@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Cam&eacute;ra DigiCam</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 13 novembre 2005</p>
+<h1>Cam&eacute;ra DigiCam </h1>
+<h2>Description </h2>
+<blockquote> 
+  <p>Pilotages des appareils photo num&eacute;riques via USB.</p>
+  <p>Liste des appareils support&eacute;s : </p>
+  <ul>
+    <li>Appareils supportant le protocole PTP (Nikon, Fujitsu, Sony, ...). </li>
+    <li>Appareils de la marque Canon. </li>
+  </ul>
+  <p>Le programme de cette cam&eacute;ra est bas&eacute; sur la librairie OpenSource 
+    <a href="http://www.gphoto.org/">GPHOTO</a> </p>
+  <p>Voir la liste des appareils PTP support&eacute;s : <a href="http://www.gphoto.org/">http://www.gphoto.org/</a> 
+  </p>
+  <p>&nbsp;</p>
+</blockquote>
+<h2>Commande de cr&eacute;ation d'une cam&eacute;ra digicam</h2>
+<blockquote> 
+  <blockquote>
+    <p></p>
+  </blockquote>
+  <p><b>cam::create digicam {-capture_command 0|1|2} {-gphoto2_win_dll_dir &quot;xxxxxxx&quot;}</b></p>
+</blockquote>
+<p><b>Param&egrave;tre capture_command (d&eacute;faut = 0)</b></p>
+<blockquote> 
+  <p>0 : D&eacute;clenchement des acquisitions via le c&acirc;ble USB de l'appareil. <br>
+    D&eacute;clenche le d&eacute;but de l'acquisition et attend que l'appareil 
+    signale lui-m&ecirc;me la fin de l'acquisition.</p>
+  <p>1 : D&eacute;clenchement des acquisitions via QuickRemote.<br>
+    D&eacute;clenche le d&eacute;but et la fin de l'acquisition via QuickRemote.</p>
+  <p>2 : D&eacute;clenchement des acquisitions via un autre dispositif.<br>
+    Attend que l'appareil signale la fin d'une acquisition.</p>
+</blockquote>
+<p><b>Param&egrave;tre gphoto2_win_dll_dir (d&eacute;faut = &quot;../bin&quot;)</b></p>
+<blockquote> 
+  <p>R&eacute;pertoire contenant les fichiers de la librairies GPHOTO. Liste des fichiers :</p>
+  <ul>
+    <li>libgphoto2.dll </li>
+    <li>libgphoto2_canon.dll </li>
+    <li>libgphoto2_port.dll<br>
+    </li>
+    <li>libgphoto2_port_usb.dll </li>
+    <li>libgphoto2_ptp2.dll 
+      <p>&nbsp;</p>
+    </li>
+  </ul>
+</blockquote>
+<h2>Commandes g&eacute;n&eacute;riques</h2>
+<h3></h3>
+<p><b>Commandes impl&eacute;ment&eacute;es :</b> acq exptime buf stop tel close</p>
+<blockquote> 
+  <h3></h3>
+</blockquote>
+<p><b>Commandes non impl&eacute;ment&eacute;es :</b> ccd nbcells nbpix celldim 
+  pixdim maxdyn fillfactor rgb info port timer gain readnoise bin window shutter 
+  cooler temperature foclen interrupt overscan.</p>
+<blockquote>
+  <p>Ces commandes <b></b> retournent des valeurs nulles. Le binning (taille des 
+    images) doit &ecirc;tre param&eacute;tr&eacute; directement sur l'appareil.</p>
+  <p>&nbsp;</p>
+</blockquote>
+<h2>Commandes sp&eacute;cifiques</h2>
+<h3>cam1 autoload {0|1}</h3>
+<blockquote> 
+  <p>Active ou d&eacute;sactive le chargemement automatique des images apr&egrave;s 
+    la fin de chaque pose. L'image est ensuite supprim&eacute;e de la m&eacute;moire 
+    de l'appareil photo.</p>
+</blockquote>
+<h3>cam1 loadlastimage </h3>
+<blockquote> 
+  <p>Chargement imm&eacute;diat de la derni&egrave;re image acquise. Cette commande 
+    est utile en particulier pour charger une image pendant l'acquisition d'une 
+    image suivante afin de gagner du temps.</p>
+  <p>Exemple d'utilisation : </p>
+  <blockquote> 
+    <table width="75%" border="1">
+      <tr> 
+        <td>cam1 autoload 0 </td>
+        <td>d&eacute;sactive le chargement automatique </td>
+      </tr>
+      <tr> 
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr> 
+        <td>cam1 exptime 300</td>
+        <td>fixe la dur&eacute;e des poses &agrave; 5 minutes</td>
+      </tr>
+      <tr> 
+        <td>cams1 acq</td>
+        <td>lance la pose n&deg;1</td>
+      </tr>
+      <tr> 
+        <td>wait cam1_status</td>
+        <td>attend la fin de la pose n&deg;1</td>
+      </tr>
+      <tr> 
+        <td>.....</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr> 
+        <td>cam1 acq</td>
+        <td>lance la pose n&deg;2</td>
+      </tr>
+      <tr> 
+        <td>cam1 loadlastimage</td>
+        <td>t&eacute;l&eacute;charge la pose n&deg;1</td>
+      </tr>
+      <tr> 
+        <td>wait cam1_status</td>
+        <td>attend la fin de la pose n&deg;2</td>
+      </tr>
+      <tr> 
+        <td>.....</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr> 
+        <td>cam1 acq</td>
+        <td>lance la pose n&deg;3</td>
+      </tr>
+      <tr> 
+        <td height="18">cam1 loadlastimage</td>
+        <td height="18">t&eacute;l&eacute;charge la pose n&deg;2</td>
+      </tr>
+      <tr> 
+        <td>wait cam1_status</td>
+        <td>attend la fin de la pose n&deg;3</td>
+      </tr>
+      <tr> 
+        <td>.....</td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+    <p>&nbsp;</p>
+  </blockquote>
+</blockquote>
+<h3>cam1 systemservice {0|1}</h3>
+<blockquote> 
+  <p>Active ou d&eacute;sactive le service de d&eacute;tection automatique des 
+    appareils photo num&eacute;riques par le syst&egrave;me d'exploitation.</p>
+  <p>Il peut &ecirc;tre utile de d&eacute;sactiver ce service pour &eacute;viter 
+    de perdre des images pendant leur rapatriement &agrave; cause d'un conflit 
+    d'acc&egrave;s entre Aud'ACE et ce service du syst&egrave;me d'exploitation.</p>
+  <p>Remarques :</p>
+  <ul>
+    <li>Equivalent &agrave; la commande WINDOWS : Panneau de configuration -&gt; Outils 
+      d'administration -&gt; Services -&gt; Acquisition d'image Windows (WIA) -&gt; D&eacute;marrer/Arr&ecirc;ter</li>
+    <li>N&eacute;cessite d'avoir des droits d'utilisateur &eacute;tendus sous WINDOWS, 
+      sinon la commande reste sans effet.</li>
+    <li>N'est pas impl&eacute;ment&eacute; pour LINUX.</li>
+  </ul>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>
