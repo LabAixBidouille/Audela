@@ -1,0 +1,94 @@
+#
+# Fichier : confeditscript.cap
+# Date de mise a jour : 02 janvier 2005
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(confeditscript,editeurs)		"Editors"
+set caption(confeditscript,parcourir)		"..."
+set caption(confeditscript,edit_script)		"Script Editor:"
+set caption(confeditscript,notice_pdf)		"See User Guides (.pdf):"
+set caption(confeditscript,navigateur_htm)	"Web Browser:"
+set caption(confeditscript,viewer)			"Viewer:"
+set caption(confeditscript,ok)			"OK"
+set caption(confeditscript,fermer)			"Close"
+set caption(confeditscript,aide)			"Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(confeditscript,editeurs)		"Editeurs"
+   set caption(confeditscript,parcourir)		"..."
+   set caption(confeditscript,edit_script)	"Editeur de scripts :"
+   set caption(confeditscript,notice_pdf)		"Voir les notices (.pdf) :"
+   set caption(confeditscript,navigateur_htm)	"Navigateur Web :"
+   set caption(confeditscript,viewer)		"Visualiseur d'images :"
+   set caption(confeditscript,ok)			"OK"
+   set caption(confeditscript,fermer)		"Fermer"
+   set caption(confeditscript,aide)			"Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(confeditscript,editeurs)		"Editors"
+   set caption(confeditscript,parcourir)		"..."
+   set caption(confeditscript,edit_script)	"Editor script:"
+   set caption(confeditscript,notice_pdf)		"Vedi la guida utente (.pdf):"
+   set caption(confeditscript,navigateur_htm)	"Web browser:"
+   set caption(confeditscript,viewer)		"Visualizzatore di immagini:"
+   set caption(confeditscript,ok)			"OK"
+   set caption(confeditscript,fermer)		"Chiudi"
+   set caption(confeditscript,aide)			"Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(confeditscript,editeurs)		"Editores"
+   set caption(confeditscript,parcourir)		"..."
+   set caption(confeditscript,edit_script)	"Editor de scripts:"
+   set caption(confeditscript,notice_pdf)		"Ver guia de usuario (.pdf):"
+   set caption(confeditscript,navigateur_htm)	"Navegador Web:"
+   set caption(confeditscript,viewer)		"Visualizador de imágenes:"
+   set caption(confeditscript,ok)			"OK"
+   set caption(confeditscript,fermer)		"Cerrar"
+   set caption(confeditscript,aide)			"Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(confeditscript,editeurs)		"Editoren"
+   set caption(confeditscript,parcourir)		"..."
+   set caption(confeditscript,edit_script)	"Skripten Editor:"
+   set caption(confeditscript,notice_pdf)		"Hinweisen ansehen (.pdf):"
+   set caption(confeditscript,navigateur_htm)	"Web Navigator:"
+   set caption(confeditscript,viewer)		"Bild Zeichner:"
+   set caption(confeditscript,ok)			"OK"
+   set caption(confeditscript,fermer)		"Schließen"
+   set caption(confeditscript,aide)			"Hilfe"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(confeditscript,editeurs)		"Teksteditor" 
+   set caption(confeditscript,parcourir)		"..."
+   set caption(confeditscript,edit_script)	"Script Editor:"
+   set caption(confeditscript,notice_pdf)		"Se brugsanvisning (.pdf):"
+   set caption(confeditscript,navigateur_htm)	"Web Browser:"
+   set caption(confeditscript,viewer)		"Billedvisning:"
+   set caption(confeditscript,ok)			"OK"
+   set caption(confeditscript,fermer)		"Luk"
+   set caption(confeditscript,aide)			"Hjælp"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

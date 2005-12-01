@@ -1,0 +1,70 @@
+#
+# Fichier : mauclaire.cap
+# Date de mise a jour : 10 octobre 2004
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(mauclaire,chargement)			"Loading File:"
+set caption(mauclaire,fin_traitement)		"End of Processing.\n"
+set caption(mauclaire,pas_de_fichier)		"File Does Not Exist.\n"
+set caption(mauclaire,charge_image)			"An image must be loaded.\n"
+set caption(mauclaire,pas_image_memoire)   	"No Image in Memory."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(mauclaire,chargement)		"Chargement du fichier :"
+   set caption(mauclaire,fin_traitement)		"Fin du traitement.\n"
+   set caption(mauclaire,pas_de_fichier)		"Le fichier n'existe pas.\n"
+   set caption(mauclaire,charge_image)		"Il faut charger une image.\n"
+   set caption(mauclaire,pas_image_memoire)   	"Il n'y a pas d'image actuellement en mémoire."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(mauclaire,chargement)		"Caricamento del file:"
+   set caption(mauclaire,fin_traitement)		"Fine del trattamento.\n"
+   set caption(mauclaire,pas_de_fichier)		"Il file non esiste.\n"
+   set caption(mauclaire,charge_image)		"Deve essere caricata un'immagine.\n"
+   set caption(mauclaire,pas_image_memoire)	"Nessuna immagine in memoria."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(mauclaire,chargement)		"Cargando fichero:"
+   set caption(mauclaire,fin_traitement)		"Fin de proceso.\n"
+   set caption(mauclaire,pas_de_fichier)		"El fichero no existe.\n"
+   set caption(mauclaire,charge_image)		"Debe cargar una imagen.\n"
+   set caption(mauclaire,pas_image_memoire)	"No existe una imágen cargada en la memoria."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(mauclaire,chargement)		"Datei laden:"
+   set caption(mauclaire,fin_traitement)		"Behandlung Ende.\n"
+   set caption(mauclaire,pas_de_fichier)		"Die Datei existiert nicht.\n"
+   set caption(mauclaire,charge_image)		"Ein Bild muss geladet sein.\n"
+   set caption(mauclaire,pas_image_memoire)	"Es ist jetzt kein Bild im Speicher."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(mauclaire,chargement)		"Indlæs fil:"
+   set caption(mauclaire,fin_traitement)		"Slut på proces.\n"
+   set caption(mauclaire,pas_de_fichier)		"Filen findes ikke.\n"
+   set caption(mauclaire,charge_image)		"Et billede må indlæses.\n"
+   set caption(mauclaire,pas_image_memoire)	"Intet billede i memory."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
