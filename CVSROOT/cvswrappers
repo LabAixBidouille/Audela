@@ -19,6 +19,8 @@
 *.jpg -k 'b'
 *.gif -k 'b'
 *.png -k 'b'
+*.bmp -k 'b'
+*.ppm -k 'b'
 *.pdf -k 'b'
 *.dll -k 'b'
 *.exe -k 'b'
