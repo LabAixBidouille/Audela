@@ -23,6 +23,7 @@
 *.dll -k 'b'
 *.exe -k 'b'
 *.sys -k 'b'
+*.so  -k 'b'
 *.a   -k 'b'
 *.fit -k 'b'
 *.ico -k 'b'
