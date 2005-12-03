@@ -1,0 +1,60 @@
+#
+# Fichier : skybot_statut.cap
+# Date de mise a jour : 19 septembre 2005
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(statut,main_title)			"SkyBoT - Statut de la base de données"
+   set caption(statut,titre1)				"La base de données SkyBoT a le statut :"
+   set caption(statut,titre2)				"Elle couvre la période allant du :"
+   set caption(statut,titre3)				"au"
+   set caption(statut,titre4)				"Actuellement, elle contient :"
+   set caption(statut,asteroide)			"astéroïde."
+   set caption(statut,asteroides)			"astéroïdes."
+   set caption(statut,planete)			"planète."
+   set caption(statut,planetes)			"planètes."
+   set caption(statut,satellite)			"satellite naturel."
+   set caption(statut,satellites)			"satellites naturels."
+   set caption(statut,comete)				"comète."
+   set caption(statut,cometes)			"comètes."
+   set caption(statut,titre5)				"La dernière mise à jour est du :"
+   set caption(statut,titre6)				"à"
+
+   set caption(statut,aide)				"Aide"
+   set caption(statut,fermer) 			"Fermer"
+
+   set caption(statut,msg_internet)			"Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

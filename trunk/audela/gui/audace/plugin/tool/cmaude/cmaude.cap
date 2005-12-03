@@ -1,0 +1,66 @@
+#
+# Fichier : cmaude.cap
+# Date de mise a jour : 03 mai 2005
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(cmaude,titre_mascot)		"Acquisition (MASCOT)"
+set caption(cmaude,help_titre)		"Help For This Tool"
+set caption(cmaude,bias)			"Bias File"
+set caption(cmaude,dark)			"Dark File"
+set caption(cmaude,overlay)			"Overlay File"
+set caption(cmaude,nom_image)			"Image File"
+set caption(cmaude,binning)			"Binning"
+set caption(cmaude,temps_pose)		"Exposure Time (sec.)"
+set caption(cmaude,entre_2_images)		"Time between 2 Img. (sec.)"
+set caption(cmaude,go_acquisition)		"GO CCD"
+set caption(cmaude,stop)			"STOP"
+set caption(cmaude,ephemerides)		"Ephemeris"
+set caption(cmaude,status)			"Status"
+set caption(cmaude,status1)			"GO to run script"
+set caption(cmaude,status2)			"---"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(cmaude,titre_mascot)		"Acquisition (MASCOT)"
+   set caption(cmaude,help_titre)		"Aide pour cet outil"
+   set caption(cmaude,bias)			"Image du bias"
+   set caption(cmaude,dark)			"Image du dark"
+   set caption(cmaude,overlay)		"Image d'overlay"
+   set caption(cmaude,nom_image)		"Nom de l'image"
+   set caption(cmaude,binning)		"Binning"
+   set caption(cmaude,temps_pose)		"Pose (sec.)"
+   set caption(cmaude,entre_2_images)	"Temps entre 2 img. (sec.)"
+   set caption(cmaude,go_acquisition)	"GO CCD"
+   set caption(cmaude,stop)			"STOP"
+   set caption(cmaude,ephemerides)		"Ephémérides"
+   set caption(cmaude,status)			"Statut"
+   set caption(cmaude,status1)		"Statut de l'acquisition"
+   set caption(cmaude,status2)		"---"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
