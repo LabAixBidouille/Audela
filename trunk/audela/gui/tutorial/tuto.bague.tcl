@@ -37,17 +37,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Probleme de connexion"
-  set caption(satured) "Des pixels sont satures"
+  set caption(max_zero) "Problème de connexion"
+  set caption(satured) "Des pixels sont saturés"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation a l'imagerie CCD"
+  set texte(firstdark_1) "Initiation à l'imagerie CCD"
   set texte(firstdark_2) "Bague pour adapter Audine sur un porte-oculaire"
-  set texte(firstdark_3) "Sur cette photo, on va visser une bague sur la face avant de la camera Audine. Cette bague\
-(disponible chez le revendeur de la camera) permet de transformer la sortie de Audine (taraudage de diametre 42 mm avec un pas de 1 mm)\
-sous la forme d'un tube au coulant standard des oculaires (diametre lisse de 31,75 mm).\n
-Ainsi, il suffit de placer la camera Audine dans le porte-oculaire de votre instrument pour etre operationnel.\n"
-  set texte(firstdark_exit) " Retour a la page principale."
+  set texte(firstdark_3) "Sur cette photo, on va visser une bague sur la face avant de la caméra Audine. Cette bague\
+(disponible chez le revendeur de la caméra) permet de transformer la sortie de Audine (taraudage de diamètre 42 mm avec un pas de 1 mm)\
+sous la forme d'un tube au coulant standard des oculaires (diamètre lisse de 31,75 mm).\n
+Ainsi, il suffit de placer la caméra Audine dans le porte-oculaire de votre instrument pour être opérationnel.\n"
+  set texte(firstdark_exit) " Retour à la page principale."
 }
 }
 

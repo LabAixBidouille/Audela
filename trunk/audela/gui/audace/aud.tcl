@@ -411,7 +411,7 @@ namespace eval ::audace {
       #--- Initialisation
       if {[info exists conf]} {unset conf}
 
-      #--- Ouverture du fichier de parametres
+      #--- Ouverture du fichier de paramètres
       if { $::tcl_platform(os) == "Linux" } {
          set fichier [ file join ~ .audela config.ini ]
          #--- Si le dossier ~/.audela n'existe pas, on le cree
@@ -983,13 +983,13 @@ namespace eval ::audace {
         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port) \n\n"
       }
 
-      #--- Definition d'un fichier palette temporaire, modifiable dynamiquement
+      #--- Définition d'un fichier palette temporaire, modifiable dynamiquement
       #--- On stocke le nom de ce fichier dans tmp(fichier_palette)
       #--- Attention : On stocke le nom du fichier sans l'extension .pal
       if { ! [ info exist tmp(fichier_palette) ] } {
          switch $::tcl_platform(os) {
             Linux {
-               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'ecriture pour tout le monde
+               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'écriture pour tout le monde
                if {[file exist [file join /tmp .audela]]=="0"} {
                   file mkdir [file join /tmp .audela]
                   exec chmod a+w [file join /tmp .audela]
@@ -1426,7 +1426,7 @@ namespace eval ::audace {
       }
    }
 
-   #--- Procedure d'affichage de la fenetre "fonctions de transfert"
+   #--- Procédure d'affichage de la fenêtre "fonctions de transfert"
    proc fonction_transfert { } {
       global audace caption conf tmp
 
@@ -1439,19 +1439,19 @@ namespace eval ::audace {
       }
 
       if {[winfo exists $audace(base).fonction_transfert] == 0} {
-         #--- Creation de la fenetre
+         #--- Création de la fenêtre
          toplevel $audace(base).fonction_transfert
          wm geometry $audace(base).fonction_transfert $conf(fonction_transfert,position)
          wm title $audace(base).fonction_transfert $caption(fcttransfert,titre)
          wm protocol $audace(base).fonction_transfert WM_DELETE_WINDOW ::audace::fonction_transfertquit
 
-         #--- Enregistrement des reglages courants
+         #--- Enregistrement des réglages courants
         # set tmp(fonction_transfert,mode)   $conf(fonction_transfert,mode)
          set tmp(fonction_transfert,param2) $conf(fonction_transfert,param2)
          set tmp(fonction_transfert,param3) $conf(fonction_transfert,param3)
          set tmp(fonction_transfert,param4) $conf(fonction_transfert,param4)
 
-         #--- Sous-trame reglage fonction de transfert
+         #--- Sous-trame réglage fonction de transfert
          frame $audace(base).fonction_transfert.regl
          pack $audace(base).fonction_transfert.regl -expand true
 
@@ -1488,7 +1488,7 @@ namespace eval ::audace {
             -text $caption(conf,aide) -width 8
          pack $audace(base).fonction_transfert.regl.aide -expand true -padx 10 -pady 10
 
-         #--- Sous-trame boutons OK, previsu & quitter
+         #--- Sous-trame boutons OK, prévisu & quitter
          frame $audace(base).fonction_transfert.buttons
          pack $audace(base).fonction_transfert.buttons
          button $audace(base).fonction_transfert.buttons.ok -command ::audace::fonction_transfertok \
@@ -1516,7 +1516,7 @@ namespace eval ::audace {
       global audace conf tmp
 
       set tmp(fonction_transfert,mode) $conf(fonction_transfert,mode)
-      #--- Recuperation de la position de la fenetre de reglages
+      #--- Récupération de la position de la fenêtre de réglages
       fonction_transfert_recup_position
       #---
       destroy $audace(base).fonction_transfert
@@ -1526,7 +1526,7 @@ namespace eval ::audace {
    proc fonction_transfertquit { } {
       global conf tmp
 
-      #--- On recupere les anciens parametres
+      #--- On récupère les anciens paramètres
       set conf(fonction_transfert,mode)   $tmp(fonction_transfert,mode)
       set conf(fonction_transfert,param2) $tmp(fonction_transfert,param2)
       set conf(fonction_transfert,param3) $tmp(fonction_transfert,param3)
@@ -1543,7 +1543,7 @@ namespace eval ::audace {
       set conf(fonction_transfert,position) "+[string range $conf(fonction_transfert,geometry) $deb $fin]"
    }
 
-   #--- Procedure d'affichage de la fenetre "aide pour reglage de la fonction de transfert"
+   #--- Procédure d'affichage de la fenêtre "aide pour réglage de la fonction de transfert"
    proc fonction_transfertaide { } {
       global help
 
@@ -1551,11 +1551,11 @@ namespace eval ::audace {
       ::audace::showHelpItem "$help(dir,affichage)" "1020transfert.htm"
    }
 
-   #--- Procedure de creation dynamique de la palette en fonction de la fonction de transfert
+   #--- Procédure de création dynamique de la palette en fonction de la fonction de transfert
    proc MAJ_palette { } {
       global audace conf tmp
 
-      #--- On recupere le nom du fichier palette "de base"
+      #--- On récupère le nom du fichier palette "de base"
       switch $conf(visu_palette) {
          1 { set fichier_palette_in [ file join $audace(rep_audela) audace palette gray ] }
          2 { set fichier_palette_in [ file join $audace(rep_audela) audace palette inv ] }
@@ -1565,18 +1565,18 @@ namespace eval ::audace {
 
       switch $conf(fonction_transfert,mode) {
          1 {
-            #--- Fonction de transfert lineaire : pas besoin de creer une palette
+            #--- Fonction de transfert linéaire : pas besoin de créer une palette
             visu$audace(visuNo) paldir [file dirname $fichier_palette_in]
             visu$audace(visuNo) pal [file tail $fichier_palette_in]         }
          2 {
             #--- Fonction de transfert log
             if { $conf(fonction_transfert,param2) == 0 } {
-               #--- On est ramene au cas lineaire
+               #--- On est ramené au cas linéaire
 	         visu$audace(visuNo) pal $fichier_palette_in
             } else {
                set conf(fonction_transfert,param2) [expr abs($conf(fonction_transfert,param2))]
-               #--- On determine quelle partie de la courbe log on utilise (abcisses [a b])
-               #--- (celle au dessus de la droite d'equation y=x-1-param)
+               #--- On détermine quelle partie de la courbe log on utilise (abcisses [a b])
+               #--- (celle au dessus de la droite d'équation y=x-1-param)
                set dicho 0.5
                set a 0.5
                while {$dicho>0.001} {
@@ -1615,14 +1615,14 @@ namespace eval ::audace {
 
                   #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
                   #--- dessous et juste au dessus de $valeur
-                  #--- Meme s'il est entier, ca marche aussi
+                  #--- Même s'il est entier, ça marche aussi
                   while {$k_in<$valeur} {
                      incr k_in
 	               set entree-1_in [gets $palette_in]
 	            }
 
 	            if {[expr $k_in -1] < $valeur} {
-                     #--- Test de securite : on ne continue que si $k_in < 255
+                     #--- Test de sécurité : on ne continue que si $k_in < 255
                      if {$k_in < 255 } {
 	                  if { [ info exist entree_in ] } {
                            set entree-1_in $entree_in
@@ -1648,13 +1648,13 @@ namespace eval ::audace {
          3 {
             #--- Fonction de transfert exp
             if { $conf(fonction_transfert,param3) == 0 } {
-               #--- On est ramene au cas lineaire
+               #--- On est ramené au cas linéaire
                visu$audace(visuNo) pal $fichier_palette
             } else {
 	         set conf(fonction_transfert,param3) [expr abs($conf(fonction_transfert,param3))]
 
-               #--- On determine quelle partie de la courbe exp on utilise (abcisses [a b])
-               #--- (celle au dessus de la droite d'equation y=x+1+parametre_exp)
+               #--- On détermine quelle partie de la courbe exp on utilise (abcisses [a b])
+               #--- (celle au dessus de la droite d'équation y=x+1+paramètre_exp)
                set dicho [expr $conf(fonction_transfert,param3)+1]
                set a [expr -$conf(fonction_transfert,param3)-1]
                while {$dicho>0.001} {
@@ -1692,14 +1692,14 @@ namespace eval ::audace {
 
                   #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
                   #--- dessous et juste au dessus de $valeur
-                  #--- Meme s'il est entier, ca marche aussi
+                  #--- Même s'il est entier, ça marche aussi
                   while {$k_in<$valeur} {
                      incr k_in
 	               set entree-1_in [gets $palette_in]
 	            }
 
 	            if {[expr $k_in -1] < $valeur} {
-                     #--- Test de securite : on ne continue que si $k_in < 255
+                     #--- Test de sécurité : on ne continue que si $k_in < 255
                      if {$k_in < 255 } {
 	                  if {[info exist entree_in]} {
                            set entree-1_in $entree_in
@@ -1723,16 +1723,16 @@ namespace eval ::audace {
             }
          }    
          4 {
-            #--- Fonction de transfert arctangente / sigmoide
+            #--- Fonction de transfert arctangente / sigmoïde
             if {$conf(fonction_transfert,param4)==0} {
-               #--- On est ramene au cas lineaire
+               #--- On est ramené au cas linéaire
                visu$audace(visuNo) pal $fichier_palette
             } else {
                set f [open $tmp(fichier_palette) w]
                set conf(fonction_transfert,param4) [expr abs($conf(fonction_transfert,param4))]
 
-               #--- On determine quelle partie de la courbe exp on utilise (abcisses [a b])
-               #--- (celle coupant la droite d'equation y=x/(1+parametre_arc))
+               #--- On détermine quelle partie de la courbe exp on utilise (abcisses [a b])
+               #--- (celle coupant la droite d'équation y=x/(1+paramètre_arc))
                set dicho [expr $conf(fonction_transfert,param4)+1]
                set a [expr -$conf(fonction_transfert,param4)-1]
                while {$dicho>0.001} {
@@ -1771,14 +1771,14 @@ namespace eval ::audace {
 
                #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
                #--- dessous et juste au dessus de $valeur
-               #--- Meme s'il est entier, ca marche aussi
+               #--- Même s'il est entier, ça marche aussi
                while {$k_in<$valeur} {
                   incr k_in
 	            set entree-1_in [gets $palette_in]
 	         }
 
 	         if { [expr $k_in -1] < $valeur } {
-                  #--- Test de securite : on ne continue que si $k_in < 255
+                  #--- Test de sécurité : on ne continue que si $k_in < 255
                   if { $k_in < 255 } {
 	               if { [info exist entree_in] } {
                         set entree-1_in $entree_in
@@ -2279,7 +2279,7 @@ namespace eval ::audace {
    }
 
    proc rien { } {
-      #--- Sert a bloquer l'affichage multiple de la fenetre Quitter
+      #--- Sert a bloquer l'affichage multiple de la fenêtre Quitter
    }
 
    proc menustate { state } {
@@ -2308,7 +2308,7 @@ namespace eval ::audace {
    #
    # ::audace::screen2Canvas coord
    # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne egalement une liste de deux entiers
+   # et retourne également une liste de deux entiers
    #
    proc screen2Canvas { coord } {
       global audace
@@ -2321,7 +2321,7 @@ namespace eval ::audace {
    #
    # ::audace::canvas2Picture coord {stick left}
    # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de deux entiers,
-   # et retourne egalement une liste de deux entiers.
+   # et retourne également une liste de deux entiers.
    # Les coordonnees canvas commencent a 0,0 dans le coin superieur gauche de l'image.
    # Les coordonnees image  commencent a 1,1 dans le coin inferieur gauche de l'image.
    # En passant un argument <> de left pour stick, calcule les coordonnees par arrondi superieur.
@@ -2358,7 +2358,7 @@ namespace eval ::audace {
    #
    # ::audace::picture2Canvas coord
    # Transforme des coordonnees image en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne egalement une liste de deux entiers
+   # et retourne également une liste de deux entiers
    #
    proc picture2Canvas { coord } {
       global audace

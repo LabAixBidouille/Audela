@@ -52,26 +52,26 @@ if {[string compare $langage french] ==0 } {
   set caption(test) "Test"
   set caption(test2) "Test2"
 
-  set texte(testcam_1) "Initiation a l'imagerie CCD"
-  set texte(testcam_2) "Tests electroniques pour le kit Audine"
-  set texte(testcam_3) "Cette serie de tests est proposee pour verifier le montage du kit de la camera Audine \
-sans CCD comme decrit dans la documentation.\n
+  set texte(testcam_1) "Initiation à l'imagerie CCD"
+  set texte(testcam_2) "Tests électroniques pour le kit Audine"
+  set texte(testcam_3) "Cette série de tests est proposée pour vérifier le montage du kit de la caméra Audine \
+sans CCD comme décrit dans la documentation.\n
 Set 0\n
-Ce test permet de faire les reglages suivants :
-Agir sur le potentiometre P3 de la carte inferieure jusqu'a lire +6.0 V sur la broche 7 du support du CCD.
-Agir sur le potentiometre P4 de la carte inferieure jusqu'a lire -4.0 V sur la broche 8 du support du CCD.
-Agir sur le potentiometre P1 de la carte inferieure jusqu'a lire +0.5 V sur la broche 22 du support du CCD.\n
+Ce test permet de faire les réglages suivants :
+Agir sur le potentiomètre P3 de la carte inférieure jusqu'à lire +6.0 V sur la broche 7 du support du CCD.
+Agir sur le potentiomètre P4 de la carte inférieure jusqu'à lire -4.0 V sur la broche 8 du support du CCD.
+Agir sur le potentiomètre P1 de la carte inférieure jusqu'à lire +0.5 V sur la broche 22 du support du CCD.\n
 Set 255\n
-Ce test permet de faire les reglages suivants :
-Agir sur le potentiometre P2 de la carte inferieure jusqu'a lire -8.0 V sur la broche 22 du support du CCD.\n
+Ce test permet de faire les réglages suivants :
+Agir sur le potentiomètre P2 de la carte inférieure jusqu'à lire -8.0 V sur la broche 22 du support du CCD.\n
 Test 'nombre'\n
-Cette commande execute un nombre de cycles de transfert Zone image / Registre horizontal egal a la valeur du\
-parametre nombre. Ce test est utile pour analyser les signaux d'entree CCD avec un oscilloscope.\n
+Cette commande exécute un nombre de cycles de transfert Zone image / Registre horizontal égal à la valeur du\
+paramètre nombre. Ce test est utile pour analyser les signaux d'entrée CCD avec un oscilloscope.\n
 Test2 'nombre'\n
-Cette commande execute un nombre de cycles de lecture rapide du CCD. Ce test est utile pour analyser les\
-signaux d'entree CCD avec un oscilloscope.\n"
+Cette commande exécute un nombre de cycles de lecture rapide du CCD. Ce test est utile pour analyser les\
+signaux d'entrée CCD avec un oscilloscope.\n"
 
-  set texte(testcam_exit) " Retour a la page principale."
+  set texte(testcam_exit) " Retour à la page principale."
 
 }
 }

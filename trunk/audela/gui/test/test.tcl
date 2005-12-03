@@ -214,9 +214,9 @@ bind $zone(image1) <Motion> {
    wm title .test "Test : ($xi,$yi) = $intens    "
 }
 
-#--- declare un buffer pour placer les images en memoire 
+#--- declare un buffer pour placer les images en mémoire 
    buf::create 1
-#--- declare une connexion avec une camera Audine sur LPT1
+#--- declare une connexion avec une caméra Audine sur LPT1
    cam::create audine lpt1 1
 #--- declare un nouvel objet de visualisation pour afficher le contenu du buffer
    visu::create 1 1

@@ -37,17 +37,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Probleme de connexion"
-  set caption(satured) "Des pixels sont satures"
+  set caption(max_zero) "Problème de connexion"
+  set caption(satured) "Des pixels sont saturés"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation a l'imagerie CCD"
+  set texte(firstdark_1) "Initiation à l'imagerie CCD"
   set texte(firstdark_2) "Focalisation sur un amas globulaire"
-  set texte(firstdark_3) "Pointer votre telescope vers un amas globulaire. Vous avez prealablement degrossi la mise au point avec une etoile brillante.\
-La premiere image de l'amas doit etre assez belle mais les etoiles ne sont surement pas encore tres fines.\
-Faites des images CCD en cliquant sur le bouton rouge, en bougeant la molette de mise au point entre chaque pose, jusqu'a obtenir des images fines.\
-Lorsque la focalisation est terminee, vous pouvez enfin commencer a prendre de belles images du ciel.\n"
-  set texte(firstdark_exit) " Retour a la page principale."
+  set texte(firstdark_3) "Pointer votre télescope vers un amas globulaire. Vous avez préalablement dégrossi la mise au point avec une étoile brillante.\
+La première image de l'amas doit être assez belle mais les étoiles ne sont sûrement pas encore très fines.\
+Faites des images CCD en cliquant sur le bouton rouge, en bougeant la molette de mise au point entre chaque pose, jusqu'à obtenir des images fines.\
+Lorsque la focalisation est terminée, vous pouvez enfin commencer à prendre de belles images du ciel.\n"
+  set texte(firstdark_exit) " Retour à la page principale."
 
 }
 }
