@@ -27,6 +27,7 @@
 *.a   -k 'b'
 *.fit -k 'b'
 *.ico -k 'b'
+*.cur -k 'b'
 *.lib -k 'b'
 *.doc -k 'b'
 *.zip -k 'b'
