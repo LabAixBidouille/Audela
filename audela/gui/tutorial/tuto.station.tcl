@@ -45,25 +45,25 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Probleme de connexion"
-  set caption(satured) "Des pixels sont satures"
+  set caption(max_zero) "Problème de connexion"
+  set caption(satured) "Des pixels sont saturés"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation a l'imagerie CCD"
-  set texte(firstdark_2) "Mise en station du telescope"
-  set texte(firstdark_3) "Sur cette photo, la fleche rouge indique la direction mecanique de l'axe de l'angle horaire de\
-la monture equatoriale. Cet axe doit pointer exactement vers le pole celeste pour que le telescope soit mis en station.\
-La mise en station permet de pointer facilement les objets du ciel avec leurs coordonnees et de realiser des images CCD\
+  set texte(firstdark_1) "Initiation à l'imagerie CCD"
+  set texte(firstdark_2) "Mise en station du télescope"
+  set texte(firstdark_3) "Sur cette photo, la flèche rouge indique la direction mécanique de l'axe de l'angle horaire de\
+la monture équatoriale. Cet axe doit pointer exactement vers le pôle céleste pour que le télescope soit mis en station.\
+La mise en station permet de pointer facilement les objets du ciel avec leurs coordonnées et de réaliser des images CCD\
 en actionnant le moteur d'angle horaire.\n
-Dans l'hemisphere nord, la direction du nord celeste coincide a moins d'un degre pres avec l'etoile Polaire. On commencera\
-donc a pointer l'etoile Polaire avec la monture placee sur la declinaison 90 degres. En fonction du type de votre monture,\
+Dans l'hémisphère nord, la direction du nord céleste coïncide à moins d'un degré prés avec l'étoile Polaire. On commencera\
+donc à pointer l'étoile Polaire avec la monture placée sur la déclinaison 90 degrés. En fonction du type de votre monture,\
 il est possible d'affiner la mise en station. Se renseigner...\n
-Si le telescope est parfaitement mis en station, il n'est plus necessaire de remplacer la camera par l'oculaire entre chaque \
-pointage puisque l'on peut pointer les objets uniquement grace aux cercles de coordonnees du telescope. Certains telescopes sont\
-automatises de sorte que l'on indique les coordonnees sur la raquette de pilotage et le telescope pointe tout seul au bon endroit\
-(dans la mesure ou le telescope est bien mis en station). Le logiciel AudeLA peut piloter lui-meme un certain nombre de montures\
-a pointage automatique (LX200, AudeCom, etc.).\n"
-  set texte(firstdark_exit) " Retour a la page principale."
+Si le télescope est parfaitement mis en station, il n'est plus nécessaire de remplacer la caméra par l'oculaire entre chaque \
+pointage puisque l'on peut pointer les objets uniquement grâce aux cercles de coordonnées du télescope. Certains télescopes sont\
+automatisés de sorte que l'on indique les coordonnées sur la raquette de pilotage et le télescope pointe tout seul au bon endroit\
+(dans la mesure où le télescope est bien mis en station). Le logiciel AudeLA peut piloter lui-même un certain nombre de montures\
+à pointage automatique (LX200, AudeCom, etc.).\n"
+  set texte(firstdark_exit) " Retour à la page principale."
 }
 }
 

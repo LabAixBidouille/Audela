@@ -37,17 +37,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Probleme de connexion"
-  set caption(satured) "Des pixels sont satures"
+  set caption(max_zero) "Problème de connexion"
+  set caption(satured) "Des pixels sont saturés"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation a l'imagerie CCD"
-  set texte(firstdark_2) "Premiere image dans le noir, camera non-refroidie"
-  set texte(firstdark_3) "Installer votre materiel d'acquisition CCD (camera branchee sur l'ordinateur) dans le noir complet. Le mieux est de proceder pendant la nuit dans une piece noire. La camera n'est pas refroidie.\n
-Cliquer sur le bouton rouge $caption(go) pour faire une image d'une seconde. Un gradient vertical (la partie la plus brillante en haut) et plusieurs lignes verticales doivent apparaitre. Si l'image est completement blanche, quelque chose ne va pas : Peut-etre que le CCD n'est pas dans un noir suffisant ou bien verifier les connexions electriques.\n
-Si la camera est a une temperature proche de 20 degres Celsius, vous pouvez verifier que le niveau thermique est d'environ 30 pas codeurs par seconde (cette valeur s'affiche automatiquement a la fin de la pose).\n
-Quand le temps d'exposition est superieur a quelques secondes, l'image semble avoir un fond sombre et plein de pixels brillants. C'est normal (n'oubliez pas que votre camera n'est pas refroidie).\n"
-  set texte(firstdark_exit) " Retour a la page principale."
+  set texte(firstdark_1) "Initiation à l'imagerie CCD"
+  set texte(firstdark_2) "Première image dans le noir, caméra non-refroidie"
+  set texte(firstdark_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans le noir complet. Le mieux est de procéder pendant la nuit dans une pièce noire. La caméra n'est pas refroidie.\n
+Cliquer sur le bouton rouge $caption(go) pour faire une image d'une seconde. Un gradient vertical (la partie la plus brillante en haut) et plusieurs lignes verticales doivent apparaître. Si l'image est complètement blanche, quelque chose ne va pas : Peut-être que le CCD n'est pas dans un noir suffisant ou bien vérifier les connexions électriques.\n
+Si la caméra est à une température proche de 20 degrés Celsius, vous pouvez vérifier que le niveau thermique est d'environ 30 pas codeurs par seconde (cette valeur s'affiche automatiquement à la fin de la pose).\n
+Quand le temps d'exposition est supérieur à quelques secondes, l'image semble avoir un fond sombre et plein de pixels brillants. C'est normal (n'oubliez pas que votre caméra n'est pas refroidie).\n"
+  set texte(firstdark_exit) " Retour à la page principale."
 
 }
 }
