@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLIControlShutter</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLIControlShutter</A></H2><H2>(<!1><A HREF="flidev_t.html">flidev_t</A> dev,  <!1><A HREF="flishutter_t.html">flishutter_t</A> shutter)</H2><BLOCKQUOTE>
+ Control the shutter on a given camera.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Control the shutter on a given camera.  This function controls the
+shutter function on camera <TT>dev</TT> according to the
+<TT>shutter</TT> parameter.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>dev</B> -  Device to control the shutter of.
+
+<BR><B>shutter</B> -  How to control the shutter.  A value of
+<TT>FLI_SHUTTER_CLOSE</TT> closes the shutter and
+<TT>FLI_SHUTTER_OPEN</TT> opens the shutter.
+<TT>FLI_SHUTTER_EXTERNAL_TRIGGER_LOW</TT> causes the exposure to begin
+only when a logic LOW is detected on I/O port bit 0.
+<TT>FLI_SHUTTER_EXTERNAL_TRIGGER_HIGH</TT> causes the exposure to begin
+only when a logic HIGH is detected on I/O port bit 0. This setting
+may not be available on all cameras.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="flishutter_t.html">flishutter_t</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

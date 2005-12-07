@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLISetImageArea</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLISetImageArea</A></H2><H2>(<!1><A HREF="flidev_t.html">flidev_t</A> dev,  long ul_x,  long ul_y,<BR>&nbsp; long lr_x,  long lr_y)</H2><BLOCKQUOTE>
+ Set the image area for a given camera.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Set the image area for a given camera.  This function sets the
+image area for camera <TT>dev</TT> to an area specified in terms of
+a upper-left point and a lower-right point.  The upper-left
+x-coordinate is <TT>ul_x</TT>, the upper-left y-coordinate is
+<TT>ul_y</TT>, the lower-right x-coordinate is <TT>lr_x</TT>, and
+the lower-right y-coordinate is <TT>lr_y</TT>.  Note that the given
+lower-right coordinate must take into account the horizontal and
+vertical bin factor settings, but the upper-left coordinate is
+absolute.  In other words, the lower-right coordinate used to set
+the image area is a virtual point <IMG BORDER=0 SRC=g000001.gif> determined by:
+
+<BR><CENTER><IMG BORDER=0 SRC=g000002.gif><BR></CENTER>
+<BR><CENTER><IMG BORDER=0 SRC=g000003.gif><BR></CENTER>
+
+Where <IMG BORDER=0 SRC=g000001.gif> is the coordinate to pass to the
+<TT>FLISetImageArea</TT> function, <IMG BORDER=0 SRC=g000004.gif> and <IMG BORDER=0 SRC=g000010.gif> are the absolute coordinates of the desired image area,
+<IMG BORDER=0 SRC=g000006.gif> is the horizontal bin factor, and <IMG BORDER=0 SRC=g000007.gif> is the vertical bin
+factor.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>dev</B> -  Camera to set image area of.
+
+<BR><B>ul_x</B> -  Upper-left x-coordinate of image area.
+
+<BR><B>ul_y</B> -  Upper-left y-coordinate of image area.
+
+<BR><B>lr_x</B> -  Lower-right x-coordinate of image area (<IMG BORDER=0 SRC=g000008.gif> from
+above).
+
+<BR><B>lr_y</B> -  Lower-right y-coordinate of image area (<IMG BORDER=0 SRC=g000009.gif> from
+above).
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="FLIGetVisibleArea.html">FLIGetVisibleArea</A>
+<BR><!1><A HREF="FLIGetArrayArea.html">FLIGetArrayArea</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>
