@@ -1,0 +1,2 @@
+LIBRARY libaudinet
+EXPORTS Audinet_Init @1
