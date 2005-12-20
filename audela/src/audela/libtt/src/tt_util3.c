@@ -161,7 +161,10 @@ int tt_util_focas0(TT_IMA *p_in,double epsilon, double delta, double threshold, 
    for (k=0,kk=0;k<p_in->objelist->nrows;k++) {
       if (p_in->objelist->ident[k]==TT_STAR) {
 	 kk++;
-	 sprintf(texte,"%f %f %f 0 0 0 %f 1 0\n",p_in->objelist->x[k],p_in->objelist->y[k],p_in->objelist->mag[k],p_in->objelist->mag[k]);
+		  /*modif Yassine formatage
+		  sprintf(texte,"%f %f %f 0 0 0 %f 1 0\n",p_in->objelist->x[k],p_in->objelist->y[k],p_in->objelist->mag[k],p_in->objelist->mag[k]);*/
+	      sprintf(texte,"%8.3f %8.3f %7.4f 0 0 0 %7.4f 1 0\n",p_in->objelist->x[k],p_in->objelist->y[k],p_in->objelist->mag[k],p_in->objelist->mag[k]);
+          /*fin*/
 	 fwrite(texte,strlen(texte),1,fichier);
       }
    }
@@ -195,7 +198,10 @@ int tt_util_focas0(TT_IMA *p_in,double epsilon, double delta, double threshold, 
    for (k=0,kk=0;k<p_in->catalist->nrows;k++) {
       if (p_in->catalist->ident[k]==TT_STAR) {
 	 kk++;
-	 sprintf(texte,"%d %f %f %f %f %f %f 1 2 1\n",kk,
+	 /*Modif Yassine formatage
+	 sprintf(texte,"%d %f %f %f %f %f %f 1 2 1\n",kk,*/
+     sprintf(texte,"%5d %9.3f %9.3f %5.2f %10.6f %9.6f %5.2f 1 2 1\n",kk,
+	 /*fin*/
 	 p_in->catalist->x[k],p_in->catalist->y[k],p_in->catalist->magr[k],
 	 p_in->catalist->ra[k],p_in->catalist->dec[k],p_in->catalist->magr[k]);
 	 fwrite(texte,strlen(texte),1,fichier);
@@ -505,7 +511,11 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
    int nball,nbcom,taille,nombre,k,kk,ntot;
    TT_XYMAG *all=NULL,*com=NULL,*comusno=NULL;
    TT_LISTSEXT *liste=NULL;
-   double x,y,mag,errmag,flux,errflux,backgnd,xy,flag_sext,fwhm,classstar,theta,a_ellipse,b_ellipse;
+   /*Modif Yassine
+   double x,y,mag,errmag,flux,errflux,backgnd,xy,flag_sext,fwhm,classstar,theta,a_ellipse,b_ellipse;*/
+   double x,y,mag,errmag,flux,errflux,backgnd,xy,fwhm,classstar,theta,a_ellipse,b_ellipse;
+   int flag_sext;
+   /*fin*/
    double diffmag1, err1, diffmag2, err2;
    int nbvois;
    double *ras=NULL;
@@ -692,7 +702,10 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
                   strcpy(texte,"");
 			   	   sscanf(ligne,"%s",texte);
 				      if ((strcmp(texte,"")!=0)) {
-   					   sscanf(ligne,"%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf",&rien,&flux,&errflux,&mag,&errmag,&backgnd,&x,&y,&x2,&y2,&xy,&a_ellipse,&b_ellipse,&theta,&fwhm,&flag_sext,&classstar);
+   					      /*Modif Yassine*/
+						  /*sscanf(ligne,"%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf",&rien,&flux,&errflux,&mag,&errmag,&backgnd,&x,&y,&x2,&y2,&xy,&a_ellipse,&b_ellipse,&theta,&fwhm,&flag_sext,&classstar);*/
+						  sscanf(ligne,"\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf %3d\t%lf",&rien,&flux,&errflux,&mag,&errmag,&backgnd,&x,&y,&x2,&y2,&xy,&a_ellipse,&b_ellipse,&theta,&fwhm,&flag_sext,&classstar);
+						  /*fin*/
 						   if (mag>=99.) {continue;}
 						   (liste+k)->flag=(short)0;
 						   (liste+k)->flux=flux;
@@ -836,7 +849,10 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 									x_dec=0.;
 								}
 								x_mag=cmag+mag;
-								x_mag1=(diffmag1+mag)*0.;
+								/*Modif Yassine
+								x_mag1=(diffmag1+mag)*0.;*/
+                                x_mag1=diffmag1+mag;
+								/*fin*/
 								x_mag2=diffmag2+mag;
 								rien=(short)0;
 								fprintf(ficcom,mise_enforme,ntot,cas,x,y,mag,rien,rien,rien,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,rien,rien,rien,rien,rien,rien,rien,rien,rien);
@@ -869,10 +885,16 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 									x_dec=0.;
 								}
 								x_mag=cmag+mag;
-								x_mag1=(diffmag1+mag)*0.;
+								/*Modif Yassine
+								x_mag1=(diffmag1+mag)*0.;*/
+								x_mag1=diffmag1+mag;
+								/*fin*/
 								x_mag2=diffmag2+mag;
                         /* -1 de sextractor */
+								/*Modif Yassine
+								fprintf(ficcom,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext,classstar);*/
 								fprintf(ficcom,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext);
+								/*fin*/
 							}
 						}
 						k++;
@@ -917,7 +939,10 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 									x_dec=0.;
 								}
 								x_mag=cmag+mag;
-								x_mag1=(diffmag1+mag)*0.;
+								/*Modif Yassine
+								/*x_mag1=(diffmag1+mag)*0.;*/
+                                x_mag1=diffmag1+mag;
+								/*fin*/
 								x_mag2=diffmag2+mag;
 								rien=(short)0;
 								/*fprintf(ficcom,"%4d %2d %7.2f %7.2f %+7.2f %10.6f %+10.6f %8.4f %+8.4f %6.4f %+8.4f %6.4f %d %d\n",ntot,cas,x,y,mag,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150);*/
@@ -951,10 +976,16 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 									x_dec=0.;
 								}
 								x_mag=cmag+mag;
-								x_mag1=(diffmag1+mag)*0.;
+								/*Modif Yassine
+								x_mag1=(diffmag1+mag)*0.;*/
+								x_mag1=diffmag1+mag;
+								/*fin*/
 								x_mag2=diffmag2+mag;
                         /* -1 de sextractor */
+								/*Modif Yassine
+								fprintf(ficcom,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext,classstar);*/
 								fprintf(ficcom,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext);
+								/*fin*/
 							}
 						}
 						k++;
@@ -4317,11 +4348,12 @@ int focas_liste_commune(char *nom_fichier_com,char *nom_fichier_dif,
 	 return(PB);
       }
       for (i=1;i<=totall_cor;i++) {
-	 sprintf(ligne,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%d\n",
-	  corresp[i].x1,corresp[i].y1,corresp[i].mag1,
-	  corresp[i].x2,corresp[i].y2,corresp[i].mag2,
-	  corresp[i].mag1-corresp[i].mag2,
-	  corresp[i].type1,corresp[i].type2);
+	  /*Modif Yassine formatage
+	  sprintf(ligne,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%d\n",corresp[i].x1,corresp[i].y1,corresp[i].mag1,	  
+	  corresp[i].x2,corresp[i].y2,corresp[i].mag2,corresp[i].mag1-corresp[i].mag2,corresp[i].type1,corresp[i].type2);*/
+	  sprintf(ligne,"%8.3f %8.3f %7.4f %8.3f %8.3f %7.4f %+8.4f %2d %2d\n",corresp[i].x1,corresp[i].y1,corresp[i].mag1,	  
+	  corresp[i].x2,corresp[i].y2,corresp[i].mag2,corresp[i].mag1-corresp[i].mag2,corresp[i].type1,corresp[i].type2);
+	  /*fin*/
 	 fwrite(ligne,strlen(ligne),1,hand_com);
       }
       fclose(hand_com);
@@ -4338,7 +4370,10 @@ int focas_liste_commune(char *nom_fichier_com,char *nom_fichier_dif,
       for (i=1;i<=totall_cor;i++) {
 	 /* if (corresp[i].type1>0) {   // ### */
 	    m=pow(10.0,(-corresp[i].mag1/2.5));
-	    sprintf(ligne,"%f\t%f\t%f\n",corresp[i].x1,corresp[i].y1,m);
+	    /*Modif Yassine formatage
+		sprintf(ligne,"%f\t%f\t%f\n",corresp[i].x1,corresp[i].y1,m);*/
+		sprintf(ligne,"%8.3f %8.3f %9.6f\n",corresp[i].x1,corresp[i].y1,m);
+		/*fin*/
 	    fwrite(ligne,strlen(ligne),1,hand_com);
 	 /* }*/
       }
@@ -4355,7 +4390,10 @@ int focas_liste_commune(char *nom_fichier_com,char *nom_fichier_dif,
       }
       for (i=1;i<=totall_cor;i++) {
 	 /* if (corresp[i].type1>0) {   // ###*/
-	    sprintf(ligne,"%f\t%f\t%f\n",corresp[i].ad,corresp[i].dec,corresp[i].mag_gsc);
+	    /*Modif Yassine formatage
+	    sprintf(ligne,"%f\t%f\t%f\n",corresp[i].ad,corresp[i].dec,corresp[i].mag_gsc);*/
+	    sprintf(ligne,"%11.6f %11.6f %6.3f\n",corresp[i].ad,corresp[i].dec,corresp[i].mag_gsc);
+		/*fin*/
 	    fwrite(ligne,strlen(ligne),1,hand_com);
 	 /* }*/
       }
@@ -4386,11 +4424,12 @@ int focas_liste_commune(char *nom_fichier_com,char *nom_fichier_dif,
 	 return(PB);
       }
       for (i=1;i<=totall_dif;i++) {
-	 sprintf(ligne,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%d\n",
-	  differe[i].x1,differe[i].y1,differe[i].mag2,
-	  differe[i].x2,differe[i].y2,differe[i].mag2,
-	  differe[i].mag1-differe[i].mag2,
-	  differe[i].type1,differe[i].type2);
+	  /*Modif Yassine formatage
+	  sprintf(ligne,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%d\t%d\n",differe[i].x1,differe[i].y1,differe[i].mag2,
+	  differe[i].x2,differe[i].y2,differe[i].mag2,differe[i].mag1-differe[i].mag2,differe[i].type1,differe[i].type2);*/
+      sprintf(ligne,"%8.3f %8.3f %6.3f %8.3f %8.3f %6.3f %+7.3f %2d %2d\n",differe[i].x1,differe[i].y1,differe[i].mag2,
+	  differe[i].x2,differe[i].y2,differe[i].mag2,differe[i].mag1-differe[i].mag2,differe[i].type1,differe[i].type2);
+	  /*fin*/
 	  fwrite(ligne,strlen(ligne),1,hand_dif);
       }
       fclose(hand_dif);
