@@ -114,6 +114,8 @@ static int cmdCamTimer(ClientData clientData, Tcl_Interp * interp, int argc, cha
 static int cmdCamGain(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamReadnoise(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamTemperature(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 /* --- Action commands ---*/
 static int cmdCamName(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -383,9 +385,9 @@ void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s, char *func
     sprintf(ligne, "info commands  %s", function);
     Tcl_Eval(interp, ligne);
     if (strcmp(interp->result, function) == 0) {
-	sprintf(ligne, "mc_date2iso8601 [%s now]", function);
-	Tcl_Eval(interp, ligne);
-	strcpy(s, interp->result);
+       sprintf(ligne, "mc_date2iso8601 [%s now]", function);
+       Tcl_Eval(interp, ligne);
+       strcpy(s, interp->result);
     }
 }
 
@@ -653,113 +655,163 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
  */
 static void AcqRead(ClientData clientData)
 {
-    int naxis1, naxis2, bin1, bin2;
-    char s[100];
-    unsigned short *p;		/* cameras de 1 a 16 bits non signes */
-    double ra, dec, exptime = 0.;
-    //float *pp;
-    //int t;
-    int status;
-    struct camprop *cam;
-    Tcl_Interp *interp;
+   char s[1000];
+   //unsigned short *p;		/* cameras de 1 a 16 bits non signes */
+   char *p;		/* cameras de 1 a 16 bits non signes */
+   double ra, dec, exptime = 0.;
+   int status;
+   struct camprop *cam;
+   Tcl_Interp *interp;
+   
+   cam = (struct camprop *) clientData;
+   interp = cam->interp;
+   
 
-    printf("Driver Audine: appel a AcqRead(clientData=%p)\n", clientData);
+   // Information par defaut concernant l'image 
+   // ATTENTION : la camera peut mettre a jour ces valeurs pendant l'execution de read_ccd()
+   strcpy(cam->pixels_classe, "CLASS_GRAY");
+   strcpy(cam->pixels_format, "FORMAT_SHORT");
+   strcpy(cam->pixels_compression, "COMPRESS_NONE");
+   cam->pixels_reverse_x = 0;
+   cam->pixels_reverse_y = 0;
+   cam->pixel_data = NULL;
 
-    cam = (struct camprop *) clientData;
-    interp = cam->interp;
-    naxis1 = cam->w;
-    naxis2 = cam->h;
-    bin1 = cam->binx;
-    bin2 = cam->biny;
+   // allocation par defaut du buffer
+   //p = (unsigned short *) calloc(cam->w * cam->h *4, sizeof(unsigned short));
+   p = (char *) calloc(cam->w * cam->h *4, sizeof(unsigned short));
+   
+   libcam_GetCurrentFITSDate(interp, cam->date_end);
+   libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
+   
 
-    p = (unsigned short *) calloc(naxis1 * naxis2, sizeof(unsigned short));
+   // set TCL global status_read_camNo
+   sprintf(s, "status_read_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, "read", TCL_GLOBAL_ONLY);
+   
+   // reset message
+   strcpy(cam->msg,"");
 
-    libcam_GetCurrentFITSDate(interp, cam->date_end);
-    libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
+   //  capture 
+   // TODO 2 : une autre solution serait de passer l'adresse de p comme ceci :
+   // CAM_DRV.read_ccd(cam, &p); 
+   // mais il faut modifier toutes les camera !! ( michel pujol)
+   CAM_DRV.read_ccd(cam, (unsigned short *) p);
+   
+   
+   // unset TCL global status_read_camNo
+   sprintf(s, "status_read_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   
 
-    // set TCL global status_read_camNo
-    sprintf(s, "status_read_cam%d", cam->camno);
-    Tcl_SetVar(interp, s, "read", TCL_GLOBAL_ONLY);
+   // si la taille alloue par defaut a p ne convient pas, la camera crée un nouveau buffer adressé par cam->pixels
+   if(cam->pixel_data != NULL) {
+      if ( (int) cam->pixel_data != -1 ) {
+         // les pixels sont dans le buffer cam->pixel_data
+         free( p);
+         p =  cam->pixel_data;
+      }
+   }
 
-    /*cam_stop_exp(cam); */
-    //cam_read_ccd(cam,p);
-    CAM_DRV.read_ccd(cam, p);
+   if (strlen(cam->msg) == 0) {
+ 
+     
+      // Ce test permet de savoir si le buffer existe
+      sprintf(s, "buf%d bitpix", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         sprintf(s, "buf::create %d", cam->bufno);
+         Tcl_Eval(interp, s);
+      }
+      
+      // --- application du miroir horizontal
+      if( cam->mirrorh == 1 ) {
+         // j'inverse l'orientation de l'image par rapport à un miroir horizontal
+         if( cam->pixels_reverse_y == 1 ) {
+            cam->pixels_reverse_y = 0; 
+         } else {
+            cam->pixels_reverse_y = 1; 
+         }
+      }
 
-    // unset TCL global status_read_camNo
-    sprintf(s, "status_read_cam%d", cam->camno);
-    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+      // --- application du miroir vertical
+      if( cam->mirrorv == 1 ) {
+         // j'inverse l'orientation de l'image par rapport à un miroir vertical
+         if( cam->pixels_reverse_x == 1 ) {
+            cam->pixels_reverse_x = 0; 
+         } else {
+            cam->pixels_reverse_x = 1; 
+         }
+      }
+      
+      //--- set pixels to buffer 
+      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d", 
+         cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
+         (void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         strcpy(s, interp->result);
+      }
+      
+      //--- get height after decompression
+      sprintf(s, "buf%d getpixelsheight", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_OK) {
+         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
+      }   
+      
+      //--- get width after decompression
+      sprintf(s, "buf%d getpixelswidth", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_OK) {
+         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
+      }   
+      
+      //--- Add FITS keywords 
+      sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, cam->binx);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, cam->biny);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+      Tcl_Eval(interp, s);
+      if (cam->timerExpiration != NULL) {
+         sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
+      } else {
+         sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
+      }
+      Tcl_Eval(interp, s);
+      if (cam->timerExpiration != NULL) {
+         sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
+      } else {
+         sprintf(s, "expr (([mc_date2jd %s]-[mc_date2jd %s])*86400.)", cam->date_end, cam->date_obs);
+         Tcl_Eval(interp, s);
+         exptime = atof(interp->result);
+         sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, exptime);
+      }
+      Tcl_Eval(interp, s);
+      
+      libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
+      if (status == 0) {
+         // Add FITS keywords 
+         sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
+         Tcl_Eval(interp, s);
+         sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
+         Tcl_Eval(interp, s);
+      }    
+   } 
+   
+   free(p);
 
-    /*
-     * Ce test permet de savoir si le buffer existe
-     */
-    sprintf(s, "buf%d bitpix", cam->bufno);
-    if (Tcl_Eval(interp, s) == TCL_ERROR) {
-	//
-	sprintf(s, "buf::create %d", cam->bufno);
-	Tcl_Eval(interp, s);
-    }
-    //sprintf(s, "buf%d format %d %d", cam->bufno, naxis1, naxis2);
-    //Tcl_Eval(interp, s);
-    //sprintf(s, "buf%d pointer", cam->bufno);
-    //Tcl_Eval(interp, s);
-    //pp = (float *) atoi(interp->result);
-    //t = naxis1 * naxis2;
-    //while (--t >= 0)
-    //     *(pp + t) = (float) *((unsigned short *) (p + t));
-    //sprintf(s, "buf%d bitpix ushort", cam->bufno);
-    //Tcl_Eval(interp, s);
-
-    sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_USHORT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) p);
-    Tcl_Eval(interp, s);
-
-
-    /* Add FITS keywords */
-    sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
-    Tcl_Eval(interp, s);
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
-    } else {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
-    }
-    Tcl_Eval(interp, s);
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
-    } else {
-	sprintf(s, "expr (([mc_date2jd %s]-[mc_date2jd %s])*86400.)", cam->date_end, cam->date_obs);
-	Tcl_Eval(interp, s);
-	exptime = atof(interp->result);
-	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, exptime);
-    }
-    Tcl_Eval(interp, s);
-
-    libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-    if (status == 0) {
-	/* Add FITS keywords */
-	sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
-	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
-	Tcl_Eval(interp, s);
-    }
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "status_cam%d", cam->camno);
-	Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-    }
-    cam->clockbegin = 0;
-
-    if (cam->timerExpiration != NULL) {
-	free(cam->timerExpiration->dateobs);
-	free(cam->timerExpiration);
-	cam->timerExpiration = NULL;
-    }
-    free(p);
+   if (cam->timerExpiration != NULL) {
+      sprintf(s, "status_cam%d", cam->camno);
+      Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   }
+   cam->clockbegin = 0;
+   
+   if (cam->timerExpiration != NULL) {
+      free(cam->timerExpiration->dateobs);
+      free(cam->timerExpiration);
+      cam->timerExpiration = NULL;
+   }
 }
 
 
@@ -774,40 +826,41 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
     struct camprop *cam;
     int result = TCL_OK;
 
+
     ligne = (char *) calloc(100, sizeof(char));
     if (argc != 2) {
-	sprintf(ligne, "Usage: %s %s", argv[0], argv[1]);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	result = TCL_ERROR;
+       sprintf(ligne, "Usage: %s %s", argv[0], argv[1]);
+       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+       result = TCL_ERROR;
     } else {
-	cam = (struct camprop *) clientData;
-	if (cam->timerExpiration == NULL) {
-	    /* Pour avertir les gens du status de la camera. */
-	    sprintf(ligne, "status_cam%d", cam->camno);
-	    Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
-
-	    i = (int) (1000 * cam->exptime);
-	    cam->timerExpiration = (struct TimerExpirationStruct *) calloc(1, sizeof(struct TimerExpirationStruct));
-	    cam->timerExpiration->clientData = clientData;
-	    cam->timerExpiration->interp = interp;
-	    cam->timerExpiration->dateobs = (char *) calloc(32, sizeof(char));
-	    CAM_DRV.start_exp(cam, "amplioff");
-	    Tcl_Eval(interp, "clock seconds");
-	    cam->clockbegin = (unsigned long) atoi(interp->result);
-	    /*
-	       cam->timerExpiration->datebegin=(int)atoi(interp->result);
-	       Tcl_Eval(interp,"clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.00\"");
-	       strcpy(cam->timerExpiration->dateobs,interp->result);
-	     */
-	    libcam_GetCurrentFITSDate(interp, cam->timerExpiration->dateobs);
-	    libcam_GetCurrentFITSDate_function(interp, cam->timerExpiration->dateobs, "::audace::date_sys2ut");
-	    /* Creation du timer pour realiser le temps de pose. */
-	    cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
-	} else {
-	    sprintf(ligne, "Camera already in use");
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	    result = TCL_ERROR;
-	}
+       cam = (struct camprop *) clientData;
+       if (cam->timerExpiration == NULL) {
+          /* Pour avertir les gens du status de la camera. */
+          sprintf(ligne, "status_cam%d", cam->camno);
+          Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+          
+          i = (int) (1000 * cam->exptime);
+          cam->timerExpiration = (struct TimerExpirationStruct *) calloc(1, sizeof(struct TimerExpirationStruct));
+          cam->timerExpiration->clientData = clientData;
+          cam->timerExpiration->interp = interp;
+          cam->timerExpiration->dateobs = (char *) calloc(32, sizeof(char));
+          CAM_DRV.start_exp(cam, "amplioff");
+          Tcl_Eval(interp, "clock seconds");
+          cam->clockbegin = (unsigned long) atoi(interp->result);
+          /*
+          cam->timerExpiration->datebegin=(int)atoi(interp->result);
+          Tcl_Eval(interp,"clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.00\"");
+          strcpy(cam->timerExpiration->dateobs,interp->result);
+          */
+          libcam_GetCurrentFITSDate(interp, cam->timerExpiration->dateobs);
+          libcam_GetCurrentFITSDate_function(interp, cam->timerExpiration->dateobs, "::audace::date_sys2ut");
+          /* Creation du timer pour realiser le temps de pose. */
+          cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
+       } else {
+          sprintf(ligne, "Camera already in use");
+          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+          result = TCL_ERROR;
+       }
     }
     return result;
 }
@@ -819,31 +872,31 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
  */
 static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    struct camprop *cam;
-    char s[100];
-    int retour = TCL_OK;
-
-    cam = (struct camprop *) clientData;
-    if (cam->timerExpiration) {
-	strcpy(cam->date_obs, cam->timerExpiration->dateobs);
-	Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
-	if (cam->timerExpiration != NULL) {
-	    free(cam->timerExpiration->dateobs);
-	    free(cam->timerExpiration);
-	    cam->timerExpiration = NULL;
-	}
-	CAM_DRV.stop_exp(cam);
-	AcqRead((ClientData) cam);
-
-    } else {
-	Tcl_SetResult(interp, "No current exposure", TCL_VOLATILE);
-	retour = TCL_ERROR;
-    }
-
-    sprintf(s, "status_cam%d", cam->camno);
-    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-
-    return retour;
+   struct camprop *cam;
+   char s[100];
+   int retour = TCL_OK;
+   
+   cam = (struct camprop *) clientData;
+   if (cam->timerExpiration) {
+      strcpy(cam->date_obs, cam->timerExpiration->dateobs);
+      Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
+      if (cam->timerExpiration != NULL) {
+         free(cam->timerExpiration->dateobs);
+         free(cam->timerExpiration);
+         cam->timerExpiration = NULL;
+      }
+      CAM_DRV.stop_exp(cam);
+      AcqRead((ClientData) cam);
+      
+   } else {
+      Tcl_SetResult(interp, "No current exposure", TCL_VOLATILE);
+      retour = TCL_ERROR;
+   }
+   
+   sprintf(s, "status_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   
+   return retour;
 }
 
 static int cmdCamDrivername(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
@@ -1138,39 +1191,39 @@ static int cmdCamCooler(ClientData clientData, Tcl_Interp * interp, int argc, ch
 
 static int cmdCamInterrupt(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    char ligne[256];
-    int result = TCL_OK, pb = 0, k = 0, choix = 1;
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    if ((argc < 2) || (argc > 4)) {
-	pb = 1;
-    } else if (argc == 2) {
-	pb = 0;
-    } else {
-	k = 0;
-	pb = 1;
-	choix = atoi(argv[2]);
-	if (choix == 0) {
-	    cam->interrupt = 0;
-	    pb = 0;
-	    cam->authorized = 1;
-	}
-	if (choix == 1) {
-	    cam->interrupt = 1;
-	    pb = 0;
-	    cam->authorized = 1;
-	}
-    }
-    if (pb == 1) {
-	sprintf(ligne, "Usage: %s %s ", argv[0], argv[1]);
-	strcat(ligne, " 0|1");
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	result = TCL_ERROR;
-    } else {
-	sprintf(ligne, "%d", cam->interrupt);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-    }
-    return result;
+   char ligne[256];
+   int result = TCL_OK, pb = 0, k = 0, choix = 1;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   if ((argc < 2) || (argc > 4)) {
+      pb = 1;
+   } else if (argc == 2) {
+      pb = 0;
+   } else {
+      k = 0;
+      pb = 1;
+      choix = atoi(argv[2]);
+      if (choix == 0) {
+         cam->interrupt = 0;
+         pb = 0;
+         cam->authorized = 1;
+      }
+      if (choix == 1) {
+         cam->interrupt = 1;
+         pb = 0;
+         cam->authorized = 1;
+      }
+   }
+   if (pb == 1) {
+      sprintf(ligne, "Usage: %s %s ", argv[0], argv[1]);
+      strcat(ligne, " 0|1");
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      sprintf(ligne, "%d", cam->interrupt);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   }
+   return result;
 }
 
 static int cmdCamOverscan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
@@ -1239,52 +1292,109 @@ static int cmdCamOverscan(ClientData clientData, Tcl_Interp * interp, int argc, 
 
 static int cmdCamFoclen(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    char ligne[256];
-    int result = TCL_OK, pb = 0;
-    struct camprop *cam;
-    double d;
-    if ((argc != 2) && (argc != 3)) {
-	sprintf(ligne, "Usage: %s %s ?focal_length_(meters)?", argv[0], argv[1]);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	result = TCL_ERROR;
-    } else if (argc == 2) {
-	cam = (struct camprop *) clientData;
-	sprintf(ligne, "%f", cam->foclen);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-    } else {
-	pb = 0;
-	if (Tcl_GetDouble(interp, argv[2], &d) != TCL_OK) {
-	    pb = 1;
-	}
-	if (pb == 0) {
-	    if (d <= 0.0) {
-		pb = 1;
-	    }
-	}
-	if (pb == 1) {
-	    sprintf(ligne, "Usage: %s %s ?focal_length_(meters)?\nfocal_length : must be an float > 0", argv[0], argv[1]);
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	    result = TCL_ERROR;
-	} else {
-	    cam = (struct camprop *) clientData;
-	    cam->foclen = d;
-	    sprintf(ligne, "%f", cam->foclen);
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	}
-    }
-    return result;
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   double d;
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?focal_length_(meters)?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%f", cam->foclen);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   } else {
+      pb = 0;
+      if (Tcl_GetDouble(interp, argv[2], &d) != TCL_OK) {
+         pb = 1;
+      }
+      if (pb == 0) {
+         if (d <= 0.0) {
+            pb = 1;
+         }
+      }
+      if (pb == 1) {
+         sprintf(ligne, "Usage: %s %s ?focal_length_(meters)?\nfocal_length : must be an float > 0", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         cam = (struct camprop *) clientData;
+         cam->foclen = d;
+         sprintf(ligne, "%f", cam->foclen);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      }
+   }
+   return result;
 }
 
+static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK;
+   struct camprop *cam;
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%d", cam->mirrorh);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      cam = (struct camprop *) clientData;
+      if (Tcl_GetInt(interp, argv[2], &cam->mirrorh) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?0|1?\nvalues must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         Tcl_SetResult(interp, "", TCL_VOLATILE);
+         result = TCL_OK;
+      }
+   }
+   return result;
+}
+
+static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK;
+   struct camprop *cam;
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%d", cam->mirrorv);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      cam = (struct camprop *) clientData;
+      if (Tcl_GetInt(interp, argv[2], &cam->mirrorv) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?0|1?\nvalue must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         Tcl_SetResult(interp, "", TCL_VOLATILE);
+         result = TCL_OK;
+      }
+   }
+   return result;
+}
 
 static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    if (CAM_DRV.close != NULL) {
-	CAM_DRV.close(cam);
-    }
-    Tcl_ResetResult(interp);
-    return TCL_OK;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   if (CAM_DRV.close != NULL) {
+      CAM_DRV.close(cam);
+   }
+   Tcl_ResetResult(interp);
+   return TCL_OK;
 }
 
 
@@ -1297,84 +1407,88 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
 /* argv[>=3] : optionnels : -ccd -num -name                  */
 /* --------------------------------------------------------- */
 {
-    int k, kk;
+   int k, kk;
+   
+   /* --- Decode les options de cam::create en fonction de argv[>=3] --- */
+   cam->index_cam = 0;
+   if (argc >= 5) {
+      for (kk = 3; kk < argc - 1; kk++) {
+         if (strcmp(argv[kk], "-name") == 0) {
+            k = 0;
+            while (strcmp(CAM_INI[k].name, "") != 0) {
+               if (strcmp(CAM_INI[k].name, argv[kk + 1]) == 0) {
+                  cam->index_cam = k;
+                  break;
+               }
+               k++;
+            }
+         }
+         if (strcmp(argv[kk], "-ccd") == 0) {
+            k = 0;
+            while (strcmp(CAM_INI[k].name, "") != 0) {
+               if (strcmp(CAM_INI[k].ccd, argv[kk + 1]) == 0) {
+                  cam->index_cam = k;
+                  break;
+               }
+               k++;
+            }
+         }
+      }
+   }
+   /* --- authorize the sti/cli functions --- */
+   if (cam->authorized == 0) {
+      cam->interrupt = 0;
+   } else {
+      cam->interrupt = 1;
+   }
+   /* --- L'axe X est choisi parallele au registre horizontal. --- */
+   cam->overscanindex = CAM_INI[cam->index_cam].overscanindex;
+   cam->nb_photox = CAM_INI[cam->index_cam].maxx;	/* nombre de photosites sur X */
+   cam->nb_photoy = CAM_INI[cam->index_cam].maxy;	/* nombre de photosites sur Y */
+   if (cam->overscanindex == 0) {
+      /* nb photosites masques autour du CCD */
+      cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
+      cam->nb_deadendphotox = CAM_INI[cam->index_cam].overscanxend;
+      cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg;
+      cam->nb_deadendphotoy = CAM_INI[cam->index_cam].overscanyend;
+   } else {
+      cam->nb_photox += (CAM_INI[cam->index_cam].overscanxbeg + CAM_INI[cam->index_cam].overscanxend);
+      cam->nb_photoy += (CAM_INI[cam->index_cam].overscanybeg + CAM_INI[cam->index_cam].overscanyend);
+      /* nb photosites masques autour du CCD */
+      cam->nb_deadbeginphotox = 0;
+      cam->nb_deadendphotox = 0;
+      cam->nb_deadbeginphotoy = 0;
+      cam->nb_deadendphotoy = 0;
+   }
+   cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
+   cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
+   cam->fillfactor = CAM_INI[cam->index_cam].fillfactor;	/* fraction du photosite sensible a la lumiere */
+   cam->foclen = CAM_INI[cam->index_cam].foclen;
+   /* --- initialisation de la fenetre par defaut --- */
+   cam->x1 = 0;
+   cam->y1 = 0;
+   cam->x2 = cam->nb_photox - 1;
+   cam->y2 = cam->nb_photoy - 1;
+   /* --- initialisation du mode de binning par defaut --- */
+   cam->binx = CAM_INI[cam->index_cam].binx;
+   cam->biny = CAM_INI[cam->index_cam].biny;
+   /* --- initialisation du temps de pose par defaut --- */
+   cam->exptime = (float) CAM_INI[cam->index_cam].exptime;
 
-    /* --- Decode les options de cam::create en fonction de argv[>=3] --- */
-    cam->index_cam = 0;
-    if (argc >= 5) {
-	for (kk = 3; kk < argc - 1; kk++) {
-	    if (strcmp(argv[kk], "-name") == 0) {
-		k = 0;
-		while (strcmp(CAM_INI[k].name, "") != 0) {
-		    if (strcmp(CAM_INI[k].name, argv[kk + 1]) == 0) {
-			cam->index_cam = k;
-			break;
-		    }
-		    k++;
-		}
-	    }
-	    if (strcmp(argv[kk], "-ccd") == 0) {
-		k = 0;
-		while (strcmp(CAM_INI[k].name, "") != 0) {
-		    if (strcmp(CAM_INI[k].ccd, argv[kk + 1]) == 0) {
-			cam->index_cam = k;
-			break;
-		    }
-		    k++;
-		}
-	    }
-	}
-    }
-    /* --- authorize the sti/cli functions --- */
-    if (cam->authorized == 0) {
-	cam->interrupt = 0;
-    } else {
-	cam->interrupt = 1;
-    }
-    /* --- L'axe X est choisi parallele au registre horizontal. --- */
-    cam->overscanindex = CAM_INI[cam->index_cam].overscanindex;
-    cam->nb_photox = CAM_INI[cam->index_cam].maxx;	/* nombre de photosites sur X */
-    cam->nb_photoy = CAM_INI[cam->index_cam].maxy;	/* nombre de photosites sur Y */
-    if (cam->overscanindex == 0) {
-	/* nb photosites masques autour du CCD */
-	cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
-	cam->nb_deadendphotox = CAM_INI[cam->index_cam].overscanxend;
-	cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg;
-	cam->nb_deadendphotoy = CAM_INI[cam->index_cam].overscanyend;
-    } else {
-	cam->nb_photox += (CAM_INI[cam->index_cam].overscanxbeg + CAM_INI[cam->index_cam].overscanxend);
-	cam->nb_photoy += (CAM_INI[cam->index_cam].overscanybeg + CAM_INI[cam->index_cam].overscanyend);
-	/* nb photosites masques autour du CCD */
-	cam->nb_deadbeginphotox = 0;
-	cam->nb_deadendphotox = 0;
-	cam->nb_deadbeginphotoy = 0;
-	cam->nb_deadendphotoy = 0;
-    }
-    cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
-    cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
-    cam->fillfactor = CAM_INI[cam->index_cam].fillfactor;	/* fraction du photosite sensible a la lumiere */
-    cam->foclen = CAM_INI[cam->index_cam].foclen;
-    /* --- initialisation de la fenetre par defaut --- */
-    cam->x1 = 0;
-    cam->y1 = 0;
-    cam->x2 = cam->nb_photox - 1;
-    cam->y2 = cam->nb_photoy - 1;
-    /* --- initialisation du mode de binning par defaut --- */
-    cam->binx = CAM_INI[cam->index_cam].binx;
-    cam->biny = CAM_INI[cam->index_cam].biny;
-    /* --- initialisation du temps de pose par defaut --- */
-    cam->exptime = (float) CAM_INI[cam->index_cam].exptime;
-    /* --- initialisation du numero de port parallele du PC --- */
-    cam->portindex = 0;
-    cam->port = 0x378;		/* lpt1 par defaut */
-    if (argc >= 2) {
-	if (strcmp(argv[2], cam_ports[1]) == 0) {
-	    cam->portindex = 1;
-	    cam->port = 0x278;
-	}
-    }
-    cam->check_temperature = CAM_INI[cam->index_cam].check_temperature;
-    cam->timerExpiration = NULL;
-
-    return 0;
+   /* --- initialisation des retournements par defaut --- */
+   cam->mirrorh = 0;
+   cam->mirrorv = 0;
+   /* --- initialisation du numero de port parallele du PC --- */
+   cam->portindex = 0;
+   cam->port = 0x378;		/* lpt1 par defaut */
+   if (argc >= 2) {
+      if (strcmp(argv[2], cam_ports[1]) == 0) {
+         cam->portindex = 1;
+         cam->port = 0x278;
+      }
+   }
+   cam->check_temperature = CAM_INI[cam->index_cam].check_temperature;
+   cam->timerExpiration = NULL;
+   
+   return 0;
 }
