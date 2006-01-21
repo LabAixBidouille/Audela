@@ -1,0 +1,7 @@
+LIBRARY libdcraw
+EXPORTS 
+    libdcraw_decodeBuffer
+    libdcraw_decodeFile
+    libdcraw_getTypeFromBuffer
+    libdcraw_getTypeFromFile
+    libdcraw_freeBuffer
