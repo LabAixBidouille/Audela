@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Date de mise à jour : 10 octobre 2004
+# Date de mise à jour : 08 janvier 2006
 #
 
 #=========================================================================
@@ -236,7 +236,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(mode_0)              "Modellazione stellare"
    set texte_photo(continuer)           "Continua"
    set texte_photo(annuler)             "Annulla"
-   set texte_photo(o_surechantillonage) "Fattore di divisione dei pixel" 
+   set texte_photo(o_surechantillonage) "Fattore di divisione dei pixel"
    set texte_photo(err_indice)          "Errore: ultimo indice inferiore o uguale al primo"
    set texte_photo(verification)        "Verifica di file %s\[%d...%d\]%s"
    set texte_photo(err_existence_1)     "Il file"
@@ -284,7 +284,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(pos_aster_2)         "Pos. nell'ultima immagine"
    set texte_photo(etoile_inconnue)     "Stella sconosciuta"
    set texte_photo(etoile_prise)        "Stella gia' selezionata"
-   set texte_photo(retour)              "Indietro" 
+   set texte_photo(retour)              "Indietro"
    set texte_photo(calcul_ellipses)     "Calcolo delle ellissi partendo dal profilo stellare"
    set texte_photo(banniere_CDR_1)      "Dati elaborati da CalaPhot"
    set texte_photo(banniere_CDR_2)      "in AudeLA"
