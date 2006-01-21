@@ -2,7 +2,7 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteurs : Raymond Zachantke
-# Date de mise a jour : 13 septembre 2004
+# Date de mise a jour : 25 octobre 2005
 #
 
 	#::AcqAPN::VerifData
@@ -12,9 +12,9 @@
 	   global confCam
 
 		switch -exact $reglage {
-			lens 			{ set confCam(apn,dzoom) [::AcqAPN::Dzoom $confCam(apn,lens)] }
+			lens 		{ set confCam(apn,dzoom) [::AcqAPN::Dzoom $confCam(apn,lens)] }
 			metering 	{ set confCam(apn,code_metering) [::AcqAPN::Metering $confCam(apn,metering)] }
-			format		{ ::AcqAPN::Resolution }
+			format	{ ::AcqAPN::Resolution }
 			compression	{ ::AcqAPN::Resolution }
 		}
 	}
@@ -25,8 +25,8 @@
 	proc Dzoom { lens } {
 		
 		switch -exact $lens {
-      	FishEye		{ set dzoom "2" }
-			Wide    		{ set dzoom "4" }
+      		FishEye	{ set dzoom "2" }
+			Wide    	{ set dzoom "4" }
 			Telephoto	{ set dzoom "8" }
 		}
 		return $dzoom
@@ -38,9 +38,9 @@
 	proc Metering { metering } {
 		
 		switch -exact $metering {
-      	Center			{ set code "2" }
+      		Center		{ set code "2" }
 			Spot     		{ set code "3" }
-			Matrix			{ set code "5" }
+			Matrix		{ set code "5" }
 			Spot-AF-Area	{ set code "6" }
 		}
 		return $code
@@ -62,7 +62,7 @@
       	VGA-Fine 		{ set confCam(apn,resolution) "3" }
       	XGA-Basic		{ set confCam(apn,resolution) "7" }
       	XGA-Normal		{ set confCam(apn,resolution) "8" }
-      	XGA-Fine			{ set confCam(apn,resolution) "9" }
+      	XGA-Fine		{ set confCam(apn,resolution) "9" }
       	SXGA-Basic		{ set confCam(apn,resolution) "4" }
       	SXGA-Normal		{ set confCam(apn,resolution) "5" }
       	SXGA-Fine		{ set confCam(apn,resolution) "6" }
@@ -71,14 +71,14 @@
       	UXGA-Fine		{ set confCam(apn,resolution) "12" }
       	3:2-Basic		{ set confCam(apn,resolution) "26" }
       	3:2-Normal		{ set confCam(apn,resolution) "27" }
-      	3:2-Fine			{ set confCam(apn,resolution) "28" }
-      	3:2-Hi			{ set confCam(apn,resolution) "38" }
+      	3:2-Fine		{ set confCam(apn,resolution) "28" }
+      	3:2-Hi		{ set confCam(apn,resolution) "38" }
       	MAX-Basic		{ set confCam(apn,resolution) "29" }
       	MAX-Normal		{ set confCam(apn,resolution) "30" }
-      	MAX-Fine			{ set confCam(apn,resolution) "31" }
-      	MAX-Hi			{ set confCam(apn,resolution) "33" }
-      	MAX-Raw			{ set confCam(apn,resolution) "55" }
-      	default			{ set confCam(apn,resolution) "-1" ; ::AcqAPN::ErrComm 3 }
+      	MAX-Fine		{ set confCam(apn,resolution) "31" }
+      	MAX-Hi		{ set confCam(apn,resolution) "33" }
+      	MAX-Raw		{ set confCam(apn,resolution) "55" }
+      	default		{ set confCam(apn,resolution) "-1" ; ::AcqAPN::ErrComm 3 }
 		}
   	}
    	
@@ -90,9 +90,9 @@
 		global confCam
 		
 		switch -exact $confCam(apn,dzoom) {
-			0			{ set confCam(apn,lens) "Telephoto" ; set confCam(apn,dzoom) "8" }
+			0		{ set confCam(apn,lens) "Telephoto" ; set confCam(apn,dzoom) "8" }
 			2   		{ set confCam(apn,lens) "Wide" }      			
-      	4			{ set confCam(apn,lens) "FishEye" }
+      		4		{ set confCam(apn,lens) "FishEye" }
 			default	{ ::AcqAPN::ErrComm 4 }
 		}
 	}
@@ -105,7 +105,7 @@
 		global confCam
 		
 		switch -exact $confCam(apn_init,resolution) {	
-			1		{ set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Basic" }
+		1		{ set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Basic" }
       	2		{ set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Normal" }
       	3		{ set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Fine" }
       	4		{ set confCam(apn_init,format) "SXGA" ; set confCam(apn_init,compression) "Basic" }
@@ -120,7 +120,7 @@
       	26		{ set confCam(apn_init,format) "3:2" ; set confCam(apn_init,compression) "Basic" }
       	27		{ set confCam(apn_init,format) "3:2" ; set confCam(apn_init,compression) "Normal" }
       	28		{ set confCam(apn_init,format) "3:2" ; set confCam(apn_init,compression) "Fine" }
-  			29		{ set confCam(apn_init,format) "MAX" ; set confCam(apn_init,compression) "Basic" }
+  		29		{ set confCam(apn_init,format) "MAX" ; set confCam(apn_init,compression) "Basic" }
       	30		{ set confCam(apn_init,format) "MAX" ; set confCam(apn_init,compression) "Normal" }
       	31		{ set confCam(apn_init,format) "MAX" ; set confCam(apn_init,compression) "Fine" }
     		33		{ set confCam(apn_init,format) "MAX" ; set confCam(apn_init,compression) "Hi" }      		

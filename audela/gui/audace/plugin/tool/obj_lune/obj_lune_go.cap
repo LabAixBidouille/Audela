@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune_go.cap
-# Date de mise a jour : 14 novembre 2004
+# Date de mise a jour : 12 decembre 2005
 #
 
 #=========================================================================
@@ -11,44 +11,44 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(obj_lune_go,obj_lune)			"Destination Moon"
-set caption(obj_lune_go,help_titre)			"Help For This Tool"
-set caption(obj_lune_go,executer)			"Run"
+set caption(obj_lune_go,obj_lune)         "Destination Moon"
+set caption(obj_lune_go,help_titre)       "Help For This Tool"
+set caption(obj_lune_go,executer)         "Run"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)		"Objectif Lune"
-   set caption(obj_lune_go,help_titre)		"Aide pour cet outil"
-   set caption(obj_lune_go,executer)		"Exécuter"
+   set caption(obj_lune_go,obj_lune)      "Objectif Lune"
+   set caption(obj_lune_go,help_titre)    "Aide pour cet outil"
+   set caption(obj_lune_go,executer)      "Exécuter"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)		"Obiettivo Luna"
-   set caption(obj_lune_go,help_titre)		"Aiuto per questo tool"
-   set caption(obj_lune_go,executer)		"Esegui"
+   set caption(obj_lune_go,obj_lune)      "Obiettivo Luna"
+   set caption(obj_lune_go,help_titre)    "Aiuto per questo tool"
+   set caption(obj_lune_go,executer)      "Esegui"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)		"Objetivo: La Luna"
-   set caption(obj_lune_go,help_titre)		"Ayuda para esta herramienta"
-   set caption(obj_lune_go,executer)		"Ejecutar"
+   set caption(obj_lune_go,obj_lune)      "Objetivo: La Luna"
+   set caption(obj_lune_go,help_titre)    "Ayuda para esta herramienta"
+   set caption(obj_lune_go,executer)      "Ejecutar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)		"Mond Ziel"
-   set caption(obj_lune_go,help_titre)		"Hilfe für dieses Gerät"
-   set caption(obj_lune_go,executer)		"Starten"
+   set caption(obj_lune_go,obj_lune)      "Mond Ziel"
+   set caption(obj_lune_go,help_titre)    "Hilfe für dieses Gerät"
+   set caption(obj_lune_go,executer)      "Starten"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)		"Destination Månen"
-   set caption(obj_lune_go,help_titre)		"Hjælp til dette værktøj"
-   set caption(obj_lune_go,executer)		"Kør"
+   set caption(obj_lune_go,obj_lune)      "Destination Månen"
+   set caption(obj_lune_go,help_titre)    "Hjælp til dette værktøj"
+   set caption(obj_lune_go,executer)      "Kør"
 
 }
 

@@ -1,9 +1,9 @@
 #
 # Fichier : scanfast.tcl
-# Description : Outil de controle du mode d'acquisition scan en mode rapide
-# Compatible : Telescope LX200 et AudeCom avec camera Audine
+# Description : Outil pour l'acquisition en mode scan rapide
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 03 novembre 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 package provide scanfast 1.0
@@ -93,14 +93,6 @@ namespace eval ::Scanfast {
       global caption
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Scanfast,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Scanfast,largeur_outil) "130"
-      } else {
-         set panneau(Scanfast,largeur_outil) "101"
-      }
       #---
       set panneau(Scanfast,choix_bin) "1x1 2x2 4x4"
       set panneau(Scanfast,binning)   "2x2"
@@ -165,22 +157,18 @@ namespace eval ::Scanfast {
       }
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
       ::Scanfast::Chargement_Var
-      set unpackFunction ::Scanfast::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
       ::Scanfast::Enregistrement_Var
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack forget $This
    }
 
    proc int { value } {
@@ -222,20 +210,20 @@ namespace eval ::Scanfast {
          #--- Temporisation ou non entre l'arret moteur et le debut de la pose
          if { [ info exists conf(tempo_scan,active) ] == "0" } {
             set conf(tempo_scan,active) "1"
-            set conf(tempo_scan)        "3"
+            set conf(tempo_scan,delai)  "3"
          }
          if { $conf(tempo_scan,active) == "1" } {
             #--- Decompte du temps d'attente
-            set attente $conf(tempo_scan)
-            if { $conf(tempo_scan) > "0" } {
-               while { $conf(tempo_scan) > "0" } {
+            set attente $conf(tempo_scan,delai)
+            if { $conf(tempo_scan,delai) > "0" } {
+               while { $conf(tempo_scan,delai) > "0" } {
                   ::camera::Avancement_scan "-10" $panneau(Scanfast,lig1)
                   update
                   after 1000	
-                  incr conf(tempo_scan) "-1"
+                  incr conf(tempo_scan,delai) "-1"
                }
             }
-            set conf(tempo_scan) $attente
+            set conf(tempo_scan,delai) $attente
          }
          #--- Gestion de l'obturateur
          catch { cam$audace(camNo) shutter opened }
@@ -264,9 +252,9 @@ namespace eval ::Scanfast {
          set posy_wintimeaudace [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
          wm geometry $audace(base).wintimeaudace +[ expr $posx_wintimeaudace  + 350 ]+[ expr $posy_wintimeaudace  + 75 ]
          label $audace(base).wintimeaudace.lab_beg -text "\n$caption(scanfast,debut) $date_beg1"
-         uplevel #0 { pack $audace(base).wintimeaudace.lab_beg -padx 10 -pady 5 }
+         pack $audace(base).wintimeaudace.lab_beg -padx 10 -pady 5
          label $audace(base).wintimeaudace.lab_end -text "$caption(scanfast,fin) $date_end1\n"
-         uplevel #0 { pack $audace(base).wintimeaudace.lab_end -padx 10 -pady 5 }
+         pack $audace(base).wintimeaudace.lab_end -padx 10 -pady 5
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).wintimeaudace
          #---
@@ -283,7 +271,7 @@ namespace eval ::Scanfast {
          $This.fra4.but1 configure -relief groove -text $panneau(Scanfast,go2) -state disabled
          update
          #--- Visualisation de l'image
-         ::audace::autovisu visu$audace(visuNo)
+         ::audace::autovisu $audace(visuNo)
          #--- Destruction de l'affichage des heures de debut et de fin du scan
          destroy $audace(base).wintimeaudace
          #--- Gestion du moteur d'A.D.
@@ -365,7 +353,7 @@ proc ScanfastBuildIF { This } {
    global panneau
    global caption
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(Scanfast,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -375,11 +363,10 @@ proc ScanfastBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool scanfast scanfast.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Scanfast,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 22 -width [ expr $panneau(Scanfast,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame des colonnes et des lignes
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -394,12 +381,12 @@ proc ScanfastBuildIF { This } {
             #--- Entry pour la colonne de debut
             entry $This.fra2.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Scanfast,col1) \
                -relief groove -width 5 -justify center
-            pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Entry pour la colonne de fin
             entry $This.fra2.fra1.ent2 -font $audace(font,arial_8_b) -textvariable panneau(Scanfast,col2) \
                -relief groove -width 5 -justify center
-            pack $This.fra2.fra1.ent2 -in $This.fra2.fra1 -side right -fill none -pady 2 -padx 4
+            pack $This.fra2.fra1.ent2 -in $This.fra2.fra1 -side right -fill none -padx 4 -pady 2
 
          pack   $This.fra2.fra1 -in $This.fra2 -anchor center -fill none
 
@@ -410,10 +397,9 @@ proc ScanfastBuildIF { This } {
          #--- Entry pour lignes
          entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Scanfast,lig1) \
             -relief groove -width 5 -justify center
-         pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -pady 2 -padx 4
+         pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 2
 
-      place $This.fra2 -x 4 -y 29 -height 98 -width [ expr $panneau(Scanfast,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Binding sur la zone des infos de la camera
       set zone(camera) $This.fra2
@@ -452,16 +438,15 @@ proc ScanfastBuildIF { This } {
             #--- Entry pour les millisecondes
             entry $This.fra3.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Scanfast,interlig1) \
                -relief groove -width 6 -justify center
-            pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label pour l'unite
             label $This.fra3.fra1.ent2 -text $panneau(Scanfast,ms) -relief flat
-            pack $This.fra3.fra1.ent2 -in $This.fra3.fra1 -side left -fill none -pady 2 -padx 2
+            pack $This.fra3.fra1.ent2 -in $This.fra3.fra1 -side left -fill none -padx 2 -pady 2
 
          pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
 
-      place $This.fra3 -x 4 -y 130 -height 75 -width [ expr $panneau(Scanfast,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
 
       #--- Frame de la calibration
       frame $This.fra33 -borderwidth 1 -relief groove
@@ -473,7 +458,7 @@ proc ScanfastBuildIF { This } {
          #--- Bouton Calcul
          button $This.fra33.but1 -borderwidth 2 -text $panneau(Scanfast,calcul) \
             -command { ::Scanfast::cmdCalcul }
-         pack $This.fra33.but1 -in $This.fra33 -anchor center -fill none -pady 1 -ipadx 13
+         pack $This.fra33.but1 -in $This.fra33 -anchor center -fill none -ipadx 13 -pady 1
 
          #--- Frame des entry & label de DT
          frame $This.fra33.fra1 -borderwidth 1 -relief flat
@@ -481,11 +466,11 @@ proc ScanfastBuildIF { This } {
             #--- Entry pour DT
             entry $This.fra33.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Scanfast,dt) \
                -relief groove -width 6
-            pack $This.fra33.fra1.ent1 -in $This.fra33.fra1 -side left -fill none -pady 2 -padx 2
+            pack $This.fra33.fra1.ent1 -in $This.fra33.fra1 -side left -fill none -padx 2 -pady 2
 
             #--- Label pour les ms
             label $This.fra33.fra1.ent2 -text $panneau(Scanfast,ms) -relief flat
-            pack $This.fra33.fra1.ent2 -in $This.fra33.fra1 -side left -fill none -pady 2 -padx 2
+            pack $This.fra33.fra1.ent2 -in $This.fra33.fra1 -side left -fill none -padx 2 -pady 2
 
          pack $This.fra33.fra1 -in $This.fra33 -anchor center -fill none
 
@@ -495,16 +480,15 @@ proc ScanfastBuildIF { This } {
             #--- Entry pour SPEED
             entry $This.fra33.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Scanfast,speed) \
                -relief groove -width 6
-            pack $This.fra33.fra2.ent1 -in $This.fra33.fra2 -side left -fill none -pady 2 -padx 2
+            pack $This.fra33.fra2.ent1 -in $This.fra33.fra2 -side left -fill none -padx 2 -pady 2
 
             #--- Label pour les boucles
             label $This.fra33.fra2.ent2 -text $panneau(Scanfast,loops) -relief flat
-            pack $This.fra33.fra2.ent2 -in $This.fra33.fra2 -side left -fill none -pady 2 -padx 2
+            pack $This.fra33.fra2.ent2 -in $This.fra33.fra2 -side left -fill none -padx 2 -pady 2
 
          pack $This.fra33.fra2 -in $This.fra33 -anchor center -fill none
 
-      place $This.fra33 -x 4 -y 208 -height 115 -width [ expr $panneau(Scanfast,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra33 -side top -fill x
 
       #--- Frame de l'acquisition
       frame $This.fra4 -borderwidth 1 -relief groove
@@ -518,8 +502,7 @@ proc ScanfastBuildIF { This } {
             -command { ::Scanfast::cmdGo motoroff }
          pack $This.fra4.but1 -in $This.fra4 -anchor center -fill x -padx 5 -ipadx 10 -ipady 3
 
-      place $This.fra4 -x 4 -y 326 -height 75 -width [ expr $panneau(Scanfast,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra4 -side top -fill x
 
    bind $This.fra4.but1 <ButtonPress-3> { ::Scanfast::cmdGo motoron }
    bind $This <Visibility> { ::Scanfast::cmdVisib }

@@ -2,7 +2,7 @@
 # Fichier : sntkutil.tcl
 # Description : Utilitaires pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 09 aout 2005
+# Date de mise a jour : 03 decembre 2005
 #
 
 #
@@ -137,7 +137,7 @@ proc snvisu_loadima_nofits { { fichier } { rep } } {
    #--- Chargement du fichier
    buf$num(buffer2) load $fichierfits
    #--- Visualisation automatique
-   ::audace::autovisu visu$num(visu_2)
+   ::audace::autovisu $num(visu_2)
    #--- Suppression du fichier copié
    file delete [ file join $rep_tmp $fichier ]
    #--- Suppression du fichier FITS temporaire

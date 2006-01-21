@@ -1,20 +1,19 @@
 #
 # Fichier : foc.tcl
-# Description : Outil de controle de la focalisation pour compatibles LX200 et carte AudeCom
+# Description : Outil pour le controle de la focalisation
+# Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Date de mise a jour : 03 novembre 2005
+# Date de mise a jour : 13 janvier 2006
 #
 
 package provide foc 1.0
 
-global graphik
-
-set graphik(compteur) {}
-set graphik(inten)    {}
-set graphik(fwhmx)    {}
-set graphik(fwhmy)    {}
-set graphik(contr)    {}
-set graphik(fichier)  ""
+set ::graphik(compteur) {}
+set ::graphik(inten)    {}
+set ::graphik(fwhmx)    {}
+set ::graphik(fwhmy)    {}
+set ::graphik(contr)    {}
+set ::graphik(fichier)  ""
 
 namespace eval ::Focs {
    variable This
@@ -33,14 +32,6 @@ namespace eval ::Focs {
       global panneau
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Focs,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Focs,largeur_outil) "130"
-      } else {
-         set panneau(Focs,largeur_outil) "101"
-      }
       #---
       set panneau(menu_name,Focs)        "$caption(foc,focalisation)"
       set panneau(Focs,aide)             "$caption(foc,help_titre)"
@@ -71,42 +62,40 @@ namespace eval ::Focs {
 
       if { [ ::focus::possedeControleEtendu ] == "1" } {
          #--- Avec controle etendu 
-         uplevel #0 pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
-         uplevel #0 pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
-         uplevel #0 pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none 
-         uplevel #0 pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
-         uplevel #0 pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
-         uplevel #0 pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
-         uplevel #0 pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none 
-         uplevel #0 pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         uplevel #0 pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         uplevel #0 pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
+         pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
+         pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none 
+         pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none 
+         pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
       } else {
          #--- Sans controle etendu 
-         uplevel #0 pack forget $This.fra5.lab1
-         uplevel #0 pack forget $This.fra5.but1
-         uplevel #0 pack forget $This.fra5.fra1.lab1
-         uplevel #0 pack forget $This.fra5.fra1.lab2
-         uplevel #0 pack forget $This.fra5.but2
-         uplevel #0 pack forget $This.fra5.fra2.ent3
-         uplevel #0 pack forget $This.fra5.fra2.lab4 
-         uplevel #0 pack forget $This.fra5.but3
+         pack forget $This.fra5.lab1
+         pack forget $This.fra5.but1
+         pack forget $This.fra5.fra1.lab1
+         pack forget $This.fra5.fra1.lab2
+         pack forget $This.fra5.but2
+         pack forget $This.fra5.fra2.ent3
+         pack forget $This.fra5.fra2.lab4 
+         pack forget $This.fra5.but3
       }
       $This.fra4.we.lab configure -text $audace(focus,labelspeed) 
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
+      global conf
 
-      trace variable ::conf(telescope) w ::Focs::Adapt_Panneau_Foc
-      set unpackFunction ::Focs::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      trace add variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
+      pack $This -side left -fill y
       ::Focs::Adapt_Panneau_Foc
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
       global audace
 
@@ -115,9 +104,8 @@ namespace eval ::Focs {
          set n1n2 [ cam$audace(camNo)  nbcells ]
          cam$audace(camNo) window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
       }
-      trace vdelete ::conf(telescope) w ::Focs::Adapt_Panneau_Foc
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      trace remove variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
+      pack forget $This
    }
 
    proc cmdGo { } {
@@ -154,8 +142,8 @@ namespace eval ::Focs {
          } elseif { $panneau(Focs,menu) == "$caption(foc,fenetre)" } { 
             set panneau(Focs,bin) "1" 
             if { $panneau(Focs,actuel) == "$caption(foc,centrage)" } {
-               if { [ info exists audace(box) ] == "1" } {
-                  set a $audace(box)
+               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
+                  set a [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ]
                   set kk 0
                   set b $a
                   #--- Tient compte du binning
@@ -171,10 +159,7 @@ namespace eval ::Focs {
          }
          cam$audace(camNo) window $panneau(Focs,window)
          #--- Suppression de la zone selectionnee avec la souris
-         catch {
-            unset audace(box)
-            $audace(hCanvas) delete $audace(hBox)
-         }
+         ::confVisu::deleteBox $audace(visuNo)
          #--- Appel a la fonction d'acquisition
          ::Focs::cmdAcq
          #--- Gestion graphique des boutons
@@ -194,19 +179,12 @@ namespace eval ::Focs {
 
    proc cmdAcq { } {
       variable This
-      global conf    
       global audace 
       global caption
       global panneau
-      global graphik
-      global inten
-      global fwhmx
-      global fwhmy
-      global contr
 
       #--- Petits raccourcis
       set camera cam$audace(camNo)
-      set visu visu$audace(visuNo)
       set buffer buf$audace(bufNo)
 
       #--- La commande exptime permet de fixer le temps de pose de l'image
@@ -237,9 +215,7 @@ namespace eval ::Focs {
       ::camera::gestionPose $panneau(Focs,exptime) 1 $camera $buffer
 
       #--- Visualisation de l'image acquise
-      image delete image0
-      image create photo image0
-      ::audace::autovisu $visu
+      ::audace::autovisu $audace(visuNo)
 
       #--- Informations sur l'image fenetree
       if { $panneau(Focs,actuel) == "$caption(foc,fenetre)" } {
@@ -248,30 +224,30 @@ namespace eval ::Focs {
             $This.fra2.but2 configure -text $panneau(Focs,stop)
             update
             incr panneau(Focs,compteur)
-            lappend graphik(compteur) $panneau(Focs,compteur)
+            lappend ::graphik(compteur) $panneau(Focs,compteur)
             #--- Statistiques
             set s [ stat ]
             set maxi [ lindex $s 2 ]
             set fond [ lindex $s 7 ]
-            set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
-            set inten [ format "%.0f" [ expr $maxi-$fond ] ]
-            lappend graphik(inten) $inten
-            lappend graphik(contr) $contr
+            set ::contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
+            set ::inten [ format "%.0f" [ expr $maxi-$fond ] ]
+            lappend ::graphik(inten) $::inten
+            lappend ::graphik(contr) $::contr
             #--- Fwhm
             set naxis1 [ expr [ lindex [ $buffer getkwd NAXIS1 ] 1 ]-0 ]
             set naxis2 [ expr [ lindex [ $buffer getkwd NAXIS2 ] 1 ]-0 ]
             set box [ list 1 1 $naxis1 $naxis2 ]
             set f [ $buffer fwhm $box ]
-            set fwhmx [ lindex $f 0 ]
-            set fwhmy [ lindex $f 1 ]
-            lappend graphik(fwhmx) $fwhmx
-            lappend graphik(fwhmy) $fwhmy
+            set ::fwhmx [ lindex $f 0 ]
+            set ::fwhmy [ lindex $f 1 ]
+            lappend ::graphik(fwhmx) $::fwhmx
+            lappend ::graphik(fwhmy) $::fwhmy
             #--- Graphique
-            append graphik(fichier) "$inten $fwhmx $fwhmy $contr \n"
-            visuf g_inten $graphik(compteur) $graphik(inten) "$caption(foc,intensite_adu)" yes
-            visuf g_fwhmx $graphik(compteur) $graphik(fwhmx) "$caption(foc,fwhm_x)" yes
-            visuf g_fwhmy $graphik(compteur) $graphik(fwhmy) "$caption(foc,fwhm_y)" yes
-            visuf g_contr $graphik(compteur) $graphik(contr) "$caption(foc,contrast_adu)" no
+            append ::graphik(fichier) "$::inten $::fwhmx $::fwhmy $::contr \n"
+            visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" yes
+            visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" yes
+            visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" yes
+            visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
             #--- Valeurs a l'ecran
             ::Focs::ParaFoc
             update
@@ -285,16 +261,15 @@ namespace eval ::Focs {
       global audace
       global caption
       global panneau
-      global graphik
 
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(Focs,raz)" } {
             set panneau(Focs,compteur) "0"
-            set graphik(compteur) {}
-            set graphik(inten)    {}
-            set graphik(fwhmx)    {}
-            set graphik(fwhmy)    {}
-            set graphik(contr)    {}
+            set ::graphik(compteur) {}
+            set ::graphik(inten)    {}
+            set ::graphik(fwhmx)    {}
+            set ::graphik(fwhmy)    {}
+            set ::graphik(contr)    {}
             destroy $audace(base).parafoc
             destroy $audace(base).visufoc
             update
@@ -340,11 +315,10 @@ namespace eval ::Focs {
 
    proc cmdSauveLog { namefile } {
       global audace
-      global graphik
 
       catch {
          set fileId [ open [ file join $audace(rep_plugin) tool foc $namefile ] w ]
-         puts -nonewline $fileId $graphik(fichier)
+         puts -nonewline $fileId $::graphik(fichier)
          close $fileId
       }
    }
@@ -474,9 +448,9 @@ namespace eval ::Focs {
 
       #--- Cree l'affichage du message
       label $audace(base).formatfoc.lab1 -text "$caption(foc,formatfoc1)"
-      uplevel #0 { pack $audace(base).formatfoc.lab1 -padx 10 -pady 2 }
+      pack $audace(base).formatfoc.lab1 -padx 10 -pady 2
       label $audace(base).formatfoc.lab2 -text "$caption(foc,formatfoc2)"
-      uplevel #0 { pack $audace(base).formatfoc.lab2 -padx 10 -pady 2 }
+      pack $audace(base).formatfoc.lab2 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).formatfoc
@@ -502,13 +476,13 @@ namespace eval ::Focs {
 
       #--- Cree l'affichage du message
       label $audace(base).limitefoc.lab1 -text "$caption(foc,limitefoc1)"
-      uplevel #0 { pack $audace(base).limitefoc.lab1 -padx 10 -pady 2 }
+      pack $audace(base).limitefoc.lab1 -padx 10 -pady 2
       if { $audace(focus,nbpas2) > "32767" } {
          label $audace(base).limitefoc.lab2 -text "$caption(foc,limitefoc2)"
-         uplevel #0 { pack $audace(base).limitefoc.lab2 -padx 10 -pady 2 }
+         pack $audace(base).limitefoc.lab2 -padx 10 -pady 2
       } else {
          label $audace(base).limitefoc.lab2 -text "$caption(foc,limitefoc3)"
-         uplevel #0 { pack $audace(base).limitefoc.lab2 -padx 10 -pady 2 }
+         pack $audace(base).limitefoc.lab2 -padx 10 -pady 2
       }
 
       #--- La nouvelle fenetre est active
@@ -523,10 +497,6 @@ namespace eval ::Focs {
       global conf
       global caption
       global panneau
-      global inten
-      global fwhmx
-      global fwhmy
-      global contr
 
       #--- Fenetre d'affichage des parametres de la foc
       if [ winfo exists $audace(base).parafoc ] {
@@ -543,15 +513,15 @@ namespace eval ::Focs {
       wm protocol $audace(base).parafoc WM_DELETE_WINDOW ::Focs::ferme_ParaFoc
       #--- Cree les etiquettes
       label $audace(base).parafoc.lab1 -text "$panneau(Focs,compteur)"
-      uplevel #0 { pack $audace(base).parafoc.lab1 -padx 10 -pady 2 }
-      label $audace(base).parafoc.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
-      uplevel #0 { pack $audace(base).parafoc.lab2 -padx 5 -pady 2 }
-      label $audace(base).parafoc.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
-      uplevel #0 { pack $audace(base).parafoc.lab3 -padx 5 -pady 2 }
-      label $audace(base).parafoc.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
-      uplevel #0 { pack $audace(base).parafoc.lab4 -padx 5 -pady 2 }
-      label $audace(base).parafoc.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
-      uplevel #0 { pack $audace(base).parafoc.lab5 -padx 5 -pady 2 }
+      pack $audace(base).parafoc.lab1 -padx 10 -pady 2
+      label $audace(base).parafoc.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $::inten"
+      pack $audace(base).parafoc.lab2 -padx 5 -pady 2
+      label $audace(base).parafoc.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $::fwhmx"
+      pack $audace(base).parafoc.lab3 -padx 5 -pady 2
+      label $audace(base).parafoc.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $::fwhmy"
+      pack $audace(base).parafoc.lab4 -padx 5 -pady 2
+      label $audace(base).parafoc.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $::contr"
+      pack $audace(base).parafoc.lab5 -padx 5 -pady 2
       update
 
       #--- Mise a jour dynamique des couleurs
@@ -578,7 +548,6 @@ proc FocGraphe { } {
    global conf
    global caption
    global panneau
-   global graphik
 
    #--- Fenetre d'affichage des parametres de la foc
    if [ winfo exists $audace(base).visufoc ] {
@@ -603,10 +572,10 @@ proc FocGraphe { } {
       ::blt::graph $audace(base).visufoc.g_fwhmx
       ::blt::graph $audace(base).visufoc.g_fwhmy
       ::blt::graph $audace(base).visufoc.g_contr
-      visuf g_inten $graphik(compteur) $graphik(inten) "$caption(foc,intensite_adu)" yes
-      visuf g_fwhmx $graphik(compteur) $graphik(fwhmx) "$caption(foc,fwhm_x)" yes
-      visuf g_fwhmy $graphik(compteur) $graphik(fwhmy) "$caption(foc,fwhm_y)" yes
-      visuf g_contr $graphik(compteur) $graphik(contr) "$caption(foc,contrast_adu)" no
+      visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" yes
+      visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" yes
+      visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" yes
+      visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
       update
 
       #--- Mise a jour dynamique des couleurs
@@ -660,7 +629,7 @@ proc FocsBuildIF { This } {
    global caption
    global panneau
 
-   frame $This -borderwidth 2 -height 75 -width $panneau(Focs,largeur_outil) -relief groove
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -670,11 +639,10 @@ proc FocsBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool foc foc.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Focs,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 18 -width [ expr $panneau(Focs,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame du centrage/pointage
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -683,10 +651,10 @@ proc FocsBuildIF { This } {
          label $This.fra2.lab1 -text $panneau(Focs,acq) -relief flat
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
-	   #--- Menu
+         #--- Menu
          menubutton $This.fra2.optionmenu1 -textvariable panneau(Focs,menu) \
             -menu $This.fra2.optionmenu1.menu -relief raised
-         pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -pady 2 -padx 4 -ipadx 3
+         pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -padx 4 -pady 2 -ipadx 3
          set m [ menu $This.fra2.optionmenu1.menu -tearoff 0 ]
          $m add radiobutton -label "$caption(foc,centrage)" \
             -indicatoron "1" \
@@ -705,24 +673,23 @@ proc FocsBuildIF { This } {
             #--- Entry pour exptime
             entry $This.fra2.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Focs,exptime) \
                -relief groove -width 6 -justify center
-            pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label secondes
             label $This.fra2.fra1.lab1 -text $panneau(Focs,secondes) -relief flat
-            pack $This.fra2.fra1.lab1 -in $This.fra2.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra2.fra1.lab1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra2.fra1 -in $This.fra2 -anchor center -fill none 
 
          #--- Bouton GO
          button $This.fra2.but1 -borderwidth 2 -text $panneau(Focs,go) -command { ::Focs::cmdGo }
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
+         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill x -padx 5 -pady 2 -ipadx 15 -ipady 1
 
          #--- Bouton STOP/RAZ
          button $This.fra2.but2 -borderwidth 2 -text $panneau(Focs,raz) -command { ::Focs::cmdStop }
-         pack $This.fra2.but2 -in $This.fra2 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         pack $This.fra2.but2 -in $This.fra2 -anchor center -fill x -padx 5 -pady 2 -ipadx 15 -ipady 1
 
-      place $This.fra2 -x 4 -y 24 -height 130 -width [ expr $panneau(Focs,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Frame des boutons manuels
       frame $This.fra4 -borderwidth 1 -relief groove
@@ -760,9 +727,8 @@ proc FocsBuildIF { This } {
 
          set zone(moins) $This.fra4.we.canv1
          set zone(plus)  $This.fra4.we.canv2
-      
-      place $This.fra4 -x 4 -y 156 -height 54 -width [ expr $panneau(Focs,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+
+      pack $This.fra4 -side top -fill x
 
       bind $This.fra4.we.lab <ButtonPress-1> { ::Focs::cmdSpeed }
 
@@ -781,7 +747,7 @@ proc FocsBuildIF { This } {
 
          #--- Bouton "Se trouve à"
          button $This.fra5.but1 -borderwidth 2 -text $panneau(Focs,trouve) -command { ::Focs::cmdSetrouvea }
-         pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          #--- Frame des labels
          frame $This.fra5.fra1 -borderwidth 1 -relief flat
@@ -789,17 +755,17 @@ proc FocsBuildIF { This } {
             #--- Label pour nbpas1
             entry $This.fra5.fra1.lab1 -font $audace(font,arial_8_b) -textvariable audace(focus,nbpas1) \
                -relief groove -width 6 -state disabled
-            pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label pas
             label $This.fra5.fra1.lab2 -text $panneau(Focs,pas) -relief flat
-            pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none 
 
          #--- Bouton "Aller à"
          button $This.fra5.but2 -borderwidth 2 -text $panneau(Focs,deplace) -command { ::Focs::cmdSedeplacea }
-         pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          #--- Frame des entry & label
          frame $This.fra5.fra2 -borderwidth 1 -relief flat
@@ -807,32 +773,30 @@ proc FocsBuildIF { This } {
             #--- Entry pour nbpas2
             entry $This.fra5.fra2.ent3 -font $audace(font,arial_8_b) -textvariable audace(focus,nbpas2) \
                -relief groove -width 6 -justify center
-            pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+            pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
             bind $This.fra5.fra2.ent3 <Enter> { ::Focs::FormatFoc }
             bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
 
             #--- Label pas
             label $This.fra5.fra2.lab4 -text $panneau(Focs,pas) -relief flat
-            pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+            pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none 
 
          #--- Bouton "Initialisation"
          button $This.fra5.but3 -borderwidth 2 -text $panneau(Focs,initialise) -command { ::Focs::cmdInitfoc }
-         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
- 
-      place $This.fra5 -x 4 -y 212 -height 157 -width [ expr $panneau(Focs,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
-      
+         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
+
+      pack $This.fra5 -side top -fill x
+
       #--- Frame du graphe
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Bouton GRAPHE
          button $This.fra3.but1 -borderwidth 2 -text $panneau(Focs,graphe) -command { FocGraphe }
-         pack $This.fra3.but1 -in $This.fra3 -side bottom -fill x -pady 5 -ipadx 15 -ipady 5 -padx 5
+         pack $This.fra3.but1 -in $This.fra3 -side bottom -fill x -padx 5 -pady 5 -ipadx 15 -ipady 2
 
-      place $This.fra3 -x 4 -y 372 -height 29 -width [ expr $panneau(Focs,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

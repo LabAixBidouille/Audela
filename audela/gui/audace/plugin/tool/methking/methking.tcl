@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : panneau d'aide à la mise en station par la méthode de King.
 # Auteurs : François Cochard et Jacques Michelet
-# Date de mise a jour : 15 novembre 2005
+# Date de mise a jour : 23 decembre 2005
 #
 
 package provide methking 1.14
@@ -272,7 +272,9 @@ namespace eval ::MethKing {
         # Etape 2: Recherche du décalage entre premiere et derniere image.
         Message consolog $caption(king,etape_2)
         loadima $nom_reg$nb_images
-        ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+        ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
         set dec [decalage]
         set dec_max_x [lindex $dec 0]
         set dec_max_x [expr int($dec_max_x)]
@@ -312,7 +314,9 @@ namespace eval ::MethKing {
         Message status $caption(king,status_selection)
         append nom 1
         loadima $nom
-        ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+        ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
         
 	# Affichage du cadre delimitant la zone acceptable pour la selection d'etoiles
         DessineRectangle [list $cadre_x1 $cadre_y1 $cadre_x2 $cadre_y2] $color(green)
@@ -412,7 +416,9 @@ namespace eval ::MethKing {
         for {set image 1} {$image <= $nb_images} {incr image} {
         # Je charge l'image registree
         loadima $nom_reg$image
-        ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+        ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
         Message consolog $caption(king,image_no) $image
 
         # Lecture dans l'entete fi..chuut du decalage de l'image...
@@ -705,7 +711,9 @@ namespace eval ::MethKing {
     $audace(hCanvas) create rectangle [expr $x1-1] [expr $naxis2-$y1] \
         [expr $x2-1] [expr $naxis2-$y2] -outline $couleur -tags cadres
     # Rafraichissement de l'image
-    ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+    ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
     }
     #--------- Fin de la procedure DessineRectangle ---------------------
 
@@ -1000,7 +1008,9 @@ namespace eval ::MethKing {
         # Ouverture
         if [catch {open $fichier_log w} log_id] {
             Message console "%s \n" $caption(king,erreur_fichier_log)
-            unpack
+#--- Debut modif Robert
+            stopTool
+#--- Fin modif Robert
             return
         }
 
@@ -1092,22 +1102,23 @@ namespace eval ::MethKing {
     }
 
     #--------------------------------------------------------------------------#
-    proc pack {} {
-    global unpackFunction
+#--- Debut modif Robert
+    proc startTool { visuNo } {
     variable This
 
     DemarrageKing This
-    set unpackFunction ::MethKing::unpack
-    set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-    uplevel #0 $a_executer
+    pack $This -anchor center -expand 0 -fill y -side left
+#--- Fin modif Robert
     }
 
     #--------------------------------------------------------------------------#
-    proc unpack {} {
+#--- Debut modif Robert
+    proc stopTool { visuNo } {
     variable This
+    
     ArretKing
-    set a_executer "pack forget $This"
-    uplevel #0 $a_executer
+    pack forget $This
+    #--- Fin modif Robert
     }
 
     #--------------------------------------------------------------------------#
@@ -1133,8 +1144,10 @@ namespace eval ::MethKing {
         # Blocage de tous les boutons
         EtatBoutons disabled
 
-        # Lecture du nom de la caméra
-        set camera $conf(camera)
+#--- Debut modif Robert
+       ### # Lecture du nom de la caméra
+       ### set camera $conf(camera)
+#--- Fin modif Robert
 
         #1ère séquence
         Message consolog "%s\n" $caption(king,sequence_1)
@@ -1156,13 +1169,15 @@ namespace eval ::MethKing {
             vwait status_cam$audace(camNo)
             Message infos ""
             set panneau(meth_king,status_acq) 0
-            if {$conf($camera,mirx)==1} {
-            buf$audace(bufNo) mirrorx
-            }
-            if {$conf($camera,miry)==1} {
-            buf$audace(bufNo) mirrory
-            }
-            ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+           ### if {$conf($camera,mirx)==1} {
+           ### buf$audace(bufNo) mirrorx
+           ### }
+           ### if {$conf($camera,miry)==1} {
+           ### buf$audace(bufNo) mirrory
+           ### }
+            ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
             if {$panneau(meth_king,demande_arret_acq) == 0} {
             # --- sauvegarde de l'image sur le disque
             Message status "%s %s" $caption(king,sauv_image) [file tail ${nom}${image}]
@@ -1194,13 +1209,15 @@ namespace eval ::MethKing {
             Message infos ""
             set panneau(meth_king,status_acq) 0
 
-            if {$conf($camera,mirx)==1} {
-                buf$audace(bufNo) mirrorx
-            }
-            if {$conf($camera,miry)==1} {
-                buf$audace(bufNo) mirrory
-            }
-            ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+           ### if {$conf($camera,mirx)==1} {
+           ###     buf$audace(bufNo) mirrorx
+           ### }
+           ### if {$conf($camera,miry)==1} {
+           ###     buf$audace(bufNo) mirrory
+           ### }
+            ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
             if {$panneau(meth_king,demande_arret_acq) == 0} {
                 # --- sauvegarde de l'image sur le disque
                 Message status "%s %s" $caption(king,sauv_noir) ${image_noire}${image}
@@ -1245,13 +1262,15 @@ namespace eval ::MethKing {
             Message infos ""
             set panneau(meth_king,status_acq) 0
 
-            if {$conf($camera,mirx)==1} {
-            buf$audace(bufNo) mirrorx
-            }
-            if {$conf($camera,miry)==1} {
-            buf$audace(bufNo) mirrory
-            }
-            ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+           ### if {$conf($camera,mirx)==1} {
+           ### buf$audace(bufNo) mirrorx
+           ### }
+           ### if {$conf($camera,miry)==1} {
+           ### buf$audace(bufNo) mirrory
+           ### }
+            ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
 
             # --- sauvegarde de l'image sur le disque
             if {$panneau(meth_king,demande_arret_acq) == 0} {
@@ -1287,7 +1306,9 @@ namespace eval ::MethKing {
             buf$audace(bufNo) load "${nom}${image}"
             buf$audace(bufNo) sub "$image_noire" 0
             buf$audace(bufNo) save "${nom}${image}"
-            ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+            ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
             }
 
             # Destruction du fichier de noir médian
@@ -1478,8 +1499,10 @@ namespace eval ::MethKing {
         }
 
         if {[::cam::list]!=""} {
-            # Lecture du nom de la caméra
-            set camera $conf(camera)
+#--- Debut modif Robert
+           ### # Lecture du nom de la caméra
+           ### set camera $conf(camera)
+#--- Fin modif Robert
             # Création des buffers nécessaires aux acquisitions et visualisations
             set numero_buffer_1 [::buf::create]
             buf$numero_buffer_1 clear
@@ -1542,12 +1565,14 @@ namespace eval ::MethKing {
             }
 
             if {$panneau(meth_king,demande_arret_acq) == 0} {
-                if {$conf($camera,mirx)==1} {
-                    buf$numero_buffer_1 mirrorx
-                }
-                if {$conf($camera,miry)==1} {
-                    buf$numero_buffer_1 mirrory
-                }
+#--- Debut modif Robert
+               ### if {$conf($camera,mirx)==1} {
+               ###     buf$numero_buffer_1 mirrorx
+               ### }
+               ### if {$conf($camera,miry)==1} {
+               ###     buf$numero_buffer_1 mirrory
+               ### }
+#--- Fin modif Robert
                 visu$numero_visu_1 cut [lrange [buf$numero_buffer_1 stat] 0 1 ]
                 visu$numero_visu_1 disp
                 ValidationBindingsPremiereFenetre
@@ -1578,12 +1603,14 @@ namespace eval ::MethKing {
                 Message infos ""
                 set panneau(meth_king,status_regl) 0
                 if {$panneau(meth_king,demande_arret_acq) == 0} {
-                    if {$conf($camera,mirx)==1} {
-                        buf$numero_buffer_2 mirrorx
-                    }
-                    if {$conf($camera,miry)==1} {
-                        buf$numero_buffer_2 mirrory
-                    }
+#--- Debut modif Robert
+                   ### if {$conf($camera,mirx)==1} {
+                   ###     buf$numero_buffer_2 mirrorx
+                   ### }
+                   ### if {$conf($camera,miry)==1} {
+                   ###     buf$numero_buffer_2 mirrory
+                   ### }
+#--- Fin modif Robert
                     visu$numero_visu_2 cut [lrange [buf$numero_buffer_2 stat] 0 1 ]
                     visu$numero_visu_2 disp
                 }
@@ -1848,12 +1875,18 @@ namespace eval ::MethKing {
         # Explications et conseils
         label $audace(base).fenreglages.explication -height 1 -justify left
         label $audace(base).fenreglages.conseil -height 1 -justify left
-        set a_executer "pack $audace(base).fenreglages.explication $audace(base).fenreglages.conseil -side top -fill x -anchor nw"
-        uplevel #0 $a_executer
+#--- Debut modif Robert
+       ### set a_executer "pack $audace(base).fenreglages.explication $audace(base).fenreglages.conseil -side top -fill x -anchor nw"
+       ### uplevel #0 $a_executer
+#--- Fin modif Robert
+        pack $audace(base).fenreglages.explication $audace(base).fenreglages.conseil -side top -fill x -anchor nw
 
         canvas $audace(base).fenreglages.image1
-        set a_executer "pack $audace(base).fenreglages.image1 -in $audace(base).fenreglages -expand 1 -side top -anchor center -fill both"
-        uplevel #0 $a_executer
+#--- Debut modif Robert
+       ### set a_executer "pack $audace(base).fenreglages.image1 -in $audace(base).fenreglages -expand 1 -side top -anchor center -fill both"
+       ### uplevel #0 $a_executer
+        pack $audace(base).fenreglages.image1 -in $audace(base).fenreglages -expand 1 -side top -anchor center -fill both
+#--- Fin modif Robert
 
         # Par rapport à la façon "normale", image2 est créée dans la routine ::visu::create grace au 2ème paramètre de cette routine
         $audace(base).fenreglages.image1 create image 1 1 -image image$num_buf -anchor nw -tag image_ref
@@ -2054,12 +2087,18 @@ namespace eval ::MethKing {
             append texte $::MethKing::king_config(textey-,$config_active)
         }
         $audace(base).fenreglages2.texte_y configure -text $texte
-        set a_executer "pack $audace(base).fenreglages2.texte_x $audace(base).fenreglages2.texte_y -side top -fill x -anchor nw"
-        uplevel #0 $a_executer
+#--- Debut modif Robert
+       ### set a_executer "pack $audace(base).fenreglages2.texte_x $audace(base).fenreglages2.texte_y -side top -fill x -anchor nw"
+       ### uplevel #0 $a_executer
+        pack $audace(base).fenreglages2.texte_x $audace(base).fenreglages2.texte_y -side top -fill x -anchor nw
+#--- Fin modif Robert
 
         canvas $audace(base).fenreglages2.image1
-        set a_executer "pack $audace(base).fenreglages2.image1 -in $audace(base).fenreglages2 -expand 1 -side top -anchor center -fill both"
-        uplevel #0 $a_executer
+#--- Debut modif Robert
+       ### set a_executer "pack $audace(base).fenreglages2.image1 -in $audace(base).fenreglages2 -expand 1 -side top -anchor center -fill both"
+       ### uplevel #0 $a_executer
+        pack $audace(base).fenreglages2.image1 -in $audace(base).fenreglages2 -expand 1 -side top -anchor center -fill both
+#--- Fin modif Robert
 
         #  Récupération des dimensions de la fenetre
         tkwait visibility $audace(base).fenreglages2

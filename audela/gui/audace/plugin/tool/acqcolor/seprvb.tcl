@@ -2,7 +2,7 @@
 # Fichier : seprvb.tcl
 # Description : Outil pour la separation des plans couleur
 # Auteur : Pierre THIERRY
-# Date de mise a jour : 22 juillet 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 global audace caption conf infos
@@ -61,7 +61,7 @@ pack $audace(base).test1.frame1 \
          set title $caption(seprvb,rep_images)
          set infos(dir_images) [ tk_chooseDirectory -title "$title" -initialdir "$initialdir" \
             -parent "$audace(base).test1" ]
-	   if { $infos(dir_images) == "" } {
+         if { $infos(dir_images) == "" } {
             set infos(dir_images) "$initialdir"
          }
          set infos(dir) "$infos(dir_images)"
@@ -135,7 +135,7 @@ button $audace(base).test1.but_valid \
    -command { 
       catch {
          set infos(type_image) "couleur"
-	   set nom [ file join $infos(dir) $infos(nom_image) ]
+         set nom [ file join $infos(dir) $infos(nom_image) ]
          for { set k 1 } { $k <= $infos(nbre_images) } { incr k } {
             loadima "${nom}$k$conf(extension,defaut);1"
             saveima "${nom}r$k$conf(extension,defaut)"

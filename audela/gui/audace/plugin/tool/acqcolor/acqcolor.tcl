@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Date de mise a jour : 06 juillet 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 proc testexit { } { 
@@ -15,819 +15,819 @@ proc testexit { } {
 } 
 
 #--- Chargement de la librairie
-  load librgb[info sharedlibextension]
+load librgb[info sharedlibextension]
 
 #--- Definition des variables globales (arrays) 
-  global caption 
-  global audace
-  global confcolor
-  global conf
-  global zone 
-  global infos 
+global caption 
+global audace
+global confcolor
+global conf
+global zone 
+global infos 
 
 #--- Definition des chemins
-  set rep(color) [ file join $audace(rep_plugin) tool acqcolor ]
+set rep(color) [ file join $audace(rep_plugin) tool acqcolor ]
 
 #--- Chargement des captions
-  source [ file join $rep(color) acqcolor.cap ]
+source [ file join $rep(color) acqcolor.cap ]
 
 #--- Initialisation
-  set confcolor(acq) "0"
+set confcolor(acq) "0"
 
 #--- Initialisation des variables de zone
-  set zone(image1,naxis1) "0"
-  set zone(image1,naxis2) "0"
-  set zone(image2,naxis1) "0"
-  set zone(image2,naxis2) "0"
+set zone(image1,naxis1) "0"
+set zone(image1,naxis2) "0"
+set zone(image2,naxis1) "0"
+set zone(image2,naxis2) "0"
 
 #--- Initialisation des variables d'infos 
-  set infos(MouseState) "rien" 
-  set infos(box)        {1 1 1 1} 
-  set infos(point)      {1 1} 
-  set infos(type_image) ""
-  set infos(dir)        ""
-  catch {
-     set infos(dir) $audace(rep_images)
-  }
+set infos(MouseState) "rien" 
+set infos(box)        {1 1 1 1} 
+set infos(point)      {1 1} 
+set infos(type_image) ""
+set infos(dir)        ""
+catch {
+   set infos(dir) $audace(rep_images)
+}
 
 #--- Valeurs numeriques a placer sur l'ecran 
-  set confcolor(exptime)      "1" 
-  set confcolor(nombre)       "3"
-  set confcolor(name)         "i"
-  set confcolor(indice)       "1" 
-  set confcolor(att)          "500" 
+set confcolor(exptime)      "1" 
+set confcolor(nombre)       "3"
+set confcolor(name)         "i"
+set confcolor(indice)       "1" 
+set confcolor(att)          "500" 
 
 #--- Choix du nombre et des formats des fenetres scrollables
-  set dimfenx 1016
-  set dimfeny 700
-  if { ! [ info exists conf(color_nb_fenetre) ] } { set conf(color_nb_fenetre) "2" }
-  if { $audace(acqvisu,ccd) != "webcam" } {
-     if { $conf(color_nb_fenetre) == "0" } {
-	set dimx1   1000
-	set dimy1   515
-     } elseif { $conf(color_nb_fenetre) == "1" } {
-	set dimx1   500
-	set dimy1   515
-     } elseif { $conf(color_nb_fenetre) == "2" } {
-	set dimx1   769
-	set dimy1   515
-     }
-  } else {
-     if { $conf(color_nb_fenetre) == "0" } {
-	set dimx1   1000
-	set dimy1   500
-     } elseif { $conf(color_nb_fenetre) == "1" } {
-	set dimx1   500
-	set dimy1   500
-     } elseif { $conf(color_nb_fenetre) == "2" } {
-	set dimx1   769
-	set dimy1   500
-     }
-  }
+set dimfenx 1016
+set dimfeny 700
+if { ! [ info exists conf(color_nb_fenetre) ] } { set conf(color_nb_fenetre) "2" }
+if { $audace(acqvisu,ccd) != "webcam" } {
+   if { $conf(color_nb_fenetre) == "0" } {
+      set dimx1   1000
+      set dimy1   515
+   } elseif { $conf(color_nb_fenetre) == "1" } {
+      set dimx1   500
+      set dimy1   515
+   } elseif { $conf(color_nb_fenetre) == "2" } {
+      set dimx1   769
+      set dimy1   515
+   }
+} else {
+   if { $conf(color_nb_fenetre) == "0" } {
+      set dimx1   1000
+      set dimy1   500
+   } elseif { $conf(color_nb_fenetre) == "1" } {
+      set dimx1   500
+      set dimy1   500
+   } elseif { $conf(color_nb_fenetre) == "2" } {
+      set dimx1   769
+      set dimy1   500
+   }
+}
 
-  # 
-  # Scrolled_Canvas
-  # Cree un canvas scrollable, ainsi que les deux scrollbars pour le deplacer
-  # Ref: Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392 
-  # 
-  proc color_Scrolled_Canvas { c args } { 
-     frame $c 
-     eval {canvas $c.canvas \ 
-	-xscrollcommand [ list $c.xscroll set ] \ 
-	-yscrollcommand [ list $c.yscroll set ] \ 
-	-highlightthickness 0 \ 
-	-borderwidth 0} $args 
-     scrollbar $c.xscroll -orient horizontal -command [ list $c.canvas xview ] 
-     scrollbar $c.yscroll -orient vertical -command [ list $c.canvas yview ] 
-     grid $c.canvas $c.yscroll -sticky news 
-     grid $c.xscroll -sticky ew 
-     grid rowconfigure $c 0 -weight 1 
-     grid columnconfigure $c 0 -weight 1 
-     return $c.canvas 
-  } 
+# 
+# Scrolled_Canvas
+# Cree un canvas scrollable, ainsi que les deux scrollbars pour le deplacer
+# Ref: Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392 
+# 
+proc color_Scrolled_Canvas { c args } { 
+   frame $c 
+   eval {canvas $c.canvas \ 
+      -xscrollcommand [ list $c.xscroll set ] \ 
+      -yscrollcommand [ list $c.yscroll set ] \ 
+      -highlightthickness 0 \ 
+      -borderwidth 0} $args 
+   scrollbar $c.xscroll -orient horizontal -command [ list $c.canvas xview ] 
+   scrollbar $c.yscroll -orient vertical -command [ list $c.canvas yview ] 
+   grid $c.canvas $c.yscroll -sticky news 
+   grid $c.xscroll -sticky ew 
+   grid rowconfigure $c 0 -weight 1 
+   grid columnconfigure $c 0 -weight 1 
+   return $c.canvas 
+} 
 
-  proc color_visu_scroll { bufnum } { 
-     global zone 
+proc color_visu_scroll { bufnum } { 
+   global zone 
 
-     set zone($bufnum,naxis1) [ lindex [ buf$bufnum getkwd NAXIS1 ] 1 ] 
-     set zone($bufnum,naxis2) [ lindex [ buf$bufnum getkwd NAXIS2 ] 1 ] 
-     $zone(image1) configure -scrollregion [ list 0 0 $zone($bufnum,naxis1) $zone($bufnum,naxis2) ] 
-  }
+   set zone($bufnum,naxis1) [ lindex [ buf$bufnum getkwd NAXIS1 ] 1 ] 
+   set zone($bufnum,naxis2) [ lindex [ buf$bufnum getkwd NAXIS2 ] 1 ] 
+   $zone(image1) configure -scrollregion [ list 0 0 $zone($bufnum,naxis1) $zone($bufnum,naxis2) ] 
+}
 
 #--- Raz de l'image et de l'en-tete FITS
-  catch { buf1001 clear }
+catch { buf1001 clear }
 
 #--- Cree la fenetre $audace(base).test de niveau le plus haut 
-  if { [ winfo exists $audace(base).test ] } {
-     wm withdraw $audace(base).test
-     wm deiconify $audace(base).test
-     focus $audace(base).test
-     return
-  }
-  
-  toplevel $audace(base).test -class Toplevel -relief groove -borderwidth 2
-  wm geometry $audace(base).test ${dimfenx}x${dimfeny}+0+0 
-  wm resizable $audace(base).test 1 1 
-  wm minsize $audace(base).test 600 400 
-  wm maxsize $audace(base).test 1800 1550 
-  wm title $audace(base).test "$caption(acqcolor,main_title) ($audace(acqvisu,ccd_model))"
+if { [ winfo exists $audace(base).test ] } {
+   wm withdraw $audace(base).test
+   wm deiconify $audace(base).test
+   focus $audace(base).test
+   return
+}
+
+toplevel $audace(base).test -class Toplevel -relief groove -borderwidth 2
+wm geometry $audace(base).test ${dimfenx}x${dimfeny}+0+0 
+wm resizable $audace(base).test 1 1 
+wm minsize $audace(base).test 600 400 
+wm maxsize $audace(base).test 1800 1550 
+wm title $audace(base).test "$caption(acqcolor,main_title) ($audace(acqvisu,ccd_model))"
 
 #--- La nouvelle fenetre est active
-  focus $audace(base).test
+focus $audace(base).test
 
 #--- Cree un frame en haut a gauche pour les canvas d'affichage
-  frame $audace(base).test.frame0 \
-     -relief groove -borderwidth 2 -cursor arrow
-  pack $audace(base).test.frame0 \
-     -in $audace(base).test -anchor nw -side top -expand 0 -fill x
+frame $audace(base).test.frame0 \
+   -relief groove -borderwidth 2 -cursor arrow
+pack $audace(base).test.frame0 \
+   -in $audace(base).test -anchor nw -side top -expand 0 -fill x
 
 #--- Cree le canevas pour l'image 1
-  Scrolled_Canvas $audace(base).test.frame0.image1 -borderwidth 0 -relief flat \
-     -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair 
-  $audace(base).test.frame0.image1.canvas configure -borderwidth 0 
-  $audace(base).test.frame0.image1.canvas configure -relief flat 
-  pack $audace(base).test.frame0.image1 \
-     -in $audace(base).test.frame0 -expand 1 -side left -anchor center -fill none -pady 5
-  set zone(image1) $audace(base).test.frame0.image1.canvas 
+Scrolled_Canvas $audace(base).test.frame0.image1 -borderwidth 0 -relief flat \
+   -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair 
+$audace(base).test.frame0.image1.canvas configure -borderwidth 0 
+$audace(base).test.frame0.image1.canvas configure -relief flat 
+pack $audace(base).test.frame0.image1 \
+   -in $audace(base).test.frame0 -expand 1 -side left -anchor center -fill none -pady 5
+set zone(image1) $audace(base).test.frame0.image1.canvas 
 
 #--- Cree le canevas pour l'image 2
-  Scrolled_Canvas $audace(base).test.frame0.image2 -borderwidth 0 -relief flat \
-     -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair 
-  $audace(base).test.frame0.image2.canvas configure -borderwidth 0 
-  $audace(base).test.frame0.image2.canvas configure -relief flat 
-  pack $audace(base).test.frame0.image2 \
-     -in $audace(base).test.frame0 -expand 1 -side left -anchor center -fill none -pady 5
-  set zone(image2) $audace(base).test.frame0.image2.canvas 
+Scrolled_Canvas $audace(base).test.frame0.image2 -borderwidth 0 -relief flat \
+   -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair 
+$audace(base).test.frame0.image2.canvas configure -borderwidth 0 
+$audace(base).test.frame0.image2.canvas configure -relief flat 
+pack $audace(base).test.frame0.image2 \
+   -in $audace(base).test.frame0 -expand 1 -side left -anchor center -fill none -pady 5
+set zone(image2) $audace(base).test.frame0.image2.canvas 
 
 #--- Cree un frame en bas a gauche pour les commandes d'acquisition 
-  frame $audace(base).test.frame1 \
-     -borderwidth 0 -cursor arrow
-  pack $audace(base).test.frame1 \
-     -in $audace(base).test -anchor nw -side left -expand 0 -fill x -pady 4
+frame $audace(base).test.frame1 \
+   -borderwidth 0 -cursor arrow
+pack $audace(base).test.frame1 \
+   -in $audace(base).test -anchor nw -side left -expand 0 -fill x -pady 4
 
-  #--- Cree un frame pour les demandes d'acquisition 
-    frame $audace(base).test.frame1.fra1 \
-       -borderwidth 0 -cursor arrow
- 
-     if { $audace(acqvisu,ccd) != "webcam" } {
-	#--- Cree le bouton 'Pointage 2x2' 
-	  button $audace(base).test.frame1.fra1.but_pointage \
-	     -text $caption(acqcolor,pointage) -borderwidth 2 \
-	     -command { testpointage } 
-	  pack $audace(base).test.frame1.fra1.but_pointage \
-	     -in $audace(base).test.frame1.fra1 -side left -anchor center  \
-	     -padx 3 -pady 3  
-	  set zone(pointage) $audace(base).test.frame1.fra1.but_pointage
-     }
+   #--- Cree un frame pour les demandes d'acquisition 
+   frame $audace(base).test.frame1.fra1 \
+      -borderwidth 0 -cursor arrow
 
-     if { $audace(acqvisu,ccd) != "webcam" } {
-	#--- Cree le bouton 'Acq. fenetre' 
-	  button $audace(base).test.frame1.fra1.but_acqfen \
-	     -text $caption(acqcolor,acqfen) -borderwidth 2 \
-	     -command { testacqfen } 
-	  pack $audace(base).test.frame1.fra1.but_acqfen \
-	     -in $audace(base).test.frame1.fra1 -side left -anchor center \
-	     -padx 3 -pady 3  
-	  set zone(acqfen) $audace(base).test.frame1.fra1.but_acqfen
-     } else {
-	#--- Cree le bouton 'Acquisition' 
-	  button $audace(base).test.frame1.fra1.but_acqfen \
-	     -text $caption(acqcolor,total1) -borderwidth 2 \
-	     -command { testacqfen } 
-	  pack $audace(base).test.frame1.fra1.but_acqfen \
-	     -in $audace(base).test.frame1.fra1 -side left -anchor center \
-	     -padx 3 -pady 3  
-	  set zone(acqfen) $audace(base).test.frame1.fra1.but_acqfen
-     }
-
-     #--- Cree l'entry 'exptime' 
-       entry $audace(base).test.frame1.fra1.ent_exptime \
-	  -textvariable confcolor(exptime) -width 5 \
-	  -relief groove -justify center
-       pack $audace(base).test.frame1.fra1.ent_exptime \
-	  -in $audace(base).test.frame1.fra1 -side right -anchor center \
-	  -padx 0 -pady 3  
-       set zone(exptime) $audace(base).test.frame1.fra1.ent_exptime 
-
-     #--- Cree le label 'sec.' 
-       label $audace(base).test.frame1.fra1.lab_sec \
-	  -text $caption(acqcolor,sec)
-       pack $audace(base).test.frame1.fra1.lab_sec \
-	  -in $audace(base).test.frame1.fra1 -side right -anchor center \
-	  -padx 0 -pady 3  
-       set zone(sec) $audace(base).test.frame1.fra1.lab_sec 
-
-    pack $audace(base).test.frame1.fra1 \
-       -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
- 
-  #--- Cree un frame pour les demandes d'acquisition serie
-    frame $audace(base).test.frame1.fra3 \
-       -borderwidth 1 -cursor arrow
-	
       if { $audace(acqvisu,ccd) != "webcam" } {
-	     #--- Cree le bouton 'Acquisition 1x1' 
-	       button $audace(base).test.frame1.fra3.but_total \
-	      -text $caption(acqcolor,total) -borderwidth 2 \
-	      -command { set confcolor(acq) "1" ; testtotal } 
-	       pack $audace(base).test.frame1.fra3.but_total \
-		     -in $audace(base).test.frame1.fra3 -side left -anchor center \
-		     -padx 3 -pady 3  
-	       set zone(total) $audace(base).test.frame1.fra3.but_total
+         #--- Cree le bouton 'Pointage 2x2' 
+         button $audace(base).test.frame1.fra1.but_pointage \
+           -text $caption(acqcolor,pointage) -borderwidth 2 \
+           -command { testpointage } 
+         pack $audace(base).test.frame1.fra1.but_pointage \
+            -in $audace(base).test.frame1.fra1 -side left -anchor center  \
+            -padx 3 -pady 3  
+         set zone(pointage) $audace(base).test.frame1.fra1.but_pointage
       }
 
       if { $audace(acqvisu,ccd) != "webcam" } {
-	 #--- Cree le bouton 'Acq. serie' 
-	   button $audace(base).test.frame1.fra3.but_acqserie \
-	      -text $caption(acqcolor,acqserie) -borderwidth 2 \
-	      -command { set confcolor(acq) "2" ; acqserie } 
-	   pack $audace(base).test.frame1.fra3.but_acqserie \
-	      -in $audace(base).test.frame1.fra3 -side left -anchor e \
-	      -padx 3 -pady 3  
-	   set zone(acqserie) $audace(base).test.frame1.fra3.but_acqserie
+         #--- Cree le bouton 'Acq. fenetre' 
+         button $audace(base).test.frame1.fra1.but_acqfen \
+            -text $caption(acqcolor,acqfen) -borderwidth 2 \
+            -command { testacqfen } 
+         pack $audace(base).test.frame1.fra1.but_acqfen \
+            -in $audace(base).test.frame1.fra1 -side left -anchor center \
+            -padx 3 -pady 3  
+         set zone(acqfen) $audace(base).test.frame1.fra1.but_acqfen
       } else {
-	 #--- Cree le bouton 'Acq. serie' 
-	   button $audace(base).test.frame1.fra3.but_acqserie \
-	      -text $caption(acqcolor,acqserie1) -borderwidth 2 \
-	      -command { set confcolor(acq) "2" ; acqserie } 
-	   pack $audace(base).test.frame1.fra3.but_acqserie \
-	      -in $audace(base).test.frame1.fra3 -side left -anchor e \
-	      -padx 3 -pady 3  
-	   set zone(acqserie) $audace(base).test.frame1.fra3.but_acqserie
+         #--- Cree le bouton 'Acquisition' 
+         button $audace(base).test.frame1.fra1.but_acqfen \
+            -text $caption(acqcolor,total1) -borderwidth 2 \
+            -command { testacqfen } 
+         pack $audace(base).test.frame1.fra1.but_acqfen \
+            -in $audace(base).test.frame1.fra1 -side left -anchor center \
+            -padx 3 -pady 3  
+         set zone(acqfen) $audace(base).test.frame1.fra1.but_acqfen
       }
-   
+
+      #--- Cree l'entry 'exptime' 
+      entry $audace(base).test.frame1.fra1.ent_exptime \
+         -textvariable confcolor(exptime) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame1.fra1.ent_exptime \
+         -in $audace(base).test.frame1.fra1 -side right -anchor center \
+         -padx 0 -pady 3  
+      set zone(exptime) $audace(base).test.frame1.fra1.ent_exptime 
+
+      #--- Cree le label 'sec.' 
+      label $audace(base).test.frame1.fra1.lab_sec \
+         -text $caption(acqcolor,sec)
+      pack $audace(base).test.frame1.fra1.lab_sec \
+         -in $audace(base).test.frame1.fra1 -side right -anchor center \
+         -padx 0 -pady 3  
+      set zone(sec) $audace(base).test.frame1.fra1.lab_sec 
+
+   pack $audace(base).test.frame1.fra1 \
+      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
+ 
+   #--- Cree un frame pour les demandes d'acquisition serie
+   frame $audace(base).test.frame1.fra3 \
+      -borderwidth 1 -cursor arrow
+
+      if { $audace(acqvisu,ccd) != "webcam" } {
+         #--- Cree le bouton 'Acquisition 1x1' 
+         button $audace(base).test.frame1.fra3.but_total \
+           -text $caption(acqcolor,total) -borderwidth 2 \
+           -command { set confcolor(acq) "1" ; testtotal } 
+         pack $audace(base).test.frame1.fra3.but_total \
+            -in $audace(base).test.frame1.fra3 -side left -anchor center \
+            -padx 3 -pady 3  
+         set zone(total) $audace(base).test.frame1.fra3.but_total
+      }
+
+      if { $audace(acqvisu,ccd) != "webcam" } {
+         #--- Cree le bouton 'Acq. serie' 
+         button $audace(base).test.frame1.fra3.but_acqserie \
+            -text $caption(acqcolor,acqserie) -borderwidth 2 \
+            -command { set confcolor(acq) "2" ; acqserie } 
+         pack $audace(base).test.frame1.fra3.but_acqserie \
+            -in $audace(base).test.frame1.fra3 -side left -anchor e \
+            -padx 3 -pady 3  
+         set zone(acqserie) $audace(base).test.frame1.fra3.but_acqserie
+      } else {
+      #--- Cree le bouton 'Acq. serie' 
+      button $audace(base).test.frame1.fra3.but_acqserie \
+         -text $caption(acqcolor,acqserie1) -borderwidth 2 \
+         -command { set confcolor(acq) "2" ; acqserie } 
+      pack $audace(base).test.frame1.fra3.but_acqserie \
+         -in $audace(base).test.frame1.fra3 -side left -anchor e \
+         -padx 3 -pady 3  
+      set zone(acqserie) $audace(base).test.frame1.fra3.but_acqserie
+      }
+
       #--- Cree l'entry 'nombre' 
-	entry $audace(base).test.frame1.fra3.ent_nombre \
-	   -textvariable confcolor(nombre) -width 5 \
-	   -relief groove -justify center
-	pack $audace(base).test.frame1.fra3.ent_nombre \
-	   -in $audace(base).test.frame1.fra3 -side right -anchor center \
-	   -padx 0 -pady 3  
-	set zone(nombre) $audace(base).test.frame1.fra3.ent_nombre 
+      entry $audace(base).test.frame1.fra3.ent_nombre \
+         -textvariable confcolor(nombre) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame1.fra3.ent_nombre \
+         -in $audace(base).test.frame1.fra3 -side right -anchor center \
+         -padx 0 -pady 3  
+      set zone(nombre) $audace(base).test.frame1.fra3.ent_nombre 
 
       #--- Cree le label 'Nbre image' 
-	label $audace(base).test.frame1.fra3.lab_nbimage \
-	   -text $caption(acqcolor,nbimage)
-	pack $audace(base).test.frame1.fra3.lab_nbimage \
-	   -in $audace(base).test.frame1.fra3 -side right -anchor center \
-	   -padx 0 -pady 3  
-	set zone(nbimage) $audace(base).test.frame1.fra3.lab_nbimage
+      label $audace(base).test.frame1.fra3.lab_nbimage \
+         -text $caption(acqcolor,nbimage)
+      pack $audace(base).test.frame1.fra3.lab_nbimage \
+         -in $audace(base).test.frame1.fra3 -side right -anchor center \
+         -padx 0 -pady 3  
+      set zone(nbimage) $audace(base).test.frame1.fra3.lab_nbimage
 
-    pack $audace(base).test.frame1.fra3 \
-	      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
+   pack $audace(base).test.frame1.fra3 \
+      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
 
-  #--- Cree un frame pour le traitement
-    frame $audace(base).test.frame1.fra2 \
-       -borderwidth 1 -cursor arrow
+   #--- Cree un frame pour le traitement
+   frame $audace(base).test.frame1.fra2 \
+      -borderwidth 1 -cursor arrow
 
-     #--- Cree le bouton 'Separation RVB' 
-       button $audace(base).test.frame1.fra2.but_seprvb \
-	  -text $caption(acqcolor,seprvb) -borderwidth 2 \
-	  -command { seprvb } 
-       pack $audace(base).test.frame1.fra2.but_seprvb \
-	  -in $audace(base).test.frame1.fra2 -side left -anchor n \
-	  -padx 3 -pady 3  
-       set zone(seprvb) $audace(base).test.frame1.fra2.but_seprvb
+      #--- Cree le bouton 'Separation RVB' 
+      button $audace(base).test.frame1.fra2.but_seprvb \
+         -text $caption(acqcolor,seprvb) -borderwidth 2 \
+         -command { seprvb } 
+      pack $audace(base).test.frame1.fra2.but_seprvb \
+         -in $audace(base).test.frame1.fra2 -side left -anchor n \
+        -padx 3 -pady 3  
+      set zone(seprvb) $audace(base).test.frame1.fra2.but_seprvb
 
-     #--- Cree l'entry 'att' 
-       entry $audace(base).test.frame1.fra2.ent_att \
-	  -textvariable confcolor(att) -width 5 \
-	  -relief groove -justify center
-       pack $audace(base).test.frame1.fra2.ent_att \
-	  -in $audace(base).test.frame1.fra2 -side right -anchor center \
-	  -padx 0 -pady 3  
+      #--- Cree l'entry 'att' 
+      entry $audace(base).test.frame1.fra2.ent_att \
+         -textvariable confcolor(att) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame1.fra2.ent_att \
+         -in $audace(base).test.frame1.fra2 -side right -anchor center \
+         -padx 0 -pady 3  
        set zone(att) $audace(base).test.frame1.fra2.ent_att 
- 
-     #--- Cree le label 'Delai' 
-       label $audace(base).test.frame1.fra2.lab_attente \
-	  -text $caption(acqcolor,attente)
-       pack $audace(base).test.frame1.fra2.lab_attente \
-	  -in $audace(base).test.frame1.fra2 -side right -anchor center \
-	  -padx 0 -pady 3  
-       set zone(attente) $audace(base).test.frame1.fra2.lab_attente
 
-    pack $audace(base).test.frame1.fra2 \
-	       -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
+      #--- Cree le label 'Delai' 
+      label $audace(base).test.frame1.fra2.lab_attente \
+         -text $caption(acqcolor,attente)
+      pack $audace(base).test.frame1.fra2.lab_attente \
+         -in $audace(base).test.frame1.fra2 -side right -anchor center \
+         -padx 0 -pady 3  
+      set zone(attente) $audace(base).test.frame1.fra2.lab_attente
 
-  #--- Cree un frame pour le traitement (suite)
-    frame $audace(base).test.frame1.fra4 \
-       -borderwidth 1 -cursor arrow
+   pack $audace(base).test.frame1.fra2 \
+      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
 
-     #--- Cree le bouton 'smedianrvb' 
-       button $audace(base).test.frame1.fra4.but_smedianrvb \
-	  -text $caption(acqcolor,smedianrvb) -borderwidth 2 \
-	  -command { smedianrvb } 
-       pack $audace(base).test.frame1.fra4.but_smedianrvb \
-	  -in $audace(base).test.frame1.fra4 -side left -anchor n \
-	  -padx 3 -pady 3  
-       set zone(smedianrvb) $audace(base).test.frame1.fra4.but_smedianrvb
+   #--- Cree un frame pour le traitement (suite)
+   frame $audace(base).test.frame1.fra4 \
+      -borderwidth 1 -cursor arrow
 
-     #--- Cree le bouton 'trichro' 
-       button $audace(base).test.frame1.fra4.but_trichro \
-	  -text $caption(acqcolor,trichro) -borderwidth 2 \
-	  -command { trichro } 
-       pack $audace(base).test.frame1.fra4.but_trichro \
-	  -in $audace(base).test.frame1.fra4 -side left -anchor n \
-	  -padx 3 -pady 3  
+      #--- Cree le bouton 'smedianrvb' 
+      button $audace(base).test.frame1.fra4.but_smedianrvb \
+         -text $caption(acqcolor,smedianrvb) -borderwidth 2 \
+         -command { smedianrvb } 
+      pack $audace(base).test.frame1.fra4.but_smedianrvb \
+         -in $audace(base).test.frame1.fra4 -side left -anchor n \
+         -padx 3 -pady 3  
+      set zone(smedianrvb) $audace(base).test.frame1.fra4.but_smedianrvb
+
+      #--- Cree le bouton 'trichro' 
+      button $audace(base).test.frame1.fra4.but_trichro \
+         -text $caption(acqcolor,trichro) -borderwidth 2 \
+         -command { trichro } 
+      pack $audace(base).test.frame1.fra4.but_trichro \
+         -in $audace(base).test.frame1.fra4 -side left -anchor n \
+         -padx 3 -pady 3  
        set zone(trichro) $audace(base).test.frame1.fra4.but_trichro
 
-     #--- Cree le bouton 'en-tete_fits' 
-       button $audace(base).test.frame1.fra4.but_en-tete_fits \
-	  -text $caption(acqcolor,entete_fits) -borderwidth 2 \
-	  -command { header_color } 
+      #--- Cree le bouton 'en-tete_fits' 
+      button $audace(base).test.frame1.fra4.but_en-tete_fits \
+         -text $caption(acqcolor,entete_fits) -borderwidth 2 \
+         -command { header_color } 
        pack $audace(base).test.frame1.fra4.but_en-tete_fits \
-	  -in $audace(base).test.frame1.fra4 -side left -anchor n \
-	  -padx 3 -pady 3  
+         -in $audace(base).test.frame1.fra4 -side left -anchor n \
+         -padx 3 -pady 3  
        set zone(entete_fits) $audace(base).test.frame1.fra4.but_en-tete_fits
 
-    pack $audace(base).test.frame1.fra4 \
-	      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
+   pack $audace(base).test.frame1.fra4 \
+      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
 
-  #--- Cree un frame pour un intercallaire
-    frame $audace(base).test.frame1.fra5 \
-       -borderwidth 0 -cursor arrow
+   #--- Cree un frame pour un intercallaire
+   frame $audace(base).test.frame1.fra5 \
+      -borderwidth 0 -cursor arrow
 
-     #--- Cree un intercallaire
-       label $audace(base).test.frame1.fra5.intercallaire \
-	  -text ""
-       pack $audace(base).test.frame1.fra5.intercallaire \
-	  -in $audace(base).test.frame1.fra5 -side left -anchor n \
-	  -padx 3 -pady 3
-       set zone(entete_fits) $audace(base).test.frame1.fra5.intercallaire
+      #--- Cree un intercallaire
+      label $audace(base).test.frame1.fra5.intercallaire \
+         -text ""
+      pack $audace(base).test.frame1.fra5.intercallaire \
+         -in $audace(base).test.frame1.fra5 -side left -anchor n \
+         -padx 3 -pady 3
+      set zone(entete_fits) $audace(base).test.frame1.fra5.intercallaire
 
-    pack $audace(base).test.frame1.fra5 \
-	      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
+   pack $audace(base).test.frame1.fra5 \
+      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x 
 
 #--- Cree un frame au milieu pour y mettre le decompte du temps de pose et les glissieres
-  frame $audace(base).test.frame2 \
-     -borderwidth 0 -cursor arrow
-  pack $audace(base).test.frame2 \
-     -in $audace(base).test -anchor s -side left -expand 0 -fill x 
+frame $audace(base).test.frame2 \
+   -borderwidth 0 -cursor arrow
+pack $audace(base).test.frame2 \
+   -in $audace(base).test -anchor s -side left -expand 0 -fill x 
 
-     #--- Cree un frame pour le decompte du temps de pose et le status de la camera
-     frame $audace(base).test.frame2.fra0 \
-	-borderwidth 0 -cursor arrow
-     pack $audace(base).test.frame2.fra0 \
-	-in $audace(base).test.frame2 -anchor s -side top -fill x -padx 10
+   #--- Cree un frame pour le decompte du temps de pose et le status de la camera
+   frame $audace(base).test.frame2.fra0 \
+      -borderwidth 0 -cursor arrow
+   pack $audace(base).test.frame2.fra0 \
+      -in $audace(base).test.frame2 -anchor s -side top -fill x -padx 10
 
-	   #--- Cree le label pour le decompte du temps de pose et le status de la camera
-	   label $audace(base).test.frame2.fra0.labURL_decompte
-	   pack $audace(base).test.frame2.fra0.labURL_decompte \
-	      -in $audace(base).test.frame2.fra0 -side left -anchor center \
-	      -padx 0 -pady 8  
-	   set zone(decompte) $audace(base).test.frame2.fra0.labURL_decompte
+      #--- Cree le label pour le decompte du temps de pose et le status de la camera
+      label $audace(base).test.frame2.fra0.labURL_decompte
+      pack $audace(base).test.frame2.fra0.labURL_decompte \
+         -in $audace(base).test.frame2.fra0 -side left -anchor center \
+         -padx 0 -pady 8  
+      set zone(decompte) $audace(base).test.frame2.fra0.labURL_decompte
 
-     #--- Cree un frame pour y mettre les glissieres
-     set smax 100000
-     set smin 0
-     for { set k 1 } { $k <= 3 } { incr k } {
-	#--- Selectionne la couleur
-	if { $k == 1 } { set c $audace(color,cursor_rgb_red)   ; set cc $audace(color,cursor_rgb_actif) }
-	if { $k == 2 } { set c $audace(color,cursor_rgb_green) ; set cc $audace(color,cursor_rgb_actif) }
-	if { $k == 3 } { set c $audace(color,cursor_rgb_blue)  ; set cc $audace(color,cursor_rgb_actif) }
+      #--- Cree un frame pour y mettre les glissieres
+      set smax 100000
+      set smin 0
+      for { set k 1 } { $k <= 3 } { incr k } {
+      #--- Selectionne la couleur
+      if { $k == 1 } { set c $audace(color,cursor_rgb_red)   ; set cc $audace(color,cursor_rgb_actif) }
+      if { $k == 2 } { set c $audace(color,cursor_rgb_green) ; set cc $audace(color,cursor_rgb_actif) }
+      if { $k == 3 } { set c $audace(color,cursor_rgb_blue)  ; set cc $audace(color,cursor_rgb_actif) }
 
-	frame $audace(base).test.frame2.fra${k} \
-	   -borderwidth 0 -cursor arrow
-	pack $audace(base).test.frame2.fra${k} \
-	   -in $audace(base).test.frame2 -anchor s -side left -expand 0 -fill x -padx 10
+      frame $audace(base).test.frame2.fra${k} \
+         -borderwidth 0 -cursor arrow
+      pack $audace(base).test.frame2.fra${k} \
+         -in $audace(base).test.frame2 -anchor s -side left -expand 0 -fill x -padx 10
 
-	   frame $audace(base).test.frame2.fra${k}.labs \
-	      -borderwidth 0 -cursor arrow
-	   pack $audace(base).test.frame2.fra${k}.labs \
-	      -in $audace(base).test.frame2.fra${k} -anchor s -side left -expand 0 -fill y 
+         frame $audace(base).test.frame2.fra${k}.labs \
+            -borderwidth 0 -cursor arrow
+         pack $audace(base).test.frame2.fra${k}.labs \
+            -in $audace(base).test.frame2.fra${k} -anchor s -side left -expand 0 -fill y 
 
-	   #--- Cree le label du seuil max
-	   label $audace(base).test.frame2.fra${k}.labs.labURLmax \
-	      -borderwidth 0 -cursor arrow -text "$smax" -fg $c
-	   pack $audace(base).test.frame2.fra${k}.labs.labURLmax \
-	      -in $audace(base).test.frame2.fra${k}.labs -anchor n -side top -expand 0 -fill x 
-	   set zone(smax$k) $audace(base).test.frame2.fra${k}.labs.labURLmax 
+            #--- Cree le label du seuil max
+            label $audace(base).test.frame2.fra${k}.labs.labURLmax \
+               -borderwidth 0 -cursor arrow -text "$smax" -fg $c
+            pack $audace(base).test.frame2.fra${k}.labs.labURLmax \
+               -in $audace(base).test.frame2.fra${k}.labs -anchor n -side top -expand 0 -fill x 
+            set zone(smax$k) $audace(base).test.frame2.fra${k}.labs.labURLmax 
 
-	   #--- Cree le label du seuil min
-	   label $audace(base).test.frame2.fra${k}.labs.labURLmin \
-	      -borderwidth 0 -cursor arrow -text "$smin" -fg $c
-	   pack $audace(base).test.frame2.fra${k}.labs.labURLmin \
-	      -in $audace(base).test.frame2.fra${k}.labs -anchor s -side bottom -expand 0 -fill x 
-	   set zone(smin$k) $audace(base).test.frame2.fra${k}.labs.labURLmin
+            #--- Cree le label du seuil min
+            label $audace(base).test.frame2.fra${k}.labs.labURLmin \
+               -borderwidth 0 -cursor arrow -text "$smin" -fg $c
+            pack $audace(base).test.frame2.fra${k}.labs.labURLmin \
+               -in $audace(base).test.frame2.fra${k}.labs -anchor s -side bottom -expand 0 -fill x 
+            set zone(smin$k) $audace(base).test.frame2.fra${k}.labs.labURLmin
 
-	#--- Cree la glissiere de seuil bas 
-	scale $audace(base).test.frame2.fra${k}.sca1_$k -orient vertical -from $smin -to $smax -length 115 \
-	   -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-	   -background $c -activebackground $cc \
-	   -relief raised -command testchangeLoCut$k
-	pack $audace(base).test.frame2.fra${k}.sca1_$k \
-	   -in $audace(base).test.frame2.fra${k} -anchor s -side left -expand 0 -padx 5 -pady 3 
-	set zone(sb$k) $audace(base).test.frame2.fra${k}.sca1_$k 
-   
-	#--- Cree la glissiere de seuil haut 
-	scale $audace(base).test.frame2.fra${k}.sca2_$k -orient vertical -from $smin -to $smax -length 115 \
-	   -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-	   -background $c -activebackground $cc \
-	   -relief raised -command testchangeHiCut$k
-	pack $audace(base).test.frame2.fra${k}.sca2_$k \
-	   -in $audace(base).test.frame2.fra${k} -anchor s -side left -expand 0 -padx 10 -pady 3 
-	set zone(sh$k) $audace(base).test.frame2.fra${k}.sca2_$k
-     }
+         #--- Cree la glissiere de seuil bas 
+         scale $audace(base).test.frame2.fra${k}.sca1_$k -orient vertical -from $smin -to $smax -length 115 \
+            -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
+            -background $c -activebackground $cc \
+            -relief raised -command testchangeLoCut$k
+         pack $audace(base).test.frame2.fra${k}.sca1_$k \
+            -in $audace(base).test.frame2.fra${k} -anchor s -side left -expand 0 -padx 5 -pady 3 
+         set zone(sb$k) $audace(base).test.frame2.fra${k}.sca1_$k 
+
+         #--- Cree la glissiere de seuil haut 
+         scale $audace(base).test.frame2.fra${k}.sca2_$k -orient vertical -from $smin -to $smax -length 115 \
+            -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
+            -background $c -activebackground $cc \
+            -relief raised -command testchangeHiCut$k
+         pack $audace(base).test.frame2.fra${k}.sca2_$k \
+            -in $audace(base).test.frame2.fra${k} -anchor s -side left -expand 0 -padx 10 -pady 3 
+         set zone(sh$k) $audace(base).test.frame2.fra${k}.sca2_$k
+      }
 
 #--- Cree un frame en bas a droite pour les commandes d'enregistrement, d'ouverture
 #--- et d'enregistrement sous le format jpeg
-  frame $audace(base).test.frame3 \
-     -borderwidth 0 -cursor arrow
-  pack $audace(base).test.frame3 \
-     -in $audace(base).test -anchor se -side right -expand 0 -fill x 
+frame $audace(base).test.frame3 \
+   -borderwidth 0 -cursor arrow
+pack $audace(base).test.frame3 \
+   -in $audace(base).test -anchor se -side right -expand 0 -fill x 
 
-  #--- Cree un frame pour les enregistrements et chargement d'images 
-    frame $audace(base).test.frame3.fra1 \
-       -borderwidth 0 -cursor arrow
+   #--- Cree un frame pour les enregistrements et chargement d'images 
+   frame $audace(base).test.frame3.fra1 \
+      -borderwidth 0 -cursor arrow
 
-    #--- Cree l'entry 'name' 
+      #--- Cree l'entry 'name' 
       entry $audace(base).test.frame3.fra1.ent_name \
-	 -textvariable confcolor(name) -width 5 \
-	 -relief groove -justify center
+         -textvariable confcolor(name) -width 5 \
+         -relief groove -justify center
       pack $audace(base).test.frame3.fra1.ent_name \
-	 -in $audace(base).test.frame3.fra1 -side left -anchor center \
-	 -padx 3 -pady 3  
+         -in $audace(base).test.frame3.fra1 -side left -anchor center \
+         -padx 3 -pady 3  
       set zone(name) $audace(base).test.frame3.fra1.ent_name 
 
-    #--- Cree l'entry 'indice' 
+      #--- Cree l'entry 'indice' 
       entry $audace(base).test.frame3.fra1.ent_indice \
-	 -textvariable confcolor(indice) -width 4 \
-	 -relief groove -justify center
+         -textvariable confcolor(indice) -width 4 \
+         -relief groove -justify center
       pack $audace(base).test.frame3.fra1.ent_indice \
-	 -in $audace(base).test.frame3.fra1 -side left -anchor center \
-	 -padx 3 -pady 3  
+         -in $audace(base).test.frame3.fra1 -side left -anchor center \
+         -padx 3 -pady 3  
       set zone(name) $audace(base).test.frame3.fra1.ent_name 
 
-    #--- Cree le bouton 'Save auto' 
+      #--- Cree le bouton 'Save auto' 
       button $audace(base).test.frame3.fra1.but_saveauto \
-	 -text $caption(acqcolor,saveauto) -borderwidth 2 \
-	 -command { testsaveauto } 
+         -text $caption(acqcolor,saveauto) -borderwidth 2 \
+         -command { testsaveauto } 
       pack $audace(base).test.frame3.fra1.but_saveauto \
-	 -in $audace(base).test.frame3.fra1 -side top -anchor center \
-	 -padx 3 -pady 3  
+         -in $audace(base).test.frame3.fra1 -side top -anchor center \
+         -padx 3 -pady 3  
       set zone(saveauto) $audace(base).test.frame3.fra1.but_saveauto
 
-    #--- Cree le bouton 'Sauve Jpeg' 
+      #--- Cree le bouton 'Sauve Jpeg' 
       button $audace(base).test.frame3.but_jpeg \
-	 -text $caption(acqcolor,jpeg) -borderwidth 2 \
-	 -command { testjpeg } 
+         -text $caption(acqcolor,jpeg) -borderwidth 2 \
+         -command { testjpeg } 
       pack $audace(base).test.frame3.but_jpeg \
-	 -in $audace(base).test.frame3 -side bottom -anchor center \
-	 -padx 3 -pady 3  
+         -in $audace(base).test.frame3 -side bottom -anchor center \
+         -padx 3 -pady 3  
       set zone(jpeg) $audace(base).test.frame3.but_jpeg
 
-    #--- Cree le bouton 'Load' 
+      #--- Cree le bouton 'Load' 
       button $audace(base).test.frame3.but_load \
-	 -text $caption(acqcolor,load) -borderwidth 2 \
-	 -command { testload } 
+         -text $caption(acqcolor,load) -borderwidth 2 \
+         -command { testload } 
       pack $audace(base).test.frame3.but_load \
-	 -in $audace(base).test.frame3 -side bottom -anchor center \
-	 -padx 3 -pady 3  
+         -in $audace(base).test.frame3 -side bottom -anchor center \
+         -padx 3 -pady 3  
       set zone(load) $audace(base).test.frame3.but_load
 
-    #--- Cree le bouton 'Save' 
+      #--- Cree le bouton 'Save' 
       button $audace(base).test.frame3.but_save \
-	 -text $caption(acqcolor,save) -borderwidth 2 \
-	 -command { testsave } 
+         -text $caption(acqcolor,save) -borderwidth 2 \
+         -command { testsave } 
       pack $audace(base).test.frame3.but_save \
-	 -in $audace(base).test.frame3 -side bottom -anchor center \
-	 -padx 3 -pady 3  
+         -in $audace(base).test.frame3 -side bottom -anchor center \
+         -padx 3 -pady 3  
       set zone(save) $audace(base).test.frame3.but_save
 
-    pack $audace(base).test.frame3.fra1 \
-       -in $audace(base).test.frame3 -anchor center -side top -expand 0 -fill x 
+   pack $audace(base).test.frame3.fra1 \
+      -in $audace(base).test.frame3 -anchor center -side top -expand 0 -fill x 
 
 #--- Cree un frame en bas a droite pour les reglages de l'obturateur, de la luminosite
 #--- et pour les boutons specifiques a la WebCam
-  frame $audace(base).test.frame2b \
-     -borderwidth 0 -cursor arrow
-  pack $audace(base).test.frame2b \
-     -in $audace(base).test -anchor center -side right -expand 0 -fill x 
+frame $audace(base).test.frame2b \
+   -borderwidth 0 -cursor arrow
+pack $audace(base).test.frame2b \
+   -in $audace(base).test -anchor center -side right -expand 0 -fill x 
 
    #--- Cree un frame pour le choix du nombre et du format des fenetres scrollables
-     frame $audace(base).test.frame2b.frame_rad \
-	-borderwidth 0 -cursor arrow
-     pack $audace(base).test.frame2b.frame_rad \
-	-in $audace(base).test.frame2b -anchor center -side top -expand 0 -fill x 
+   frame $audace(base).test.frame2b.frame_rad \
+      -borderwidth 0 -cursor arrow
+   pack $audace(base).test.frame2b.frame_rad \
+      -in $audace(base).test.frame2b -anchor center -side top -expand 0 -fill x 
 
-	#--- Bouton radio 1 fenetre
-	radiobutton $audace(base).test.frame2b.frame_rad.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-	   -text "$caption(acqcolor,1_fenetre)" -value 0 -variable conf(color_nb_fenetre) \
-	   -command { color_nb_fenetre }
-	pack $audace(base).test.frame2b.frame_rad.rad0 \
-	   -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
-	   -padx 3 -pady 3  
-	#--- Bouton radio 2 fenetres
-	radiobutton $audace(base).test.frame2b.frame_rad.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-	   -text "$caption(acqcolor,2_fenetre)" -value 1 -variable conf(color_nb_fenetre) \
-	   -command { color_nb_fenetre }
-	pack $audace(base).test.frame2b.frame_rad.rad1 \
-	   -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
-	   -padx 3 -pady 3  
-	#--- Bouton radio 2 fenetres (special Pierre Thierry)
-	radiobutton $audace(base).test.frame2b.frame_rad.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-	   -text "$caption(acqcolor,2_fenetre_pth)" -value 2 -variable conf(color_nb_fenetre) \
-	   -command { color_nb_fenetre }
-	pack $audace(base).test.frame2b.frame_rad.rad2 \
-	   -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
-	   -padx 3 -pady 3  
+      #--- Bouton radio 1 fenetre
+      radiobutton $audace(base).test.frame2b.frame_rad.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(acqcolor,1_fenetre)" -value 0 -variable conf(color_nb_fenetre) \
+         -command { color_nb_fenetre }
+      pack $audace(base).test.frame2b.frame_rad.rad0 \
+         -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
+         -padx 3 -pady 3  
+      #--- Bouton radio 2 fenetres
+      radiobutton $audace(base).test.frame2b.frame_rad.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(acqcolor,2_fenetre)" -value 1 -variable conf(color_nb_fenetre) \
+         -command { color_nb_fenetre }
+      pack $audace(base).test.frame2b.frame_rad.rad1 \
+         -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
+         -padx 3 -pady 3  
+      #--- Bouton radio 2 fenetres (special Pierre Thierry)
+      radiobutton $audace(base).test.frame2b.frame_rad.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(acqcolor,2_fenetre_pth)" -value 2 -variable conf(color_nb_fenetre) \
+         -command { color_nb_fenetre }
+      pack $audace(base).test.frame2b.frame_rad.rad2 \
+         -in $audace(base).test.frame2b.frame_rad -side left -anchor center \
+         -padx 3 -pady 3  
 
-     if { $audace(acqvisu,ccd) != "webcam" } {
-	#--- Cree le bouton 'Obturateur' 
-	  button $audace(base).test.frame2b.but_obtu \
-	     -text $caption(acqcolor,obtu) -borderwidth 2 \
-	     -command { set confcolor(obtu_pierre) "0" ; ::Obtu_Pierre::run } 
-	  pack $audace(base).test.frame2b.but_obtu \
-	     -in $audace(base).test.frame2b -side top -anchor center \
-	     -padx 3 -pady 3  
-	  set zone(obtu) $audace(base).test.frame2b.but_obtu
+      if { $audace(acqvisu,ccd) != "webcam" } {
+         #--- Cree le bouton 'Obturateur' 
+         button $audace(base).test.frame2b.but_obtu \
+            -text $caption(acqcolor,obtu) -borderwidth 2 \
+            -command { set confcolor(obtu_pierre) "0" ; ::Obtu_Pierre::run } 
+         pack $audace(base).test.frame2b.but_obtu \
+            -in $audace(base).test.frame2b -side top -anchor center \
+            -padx 3 -pady 3  
+         set zone(obtu) $audace(base).test.frame2b.but_obtu
       }
 
       #--- Boutons supplementaires pour la WebCam
       if { $audace(acqvisu,ccd) == "webcam" } {
-	 #--- Cree le bouton 'Configuration de la WebCam' 
-	   button $audace(base).test.frame2b.webcam_conf \
-	      -text $caption(acqcolor,webcam_conf) -borderwidth 2 \
-	      -command { cam1000 videosource } 
-	   pack $audace(base).test.frame2b.webcam_conf \
-	      -in $audace(base).test.frame2b -side top -anchor center \
-	      -padx 3 -pady 3  
-	   set zone(webcam_conf) $audace(base).test.frame2b.webcam_conf
+         #--- Cree le bouton 'Configuration de la WebCam' 
+         button $audace(base).test.frame2b.webcam_conf \
+            -text $caption(acqcolor,webcam_conf) -borderwidth 2 \
+            -command { cam1000 videosource } 
+         pack $audace(base).test.frame2b.webcam_conf \
+            -in $audace(base).test.frame2b -side top -anchor center \
+            -padx 3 -pady 3  
+         set zone(webcam_conf) $audace(base).test.frame2b.webcam_conf
 
-	 #--- Cree le bouton 'Choix du format de l'image' 
-	   button $audace(base).test.frame2b.webcam_format \
-	      -text $caption(acqcolor,webcam_format) -borderwidth 2 \
-	      -command { cam1000 videoformat } 
-	   pack $audace(base).test.frame2b.webcam_format \
-	      -in $audace(base).test.frame2b -side top -anchor center \
-	      -padx 3 -pady 3  
-	   set zone(webcam_format) $audace(base).test.frame2b.webcam_format
+         #--- Cree le bouton 'Choix du format de l'image' 
+         button $audace(base).test.frame2b.webcam_format \
+            -text $caption(acqcolor,webcam_format) -borderwidth 2 \
+            -command { cam1000 videoformat } 
+         pack $audace(base).test.frame2b.webcam_format \
+            -in $audace(base).test.frame2b -side top -anchor center \
+            -padx 3 -pady 3  
+         set zone(webcam_format) $audace(base).test.frame2b.webcam_format
       }
 
       #--- Cree le bouton 'luminosite' 
-	button $audace(base).test.frame2b.but_luminosite \
-	   -text $caption(acqcolor,luminosite) -borderwidth 2 \
-	   -command { luminosite } 
-	pack $audace(base).test.frame2b.but_luminosite \
-	   -in $audace(base).test.frame2b -side top -anchor center \
-	   -padx 3 -pady 3  
-	set zone(luminosite) $audace(base).test.frame2b.but_luminosite
+      button $audace(base).test.frame2b.but_luminosite \
+         -text $caption(acqcolor,luminosite) -borderwidth 2 \
+         -command { luminosite } 
+      pack $audace(base).test.frame2b.but_luminosite \
+         -in $audace(base).test.frame2b -side top -anchor center \
+         -padx 3 -pady 3  
+      set zone(luminosite) $audace(base).test.frame2b.but_luminosite
 
       #--- Cree l'entry 'niveauhaut' 
-	entry $audace(base).test.frame2b.ent_niveauhaut \
-	   -textvariable confcolor(niveauhaut) -width 5 \
-	   -relief groove -justify center
-	pack $audace(base).test.frame2b.ent_niveauhaut \
-	   -in $audace(base).test.frame2b -side left -anchor center \
-	   -padx 3 -pady 3  
-	set zone(niveauhaut) $audace(base).test.frame2b.ent_niveauhaut 
+      entry $audace(base).test.frame2b.ent_niveauhaut \
+         -textvariable confcolor(niveauhaut) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame2b.ent_niveauhaut \
+         -in $audace(base).test.frame2b -side left -anchor center \
+         -padx 3 -pady 3  
+     set zone(niveauhaut) $audace(base).test.frame2b.ent_niveauhaut 
 
       #--- Cree l'entry 'niveaubas' 
-	entry $audace(base).test.frame2b.ent_niveaubas \
-	   -textvariable confcolor(niveaubas) -width 5 \
-	   -relief groove -justify center
-	pack $audace(base).test.frame2b.ent_niveaubas \
-	   -in $audace(base).test.frame2b -side left -anchor center \
-	   -padx 3 -pady 3  
-	set zone(niveaubas) $audace(base).test.frame2b.ent_niveaubas
-    
+      entry $audace(base).test.frame2b.ent_niveaubas \
+         -textvariable confcolor(niveaubas) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame2b.ent_niveaubas \
+         -in $audace(base).test.frame2b -side left -anchor center \
+         -padx 3 -pady 3  
+      set zone(niveaubas) $audace(base).test.frame2b.ent_niveaubas
+
       #--- Cree l'entry 'cfv' 
-	entry $audace(base).test.frame2b.ent_cfv \
-	   -textvariable confcolor(cfv) -width 5 \
-	   -relief groove -justify center
-	pack $audace(base).test.frame2b.ent_cfv \
-	   -in $audace(base).test.frame2b -side left -anchor center \
-	   -padx 3 -pady 3  
-	set zone(cfv) $audace(base).test.frame2b.ent_cfv
+      entry $audace(base).test.frame2b.ent_cfv \
+         -textvariable confcolor(cfv) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame2b.ent_cfv \
+         -in $audace(base).test.frame2b -side left -anchor center \
+         -padx 3 -pady 3  
+      set zone(cfv) $audace(base).test.frame2b.ent_cfv
 
       #--- Cree le label 'vert' 
-	label $audace(base).test.frame2b.lab_vert \
-	   -text $caption(acqcolor,vert)
-	pack $audace(base).test.frame2b.lab_vert \
-	   -in $audace(base).test.frame2b -side left -anchor center \
-	   -padx 3 -pady 3  
-	set zone(vert) $audace(base).test.frame2b.lab_vert
+      label $audace(base).test.frame2b.lab_vert \
+         -text $caption(acqcolor,vert)
+      pack $audace(base).test.frame2b.lab_vert \
+         -in $audace(base).test.frame2b -side left -anchor center \
+         -padx 3 -pady 3  
+      set zone(vert) $audace(base).test.frame2b.lab_vert
 
       #--- Cree l'entry 'cfb' 
-	entry $audace(base).test.frame2b.ent_cfb \
-	   -textvariable confcolor(cfb) -width 5 \
-	   -relief groove -justify center
-	pack $audace(base).test.frame2b.ent_cfb \
-	   -in $audace(base).test.frame2b -side left -anchor center \
-	   -padx 3 -pady 3  
-	set zone(cfb) $audace(base).test.frame2b.ent_cfb
+      entry $audace(base).test.frame2b.ent_cfb \
+         -textvariable confcolor(cfb) -width 5 \
+         -relief groove -justify center
+      pack $audace(base).test.frame2b.ent_cfb \
+         -in $audace(base).test.frame2b -side left -anchor center \
+         -padx 3 -pady 3  
+      set zone(cfb) $audace(base).test.frame2b.ent_cfb
 
       #--- Cree le label 'bleu' 
-	label $audace(base).test.frame2b.lab_bleu \
-	   -text $caption(acqcolor,bleu)
-	pack $audace(base).test.frame2b.lab_bleu \
-	   -in $audace(base).test.frame2b -side left -anchor center \
-	   -padx 3 -pady 3  
-	set zone(bleu) $audace(base).test.frame2b.lab_bleu
+      label $audace(base).test.frame2b.lab_bleu \
+         -text $caption(acqcolor,bleu)
+      pack $audace(base).test.frame2b.lab_bleu \
+         -in $audace(base).test.frame2b -side left -anchor center \
+         -padx 3 -pady 3  
+      set zone(bleu) $audace(base).test.frame2b.lab_bleu
 
 #--- Mise a jour dynamique des couleurs
 ::confColor::applyColor $audace(base).test
 
 #--- Detruit la fenetre principale avec la croix en haut a droite 
-  bind $audace(base).test <Destroy> { testexit } 
+bind $audace(base).test <Destroy> { testexit }
 
-#--- Declare un buffer pour placer les images en mémoire 
-  global conf
+#--- Declare un buffer pour placer les images en mémoire
+global conf
 
-  buf::create 1000
-  buf1000 extension "$conf(extension,defaut)"
-  buf::create 1001
-  buf1001 extension "$conf(extension,defaut)"
+buf::create 1000
+buf1000 extension "$conf(extension,defaut)"
+buf::create 1001
+buf1001 extension "$conf(extension,defaut)"
 
-#--- Re-affiche l'image si on relache les curseurs des glissieres 
-  for { set k 1 } { $k <= 3 } { incr k } {
-     bind $zone(sh$k) <ButtonRelease> { testrevisu } 
-     bind $zone(sb$k) <ButtonRelease> { testrevisu } 
-  }
+#--- Re-affiche l'image si on relache les curseurs des glissieres
+for { set k 1 } { $k <= 3 } { incr k } {
+   bind $zone(sh$k) <ButtonRelease> { testrevisu }
+   bind $zone(sb$k) <ButtonRelease> { testrevisu }
+}
 
 #--- Debut de cadre
-  bind $zone(image1) <ButtonPress-1> { 
-     global infos 
+bind $zone(image1) <ButtonPress-1> {
+   global infos 
 
-     if { [ string compare $infos(MouseState) rien ] == "0" } { 
-	set liste [ testscreen2Canvas [ list %x %y ] ] 
-	if { [ info exists zone(image1,naxis1) ] == "1" } { 
-	   if { [ lindex $liste 0 ] < $zone(image1,naxis1) && [ lindex $liste 1 ] < $zone(image1,naxis2) } { 
-	      testboxBegin [ list %x %y ] 
-	      set infos(MouseState) dragging 
-	   } 
-	} 
-     } else { 
-	if { [ string compare $infos(MouseState) context ] == "0" } { 
-	   set infos(MouseState) rien 
-	} 
-     } 
-  } 
+   if { [ string compare $infos(MouseState) rien ] == "0" } {
+      set liste [ testscreen2Canvas [ list %x %y ] ]
+      if { [ info exists zone(image1,naxis1) ] == "1" } {
+         if { [ lindex $liste 0 ] < $zone(image1,naxis1) && [ lindex $liste 1 ] < $zone(image1,naxis2) } {
+            testboxBegin [ list %x %y ] 
+            set infos(MouseState) dragging 
+         } 
+      }
+   } else {
+      if { [ string compare $infos(MouseState) context ] == "0" } {
+         set infos(MouseState) rien
+      }
+   }
+}
 
 #--- Elargissement de cadre
-  bind $zone(image1) <B1-Motion> { 
-     global infos 
+bind $zone(image1) <B1-Motion> {
+   global infos
 
-     if { [ string compare $infos(MouseState) dragging ] == "0" } { 
-	#--- On n'oublie pas de dragger eventuellement la fenetre
-	testboxDrag [ list %x %y ] 
-     } 
-  } 
+   if { [ string compare $infos(MouseState) dragging ] == "0" } {
+      #--- On n'oublie pas de dragger eventuellement la fenetre
+      testboxDrag [ list %x %y ]
+   }
+}
 
 #--- Fin de cadre
-  bind $zone(image1) <ButtonRelease-1> { 
-     global infos 
+bind $zone(image1) <ButtonRelease-1> {
+   global infos
 
-     if { [ string compare $infos(MouseState) dragging ] == "0" } { 
-	set infos(MouseState) rien 
-	catch { testboxEnd [ list %x %y ] } 
-     } 
-  }
+   if { [ string compare $infos(MouseState) dragging ] == "0" } {
+      set infos(MouseState) rien
+      catch { testboxEnd [ list %x %y ] }
+   }
+}
 
 #--- Copy vers la zone d'affichage numero 2
-  bind $zone(image2) <ButtonPress-1> { 
-     bell
-     testcopy1to2
-  }
-  bind $audace(base).test <Key-Escape> { 
-     bell
-     testcopy1to2
-  }
+bind $zone(image2) <ButtonPress-1> {
+   bell
+   testcopy1to2
+}
+bind $audace(base).test <Key-Escape> {
+   bell
+   testcopy1to2
+}
 
 #--- Acquisition fenetre suivante
-  bind $audace(base).test <Key-space> { 
-     bell
-     testacqfen
-  }
+bind $audace(base).test <Key-space> {
+   bell
+   testacqfen
+}
 
 #--- Revisu des seuils auto
-  bind $audace(base).test <Key-F1> { 
-     buf1001 stat 
-     buf1002 stat 
-     buf1003 stat 
-     testvisu
-  }
+bind $audace(base).test <Key-F1> {
+   buf1001 stat 
+   buf1002 stat 
+   buf1003 stat 
+   testvisu
+}
 
 #--- Sauve automatiquement
-  bind $audace(base).test <Key-Return> { 
-     bell
-     testsaveauto
-  }
+bind $audace(base).test <Key-Return> {
+   bell
+   testsaveauto
+}
 
 #--- Modifie les limites des barres de seuil
-  bind $zone(smax1) <ButtonPress-1> { testmodifseuillimites 1001 1 + }
-  bind $zone(smin1) <ButtonPress-1> { testmodifseuillimites 1001 1 - }
-  bind $zone(smax2) <ButtonPress-1> { testmodifseuillimites 1002 2 + }
-  bind $zone(smin2) <ButtonPress-1> { testmodifseuillimites 1002 2 - }
-  bind $zone(smax3) <ButtonPress-1> { testmodifseuillimites 1003 3 + }
-  bind $zone(smin3) <ButtonPress-1> { testmodifseuillimites 1003 3 - }
+bind $zone(smax1) <ButtonPress-1> { testmodifseuillimites 1001 1 + }
+bind $zone(smin1) <ButtonPress-1> { testmodifseuillimites 1001 1 - }
+bind $zone(smax2) <ButtonPress-1> { testmodifseuillimites 1002 2 + }
+bind $zone(smin2) <ButtonPress-1> { testmodifseuillimites 1002 2 - }
+bind $zone(smax3) <ButtonPress-1> { testmodifseuillimites 1003 3 + }
+bind $zone(smin3) <ButtonPress-1> { testmodifseuillimites 1003 3 - }
 
-#--- Affiche la valeur du pixel pointe dans l'image 
-  bind $zone(image1) <Motion> { 
-     global audace
-     global zone  
-     global caption
+#--- Affiche la valeur du pixel pointe dans l'image
+bind $zone(image1) <Motion> {
+   global audace
+   global zone
+   global caption
 
-     #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y) 
-     set xy [ testscreen2Canvas [ list %x %y ] ] 
-     #--- Transforme les coordonnees canvas (x,y) en coordonnees image (xi,yi) 
-     set xyi [ testcanvas2Picture $xy ] 
-     set xi [ lindex $xyi 0 ] 
-     set yi [ lindex $xyi 1 ] 
-     #--- Intens contiendra l'intensite du pixel pointe 
-     set intens - 
-     if { $infos(type_image) == "couleur" } {
-	catch {
-	   set intens1 [ buf1001 getpix [ list $xi $yi ] ]
-	   set intens2 [ buf1002 getpix [ list $xi $yi ] ]
-	   set intens3 [ buf1003 getpix [ list $xi $yi ] ]
-	   set intens1 [ expr round($intens1) ]
-	   set intens2 [ expr round($intens2) ]
-	   set intens3 [ expr round($intens3) ]
-	   set intens "$intens1 $intens2 $intens3"
-	}
-     }
-     if { $infos(type_image) == "noiretblanc" } {
-	catch {
-	   set intens [ buf1000 getpix [ list $xi $yi ] ]
-	   set intens [ expr round($intens) ]
-	   set intens "$intens"
-	}
-     }
-     #--- Affichage des coordonnees  
-     wm title $audace(base).test "$caption(acqcolor,main_title) ($audace(acqvisu,ccd_model)) ($xi,$yi) = $intens   " 
-  } 
+   #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
+   set xy [ testscreen2Canvas [ list %x %y ] ]
+   #--- Transforme les coordonnees canvas (x,y) en coordonnees image (xi,yi)
+   set xyi [ testcanvas2Picture $xy ]
+   set xi [ lindex $xyi 0 ]
+   set yi [ lindex $xyi 1 ]
+   #--- Intens contiendra l'intensite du pixel pointe
+   set intens - 
+   if { $infos(type_image) == "couleur" } {
+      catch {
+         set intens1 [ buf1001 getpix [ list $xi $yi ] ]
+         set intens2 [ buf1002 getpix [ list $xi $yi ] ]
+         set intens3 [ buf1003 getpix [ list $xi $yi ] ]
+         set intens1 [ expr round($intens1) ]
+         set intens2 [ expr round($intens2) ]
+         set intens3 [ expr round($intens3) ]
+         set intens "$intens1 $intens2 $intens3"
+      }
+   }
+   if { $infos(type_image) == "noiretblanc" } {
+      catch {
+         set intens [ buf1000 getpix [ list $xi $yi ] ]
+         set intens [ expr round($intens) ]
+         set intens "$intens"
+      }
+   }
+   #--- Affichage des coordonnees  
+   wm title $audace(base).test "$caption(acqcolor,main_title) ($audace(acqvisu,ccd_model)) ($xi,$yi) = $intens   " 
+} 
 
 #--- Declare une connexion avec une WebCam ou une camera Audine couleur sur LPT1 
-  #--- Il faut detruire toutes les webcams deja existantes
-  foreach numcam [ cam::list ] {
-     if { [ cam$numcam name ] == "webcam" } {
-	::cam::delete $numcam
-	if { $numcam == "1" } {
-	   $audace(base).fra1.labCam_name configure -text "$caption(acqcolor,tiret)"
-	}
-     }
-  }
-  if { $audace(acqvisu,ccd) == "webcam" } {
-     #---
-     if {![info exists conf(webcam,longueposeport)]} {set conf(webcam,longueposeport) "lpt1"}
-     if {![info exists conf(webcam,port)]}           {set conf(webcam,port)           "0"}
-     #---
-     set erreur [ catch { cam::create webcam usb -channel $conf(webcam,port) -num 1000 \
-	-lpport $conf(webcam,longueposeport) } msg ]
-     if { $erreur == "1" } {
-	testexit
-	tk_messageBox -message "$msg" -icon error
-     } else {
-	#---
-	if {![info exists conf(webcam,longuepose)]}           {set conf(webcam,longuepose)           "0"}
-	if {![info exists conf(webcam,longueposestartvalue)]} {set conf(webcam,longueposestartvalue) "0"}
-	if {![info exists conf(webcam,longueposestopvalue)]}  {set conf(webcam,longueposestopvalue)  "1"}
-	#---
-	cam1000 buf 1000
-	cam1000 longuepose $conf(webcam,longuepose)
-	cam1000 longueposestartvalue $conf(webcam,longueposestartvalue)
-	cam1000 longueposestopvalue $conf(webcam,longueposestopvalue)
-     }
-  } elseif {$audace(acqvisu,ccd)=="kac1310"} {
-     #---
-     if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
-     #---
-     cam::create synonyme $conf(scr1300xtc,port) -num 1000
-     cam1000 interrupt 0
-     cam1000 buf 1000
-  } elseif { $audace(acqvisu,ccd) == "kaf1600" } {
-     #---
-     if { ! [ info exists conf(audine,port) ] } { set conf(audine,port) "lpt1" }
-     #---
-     cam::create audine $conf(audine,port) -num 1000 -ccd kaf1602
-     cam1000 buf 1000
-     cam1000 shutter synchro
-     cam1000 shuttertype "audine"
-  } else {
-     #---
-     if { ! [ info exists conf(audine,port) ] } { set conf(audine,port) "lpt1" }
-     #---
-     cam::create audine $conf(audine,port) -num 1000 -ccd kaf401
-     cam1000 buf 1000
-     cam1000 shutter synchro
-     cam1000 shuttertype "thierry"
-  }
+#--- Il faut detruire toutes les webcams deja existantes
+foreach numcam [ cam::list ] {
+   if { [ cam$numcam name ] == "webcam" } {
+      ::cam::delete $numcam
+      if { $numcam == "1" } {
+         ::confVisu::setCamera $audace(visuNo) $audace(camNo) 
+      }
+   }
+}
+if { $audace(acqvisu,ccd) == "webcam" } {
+   #---
+   if {![info exists conf(webcam,longueposeport)]} {set conf(webcam,longueposeport) "lpt1"}
+   if {![info exists conf(webcam,port)]}           {set conf(webcam,port)           "0"}
+   #---
+   set erreur [ catch { cam::create webcam usb -channel $conf(webcam,port) -num 1000 \
+      -lpport $conf(webcam,longueposeport) } msg ]
+   if { $erreur == "1" } {
+      testexit
+      tk_messageBox -message "$msg" -icon error
+   } else {
+      #---
+      if {![info exists conf(webcam,longuepose)]}           {set conf(webcam,longuepose)           "0"}
+      if {![info exists conf(webcam,longueposestartvalue)]} {set conf(webcam,longueposestartvalue) "0"}
+      if {![info exists conf(webcam,longueposestopvalue)]}  {set conf(webcam,longueposestopvalue)  "1"}
+      #---
+      cam1000 buf 1000
+      cam1000 longuepose $conf(webcam,longuepose)
+      cam1000 longueposestartvalue $conf(webcam,longueposestartvalue)
+      cam1000 longueposestopvalue $conf(webcam,longueposestopvalue)
+   }
+} elseif {$audace(acqvisu,ccd)=="kac1310"} {
+   #---
+   if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
+   #---
+   cam::create synonyme $conf(scr1300xtc,port) -num 1000
+   cam1000 interrupt 0
+   cam1000 buf 1000
+} elseif { $audace(acqvisu,ccd) == "kaf1600" } {
+   #---
+   if { ! [ info exists conf(audine,port) ] } { set conf(audine,port) "lpt1" }
+   #---
+   cam::create audine $conf(audine,port) -num 1000 -ccd kaf1602
+   cam1000 buf 1000
+   cam1000 shutter synchro
+   cam1000 shuttertype "audine"
+} else {
+   #---
+   if { ! [ info exists conf(audine,port) ] } { set conf(audine,port) "lpt1" }
+   #---
+   cam::create audine $conf(audine,port) -num 1000 -ccd kaf401
+   cam1000 buf 1000
+   cam1000 shutter synchro
+   cam1000 shuttertype "thierry"
+}
 
 #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer 
-  ::visu::create 1000 1000 1000
-  ::visu::create 1000 1001 1001
+::visu::create 1000 1000 1000
+::visu::create 1000 1001 1001
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation 
-  catch {
-     $zone(image1) create image 1 1 -image image1000 -anchor nw -tag img1  
-     image delete image1000
-  }
+catch {
+   $zone(image1) create image 1 1 -image image1000 -anchor nw -tag img1  
+   image delete image1000
+}
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation 
-  catch {
-     $zone(image2) create image 1 1 -image image1001 -anchor nw -tag img1  
-     image delete image1001
-  }
+catch {
+   $zone(image2) create image 1 1 -image image1001 -anchor nw -tag img1  
+   image delete image1001
+}
 
 proc testcopy1to2 { } {
    global zone
@@ -839,22 +839,22 @@ proc testcopy1to2 { } {
 
    if { $infos(type_image) == "couleur" } {
       catch {
-	 #--- Ajuste les scroll bars
-	 set zone(image2,naxis1) [ lindex [buf1001 getkwd NAXIS1] 1 ] 
-	 set zone(image2,naxis2) [ lindex [buf1001 getkwd NAXIS2] 1 ] 
-	 $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ] 
-	 visu1001 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
+         #--- Ajuste les scroll bars
+         set zone(image2,naxis1) [ lindex [buf1001 getkwd NAXIS1] 1 ] 
+         set zone(image2,naxis2) [ lindex [buf1001 getkwd NAXIS2] 1 ] 
+         $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ] 
+         visu1001 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
 
       }
    }
    if { $infos(type_image) == "noiretblanc" } {
       catch {
-	 visu1001 cut [ visu1000 cut ]
-	 #--- Ajuste les scroll bars
-	 set zone(image2,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ] 
-	 set zone(image2,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
-	 $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ] 
-	 visu1001 disp
+         visu1001 cut [ visu1000 cut ]
+         #--- Ajuste les scroll bars
+         set zone(image2,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ] 
+         set zone(image2,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
+         $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ] 
+         visu1001 disp
       }
    }
 }
@@ -963,7 +963,7 @@ proc testacqfen { } {
       ::camera::alarme_sonore $confcolor(exptime)
       #--- Appel du timer
       if { $confcolor(exptime) > "1" } {
-	 ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
+         ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
       }
       #--- Attend la fin de la pose
       vwait status_cam1000
@@ -1045,9 +1045,9 @@ proc acqserie { } {
    #--- Serie d'acquisition
    for { set k 1 } { $k <= $confcolor(nombre) } { incr k } {
       if { $audace(acqvisu,ccd) == "webcam" } {
-	 testacqfen
+         testacqfen
       } else {
-	 testtotal
+         testtotal
       }
       telshift
       after 2000
@@ -1123,21 +1123,21 @@ proc testvisu { } {
       #--- Affiche l'image
       visu1000 disp $mycuts1 $mycuts2 $mycuts3
 
-   } else {     
-      set zone(image1,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ] 
-      set zone(image1,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ] 
-      #--- Statistiques pour calculer les seuils de visu 
+   } else {
+      set zone(image1,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
+      set zone(image1,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
+      #--- Statistiques pour calculer les seuils de visu
       set mycuts [ testgetseuils 1000 ]
       visu1000 cut $mycuts
       #--- Definit les limites de seuils bas et haut 
-      set lohi [ testseuillimites 1000 1 ]       
-      #--- Place les curseurs des barres de seuil au bon endroit 
+      set lohi [ testseuillimites 1000 1 ]
+      #--- Place les curseurs des barres de seuil au bon endroit
       testsetscales $lohi 1
       #--- Ajuste les scroll bars
-      $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ] 
+      $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
       #--- Affiche l'image
       visu1000 disp 
-  } 
+   }
 }
 
 proc luminosite { } {
@@ -1251,24 +1251,24 @@ proc testload { } {
    set n_buffer_couleur "1000"
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $fenetre $infos(dir) $n_buffer_couleur "1" ]
-   if { $filename != "" } {        
+   if { $filename != "" } {
       catch { $zone(image1) delete $infos(hBox) } 
       catch { set infos(dir) [ file dirname $filename ] }
       if { $infos(dir) == "" } {
-	      set infos(dir) "./"
+         set infos(dir) "./"
       } else {
-	      append infos(dir) "/"
+         append infos(dir) "/"
       }
       set error [ catch { rgb_load $filename } message ]
       if { $message == "" } {
-	      set infos(type_image) "couleur"
-	      testvisu
+         set infos(type_image) "couleur"
+         testvisu
       } else {
-	      buf1000 load $filename
-	      set infos(type_image) "noiretblanc"
-	      testvisu
+         buf1000 load $filename
+         set infos(type_image) "noiretblanc"
+         testvisu
       }
-   } 
+   }
 } 
 
 proc testsave { } { 
@@ -1284,49 +1284,49 @@ proc testsave { } {
    if { $filename != "" } { 
       catch { set infos(dir) [ file dirname $filename ] }
       if { $infos(dir) == "" } {
-	 set infos(dir) "./"
+          set infos(dir) "./"
       } else {
-	 append infos(dir) "/"
+         append infos(dir) "/"
       }
       if { $infos(type_image) == "couleur" } {
-	 for { set k 1 } { $k <= 3 } { incr k } {
-	    set kk [ expr $k-1 ]
-	    set hi [ buf100$k getkwd MIPS-HI ] 
-	    buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
-	    set lo [ buf100$k getkwd MIPS-LO ] 
-	    buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
-	 }
-	 rgb_save $filename
+         for { set k 1 } { $k <= 3 } { incr k } {
+            set kk [ expr $k-1 ]
+            set hi [ buf100$k getkwd MIPS-HI ] 
+            buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
+            set lo [ buf100$k getkwd MIPS-LO ] 
+            buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
+         }
+         rgb_save $filename
       }
       if { $infos(type_image) == "noiretblanc" } {
-	 buf1000 save $filename 
+       buf1000 save $filename 
       }
-   } 
-} 
+   }
+}
 
-proc testsaveauto { } { 
+proc testsaveauto { } {
    global confcolor 
    global infos
 
    set filename [ file join $infos(dir) $confcolor(name)$confcolor(indice) ]
    if { $filename != "" } { 
       if { $infos(type_image) == "couleur" } {
-	 for { set k 1 } { $k <= 3 } { incr k } {
-	    set kk [ expr $k-1 ]
-	    set hi [ buf100$k getkwd MIPS-HI ] 
-	    buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
-	    set lo [ buf100$k getkwd MIPS-LO ] 
-	    buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
-	 }
-	 rgb_save $filename
+         for { set k 1 } { $k <= 3 } { incr k } {
+            set kk [ expr $k-1 ]
+            set hi [ buf100$k getkwd MIPS-HI ] 
+            buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
+            set lo [ buf100$k getkwd MIPS-LO ] 
+            buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
+         }
+         rgb_save $filename
       }
       if { $infos(type_image) == "noiretblanc" } {
-	 buf1000 save $filename 
+         buf1000 save $filename 
       }
    } 
    incr confcolor(indice)
    update
-} 
+}
 
 #
 # Retourne un liste contenant le seuil haut et bas de l'image 
@@ -1566,14 +1566,14 @@ proc testboxEnd { coord } {
       set x2 [ lindex $coord2 0 ] 
       set y2 [ lindex $coord2 1 ] 
       if { $x1 > $x2 } { 
-	 set a $x1 
-	 set x1 $x2 
-	 set x2 $a 
+         set a $x1 
+         set x1 $x2 
+         set x2 $a 
       } 
       if { $y1 > $y2 } { 
-	 set a $y1 
-	 set y1 $y2 
-	 set y2 $a 
+         set a $y1 
+         set y1 $y2 
+         set y2 $a 
       } 
       catch { unset infos(box) } 
       set infos(box) [ list $x1 $y1 $x2 $y2 ] 
@@ -1626,24 +1626,24 @@ proc testjpeg { } {
    if { $filename != "" } { 
       catch { set infos(dir) [ file dirname $filename ] }
       if { $infos(dir) == "" } {
-	 set infos(dir) "./"
+         set infos(dir) "./"
       } else {
-	 append infos(dir) "/"
+         append infos(dir) "/"
       }
       if { $infos(type_image) == "couleur" } {
-	 for { set k 1 } { $k <= 3 } { incr k } {
-	    set kk [ expr $k-1 ]
-	    set hi [ buf100$k getkwd MIPS-HI ] 
-	    buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
-	    set lo [ buf100$k getkwd MIPS-LO ] 
-	    buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
-	 }
-	 rgb_save [ file join $infos(dir) rgbdummy ]
-	 fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1001 extension ]" $filename
-	 catch { file delete [ file join $infos(dir) rgbdummy ][ buf1001 extension ] }
+         for { set k 1 } { $k <= 3 } { incr k } {
+            set kk [ expr $k-1 ]
+            set hi [ buf100$k getkwd MIPS-HI ] 
+            buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
+            set lo [ buf100$k getkwd MIPS-LO ] 
+            buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
+         }
+         rgb_save [ file join $infos(dir) rgbdummy ]
+         fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1001 extension ]" $filename
+         catch { file delete [ file join $infos(dir) rgbdummy ][ buf1001 extension ] }
       }
       if { $infos(type_image) == "noiretblanc" } {
-	 buf1000 sauve_jpeg $filename 
+         buf1000 sauve_jpeg $filename 
       }
    } 
 } 
@@ -1686,21 +1686,21 @@ proc header_color { } {
       $audace(base).header_color.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
       $audace(base).header_color.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
       foreach kwd [lsort -dictionary [buf1001 getkwds]] {
-	 set liste [buf1001 getkwd $kwd]
-	 set koff 0
-	 if {[llength $liste]>5} {
-	    #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
-	    set koff [expr [llength $liste]-5]
-	 }
-	 set keyword "$kwd"
-	 if {[string length $keyword]<=8} {
-	    set keyword "[format "%8s" $keyword]"
-	 }
-	 $audace(base).header_color.slb.list insert end "$keyword " keyw
-	 $audace(base).header_color.slb.list insert end "= " egal
-	 $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
-	 $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
-	 $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
+         set liste [buf1001 getkwd $kwd]
+         set koff 0
+         if {[llength $liste]>5} {
+            #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
+            set koff [expr [llength $liste]-5]
+         }
+         set keyword "$kwd"
+         if {[string length $keyword]<=8} {
+            set keyword "[format "%8s" $keyword]"
+         }
+         $audace(base).header_color.slb.list insert end "$keyword " keyw
+         $audace(base).header_color.slb.list insert end "= " egal
+         $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
+         $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
+         $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
       label $audace(base).header_color.l -text "$caption(acqcolor,entete_fits_noimage)"
@@ -1720,25 +1720,25 @@ proc color_nb_fenetre { } {
    #--- Choix du nombre et des formats des fenetres scrollables
    if { $audace(acqvisu,ccd) != "webcam" } {
       if { $conf(color_nb_fenetre) == "0" } {
-	 set dimx1   1000
-	 set dimy1   515
+         set dimx1   1000
+         set dimy1   515
       } elseif { $conf(color_nb_fenetre) == "1" } {
-	 set dimx1   500
-	 set dimy1   515
+         set dimx1   500
+         set dimy1   515
       } elseif { $conf(color_nb_fenetre) == "2" } {
-	 set dimx1   769
-	 set dimy1   515
+         set dimx1   769
+         set dimy1   515
       }
    } else { 
       if { $conf(color_nb_fenetre) == "0" } {
-	 set dimx1   1000
-	 set dimy1   500
+         set dimx1   1000
+         set dimy1   500
       } elseif { $conf(color_nb_fenetre) == "1" } {
-	 set dimx1   500
-	 set dimy1   500
+         set dimx1   500
+         set dimy1   500
       } elseif { $conf(color_nb_fenetre) == "2" } {
-	 set dimx1   769
-	 set dimy1   500
+         set dimx1   769
+         set dimy1   500
       }
    }
    #--- Configuration des canvas scrollables

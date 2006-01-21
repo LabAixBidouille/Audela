@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune 
 # Auteur : Robert DELMAS
-# Date de mise a jour : 02 aout 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 namespace eval obj_Lune_2 {
@@ -1737,14 +1737,14 @@ namespace eval obj_Lune_2 {
 
       #--- Cree l'affichage du message
       label $audace(base).manque_cartes.lab1 -text "$caption(obj_lune2,manque_cartes_1)"
-      uplevel #0 { pack $audace(base).manque_cartes.lab1 -padx 10 -pady 2 }
+      pack $audace(base).manque_cartes.lab1 -padx 10 -pady 2
       label $audace(base).manque_cartes.labURL2 -text "$caption(obj_lune2,manque_cartes_2)" \
          -fg $fg -font $audace(font,url)
-      uplevel #0 { pack $audace(base).manque_cartes.labURL2 -padx 10 -pady 2 }
+      pack $audace(base).manque_cartes.labURL2 -padx 10 -pady 2
       label $audace(base).manque_cartes.lab3 -text "$caption(obj_lune2,manque_cartes_3)"
-      uplevel #0 { pack $audace(base).manque_cartes.lab3 -padx 10 -pady 2 }
+      pack $audace(base).manque_cartes.lab3 -padx 10 -pady 2
       label $audace(base).manque_cartes.lab4 -text "$caption(obj_lune2,manque_cartes_4)"
-      uplevel #0 { pack $audace(base).manque_cartes.lab4 -padx 10 -pady 2 }
+      pack $audace(base).manque_cartes.lab4 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).manque_cartes

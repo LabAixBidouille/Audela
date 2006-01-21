@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Date de mise a jour : 19 avril 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 namespace eval viseurPolaireTaka {
@@ -160,7 +160,7 @@ namespace eval viseurPolaireTaka {
       wm resizable $This 0 0
       wm protocol $This WM_DELETE_WINDOW ::viseurPolaireTaka::fermer
 
-	#--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame 
       set widget(This) $This
 
       #--- Creation des differents frames
@@ -190,20 +190,20 @@ namespace eval viseurPolaireTaka {
 
       #--- Texte et donnees
       label $This.lab1 -text "$caption(viseur_taka,texte)"
-	pack $This.lab1 -in $This.frame4 -anchor center -side left -padx 5 -pady 2
+      pack $This.lab1 -in $This.frame4 -anchor center -side left -padx 5 -pady 2
 
       set viseurPolaireTaka(longitude) "$conf(posobs,estouest) $conf(posobs,long)"
       label $This.labURL3 -textvariable "viseurPolaireTaka(longitude)" -font $audace(font,url) -fg $color(blue)
-	pack $This.labURL3 -in $This.frame4 -anchor center -side right -padx 5 -pady 2
+      pack $This.labURL3 -in $This.frame4 -anchor center -side right -padx 5 -pady 2
 
       label $This.lab2 -text "$caption(viseur_taka,long)"
-	pack $This.lab2 -in $This.frame4 -anchor center -side right -padx 0 -pady 2
+      pack $This.lab2 -in $This.frame4 -anchor center -side right -padx 0 -pady 2
 
       label $This.lab4 -text "$caption(viseur_taka,ah_polaire)"
-	pack $This.lab4 -in $This.frame5 -anchor center -side left -padx 5 -pady 2
+      pack $This.lab4 -in $This.frame5 -anchor center -side left -padx 5 -pady 2
 
       label $This.lab5 -anchor w
-	pack $This.lab5 -in $This.frame5 -anchor center -side left -padx 0 -pady 2
+      pack $This.lab5 -in $This.frame5 -anchor center -side left -padx 0 -pady 2
 
       #--- Creation d'un canvas pour l'affichage du viseur polaire
       canvas $This.image1_color_invariant -width [ expr $widget(viseur_polaire_taka,taille)*500 ] \
@@ -216,7 +216,7 @@ namespace eval viseurPolaireTaka {
 
       #--- Taille du viseur polaire
       label $This.lab10 -text "$caption(viseur_taka,taille)"
-   	pack $This.lab10 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab10 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
       
       #--- Definition de la taille de la raquette 
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
@@ -242,15 +242,15 @@ namespace eval viseurPolaireTaka {
                   -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_fond)}  
             }
          }
-	pack $This.but_couleur_fond_color_invariant -in $This.frame7 -anchor center -side right -padx 5 -pady 5
+      pack $This.but_couleur_fond_color_invariant -in $This.frame7 -anchor center -side right -padx 5 -pady 5
 
       #--- Couleur du fond
       label $This.lab_couleur_fond -text "$caption(viseur_taka,couleur_fond)"
-	pack $This.lab_couleur_fond -in $This.frame7 -anchor center -side right -padx 5 -pady 5
+      pack $This.lab_couleur_fond -in $This.frame7 -anchor center -side right -padx 5 -pady 5
 
       #--- Couleur du reticule
       label $This.lab_couleur_reticule -text "$caption(viseur_taka,couleur_reticule)"
-	pack $This.lab_couleur_reticule -in $This.frame8 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab_couleur_reticule -in $This.frame8 -anchor center -side left -padx 5 -pady 5
 
       #--- Choix de la couleur du reticule
       button $This.but_couleur_reticule_color_invariant -relief raised -width 6 \
@@ -265,7 +265,7 @@ namespace eval viseurPolaireTaka {
                   -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_reticule)}  
             }
          }
-	pack $This.but_couleur_reticule_color_invariant -in $This.frame8 -anchor center -side left -padx 5 -pady 5
+      pack $This.but_couleur_reticule_color_invariant -in $This.frame8 -anchor center -side left -padx 5 -pady 5
 
       #--- Choix de la couleur de la Polaire
       button $This.but_couleur_etoile_color_invariant -relief raised -width 6 \
@@ -279,11 +279,11 @@ namespace eval viseurPolaireTaka {
                   -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_etoile)}
             }
          }
-	pack $This.but_couleur_etoile_color_invariant -in $This.frame8 -anchor center -side right -padx 5 -pady 5
+      pack $This.but_couleur_etoile_color_invariant -in $This.frame8 -anchor center -side right -padx 5 -pady 5
 
       #--- Couleur de la Polaire
       label $This.lab_couleur_etoile -text "$caption(viseur_taka,couleur_etoile)"
-	pack $This.lab_couleur_etoile -in $This.frame8 -anchor center -side right -padx 5 -pady 5
+      pack $This.lab_couleur_etoile -in $This.frame8 -anchor center -side right -padx 5 -pady 5
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(viseur_taka,ok)" -width 7 -borderwidth 2 \
@@ -301,7 +301,7 @@ namespace eval viseurPolaireTaka {
       button $This.but_fermer -text "$caption(viseur_taka,fermer)" -width 7 -borderwidth 2 \
          -command { ::viseurPolaireTaka::fermer } 
       pack $This.but_fermer -in $This.frame3 -side right -anchor w -padx 3 -pady 3 -ipady 5
- 
+
       #--- Cree le bouton 'Aide' 
       button $This.but_aide -text "$caption(viseur_taka,aide)" -width 7 -borderwidth 2 \
          -command {

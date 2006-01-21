@@ -2,7 +2,7 @@
 # Fichier : trichro.tcl
 # Description : Outil pour importer une trichromie
 # Auteur : Pierre THIERRY
-# Date de mise a jour : 22 juillet 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 global audace caption conf infos
@@ -63,7 +63,7 @@ pack $audace(base).test3.frame1 \
          set title $caption(trichro,rep_images)
          set infos(dir_images) [ tk_chooseDirectory -title "$title" -initialdir "$initialdir" \
             -parent "$audace(base).test3" ]
-	   if { $infos(dir_images) == "" } {
+         if { $infos(dir_images) == "" } {
             set infos(dir_images) "$initialdir"
          }
          set infos(dir) "$infos(dir_images)"
@@ -204,9 +204,9 @@ button $audace(base).test3.but_valid \
       if { [ buf1001 imageready ] == "1" } {
          #--- Charge l'image dans 3 fichiers
          set infos(type_image) "couleur"
-	   set nomr [ file join $infos(dir) $infos(image_r) ]
+         set nomr [ file join $infos(dir) $infos(image_r) ]
          set nomv [ file join $infos(dir) $infos(image_v) ]
-	   set nomb [ file join $infos(dir) $infos(image_b) ]
+         set nomb [ file join $infos(dir) $infos(image_b) ]
          rgb_load {$nomr$conf(extension,defaut)} {$nomv$conf(extension,defaut)} {$nomb$conf(extension,defaut)}
          #--- Affiche l'image
          set infos(type_image) "couleur"

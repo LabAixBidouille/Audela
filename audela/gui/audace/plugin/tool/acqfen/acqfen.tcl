@@ -5,7 +5,7 @@
 # Avec les contributions de :
 # - François Cochard pour la partie "modes d'acquisitions" directement issue de acqfc.tcl
 # - Robert Delmas pour sa relecture attentive du script et ses corrections de bugs
-# Date de mise à jour : 10 avril 2005 ---> 18 juin 2005 ---> 11 aout 2005 ---> 03 novembre 2005
+# Date de mise à jour : 10 avril 2005 ---> 18 juin 2005 ---> 11 aout 2005 ---> 18 janvier 2006
 # Version : 1.2.1 ---> 1.2.2 ---> 1.2.3 ---> 1.2.4
 #
 
@@ -46,14 +46,6 @@ namespace eval ::acqfen {
 
       set This $this
 #--- Debut modif Robert
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(acqfen,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(acqfen,largeur_outil) "130"
-      } else {
-         set panneau(acqfen,largeur_outil) "101"
-      }
       #--- Recuperation de la derniere configuration de prise de vue
       ::acqfen::Chargement_Var
 #--- Fin modif Robert
@@ -103,17 +95,17 @@ namespace eval ::acqfen {
       set panneau(acqfen,mtx_y)           54
       
       # Valeurs initiales des coordonnées de la "boîte"
-      set panneau(acqfen,X1)			"-"
-      set panneau(acqfen,Y1)			"-"
-      set panneau(acqfen,X2)			"-"
-      set panneau(acqfen,Y2)			"-"
+      set panneau(acqfen,X1)              "-"
+      set panneau(acqfen,Y1)              "-"
+      set panneau(acqfen,X2)              "-"
+      set panneau(acqfen,Y2)              "-"
 
       # Type de zoom par défaut (scale / zoom)
-      set panneau(acqfen,typezoom)		"scale"
+      set panneau(acqfen,typezoom)        "scale"
       
       # Mode d'acquisition par défaut
 #--- Debut modif Robert
-     # set panneau(acqfen,mode)		"une"
+     # set panneau(acqfen,mode)           "une"
       if { ! [ info exists panneau(acqfen,mode) ] } {
          set panneau(acqfen,mode) "$parametres(acqfen,mode)"
       }
@@ -128,20 +120,20 @@ namespace eval ::acqfen {
       }
 #--- Fin modif Robert
 
-      set panneau(acqfen,index)		1
-      set panneau(acqfen,nb_images)		1
+      set panneau(acqfen,index)           1
+      set panneau(acqfen,nb_images)	      1
 
       set panneau(acqfen,enregistrer)     0
 
       # Réglages acquisitions série et continu par défaut
-      set panneau(acqfen,fenreglfen1)	1
-      set panneau(acqfen,fenreglfen12)	0
-      set panneau(acqfen,fenreglfen2)	1
-      set panneau(acqfen,fenreglfen22)	2
-      set panneau(acqfen,fenreglfen3)	1
-      set panneau(acqfen,fenreglfen4)	1
+      set panneau(acqfen,fenreglfen1)     1
+      set panneau(acqfen,fenreglfen12)    0
+      set panneau(acqfen,fenreglfen2)     1
+      set panneau(acqfen,fenreglfen22)    2
+      set panneau(acqfen,fenreglfen3)     1
+      set panneau(acqfen,fenreglfen4)     1
       # Pourcentage de correction des défauts de suivi (doit être compris entre 1 et 100)
-      set panneau(acqfen,fenreglfen42)	70
+      set panneau(acqfen,fenreglfen42)    70
 
       # Au début les réglages de temps de pose et de binning sont "accessibles" pour les 2 modes d'acquisition
       set panneau(acqfen,affpleinetrame)  1
@@ -152,8 +144,7 @@ namespace eval ::acqfen {
       ::acqfen::ActuAff
 
 #--- Debut modif Robert
-      place $This.mode.$panneau(acqfen,mode) -x 0 -y 24 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] \
-         -height 112 -anchor nw
+      pack $This.mode.$panneau(acqfen,mode) -anchor nw -fill x
 #--- Fin modif Robert
 
    }
@@ -206,16 +197,17 @@ namespace eval ::acqfen {
 #***** Fin de la procedure Enregistrement_Var ******************
 #--- Fin modif Robert
 
-   proc pack {} {
-      global unpackFunction
+#--- Debut modif Robert
+   proc startTool { visuNo } {
       variable This
-      set unpackFunction ::acqfen::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+
+      pack $This -side left -fill y
+#--- Fin modif Robert
    }
 
-
-   proc unpack {} {
+#--- Debut modif Robert
+   proc stopTool { visuNo } {
+#--- Fin modif Robert
       # conseil A. Klotz : ne JAMAIS modifier cette procédure !
       variable This
       global audace
@@ -231,9 +223,8 @@ namespace eval ::acqfen {
          set n1n2 [cam$audace(camNo)  nbcells]
          cam$audace(camNo) window [ list 1 1 [lindex $n1n2 0] [lindex $n1n2 1] ]
       }
+      pack forget $This
 #--- Fin modif Robert
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
    }
 
 
@@ -262,7 +253,7 @@ namespace eval ::acqfen {
       global panneau caption
       variable This
       switch -exact -- $panneau(acqfen,bin_centrage) {
-	   "3" {
+         "3" {
             set panneau(acqfen,bin_centrage) 4
             }
          "4" {
@@ -277,97 +268,85 @@ namespace eval ::acqfen {
    proc ChangeAffPleineTrame {} {
       global panneau
       variable This
-	  switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
-	  "00" {
+      switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
+        "00" {
            set panneau(acqfen,affpleinetrame) 1
-	     place forget $This.acqcentred
-	     place forget $This.acqred
-	     }
-	  "01" {
+           pack forget $This.acqcentred
+           pack forget $This.acqred
+        }
+        "01" {
            set panneau(acqfen,affpleinetrame) 1
-	     place forget $This.acqcentred
-	     place forget $This.acq
-	     }
-	  "10" {
+           pack forget $This.acqcentred
+           pack forget $This.acq
+        }
+        "10" {
            set panneau(acqfen,affpleinetrame) 0
-	     place forget $This.acqcent
-	     place forget $This.acqred
-	     }
-	  "11" {
+           pack forget $This.acqcent
+           pack forget $This.acqred
+        }
+        "11" {
            set panneau(acqfen,affpleinetrame) 0
-	     place forget $This.acqcent
-	     place forget $This.acq
-	     }
-      }         
-      place forget $This.mode
+           pack forget $This.acqcent
+           pack forget $This.acq
+        }
+      }
+      pack forget $This.mode
       acqfen::ActuAff
-   }		
+   }
      
    proc ChangeAffFenetrees {} {
       global panneau
       variable This
-	  switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
-	  "00" {
-	     set panneau(acqfen,afffenetrees) 1
-	     place forget $This.acqcentred
-	     place forget $This.acqred
-	     }
-	  "01" {
-           set panneau(acqfen,afffenetrees) 0
-	     place forget $This.acqcentred
-	     place forget $This.acq
-	     }
-	  "10" {
+      switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
+        "00" {
            set panneau(acqfen,afffenetrees) 1
-	     place forget $This.acqcent
-	     place forget $This.acqred
-	     }
+           pack forget $This.acqcentred
+           pack forget $This.acqred
+        }
+        "01" {
+           set panneau(acqfen,afffenetrees) 0
+           pack forget $This.acqcentred
+           pack forget $This.acq
+        }
+        "10" {
+           set panneau(acqfen,afffenetrees) 1
+           pack forget $This.acqcent
+           pack forget $This.acqred
+        }
         "11" {
-	     set panneau(acqfen,afffenetrees) 0
-	     place forget $This.acqcent
-	     place forget $This.acq
-	     }
-      }         
-      place forget $This.mode
+           set panneau(acqfen,afffenetrees) 0
+           pack forget $This.acqcent
+           pack forget $This.acq
+        }
+      }
+      pack forget $This.mode
       acqfen::ActuAff
    }
 
    proc ActuAff {} {  
-	  global panneau
-	  variable This
+     global panneau
+     variable This
 #--- Debut modif Robert
-	  switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
-	  00 {
-           place $This.acqcentred -x 4 -y 28 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 50 -anchor nw \
-              -bordermode ignore
-           place $This.acqred -x 4 -y 81 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 135 -anchor nw \
-              -bordermode ignore
-           place $This.mode -x 4 -y 219 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 141 -anchor nw \
-              -bordermode ignore
+     switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
+       00 {
+           pack $This.acqcentred -side top -fill x
+           pack $This.acqred -side top -fill x
+           pack $This.mode -side top -fill x
          }
-	  01 {
-           place $This.acqcentred -x 4 -y 28 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 50 -anchor nw \
-              -bordermode ignore
-           place $This.acq -x 4 -y 81 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 185 -anchor nw \
-              -bordermode ignore
-           place $This.mode -x 4 -y 268 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 141 -anchor nw \
-              -bordermode ignore
+       01 {
+           pack $This.acqcentred -side top -fill x
+           pack $This.acq -side top -fill x
+           pack $This.mode -side top -fill x
          }
-	  10 {
-           place $This.acqcent -x 4 -y 28 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 105 -anchor nw \
-              -bordermode ignore
-           place $This.acqred -x 4 -y 136 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 135 -anchor nw \
-              -bordermode ignore
-           place $This.mode -x 4 -y 274 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 141 -anchor nw \
-              -bordermode ignore
+       10 {
+           pack $This.acqcent -side top -fill x
+           pack $This.acqred -side top -fill x
+           pack $This.mode -side top -fill x
          }
-	  11 {
-           place $This.acqcent -x 4 -y 28 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 105 -anchor nw \
-              -bordermode ignore
-           place $This.acq -x 4 -y 136 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 185 -anchor nw \
-              -bordermode ignore
-           place $This.mode -x 4 -y 324 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 141 -anchor nw \
-              -bordermode ignore
+       11 {
+           pack $This.acqcent -side top -fill x
+           pack $This.acq -side top -fill x
+           pack $This.mode -side top -fill x
          }
       }
 #--- Fin modif Robert
@@ -383,16 +362,17 @@ namespace eval ::acqfen {
 
       switch -exact -- $panneau(acqfen,go_stop_cent) {
       "go" {
-	   # Modification du bouton, pour éviter un second lancement
+         # Modification du bouton, pour éviter un second lancement
          set panneau(acqfen,go_stop_cent) stop
          $This.acqcent.but configure -text $caption(acqfen,stop)
-         $This.acqcentred.but configure -text $caption(acqfen,stop)   
+         $This.acqcentred.but configure -text $caption(acqfen,stop)
 
          #--- Suppression de la zone selectionnee avec la souris
-         catch {
-            unset audace(box)
-            $audace(hCanvas) delete $audace(hBox)
+#--- Debut modif Robert
+         if { [ lindex [ list [ ::confVisu::getBox ] ] 0 ] != "" } {
+            ::confVisu::deleteBox
          }
+#--- Fin modif Robert
 
          #--- Mise a jour en-tête audace
          wm title $audace(base) "$caption(acqfen,audace)"
@@ -434,12 +414,16 @@ namespace eval ::acqfen {
             buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
             }
          
-         #--- Visualisation de l'image
-         image delete image0
-         image create photo image0
+#--- Debut modif Robert
+###         #--- Visualisation de l'image
+###         image delete image0
+###         image create photo image0
+#--- Fin modif Robert
 
          #--- Affichage avec visu auto.
-         audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+         audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
               
          # On restitue l'affichage du bouton "GO":
          set panneau(acqfen,go_stop_cent) go
@@ -469,7 +453,7 @@ namespace eval ::acqfen {
          #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
          ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
 #--- Fin modif Robert
-	   #--- Arret de la pose
+         #--- Arret de la pose
          catch { cam$audace(camNo) stop }
          after 200
          }         
@@ -505,25 +489,28 @@ namespace eval ::acqfen {
         set panneau(acqfen,demande_arret) 0
 
         #--- Suppression de la zone selectionnee avec la souris
-        catch {
-          unset audace(box)
-          $audace(hCanvas) delete $audace(hBox)
-          }
+#--- Debut modif Robert
+        if { [ lindex [ list [ ::confVisu::getBox ] ] 0 ] != "" } {
+           ::confVisu::deleteBox
+        }
+#--- Fin modif Robert
 
         #--- Mise a jour en-tête audace
         wm title $audace(base) "$caption(acqfen,audace)"
 
         switch -exact -- $panneau(acqfen,mode) {
-	    "une" {
+        "une" {
           set panneau(acqfen,enregistrer) 0
           acqfen::acq_acqfen
           #--- Affichage avec visu auto
-          audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+          audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
           }
         "serie" {
-	    # On vérifie l'intégrité des paramètres d'entrée :
-	      
-	    # On vérifie qu'il y a bien un nom de fichier
+          # On vérifie l'intégrité des paramètres d'entrée :
+
+          # On vérifie qu'il y a bien un nom de fichier
           if {$panneau(acqfen,nom_image) == ""} {
             tk_messageBox -title $caption(acqfen,pb) -type ok \
              -message $caption(acqfen,donnomfich)
@@ -562,8 +549,8 @@ namespace eval ::acqfen {
           # On vérifie que l'index existe
           if {$panneau(acqfen,index) == ""} {
             tk_messageBox -title $caption(acqfen,pb) -type ok \
-   	       -message $caption(acqfen,saisind)
-   	      # On restitue l'affichage du bouton "GO" :
+             -message $caption(acqfen,saisind)
+            # On restitue l'affichage du bouton "GO" :
             set panneau(acqfen,go_stop) go
             $This.acq.but configure -text $caption(acqfen,GO)
 #--- Debut modif Robert
@@ -600,8 +587,8 @@ namespace eval ::acqfen {
           # On vérifie que le nombre d'images à faire existe
           if {$panneau(acqfen,nb_images) == ""} {
             tk_messageBox -title $caption(acqfen,pb) -type ok \
-   	       -message $caption(acqfen,saisnbim)
-   	      # On restitue l'affichage du bouton "GO" :
+             -message $caption(acqfen,saisnbim)
+            # On restitue l'affichage du bouton "GO" :
             set panneau(acqfen,go_stop) go
             $This.acq.but configure -text $caption(acqfen,GO)
 #--- Debut modif Robert
@@ -642,13 +629,15 @@ namespace eval ::acqfen {
 #--- Fin modif Robert
 
           switch -exact -- $panneau(acqfen,fenreglfen2)$panneau(acqfen,fenreglfen3) {
-	      "11" {
-		   for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-			if {$panneau(acqfen,demande_arret)==1} {break}
-			# Acquisition
+          "11" {
+             for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+               if {$panneau(acqfen,demande_arret)==1} {break}
+                  # Acquisition
                   acqfen::acq_acqfen
                   # Affichage avec visu auto
-                  audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                  audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                   # Sauvegarde de l'image
                   set nom $panneau(acqfen,nom_image)
                   # Pour éviter un nom de fichier qui commence par un blanc :
@@ -674,17 +663,19 @@ namespace eval ::acqfen {
                   }
                }
             "21" {
-	         set nbint 1
-		   for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-			if {$panneau(acqfen,demande_arret)==1} {break}
-			# Acquisition
+              set nbint 1
+              for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                if {$panneau(acqfen,demande_arret)==1} {break}
+                  # Acquisition
                   acqfen::acq_acqfen                                    
                   # Affichage éventuel
                   if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                     audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                     audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                      set nbint 1
                   } else {
-	               incr nbint
+                     incr nbint
                      }
                   # Sauvegarde de l'image
                   set nom $panneau(acqfen,nom_image)
@@ -709,11 +700,11 @@ namespace eval ::acqfen {
                   # Corrections éventuelles de suivi
                   if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
                   }
-               }	            
-		"31" {
-		   for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-			if {$panneau(acqfen,demande_arret)==1} {break}
-			# Acquisition
+               }
+            "31" {
+              for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                 if {$panneau(acqfen,demande_arret)==1} {break}
+                  # Acquisition
                   acqfen::acq_acqfen                                    
                   # Sauvegarde de l'image
                   set nom $panneau(acqfen,nom_image)
@@ -739,16 +730,20 @@ namespace eval ::acqfen {
                   if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
                   }
                # Affichage avec visu auto
-               audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+               audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                }	            
-	      "12" {
-		   set liste_buffers ""
-		   for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-		      if {$panneau(acqfen,demande_arret)==1} {break}
-		      # Acquisition
+            "12" {
+              set liste_buffers ""
+              for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                if {$panneau(acqfen,demande_arret)==1} {break}
+                  # Acquisition
                   acqfen::acq_acqfen
                   # Affichage avec visu auto
-                  audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                  audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                   # Sauvegarde temporaire de l'image
                   set buftmp [buf::create]
                   buf$audace(bufNo) copyto $buftmp
@@ -783,18 +778,20 @@ namespace eval ::acqfen {
                foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
                }
             "22" {
-		   set liste_buffers ""
-	         set nbint 1
-		   for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-			if {$panneau(acqfen,demande_arret)==1} {break}
-			# Acquisition
+              set liste_buffers ""
+              set nbint 1
+              for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                if {$panneau(acqfen,demande_arret)==1} {break}
+                  # Acquisition
                   acqfen::acq_acqfen                                    
                   # Affichage éventuel
                   if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                     audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                     audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                      set nbint 1
                   } else {
-	                 incr nbint
+                     incr nbint
                      }
                   # Sauvegarde temporaire de l'image
                   set buftmp [buf::create]
@@ -828,12 +825,12 @@ namespace eval ::acqfen {
                   }
                # On libère les buffers temporaires
                foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
-               }	            
-		"32" {
-		   set liste_buffers ""
-		   for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-			if {$panneau(acqfen,demande_arret)==1} {break}
-			# Acquisition
+               }
+            "32" {
+              set liste_buffers ""
+              for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                if {$panneau(acqfen,demande_arret)==1} {break}
+                  # Acquisition
                   acqfen::acq_acqfen                                    
                   # Sauvegarde temporaire de l'image
                   set buftmp [buf::create]
@@ -866,16 +863,18 @@ namespace eval ::acqfen {
                   saveima [append nom [lindex $ima 1]]                  
                   }               
                # Affichage avec visu auto
-               audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+               audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                }
                # On libère les buffers temporaires
                foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
             }               
             }
          "continu" {
-	      # On vérifie l'intégrité des paramètres d'entrée :
-	      
-	      # On vérifie qu'il y a bien un nom de fichier
+           # On vérifie l'intégrité des paramètres d'entrée :
+
+            # On vérifie qu'il y a bien un nom de fichier
             if {$panneau(acqfen,nom_image) == ""} {
                tk_messageBox -title $caption(acqfen,pb) -type ok \
                 -message $caption(acqfen,donnomfich)
@@ -914,8 +913,8 @@ namespace eval ::acqfen {
             # On vérifie que l'index existe
             if {$panneau(acqfen,index) == ""} {
                tk_messageBox -title $caption(acqfen,pb) -type ok \
-   	          -message $caption(acqfen,saisind)
-   	         # On restitue l'affichage du bouton "GO" :
+                -message $caption(acqfen,saisind)
+               # On restitue l'affichage du bouton "GO" :
                set panneau(acqfen,go_stop) go
                $This.acq.but configure -text $caption(acqfen,GO)
 #--- Debut modif Robert
@@ -968,12 +967,14 @@ namespace eval ::acqfen {
 #--- Fin modif Robert
             
             switch -exact -- $panneau(acqfen,fenreglfen2)$panneau(acqfen,fenreglfen3) {
-	        "11" {
-		     while {$panneau(acqfen,demande_arret)==0} {
-		        # Acquisition
+               "11" {
+                  while {$panneau(acqfen,demande_arret)==0} {
+                    # Acquisition
                     acqfen::acq_acqfen
                     # Affichage avec visu auto
-                    audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                    audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                     # Si demandé, sauvegarde de l'image
                     if {$panneau(acqfen,enregistrer)==1} {
                        set nom $panneau(acqfen,nom_image)
@@ -1001,16 +1002,18 @@ namespace eval ::acqfen {
                  }
               }
               "21" {
-	           set nbint 1
-		     while {$panneau(acqfen,demande_arret)==0} {
-		        # Acquisition
+                 set nbint 1
+                 while {$panneau(acqfen,demande_arret)==0} {
+                   # Acquisition
                     acqfen::acq_acqfen                                    
                     # Affichage éventuel
                     if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                       audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                      audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                        set nbint 1
                     } else {
-	                 incr nbint
+                       incr nbint
                        }
                     # Si demandé, sauvegarde de l'image
                     if {$panneau(acqfen,enregistrer)==1} {
@@ -1037,10 +1040,10 @@ namespace eval ::acqfen {
                     # Corrections éventuelles de suivi
                     if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
                  }
-              }	            
-		  "31" {
-		     while {$panneau(acqfen,demande_arret)==0} {
-		        # Acquisition
+              }
+              "31" {
+                  while {$panneau(acqfen,demande_arret)==0} {
+                    # Acquisition
                     acqfen::acq_acqfen     
                     # Si demandé, sauvegarde de l'image
                     if {$panneau(acqfen,enregistrer)==1} {
@@ -1068,15 +1071,19 @@ namespace eval ::acqfen {
                     if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
                  }
                  # Affichage avec visu auto
-                 audace::autovisu visu$audace(visuNo)
-              }	            
-	        "12" {
-		     set liste_buffers ""
-		     while {$panneau(acqfen,demande_arret)==0} {
-			  # Acquisition
+#--- Debut modif Robert
+                 audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
+              }
+              "12" {
+                  set liste_buffers ""
+                  while {$panneau(acqfen,demande_arret)==0} {
+                    # Acquisition
                     acqfen::acq_acqfen
                     # Affichage avec visu auto
-                    audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                    audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                     # Si demandé, sauvegarde temporaire de l'image
                     if {$panneau(acqfen,enregistrer)==1} {                  
                        set buftmp [buf::create]
@@ -1111,16 +1118,18 @@ namespace eval ::acqfen {
                  }
               }
               "22" {
-	           set nbint 1
-		     while {$panneau(acqfen,demande_arret)==0} {
-		        # Acquisition
+                  set nbint 1
+                  while {$panneau(acqfen,demande_arret)==0} {
+                    # Acquisition
                     acqfen::acq_acqfen                                    
                     # Affichage éventuel
                     if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                       audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                       audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                        set nbint 1
                     } else {
-	                 incr nbint
+                       incr nbint
                        }
                     # Si demandé, sauvegarde temporaire de l'image
                     if {$panneau(acqfen,enregistrer)==1} {                     
@@ -1155,9 +1164,9 @@ namespace eval ::acqfen {
                     saveima [append nom [lindex $ima 1]]                  
                  }
               }
-		  "32" {
-		     while {$panneau(acqfen,demande_arret)==0} {
-		        # Acquisition
+              "32" {
+                  while {$panneau(acqfen,demande_arret)==0} {
+                    # Acquisition
                     acqfen::acq_acqfen
                     # Si demandé, sauvegarde temporaire de l'image
                     if {$panneau(acqfen,enregistrer)==1} {                                
@@ -1192,7 +1201,9 @@ namespace eval ::acqfen {
                        saveima [append nom [lindex $ima 1]]                  
                     }               
                     # Affichage avec visu auto
-                    audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                    audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                  }               
               }
             }       
@@ -1205,7 +1216,7 @@ namespace eval ::acqfen {
 #--- Fin modif Robert
          }
       "stop" {
-	   # On positionne un indicateur de demande d'arrêt
+         # On positionne un indicateur de demande d'arrêt
          set panneau(acqfen,demande_arret) 1
 #--- Debut modif Robert
          #--- Annulation de l'alarme de fin de pose
@@ -1238,16 +1249,16 @@ namespace eval ::acqfen {
 
       #--- La commande window permet de fixer le fenêtrage de numérisation du CCD
       if {$panneau(acqfen,X1) == "-"} {
-	   cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
+         cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
       } else {
-	   cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
+         cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
          $panneau(acqfen,X2) $panneau(acqfen,Y2)]
       }
 
       #--- Acquisition
       if {$panneau(acqfen,fenreglfen1)=="1"} {
-	   # Acquisitions avec nombre d'effacements préalables par défaut
-	   #--- La commande exptime permet de fixer le temps de pose de l'image.
+         # Acquisitions avec nombre d'effacements préalables par défaut
+         #--- La commande exptime permet de fixer le temps de pose de l'image.
          cam$audace(camNo) exptime $panneau(acqfen,pose)
 #--- Debut modif Robert
          #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
@@ -1267,36 +1278,41 @@ namespace eval ::acqfen {
          ::camera::gestionPose $panneau(acqfen,pose) 1 cam$audace(camNo) buf$audace(bufNo)
 #--- Fin modif Robert
       } else {
-	   for {set k 1} {$k<=$panneau(acqfen,fenreglfen12)} {incr k} {cam$audace(camNo) wipe}
+         for {set k 1} {$k<=$panneau(acqfen,fenreglfen12)} {incr k} {cam$audace(camNo) wipe}
          after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
       }
-         
-      #--- Chargement de l'image dans le buffer Aud'ACE
-      image delete image0
-      image create photo image0
+
+#--- Debut modif Robert
+###      #--- Chargement de l'image dans le buffer Aud'ACE
+###      image delete image0
+###      image create photo image0
+#--- Fin modif Robert
    }
 
 
    # Procédures d'actualisation des coordonnées
-   proc ActuCoord {} {
-	  global audace caption panneau
-	  variable This
-	  if {[info exists audace(box)]} {
-           if {[lindex $audace(box) 0]<[lindex $audace(box) 2]} {
-	        set panneau(acqfen,X1) [lindex $audace(box) 0]
-              set panneau(acqfen,X2) [lindex $audace(box) 2]
+#--- Debut modif Robert
+   proc ActuCoord { { visuNo "1" } } {
+      global audace caption panneau
+      variable This
+      set box [ ::confVisu::getBox $visuNo ]
+      if { $box != "" } {
+           if {[lindex $box 0]<[lindex $box 2]} {
+              set panneau(acqfen,X1) [lindex $box 0]
+              set panneau(acqfen,X2) [lindex $box 2]
            } else {
-	        set panneau(acqfen,X1) [lindex $audace(box) 2]
-              set panneau(acqfen,X2) [lindex $audace(box) 0]
+              set panneau(acqfen,X1) [lindex $box 2]
+              set panneau(acqfen,X2) [lindex $box 0]
               }
-	     if {[lindex $audace(box) 1]<[lindex $audace(box) 3]} {
-	        set panneau(acqfen,Y1) [lindex $audace(box) 1]
-              set panneau(acqfen,Y2) [lindex $audace(box) 3]
+           if {[lindex $box 1]<[lindex $box 3]} {
+              set panneau(acqfen,Y1) [lindex $box 1]
+              set panneau(acqfen,Y2) [lindex $box 3]
            } else {
-	        set panneau(acqfen,Y1) [lindex $audace(box) 3]
-              set panneau(acqfen,Y2) [lindex $audace(box) 1]
+              set panneau(acqfen,Y1) [lindex $box 3]
+              set panneau(acqfen,Y2) [lindex $box 1]
               }
-                      
+#--- Fin modif Robert
+
            set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
            $This.acq.matrice_color_invariant.fen config  -height $hauteur \
             -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
@@ -1323,27 +1339,27 @@ namespace eval ::acqfen {
       variable This
 
       switch -exact -- $panneau(acqfen,mode) {
-	   "une" {
-	      # On efface  l'ancien sous-panneau
-            place forget $This.mode.une
+         "une" {
+            # On efface  l'ancien sous-panneau
+            pack forget $This.mode.une -fill x
             # On met le nouveau à sa place
-            place $This.mode.serie -x 0 -y 24 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 112 -anchor nw
+            pack $This.mode.serie -fill x -anchor nw
             $This.mode.but configure -text $caption(acqfen,serie)
             set panneau(acqfen,mode) "serie"
             }
          "serie" {
-	      # On efface  l'ancien sous-panneau
-            place forget $This.mode.serie
+            # On efface  l'ancien sous-panneau
+            pack forget $This.mode.serie -fill x
             # On met le nouveau à sa place
-            place $This.mode.continu -x 0 -y 24 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 112 -anchor nw
+            pack $This.mode.continu -fill x -anchor nw
             $This.mode.but configure -text $caption(acqfen,continu)         
             set panneau(acqfen,mode) "continu"
             }
          "continu" {
-	      # On efface  l'ancien sous-panneau
-            place forget $This.mode.continu
+            # On efface  l'ancien sous-panneau
+            pack forget $This.mode.continu -fill x
             # On met le nouveau à sa place
-            place $This.mode.une -x 0 -y 24 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 112 -anchor nw
+            pack $This.mode.une -fill x -anchor nw
             $This.mode.but configure -text $caption(acqfen,uneimage)         
             set panneau(acqfen,mode) "une"
             }
@@ -1417,7 +1433,7 @@ namespace eval ::acqfen {
          # Vérifie que l'index existe
          if {$panneau(acqfen,index) == ""} {
             tk_messageBox -title $caption(acqfen,pb) -type ok \
-   	         -message $caption(acqfen,saisind)
+               -message $caption(acqfen,saisind)
             return
             }
          # Verifier que l'index est bien un nombre entier
@@ -1470,7 +1486,7 @@ namespace eval ::acqfen {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[0-9]} $a]} {
+         if {![string match {[0-9]} $a]} {
             set test 0
             }
          }
@@ -1486,7 +1502,7 @@ namespace eval ::acqfen {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[-a-zA-Z0-9_]} $a]} {
+         if {![string match {[-a-zA-Z0-9_]} $a]} {
             set test 0
             }
          }
@@ -1507,7 +1523,7 @@ namespace eval ::acqfen {
       ::acqfen::recup_position
       set conf(fenreglfen,position)    $panneau(acqfen,position)
       #---
-	destroy $audace(base).fenreglfen
+      destroy $audace(base).fenreglfen
    }
 
 #---Procédure de récupération de la position de la fenêtre de réglage
@@ -1519,7 +1535,7 @@ namespace eval ::acqfen {
       set deb [ expr 1 + [ string first + $panneau(acqfen,geometry) ] ]
       set fin [ string length $panneau(acqfen,geometry) ]
       set panneau(acqfen,position) "+[string range $panneau(acqfen,geometry) $deb $fin]"     
-   }	
+   }
 
 }
 
@@ -1538,19 +1554,19 @@ global audace panneau caption color
 
 #--- Trame du panneau
 
-frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -relief groove
- 
+frame $This -borderwidth 2 -relief groove
+
    #--- Trame du titre panneau
 #--- Debut modif Robert
    frame $This.titre -borderwidth 2 -relief groove
-   place $This.titre -x 4 -y 4 -width [ expr $panneau(acqfen,largeur_outil) - 9 ] -height 22 -anchor nw -bordermode ignore
+   pack $This.titre -side top -fill x
 #--- Fin modif Robert
 
    Button $This.titre.but -borderwidth 1 -text $caption(acqfen,titre_fenetrees) \
       -command {
          ::audace::showHelpPlugin tool acqfen acqfen.htm
       }
-   pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top
+   pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
    DynamicHelp::add $This.titre.but -text $caption(acqfen,help_titre)
 
    bind $This.titre.but <ButtonPress-3> { Creefenreglfen }
@@ -1563,7 +1579,7 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       #--- Sous-titre "acquisition pleine trame"
       button $This.acqcent.titre -text $caption(acqfen,titre_centrage) \
          -command {::acqfen::ChangeAffPleineTrame} -borderwidth 0
-      pack $This.acqcent.titre -expand true -fill x
+      pack $This.acqcent.titre -expand true -fill x -pady 2
       
       #--- Sous-trame pour temps de pose
       frame $This.acqcent.pose -borderwidth 1 -height 77 -relief groove
@@ -1586,7 +1602,7 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
          pack $This.acqcent.pose.sec -side right
 
          #--- Ligne de saisie du temps de pose
-         entry $This.acqcent.pose.pose_ent -font $audace(font,arial_8_b) -width 10 \
+         entry $This.acqcent.pose.pose_ent -font $audace(font,arial_8_b) -width 4 \
             -textvariable panneau(acqfen,pose_centrage) -relief groove -justify center
          pack $This.acqcent.pose.pose_ent -side left -fill y
 
@@ -1601,7 +1617,7 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       button $This.acqcent.but -text $caption(acqfen,GO) -font $audace(font,arial_12_b) -borderwidth 3 \
          -command ::acqfen::GoStopCent
       pack $This.acqcent.but -expand true -fill both
-      
+
    #--- Trame acquisition centrage (version réduite)
 #--- Debut modif Robert
    frame $This.acqcentred -borderwidth 1 -relief groove
@@ -1610,13 +1626,13 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       #--- Sous-titre "acquisition pleine trame"
       button $This.acqcentred.titre -text $caption(acqfen,titre_centrage) \
          -command {::acqfen::ChangeAffPleineTrame} -borderwidth 0
-      pack $This.acqcentred.titre -expand true -fill x
+      pack $This.acqcentred.titre -expand true -fill x -pady 2
       
       #--- Bouton Go/Stop
       button $This.acqcentred.but -text $caption(acqfen,GO) -font $audace(font,arial_12_b) -borderwidth 3 \
          -command ::acqfen::GoStopCent
       pack $This.acqcentred.but -expand true -fill both            
-      
+
    #--- Trame acquisition (version complète)
 #--- Debut modif Robert
    frame $This.acq -borderwidth 1 -relief groove
@@ -1625,7 +1641,7 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       #--- Sous-titre "acquisitions fenêtrées"
       button $This.acq.titre -text $caption(acqfen,titre_fenetrees) \
          -command {::acqfen::ChangeAffFenetrees} -borderwidth 0
-      pack $This.acq.titre -expand true -fill x
+      pack $This.acq.titre -expand true -fill x -pady 2
 
       #--- Sous-trame pour temps de pose
       frame $This.acq.pose -borderwidth 1 -height 77 -relief groove
@@ -1648,7 +1664,7 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
          pack $This.acq.pose.sec -side right
 
          #--- Ligne de saisie du temps de pose
-         entry $This.acq.pose.pose_ent -font $audace(font,arial_8_b) -width 10 \
+         entry $This.acq.pose.pose_ent -font $audace(font,arial_8_b) -width 4 \
             -textvariable panneau(acqfen,pose) -relief groove -justify center
          pack $This.acq.pose.pose_ent -side left -fill y
 
@@ -1666,12 +1682,12 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       frame $This.acq.matrice_color_invariant.fen -bg $color(cyan) -height $panneau(acqfen,mtx_y) \
          -width $panneau(acqfen,mtx_x)
       pack $This.acq.matrice_color_invariant.fen 
-      
+
       #--- Bouton Go/Stop
       button $This.acq.but -text $caption(acqfen,actuxy) -font $audace(font,arial_12_b) -borderwidth 3 \
          -command {::acqfen::ActuCoord}        
       pack $This.acq.but -expand true -fill both
-      
+
    #--- Trame acquisition (version réduite)
 #--- Debut modif Robert
    frame $This.acqred -borderwidth 1 -relief groove
@@ -1680,8 +1696,8 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       #--- Sous-titre "acquisitions fenêtrées"
       button $This.acqred.titre -text $caption(acqfen,titre_fenetrees) \
          -command {::acqfen::ChangeAffFenetrees} -borderwidth 0
-      pack $This.acqred.titre -expand true -fill x
-      
+      pack $This.acqred.titre -expand true -fill x -pady 2
+
       #--- Représentation matrice CCD
       frame $This.acqred.matrice_color_invariant -bg $color(blue) -height $panneau(acqfen,mtx_y) \
          -width $panneau(acqfen,mtx_x)
@@ -1689,7 +1705,7 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
       frame $This.acqred.matrice_color_invariant.fen -bg $color(cyan) -height $panneau(acqfen,mtx_y) \
          -width $panneau(acqfen,mtx_x)
       pack $This.acqred.matrice_color_invariant.fen
-     
+
       #--- Bouton Go/Stop
       button $This.acqred.but -text $caption(acqfen,actuxy) -font $audace(font,arial_12_b) -borderwidth 3 \
          -command {::acqfen::ActuCoord}
@@ -1697,20 +1713,17 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
 
    #--- Trame du mode d'acquisition
    frame $This.mode -borderwidth 2 -relief groove
-   
+
 #--- Debut modif Robert
-     # button $This.mode.but -text $caption(acqfen,uneimage) -font $audace(font,arial_10_b) \
-     #    -command ::acqfen::ChangeMode
-     # place $This.mode.but -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 24 -anchor nw
       button $This.mode.but -text $panneau(acqfen,bouton_mode) -font $audace(font,arial_10_b) \
          -command ::acqfen::ChangeMode
-      place $This.mode.but -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 24 -anchor nw
+      pack $This.mode.but -expand true -fill both
 #--- Debut modif Robert
 
       # Définition du sous-panneau "Mode: Une seule image"
       frame $This.mode.une -borderwidth 0
 #--- Debut modif Robert
-     # place $This.mode.une -x 0 -y 24 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 112 -anchor nw
+     ### pack $This.mode.une -fill x -anchor nw
 #--- Debut modif Robert
 
          frame $This.mode.une.nom -relief ridge -borderwidth 2
@@ -1719,24 +1732,21 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
             entry $This.mode.une.nom.entr -width 10 -textvariable panneau(acqfen,nom_image) \
                -font $audace(font,arial_10_b) -relief groove
             pack $This.mode.une.nom.entr -fill x -side top
-         place $This.mode.une.nom -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 42 -anchor nw
+         pack $This.mode.une.nom -expand true -fill both
          frame $This.mode.une.index -relief ridge -borderwidth 2
             checkbutton $This.mode.une.index.case -pady 0 -text $caption(acqfen,index)\
                -variable panneau(acqfen,indexer)
-            place $This.mode.une.index.case -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 18 ] -height 18 \
-               -anchor nw
+            pack $This.mode.une.index.case -expand true -fill both
             entry $This.mode.une.index.entr -width 3 -textvariable panneau(acqfen,index) \
                -font $audace(font,arial_10_b) -relief groove -justify center 
-            place $This.mode.une.index.entr -x 0 -y 18 -width [ expr $panneau(acqfen,largeur_outil) - 38 ] -height 24 \
-               -anchor nw
-            button $This.mode.une.index.but -text "1" -command {set panneau(acqfen,index) 1}
-            place $This.mode.une.index.but -x [ expr $panneau(acqfen,largeur_outil) - 38 ] -y 18 -width 20 -height 24 \
-               -anchor nw
-         place $This.mode.une.index -x 0 -y 42 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 46 -anchor nw
+            pack $This.mode.une.index.entr -side left -fill x -expand true
+            button $This.mode.une.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
+            pack $This.mode.une.index.but -side right -fill x
+         pack $This.mode.une.index -expand true -fill both
          button $This.mode.une.sauve -text $caption(acqfen,sauvegde) \
             -command ::acqfen::SauveUneImage 
-         place $This.mode.une.sauve -x 0 -y 88 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 24 -anchor nw
-     
+         pack $This.mode.une.sauve -expand true -fill both
+
       # Définition du sous-panneau "Mode: Serie d'image"
       frame $This.mode.serie -borderwidth 0
          frame $This.mode.serie.nom -relief ridge -borderwidth 2
@@ -1745,56 +1755,47 @@ frame $This -borderwidth 2 -height 75 -width $panneau(acqfen,largeur_outil) -rel
             entry $This.mode.serie.nom.entr -width 10 -textvariable panneau(acqfen,nom_image) \
                -font $audace(font,arial_10_b) -relief groove
             pack $This.mode.serie.nom.entr -fill x
-         place $This.mode.serie.nom -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 42 -anchor nw
+         pack $This.mode.serie.nom -expand true -fill both
          frame $This.mode.serie.nb -relief ridge -borderwidth 2
             label $This.mode.serie.nb.but -text $caption(acqfen,nombre) -pady 0
             pack $This.mode.serie.nb.but -side left -fill y
             entry $This.mode.serie.nb.entr -width 3 -textvariable panneau(acqfen,nb_images) \
                -font $audace(font,arial_10_b) -relief groove -justify center
             pack $This.mode.serie.nb.entr -side left -fill x -expand true
-         place $This.mode.serie.nb -x 0 -y 42 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 24 -anchor nw
+         pack $This.mode.serie.nb -expand true -fill both
          frame $This.mode.serie.index -relief ridge -borderwidth 2
             label $This.mode.serie.index.lab -text $caption(acqfen,index) -pady 0
-            place $This.mode.serie.index.lab -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 18 ] -height 18 \
-               -anchor nw
+            pack $This.mode.serie.index.lab -expand true -fill both
             entry $This.mode.serie.index.entr -width 3 -textvariable panneau(acqfen,index) \
                -font $audace(font,arial_10_b) -relief groove -justify center 
-            place $This.mode.serie.index.entr -x 0 -y 18 -width [ expr $panneau(acqfen,largeur_outil) - 38 ] -height 24 \
-               -anchor nw
-            button $This.mode.serie.index.but -text "1" -command {set panneau(acqfen,index) 1}
-            place $This.mode.serie.index.but -x [ expr $panneau(acqfen,largeur_outil) - 38 ] -y 18 -width 20 -height 24 \
-               -anchor nw
-         place $This.mode.serie.index -x 0 -y 66 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 46 -anchor nw
-         
+            pack $This.mode.serie.index.entr -side left -fill x -expand true
+            button $This.mode.serie.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
+            pack $This.mode.serie.index.but -side right -fill x
+         pack $This.mode.serie.index -expand true -fill both
+
       # Définition du sous-panneau "Mode: Continu"
       frame $This.mode.continu -borderwidth 0
          frame $This.mode.continu.sauve -relief ridge -borderwidth 2
             checkbutton $This.mode.continu.sauve.case -text $caption(acqfen,enregistrer) \
                -variable panneau(acqfen,enregistrer)
             pack $This.mode.continu.sauve.case -side left -fill x  -expand true
-         place $This.mode.continu.sauve -x 0 -y 0  -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 24 \
-            -anchor nw
+         pack $This.mode.continu.sauve -expand true -fill both
          frame $This.mode.continu.nom -relief ridge -borderwidth 2
             label $This.mode.continu.nom.but -text $caption(acqfen,nom) -pady 0
             pack $This.mode.continu.nom.but -fill x
             entry $This.mode.continu.nom.entr -width 10 -textvariable panneau(acqfen,nom_image) \
                -font $audace(font,arial_10_b) -relief groove
             pack $This.mode.continu.nom.entr -fill x
-         place $This.mode.continu.nom -x 0 -y 24 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 42 \
-            -anchor nw
+         pack $This.mode.continu.nom -expand true -fill both
          frame $This.mode.continu.index -relief ridge -borderwidth 2
             label $This.mode.continu.index.lab -text $caption(acqfen,index) -pady 0
-            place $This.mode.continu.index.lab -x 0 -y 0 -width [ expr $panneau(acqfen,largeur_outil) - 18 ] -height 18 \
-               -anchor nw
+            pack $This.mode.continu.index.lab -expand true -fill both
             entry $This.mode.continu.index.entr -width 3 -textvariable panneau(acqfen,index) \
                -font $audace(font,arial_10_b) -relief groove -justify center
-            place $This.mode.continu.index.entr -x 0 -y 18 -width [ expr $panneau(acqfen,largeur_outil) - 38 ] -height 24 \
-               -anchor nw
-            button $This.mode.continu.index.but -text "1" -command {set panneau(acqfen,index) 1}
-            place $This.mode.continu.index.but -x [ expr $panneau(acqfen,largeur_outil) - 38 ] -y 18 -width 20 -height 24 \
-               -anchor nw
-         place $This.mode.continu.index -x 0 -y 66 -width [ expr $panneau(acqfen,largeur_outil) - 14 ] -height 46 \
-            -anchor nw
+            pack $This.mode.continu.index.entr -side left -fill x -expand true
+            button $This.mode.continu.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
+            pack $This.mode.continu.index.but -side right -fill x
+         pack $This.mode.continu.index -expand true -fill both
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1817,7 +1818,7 @@ proc Creefenreglfen {} {
 
    if {[winfo exists $audace(base).fenreglfen] == 0} {
       # Création de la fenêtre
-	toplevel $audace(base).fenreglfen
+      toplevel $audace(base).fenreglfen
       wm geometry $audace(base).fenreglfen 400x370$panneau(acqfen,position)
       wm title $audace(base).fenreglfen $caption(acqfen,fenreglfen)
       wm protocol $audace(base).fenreglfen WM_DELETE_WINDOW ::acqfen::fenreglfenquit

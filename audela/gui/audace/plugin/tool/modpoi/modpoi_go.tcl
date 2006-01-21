@@ -1,8 +1,8 @@
 #
 # Fichier : modpoi_go.tcl
-# Description : Outil pour le modele de pointage
+# Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 18 juin 2005
+# Date de mise a jour : 13 janvier 2006
 #
 
 package provide modpoi 1.0
@@ -24,17 +24,8 @@ namespace eval ::Modelpoi {
       global caption
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Modelpoi,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Modelpoi,largeur_outil) "130"
-      } else {
-         set panneau(Modelpoi,largeur_outil) "101"
-      }
       #---
-      set panneau(menu_name,Modelpoi)   "$caption(modpoi_go,modpoi_titre)"
-      set panneau(Modelpoi,titre)       "$caption(modpoi_go,modpoi)"
+      set panneau(menu_name,Modelpoi)   "$caption(modpoi_go,modpoi)"
       set panneau(Modelpoi,aide)        "$caption(modpoi_go,help_titre)"
       set panneau(Modelpoi,titre1)      "$caption(modpoi_go,titre)"
       set panneau(Modelpoi,nouveau)     "$caption(modpoi_go,nouveau)"
@@ -44,20 +35,16 @@ namespace eval ::Modelpoi {
       ModelpoiBuildIF $This
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
-      set unpackFunction ::Modelpoi::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack forget $This
    }
 
 }
@@ -66,21 +53,20 @@ proc ModelpoiBuildIF { This } {
    global audace
    global panneau
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(Modelpoi,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Modelpoi,titre) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Modelpoi) \
             -command {
                ::audace::showHelpPlugin tool modpoi modpoi.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Modelpoi,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 22 -width [ expr $panneau(Modelpoi,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame TPOINT
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -133,8 +119,7 @@ proc ModelpoiBuildIF { This } {
             }
          pack $This.fra2.but4 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      place $This.fra2 -x 4 -y 32 -height 190 -width [ expr $panneau(Modelpoi,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

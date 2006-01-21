@@ -1,8 +1,9 @@
 #
 # Fichier : tel.tcl
-# Description : Outil de controle du telescope pour compatibles LX200, carte AudeCom, etc
+# Description : Outil pour le controle des montures
+# Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Date de mise a jour : 03 novembre 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 package provide tel 1.0
@@ -25,14 +26,6 @@ namespace eval ::Tlscp {
       global catalogue
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Tlscp,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Tlscp,largeur_outil) "130"
-      } else {
-         set panneau(Tlscp,largeur_outil) "101"
-      }
       #---
       set panneau(menu_name,Tlscp)   "$caption(tel,telescope)"
       set panneau(Tlscp,aide)        "$caption(tel,help_titre)"
@@ -63,35 +56,35 @@ namespace eval ::Tlscp {
       global caption
 
       if { $conf(telescope) == "audecom" } {
-         uplevel #0 pack $This.fra2.fra1a.check1 -in $This.fra2.fra1a -side left -fill both -anchor center -pady 1
+         pack $This.fra2.fra1a.check1 -in $This.fra2.fra1a -side left -fill both -anchor center -pady 1
          #--- Evolution du script tant que la fonctionnalite "Stop Goto" sous AudeCom ne fonctionne pas
-         #--- uplevel #0 pack $This.fra2.fra2a.but2 -in $This.fra2.fra2a -side right -fill both -anchor center -pady 1
-         uplevel #0 pack forget $This.fra2.fra2a.but2
+         #--- pack $This.fra2.fra2a.but2 -in $This.fra2.fra2a -side right -fill both -anchor center -pady 1
+         pack forget $This.fra2.fra2a.but2
          #--- Fin de l'evolution
-         uplevel #0 pack forget $This.fra2.fra2a.but3
-         uplevel #0 pack $This.fra2.but3 -in $This.fra2 -side bottom -anchor center -fill x -pady 1
-         uplevel #0 pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
+         pack forget $This.fra2.fra2a.but3
+         pack $This.fra2.but3 -in $This.fra2 -side bottom -anchor center -fill x -pady 1
+         pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
       } elseif { $conf(telescope) == "temma" } {
          if { $conf(temma,modele) == "2" } {
-            uplevel #0 pack forget $This.fra2.fra1a.check1
-            uplevel #0 pack forget $This.fra2.fra2a.but2
-            uplevel #0 pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-            uplevel #0 pack forget $This.fra2.but3
-            uplevel #0 pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
+            pack forget $This.fra2.fra1a.check1
+            pack forget $This.fra2.fra2a.but2
+            pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
+            pack forget $This.fra2.but3
+            pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
          } else {
-            uplevel #0 pack forget $This.fra2.fra1a.check1
-            uplevel #0 pack forget $This.fra2.fra2a.but2
-            uplevel #0 pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-            uplevel #0 pack forget $This.fra2.but3
-            uplevel #0 pack forget $This.fra4.s.lab1
+            pack forget $This.fra2.fra1a.check1
+            pack forget $This.fra2.fra2a.but2
+            pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
+            pack forget $This.fra2.but3
+            pack forget $This.fra4.s.lab1
          }
       } else {
          #--- C'est un telescope compatible LX200
-         uplevel #0 pack forget $This.fra2.fra1a.check1
-         uplevel #0 pack forget $This.fra2.fra2a.but2
-         uplevel #0 pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-         uplevel #0 pack forget $This.fra2.but3
-         uplevel #0 pack forget $This.fra4.s.lab1
+         pack forget $This.fra2.fra1a.check1
+         pack forget $This.fra2.fra2a.but2
+         pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
+         pack forget $This.fra2.but3
+         pack forget $This.fra4.s.lab1
       }
       if { [ ::telescope::possedeGoto ] == "0" } {
          $This.fra2.fra1a.match configure -relief groove -state disabled
@@ -106,28 +99,24 @@ namespace eval ::Tlscp {
       }
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
-      trace variable ::conf(telescope) w ::Tlscp::Adapt_Panneau_Tel
-      trace variable ::confTel(temma,modele) w ::Tlscp::Adapt_Panneau_Tel
-      set unpackFunction ::Tlscp::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      trace add variable ::conf(telescope) write ::Tlscp::Adapt_Panneau_Tel
+      trace add variable ::confTel(temma,modele) write ::Tlscp::Adapt_Panneau_Tel
+      pack $This -side left -fill y
       ::Tlscp::Adapt_Panneau_Tel
       #--- Je refraichis l'affichage des coordonnees      
       ::telescope::afficheCoord
 
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
-      trace vdelete ::conf(telescope) w ::Tlscp::Adapt_Panneau_Tel
-      trace vdelete ::confTel(temma,modele) w ::Tlscp::Adapt_Panneau_Tel
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      trace remove variable ::conf(telescope) write ::Tlscp::Adapt_Panneau_Tel
+      trace remove variable ::confTel(temma,modele) write ::Tlscp::Adapt_Panneau_Tel
+      pack forget $This
    }
 
    proc cmdMatch { } {
@@ -348,11 +337,11 @@ namespace eval ::Tlscp {
 
          #--- Cree l'affichage du message
          label $audace(base).pluslong.lab1 -text "$caption(tel,pluslong1)"
-         uplevel #0 { pack $audace(base).pluslong.lab1 -padx 10 -pady 2 }
+         pack $audace(base).pluslong.lab1 -padx 10 -pady 2
          label $audace(base).pluslong.lab2 -text "$caption(tel,pluslong2)"
-         uplevel #0 { pack $audace(base).pluslong.lab2 -padx 10 -pady 2 }
+         pack $audace(base).pluslong.lab2 -padx 10 -pady 2
          label $audace(base).pluslong.lab3 -text "$caption(tel,pluslong3)"
-         uplevel #0 { pack $audace(base).pluslong.lab3 -padx 10 -pady 2 }
+         pack $audace(base).pluslong.lab3 -padx 10 -pady 2
 
          #--- La nouvelle fenetre est active
          focus $audace(base).pluslong
@@ -397,15 +386,15 @@ namespace eval ::Tlscp {
 
       #--- Cree l'affichage du message
       label $audace(base).formataddec.lab1 -text "$caption(tel,formataddec1)"
-      uplevel #0 { pack $audace(base).formataddec.lab1 -padx 10 -pady 2 }
+      pack $audace(base).formataddec.lab1 -padx 10 -pady 2
       label $audace(base).formataddec.lab2 -text "$caption(tel,formataddec2)"
-      uplevel #0 { pack $audace(base).formataddec.lab2 -padx 10 -pady 2 }
+      pack $audace(base).formataddec.lab2 -padx 10 -pady 2
       label $audace(base).formataddec.lab3 -text "$caption(tel,formataddec3)"
-      uplevel #0 { pack $audace(base).formataddec.lab3 -padx 10 -pady 2 }
+      pack $audace(base).formataddec.lab3 -padx 10 -pady 2
       label $audace(base).formataddec.lab4 -text "$caption(tel,formataddec4)"
-      uplevel #0 { pack $audace(base).formataddec.lab4 -padx 10 -pady 2 }
+      pack $audace(base).formataddec.lab4 -padx 10 -pady 2
       label $audace(base).formataddec.lab5 -text "$caption(tel,formataddec5)"
-      uplevel #0 { pack $audace(base).formataddec.lab5 -padx 10 -pady 2 }
+      pack $audace(base).formataddec.lab5 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).formataddec
@@ -494,7 +483,6 @@ namespace eval ::Tlscp {
 
       #--- Petits raccourcis
       set camera cam$audace(camNo)
-      set visu visu$audace(visuNo)
       set buffer buf$audace(bufNo)
 
       #--- La commande exptime permet de fixer le temps de pose de l'image
@@ -518,9 +506,7 @@ namespace eval ::Tlscp {
       ::camera::gestionPose $exptime 1 $camera $buffer
 
       #--- Visualisation de l'image
-      image delete image0
-      image create photo image0
-      ::audace::autovisu $visu
+      ::audace::autovisu $audace(visuNo)
    }
 
    proc TestReel { valeur } {
@@ -543,7 +529,7 @@ proc TlscpBuildIF { This } {
    global panneau
    global caption
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(Tlscp,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -553,11 +539,10 @@ proc TlscpBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool tel tel.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Tlscp,aide)
 
-      place $This.fra1 -x 3 -y 4 -height 20 -width [ expr $panneau(Tlscp,largeur_outil) - 6 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame du pointage
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -571,13 +556,16 @@ proc TlscpBuildIF { This } {
             -textvariable panneau(Tlscp,menu) \
             -modifycmd { ::Tlscp::Gestion_Cata $panneau(Tlscp,menu) } \
             -values $panneau(Tlscp,cata_coord)
-	   pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -padx 2 -pady 2
+         pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -padx 2 -pady 2
+
          #--- Bind (clic droit) pour ouvrir la fenetre sans avoir a selectionner dans la listbox
          bind $This.fra2.optionmenu1.e <ButtonPress-3> { ::Tlscp::Gestion_Cata $panneau(Tlscp,menu) }
 
          #--- Entry pour l'objet a entrer
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Tlscp,getobj) -relief groove
+         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Tlscp,getobj) \
+            -relief groove -width 16
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -padx 2 -pady 2
+
          bind $This.fra2.ent1 <Enter> { ::Tlscp::FormatADDec }
          bind $This.fra2.ent1 <Leave> { destroy $audace(base).formataddec }
 
@@ -616,23 +604,22 @@ proc TlscpBuildIF { This } {
          button $This.fra2.but3 -borderwidth 2 -textvariable audace(telescope,inittel) -command { ::Tlscp::cmdInitTel }
          pack $This.fra2.but3 -in $This.fra2 -side bottom -anchor center -fill x -pady 1
 
-      place $This.fra2 -x 3 -y 25 -height 139 -width [ expr $panneau(Tlscp,largeur_outil) - 6 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Frame des coordonnees
       frame $This.fra3 -borderwidth 1 -relief groove
 
-      #--- Label pour RA
-      label $This.fra3.ent1 -font $audace(font,arial_10_b) -textvariable audace(telescope,getra) -relief flat
-      pack $This.fra3.ent1 -in $This.fra3 -anchor center -fill none -pady 1
+         #--- Label pour RA
+         label $This.fra3.ent1 -font $audace(font,arial_10_b) -textvariable audace(telescope,getra) -relief flat
+         pack $This.fra3.ent1 -in $This.fra3 -anchor center -fill none -pady 1
 
-      #--- Label pour DEC
-      label $This.fra3.ent2 -font $audace(font,arial_10_b) -textvariable audace(telescope,getdec) -relief flat
-      pack $This.fra3.ent2 -in $This.fra3 -anchor center -fill none -pady 1
+         #--- Label pour DEC
+         label $This.fra3.ent2 -font $audace(font,arial_10_b) -textvariable audace(telescope,getdec) -relief flat
+         pack $This.fra3.ent2 -in $This.fra3 -anchor center -fill none -pady 1
 
-      place $This.fra3 -x 3 -y 165 -height 45 -width [ expr $panneau(Tlscp,largeur_outil) - 6 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
       set zone(radec) $This.fra3
+
       bind $zone(radec) <ButtonPress-1> { ::telescope::afficheCoord }
       bind $zone(radec).ent1 <ButtonPress-1> { ::telescope::afficheCoord }
       bind $zone(radec).ent2 <ButtonPress-1> { ::telescope::afficheCoord }
@@ -705,8 +692,7 @@ proc TlscpBuildIF { This } {
             -borderwidth 0 -relief flat
          pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
 
-      place $This.fra4 -x 3 -y 211 -height 111 -width [ expr $panneau(Tlscp,largeur_outil) - 6 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra4 -side top -fill x
 
       bind $This.fra4.we.lab <ButtonPress-1> { ::Tlscp::cmdSpeed }
       bind $This.fra4.s.lab1 <ButtonPress-1> { ::Tlscp::cmdCtlSuivi }
@@ -730,7 +716,7 @@ proc TlscpBuildIF { This } {
             #--- Entry pour l'objet a entrer
             entry $This.fra6.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Tlscp,exptime) \
                -relief groove -width 5 -justify center
-            pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -padx 4 -pady 2
 
             label $This.fra6.fra1.lab1 -text $panneau(Tlscp,secondes) -relief flat  
             pack $This.fra6.fra1.lab1 -in $This.fra6.fra1 -side left -fill none -padx 1 -pady 1
@@ -759,8 +745,7 @@ proc TlscpBuildIF { This } {
          button $This.fra6.but1 -borderwidth 2 -text $panneau(Tlscp,go) -command { ::Tlscp::cmdGo }
          pack $This.fra6.but1 -in $This.fra6 -fill none -anchor center -pady 1 -ipadx 17
 
-      place $This.fra6 -x 3 -y 323 -height 79 -width [ expr $panneau(Tlscp,largeur_outil) - 6 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra6 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

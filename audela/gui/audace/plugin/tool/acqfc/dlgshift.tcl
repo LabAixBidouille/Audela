@@ -9,7 +9,7 @@
 # Revision 1.0  2001-07-07 13:58:00+02 Michel PUJOL
 # Initial revision
 #
-# Date de mise a jour : 16 mars 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 namespace eval DlgShift {
@@ -53,7 +53,7 @@ namespace eval DlgShift {
    #  cmdSave 
    #------------------------------------------------------------
    proc cmdSave { } {
-	variable This
+      variable This
       global panneau
       global fileName
 
@@ -96,7 +96,7 @@ namespace eval DlgShift {
    #      display fields values in the grid
    #------------------------------------------------------------
    proc loadDataFile { } {
-	variable This
+      variable This
       global panneau
       global fileName
 
@@ -114,7 +114,7 @@ namespace eval DlgShift {
    #      close dialog
    #------------------------------------------------------------
    proc closeDialog { } {
-	variable This
+      variable This
       
       #--- close and destroy the dialog window
       destroy $This     
@@ -181,7 +181,7 @@ namespace eval DlgShift {
       set deb [ expr 1 + [ string first + $panneau(DlgShift,geometry) ] ]
       set fin [ string length $panneau(DlgShift,geometry) ]
       set panneau(DlgShift,position) "+[string range $panneau(DlgShift,geometry) $deb $fin]"     
-   }	
+   }
 
    #------------------------------------------------------------
    #  createDialog 

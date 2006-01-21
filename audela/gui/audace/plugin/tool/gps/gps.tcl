@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Panneau de synchronisation GPS
 # Auteur : Jacques Michelet
-# Date de mise a jour : 16 novembre 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 package provide gps 3.3
@@ -905,17 +905,16 @@ namespace eval ::Gps {
         }
     }
 
+#--- Debut modif Robert
     ##############################################################
-    ### pack #####################################################
+    ### startTool ################################################
     ##############################################################
-    proc pack {} {
-        global unpackFunction
-        variable This
+    proc startTool { visuNo } {
+       variable This
 
         Initialisation $This
-        set unpackFunction ::Gps::unpack
-        set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-        uplevel #0 $a_executer
+        pack $This -anchor center -expand 0 -fill y -side left
+#--- Fin modif Robert
     }
 
     ##############################################################
@@ -1329,15 +1328,16 @@ namespace eval ::Gps {
         }
     }
 
+#--- Debut modif Robert
     ##############################################################
-    ### unpack ###################################################
+    ### stopTool #################################################
     ##############################################################
-    proc unpack {} {
+    proc stopTool { visuNo } {
         variable This
 
         Terminaison $This
-        set a_executer "pack forget $This"
-        uplevel #0 $a_executer
+        pack forget $This
+#--- Fin modif Robert
     }
 
     ##############################################################

@@ -4,7 +4,7 @@
 # Type Takahashi : Viseur polaire à niveau
 # Type EQ6 : Viseur polaire à constellations
 # Auteur : Robert DELMAS
-# Date de mise a jour : 18 juin 2005
+# Date de mise a jour : 13 janvier 2006
 #
 
 package provide viseur_polaire 1.0
@@ -26,14 +26,6 @@ namespace eval ::ViseurPolaire {
       global caption
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(ViseurPolaire,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(ViseurPolaire,largeur_outil) "130"
-      } else {
-         set panneau(ViseurPolaire,largeur_outil) "101"
-      }
       #---
       set panneau(menu_name,ViseurPolaire) "$caption(viseur_polaire_go,titre)"
       set panneau(ViseurPolaire,aide)      "$caption(viseur_polaire_go,help_titre)"
@@ -42,20 +34,16 @@ namespace eval ::ViseurPolaire {
       ViseurPolaireBuildIF $This
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
-      set unpackFunction ::ViseurPolaire::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack forget $This
    }
 
 }
@@ -64,7 +52,7 @@ proc ViseurPolaireBuildIF { This } {
    global audace
    global panneau
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(ViseurPolaire,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -74,11 +62,10 @@ proc ViseurPolaireBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool viseur_polaire viseur_polaire.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(ViseurPolaire,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 22 -width [ expr $panneau(ViseurPolaire,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame du viseur polaire de type Takahashi
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -91,8 +78,7 @@ proc ViseurPolaireBuildIF { This } {
             }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      place $This.fra2 -x 4 -y 32 -height 50 -width [ expr $panneau(ViseurPolaire,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Frame du viseur polaire de type EQ6
       frame $This.fra3 -borderwidth 1 -relief groove
@@ -105,8 +91,7 @@ proc ViseurPolaireBuildIF { This } {
             }
          pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      place $This.fra3 -x 4 -y 88 -height 50 -width [ expr $panneau(ViseurPolaire,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

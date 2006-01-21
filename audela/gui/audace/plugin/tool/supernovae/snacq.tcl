@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 15 novembre 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 # ===================================================================
@@ -971,7 +971,7 @@ proc snacq_go { {sndebug 0} } {
             ::camera::gestionPose $snconf(exptime) 1 $camera $buffer
 
             #--- Visualisation de l'image acquise
-            ::audace::autovisu visu$audace(visuNo)
+            ::audace::autovisu $audace(visuNo)
 
             #--- Modification du nom des images a la demande de Robin
             if { $snconf(nbimages) != "1" } {
@@ -1094,9 +1094,9 @@ proc OutSnAcq { } {
 
    #--- Cree l'affichage du message
    label $audace(base).outSnAcq.labURL1 -text "$caption(snacq,texte1)" -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).outSnAcq.labURL1 -padx 10 -pady 2 }
+   pack $audace(base).outSnAcq.labURL1 -padx 10 -pady 2
    label $audace(base).outSnAcq.labURL2 -text "$caption(snacq,texte2)" -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).outSnAcq.labURL2 -padx 10 -pady 2 }
+   pack $audace(base).outSnAcq.labURL2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
    focus $audace(base).outSnAcq
@@ -1128,9 +1128,9 @@ proc Out_SnAcq { } {
 
    #--- Cree l'affichage du message
    label $audace(base).out_SnAcq.labURL1 -text "$caption(snacq,texte3)" -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).out_SnAcq.labURL1 -padx 10 -pady 2 }
+   pack $audace(base).out_SnAcq.labURL1 -padx 10 -pady 2
    label $audace(base).out_SnAcq.labURL2 -text "$caption(snacq,texte4)" -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).out_SnAcq.labURL2 -padx 10 -pady 2 }
+   pack $audace(base).out_SnAcq.labURL2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
    focus $audace(base).out_SnAcq

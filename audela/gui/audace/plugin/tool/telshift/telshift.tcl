@@ -8,7 +8,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Date de mise a jour : 19 avril 2005
+# Date de mise a jour : 24 decembre 2005
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -950,11 +950,11 @@ proc ErreurFocale { } {
 
    #--- create the message display
    label $audace(base).erreurfocale.lab1 -text "$caption(telshift,erreurfocale1)"
-   uplevel #0 { pack $audace(base).erreurfocale.lab1 -padx 10 -pady 2 }
+   pack $audace(base).erreurfocale.lab1 -padx 10 -pady 2
    label $audace(base).erreurfocale.lab2 -text "$caption(telshift,erreurfocale2)"
-   uplevel #0 { pack $audace(base).erreurfocale.lab2 -padx 10 -pady 2 }
+   pack $audace(base).erreurfocale.lab2 -padx 10 -pady 2
    label $audace(base).erreurfocale.lab3 -text "$caption(telshift,erreurfocale3)"
-   uplevel #0 { pack $audace(base).erreurfocale.lab3 -padx 10 -pady 2 }
+   pack $audace(base).erreurfocale.lab3 -padx 10 -pady 2
 
    #--- the new window is on
    focus $audace(base).erreurfocale
@@ -972,7 +972,6 @@ proc acq {exptime binning {k ""} {nbr ""} } {
 
    #--- shortcuts
    set camera cam$audace(camNo)
-   set visu visu$audace(visuNo)
    set buffer buf$audace(bufNo)
 
    #---
@@ -1008,20 +1007,8 @@ proc acq {exptime binning {k ""} {nbr ""} } {
    #--- waiting for exposure end
    vwait status_$camera
  
-   #--- image inversion
-   set cam $conf(camera)
-   if {$conf($cam,mirx)==1} {
-      $buffer mirrorx
-   }
-   if {$conf($cam,miry)==1} {
-      $buffer mirrory
-   }
-   
    #--- image viewing
-   image delete image0
-   image create photo image0
-   ::audace::autovisu $visu
-
+   ::audace::autovisu $audace(visuNo)
 }
 
 proc dispTime {{k ""} {nbr ""}} {
@@ -1050,7 +1037,6 @@ proc acqmosa {exptime binning {kkkk ""} {s ""} {mosa ""} } {
 
    #--- shortcuts
    set camera cam$audace(camNo)
-   set visu visu$audace(visuNo)
    set buffer buf$audace(bufNo)
 
    #---
@@ -1086,20 +1072,8 @@ proc acqmosa {exptime binning {kkkk ""} {s ""} {mosa ""} } {
    #--- waiting for exposure end
    vwait status_$camera
  
-   #--- image inversion
-   set cam $conf(camera)
-   if {$conf($cam,mirx)==1} {
-      $buffer mirrorx
-   }
-   if {$conf($cam,miry)==1} {
-      $buffer mirrory
-   }
-   
    #--- image viewing
-   image delete image0
-   image create photo image0
-   ::audace::autovisu $visu
-
+   ::audace::autovisu $audace(visuNo)
 }
 
 proc dispTimemosa { {kkkk ""} {s ""} {mosa ""} } {

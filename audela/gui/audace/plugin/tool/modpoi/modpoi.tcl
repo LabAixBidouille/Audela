@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 23 avril 2005
+# Date de mise a jour : 11 decembre 2005
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -137,7 +137,7 @@ proc recup_position { } {
    set modpoi(toplevel,position) "+[ string range $modpoi(wm_geometry) $deb $fin ]"
    #---
    set parametres(modpoi,position) $modpoi(toplevel,position)
-}	
+}
 
 proc modpoi_wiz { { mode new } } {
    variable parametres
@@ -398,7 +398,7 @@ proc modpoi_wiz1b { } {
          -modifycmd {
             set parametres(modpoi,catalog) "$modpoi(stars,catalog)"
          }
-	pack $modpoi(g,base).fra_star_catalog.combobox_star_catalog \
+      pack $modpoi(g,base).fra_star_catalog.combobox_star_catalog \
       -side right -anchor center \
       -padx 0 -pady 3 -expand 0
    pack $modpoi(g,base).fra_star_catalog \
@@ -2239,7 +2239,7 @@ proc modpoi_acqxy { } {
       set y2 [expr $dimy-2]
       set box [list $x1 $y1 $x2 $y2]
       set res [buf$audace(bufNo) centro $box]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
       set filename [mc_date2jd now]
       saveima ${filename}w$conf(extension,defaut)
       set texte "$caption(modpoi,fichier) ${filename}w$conf(extension,defaut)\n"

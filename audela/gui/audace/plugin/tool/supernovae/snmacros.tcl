@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 08 aout 2005
+# Date de mise a jour : 23 decembre 2005
 #
 
 proc globgalsn { args } {
@@ -19,7 +19,7 @@ proc globgalsn { args } {
    set f [lindex $result 0]
    set rep [file dirname $f]
    set mask [ file join ${rep} d*b* ]
-	set errnum [catch {glob $mask} resultd]
+   set errnum [catch {glob $mask} resultd]
    if {$errnum==1} {
       set resultd ""
    }
@@ -601,8 +601,6 @@ proc snprism { } {
    set crval2 $dec
    set cdelt1 [expr atan($cdeltm1/$focmm)]
    set cdelt2 [expr atan($cdeltm2/$focmm)]
-   # set mirrorx $snconf(mirrorx)
-   # set mirrory $snconf(mirrory)
    set focal $focmm
    set x1 1
    set y1 1
