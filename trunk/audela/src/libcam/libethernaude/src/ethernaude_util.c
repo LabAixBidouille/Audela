@@ -15,6 +15,9 @@
 #include "sysexp.h"
 #include "ethernaude_util.h"
 
+int ethernaude_debug = 0;
+
+
 /***************************************************************************/
 /* paramCCD_new :                                                          */
 /***************************************************************************/
@@ -535,8 +538,10 @@ int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype)
 
 int util_log(char *message, int signal)
 {
-#ifdef ETHERNAUDE_DEBUG
     FILE *f;
+    if (ethernaude_debug == 0) {
+       return 0;
+    }
     if (signal == 0) {
 	f = fopen("eth.txt", "at");
 	fprintf(f, "%s\n", message);
@@ -555,6 +560,5 @@ int util_log(char *message, int signal)
 	fclose(f);
 	return (0);
     }
-#endif
     return (1);
 }

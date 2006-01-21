@@ -18,7 +18,9 @@
     {"canspeed", (Tcl_CmdProc *) cmdEthernaudeCanSpeed}, \
     {"directclear", (Tcl_CmdProc *) cmdEthernaudeDirectClear}, \
     {"directreset", (Tcl_CmdProc *) cmdEthernaudeDirectReset}, \
-    {"directidentity", (Tcl_CmdProc *) cmdEthernaudeDirectIdentity},
+    {"directidentity", (Tcl_CmdProc *) cmdEthernaudeDirectIdentity}, \
+    {"debug", (Tcl_CmdProc *) cmdEthernaudeDebug}, \
+    {"gps", (Tcl_CmdProc *) cmdEthernaudeGPS},
 
 
  /* === Specific commands for that camera === */
@@ -31,6 +33,7 @@ int cmdEthernaudeShutterType(ClientData clientData, Tcl_Interp * interp, int arg
 int cmdEthernaudeCanSpeed(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-
+int cmdEthernaudeDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif
