@@ -112,7 +112,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     int errnum;
     struct new_ethernaude_inp inparams;
     unsigned short ip[4];
-    ethernaude_var ethvar;
     char ipstring[50];
     int k, kk, kdeb, nbp, klen;
 #if defined OS_WIN
@@ -158,6 +157,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 		if ((kk + 1) <= (argc - 1)) {
 		    cam->canspeed = atoi(argv[kk + 1]);
 		}
+	    }
+	    if (strcmp(argv[kk], "-debug") == 0) {
+	       ethernaude_debug = 1;
 	    }
 	}
     }
@@ -218,9 +220,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     inparams.ip[3] = ip[3];
     inparams.shutterinvert = cam->shutteraudinereverse;
     inparams.canspeed = cam->canspeed;
-    errnum = new_ethernaude(&inparams, &ethvar);
+    errnum = new_ethernaude(&inparams, &(cam->ethvar));
     if (errnum != 0) {
-	strcpy(cam->msg, ethvar.message);
+	strcpy(cam->msg, cam->ethvar.message);
 	return errnum;
     }
     if (cam->direct == 1) {
@@ -231,19 +233,19 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     }
 
     /* === conversion des parametres Ethernaude -> AudeLA CAM_INI === */
-    if (strcmp(ethvar.SystemName,"Ethernaude")==0) strcpy(ethvar.SystemName,"Audine+Ethernaude");
-    strcpy(CAM_INI[cam->index_cam].name, ethvar.SystemName);
-    strcpy(CAM_INI[cam->index_cam].ccd, ethvar.InfoCCD_NAME);
-    CAM_INI[cam->index_cam].maxx = cam->ethvar.WidthPixels = ethvar.WidthPixels;
-    CAM_INI[cam->index_cam].maxy = cam->ethvar.HeightPixels = ethvar.HeightPixels;
+    if (strcmp(cam->ethvar.SystemName,"Ethernaude")==0) strcpy(cam->ethvar.SystemName,"Audine+Ethernaude");
+    strcpy(CAM_INI[cam->index_cam].name, cam->ethvar.SystemName);
+    strcpy(CAM_INI[cam->index_cam].ccd, cam->ethvar.InfoCCD_NAME);
+    CAM_INI[cam->index_cam].maxx = cam->ethvar.WidthPixels;
+    CAM_INI[cam->index_cam].maxy = cam->ethvar.HeightPixels;
     /* bug actuellement */
-    CAM_INI[cam->index_cam].overscanxbeg = cam->ethvar.PixelsPrescanX = ethvar.PixelsPrescanX;
-    CAM_INI[cam->index_cam].overscanxend = cam->ethvar.PixelsOverscanX = ethvar.PixelsOverscanX;
-    CAM_INI[cam->index_cam].overscanybeg = cam->ethvar.PixelsPrescanY = ethvar.PixelsPrescanY;
-    CAM_INI[cam->index_cam].overscanyend = cam->ethvar.PixelsOverscanY = ethvar.PixelsOverscanY;
-    CAM_INI[cam->index_cam].celldimx = ((double) (ethvar.InfoCCD_PixelsSizeX)) / 1000000000.;
-    CAM_INI[cam->index_cam].celldimy = ((double) (ethvar.InfoCCD_PixelsSizeY)) / 1000000000.;
-    CAM_INI[cam->index_cam].maxconvert = pow(2, (double) ethvar.BitPerPixels) - 1.;
+    CAM_INI[cam->index_cam].overscanxbeg = cam->ethvar.PixelsPrescanX;
+    CAM_INI[cam->index_cam].overscanxend = cam->ethvar.PixelsOverscanX;
+    CAM_INI[cam->index_cam].overscanybeg = cam->ethvar.PixelsPrescanY;
+    CAM_INI[cam->index_cam].overscanyend = cam->ethvar.PixelsOverscanY;
+    CAM_INI[cam->index_cam].celldimx = ((double) (cam->ethvar.InfoCCD_PixelsSizeX)) / 1000000000.;
+    CAM_INI[cam->index_cam].celldimy = ((double) (cam->ethvar.InfoCCD_PixelsSizeY)) / 1000000000.;
+    CAM_INI[cam->index_cam].maxconvert = pow(2, (double) cam->ethvar.BitPerPixels) - 1.;
 
     /* === intialisation des elements de la structure cam === */
     cam->inparams = inparams;
@@ -266,11 +268,34 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     }
     cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
     cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
-    cam->x2 = ethvar.WidthPixels - 1;
-    cam->y2 = ethvar.HeightPixels - 1;
+    cam->x2 = cam->ethvar.WidthPixels - 1;
+    cam->y2 = cam->ethvar.HeightPixels - 1;
 
     cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
     cam->CCDStatus = 1;		/* effectue la commande CCDStatus a la prochaine cam_read_ccd */
+
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.message[256]='%s'",		     cam->ethvar.message); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.Camera_ID=%d",		     cam->ethvar.Camera_ID); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.NbreParamSetup=%d",		     cam->ethvar.NbreParamSetup); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.CCDDrivenAmount=%d",		     cam->ethvar.CCDDrivenAmount); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.SystemName[50]='%s'",	     cam->ethvar.SystemName); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_NAME[50]='%s'",	     cam->ethvar.InfoCCD_NAME); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_ClockModes=%d",	     cam->ethvar.InfoCCD_ClockModes); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.WidthPixels=%d",		     cam->ethvar.WidthPixels); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.HeightPixels=%d",		     cam->ethvar.HeightPixels); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.PixelsPrescanX=%d",		     cam->ethvar.PixelsPrescanX); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.PixelsPrescanY=%d",		     cam->ethvar.PixelsPrescanY); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.PixelsOverscanX=%d",		     cam->ethvar.PixelsOverscanX); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.PixelsOverscanY=%d",		     cam->ethvar.PixelsOverscanY); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_MaxExposureTime=%d",	     cam->ethvar.InfoCCD_MaxExposureTime); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_PixelsSizeX=%d",	     cam->ethvar.InfoCCD_PixelsSizeX); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_PixelsSizeY=%d",	     cam->ethvar.InfoCCD_PixelsSizeY); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_IsGuidingCCD=%d",	     cam->ethvar.InfoCCD_IsGuidingCCD); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasTDICaps=%d",	     cam->ethvar.InfoCCD_HasTDICaps); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasVideoCaps=%d",	     cam->ethvar.InfoCCD_HasVideoCaps); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasRegulationTempCaps=%d",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasGPSDatation=%d",	     cam->ethvar.InfoCCD_HasGPSDatation); util_log(cmdline, 0);
+
     return 0;
 }
 
@@ -620,11 +645,72 @@ void cam_shutter_off(struct camprop *cam)
 
 void cam_measure_temperature(struct camprop *cam)
 {
-    cam->temperature = 0.;
+    char keyword[MAXLENGTH + 1];
+    char value[MAXLENGTH + 1];
+    char ligne[MAXLENGTH];
+    char result[MAXLENGTH];
+    int k, failed, paramtype;
+
+    strcpy(cam->msg, "");
+    if (cam->authorized == 1) {
+        if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
+	    sprintf(ligne, "<LIBETHERNAUDE/cam_measure_temperature> camera does not support temperature regulation (%d) ; return bypassed.",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(ligne, 0);
+	    // TODO: FIXME. return;
+	}
+    	failed = 0;
+	paramCCD_clearall(&ParamCCDIn, 1);
+	paramCCD_put(-1, "GetCCD_tempe", &ParamCCDIn, 1);
+	paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+	util_log("", 1);
+	for (k = 0; k < ParamCCDIn.NbreParam; k++) {
+	    paramCCD_get(k, result, &ParamCCDIn);
+	    util_log(result, 0);
+	}
+	AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+	util_log("", 2);
+	for (k = 0; k < ParamCCDOut.NbreParam; k++) {
+	    paramCCD_get(k, result, &ParamCCDOut);
+	    util_log(result, 0);
+	}
+	util_log("\n", 0);
+	if (ParamCCDOut.NbreParam >= 1) {
+	    paramCCD_get(0, result, &ParamCCDOut);
+	    strcpy(cam->msg, "");
+	    if (strcmp(result, "FAILED") == 0) {
+		failed = 1;
+		paramCCD_get(1, result, &ParamCCDOut);
+		sprintf(cam->msg, "GetCCD_tempe Failed\n%s", result);
+	    }
+	}
+	if (failed == 0) {
+	    /* --- normal state --- */
+	    sprintf(keyword,"Temperature");
+	    if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+		cam->temperature = atof(value);
+	    }
+	    sprintf(ligne,"<LIBETHERNAUDE/cam_measure_temperature> keyword='%s', value='%s', cam->temperature=%f",keyword,value,cam->temperature); util_log("\n", 0);
+	} else {
+	    sprintf(ligne, "cam%d reinit -ip %s", cam->camno, cam->ip);
+	    if (cam->ipsetting == 1) {
+		sprintf(result, " -ipsetting \"%s\"", cam->ipsetting_filename);
+		strcat(ligne, result);
+	    }
+	    sprintf(result, " -shutterinvert %d", cam->shutteraudinereverse);
+	    strcat(ligne, result);
+	    sprintf(result, " -canspeed %d", cam->canspeed);
+	    strcat(ligne, result);
+	    strcpy(cam->msg, "");
+	    if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
+		sprintf(cam->msg, cam->interp->result);
+	    }
+	}
+	cam->CCDStatus = 1;
+    }
 }
 
 void cam_cooler_on(struct camprop *cam)
 {
+    cam_cooler_check(cam);
 }
 
 void cam_cooler_off(struct camprop *cam)
@@ -633,6 +719,63 @@ void cam_cooler_off(struct camprop *cam)
 
 void cam_cooler_check(struct camprop *cam)
 {
+    char ligne[MAXLENGTH];
+    char result[MAXLENGTH];
+    int k, sortie, failed;
+
+    strcpy(cam->msg, "");
+    if (cam->authorized == 1) {
+       if (!cam->ethvar.InfoCCD_HasRegulationTempCaps) {
+	  sprintf(ligne, "<LIBETHERNAUDE/cam_cooler_check> camera does not support temperature regulation (%d) ; return bypassed.",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(ligne, 0);
+	  // TODO: FIXME. return;
+       }
+    	failed = 0;
+	paramCCD_clearall(&ParamCCDIn, 1);
+	paramCCD_put(-1, "SetCCD_tempe", &ParamCCDIn, 1);
+	paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+	sprintf(ligne, "Temperature=%f", (float)(cam->check_temperature));
+	paramCCD_put(-1, ligne, &ParamCCDIn, 1);
+	util_log("", 1);
+	for (k = 0; k < ParamCCDIn.NbreParam; k++) {
+	    paramCCD_get(k, result, &ParamCCDIn);
+	    util_log(result, 0);
+	}
+	AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+	util_log("", 2);
+	for (k = 0; k < ParamCCDOut.NbreParam; k++) {
+	    paramCCD_get(k, result, &ParamCCDOut);
+	    util_log(result, 0);
+	}
+	util_log("\n", 0);
+	if (ParamCCDOut.NbreParam >= 1) {
+	    paramCCD_get(0, result, &ParamCCDOut);
+	    strcpy(cam->msg, "");
+	    if (strcmp(result, "FAILED") == 0) {
+		failed = 1;
+		paramCCD_get(1, result, &ParamCCDOut);
+		sprintf(cam->msg, "SetCCD_tempe Failed\n%s", result);
+	    }
+	}
+	if (failed == 0) {
+	    /* --- normal state --- */
+	    sortie = 1;
+	} else {
+	    sprintf(ligne, "cam%d reinit -ip %s", cam->camno, cam->ip);
+	    if (cam->ipsetting == 1) {
+		sprintf(result, " -ipsetting \"%s\"", cam->ipsetting_filename);
+		strcat(ligne, result);
+	    }
+	    sprintf(result, " -shutterinvert %d", cam->shutteraudinereverse);
+	    strcat(ligne, result);
+	    sprintf(result, " -canspeed %d", cam->canspeed);
+	    strcat(ligne, result);
+	    strcpy(cam->msg, "");
+	    if (Tcl_Eval(cam->interp, ligne) != TCL_OK) {
+		sprintf(cam->msg, cam->interp->result);
+	    }
+	}
+	cam->CCDStatus = 1;
+    }
 }
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)

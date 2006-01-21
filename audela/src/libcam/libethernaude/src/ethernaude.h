@@ -74,6 +74,11 @@ typedef struct {
     int InfoCCD_PixelsSizeX;
     int InfoCCD_PixelsSizeY;
     int InfoCCD_IsGuidingCCD;
+    int InfoCCD_HasTDICaps;
+    int InfoCCD_HasVideoCaps;
+    int InfoCCD_HasRegulationTempCaps;
+    int InfoCCD_HasGPSDatation;
+
     int BitPerPixels;
     double VersionID;		/* obsolete ? */
     char SX52_Audine_Release[10];
@@ -98,7 +103,7 @@ typedef struct {
 
 
 /* #define ETHERNAUDE_DEBUG */
-
+extern int ethernaude_debug;
 
 /***************************************************************************/
 #endif

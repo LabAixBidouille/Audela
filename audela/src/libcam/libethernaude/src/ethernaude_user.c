@@ -97,6 +97,13 @@ int close_ethernaude(void)
     return 0;
 }
 
+#define DUMP_ParamCCDOut {\
+   char res[200]; int dd;\
+   for(dd=0;dd<ParamCCDOut.NbreParam;dd++) {\
+      sprintf(res, "<LIBETHERNAUDE/new_ethernaude:%d> param[%d]='%s'",__LINE__,dd,ParamCCDOut.Param[dd]); util_log(res, 0);\
+   }\
+}
+
 
 /***************************************************************************/
 /* new_ethernaude                                                          */
@@ -255,11 +262,17 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
 	}
     }
 
+    DUMP_ParamCCDOut;
+
     /* - how many CCD are supported by this camera ? - */
+
     strcpy(keyword, "CCDDrivenAmount");
     ethvar->CCDDrivenAmount = 0;
-    if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+    k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
+    sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
+    if (k == 0) {
 	ethvar->CCDDrivenAmount = atoi(value);
+	sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->CCDDrivenAmount = %d",ethvar->CCDDrivenAmount); util_log(result, 0);
     }
 
     /* - read current systeme name - */
@@ -324,7 +337,51 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
     strcpy(keyword, "InfoCCD_PixelsSizeY");
     ethvar->InfoCCD_PixelsSizeY = 0;
     if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	ethvar->InfoCCD_PixelsSizeY = atof(value);
+	ethvar->InfoCCD_PixelsSizeY = atoi(value);
+    }
+    /* - InfoCCD_HasTDICaps - */
+    strcpy(keyword, "InfoCCD_HasTDICaps");
+    ethvar->InfoCCD_HasTDICaps = 0;
+    k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
+    sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
+    if (k == 0) {
+       if (!strcmp(value,"TRUE")) {
+	   ethvar->InfoCCD_HasTDICaps = 1;
+       }
+        sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasTDICaps = %d",ethvar->InfoCCD_HasTDICaps); util_log(result, 0);
+    }
+    /* - InfoCCD_HasVideoCaps - */
+    strcpy(keyword, "InfoCCD_HasVideoCaps");
+    ethvar->InfoCCD_HasVideoCaps = 0;
+    k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
+    sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
+    if (k == 0) {
+       if (!strcmp(value,"TRUE")) {
+	   ethvar->InfoCCD_HasVideoCaps = 1;
+	   sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasVideoCaps = %d",ethvar->InfoCCD_HasVideoCaps); util_log(result, 0);
+       }
+    }
+    /* - InfoCCD_HasRegulationTempCaps - */
+    strcpy(keyword, "InfoCCD_HasRegulationTempCaps");
+    ethvar->InfoCCD_HasRegulationTempCaps = 0;
+    k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
+    sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
+    if (k == 0) {
+       if (!strcmp(value,"TRUE")) {
+	   ethvar->InfoCCD_HasRegulationTempCaps = 1;
+       }
+       sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasRegulationTempCaps = %d",ethvar->InfoCCD_HasRegulationTempCaps); util_log(result, 0);
+    }
+    /* - InfoCCD_HasGPSDatation - */
+    strcpy(keyword, "InfoCCD_HasGPSDatation");
+    ethvar->InfoCCD_HasGPSDatation = 0;
+    k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
+    sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
+    if (k == 0) {
+       if (!strcmp(value,"TRUE")) {
+	   ethvar->InfoCCD_HasGPSDatation = 1;
+       }
+       sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasGPSDatation = %d",ethvar->InfoCCD_HasGPSDatation); util_log(result, 0);
     }
 
     /* - GetClockModes for the CCD number 1 and the clock mode number 1 - */
