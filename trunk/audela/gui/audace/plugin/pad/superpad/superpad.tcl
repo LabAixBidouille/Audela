@@ -2,27 +2,27 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle 
 # Auteur : Michel PUJOL
-# Date de mise a jour : 15 novembre 2005
+# Date de mise a jour : 23 decembre 2005
 #
 
 package provide superpad 1.0
 
 #==============================================================
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement)
-#     init 			: initialise le namespace (appelee pendant le chargement de ce source)   
-#     getLabel     	: retourne le nom affichable du driver 
+#     init              : initialise le namespace (appelee pendant le chargement de ce source)   
+#     getLabel          : retourne le nom affichable du driver 
 #     getHelp           : retourne la documentation htm associee
-#     getDriverType 	: retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf     	: initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
-#     fillConfigPage 	: affiche la fenetre de configuration de ce driver 
-#     confToWidget   	: copie le tableau conf() dans les variables des widgets
-#     widgetToConf 	: copie les variables des widgets dans le tableau conf()
-#     configureDriver	: configure le driver 
+#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     confToWidget      : copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : copie les variables des widgets dans le tableau conf()
+#     configureDriver   : configure le driver 
 #     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady 		: informe de l'etat de fonctionnement du driver
+#     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :  
-#     run         	: affiche la raquette 
+#     run               : affiche la raquette 
 #    
 #==============================================================
 
@@ -38,8 +38,8 @@ namespace eval ::superpad {
    #  
    #  return namespace name
    #------------------------------------------------------------
-   proc init { } {   
-      global audace    
+   proc init { } {
+      global audace
 
       #--- charge le fichier caption
       uplevel #0  "source \"[ file join $audace(rep_plugin) pad superpad superpad.cap ]\"" 
@@ -47,7 +47,7 @@ namespace eval ::superpad {
       #--- cree les variables dans conf(..) si elles n'existent pas
       initConf
 
-	#--- j'initialise les variables widget(..) 
+      #--- j'initialise les variables widget(..) 
       confToWidget
 
       return [namespace current]
@@ -61,7 +61,7 @@ namespace eval ::superpad {
    #------------------------------------------------------------
    proc getDriverType { } {
       return "pad"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getLabel
@@ -73,7 +73,7 @@ namespace eval ::superpad {
       global caption
 
       return "$caption(superpad,titre)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getHelp
@@ -83,7 +83,7 @@ namespace eval ::superpad {
    #------------------------------------------------------------
    proc getHelp { } {
       return "superpad.htm"
-   }	
+   }
 
    #------------------------------------------------------------
    #  initConf 
@@ -130,7 +130,7 @@ namespace eval ::superpad {
       set conf(superpad,padsize)     $widget(padsize)
       set conf(superpad,visible)     $widget(visible)
       set conf(superpad,centerspeed) $widget(centerspeed) 
-   }	
+   }
 
    #------------------------------------------------------------
    #  fillConfigPage 
@@ -143,7 +143,7 @@ namespace eval ::superpad {
       variable private
       global caption
 
-	#--- je memorise la reference de la frame 
+      #--- je memorise la reference de la frame 
       set widget(frm) $frm
       
       #--- Creation des differents frames
@@ -158,7 +158,7 @@ namespace eval ::superpad {
 
       #--- Label pad size
       label $frm.labSize -text "$caption(superpad,pad_size)"
-   	pack $frm.labSize -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.labSize -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       #--- Definition de la taille de la raquette 
       set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
@@ -170,20 +170,20 @@ namespace eval ::superpad {
          -editable 0       \
          -textvariable ::superpad::widget(padsize) \
          -values $list_combobox
-	pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
 
       #--- Definition centerspeed
       label $frm.labcenterspeed -text "$caption(superpad,center_speed)"
-	pack $frm.labcenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.labcenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
 
       #--- Entry centerspeed
       entry $frm.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
       pack $frm.entrycenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
 
-	#--- Raquette toujours visible
-	checkbutton $frm.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
+      #--- Raquette toujours visible
+      checkbutton $frm.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
          -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
-	pack $frm.visible -in $frm.frame3 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.visible -in $frm.frame3 -anchor nw -side left -padx 10 -pady 10
    }
 
    #------------------------------------------------------------
@@ -342,7 +342,7 @@ namespace eval ::superpad {
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind .superpad <Key-F1> { $audace(console)::GiveFocus }
 
-   }  
+   }
 
 }
 
@@ -410,12 +410,12 @@ namespace eval ::telescopePad {
       #--- Cree un espace pour les boutons cardinaux
       frame $This.card -height 150 -borderwidth 0 -relief flat -bg $colorpad(backpad)
       pack $This.card -in $This -side top -fill x -padx 2
-      
+
       #--- Frame for speed choice
       frame $This.card.speed -width $geompad(20pixels) \
          -bg $colorpad(backpad)
       pack $This.card.speed -in $This.card -side left -fill y -expand 1
-     
+
       radiobutton $This.card.speed.4 -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
          -bg $colorpad(backkey) \
@@ -432,7 +432,7 @@ namespace eval ::telescopePad {
          -highlightcolor $colorpad(green) \
          -text "3" -value 3 -variable audace(telescope,speed) \
          -command { ::telescope::setSpeed "3" }
-         
+
       radiobutton $This.card.speed.2  -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
          -bg $colorpad(backkey) \
@@ -440,7 +440,7 @@ namespace eval ::telescopePad {
          -selectcolor $colorpad(backdisp) \
          -text "2" -value 2 -variable audace(telescope,speed) \
          -command { ::telescope::setSpeed "2" }
-         
+
       radiobutton $This.card.speed.1 -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
          -bg $colorpad(backkey) \
@@ -466,7 +466,7 @@ namespace eval ::telescopePad {
       frame $This.card.ns \
          -width $geompad(larg2) \
          -borderwidth 0 -relief flat -bg $colorpad(backpad)
-                      
+
       button  $This.card.ns.n -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -text "N" \
@@ -475,7 +475,7 @@ namespace eval ::telescopePad {
          -fg $colorpad(textkey) \
          -anchor center \
          -relief ridge   
-      
+
       button  $This.card.ns.s -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -text "S" \
@@ -504,19 +504,19 @@ namespace eval ::telescopePad {
 
       #--- Frame des coordonnees --------------------------------------------------
       frame $This.frameCoord -borderwidth 1  -relief groove -bg $colorpad(backpad)
-   
+
       #--- Label pour RA
       label  $This.frameCoord.labelRa  \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -textvariable audace(telescope,getra) -bg $colorpad(backpad) -fg $colorpad(textkey) -relief groove -width 10
       pack   $This.frameCoord.labelRa -in $This.frameCoord -anchor center -fill x  -side left
-      
+
       #--- Label pour DEC
       label  $This.frameCoord.labelDec \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -textvariable audace(telescope,getdec) -bg $colorpad(backpad) -fg $colorpad(textkey) -relief groove -width 10
       pack   $This.frameCoord.labelDec -in $This.frameCoord -anchor center -fill x 
-   
+
       pack $This.frameCoord -in $This  -fill x
 
       pack $This -in $parentFrame  -fill both -expand 1 
@@ -530,7 +530,7 @@ namespace eval ::telescopePad {
       bind $This.card.ns.s <ButtonRelease-1> { ::telescope::stop s }
       bind $This.card.ns.n <ButtonPress-1>   { ::telescope::move n }
       bind $This.card.ns.n <ButtonRelease-1> { ::telescope::stop n }
-      
+
       #--- bind display zone
       bind $This.frameCoord <ButtonPress-1>            { ::telescope::afficheCoord }
       bind $This.frameCoord.labelRa <ButtonPress-1>    { ::telescope::afficheCoord }
@@ -629,11 +629,14 @@ namespace eval ::AlignManager {
          set moveTime [expr int($deltax * $conf(superpad,centerspeed) * -1) ]
       }
       set moveTime [expr int($moveTime * $binning / 4 ) ]
+      set camNo $::confCam(camera,A,camNo)
+      set mirx [cam$camNo mirrorx]
+      set miry [cam$camNo mirrory]
 
-      if {    (([expr $deltax] >0 ) && ( $conf($conf(camera),mirx)==0) && ($private(mountSide)=="e" ))
-           || (([expr $deltax] <0 )  && ($conf($conf(camera),mirx)==1) && ($private(mountSide)=="e" )) 
-           || (([expr $deltax] <0 ) && ( $conf($conf(camera),mirx)==0) && ($private(mountSide)=="w" ))
-           || (([expr $deltax] >0 )  && ($conf($conf(camera),mirx)==1) && ($private(mountSide)=="w" ))} {         
+      if {    (([expr $deltax] >0 ) && ($mirx==0) && ($private(mountSide)=="e" ))
+           || (([expr $deltax] <0 ) && ($mirx==1) && ($private(mountSide)=="e" )) 
+           || (([expr $deltax] <0 ) && ($mirx==0) && ($private(mountSide)=="w" ))
+           || (([expr $deltax] >0 ) && ($mirx==1) && ($private(mountSide)=="w" ))} {         
           console::disp "move $moveTime ms\nto est \n" 
           set direction "e"
       } else {
@@ -649,7 +652,7 @@ namespace eval ::AlignManager {
          after [expr ($moveTime -2500)/16 ]
          ::telescope::stop $direction
          set moveTime  2000
-	}         
+      }
 
       #--- use low speed
       if { [expr $moveTime] > 100  } {
@@ -658,7 +661,7 @@ namespace eval ::AlignManager {
          #logInfo "telss2k.centerStar moveTime=$moveTime ms to $direction \n "
          after $moveTime
          ::telescope::stop $direction
-	}
+      }
 
       set binning [lindex [buf$audace(bufNo) getkwd "BIN2"] 1]
 
@@ -670,10 +673,10 @@ namespace eval ::AlignManager {
       }                  
       set moveTime [expr int($moveTime * $binning / 4 ) ]
       
-      if {    (([expr $deltay ]>0) && ($conf($conf(camera),miry)==0) && ($private(mountSide)=="e" ))
-           || (([expr $deltay ]<0) && ($conf($conf(camera),miry)==1) && ($private(mountSide)=="e" ))
-			  || (([expr $deltay ]<0) && ($conf($conf(camera),miry)==0) && ($private(mountSide)=="w" ))
-           || (([expr $deltay ]>0) && ($conf($conf(camera),miry)==1) && ($private(mountSide)=="w" )) } {         
+      if {    (([expr $deltay ]>0) && ($miry==0) && ($private(mountSide)=="e" ))
+           || (([expr $deltay ]<0) && ($miry==1) && ($private(mountSide)=="e" ))
+           || (([expr $deltay ]<0) && ($miry==0) && ($private(mountSide)=="w" ))
+           || (([expr $deltay ]>0) && ($miry==1) && ($private(mountSide)=="w" )) } {
           console::disp "move $moveTime ms\nto north \n"
           set direction "n"
       } else {
@@ -689,18 +692,17 @@ namespace eval ::AlignManager {
          after [expr ($moveTime -2500)/16 ]
          ::telescope::stop $direction
          set moveTime  2000
-	}      
+      }
    
       #--- use low speed
       if { [expr $moveTime] > 100  } {
-	   ::telescope::setSpeed "2"	
-  	   ::telescope::move $direction
-	   #logInfo "telss2k.centerStar moveTime=$moveTime ms to $direction \n "
+         ::telescope::setSpeed "2"	
+         ::telescope::move $direction
          after $moveTime
          ::telescope::stop $direction
       }
 
-	#--- restore speed=Low 
+      #--- restore speed=Low 
       ::telescope::setSpeed "2"	
 
       #-- enable center button
@@ -714,10 +716,10 @@ namespace eval ::AlignManager {
    proc cmdChangeMountSide { } {
       variable private
 
-	if  { $private(mountSide) == "w" }  {
-	   set private(mountSide) "e"
+      if  { $private(mountSide) == "w" }  {
+         set private(mountSide) "e"
       } else {
-	   set private(mountSide) "w"
+         set private(mountSide) "w"
       }
 
       update
@@ -741,12 +743,12 @@ namespace eval ::AlignManager {
    #------------------------------------------------------------
    proc cmdSelectStar { } {
       variable private
-      
-	set coord [::DlgSelectStar::run]
-	if { [string compare $coord ""]==0 } {
-	   #--- if no star selected, do nothing
-	   return 
-	}
+
+      set coord [::DlgSelectStar::run]
+      if { [string compare $coord ""]==0 } {
+         #--- if no star selected, do nothing
+         return 
+      }
       set private(targetRa)   "[lindex $coord 0]"
       set private(targetDec)  "[lindex $coord 1]"
       set private(targetName) "[lindex $coord 3]"
@@ -764,15 +766,15 @@ namespace eval ::AlignManager {
       set result [::carte::getSelectedObject]      
       if { [llength $result] == 3 } {
 
-   	   set now now
-   	   catch {set now [::audace::date_sys2ut now]}
-   	   set listv [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
+         set now now
+         catch {set now [::audace::date_sys2ut now]}
+         set listv [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
          set ra [lindex $listv 0]
-   	   set ra [mc_angle2hms $ra 360 nozero 1 auto string]
+         set ra [mc_angle2hms $ra 360 nozero 1 auto string]
          set ra [string range $ra 0 [string first "s" "$ra" ] ]
 
-   	   set dec [lindex $listv 1]
-   	   set dec [mc_angle2dms $dec 90 nozero 0 + string]  
+         set dec [lindex $listv 1]
+         set dec [mc_angle2dms $dec 90 nozero 0 + string]  
          set dec [string range $dec 0 [string first "s" "$dec"  ] ]
                 
          set private(targetRa)   "$ra"
@@ -876,7 +878,7 @@ namespace eval ::AlignManager {
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -textvariable ::AlignManager::private(targetRa) 
       pack   $This.frameTargetCoord.targetRa -in $This.frameTargetCoord -anchor center -fill x  -side left
-   
+
       #--- Entry Declinaison
       entry  $This.frameTargetCoord.targetDec -bg $colorpad(backdisp) -relief groove -width 11 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
@@ -884,7 +886,7 @@ namespace eval ::AlignManager {
       pack   $This.frameTargetCoord.targetDec -in $This.frameTargetCoord -anchor center -fill x
 
       pack $This.frameTargetCoord -in $This.frameGoto  -fill x
-   
+
       #--- Frame Goto --------------------------------------------------
       #--- button StartGOTO
       button  $This.frameGoto.buttonStartGoto -borderwidth 1 -bg $colorpad(backkey) -width 14\
@@ -893,7 +895,7 @@ namespace eval ::AlignManager {
          -relief ridge \
          -command { ::AlignManager::cmdStartGoto }
       pack   $This.frameGoto.buttonStartGoto -in $This.frameGoto -anchor center -fill x -side left
-   
+
       #--- button StopGOTO
       button  $This.frameGoto.buttonStopGoto -borderwidth 1 -bg $colorpad(backkey) -width 6 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
@@ -901,7 +903,7 @@ namespace eval ::AlignManager {
          -relief ridge \
          -command { ::telescope::stopGoto }
       pack   $This.frameGoto.buttonStopGoto -in $This.frameGoto -anchor center -fill x 
-   
+
       pack $This.frameGoto -in $This  -fill x
 
       #--- Frame du pointage ---------------------------------------------
@@ -914,7 +916,7 @@ namespace eval ::AlignManager {
          -relief ridge \
          -command { ::AlignManager::cmdChangeMountSide }
       pack $This.fraAlign.butMountSide -in $This.fraAlign -fill x   -side left
-    
+
       #--- button CENTER
       button  $This.fraAlign.butCenter -borderwidth 1 -bg $colorpad(backkey)  \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \

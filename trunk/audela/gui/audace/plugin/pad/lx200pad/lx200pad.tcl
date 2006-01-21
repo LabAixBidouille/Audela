@@ -2,35 +2,35 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 01 janvier 2005
+# Date de mise a jour : 22 decembre 2005
 #
 
 package provide lx200pad 1.0
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init 			  : initialise le namespace (appelee pendant le chargement de ce source)   
-#     getDriverName  	  : retourne le nom du driver
-#     getLabel     	  : retourne le nom affichable du driver 
+#     init                : initialise le namespace (appelee pendant le chargement de ce source)
+#     getDriverName       : retourne le nom du driver
+#     getLabel            : retourne le nom affichable du driver 
 #     getHelp             : retourne la documentation htm associee
-#     getDriverType 	  : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf     	  : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
-#     fillConfigPage 	  : affiche la fenetre de configuration de ce driver 
-#     confToWidget   	  : copie le tableau conf() dans les variables des widgets
-#     widgetToConf 	  : copie les variables des widgets dans le tableau conf()
-#     configureDriver	  : configure le driver et reserve les ressources
+#     getDriverType       : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf            : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage      : affiche la fenetre de configuration de ce driver 
+#     confToWidget        : copie le tableau conf() dans les variables des widgets
+#     widgetToConf        : copie les variables des widgets dans le tableau conf()
+#     configureDriver     : configure le driver et reserve les ressources
 #     stopDriver          : arrete le driver et libere les ressources occupees
-#     isReady 		  : informe de l'etat de fonctionnement du driver
+#     isReady             : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :  
-#     run         	  : affiche la raquette 
+#     run                 : affiche la raquette 
 #     startSurveilleSpeed : lance la surveillance de la vitesse
 #     surveilleSpeed      : surveillance de la vitesse
 #     lx200_set_slew      : vitesse slew
 #     lx200_set_find      : vitesse find
 #     lx200_set_cntr      : vitesse cntr
 #     lx200_set_guide     : vitesse guide
-#    
+#
 
 namespace eval ::lx200pad {
 
@@ -67,7 +67,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc getDriverType { } {
       return "pad"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getLabel
@@ -79,7 +79,7 @@ namespace eval ::lx200pad {
       global caption
 
       return "$caption(lx200pad,titre)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getHelp
@@ -90,7 +90,7 @@ namespace eval ::lx200pad {
    proc getHelp { } {
 
       return "lx200pad.htm"
-   }	
+   }
 
    #------------------------------------------------------------
    #  initConf 
@@ -136,7 +136,7 @@ namespace eval ::lx200pad {
       
       set conf(lx200pad,padsize) $widget(padsize)
       set conf(lx200pad,visible) $widget(visible)
-  }	
+  }
 
    #------------------------------------------------------------
    #  fillConfigPage 
@@ -161,7 +161,7 @@ namespace eval ::lx200pad {
 
       #--- Label pad size
       label $frm.labSize -text "$caption(lx200pad,pad_size)"
-   	pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
 
       #--- Definition de la taille de la raquette 
       set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
@@ -175,10 +175,10 @@ namespace eval ::lx200pad {
          -values $list_combobox
       pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
 
-	#--- Raquette toujours visible
-	checkbutton $frm.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
+      #--- Raquette toujours visible
+      checkbutton $frm.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
          -variable ::lx200pad::widget(visible) -onvalue 1 -offvalue 0
-	pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
    }
 
    #------------------------------------------------------------
@@ -220,7 +220,7 @@ namespace eval ::lx200pad {
       #--- J'arrete la surveillance de audace(telescope,speed) et je modifie pour débloquer la boucle d'attente
       set temp $audace(telescope,speed) 
       set audace(telescope,speed) $temp
-      
+
       return 
    }
 
@@ -230,7 +230,7 @@ namespace eval ::lx200pad {
    #  
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
-   proc isReady {  } {   
+   proc isReady {  } {
       return  0
    }
                
@@ -1198,10 +1198,10 @@ namespace eval ::lx200pad {
       #--- Si la raquette existe , je met a jour l'affichage de la vitesse
       if { [ winfo exists .lx200pad ] } {
          switch -exact -- $audace(telescope,speed) {
-   	      1 { ::lx200pad::lx200_set_guide }
-   	      2 { ::lx200pad::lx200_set_cntr  }
-   	      3 { ::lx200pad::lx200_set_find  }
-   	      4 { ::lx200pad::lx200_set_slew }
+            1 { ::lx200pad::lx200_set_guide }
+            2 { ::lx200pad::lx200_set_cntr  }
+            3 { ::lx200pad::lx200_set_find  }
+            4 { ::lx200pad::lx200_set_slew }
          }
       }
 
@@ -1211,7 +1211,7 @@ namespace eval ::lx200pad {
       } else {
          set suveilleSpeedActif "0"
       }
-	   
+
    }
 
    #------------------------------------------------------------

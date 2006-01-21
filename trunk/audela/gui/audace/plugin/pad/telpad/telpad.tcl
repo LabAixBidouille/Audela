@@ -2,28 +2,28 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Date de mise a jour : 26 juillet 2005
+# Date de mise a jour : 22 decembre 2005
 #
 
 package provide telpad 1.0
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init 			: initialise le namespace (appelee pendant le chargement de ce source)   
-#     getDriverName  	: retourne le nom du driver
-#     getLabel     	: retourne le nom affichable du driver 
+#     init              : initialise le namespace (appelee pendant le chargement de ce source)
+#     getDriverName     : retourne le nom du driver
+#     getLabel          : retourne le nom affichable du driver 
 #     getHelp           : retourne la documentation htm associee
-#     getDriverType 	: retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf     	: initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
-#     fillConfigPage 	: affiche la fenetre de configuration de ce driver 
-#     confToWidget   	: copie le tableau conf() dans les variables des widgets
-#     widgetToConf 	: copie les variables des widgets dans le tableau conf()
-#     configureDriver	: configure le driver 
+#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     confToWidget      : copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : copie les variables des widgets dans le tableau conf()
+#     configureDriver   : configure le driver 
 #     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady 		: informe de l'etat de fonctionnement du driver
+#     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :  
-#     run         	: affiche la raquette 
+#     run               : affiche la raquette 
 #     fermer            : ferme la raquette
 #     createDialog      : creation de l'interface graphique
 #    
@@ -51,7 +51,7 @@ namespace eval telpad {
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf   
 
-	#--- J'initialise les variables widget(..) 
+      #--- J'initialise les variables widget(..) 
       confToWidget
 
       return [namespace current]
@@ -65,7 +65,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc getDriverType { } {
       return "pad"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getLabel
@@ -77,7 +77,7 @@ namespace eval telpad {
       global caption
 
       return "$caption(telpad,titre)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getHelp
@@ -88,7 +88,7 @@ namespace eval telpad {
    proc getHelp { } {
 
       return "telpad.htm"
-   }	
+   }
 
    #------------------------------------------------------------
    #  initConf 
@@ -145,7 +145,7 @@ namespace eval telpad {
       variable private
       global caption
 
-	#--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame 
       set widget(frm) $frm
       
       #--- Creation des differents frames
@@ -157,7 +157,7 @@ namespace eval telpad {
 
       #--- Label pad size
       label $frm.labSize -text "$caption(telpad,taille)"
-   	pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
       
       #--- Definition de la taille de la raquette 
       set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
@@ -171,10 +171,10 @@ namespace eval telpad {
          -values $list_combobox
       pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
 
-	#--- Raquette toujours visible
-	checkbutton $frm.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
+      #--- Raquette toujours visible
+      checkbutton $frm.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
          -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
-	pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
    }
 
    #------------------------------------------------------------
@@ -420,7 +420,7 @@ namespace eval telpad {
 
       set zone(moins) $This.frame4.we.canv1
       set zone(plus)  $This.frame4.we.canv2
-      
+
       #--- Binding de la vitesse du moteur de focalisation
       bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed }
 

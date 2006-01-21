@@ -4,24 +4,24 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Date de mise a jour : 08 aout 2005
+# Date de mise a jour : 22 decembre 2005
 #
 
 package provide carteducielv3 1.0
 
 #
 # Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,..)
-#     init 			: initialise le namespace (appelee pendant le chargement de ce source)   
-#     getLabel     	: retourne le nom affichable du driver 
+#     init              : initialise le namespace (appelee pendant le chargement de ce source)
+#     getLabel          : retourne le nom affichable du driver 
 #     getHelp           : retourne la documentation htm associee
-#     getDriverType 	: retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf     	: initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
-#     fillConfigPage 	: affiche la fenetre de configuration de ce driver 
-#     confToWidget   	: copie le tableau conf() dans les variables des widgets
-#     widgetToConf 	: copie les variables des widgets dans le tableau conf()
-#     configureDriver	: configure le driver 
+#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     confToWidget      : copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : copie les variables des widgets dans le tableau conf()
+#     configureDriver   : configure le driver 
 #     stopDriver	      : arrete le driver 
-#     isReady 		: informe de l'etat de fonctionnement du driver
+#     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :  
 #     gotoObject        : centre le champ de la carte  sur un objet 
@@ -49,7 +49,7 @@ namespace eval carteducielv3 {
       global audace
 
       #--- je cree les variables dans conf(...)
-	initConf   
+      initConf   
 
       #--- charge le fichier caption
       uplevel #0  "source \"[ file join $audace(rep_plugin) chart carteducielv3 carteducielv3.cap ]\" " 
@@ -65,7 +65,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc getDriverType { } {
       return "catalog"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getLabel
@@ -77,7 +77,7 @@ namespace eval carteducielv3 {
       global caption
 
       return "$caption(carteducielv3,titre)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getHelp
@@ -88,7 +88,7 @@ namespace eval carteducielv3 {
    proc getHelp { } {
 
       return "carteducielv3.htm"
-   }	
+   }
 
    #------------------------------------------------------------
    #  initConf 
@@ -198,7 +198,7 @@ namespace eval carteducielv3 {
       set conf(carteducielv3,localserver)   "$widget(localserver)"
       set conf(carteducielv3,host)          "$widget(cdchost)"
       set conf(carteducielv3,port)          "$widget(cdcport)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  fillConfigPage 
@@ -212,10 +212,10 @@ namespace eval carteducielv3 {
       global caption
       global color
 
-	#--- je memorise la reference de la frame 
+      #--- je memorise la reference de la frame 
       set widget(frm) $frm
       
-	#--- j'initialise les valeurs 
+      #--- j'initialise les valeurs 
       confToWidget
 
       #--- Creation des differents frames
@@ -236,21 +236,21 @@ namespace eval carteducielv3 {
 
       #--- Definition du champ (FOV)
       label $frm.frame1.labFOV -text "$caption(carteducielv3,fov_label)"
-	pack $frm.frame1.labFOV -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFOV -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       checkbutton $frm.frame1.fovState -text "$caption(carteducielv3,fov_state)" \
          -highlightthickness 0 -variable ::carteducielv3::widget(fixedfovstate)
-    	pack $frm.frame1.fovState -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.fovState -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame1.labFovValue -text "$caption(carteducielv3,fov_value)"
-	pack $frm.frame1.labFovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame1.fovValue -textvariable ::carteducielv3::widget(fixedfovvalue) -width 10
-	pack $frm.frame1.fovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.fovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       #--- Initialisation du chemin du fichier
       label $frm.frame2.labFichier -text "$caption(carteducielv3,fichier)"
-	pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame2.nomFichier -textvariable ::carteducielv3::widget(fichier_recherche) -width 12 -justify center
       pack $frm.frame2.nomFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 5
@@ -277,16 +277,16 @@ namespace eval carteducielv3 {
 
       #--- adresse IP du serveur distant   
       label $frm.labcdchost -text "$caption(carteducielv3,cdchost)"
-	pack $frm.labcdchost -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
+      pack $frm.labcdchost -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
 
       entry $frm.cdchost -width 17 -textvariable ::carteducielv3::widget(cdchost)
-	pack $frm.cdchost -in $frm.frame4 -anchor center -side left -padx 15 -pady 10
+      pack $frm.cdchost -in $frm.frame4 -anchor center -side left -padx 15 -pady 10
 
       label $frm.labcdcport -text "$caption(carteducielv3,cdcport)"
-	pack $frm.labcdcport -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
+      pack $frm.labcdcport -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
 
       entry $frm.cdcport -width 5 -textvariable ::carteducielv3::widget(cdcport)
-	pack $frm.cdcport -in $frm.frame4 -anchor center -side left -padx 5 -pady 7
+      pack $frm.cdcport -in $frm.frame4 -anchor center -side left -padx 5 -pady 7
 
       button $frm.ping -text "$caption(carteducielv3,testping)" -relief raised -state normal \
          -command { 
@@ -297,9 +297,9 @@ namespace eval carteducielv3 {
             set res1 [lindex $res 0]
             set res2 [lindex $res 1]
             if {$res1==1} {
-	            set tres1 "$caption(carteducielv3,appareil_connecte) $::carteducielv3::widget(cdchost)"
+               set tres1 "$caption(carteducielv3,appareil_connecte) $::carteducielv3::widget(cdchost)"
             } else {
-	            set tres1 "$caption(carteducielv3,pas_appareil_connecte) $::carteducielv3::widget(cdchost)"
+               set tres1 "$caption(carteducielv3,pas_appareil_connecte) $::carteducielv3::widget(cdchost)"
             }
             set tres2 "$caption(carteducielv3,message_ping)"
             tk_messageBox -message "$tres1.\n$tres2 $res2" -icon info
@@ -389,7 +389,7 @@ namespace eval carteducielv3 {
          moveCoord $ad $dec
       } 
    }
- 
+
    #------------------------------------------------------------
    #  moveCoord  radec 
    #     centre la fenetre de carteduciel sur les coordonnees passes en parametre
@@ -400,7 +400,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc moveCoord { ra dec } {
       global conf 
-  
+
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv3,fixedfovstate) != 0 }  {
          # j'utilise le champ fixe
@@ -600,12 +600,12 @@ namespace eval carteducielv3 {
       set detail ""
       scan $ligne "%s %s %s %s %\[^\r\] " cr ra dec objType detail 
 
-#console::disp "CDC ----------------\n"
-#console::disp "CDC entry cr=$cr\n"
-#console::disp "CDC entry ra=$ra\n"
-#console::disp "CDC entry dec=$dec\n"
-#console::disp "CDC entry objType=$objType\n"
-#console::disp "CDC entry detail=$detail \n"
+     # console::disp "CDC ----------------\n"
+     # console::disp "CDC entry cr=$cr\n"
+     # console::disp "CDC entry ra=$ra\n"
+     # console::disp "CDC entry dec=$dec\n"
+     # console::disp "CDC entry objType=$objType\n"
+     # console::disp "CDC entry detail=$detail \n"
       
       #Mise en forme de ra 
       set ra [lindex [split $ra "."] 0]
