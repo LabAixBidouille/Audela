@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Date de mise a jour : 19 novembre 2005
+# Date de mise a jour : 17 decembre 2005
 #
 
 namespace eval AlAudine_NT {
@@ -78,7 +78,7 @@ namespace eval AlAudine_NT {
       set confCam(alaudine_nt,position) "+[ string range $confCam(alaudine_nt,geometry) $deb $fin ]"
       #---
       set conf(alaudine_nt,position) $confCam(alaudine_nt,position)
-   }	
+   }
 
    proc createDialog { } {
       variable This
@@ -179,7 +179,7 @@ namespace eval AlAudine_NT {
       scale $This.temp_ccd_souhaite_variant -from $tmp_ccd_min -to $tmp_ccd_max -length 300 \
          -orient horizontal -showvalue true -tickinterval 5 -resolution 0.1 \
          -borderwidth 2 -relief groove -variable confCam(alaudine_nt,temp_ccd_souhaite) -width 10 \
-         -command { catch { [ cam$audace(camNo) cooler check $confCam(alaudine_nt,temp_ccd_souhaite) ] } }
+         -command { catch { [ cam$confCam(camera,$confCam(cam_item),camNo) cooler check $confCam(alaudine_nt,temp_ccd_souhaite) ] } }
       pack $This.temp_ccd_souhaite_variant -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
       entry $This.temp_ccd_souhaite -textvariable confCam(alaudine_nt,temp_ccd_souhaite) -width 5 -justify center
@@ -268,11 +268,11 @@ namespace eval AlAudine_NT {
       global confCam
 
       catch {
-         if { stats_cam$audace(camNo) == "read" } {
+         if { stats_cam$confCam(camera,$confCam(cam_item),camNo) == "read" } {
             #--- Si on lit une image de la camera, il ne faut pas lire la temperature
             set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
          } else {
-            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$audace(camNo) temperature ] } ] == "0" } {
+            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam(camera,$confCam(cam_item),camNo) temperature ] } ] == "0" } {
                set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
                $This.lab7 configure \
                   -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
