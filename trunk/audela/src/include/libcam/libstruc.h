@@ -56,6 +56,8 @@ struct TimerExpirationStruct {
    int binx, biny;\
    int x1, y1, x2, y2;\
    int w, h;\
+   int mirrorh;\
+   int mirrorv;\
    int bufno;\
    int camno;\
    int telno;\
@@ -83,6 +85,13 @@ struct TimerExpirationStruct {
    unsigned long clockbegin;\
    Tcl_Interp *interp;\
    struct TimerExpirationStruct *timerExpiration;\
+   char pixels_classe[60]; \
+   char pixels_format[60]; \
+   char pixels_compression[60]; \
+   char pixels_reverse_x; \
+   char pixels_reverse_y; \
+   char *pixel_data; \
+   unsigned long pixel_size; \
    struct camprop *next
 
 

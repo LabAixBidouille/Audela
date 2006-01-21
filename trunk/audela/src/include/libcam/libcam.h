@@ -69,6 +69,8 @@ struct cmditem {
    {"interrupt", (Tcl_CmdProc *)cmdCamInterrupt},\
    {"overscan", (Tcl_CmdProc *)cmdCamOverscan}, \
    {"close", (Tcl_CmdProc *)cmdCamClose}, \
+   {"mirrorh", (Tcl_CmdProc *)cmdCamMirrorH},\
+   {"mirrorv", (Tcl_CmdProc *)cmdCamMirrorV},\
 
 
 
