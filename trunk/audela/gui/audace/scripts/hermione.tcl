@@ -1,14 +1,13 @@
 #
 # Fichier : hermione.tcl
 # Description : Script a placer dans le repertoire scripts, optimise pour une Audine Kaf-0400
-# Date de mise a jour : 05 mai 2005
+# Date de mise a jour : 24 decembre 2005
 #
 
 global audace
 
 #--- Petits raccourcis
 set camera cam$audace(camNo)
-set visu visu$audace(visuNo)
 set buffer buf$audace(bufNo)
 
 #--- Inverser le "yes" et le "no" au moment de l'observation reelle de l'occultation
@@ -63,7 +62,7 @@ bell
 catch { $camera shutter synchro }
 
 #--- Visualisation de l'image
-::audace::autovisu $visu
+::audace::autovisu $audace(visuNo)
 
 #--- Enregistrement du fichier FITS
 $buffer save "${astername}_$name"

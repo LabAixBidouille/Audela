@@ -1,6 +1,6 @@
 #
 # Fichier : tri_fwhm.cap
-# Date de mise a jour : 25 fevrier 2005
+# Date de mise a jour : 08 janvier 2006
 #
 
 #=========================================================================
@@ -18,7 +18,7 @@ set cap_tri(arret_procedure)        "Script stopped"
 set cap_tri(fin)                    "----------End of Tri_FWHM---------"
 set cap_tri(verification)           "File Check"
 set cap_tri(erreur_verif_1)         "File"
-set cap_tri(erreur_verif_2)         "does not exist"    
+set cap_tri(erreur_verif_2)         "does not exist"
 set cap_tri(calcul_principal)       "Main FWHM Computation"
 set cap_tri(analyse)                "Image Analysis"
 set cap_tri(fwhm_image)             "Image FWHM"
@@ -76,7 +76,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(fin)                 "---------Fin de Tri_FWHM----------"
    set cap_tri(verification)        "Vérification de l'existence des fichiers"
    set cap_tri(erreur_verif_1)      "Le fichier"
-   set cap_tri(erreur_verif_2)      "n'existe pas"  
+   set cap_tri(erreur_verif_2)      "n'existe pas"
    set cap_tri(calcul_principal)    "Calcul principal de tous les FWHM"
    set cap_tri(analyse)             "Analyse de chaque image"
    set cap_tri(fwhm_image)          "FWHM de l'image"
@@ -134,7 +134,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(fin)                 "-------- Fine di Tri_FWHM---------"
    set cap_tri(verification)        "Verifica dell'esistenza dei file"
    set cap_tri(erreur_verif_1)      "Il file"
-   set cap_tri(erreur_verif_2)      "non esiste"  
+   set cap_tri(erreur_verif_2)      "non esiste"
    set cap_tri(calcul_principal)    "Calcolo principale di tutte le FWHM"
    set cap_tri(analyse)             "Analisi di ogni immagine"
    set cap_tri(fwhm_image)          "FWHM dell'immagine"
@@ -192,7 +192,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(fin)                 "----------Fin de Tri_FWHM---------"
    set cap_tri(verification)        "Verificación"
    set cap_tri(erreur_verif_1)      "Fichero"
-   set cap_tri(erreur_verif_2)      "no existe"    
+   set cap_tri(erreur_verif_2)      "no existe"
    set cap_tri(calcul_principal)    "Cálculo FWHM principal"
    set cap_tri(analyse)             "Análisis de imágenes"
    set cap_tri(fwhm_image)          "FWHM de la imagen"
@@ -250,7 +250,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(fin)                 "----------Tri_FWHM Ende-----------"
    set cap_tri(verification)        "Prüfung der Existenz der Datei"
    set cap_tri(erreur_verif_1)      "Die Datei"
-   set cap_tri(erreur_verif_2)      "existiert nicht"  
+   set cap_tri(erreur_verif_2)      "existiert nicht"
    set cap_tri(calcul_principal)    "Hauptrechnung von alle FWHM"
    set cap_tri(analyse)             "Analyse von jedes Bild"
    set cap_tri(fwhm_image)          "Bild FWHM"
@@ -308,7 +308,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(fin)                 "----------End of Tri_FWHM---------"
    set cap_tri(verification)        "File Check"
    set cap_tri(erreur_verif_1)      "File"
-   set cap_tri(erreur_verif_2)      "does not exist"    
+   set cap_tri(erreur_verif_2)      "does not exist"
    set cap_tri(calcul_principal)    "Main FWHM Computation"
    set cap_tri(analyse)             "Image Analysis"
    set cap_tri(fwhm_image)          "Image FWHM"

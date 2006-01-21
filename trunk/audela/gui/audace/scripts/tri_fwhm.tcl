@@ -1,8 +1,8 @@
+#
 # Fichier : tri_fwmh.tcl
 # Description : script pour le tri d'images par le critère de fwhm.
 # Auteurs : Francois Cochard et Jacques Michelet
-# Date de MAJ : 21 mars 2005
-#
+# Date de MAJ : 04 decembre 2005
 #
 
 namespace eval ::TriFWHM {
@@ -1320,7 +1320,9 @@ namespace eval ::TriFWHM {
             if {$fwhm_image($image) <= $valeur_fwhm } {
                 loadima $source
                 saveima $destination
-                ::audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+                ::audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
                 incr indice_destination
             }
         }
