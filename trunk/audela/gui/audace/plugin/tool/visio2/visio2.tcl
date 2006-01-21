@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# Date de mise a jour : 13 novembre 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 package provide visio2 1.0
@@ -20,7 +20,7 @@ namespace eval ::Visio2 {
    source [ file join $audace(rep_audela) audace image.tcl ]
    source [ file join $audace(rep_audela) audace fullscreen.tcl ]
 
-   array set private { 
+   array set private {
       This           ""
       ftptbl         ""
       parentFolder   ""
@@ -30,22 +30,13 @@ namespace eval ::Visio2 {
       file           ""
       ftpconnection  "0"
       animation      "0"
-   }    
-
-   #--- Types des objets affiches
-   #---   bidouille !!! je met un espace au debut de private(parentFolder) et private(folder) 
-   #---   pour que les repertoires apparaissent en premier par ordre alphabetique
-   set private(parentFolder)        " $caption(visio2,parent_folder)"
-   set private(folder)              " $caption(visio2,folder)"
-   set private(fileImage)           "$caption(visio2,image)"
-   set private(fileMovie)           "$caption(visio2,movie)"
-   set private(file)                "$caption(visio2,file)"
-   set private(volume)              "disque"
+   }
 
    proc init { { in "" } } {
+      variable private
       global audace
       global caption
-      
+
       #--- je verifie que le package Tablelist est present
       set result [catch { package require Tablelist } msg]
       if { $result == 1} {
@@ -62,11 +53,21 @@ namespace eval ::Visio2 {
 
       #--- je verifie que les variables de cet outil existent dans $conf(...)
       initConf
-      
+
+      #--- Types des objets affiches
+      #---   bidouille !!! je met un espace au debut de private(parentFolder) et private(folder) 
+      #---   pour que les repertoires apparaissent en premier par ordre alphabetique
+      set private(parentFolder)        " $caption(visio2,parent_folder)"
+      set private(folder)              " $caption(visio2,folder)"
+      set private(fileImage)           "$caption(visio2,image)"
+      set private(fileMovie)           "$caption(visio2,movie)"
+      set private(file)                "$caption(visio2,file)"
+      set private(volume)              "disque"
+
       #--- j'affiche le panneau
       createPanel $in.visio2
    }
-    
+
    #------------------------------------------------------------
    #  initConf{ }
    #     initialise les parametres dans le tableau conf()
@@ -79,18 +80,18 @@ namespace eval ::Visio2 {
       if {![info exists conf(Visio2,show_column_series)]}   { set conf(Visio2,show_column_series) "0" }
       if {![info exists conf(Visio2,show_column_date)]}     { set conf(Visio2,show_column_date) "0" }
       if {![info exists conf(Visio2,show_column_size)]}     { set conf(Visio2,show_column_size) "0" }
-      
+
       #--- largeur des colonnes en nombre de caracteres (valeur positive) ou en nombre de pixel (valeur negative)
       if {![info exists conf(Visio2,width_column_name)]}    { set conf(Visio2,width_column_name)   "-90" }
       if {![info exists conf(Visio2,width_column_type)]}    { set conf(Visio2,width_column_type)   "-70" }
       if {![info exists conf(Visio2,width_column_series)]}  { set conf(Visio2,width_column_series) "-60" }
       if {![info exists conf(Visio2,width_column_date)]}    { set conf(Visio2,width_column_date)   "-104" }
-      if {![info exists conf(Visio2,width_column_size)]}    { set conf(Visio2,width_column_size)   "-70" }      
- 
+      if {![info exists conf(Visio2,width_column_size)]}    { set conf(Visio2,width_column_size)   "-70" }
+
       #--- extensions des fichiers par defaut
-      if {![info exists conf(Visio2,enableExtension)]}    {       
+      if {![info exists conf(Visio2,enableExtension)]} {
          #--- par defaut je traite les fichiers fit et gif
-         array set enableExtension {                
+         array set enableExtension {
             fit      "1"
             gif      "1"
             bmp      "1"
@@ -100,19 +101,19 @@ namespace eval ::Visio2 {
             tif      "1"
             xbm      "1"
             raw      "1"
-            avi      "1"  
+            avi      "1"
          }    
          set conf(Visio2,enableExtension)   [array get enableExtension]
-      }      
-      if {![info exists conf(Visio2,show_all_files)]}    { set conf(Visio2,show_all_files)   "0" }      
+      }
+      if {![info exists conf(Visio2,show_all_files)]} { set conf(Visio2,show_all_files)   "0" }
 
-   }     
+   }
 
    #==============================================================
    # Fonctions generiques de gestion de panneau
    #  createPanel
-   #  pack
-   #  unpack
+   #  startTool
+   #  stopTool
    #==============================================================
 
    proc createPanel { this } {
@@ -124,30 +125,28 @@ namespace eval ::Visio2 {
       # j'initialise les variable private
       set private(This) $this
       
+      #---
+
       # j'affiche le panneau
-      set panneau(menu_name,Visio2)   $caption(visio2,title)
+      set panneau(menu_name,Visio2) $caption(visio2,title)
       Visio2BuildIF $private(This)
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable private
-      global unpackFunction
       global audace
-      global caption
 
-      set unpackFunction ::Visio2::unpack
-      set a_executer "pack $private(This) -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
-      
+      pack $private(This) -side left -fill y
+
       #--- je refraichis la liste des fichiers 
       localTable::init $private(This) $audace(rep_images)
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable private
       global conf
       global audace
-         
+
       #--- j'arrete le diaporama
       localTable::stopSlideShow
       #--- j'arrete l'animation
@@ -155,14 +154,13 @@ namespace eval ::Visio2 {
       #--- je supprime le canvas des films
       ::Movie::close $audace(hCanvas)
       #--- copie la largeur des colonnes dans conf()
-      localTable::saveColumnWidth          
+      localTable::saveColumnWidth
       #--- je ferme la connexion ftp
       ftpclient::close
-           
-      set a_executer "pack forget $private(This)"
-      uplevel #0 $a_executer
+
+      pack forget $private(This)
    }
-   
+
    #------------------------------------------------------------------------------
    # configure
    #
@@ -171,15 +169,15 @@ namespace eval ::Visio2 {
    proc configure { } {
       variable private
       global audace
-      
-      #--- j'affiche la fenetre de configuration 
+
+      #--- j'affiche la fenetre de configuration
       ::confGenerique::run "$audace(base).confvisio2" "::Visio2::config"
-      
+
       #--- je refraichis les tables pour prendre en compte la nouvelle config
       localTable::refresh
       ftpTable::refresh
    }
-   
+
    #------------------------------------------------------------------------------
    # getFileList
    #
@@ -189,19 +187,19 @@ namespace eval ::Visio2 {
    #------------------------------------------------------------------------------
     proc getFileList { directory } {
       variable private
-      
+
       set files ""
       foreach fullname [glob -nocomplain -dir $directory *] {
          set isdir [file isdir $fullname]
          set shortname [file tail $fullname]
-         set date [file mtime $fullname]         
+         set date [file mtime $fullname]
          if { $isdir == 1 } {
             set size "" 
          } else {
             set size [file size $fullname]
          }
          lappend files [list "$isdir" "$shortname" "$date" "$size" ]
-      }      
+      }
       return $files
    }
 
@@ -215,7 +213,7 @@ namespace eval ::Visio2 {
       global conf
 
       #--- je recupere les extensions autorisees dans un tableau
-      array set enableExtension $conf(Visio2,enableExtension) 
+      array set enableExtension $conf(Visio2,enableExtension)
 
       #--- raz de la liste
       $tbl delete 0 end
@@ -228,13 +226,13 @@ namespace eval ::Visio2 {
       #--- j'ajoute l'icone
       $tbl cellconfigure end,0 -image $private(folderIcon)
 
-      #--- j'ajoute les lignes correspondant aux fichiers et sous-repertoires 
+      #--- j'ajoute les lignes correspondant aux fichiers et sous-repertoires
       foreach i [lsort -dictionary $files] {
          set isdir   "[lindex $i 0 ]"
          set name    "[lindex $i 1 ]"
          set date    "[lindex $i 2 ]"
          set size    "[lindex $i 3 ]"
-         
+
          if { $isdir == 1 } {
             # cas d'un repertoire : affiche le nom du repertoire et l'icone private(folderIcon)
             set item {}
@@ -246,7 +244,7 @@ namespace eval ::Visio2 {
             set type "$private(folder)"
             #--- colonne date
             if { "$date" != "" && [string is integer $date ] } {
-               set date  "[clock format $date -format "%Y/%m/%d %H:%M:%S" ]" 
+               set date  "[clock format $date -format "%Y/%m/%d %H:%M:%S" ]"
             }
             #--- colonne serie (toujours vide our un repertoire)
             set serie ""
@@ -260,20 +258,20 @@ namespace eval ::Visio2 {
             $tbl cellconfigure end,0 -image $private(folderIcon)
 
          } elseif {  [regexp ($conf(extension,defaut)|$conf(extension,defaut).gz)$  [string tolower $name]] && $enableExtension(fit)==1 
-                  || [regexp (.fit)$         [string tolower $name]] && $enableExtension(fit)==1
-                  || [regexp (.fit.gz)$      [string tolower $name]] && $enableExtension(fit)==1
-                  || [regexp (.fits)$        [string tolower $name]] && $enableExtension(fit)==1
-                  || [regexp (.fits.gz)$     [string tolower $name]] && $enableExtension(fit)==1
-                  || [regexp (.fts)$         [string tolower $name]] && $enableExtension(fit)==1
-                  || [regexp (.fts.gz)$      [string tolower $name]] && $enableExtension(fit)==1
-                  || [regexp (.bmp)$         [string tolower $name]] && $enableExtension(bmp)==1
-                  || [regexp (.gif)$         [string tolower $name]] && $enableExtension(gif)==1
-                  || [regexp (.jpg|.jpeg)$   [string tolower $name]] && $enableExtension(jpg)==1
-                  || [regexp (.tif|.tiff)$   [string tolower $name]] && $enableExtension(tif)==1
-                  || [regexp (.png)$         [string tolower $name]] && $enableExtension(png)==1
-                  || [regexp (.ps|.eps)$     [string tolower $name]] && $enableExtension(ps)==1                  
-                  || [regexp (.xbm|.xmp)$    [string tolower $name]] && $enableExtension(xbm)==1                  
-                  || [regexp (.crw|.nef)$    [string tolower $name]] && $enableExtension(raw)==1                  
+                  || [regexp (.fit)$                [string tolower $name]] && $enableExtension(fit)==1
+                  || [regexp (.fit.gz)$             [string tolower $name]] && $enableExtension(fit)==1
+                  || [regexp (.fits)$               [string tolower $name]] && $enableExtension(fit)==1
+                  || [regexp (.fits.gz)$            [string tolower $name]] && $enableExtension(fit)==1
+                  || [regexp (.fts)$                [string tolower $name]] && $enableExtension(fit)==1
+                  || [regexp (.fts.gz)$             [string tolower $name]] && $enableExtension(fit)==1
+                  || [regexp (.bmp)$                [string tolower $name]] && $enableExtension(bmp)==1
+                  || [regexp (.gif)$                [string tolower $name]] && $enableExtension(gif)==1
+                  || [regexp (.jpg|.jpeg)$          [string tolower $name]] && $enableExtension(jpg)==1
+                  || [regexp (.tif|.tiff)$          [string tolower $name]] && $enableExtension(tif)==1
+                  || [regexp (.png)$                [string tolower $name]] && $enableExtension(png)==1
+                  || [regexp (.ps|.eps)$            [string tolower $name]] && $enableExtension(ps)==1
+                  || [regexp (.xbm|.xmp)$           [string tolower $name]] && $enableExtension(xbm)==1
+                  || [regexp (.crw|.nef|.cr2|.dng)$ [string tolower $name]] && $enableExtension(raw)==1
                   } {
             #--- cas d'une image : ajoute une ligne dans la table avec le nom, type, serie et date du fichier
             #--- colonne name
@@ -291,7 +289,7 @@ namespace eval ::Visio2 {
             set serialName ""
             set serialInd ""
             set rootname [file rootname $name]            
-            #------ 2)je supprime les extensions avec un boucle car il peut y avoir plusieurs extensions 
+            #------ 2)je supprime les extensions avec un boucle car il peut y avoir plusieurs extensions
             while { [string first "." "$rootname" ] != -1  } {
                set rootname [file rootname $rootname]
             }       
@@ -307,8 +305,8 @@ namespace eval ::Visio2 {
                   }
                   if { [string is integer $serialInd] && "$serialInd" != ""} {
                      set serie [format "%s % 5d" $serialName $serialInd]
-                  } else { 
-                     console::affiche_erreur "fillTable error serialInd=$serialInd name=$name \n" 
+                  } else {
+                     console::affiche_erreur "fillTable error serialInd=$serialInd name=$name \n"
                   }
                }
             } else {
@@ -319,14 +317,14 @@ namespace eval ::Visio2 {
             if { [string is integer $size ] } {  
                set size [format "%12d" $size]
             } 
-            
+
             #--- je cree la ligne
             set item {}
             lappend item "$name" "$type" "$serie" "$date" "$size"
-            #--- j'ajoute une ligne dans la table           
+            #--- j'ajoute une ligne dans la table
             $tbl insert end $item
-            
-         } elseif { [regexp (.avi|.mov|.mpeg)$ [string tolower $name]] && $enableExtension(avi)==1 } {                    
+
+         } elseif { [regexp (.avi|.mov|.mpeg)$ [string tolower $name]] && $enableExtension(avi)==1 } {
             #--- cas d'un film : ajoute une ligne avec le nom, type, serie et date du fichier
             set item {}
             #--- colonne name
@@ -335,17 +333,17 @@ namespace eval ::Visio2 {
             set type "$private(fileMovie)"
             #--- colonne date
             if { [string is integer $date ] } {
-               set date  "[clock format $date -format "%Y/%m/%d %H:%M:%S" ]" 
+               set date  "[clock format $date -format "%Y/%m/%d %H:%M:%S" ]"
             }
             #--- colonne serie
             set serie ""
             #--- colonne size
-            if { [string is integer $size ] } {  
+            if { [string is integer $size ] } {
                set size [format "%12d" $size]
             } 
             #--- je cree la ligne
             lappend item "$name" "$type" "$serie" "$date" "$size"
-            #--- j'ajoute une ligne dans la table           
+            #--- j'ajoute une ligne dans la table
             $tbl insert end $item            
          } elseif  { $conf(Visio2,show_all_files)==1 } {
             #--- cas d'un fichier quelconque
@@ -355,24 +353,24 @@ namespace eval ::Visio2 {
             #--- colonne type
             set type "$private(file)"
             #--- colonne date
-            set date  "[clock format $date -format "%Y/%m/%d %H:%M:%S" ]" 
+            set date  "[clock format $date -format "%Y/%m/%d %H:%M:%S" ]"
             #--- colonne serie
             set serie ""
             #--- colonne size
-            if { [string is integer $size ] } {  
+            if { [string is integer $size ] } {
                set size [format "%12d" $size]
             } 
             #--- je cree la ligne
             lappend item "$name" "$type" "$serie" "$date" "$size"
-            #--- j'ajoute une ligne dans la table           
-            $tbl insert end $item            
+            #--- j'ajoute une ligne dans la table
+            $tbl insert end $item
          }
       }
-      
-      #--- je trie par ordre alphabetique de la premiere colonne 
+
+      #--- je trie par ordre alphabetique de la premiere colonne
       tablelist::sortByColumn $tbl 0
    }
-   
+
    #------------------------------------------------------------------------------
    # fillVolumeTable
    #
@@ -386,9 +384,9 @@ namespace eval ::Visio2 {
       $tbl delete 0 end
       $tbl resetsortinfo
 
-      #--- j'ajoute les lignes correspondant aux fichiers et sous-repertoires 
+      #--- j'ajoute les lignes correspondant aux fichiers et sous-repertoires
       foreach i [file volumes] {
-         
+
          #--- colonne name
          set name [file nativename "$i"]
          #--- colonne type
@@ -399,7 +397,7 @@ namespace eval ::Visio2 {
          set serie ""
          #--- colonne size (toujours vide pour un disque)
          set size ""
-         
+
          set item {}
          lappend item  "$name" "$type" "$serie" "$date" "$size"
          #--- j'insere la ligne dans la table
@@ -419,10 +417,10 @@ namespace eval ::Visio2 {
    # trie les lignes par ordre alphabetique de la colonne
    # (est appele quand on clique sur le titre de la colonne)
    #------------------------------------------------------------------------------
-   proc cmdSortColumn {tbl col} {
+   proc cmdSortColumn { tbl col } {
       tablelist::sortByColumn $tbl $col
    }
-   
+
    #------------------------------------------------------------------------------
    # showColumn
    #
@@ -431,7 +429,7 @@ namespace eval ::Visio2 {
    #------------------------------------------------------------------------------
    proc showColumn { tbl columnIndex show } {
       variable private
-      
+
       if { $show == 1 } {
          $tbl columnconfigure $columnIndex -hide 0
       } else {
@@ -448,7 +446,8 @@ namespace eval ::Visio2 {
       }
       $tbl configure -width $width      
 
-      #--- je fais pareil pour la table ftpTable si elle est affichee      
+      #--- je fais pareil pour la table ftpTable si elle est affichee
+      if { [info exists ::Visio2::ftpTable::private(tbl)] } {
       if { "$::Visio2::ftpTable::private(tbl)" != "" } {
          set tbl $::Visio2::ftpTable::private(tbl)
          if { $show == 1 } {
@@ -456,7 +455,7 @@ namespace eval ::Visio2 {
          } else {
             $tbl columnconfigure $columnIndex -hide 1
          }
-         
+
          #--- je recalcule la largeur de la liste
          set width 0
          for {set i 0} {$i < [$tbl columncount] } {incr i } {
@@ -465,7 +464,7 @@ namespace eval ::Visio2 {
             }
          }
          $tbl configure -width $width
-     
+      }
       }
    }
 
@@ -478,22 +477,22 @@ namespace eval ::Visio2 {
    proc cmdFtpConnection { } {
       variable private
       global caption
-   
+
       if { $private(ftpconnection) == 1 } {   
          set result [ftpTable::init "$private(This)" ]
          if {  $result == 0 } {
              #--- si la connexion est annulee , je decoche le checkbutton
              set private(ftpconnection) 0
-         }         
+         }
       } else { 
          #--- je ferme la connexion FTP et supprime la liste FTP
          set result [ftpTable::close]
-         if { $result == "0" } {            
+         if { $result == "0" } {
             #--- si la fermeture est annulee, je recoche le checkbutton
             set private(ftpconnection) 1
-         }         
+         }
       }
-   }   
+   }
 
    #--- icone directory
    set private(folderIcon) [image create photo folderopen16 -data {
@@ -526,22 +525,21 @@ proc Visio2BuildIF { This } {
    global audace
    global caption
    global conf
-   
-   frame $This -borderwidth 2 -relief groove -height 75
+
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
-      frame $This.titre -borderwidth 2 -relief groove 
+      frame $This.titre -borderwidth 2 -relief groove
 
       #--- Label du titre
-      Button $This.titre.but -borderwidth 1 -text $caption(visio2,title)  \
+      Button $This.titre.but -borderwidth 1 -text $caption(visio2,title) \
          -command { 
             ::audace::showHelpPlugin "tool" "visio2" "visio2.htm"
          }
       DynamicHelp::add $This.titre.but -text $caption(visio2,help,titre)
-         
-      pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill x -side top
+      pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill x -side top -ipadx 5
 
-      pack $This.titre -in $This -fill x 
+      pack $This.titre -in $This -fill x
 
       #--- Frame de la liste locale
       frame $This.locallist -borderwidth 1 -relief groove
@@ -549,8 +547,8 @@ proc Visio2BuildIF { This } {
       pack $This.locallist -fill both -expand 1 -anchor n -side top
 
       #--- Frame SlideShow
-      frame $This.slideShow  -borderwidth 1 -relief groove 
-      
+      frame $This.slideShow  -borderwidth 1 -relief groove
+
       checkbutton $This.slideShow.check -pady 0 -text "$caption(visio2,slideshow)" \
                -variable ::Visio2::localTable::private(slideShowState) \
                -command {
@@ -561,7 +559,7 @@ proc Visio2BuildIF { This } {
                    }
                 }
       pack $This.slideShow.check -in $This.slideShow -anchor center -expand 0 -fill none -side left
-      
+
       set list_combobox [ list "0.5" "1" "2" "3" "5" "10" ]
       ComboBox $This.slideShow.delay \
          -width 3          \
@@ -575,8 +573,8 @@ proc Visio2BuildIF { This } {
       $This.slideShow.delay setvalue @1
       pack $This.slideShow.delay -in $This.slideShow -anchor center -expand 0 -fill none -side left
 
-      label $This.slideShow.labdelay -borderwidth 1 -text "s." 
-      pack $This.slideShow.labdelay -in $This.slideShow -anchor center -expand 0 -fill none  -side left
+      label $This.slideShow.labdelay -borderwidth 1 -text "s."
+      pack $This.slideShow.labdelay -in $This.slideShow -anchor center -expand 0 -fill none -side left
       pack $This.slideShow -fill x -anchor n 
 
       #--- frame ftp      
@@ -624,7 +622,7 @@ namespace eval ::Visio2::config {
       global caption
 
       return "$caption(visio2,title)"
-   }   
+   }
 
    #------------------------------------------------------------
    #  ::Visio2::config::showHelp
@@ -632,30 +630,30 @@ namespace eval ::Visio2::config {
    #------------------------------------------------------------
    proc showHelp { } {
       ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "config"
-   }   
+   }
    
    #------------------------------------------------------------
    #  ::Visio2::config::confToWidget { }
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
-   proc confToWidget {  } {   
+   proc confToWidget { } {
       variable private  
       variable widget  
       variable widgetEnableExtension
       global conf
 
-      #--- je met les extensions dans un array (de-serialisation)         
+      #--- je met les extensions dans un array (de-serialisation)
       array set widgetEnableExtension $conf(Visio2,enableExtension)
 
       #j'initialise les variable utilisees par le widgets      
-      set widget(show_all_files)         $conf(Visio2,show_all_files) 
+      set widget(show_all_files)         $conf(Visio2,show_all_files)
    }
 
    #------------------------------------------------------------
    #  ::Visio2::config::widgetToConf { }
    #     copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
-   proc widgetToConf {  } {   
+   proc widgetToConf { } {
       variable private
       variable widget 
       variable widgetEnableExtension
@@ -663,7 +661,7 @@ namespace eval ::Visio2::config {
 
       set conf(Visio2,enableExtension) [array get widgetEnableExtension]
       set conf(Visio2,show_all_files)    $widget(show_all_files)
-   }   
+   }
 
    #------------------------------------------------------------
    #  ::Visio2::config::fillConfigPage { }
@@ -672,7 +670,7 @@ namespace eval ::Visio2::config {
    #  return rien
    #
    #------------------------------------------------------------
-   proc fillConfigPage { frm } {
+   proc fillConfigPage { frm visuNo } {
       variable widget 
       variable widgetEnableExtension
       global caption
@@ -700,6 +698,7 @@ namespace eval ::Visio2::config {
          ( $conf(extension,defaut) == ".tiff" ) || ( $conf(extension,defaut) == ".xbm" ) || \
          ( $conf(extension,defaut) == ".xpm" ) || ( $conf(extension,defaut) == ".avi" ) || \
          ( $conf(extension,defaut) == ".crw" ) || ( $conf(extension,defaut) == ".nef" ) || \
+         ( $conf(extension,defaut) == ".cr2" ) || ( $conf(extension,defaut) == ".dng" ) || \
          ( $conf(extension,defaut) == ".mov" ) || ( $conf(extension,defaut) == ".mpeg" ) } {
          checkbutton $frm.extension.extdefaut -text "$conf(extension,defaut)" \
              -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(defautext)
@@ -811,7 +810,8 @@ namespace eval ::Visio2::config {
       }
 
       #--- fichiers raw
-      if { ( $conf(extension,defaut) != ".crw" ) && ( $conf(extension,defaut) != ".nef" ) } {
+      if { ( $conf(extension,defaut) != ".crw" ) && ( $conf(extension,defaut) != ".nef" ) && \
+         ( $conf(extension,defaut) != ".cr2" ) && ( $conf(extension,defaut) != ".dng" ) } {
          checkbutton $frm.extension.raw -text ".crw .nef" \
              -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(raw)
          pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
@@ -823,8 +823,15 @@ namespace eval ::Visio2::config {
          checkbutton $frm.extension.raw -text ".nef" \
              -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(raw)
          pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+      } elseif { $conf(extension,defaut) == ".cr2" } {
+         checkbutton $frm.extension.raw -text ".cr2" \
+             -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(raw)
+         pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+      } elseif { $conf(extension,defaut) == ".dng" } {
+         checkbutton $frm.extension.raw -text ".dng" \
+             -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(raw)
+         pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
       }
-
 
       #--- fichiers avi
       if { ( $conf(extension,defaut) != ".avi" ) && ( $conf(extension,defaut) != ".mov" ) && \
@@ -906,13 +913,6 @@ namespace eval ::Visio2::localTable {
       animation            0
 
    }
-   
-   set private(parentFolder)        $::Visio2::private(parentFolder)
-   set private(folder)              $::Visio2::private(folder)
-   set private(fileImage)           $::Visio2::private(fileImage)
-   set private(fileMovie)           $::Visio2::private(fileMovie) 
-   set private(file)                $::Visio2::private(file) 
-   set private(volume)              $::Visio2::private(volume)
 
    #------------------------------------------------------------------------------
    #  localTable::init  
@@ -920,7 +920,14 @@ namespace eval ::Visio2::localTable {
    #------------------------------------------------------------------------------
    proc init { mainframe directory } {
       variable private
-            
+
+      set private(parentFolder)        $::Visio2::private(parentFolder)
+      set private(folder)              $::Visio2::private(folder)
+      set private(fileImage)           $::Visio2::private(fileImage)
+      set private(fileMovie)           $::Visio2::private(fileMovie) 
+      set private(file)                $::Visio2::private(file) 
+      set private(volume)              $::Visio2::private(volume)
+
       set private(directory) "$directory"
       fillTable
    }
@@ -930,12 +937,12 @@ namespace eval ::Visio2::localTable {
    #  retourn le reperoire courant
    #  
    #------------------------------------------------------------------------------
-   proc getDirectory {  } {
+   proc getDirectory { } {
       global caption
       global audace
       variable private
       
-      return "$private(directory)"      
+      return "$private(directory)"
    }
 
    #------------------------------------------------------------------------------
@@ -943,19 +950,19 @@ namespace eval ::Visio2::localTable {
    #  affiche les fichiers et sous repertoires dans la table
    #  et affiche le nom du repertoire courant dans le titre de la fenetre principale 
    #------------------------------------------------------------------------------
-   proc fillTable {  } {
+   proc fillTable { } {
       global caption
       global audace
       variable private
 
-      #--- j'affiche les fichiers dans la table            
-      ::Visio2::fillTable $private(tbl) [::Visio2::getFileList $private(directory)]   
+      #--- j'affiche les fichiers dans la table
+      ::Visio2::fillTable $private(tbl) [::Visio2::getFileList $private(directory)]
       #--- j'affiche le nom du repertoire courant
-      configureLabelDirectory $private(labelDirectory)  
+      configureLabelDirectory $private(labelDirectory)
       #--- je place le focus sur le contenu de la table pour permettre les deplacements avec les touches de direction du clavier
       focus  [$private(tbl) bodypath]
    }
-   
+
    #------------------------------------------------------------------------------
    # localTable::cmdButton1Click
    #
@@ -966,14 +973,14 @@ namespace eval ::Visio2::localTable {
       global audace
       global caption
 
-      set selection [$tbl curselection]      
+      set selection [$tbl curselection]
       #--- retourne immediatemment si aucun item selectionne
       if { "$selection" == "" } {
          return
       }
       if { $private(slideShowState) == 1 } {
          #--- j'arrete le slideshow 
-         set private(slideShowState) 0         
+         set private(slideShowState) 0
       }
 
       #--- je charge l'item selectionne
@@ -989,7 +996,7 @@ namespace eval ::Visio2::localTable {
       variable private
       global audace
       global caption
-            
+
       set selection [$tbl curselection]      
       #--- retourne immediatemment si aucun item selectionne
       if { "$selection" == "" } {
@@ -998,7 +1005,7 @@ namespace eval ::Visio2::localTable {
 
       if { $private(slideShowState) == 1 } {
          #--- j'arrete le slideshow 
-         set private(slideShowState) 0         
+         set private(slideShowState) 0
       }
 
       #--- je charge l'item selectionne (avec option double-clic)
@@ -1019,7 +1026,7 @@ namespace eval ::Visio2::localTable {
    #
    #
    #------------------------------------------------------------------------------
-   proc loadItem  { index { doubleClick 0 } } {
+   proc loadItem { index { doubleClick 0 } } {
       variable private
       global audace
       global caption
@@ -1028,14 +1035,14 @@ namespace eval ::Visio2::localTable {
       set tbl $private(tbl)
 
       if { $private(animation) == 1 } {
-         #--- j'arrete l'animation 
-         stopAnimation        
+         #--- j'arrete l'animation
+         stopAnimation
       }
        
       set name [string trimleft  [$tbl cellcget $index,0 -text]]
       set type [$tbl cellcget $index,1 -text] 
       set filename [file join "$private(directory)" "$name"]
-             
+
       if { [string first "$private(fileImage)" "$type" ] != -1 } {
          #--- j'affiche l'image
          loadima $filename
@@ -1057,7 +1064,7 @@ namespace eval ::Visio2::localTable {
          }
          setAnimationState "0"      
          set name ""
-                  
+
       }  elseif { "$type" == "$private(parentFolder)"} {
          if { $doubleClick == 1 } {
             #--- j'affiche le contenu du repertoire parent
@@ -1073,17 +1080,17 @@ namespace eval ::Visio2::localTable {
          setAnimationState "0"      
          #---  je masque le nom pour que ".." n'apparaisse pas dans la barre de titre
          set name ""
-      }      
+      }
 
       #--- j'affiche le nom du fichier dans la barre de titre de audace
       wm title $audace(base) "$caption(visio2,audace) - [file join "$private(directory)" "$name"]"
 
-      #--- j'affiche le widget dans le canvas    
+      #--- j'affiche le widget dans le canvas
       set private(previousType)     "$type"
       set private(previousFileName) "$filename"
- 
+
       set private(currentItemIndex) $index
-      
+
    }
 
    #------------------------------------------------------------------------------
@@ -1092,11 +1099,11 @@ namespace eval ::Visio2::localTable {
    #  recharge la liste des fichiers dans la table
    #  et affiche une image si le parametre filename est renseigne
    #------------------------------------------------------------------------------
-   proc refresh  { { fileName "" } } {
+   proc refresh { { fileName "" } } {
       variable private
       
       #--- je refraichis la liste des fichiers dans la table
-      fillTable      
+      fillTable
 
       #--- j'affiche l'image 
       set tbl $private(tbl)
@@ -1123,7 +1130,7 @@ namespace eval ::Visio2::localTable {
    #
    #  selectionne tous les fichiers dans la table
    #------------------------------------------------------------------------------
-   proc selectAll  { } {
+   proc selectAll { } {
       variable private
       
       $private(tbl) selection set   0 end
@@ -1135,10 +1142,10 @@ namespace eval ::Visio2::localTable {
    #  recharge la liste 
    #  et affiche une image si le parametre filename n'est pas vide
    #------------------------------------------------------------------------------
-   proc saveFile  {  } {
+   proc saveFile { } {
       variable private
       
-      #TODO      
+      #TODO
 
    }
 
@@ -1147,7 +1154,7 @@ namespace eval ::Visio2::localTable {
    #
    #  supprime le(s) fichier(s) selectionne(s) 
    #------------------------------------------------------------------------------
-   proc deleteFile  {  } {
+   proc deleteFile { } {
       variable private
       global caption
       global audace
@@ -1158,7 +1165,7 @@ namespace eval ::Visio2::localTable {
       stopAnimation
       #--- je ferme le film
       ::Movie::close $audace(hCanvas)
-      
+
       set tbl $private(tbl)
       set selection [$tbl curselection]      
       #--- je retourne immediatemment si aucun item n'est selectionne
@@ -1167,15 +1174,15 @@ namespace eval ::Visio2::localTable {
          tk_messageBox -title "$caption(visio2,dialog_title)" -type ok -message "$message" -icon error
          return
       }
-      
+
       #--- par defaut, je demande une confirmation avant de supprimer chaque fichier
       set confirm 1
-      
+
       foreach index $selection { 
          set name [string trimleft  [$tbl cellcget $index,0 -text]]
          set type [$tbl cellcget $index,1 -text]
-         
-         if { $type == "$private(folder)" }  {
+
+         if { $type == "$private(folder)" } {
             set dir [ file join "$private(directory)" "$name" ]
             set message "$caption(visio2,delete_dir_confirm) \n $dir" 
             set choice [tk_messageBox -title "$caption(visio2,dialog_title)" -type okcancel -message "$message" -icon question]
@@ -1184,10 +1191,10 @@ namespace eval ::Visio2::localTable {
                #--- je supprime le repertoire
                file delete -force "$dir"
             }
-            
+
          } elseif { "$type" == "$private(fileImage)" || "$type" == "$private(fileMovie)" || "$type" == "$private(file)"} {
             set filename [file join "$private(directory)" "$name"]
-            
+
             if { $confirm == 1 } {
                set choice [tk_dialog .deletefile \
                   "$caption(visio2,dialog_title)" \
@@ -1196,7 +1203,7 @@ namespace eval ::Visio2::localTable {
             } else {
                set choice 0
             }
-            
+
             if { $choice == 0 || $choice == 1} {
                #--- je ferme le fichier
                if { "$type" == "$private(fileMovie)" } {
@@ -1216,7 +1223,7 @@ namespace eval ::Visio2::localTable {
             }
          }
       }
-      
+
       #--- je refraichis la table
       refresh
    }
@@ -1231,15 +1238,15 @@ namespace eval ::Visio2::localTable {
       variable private
       global audace
       global conf
-      
+
       set conf(visu_zoom) "$zoom"
       visu$audace(visuNo) zoom $conf(visu_zoom)
-      
+
       #--- je rafraichis l'affichage du canvas
       cmdButton1Click $private(tbl)       
 
       #--- je rafraichis l'affichage du reticule
-      ::Crosshair::redrawCrosshair       
+      ::confVisu::redrawCrosshair $audace(visuNo)      
    }
 
    #------------------------------------------------------------------------------
@@ -1254,11 +1261,11 @@ namespace eval ::Visio2::localTable {
       if { $audace(fullscreen) == 1 } {
          #--- je ferme les films 
          ::Movie::close $audace(hCanvas)
-         
+
          set tbl $private(tbl)
          #--- je recupere la selection courante
          set selection [$tbl curselection ]
-         
+
          if { "$selection" == "" } {
             #--- je selectionne tout
             $tbl selection set   0 end
@@ -1266,7 +1273,7 @@ namespace eval ::Visio2::localTable {
             #--- raz de la selection
             $tbl selection clear 0 end
          }
- 
+
          #--- je copie le nom et le type des fichiers 
          set files ""
          foreach index $selection {
@@ -1293,16 +1300,16 @@ namespace eval ::Visio2::localTable {
    proc setAnimationState { state } {
       variable private
       global caption
-      
+
       set menu $private(popupmenu)               
       #--- je configure le popup menu
       if { $state == 1 }  {
          #--- j'active les commandes d'animation
          $menu entryconfigure $caption(visio2,play_movie) -state normal
-      }  else {
+      } else {
          #--- je desactive les commandes d'animation
          $menu entryconfigure $caption(visio2,play_movie) -state disabled
-      }      
+      }
    }
 
    #------------------------------------------------------------------------------
@@ -1318,7 +1325,7 @@ namespace eval ::Visio2::localTable {
          stopAnimation
       }
    }
-      
+
    #------------------------------------------------------------------------------
    # localTable::startAnimation
    # Lance une animation (film ou GIF anime)
@@ -1326,7 +1333,8 @@ namespace eval ::Visio2::localTable {
    proc startAnimation { } {
       variable private
       global conf
-      
+      global audace
+
       #--- je recupere le nom du fichier selectionne
       set selection [$private(tbl) curselection ]
       set index [lindex $selection 0 ]
@@ -1334,19 +1342,19 @@ namespace eval ::Visio2::localTable {
       set filename [file join "$private(directory)" "$name"]
 
       if { "$private(previousType)" == "$private(fileImage)" } {
-         ::Image::startGifAnimation image0 $conf(visu_zoom) $filename
+         ::Image::startGifAnimation image$audace(imageNo) $conf(visu_zoom) $filename
       } elseif { "$private(previousType)" == "$private(fileMovie)" } {
          ::Movie::start
-      }   
+      }
       set private(animation) 1
       update
    }
-   
+
    #------------------------------------------------------------------------------
    # localTable::stopAnimation
    # arrete une animation (film ou GIF anime)
    #------------------------------------------------------------------------------
-   proc stopAnimation {} {
+   proc stopAnimation { } {
       variable private
 
       if { "$private(previousType)" == "$private(fileImage)" } {
@@ -1362,10 +1370,10 @@ namespace eval ::Visio2::localTable {
    # localTable::startSlideShow
    # Lance le diaporama
    #------------------------------------------------------------------------------
-   proc startSlideShow {} {
+   proc startSlideShow { } {
       variable private
       global caption      
-      
+
       #--- je recupere le nombre d'images selectionnees
       set selection [$private(tbl) curselection ]
       #--- je verifie que le nombre d'images selectionnées est suffisant (>=2)
@@ -1387,22 +1395,22 @@ namespace eval ::Visio2::localTable {
          set private(slideShowAfterId) [after 10 ::Visio2::localTable::showNextSlide ]
       }
    }
-   
+
    #------------------------------------------------------------------------------
    # localTable::showNextSlide
    #
    #  affiche l'image suivante du diaporama
    #------------------------------------------------------------------------------
-   proc showNextSlide { { currentitem "0" }} {
+   proc showNextSlide { { currentitem "0" } } {
       variable private
       global caption
       global audace
-      
+
       #--- si une demande d'arret a deja ete faite, je ne fais plus rien
       if { $private(slideShowState) == 0  } {
          return
       }
-    
+
       #--- je recupere les informations de l'item suivante
       set index [lindex $private(slideShowListe) $currentitem ]
       
@@ -1414,7 +1422,7 @@ namespace eval ::Visio2::localTable {
       } else {
          set currentitem "0"
       }
-      
+
       #--- je lance l'iteration suivante
       if { $private(slideShowState) == 1  } {
          set result [ catch { set delay [expr round($private(slideShowDelay) * 1000) ] } ]
@@ -1425,12 +1433,12 @@ namespace eval ::Visio2::localTable {
          set private(slideShowAfterId) [after $delay ::Visio2::localTable::showNextSlide $currentitem ]
       }
    }
-      
+
    #------------------------------------------------------------------------------
    # localTable::stopSlideShow
    #  arrete le diaporama
    #------------------------------------------------------------------------------
-   proc stopSlideShow {  } {
+   proc stopSlideShow { } {
       variable private
       
       set private(slideShowState) "0"
@@ -1445,10 +1453,10 @@ namespace eval ::Visio2::localTable {
    #  localTable::saveColumnWidth  
    #  sauve la largeur des colonnes dans conf()
    #------------------------------------------------------------------------------
-   proc saveColumnWidth {  } {
+   proc saveColumnWidth { } {
       variable private
       global conf
-      
+
       #--- save columns width
       set conf(Visio2,width_column_name)   [$private(tbl) columncget 0 -width] 
       set conf(Visio2,width_column_type)   [$private(tbl) columncget 1 -width] 
@@ -1479,7 +1487,7 @@ namespace eval ::Visio2::localTable {
       label $frame.directory -anchor w -relief raised -bd 1 
       #--- pour intercepter les mises a jour du label ( equivalent a l'option -textvariable)
       bind $frame.directory <Configure> "::Visio2::localTable::configureLabelDirectory $frame.directory "
-        
+
       #--- table des fichiers
       tablelist::tablelist $tbl \
          -columns [ list \
@@ -1515,15 +1523,15 @@ namespace eval ::Visio2::localTable {
       } else {
          #--- je classe les fichiers par ordre alphabetique , sans tenir compte des majuscule/minuscule
          $tbl columnconfigure 0 -sortmode dictionary 
-      }         
-      
+      }
+
       #--- j'adapte la largeur de la liste en fonction des colonnes affichees
       ::Visio2::showColumn $tbl 0 1
-     
+
       #--- scrollbar verticale et horizontale
       scrollbar $frame.vsb -orient vertical   -command [list $tbl yview]
       scrollbar $frame.hsb -orient horizontal -command [list $tbl xview]
-         
+
       #--- je place la liste et les scrollbar dans une grille 
       grid $frame.directory -row 0 -column 0 -columnspan 2 -sticky ew
       grid $tbl -row 1 -column 0 -sticky ns
@@ -1531,19 +1539,19 @@ namespace eval ::Visio2::localTable {
       grid $frame.hsb -row 2 -column 0 -sticky ew
       grid rowconfigure    $frame 1 -weight 1
       grid columnconfigure $frame 0 -weight 1
- 
+
       #--- pop-up menu associe a la table 
       menu $menu -tearoff no      
-      $menu add command -label $caption(visio2,refresh)  \
+      $menu add command -label $caption(visio2,refresh) \
          -command { ::Visio2::localTable::refresh  }
-      $menu add command -label $caption(visio2,select_all)  \
+      $menu add command -label $caption(visio2,select_all) \
          -command { ::Visio2::localTable::selectAll  }
       $menu add command -label $caption(visio2,save_file) -state disabled \
          -command { ::Visio2::localTable::saveFile  }
-      $menu add command -label $caption(visio2,delete_file)  \
+      $menu add command -label $caption(visio2,delete_file) \
          -command { ::Visio2::localTable::deleteFile  }
-      
-      $menu add separator        
+
+      $menu add separator
       $menu add checkbutton -label $caption(visio2,column_type)  \
          -variable conf(Visio2,show_column_type)      \
          -command { ::Visio2::showColumn $::Visio2::localTable::private(tbl) 1 $conf(Visio2,show_column_type) }
@@ -1557,37 +1565,37 @@ namespace eval ::Visio2::localTable {
          -variable conf(Visio2,show_column_size)       \
          -command { ::Visio2::showColumn $::Visio2::localTable::private(tbl) 4 $conf(Visio2,show_column_size) }
 
-      $menu add separator        
-      $menu add cascade -label $caption(visio2,zoom) -menu $menu.zoom       
+      $menu add separator
+      $menu add cascade -label $caption(visio2,zoom) -menu $menu.zoom
       menu $menu.zoom -tearoff no
 
       $menu.zoom add radiobutton -label "$caption(visio2,zoom_0.125)" \
          -indicatoron "1" \
          -value "0.125" \
          -variable conf(visu_zoom) \
-         -command { ::Visio2::localTable::changeZoom "0.125"  }
+         -command { ::Visio2::localTable::changeZoom "0.125" }
       $menu.zoom add radiobutton -label "$caption(visio2,zoom_0.25)" \
          -indicatoron "1" \
          -value "0.25" \
          -variable conf(visu_zoom) \
-         -command { ::Visio2::localTable::changeZoom "0.25"  }
+         -command { ::Visio2::localTable::changeZoom "0.25" }
       $menu.zoom add radiobutton -label "$caption(visio2,zoom_0.5)" \
          -indicatoron "1" \
          -value "0.5" \
          -variable conf(visu_zoom) \
-         -command { ::Visio2::localTable::changeZoom "0.5"  }
+         -command { ::Visio2::localTable::changeZoom "0.5" }
       $menu.zoom add radiobutton -label "$caption(visio2,zoom_1)" \
          -indicatoron "1" \
          -value "1" \
          -variable conf(visu_zoom) \
-         -command { ::Visio2::localTable::changeZoom "1"  }
+         -command { ::Visio2::localTable::changeZoom "1" }
       $menu.zoom add radiobutton -label "$caption(visio2,zoom_2)" \
          -indicatoron "1" \
          -value "2" \
          -variable  conf(visu_zoom) \
-         -command { ::Visio2::localTable::changeZoom "2"  }
+         -command { ::Visio2::localTable::changeZoom "2" }
 
-      $menu add checkbutton -label $caption(visio2,full_screen)    \
+      $menu add checkbutton -label $caption(visio2,full_screen) \
          -variable audace(fullscreen)       \
          -command { ::Visio2::localTable::toggleFullScreen }
 
@@ -1596,14 +1604,14 @@ namespace eval ::Visio2::localTable {
          -command {
             ::audace::showHelpPlugin "tool" "visio2" "visio2.htm"
          }
-         
+
       $menu add separator  
-      $menu add checkbutton -label $caption(visio2,play_movie)    \
-         -variable ::Visio2::localTable::private(animation)       \
+      $menu add checkbutton -label $caption(visio2,play_movie) \
+         -variable ::Visio2::localTable::private(animation) \
          -command { ::Visio2::localTable::toggleAnimation  }
-      
+
       bind [$tbl bodypath] <<Button3>> [list tk_popup $menu %X %Y]
-      
+
       bind $tbl <<ListboxSelect>>      [list ::Visio2::localTable::cmdButton1Click $tbl]
       bind [$tbl bodypath] <Double-1>  [list ::Visio2::localTable::cmdButton1DoubleClick $tbl]
       bind [$tbl bodypath] <Return>    [list ::Visio2::localTable::cmdButton1DoubleClick $tbl]
@@ -1618,21 +1626,21 @@ namespace eval ::Visio2::localTable {
    #------------------------------------------------------------------------------
    proc configureLabelDirectory { label } {
       variable private     
-   
+
       set tt "$private(directory)"
       set labelwidth [expr [winfo width $label]-5]
       if { [font measure [$label cget -font] $tt] <= $labelwidth } {
          #--- affiche private(directory) en entier
-   	     $label configure -text $tt
+         $label configure -text $tt
       } else {
-   	   while { [string length $tt] > 3 } {
-   	      set tt [string range $tt 1 end]
-   	      if { [font measure [$label cget -font] ...$tt] <= $labelwidth } {
-   		      break
-   	      }
-   	   }
-   	   #--- affiche "..." suivi de la fin de private(directory)
-   	   $label configure -text ...$tt
+         while { [string length $tt] > 3 } {
+            set tt [string range $tt 1 end]
+            if { [font measure [$label cget -font] ...$tt] <= $labelwidth } {
+               break
+            }
+         }
+         #--- affiche "..." suivi de la fin de private(directory)
+         $label configure -text ...$tt
       }
    }
 
@@ -1643,17 +1651,18 @@ namespace eval ::Visio2::localTable {
 #    gere la table des fichiers du serveur FTP
 ################################################################
 namespace eval ::Visio2::ftpTable {
-   array set private { 
-      tbl         ""
-      directory   "/"
-      frame       ""
-   }
+   variable private 
       set private(parentFolder)        $::Visio2::private(parentFolder)
       set private(folder)              $::Visio2::private(folder)
       set private(fileImage)           $::Visio2::private(fileImage)
       set private(fileMovie)           $::Visio2::private(fileMovie) 
       set private(file)                $::Visio2::private(file) 
-   
+      set private(tbl)                 ""
+      set private(directory)           "/"
+      set private(frame)               ""
+
+
+
    #------------------------------------------------------------------------------
    #  ftpTable::init  
    #  affiche les fichiers dans la table 
@@ -1668,7 +1677,7 @@ namespace eval ::Visio2::ftpTable {
 
          #--- j'affiche la fenetre de selection d'un connexion ftp
          set result [::ftpclient::selectConnection]
-        
+
          if { $result == 1 } {
             set private(directory) "[::ftpclient::getDirectory]"
             #--- si la connection a reussi, j'affiche la liste des fichiers
@@ -1703,7 +1712,7 @@ namespace eval ::Visio2::ftpTable {
    #  et supprime la table de l'affichage
    #  retourne 1 si la fermeture est faite , sinon retourne 0
    #------------------------------------------------------------------------------
-   proc close {  } {
+   proc close { } {
       variable private
       global caption
 
@@ -1718,7 +1727,7 @@ namespace eval ::Visio2::ftpTable {
          # je demande d'abord la confirmation de la fermeture
          set message "$caption(visio2,ftp_connection_close) [::ftpclient::getUrl]"
          set choice [tk_messageBox -title "$caption(visio2,ftp_connection_title)" -type okcancel -message "$message" -icon question ]
-         if { $choice == "ok" } {            
+         if { $choice == "ok" } {
             #--- je ferme la connexion FTP en cours
             ::ftpclient::close
             #--- je masque la table ftp
@@ -1727,11 +1736,11 @@ namespace eval ::Visio2::ftpTable {
          } else {
             # refus de l'utilisateur
             set result 0
-         }   
-      }      
+         }
+      }
       return $result 
    }
-   
+
    #------------------------------------------------------------------------------
    #  ftpTable::fillTable  
    #  affiche les fichiers dans la table 
@@ -1741,11 +1750,11 @@ namespace eval ::Visio2::ftpTable {
       global conf
       global audace
       variable private
-      
+
       set result 0
       #--- je recupere la liste des fichiers du serveur distant
       set files  [::ftpclient::getFileList "$directory" ]
-      
+
       if { $files != "" } {
          set private(directory) "$directory"
          #--- j'affiche les noms des fichiers dans la table
@@ -1753,7 +1762,7 @@ namespace eval ::Visio2::ftpTable {
          #--- je place le focus sur le contenu de la table pour permettre les deplacements avec les touches de direction du clavier
          focus  [$private(tbl) bodypath]
          set result 1
-      }         
+      }
       return $result 
    }
 
@@ -1763,15 +1772,15 @@ namespace eval ::Visio2::ftpTable {
    #  recharge la liste des fichiers dans la table
    #  et affiche une image si le parametre filename est renseigne
    #------------------------------------------------------------------------------
-   proc refresh  { { fileName "" } } {
+   proc refresh { { fileName "" } } {
       variable private
-      
+
       set tbl $private(tbl)
       if { "$private(frame)" == "" } {
          #--- rien a faire si la table n'est pas affichee
          return
       }
-      
+
       if { [winfo manager $private(frame)] == "" } {
          #--- rien a faire si la table n'est pas affichee
          return
@@ -1804,11 +1813,11 @@ namespace eval ::Visio2::ftpTable {
    #  simple click sur le bouton 1
    #     n'est pas utilise pour l'instant
    #------------------------------------------------------------------------------
-   proc cmdButton1Click {} {
+   proc cmdButton1Click { } {
       variable private
       global audace
       global caption
-      
+
       return
    }
 
@@ -1820,11 +1829,11 @@ namespace eval ::Visio2::ftpTable {
    #    si film  : copie le film dans le repertoire local courant (appelle ::ftpclient::get)
    #    si sous-repertoire : va dans le repertoire et affiche le contenu (appelle fillTable)
    #------------------------------------------------------------------------------
-   proc cmdButton1DoubleClick  {} {
+   proc cmdButton1DoubleClick { } {
       variable private
       global audace
       global caption
-      
+
       set tbl $private(tbl)
       set selection [$tbl curselection]      
       if { "$selection" == "" } {
@@ -1836,16 +1845,16 @@ namespace eval ::Visio2::ftpTable {
       set name [string trimleft  [$tbl cellcget $index,0 -text]]
       set type [$tbl cellcget $index,1 -text]
       set size [$tbl cellcget $index,4 -text]
-       
+
       if { $type == "$private(parentFolder)" }  {
          #--- j'affiche le contenu du repertoire parent
-         set directory [ file dirname "$private(directory)"  ]
+         set directory [ file dirname "$private(directory)" ]
          if { [ fillTable "$directory" ] != 1 } {
             set message "$caption(visio2,show_directory) $directory"
             console::affiche_erreur "$message \n"
             tk_messageBox -title "$caption(visio2,ftp_connection_title)" -type ok -message "$message" -icon error
          }
-         
+
       } elseif { $type == "$private(folder)" }  {
          #--- j'affiche le contenu du sous-repertoire
          set directory [ file join "$private(directory)" "$name" ]
@@ -1854,7 +1863,7 @@ namespace eval ::Visio2::ftpTable {
             console::affiche_erreur "$message \n"
             tk_messageBox -title "$caption(visio2,ftp_connection_title)" -type ok -message "$message" -icon error
          }
-         
+
       }  elseif { "$type" == "$private(fileImage)" || "$type" == "$private(fileMovie)" ||  "$type" == "$private(file)" } {
          #--- copie le fichier du serveur distant vers le repertoire local et affiche l'image
          set targetDir "[::Visio2::localTable::getDirectory]"
@@ -1865,11 +1874,11 @@ namespace eval ::Visio2::ftpTable {
                return
             }
          }
-      
+
          #--- je copie le fichier 
          set filename [file join "$private(directory)" "$name"] 
          ::ftpclient::get "$filename" "$targetDir" "$size"
-      
+
          #--- je refraichis l'affichage de la table locale et affiche l'image
          ::Visio2::localTable::refresh "$name"            
       }       
@@ -1905,7 +1914,7 @@ namespace eval ::Visio2::ftpTable {
             17 $caption(visio2,column_date)   left \
             10 $caption(visio2,column_size)   right \
             ] \
-         -labelcommand ::Visio2::cmdSortColumn  \
+         -labelcommand ::Visio2::cmdSortColumn \
          -xscrollcommand [list $frame.hsb set] -yscrollcommand [list $frame.vsb set] \
          -selectmode extended \
          -activestyle none \
@@ -1935,11 +1944,11 @@ namespace eval ::Visio2::ftpTable {
          #--- je classe les fichiers par ordre alphabetique , sans tenir compte des majuscule/minuscule
          $tbl columnconfigure 0 -sortmode dictionary 
       }         
-     
+
       #--- scrollbar verticale et horizontale
       scrollbar $frame.vsb -orient vertical   -command [list $tbl yview]
       scrollbar $frame.hsb -orient horizontal -command [list $tbl xview]
-        
+
       #--- je place la liste et les scrollbar dans une grille 
       grid $frame.directory -row 0 -column 0 -columnspan 2 -sticky ew
       grid $tbl -row 1 -column 0 -sticky ns
@@ -1969,27 +1978,28 @@ namespace eval ::Visio2::ftpTable {
    #------------------------------------------------------------------------------
    proc configureLabelDirectory { label directory} {
       variable private 
-   
+
       set tt "$directory" 
       set labelwidth [expr [winfo width $label]-5]
       if { [font measure [$label cget -font] $tt] <= $labelwidth } {
          #--- affiche en entier
-   	     $label configure -text $tt
+         $label configure -text $tt
       } else {
-   	   while { [string length $tt] > 3 } {
-   	      set tt [string range $tt 1 end]
-   	      if { [font measure [$label cget -font] ...$tt] <= $labelwidth } {
-   		      break
-   	      }
-   	   }
-   	   #--- affiche "..." suivi de la fin de directory
-   	   $label configure -text ...$tt
+         while { [string length $tt] > 3 } {
+            set tt [string range $tt 1 end]
+            if { [font measure [$label cget -font] ...$tt] <= $labelwidth } {
+               break
+            }
+         }
+         #--- affiche "..." suivi de la fin de directory
+         $label configure -text ...$tt
       }
    }
 
 }
 
 ::Visio2::init $audace(base)
+
 
 #ftpserver::start
 

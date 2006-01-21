@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 03 novembre 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 package provide remotectrl 1.0
@@ -27,14 +27,6 @@ namespace eval ::Rmctrl {
 
       #--- Chargement des variables
       ::Rmctrl::Chargement_Var
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Rmctrl,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Rmctrl,largeur_outil) "130"
-      } else {
-         set panneau(Rmctrl,largeur_outil) "101"
-      }
       #---
       set This $this
       set panneau(menu_name,Rmctrl)     "$caption(rmctrl,title)"
@@ -148,20 +140,16 @@ namespace eval ::Rmctrl {
       }
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
-      set unpackFunction ::Rmctrl::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack forget $This
    }
 
    proc cmdConnect { } {
@@ -715,7 +703,7 @@ namespace eval ::Rmctrl {
          set ext $conf(extension,defaut)
          #---
          if {$panneau(Rmctrl,path_img)>1} {
-  	      #--- Transfert par protocole ftp
+            #--- Transfert par protocole ftp
             set message "send \{saveima \"\$audace(rep_images)/temp$ext\" \}"
             eval $message
             after 1000
@@ -727,7 +715,7 @@ namespace eval ::Rmctrl {
             if {$error==0} {
                set error [catch {::ftp::Open $panneau(Rmctrl,ip1) anonymous software.audela@free.fr -timeout 15} msg]
                if {($error==0)} {
-	            set ftpid $msg
+                  set ftpid $msg
                   ::ftp::Type $ftpid binary
                   ::ftp::Get $ftpid temp$ext
                   catch {file rename -force temp$ext "$audace(rep_images)/temp$ext" }
@@ -737,7 +725,7 @@ namespace eval ::Rmctrl {
                }
             }
          } else {
-	      #--- Tranfert par fichier dans un dossier partagé
+            #--- Tranfert par fichier dans un dossier partagé
             set message "send \{saveima \"\$panneau(Rmctrl,path_img)/temp$ext\" \}"
             eval $message
             after 1000
@@ -785,7 +773,7 @@ proc RmctrlBuildIF { This } {
    global color
 
    #---
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(Rmctrl,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -795,11 +783,10 @@ proc RmctrlBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool remotectrl remotectrl.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Rmctrl,aide)
 
-      place $This.fra1 -x 3 -y 4 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 22 -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame de la configuration
       frame $This.fraconf -borderwidth 1 -relief groove
@@ -812,8 +799,7 @@ proc RmctrlBuildIF { This } {
          button $This.fraconf.but1 -borderwidth 2 -text $panneau(Rmctrl,connect) -command { ::Rmctrl::cmdConnect }
          pack $This.fraconf.but1 -in $This.fraconf -anchor center -fill none -ipadx 3 -ipady 3
 
-      place $This.fraconf -x 3 -y 28 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 52 -anchor nw \
-         -bordermode ignore
+      pack $This.fraconf -side top -fill x
 
       #--- Frame du pointage
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -827,20 +813,21 @@ proc RmctrlBuildIF { This } {
             -textvariable panneau(Rmctrl,menu) \
             -modifycmd { ::Rmctrl::Gestion_Cata } \
             -values $panneau(Rmctrl,cata_coord)
-	   pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -padx 2 -pady 2
+         pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -pady 2
+
          #--- Bind (clic droit) pour ouvrir la fenetre sans avoir a selectionner dans la listbox
          bind $This.fra2.optionmenu1.e <ButtonPress-3> { ::Rmctrl::Gestion_Cata }
 
          #--- Entry pour l'objet a entrer
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Rmctrl,getobj) -relief groove
-         pack $This.fra2.ent1 -in $This.fra2 -anchor center -padx 2 -pady 2
+         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Rmctrl,getobj) \
+            -width 14 -relief groove
+         pack $This.fra2.ent1 -in $This.fra2 -anchor center -pady 2
 
          #--- Bouton GOTO
          button $This.fra2.but1 -borderwidth 2 -text $panneau(Rmctrl,goto) -command { ::Rmctrl::cmdGoto }
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 2 -ipadx 15
+         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill x -ipadx 15 -ipady 3
 
-      place $This.fra2 -x 3 -y 80 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 72 -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       bind $This.fra2.but1 <ButtonRelease-3> { ::Rmctrl::cmdMatch }
 
@@ -858,8 +845,7 @@ proc RmctrlBuildIF { This } {
          label $This.fra3.ent2 -font $audace(font,arial_10_b) -text $panneau(Rmctrl,getdec) -relief flat
          pack $This.fra3.ent2 -in $This.fra3 -anchor center -fill none -pady 1
 
-      place $This.fra3 -x 3 -y 154 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 44 -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
 
       set zone(radec) $This.fra3
       bind $zone(radec) <ButtonPress-1> { ::Rmctrl::cmdAfficheCoord0 }
@@ -914,7 +900,7 @@ proc RmctrlBuildIF { This } {
          #--- Write the label of speed
          label $This.fra4.ns.lab -font [list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
-         pack $This.fra4.ns.lab -in $This.fra4.ns -expand 0 -side top
+         pack $This.fra4.ns.lab -in $This.fra4.ns -expand 0 -side top -pady 6
 
          #--- Button-design 'S'
          button $This.fra4.ns.canv2 -borderwidth 2 \
@@ -942,8 +928,7 @@ proc RmctrlBuildIF { This } {
          set zone(s) $This.fra4.ns.canv2
          set zone(w) $This.fra4.w.canv1
 
-      place $This.fra4 -x 3 -y 200 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 121 -anchor nw \
-         -bordermode ignore
+      pack $This.fra4 -side top -fill x
 
       bind $This.fra4.ns.lab <ButtonPress-1> { ::Rmctrl::cmdSpeed }
 
@@ -966,7 +951,7 @@ proc RmctrlBuildIF { This } {
             #--- Entry pour l'objet a entrer
             entry $This.fra6.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Rmctrl,exptime) \
                -relief groove -width 5 -justify center
-            pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -pady 2 -padx 4
+            pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label pour les secondes
             label $This.fra6.fra1.lab1 -text $panneau(Rmctrl,secondes) -relief flat
@@ -994,14 +979,13 @@ proc RmctrlBuildIF { This } {
 
          #--- Bouton GO
          button $This.fra6.but1 -borderwidth 2 -text $panneau(Rmctrl,go) -command { ::Rmctrl::cmdGo }
-         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 1 -ipadx 15
+         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill x -ipadx 15 -ipady 3
 
-      place $This.fra6 -x 3 -y 323 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 80 -anchor nw \
-         -bordermode ignore
+      pack $This.fra6 -side top -fill x
 
       #--- Frame du mask
       frame $This.fram -borderwidth 1 -relief flat
-      place $This.fram -x 3 -y 80 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 324 -anchor nw \
+      place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
          -bordermode ignore
 
       #--- Mise a jour dynamique des couleurs
@@ -1214,7 +1198,7 @@ global audace
          }
          $This.fraconf.but1 configure -text $panneau(Rmctrl,unconnect)
          #--- Le client demasque les commandes
-         place $This.fram -x 3 -y 81 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 1 -anchor nw \
+         place $This.fram -x 3 -y 74 -width 200 -height 1 -anchor nw \
             -bordermode ignore
          ::Rmctrl::cmdAfficheCoord
       }
@@ -1312,7 +1296,7 @@ global audace
                $This.fraconf.labURL2 configure -text $panneau(Rmctrl,backyard) -fg $color(blue)
                $This.fraconf.but1 configure -text $panneau(Rmctrl,unconnect)
                #--- Le serveur masque les commandes
-               place $This.fram -x 3 -y 80 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 324 -anchor nw \
+               place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
                   -bordermode ignore
             }
          }
@@ -1344,7 +1328,7 @@ global audace
       $This.fraconf.labURL2 configure -text $panneau(Rmctrl,none) -fg $color(red)
       $This.fraconf.but1 configure -text $panneau(Rmctrl,connect)
       #--- Masque les commandes
-      place $This.fram -x 3 -y 80 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 324 -anchor nw \
+      place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
          -bordermode ignore
    }
 
@@ -1367,7 +1351,7 @@ global audace
       $This.fraconf.labURL2 configure -text $panneau(Rmctrl,none) -fg $color(red)
       $This.fraconf.but1 configure -text $panneau(Rmctrl,connect)
       #--- Masque les commandes
-      place $This.fram -x 3 -y 80 -width [ expr $panneau(Rmctrl,largeur_outil) - 6 ] -height 324 -anchor nw \
+      place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
          -bordermode ignore
    }
 

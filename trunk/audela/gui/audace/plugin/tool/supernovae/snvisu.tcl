@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 03 septembre 2005
+# Date de mise a jour : 11 decembre 2005
 #  
 
 global audace
@@ -659,7 +659,7 @@ proc no_cosmic { } {
       -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
    #---
    set result [buf$num(buffer1) load $filename]
-   ::audace::autovisu visu$num(visu_1)
+   ::audace::autovisu $num(visu_1)
    $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
 }
 
@@ -695,7 +695,7 @@ proc subsky { } {
          -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       #---
       set result [buf$num(buffer1) load $filename]
-      ::audace::autovisu visu$num(visu_1)
+      ::audace::autovisu $num(visu_1)
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
 
@@ -714,7 +714,7 @@ proc subsky { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          set result [buf$num(buffer2) load $filename]
-         ::audace::autovisu visu$num(visu_2)
+         ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
       } elseif { ( $snvisu(ima_rep3_exist) == "1" ) && ( $snconfvisu(num_rep2_3) == "1" ) } { 
@@ -732,7 +732,7 @@ proc subsky { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          set result [buf$num(buffer2) load $filename]
-         ::audace::autovisu visu$num(visu_2)
+         ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
       }
@@ -778,10 +778,10 @@ proc change_dir { { numbuf "1" } } {
          set aa "$rep($numbuf)/*$extname"
          set rep(x$numbuf) [globgalsn $aa]
 
-	   set rep00 {}
-	   set aa "$rep($numbuf)/*${extname}.gz"
-	   catch {set rep00 [globgalsn $aa]}
-	   set rep(x$numbuf) [concat $rep(x$numbuf) $rep00]
+         set rep00 {}
+         set aa "$rep($numbuf)/*${extname}.gz"
+         catch {set rep00 [globgalsn $aa]}
+         set rep(x$numbuf) [concat $rep(x$numbuf) $rep00]
 
          set rep(xx$numbuf) -1
          set snconfvisu(rep$numbuf) "$rep($numbuf)"
@@ -853,7 +853,7 @@ proc affimages { } {
       if {$a==1} {
          return
       }
-      ::audace::autovisu visu$num(visu_1)
+      ::audace::autovisu $num(visu_1)
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
       #$audace(base).snvisu.lst1 delete 0 end
@@ -877,8 +877,8 @@ proc affimages { } {
       if {$posimoins==-1} {
          set posimoins [string last . $name]
       }
-	set shortname [string range $name 0 [expr ${posimoins}-1]]
-	#--- j'affiche le premier radio bouton en GROOVE si l'image existe dans rep(2) 
+      set shortname [string range $name 0 [expr ${posimoins}-1]]
+      #--- j'affiche le premier radio bouton en GROOVE si l'image existe dans rep(2) 
       set filename2 $rep(2)
       append filename2 /${shortname}[file extension $name]
       if { [ string last ".gz" "$filename2" ] == -1 } {
@@ -901,7 +901,7 @@ proc affimages { } {
             set snvisu(ima_rep2_exist) "0"
          }
       }
-	#--- j'affiche le deuxieme radio bouton en GROOVE si l'image existe dans rep(3)
+      #--- j'affiche le deuxieme radio bouton en GROOVE si l'image existe dans rep(3)
       set filename3 $rep(3)
       append filename3 /${shortname}[file extension $name]
       set rep(DSS) $filename3
@@ -1003,7 +1003,7 @@ proc affimages { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          if {$result==""} {
-            ::audace::autovisu visu$num(visu_2)
+            ::audace::autovisu $num(visu_2)
             $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
             $zone(labelh2) configure -text "$caption(snvisu,reference) : [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]"
             #---
@@ -1268,7 +1268,7 @@ proc snvisu_configuration { } {
       checkbutton $audace(base).snvisu3.frame5.dss_dvd -text "$caption(snvisu,dss_dvd)" \
          -highlightthickness 0 -variable snconfvisu(dss_dvd) \
          -font $audace(font,arial_8_b)
-	pack $audace(base).snvisu3.frame5.dss_dvd \
+      pack $audace(base).snvisu3.frame5.dss_dvd \
         -in $audace(base).snvisu3.frame5 -anchor center -side left \
         -padx 5 -pady 5
       #--- Bouton parcourir
@@ -1278,7 +1278,7 @@ proc snvisu_configuration { } {
             set title $caption(snvisu,rep_dss_dvd)
             set snconfvisu(rep_dss_dvd) [ tk_chooseDirectory -title "$title" -initialdir "$initialdir" \
                -parent "$audace(base).snvisu3" ]
-	      if { $snconfvisu(rep_dss_dvd) == "" } {
+            if { $snconfvisu(rep_dss_dvd) == "" } {
                set snconfvisu(rep_dss_dvd) "$initialdir"
             }
             $audace(base).snvisu3.frame5.ent configure -textvariable snconfvisu(rep_dss_dvd)
@@ -1301,7 +1301,7 @@ proc snvisu_configuration { } {
       checkbutton $audace(base).snvisu3.frame6.priorite_dvd -text "$caption(snvisu,priorite_dvd)" \
          -highlightthickness 0 -variable snconfvisu(priorite_dvd) \
          -font $audace(font,arial_8_b)
-	pack $audace(base).snvisu3.frame6.priorite_dvd \
+      pack $audace(base).snvisu3.frame6.priorite_dvd \
         -in $audace(base).snvisu3.frame6 -anchor center -side left \
         -padx 5 -pady 5
    pack $audace(base).snvisu3.frame6 -side top -fill both -expand 1  
@@ -1502,24 +1502,24 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
 
    if { [file exists $filenameDSS] } {
       set rep(jpg_dss) "$shortname-DSS\.jpg"  
-	set extJPG ".jpg" 
+      set extJPG ".jpg" 
       #je converti l'image FIT en JPG
       #ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
 
-   	set num(bufDSS) [buf::create]
+      set num(bufDSS) [buf::create]
       visu::create $num(bufDSS) 300 
       #if {[info exists audace]==1} {
-   	   #buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
-	#}
-   	set result [buf$num(bufDSS) load $filenameDSS]         
+         #buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
+     #}
+      set result [buf$num(bufDSS) load $filenameDSS]
       set hight [expr [lindex [buf$num(bufDSS) stat] 0] * 3]
       set low [lindex [buf$num(bufDSS) stat] 1] 
 
       #visu$num(bufDSS) cut "$hight $low" 
-	#visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
+      #visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
       #visu$num(bufDSS) disp                                        
-	set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
-	buf::delete $num(bufDSS)
+      set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
+      buf::delete $num(bufDSS)
    }
 }
 
@@ -1640,9 +1640,9 @@ proc htmlimage { } {
              append texte "<br>The possible supernova is located at about $htmlp(posns)\" $htmlp(dirns), $htmlp(posew)\" $htmlp(direw) from the nucleus of "
              append texte "the galaxy. The magnitude is estimated to $htmlp(magest). Bellow, the DSS image :\n"
              if { "$rep(jpg_dss)" != "" } {
-	          append texte "<BR><center><img SRC=\"$rep(jpg_dss)\" height=300 width=300></center>"
-             } else {						
-	          append texte "<BR><center><img SRC=\"$rep(gif_dss)\" height=300 width=300></center>"
+                append texte "<BR><center><img SRC=\"$rep(jpg_dss)\" height=300 width=300></center>"
+             } else {
+                append texte "<BR><center><img SRC=\"$rep(gif_dss)\" height=300 width=300></center>"
              }
              append texte "</body>\n"
              append texte "</html>\n"
@@ -1863,7 +1863,7 @@ proc snblinkimage { } {
    buf$b extension "$ext"
    set filename [lindex $rep(x1) $rep(xx1)]
    if {$rep(blink,last)!=$filename} {
-	set rep(blink,last) "$filename"
+      set rep(blink,last) "$filename"
       buf$num(buffer2) copyto $b
       set dimx [lindex [buf$num(buffer1) getkwd NAXIS1 ] 1]
       set dimy [lindex [buf$num(buffer1) getkwd NAXIS2 ] 1]
@@ -1978,9 +1978,9 @@ proc afficheCarte { } {
    if { $found ==  0 }  {
       #--- deuxieme  tentative : je recupere les coordonnees dans le fichier sn.log
       set snlog "sn.log"    
-   	set filename [lindex $rep(x1) $rep(xx1)] 
+      set filename [lindex $rep(x1) $rep(xx1)] 
 
-   	if { "$filename" != "" } {
+      if { "$filename" != "" } {
          set shortname [file rootname [file tail $filename]]
          #--- Dans le cas des fichiers compresses *.extension.gz, il faut supprimer l'extension qui reste
          if { [string first "." "$shortname" ] != -1 } {
@@ -1992,7 +1992,7 @@ proc afficheCarte { } {
             set vector ""
             catch {
                set fileId [open $rep(1)/${snlog} r] 
-         	   set vector [read $fileId];
+               set vector [read $fileId];
                close  $fileId  
             } result
             
@@ -2002,11 +2002,10 @@ proc afficheCarte { } {
                set line  [lindex $vector $indice]                   
                while { ($line != "") && ($found == 0)} {
                   set line  [lindex $vector $indice] 
-            	if { $shortname == [lindex $line 0]  } {
+                  if { $shortname == [lindex $line 0]  } {
                      set ra  "[ lindex $line 1 ]h[ lindex $line 2 ]m[ lindex $line 3 ]s"
                      set dec "[ lindex $line 4 ]d[ lindex $line 5 ]m[ lindex $line 6 ]s"
                      set found 1
-
                   } 
                   incr indice
                }
@@ -2019,8 +2018,8 @@ proc afficheCarte { } {
       # troisieme tentative : je recupere le nom de l'objet
       # attention : cette solution depends des catalogues presents dans carteduciel
       #             (catalogues presents par defaut : NGC, IC )
-   	set filename [lindex $rep(x1) $rep(xx1)]
-   	if { "$filename" != "" } {
+      set filename [lindex $rep(x1) $rep(xx1)]
+      if { "$filename" != "" } {
          set shortname [file rootname [file tail $filename]]
          #--- Dans le cas des fichiers compresses *.extension.gz, il faut supprimer l'extension qui reste
          if { [string first "." "$shortname" ] != -1 } {
@@ -2029,14 +2028,14 @@ proc afficheCarte { } {
          if { "$shortname" != "" } {
             set found 1
          }
-   	}  
+      }
    }
             
    #--- j'envoi la commande d'affichage
    if { $found == 1} {
-	set zoom_objet "10"
-	set avant_plan "1"
-	::carte::gotoObject "$shortname" "$ra" "$dec" $zoom_objet $avant_plan
+      set zoom_objet "10"
+      set avant_plan "1"
+      ::carte::gotoObject "$shortname" "$ra" "$dec" $zoom_objet $avant_plan
    }
 }
 

@@ -1,8 +1,8 @@
 #
 # Fichier : animate.tcl
-# Description : Outil de controle des animations
+# Description : Outil pour le controle des animations
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 18 juin 2005
+# Date de mise a jour : 13 janvier 2006
 #
 
 package provide animate 1.0
@@ -24,14 +24,6 @@ namespace eval ::Anim {
       global caption
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Anim,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Anim,largeur_outil) "130"
-      } else {
-         set panneau(Anim,largeur_outil) "101"
-      }
       #---
       set panneau(menu_name,Anim)       "$caption(animate,animation)"
       set panneau(Anim,aide)            "$caption(animate,help_titre)"
@@ -43,38 +35,33 @@ namespace eval ::Anim {
       AnimBuildIF $This
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
-      set unpackFunction ::Anim::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
       global audace
 
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
-	if { [ winfo exists $audace(base).erreurfichier ] } {
-	   destroy $audace(base).erreurfichier
-	}
+      pack forget $This
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
+      }
    }
 
    proc cmdGo { } {
       variable This
-      global panneau
+      global panneau audace
 
-      #--- Nettoyage de l'ecran 
-      image delete image0
-      image create photo image0
+      #--- Nettoyage de la visualisation 
+      visu$audace(visuNo) clear
 
       if { $panneau(Anim,encours) == "0" } {
          set panneau(Anim,encours) "1"
-         grab $This.frago.but1
-         $This.frago.but1 configure -relief groove
+         grab $This.fra6.but1
+         $This.fra6.but1 configure -relief groove
          update 
          #--- Gestion des erreurs, absence d'images ou dans un autre repertoire
          set num [ catch { animate $panneau(Anim,filename) $panneau(Anim,nbi) $panneau(Anim,ms) $panneau(Anim,nbl) } msg ]
@@ -82,8 +69,8 @@ namespace eval ::Anim {
             ::Anim::ErreurFichier
          } 
          #---
-         grab release $This.frago.but1
-         $This.frago.but1 configure -relief raised
+         grab release $This.fra6.but1
+         $This.fra6.but1 configure -relief raised
          update 
          set panneau(Anim,encours) "0"
       }
@@ -106,11 +93,11 @@ namespace eval ::Anim {
 
       #--- Cree l'affichage du message d'erreur
       label $audace(base).erreurfichier.lab1 -text "$caption(animate,erreur_fichier1)"
-      uplevel #0 { pack $audace(base).erreurfichier.lab1 -padx 10 -pady 2 }
+      pack $audace(base).erreurfichier.lab1 -padx 10 -pady 2
       label $audace(base).erreurfichier.lab2 -text "$caption(animate,erreur_fichier2)"
-      uplevel #0 { pack $audace(base).erreurfichier.lab2 -padx 10 -pady 2 }
+      pack $audace(base).erreurfichier.lab2 -padx 10 -pady 2
       label $audace(base).erreurfichier.lab3 -text "$caption(animate,erreur_fichier3)"
-      uplevel #0 { pack $audace(base).erreurfichier.lab3 -padx 10 -pady 2 }
+      pack $audace(base).erreurfichier.lab3 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).erreurfichier
@@ -148,11 +135,11 @@ namespace eval ::Anim {
 
       #--- Cree l'affichage du message
       label $audace(base).nom_gene.lab1 -text "$caption(animate,message1)"
-      uplevel #0 { pack $audace(base).nom_gene.lab1 -padx 10 -pady 2 }
+      pack $audace(base).nom_gene.lab1 -padx 10 -pady 2
       label $audace(base).nom_gene.lab2 -text "$caption(animate,message2)"
-      uplevel #0 { pack $audace(base).nom_gene.lab2 -padx 10 -pady 2 }
+      pack $audace(base).nom_gene.lab2 -padx 10 -pady 2
       label $audace(base).nom_gene.lab3 -text "$caption(animate,message3)"
-      uplevel #0 { pack $audace(base).nom_gene.lab3 -padx 10 -pady 2 }
+      pack $audace(base).nom_gene.lab3 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).nom_gene
@@ -173,7 +160,7 @@ proc AnimBuildIF { This } {
    if { [info exists panneau(Anim,ms)] == "0" }       { set panneau(Anim,ms)       "300" }
    if { [info exists panneau(Anim,nbl)] == "0" }      { set panneau(Anim,nbl)      "5" }
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(Anim,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -183,11 +170,10 @@ proc AnimBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool animate animate.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Anim,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 22 -width [ expr $panneau(Anim,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame du nom generique
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -197,69 +183,65 @@ proc AnimBuildIF { This } {
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Entry pour le nom generique
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Anim,filename) -relief groove
-         pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 4
+         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Anim,filename) \
+            -width 14 -relief groove
+         pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1
          bind $This.fra2.ent1 <Enter> { ::Anim::Nom_gene }
          bind $This.fra2.ent1 <Leave> { destroy $audace(base).nom_gene }
 
-      place $This.fra2 -x 4 -y 30 -height 46 -width [ expr $panneau(Anim,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Frame pour le nombre d'images
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Label pour le nombre d'images
          label $This.fra3.lab1 -text $panneau(Anim,nbimages) -relief flat
-         pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand 1 -fill none -side left
+         pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand true -fill none -side left
 
          #--- Entry pour le nombre d'images
          entry $This.fra3.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Anim,nbi) -relief groove \
-            -width 3 -justify center
-         pack $This.fra3.ent1 -in $This.fra3 -anchor center -expand 1 -fill none -side left
+            -width 4 -justify center
+         pack $This.fra3.ent1 -in $This.fra3 -anchor center -expand true -fill none -side left
    
-      place $This.fra3 -x 4 -y 80 -height 40 -width [ expr $panneau(Anim,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
 
       #--- Frame pour le delai
       frame $This.fra4 -borderwidth 1 -relief groove
 
          #--- Label pour le delai
          label $This.fra4.lab1 -text $panneau(Anim,delayms) -relief flat
-         pack $This.fra4.lab1 -in $This.fra4 -anchor center -expand 1 -fill none -side left
+         pack $This.fra4.lab1 -in $This.fra4 -anchor center -expand true -fill none -side left
 
          #--- Entry pour le delai
          entry $This.fra4.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Anim,ms) -relief groove \
             -width 5 -justify center
-         pack $This.fra4.ent1 -in $This.fra4 -anchor center -expand 1 -fill none -side left
+         pack $This.fra4.ent1 -in $This.fra4 -anchor center -expand true -fill none -side left
    
-      place $This.fra4 -x 4 -y 124 -height 40 -width [ expr $panneau(Anim,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra4 -side top -fill x
 
       #--- Frame pour le nb de boucles
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Label pour le nb de boucles
          label $This.fra5.lab1 -text $panneau(Anim,nbloops) -relief flat
-         pack $This.fra5.lab1 -in $This.fra5 -anchor center -expand 1 -fill none -side left
+         pack $This.fra5.lab1 -in $This.fra5 -anchor center -expand true -fill none -side left
 
          #--- Entry pour le nb de boucles
          entry $This.fra5.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Anim,nbl) -relief groove \
-            -width 3 -justify center
-         pack $This.fra5.ent1 -in $This.fra5 -anchor center -expand 1 -fill none -side left
+            -width 4 -justify center
+         pack $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -side left
    
-      place $This.fra5 -x 4 -y 168 -height 40 -width [ expr $panneau(Anim,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra5 -side top -fill x
 
       #--- Lancement de l'animation
-      frame $This.frago -borderwidth 1 -relief groove
+      frame $This.fra6 -borderwidth 1 -relief groove
 
          #--- Bouton GO Anim
-         button $This.frago.but1 -borderwidth 2 -text $panneau(Anim,go) \
+         button $This.fra6.but1 -borderwidth 2 -text $panneau(Anim,go) \
             -command { ::Anim::cmdGo }
-         pack $This.frago.but1 -in $This.frago -anchor center -fill none -ipadx 5 -ipady 8 -pady 5 -padx 2
+         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -padx 2 -pady 5 -ipadx 5 -ipady 8
 
-      place $This.frago -x 4 -y 216 -height 48 -width [ expr $panneau(Anim,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra6 -side top -fill x
 
    #--- Binding pour afficher le nom generique des images
    bind $This.fra2.ent1 <Key-Escape> { ::Anim::edit_nom_image }

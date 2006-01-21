@@ -1,8 +1,8 @@
 #
 # Fichier : pretrfc.tcl
-# Description : Module de pretraitement automatique
-# Auteurs : François COCHARD et Jacques MICHELET
-# Date de mise a jour : 18 novembre 2005
+# Description : Outil pour le pretraitement automatique
+# Auteurs : Francois COCHARD et Jacques MICHELET
+# Date de mise a jour : 13 janvier 2006
 #
 
 #=====================================================================
@@ -19,12 +19,12 @@ namespace eval ::pretraitFC {
 
    source [ file join $audace(rep_plugin) tool pretrfc pretrfc.cap ]
 
-   # Numéro de la version du logiciel
+   # Numero de la version du logiciel
    set numero_version "1.40"
 
-#***** Procédure DemarragePretraitFC *********************************
+#***** Procedure DemarragePretraitFC *********************************
    proc DemarragePretraitFC { } {
-	variable fichier_log
+      variable fichier_log
       variable log_id
       variable numero_version
 	global audace caption
@@ -32,10 +32,10 @@ namespace eval ::pretraitFC {
       # Lecture du fichier de configuration
       ::pretraitFC::RecuperationParametres
 
-	# Gestion du fichier de log
-	# Creation du nom de fichier log
+      # Gestion du fichier de log
+      # Creation du nom de fichier log
       set nom_generique pretrfc
-      # Heure à partir de laquelle on passe sur un nouveau fichier de log...
+      # Heure a partir de laquelle on passe sur un nouveau fichier de log...
       set heure_nouveau_fichier 4
       set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
       if {$heure_courante < $heure_nouveau_fichier} {
@@ -48,96 +48,87 @@ namespace eval ::pretraitFC {
     	set fichier_log $audace(rep_images)
     	append fichier_log "/" $nom_generique $formatdate ".log"
 
-	# Ouverture
-	if {[catch {open $fichier_log a} log_id]} {
-	   Message console $caption(pretrfc,pbouvfichcons)
+      # Ouverture
+      if {[catch {open $fichier_log a} log_id]} {
+         Message console $caption(pretrfc,pbouvfichcons)
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
-		-message $caption(pretrfc,pbouvfich)
-# Note importante: Je détecte si j'ai un pb à l'ouverture du fichier, mais je ne sais
+            -message $caption(pretrfc,pbouvfich)
+# Note importante: Je detecte si j'ai un pb a l'ouverture du fichier, mais je ne sais
 # pas traiter ce cas: Il faudrait interdire l'ouverture du panneau, mais le processus
-# est déjà lancé à ce stade... Tout ce que je fais, c'est inviter l'utilisateur à
+# est deja lance a ce stade... Tout ce que je fais, c'est inviter l'utilisateur a
 # changer d'outil !
       } else {
-         # Entête du fichier
-	   Message log $caption(pretrfc,ouvsess) $numero_version
-  	   set date [clock format [clock seconds] -format "%A %d %B %Y"]
+         # En-tete du fichier
+         Message log $caption(pretrfc,ouvsess) $numero_version
+         set date [clock format [clock seconds] -format "%A %d %B %Y"]
          set heure $audace(tu,format,hmsint)
-	   Message log $caption(pretrfc,affheure) $date $heure
+         Message log $caption(pretrfc,affheure) $date $heure
       }
    }
-#***** Fin de la procédure DemarragePretraitFC ***********************
+#***** Fin de la procedure DemarragePretraitFC ***********************
 
-#***** Procédure ArretPretraitFC *************************************
+#***** Procedure ArretPretraitFC *************************************
    proc ArretPretraitFC { } {
-	variable log_id
-	global audace caption conf_pt_fc panneau
+      variable log_id
+      global audace caption conf_pt_fc panneau
 
-	# Fermeture du fichier de log
-      set heure $audace(tu,format,hmsint)
-# Je m'assure que le fichier se termine correctement, en particulier pour le cas où il y
-# a eu un problème à l'ouverture (C'est un peu une rustine...)
-      if {[catch {Message log $caption(pretrfc,finsess) $heure} bug]} {
-	   Message console $caption(pretrfc,pbfermfichcons)
-      } else {
-         catch { close $log_id }
+      # Fermeture du fichier de log
+      if { [ info exists log_id ] } {
+         set heure $audace(tu,format,hmsint)
+         #--- Je m'assure que le fichier se termine correctement, en particulier pour le cas ou il y
+         #--- a eu un probleme a l'ouverture (C'est un peu une rustine...)
+         if { [ catch { Message log $caption(pretrfc,finsess) $heure } bug ] } {
+            Message console $caption(pretrfc,pbfermfichcons)
+         } else {
+            close $log_id
+            unset log_id
+         }
       }
 
-      # Récupération de la position de la fenêtre de réglages
+      # Recuperation de la position de la fenetre de reglages
       ::pretraitFC::recup_position
       set conf_pt_fc(fenetrePretr,position) $panneau(pretraitFC,position)
-      # Sauvegarde des paramètres dans le fichier de config
+      # Sauvegarde des parametres dans le fichier de config
       ::pretraitFC::SauvegardeParametres
-      # Fermeture de la fenêtre de prétraitement
+      # Fermeture de la fenetre de pretraitement
       destroy $audace(base).fenetrePretr
    }
-#***** Fin de la procédure ArretPretraitFC ***************************
+#***** Fin de la procedure ArretPretraitFC ***************************
 
-#***** Procédure Init ************************************************
+#***** Procedure Init ************************************************
    proc Init { { in "" } } {
       createPanel $in.pretraitFC
    }
-#***** Fin de la procédure Init **************************************
+#***** Fin de la procedure Init **************************************
 
-#***** Procédure createPanel *****************************************
+#***** Procedure createPanel *****************************************
    proc createPanel { this } {
       variable This
       global caption panneau
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(pretraitFC,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(pretraitFC,largeur_outil) "130"
-      } else {
-         set panneau(pretraitFC,largeur_outil) "101"
-      }
       #---
       set panneau(menu_name,pretraitFC) $caption(pretrfc,menu)
 
       pretraitFCBuildIF $This
    }
-#***** Fin de la procédure createPanel *******************************
+#***** Fin de la procedure createPanel *******************************
 
-#***** Procedure pack ************************************************
-   proc pack { } {
-      variable This
-      global unpackFunction
-
-      set unpackFunction ::pretraitFC::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
-   }
-#***** Fin de la procedure pack **************************************
-
-#***** Procedure unpack **********************************************
-   proc unpack { } {
+#***** Procedure startTool *******************************************
+   proc startTool { visuNo } {
       variable This
 
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
-#***** Fin de la procedure unpack ************************************
+#***** Fin de la procedure startTool *********************************
+
+#***** Procedure stopTool ********************************************
+   proc stopTool { visuNo } {
+      variable This
+
+      pack forget $This
+   }
+#***** Fin de la procedure stopTool **********************************
 
 #***** Procedure recup_position **************************************
    proc recup_position { } {
@@ -147,10 +138,10 @@ namespace eval ::pretraitFC {
       set deb [ expr 1 + [ string first + $panneau(pretraitFC,geometry) ] ]
       set fin [ string length $panneau(pretraitFC,geometry) ]
       set panneau(pretraitFC,position) "+[string range $panneau(pretraitFC,geometry) $deb $fin]"     
-   }	
+   }
 #***** Fin de la procedure recup_position ****************************
 
-#***** Procédure fenetrePretr ****************************************
+#***** Procedure fenetrePretr ****************************************
    proc fenetrePretr { } {
       global audace caption conf_pt_fc panneau
 
@@ -169,10 +160,10 @@ namespace eval ::pretraitFC {
          }
 
          #---
-   	   toplevel $audace(base).fenetrePretr -class Toplevel -borderwidth 2 -relief groove
+         toplevel $audace(base).fenetrePretr -class Toplevel -borderwidth 2 -relief groove
          wm geometry $audace(base).fenetrePretr $panneau(pretraitFC,position)
          wm resizable $audace(base).fenetrePretr 1 1
-	   wm title $audace(base).fenetrePretr $caption(pretrfc,titrelong)
+         wm title $audace(base).fenetrePretr $caption(pretrfc,titrelong)
 
          wm protocol $audace(base).fenetrePretr WM_DELETE_WINDOW ::pretraitFC::ArretPretraitFC
 
@@ -189,7 +180,7 @@ namespace eval ::pretraitFC {
 
       # Initialisation
       if {[info exists conf_pt_fc]} {unset conf_pt_fc}
-      # Ouverture du fichier de paramètres
+      # Ouverture du fichier de parametres
       set fichier [file join $audace(rep_plugin) tool pretrfc pretrfc.ini]
       if {[file exists $fichier]} {source $fichier}
       # Creation des variables si elles n'existent pas
@@ -228,8 +219,8 @@ namespace eval ::pretraitFC {
        global audace conf_pt_fc
 
        catch {
-	    set nom_fichier [file join $audace(rep_plugin) tool pretrfc pretrfc.ini]
-	    if [catch {open $nom_fichier w} fichier] {
+          set nom_fichier [file join $audace(rep_plugin) tool pretrfc pretrfc.ini]
+          if [catch {open $nom_fichier w} fichier] {
              Message console "%s\n" $caption(pretrfc,PbSauveConfig)
           } else {
              foreach {a b} [array get conf_pt_fc] {
@@ -241,14 +232,14 @@ namespace eval ::pretraitFC {
     }
 #***** Fin de la procedure SauvegardeParametres **********************
 
-#***** Procédure rechargeCosm ****************************************
+#***** Procedure rechargeCosm ****************************************
    proc rechargeCosm { } {
-      # Cette procédure a pour fonction de recharger le script de correction
-      #    cosmétique (pour permettre à l'utilisateur de faire du debug sans
+      # Cette procedure a pour fonction de recharger le script de correction
+      #    cosmetique (pour permettre a l'utilisateur de faire du debug sans
       #    sortir de Audela !
       global conf_pt_fc audace caption
 
-      # Vérifie validité du nom du fichier de script
+      # Verifie validite du nom du fichier de script
       if {[TestNomFichier $conf_pt_fc(FichScript)] == 0} {
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomFichScr)
@@ -268,12 +259,12 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure rechargeCosm ******************************
 
-#***** Procédure goCosm***********************************************
+#***** Procedure goCosm***********************************************
    proc goCosm { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
-	testCosm
+      # Dans un premier temps, je teste l'integrite de l'operation
+      testCosm
       # Si tout est Ok, je lance le traitement
       if {$integre(cosm) == "oui"} {
          traiteCosm
@@ -281,7 +272,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure goCosm*************************************
 
-#***** Procédure testCosm*********************************************
+#***** Procedure testCosm*********************************************
    proc testCosm { } {
       global audace caption conf_pt_fc integre
 
@@ -289,14 +280,14 @@ namespace eval ::pretraitFC {
       set integre(cosm) oui
 
       if {[TestNomFichier $conf_pt_fc(procCorr)] == 0} {
-         # Teste si le nom de la procédure est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de la procedure est Ok (un seul champ, pas de caractere interdit...)
          set integre(cosm) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbProcCorr)
       } elseif {[info procs $conf_pt_fc(procCorr)] == ""} {
-         # Teste si la procédure de correction cosmétique existe
+         # Teste si la procedure de correction cosmetique existe
          # Alors je dois regarder si j'ai de quoi charger le fichier contenant le script
-         # Teste si le nom de fichier est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier est Ok (un seul champ, pas de caractere interdit...)
          if {[TestNomFichier $conf_pt_fc(FichScript)] == 0} {
             set integre(cosm) non
             tk_messageBox -title $caption(pretrfc,pb) -type ok \
@@ -312,7 +303,7 @@ namespace eval ::pretraitFC {
             } else {
                # Alors dans ce cas, je charge le fichier
                source $nomFich
-               # et je me repose la question de l'existence de la procédure:
+               # et je me repose la question de l'existence de la procedure:
                if {[info procs $conf_pt_fc(procCorr)] == ""} {
                   tk_messageBox -title $caption(pretrfc,pb) -type ok \
                      -message $caption(pretrfc,procCorrIntrouv)
@@ -325,23 +316,23 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure testCosm***********************************
 
-#***** Procédure traiteCosm*******************************************
+#***** Procedure traiteCosm*******************************************
    proc traiteCosm { } {
       global caption conf_pt_fc integre
 
       desactiveBoutons
-      # Applique la procédure de correction cosmétique à l'image en cours
+      # Applique la procedure de correction cosmetique a l'image en cours
       eval $conf_pt_fc(procCorr)
       activeBoutons
    }
 #***** Fin de la procedure traiteCosm*********************************
 
-#***** Procédure goPrecharge *****************************************
+#***** Procedure goPrecharge *****************************************
    proc goPrecharge { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
-	testPrecharge
+      # Dans un premier temps, je teste l'integrite de l'operation
+      testPrecharge
       # Si tout est Ok, je lance le traitement
       if {$integre(precharge) == "oui"} {
          traitePrecharge
@@ -349,7 +340,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure goPrecharge *******************************
 
-#***** Procédure testPrecharge ***************************************
+#***** Procedure testPrecharge ***************************************
    proc testPrecharge { } {
       global audace caption conf_pt_fc integre
 
@@ -359,9 +350,9 @@ namespace eval ::pretraitFC {
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmPrech) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la definition de la correction cosmetique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(precharge) non
@@ -371,13 +362,13 @@ namespace eval ::pretraitFC {
 
        desactiveBoutons
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractere interdit...)
       if {[TestNomFichier $conf_pt_fc(nmPrechSce)] == 0} {
          set integre(precharge) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomPrechSrce)
       } elseif {[TestNomFichier $conf_pt_fc(nmPrechRes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier resultant est Ok (un seul champ, pas de caractere interdit...)
          set integre(noir) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomPrechRes)
@@ -399,7 +390,7 @@ namespace eval ::pretraitFC {
             tk_messageBox -title $caption(pretrfc,pb) -type ok \
                -message $caption(pretrfc,fichPrechAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier resultant existe deja
             set nomFich $audace(rep_images)
             append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
             if {[file exists $nomFich] == 1} {
@@ -411,7 +402,7 @@ namespace eval ::pretraitFC {
                   return
                }
             }
-            # Dans le cas où le filtrage est demandé, je vérifie que le nb est valide
+            # Dans le cas ou le filtrage est demande, je verifie que le nb est valide
             if {$conf_pt_fc(medFiltree) == 1} {
                if {[TestEntier $conf_pt_fc(filtrage)] == 0} {
                   tk_messageBox -title $caption(pretrfc,pb) -type ok \
@@ -425,7 +416,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure testPrecharge *****************************
 
-#***** Procédure traitePrecharge *************************************
+#***** Procedure traitePrecharge *************************************
    proc traitePrecharge { } {
       global audace caption conf_pt_fc integre
 
@@ -433,14 +424,14 @@ namespace eval ::pretraitFC {
       focus $audace(Console)
 
       desactiveBoutons
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de demarrage du pretraitement des noirs
       Message consolog $caption(pretrfc,debPrech)
 
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
       if {$conf_pt_fc(cosmPrech) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas ou la correction cosmetique est demandee
          Message consolog $caption(pretrfc,lanceCosmPrech)
          for {set i 1} {$i <= $conf_pt_fc(nbPrech)} {incr i} {
             set instr "loadima $conf_pt_fc(nmPrechSce)$i"
@@ -457,7 +448,7 @@ namespace eval ::pretraitFC {
             eval $instr
          }
       }
-      # Affichage de la première image de noir
+      # Affichage de la premiere image de noir
       set nomFich $conf_pt_fc(nmPrechSce)
       append nomFich "1"
       Message consolog $caption(pretrfc,chargPremPrech)
@@ -467,14 +458,14 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mediane des images
       set instr "smedian $conf_pt_fc(nmPrechSce) $conf_pt_fc(nmPrechRes) $conf_pt_fc(nbPrech)"
       Message consolog $caption(pretrfc,CalcMedPrech)
       Message consolog $instr
       Message consolog "\n"
       eval $instr
 
-      # Opération éventuelle de filtrage
+      # Operation eventuelle de filtrage
       if {$conf_pt_fc(medFiltree) == 1} {
          Message consolog $caption(pretrfc,filtrage)
          set taille $conf_pt_fc(filtrage)
@@ -486,7 +477,7 @@ namespace eval ::pretraitFC {
          eval $instr
       }
 
-      # Affichage de l'image de précharge résultante
+      # Affichage de l'image de precharge resultante
       set nomFich $conf_pt_fc(nmPrechRes)
       Message consolog $caption(pretrfc,chargPrechRes)
       set instr "loadima $nomFich"
@@ -494,7 +485,7 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Affichage du message de fin du prétraitement de la précharge
+      # Affichage du message de fin du pretraitement de la precharge
       Message consolog $caption(pretrfc,finPrech)
 
       activeBoutons
@@ -502,12 +493,12 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure traitePrecharge ***************************
 
-#***** Procédure goNoir **********************************************
+#***** Procedure goNoir **********************************************
    proc goNoir { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
-	testNoir
+      # Dans un premier temps, je teste l'integrite de l'operation
+      testNoir
       # Si tout est Ok, je lance le traitement
       if {$integre(noir) == "oui"} {
          traiteNoir
@@ -515,7 +506,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure goNoir ************************************
 
-#***** Procédure testNoir ********************************************
+#***** Procedure testNoir ********************************************
    proc testNoir { } {
       global audace caption conf_pt_fc integre
 
@@ -525,9 +516,9 @@ namespace eval ::pretraitFC {
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmNoir) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la definition de la correction cosmetique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(noir) non
@@ -537,13 +528,13 @@ namespace eval ::pretraitFC {
 
       desactiveBoutons
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractere interdit...)
       if {[TestNomFichier $conf_pt_fc(nmNrSce)] == 0} {
          set integre(noir) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomNoirSrce)
       } elseif {[TestNomFichier $conf_pt_fc(nmNoirRes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier resultant est Ok (un seul champ, pas de caractere interdit...)
          set integre(noir) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomNoirRes)
@@ -565,7 +556,7 @@ namespace eval ::pretraitFC {
             tk_messageBox -title $caption(pretrfc,pb) -type ok \
                -message $caption(pretrfc,fichNoirAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier resultant existe deja
             set nomFich $audace(rep_images)
             append nomFich "/" $conf_pt_fc(nmNoirRes) $ext
             if {[file exists $nomFich] == 1} {
@@ -581,7 +572,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure testNoir **********************************
 
-#***** Procédure traiteNoir ******************************************
+#***** Procedure traiteNoir ******************************************
    proc traiteNoir { } {
       global audace caption conf_pt_fc integre
 
@@ -589,11 +580,11 @@ namespace eval ::pretraitFC {
       focus $audace(Console)
 
       desactiveBoutons
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de demarrage du pretraitement des noirs
       Message consolog $caption(pretrfc,debNoir)
 
       if {$conf_pt_fc(cosmNoir) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas ou la correction cosmetique est demandee
          Message consolog $caption(pretrfc,lanceCosmNoir)
          for {set i 1} {$i <= $conf_pt_fc(nbNoirs)} {incr i} {
             set instr "loadima $conf_pt_fc(nmNrSce)$i"
@@ -610,7 +601,7 @@ namespace eval ::pretraitFC {
             eval $instr
          }
       }
-      # Affichage de la première image de noir
+      # Affichage de la premiere image de noir
       set nomFich $conf_pt_fc(nmNrSce)
       append nomFich "1"
       Message consolog $caption(pretrfc,chargPremNoir)
@@ -620,14 +611,14 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mediane des images
       set instr "smedian $conf_pt_fc(nmNrSce) $conf_pt_fc(nmNoirRes) $conf_pt_fc(nbNoirs)"
       Message consolog $caption(pretrfc,CalcMedNoir)
       Message consolog $instr
       Message consolog "\n"
       eval $instr
 
-      # Affichage de l'image noire résultante
+      # Affichage de l'image noire resultante
       set nomFich $conf_pt_fc(nmNoirRes)
       Message consolog $caption(pretrfc,chargNoirRes)
       set instr "loadima $nomFich"
@@ -635,7 +626,7 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Affichage du message de fin du prétraitement des noirs
+      # Affichage du message de fin du pretraitement des noirs
       Message consolog $caption(pretrfc,finNoir)
 
       activeBoutons
@@ -643,12 +634,12 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure traiteNoir ********************************
 
-#***** Procédure goNoirDePLU *****************************************
+#***** Procedure goNoirDePLU *****************************************
    proc goNoirDePLU { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
-	testNoirDePLU
+      # Dans un premier temps, je teste l'integrite de l'operation
+      testNoirDePLU
       # Si tout est Ok, je lance le traitement
       if {$integre(noir_PLU) == "oui"} {
          traiteNoirDePLU
@@ -656,7 +647,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure goNoirDePLU *******************************
 
-#***** Procédure testNoirDePLU ***************************************
+#***** Procedure testNoirDePLU ***************************************
    proc testNoirDePLU { } {
       global audace caption conf_pt_fc integre
 
@@ -666,9 +657,9 @@ namespace eval ::pretraitFC {
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmNrPLU) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la definition de la correction cosmetique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(noir_PLU) non
@@ -678,13 +669,13 @@ namespace eval ::pretraitFC {
 
       desactiveBoutons
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractere interdit...)
       if {[TestNomFichier $conf_pt_fc(nmNrPLUSce)] == 0} {
          set integre(noir_PLU) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomNrPLUSrce)
       } elseif {[TestNomFichier $conf_pt_fc(nmNrPLURes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier resultant est Ok (un seul champ, pas de caractere interdit...)
          set integre(noir_PLU) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomNrPLURes)
@@ -706,7 +697,7 @@ namespace eval ::pretraitFC {
             tk_messageBox -title $caption(pretrfc,pb) -type ok \
                -message $caption(pretrfc,fichNrPLUAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier resultant existe deja
             set nomFich $audace(rep_images)
             append nomFich "/" $conf_pt_fc(nmNrPLURes) $ext
             if {[file exists $nomFich] == 1} {
@@ -722,7 +713,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure testNoirDePLU *****************************
 
-#***** Procédure traiteNoirDePLU *************************************
+#***** Procedure traiteNoirDePLU *************************************
    proc traiteNoirDePLU { } {
       global audace caption conf_pt_fc integre
 
@@ -730,11 +721,11 @@ namespace eval ::pretraitFC {
       focus $audace(Console)
 
       desactiveBoutons
-      # Affichage du message de démarrage du prétraitement des noir de PLU
+      # Affichage du message de demarrage du pretraitement des noir de PLU
       Message consolog $caption(pretrfc,debNrPLU)
 
       if {$conf_pt_fc(cosmNrPLU) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas ou la correction cosmetique est demandee
          Message consolog $caption(pretrfc,cosmNoirDePLU)
          for {set i 1} {$i <= $conf_pt_fc(nbNrPLU)} {incr i} {
             set instr "loadima $conf_pt_fc(nmNrPLUSce)$i"
@@ -752,7 +743,7 @@ namespace eval ::pretraitFC {
          }
       }
 
-      # Affichage de la première image de noir de PLU
+      # Affichage de la premiere image de noir de PLU
       set nomFich $conf_pt_fc(nmNrPLUSce)
       append nomFich "1"
       Message consolog $caption(pretrfc,chargPremNrPLU)
@@ -761,14 +752,14 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mediane des images
       set instr "smedian $conf_pt_fc(nmNrPLUSce) $conf_pt_fc(nmNrPLURes) $conf_pt_fc(nbNrPLU)"
       Message consolog $caption(pretrfc,CalcMedNrPLU)
       Message consolog $instr
       Message consolog "\n"
       eval $instr
 
-      # Affichage de l'image de noir de PLU résultante
+      # Affichage de l'image de noir de PLU resultante
       set nomFich $conf_pt_fc(nmNrPLURes)
       Message consolog $caption(pretrfc,chargNrPLURes)
       set instr "loadima $nomFich"
@@ -776,19 +767,19 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Affichage du fin de démarrage du prétraitement des noirs de PLU
+      # Affichage du fin de demarrage du pretraitement des noirs de PLU
       Message consolog $caption(pretrfc,finNrPLU)
       activeBoutons
       focus $audace(base).fenetrePretr
    }
 #***** Fin de la procedure traiteNoirDePLU ***************************
 
-#***** Procédure goPLU ***********************************************
+#***** Procedure goPLU ***********************************************
    proc goPLU { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
-	testPLU
+      # Dans un premier temps, je teste l'integrite de l'operation
+      testPLU
       # Si tout est Ok, je lance le traitement
       if {$integre(PLU) == "oui"} {
          traitePLU
@@ -796,7 +787,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure goPLU *************************************
 
-#***** Procédure testPLU *********************************************
+#***** Procedure testPLU *********************************************
    proc testPLU { } {
       global audace caption conf_pt_fc integre
 
@@ -806,9 +797,9 @@ namespace eval ::pretraitFC {
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmPLU) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la definition de la correction cosmetique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(PLU) non
@@ -821,13 +812,13 @@ namespace eval ::pretraitFC {
       set conf_pt_fc(precharge_a_faire_pl) non
       set conf_pt_fc(noir_a_faire_pl) non
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractere interdit...)
       if {[TestNomFichier $conf_pt_fc(nmPLUSce)] == 0} {
          set integre(PLU) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomPLUSrce)
       } elseif {[TestNomFichier $conf_pt_fc(nmPLURes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier resultant est Ok (un seul champ, pas de caractere interdit...)
          set integre(PLU) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomPLURes)
@@ -849,7 +840,7 @@ namespace eval ::pretraitFC {
             tk_messageBox -title $caption(pretrfc,pb) -type ok \
                -message $caption(pretrfc,fichPLUAbs)
          } else {
-            # Teste si le fichier résultant existe déja
+            # Teste si le fichier resultant existe deja
             set nomFich $audace(rep_images)
             append nomFich "/" $conf_pt_fc(nmPLURes) $ext
             if {[file exists $nomFich] == 1} {
@@ -862,7 +853,7 @@ namespace eval ::pretraitFC {
                }
             }
             if {$conf_pt_fc(modePLU) == "simple"} {
-               # A partir de là, c'est selon le mode de traitement de la PLU retenue
+               # A partir de la, c'est selon le mode de traitement de la PLU retenue
                # Teste si le fichier de noir de PLU existe bien
                set nomFich $audace(rep_images)
                append nomFich "/" $conf_pt_fc(nmNrPLURes) $ext
@@ -876,7 +867,7 @@ namespace eval ::pretraitFC {
                   } else {
                      # J'ai tout pour faire le noir de PLU
                      set conf_pt_fc(fich_pour_PLU_ok) oui
-                     # Alors je mémorise que je dois le faire
+                     # Alors je memorise que je dois le faire
                      set conf_pt_fc(noir_de_PLU_a_faire_pl) oui
                   }
                } else {
@@ -884,7 +875,7 @@ namespace eval ::pretraitFC {
                }
             } elseif {$conf_pt_fc(modePLU) != ""} {
                # Dans ce cas, on a choisit les options rapp tps pose ou optimisation
-               # Teste si le fichier de précharge existe bien
+               # Teste si le fichier de precharge existe bien
                set nomFich $audace(rep_images)
                append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
                if {[file exists $nomFich] == 0} {
@@ -895,9 +886,9 @@ namespace eval ::pretraitFC {
                      set integre(PLU) non
                      set conf_pt_fc(fich_pour_PLU_ok) non
                   } else {
-                     # J'ai tout pour faire la précharge
+                     # J'ai tout pour faire la precharge
                      set conf_pt_fc(fich_pour_PLU_ok) oui
-                     # Alors je mémorise que je dois le faire
+                     # Alors je memorise que je dois le faire
                      set conf_pt_fc(precharge_a_faire_pl) oui
                   }
                } else {
@@ -917,15 +908,15 @@ namespace eval ::pretraitFC {
                      } else {
                         # J'ai tout pour faire le noir
                         set conf_pt_fc(fich_pour_PLU_ok) oui
-                        # Alors je mémorise que je dois le faire
+                        # Alors je memorise que je dois le faire
                         set conf_pt_fc(noir_a_faire_pl) oui
-	               }
+                     }
                   } else {
                      set conf_pt_fc(fich_pour_PLU_ok) oui
                   }
                }
             } else {
-               # Vérifie qu'un mode de traitement est bien sélectionné
+               # Verifie qu'un mode de traitement est bien selectionne
                tk_messageBox -title $caption(pretrfc,pb) -type ok \
                   -message $caption(pretrfc,choisir_mode_PLU)
                set integre(PLU) non
@@ -936,7 +927,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure testPLU ***********************************
 
-#***** Procédure traitePLU *******************************************
+#***** Procedure traitePLU *******************************************
    proc traitePLU { } {
       global audace caption conf_pt_fc integre
 
@@ -959,7 +950,7 @@ namespace eval ::pretraitFC {
 
       desactiveBoutons
 
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de demarrage du pretraitement des noirs
       Message consolog $caption(pretrfc,debPLU)
       switch -exact $conf_pt_fc(modePLU) {
          simple {
@@ -974,7 +965,7 @@ namespace eval ::pretraitFC {
       }
 
       if {$conf_pt_fc(cosmPLU) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas ou la correction cosmetique est demandee
          Message consolog $caption(pretrfc,lanceCosmPLU)
          for {set i 1} {$i <= $conf_pt_fc(nbPLU)} {incr i} {
             set instr "loadima $conf_pt_fc(nmPLUSce)$i"
@@ -989,7 +980,7 @@ namespace eval ::pretraitFC {
          }
       }
 
-      # Affichage de la première image de PLU
+      # Affichage de la premiere image de PLU
       set nomFich $conf_pt_fc(nmPLUSce)
       append nomFich "1"
       Message consolog $caption(pretrfc,chargPremPLU)
@@ -1009,13 +1000,13 @@ namespace eval ::pretraitFC {
          }
          rapTps {
             # Lecture du temps de pose de l'image PLU
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je verifie que le champ exposure est bien present dans l'en-tete FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
                set motCle EXPTIME
             }
-		set instr "set temps_plu [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            set instr "set temps_plu [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(pretrfc,LitTpsPLU)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1025,18 +1016,18 @@ namespace eval ::pretraitFC {
             Message consolog "%s\n" $instr
             eval $instr
             # Lecture du temps de pose du noir
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je verifie que le champ exposure est bien present dans l'en-tete FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
                set motCle EXPTIME
             }
-		set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(pretrfc,LitTpsNoir)
             Message consolog "%s\n" $instr
             eval $instr
             # Calcul du rapport de temps entre noir et PLU
-		set instr "set rapport [expr double($temps_plu) / double($temps_noir)]"
+            set instr "set rapport [expr double($temps_plu) / double($temps_noir)]"
             Message consolog $caption(pretrfc,calcRapp)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1052,7 +1043,7 @@ namespace eval ::pretraitFC {
             Message consolog $caption(pretrfc,multNoir)
             Message consolog "%s\n" $instr
             eval $instr
-            # Sauvegarde le noir pondéré
+            # Sauvegarde le noir pondere
             set instr "saveima noir_pondere_temp"
             Message consolog $caption(pretrfc,SauveNoirPond)
             Message consolog "%s\n" $instr
@@ -1064,7 +1055,7 @@ namespace eval ::pretraitFC {
             Message consolog $caption(pretrfc,SoustrPrechPLUProv)
             Message consolog "%s\n" $instr
             eval $instr
-            # Retire le noir pondéré de toutes les images de PLU
+            # Retire le noir pondere de toutes les images de PLU
             set instr "sub2 $nom_fich noir_pondere_temp $nom_fich 0 $conf_pt_fc(nbPLU)"
             Message consolog $caption(pretrfc,SoustrNoirPondPLU)
             Message consolog "%s\n" $instr
@@ -1077,12 +1068,12 @@ namespace eval ::pretraitFC {
                Message consolog $caption(pretrfc,ChargeNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Addition de la précharge
+               # Addition de la precharge
                set instr "add $conf_pt_fc(nmPrechRes) 0"
                Message consolog $caption(pretrfc,ajoutePrechNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Sauvegarde le noir contenant la précharge
+               # Sauvegarde le noir contenant la precharge
                set instr "saveima noir_avec_prech"
                Message consolog $caption(pretrfc,SauveNoirAvecPrech)
                Message consolog "%s\n" $instr
@@ -1103,7 +1094,7 @@ namespace eval ::pretraitFC {
          }
       }
 
-      # Affichage de la première image de PLU, corrigée du noir
+      # Affichage de la premiere image de PLU, corrigee du noir
       set nomFich $conf_pt_fc(nmPLUSce)
       append nomFich "_moinsnoir_1"
       Message consolog $caption(pretrfc,chargPremPLUCorrNrPLU)
@@ -1112,13 +1103,13 @@ namespace eval ::pretraitFC {
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Calcul de la valeur moyenne de la première image:
+      # Calcul de la valeur moyenne de la premiere image:
       set instr "set valMoyenne \[lindex \[stat\] 4\]"
       Message consolog $caption(pretrfc,calcMoyPremIm)
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Mise au même niveau de tous les PLU
+      # Mise au meme niveau de tous les PLU
       set instr "ngain2 "
       append instr $conf_pt_fc(nmPLUSce)
       append instr "_moinsnoir_ "
@@ -1128,7 +1119,7 @@ namespace eval ::pretraitFC {
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Calcul de la médiane des images
+      # Calcul de la mediane des images
       set instr "smedian "
       append instr $conf_pt_fc(nmPLUSce)
       append instr _auniveau " " $conf_pt_fc(nmPLURes) " " $conf_pt_fc(nbPLU)
@@ -1136,14 +1127,14 @@ namespace eval ::pretraitFC {
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Affichage de l'image noire résultante
+      # Affichage de l'image noire resultante
       set nomFich $conf_pt_fc(nmPLURes)
       Message consolog $caption(pretrfc,chargPLURes)
       set instr "loadima $nomFich"
       Message consolog "%s\n" $instr
       eval $instr
 
-      # Effacement du disque des images générées par le prétraitement:
+      # Effacement du disque des images generees par le pretraitement:
       Message consolog $caption(pretrfc,effacePLUInter)
       for {set i 1} {$i <= $conf_pt_fc(nbPLU)} {incr i} {
          set nomFich $audace(rep_images)
@@ -1164,19 +1155,19 @@ namespace eval ::pretraitFC {
          file delete $nomFich
       }
 
-      # Affichage du message de fin du prétraitement des noirs
+      # Affichage du message de fin du pretraitement des noirs
       Message consolog $caption(pretrfc,finPLU)
       activeBoutons
       focus $audace(base).fenetrePretr
    }
 #***** Fin de la procedure traitePLU *********************************
 
-#***** Procédure goBrut **********************************************
+#***** Procedure goBrut **********************************************
    proc goBrut { } {
       global caption integre
 
-      # Dans un premier temps, je teste l'intégrité de l'opération
-	testBrut
+      # Dans un premier temps, je teste l'integrite de l'operation
+      testBrut
       # Si tout est Ok, je lance le traitement
       if {$integre(brut) == "oui"} {
          traiteBrut
@@ -1184,7 +1175,7 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure goBrut ************************************
 
-#***** Procédure testBrut ********************************************
+#***** Procedure testBrut ********************************************
    proc testBrut { } {
       global audace caption conf_pt_fc integre
 
@@ -1194,9 +1185,9 @@ namespace eval ::pretraitFC {
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
-      # Je commence par regarder si la correction cosmétique est demandée...
+      # Je commence par regarder si la correction cosmetique est demandee...
       if {$conf_pt_fc(cosmBrut) == 1} {
-         # Alors je teste si la définition de la correction cosmétique est Ok
+         # Alors je teste si la definition de la correction cosmetique est Ok
          testCosm
          if {$integre(cosm) != "oui"} {
             set integre(brut) non
@@ -1211,13 +1202,13 @@ namespace eval ::pretraitFC {
       set conf_pt_fc(PLU_ok) non
       set conf_pt_fc(precharge_ok) non
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractere interdit...)
       if {[TestNomFichier $conf_pt_fc(nmBrutSce)] == 0} {
          set integre(brut) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomBrutSrce)
       } elseif {[TestNomFichier $conf_pt_fc(nmBrutRes)] == 0} {
-         # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
+         # Teste si le nom de fichier resultant est Ok (un seul champ, pas de caractere interdit...)
          set integre(brut) non
          tk_messageBox -title $caption(pretrfc,pb) -type ok \
             -message $caption(pretrfc,pbNomBrutRes)
@@ -1246,13 +1237,13 @@ namespace eval ::pretraitFC {
                # Dans ce cas, je regarde si je peux calculer le noir...
                testNoir
                if {$integre(noir) == "non"} {
-                  # Je n'ai pas les éléments pour faire le noir
+                  # Je n'ai pas les elements pour faire le noir
                   tk_messageBox -title $caption(pretrfc,pb) -type ok \
                      -message $caption(pretrfc,fichNoirBrutAbs)
                   set integre(brut) non
                   set conf_pt_fc(noir_ok) non
                   } else {
-                  # Alors je dois prévoir de faire le calcul du noir pendant le traitement
+                  # Alors je dois prevoir de faire le calcul du noir pendant le traitement
                   set conf_pt_fc(noir_a_faire_br) oui
                   # Et je memorise que c'est Ok pour les noirs
                   set conf_pt_fc(noir_ok) oui
@@ -1268,13 +1259,13 @@ namespace eval ::pretraitFC {
                   # Dans ce cas, je regarde si je peux calculer le PLU...
                   testPLU
                   if {$integre(PLU) == "non"} {
-                  # Je n'ai pas les éléments pour faire le PLU
+                  # Je n'ai pas les elements pour faire le PLU
                      tk_messageBox -title $caption(pretrfc,pb) -type ok \
                         -message $caption(pretrfc,fichPLUBrutAbs)
                      set integre(brut) non
                      set conf_pt_fc(PLU_ok) non
                   } else {
-                     # Alors je dois prévoir de faire le calcul du PLU pendant le traitement
+                     # Alors je dois prevoir de faire le calcul du PLU pendant le traitement
                      set conf_pt_fc(PLU_a_faire_br) oui
                      set conf_pt_fc(PLU_ok) oui
                   }
@@ -1283,7 +1274,7 @@ namespace eval ::pretraitFC {
                }
             }
             if {$conf_pt_fc(PLU_ok) == "oui" && $conf_pt_fc(noir_ok) == "oui"} {
-               # Teste si les fichiers résultants existent déja
+               # Teste si les fichiers resultants existent deja
                for {set i 1} {$i <= $conf_pt_fc(nbBrut)} {incr i} {
                   set nomFich $audace(rep_images)
                   append nomFich "/" $conf_pt_fc(nmBrutRes) $i $ext
@@ -1301,22 +1292,22 @@ namespace eval ::pretraitFC {
             }
             if {$conf_pt_fc(PLU_ok) == "oui" && $conf_pt_fc(noir_ok) == "oui"} {
                if {$conf_pt_fc(modeBrut) != "simple" || $conf_pt_fc(NrContientPrech) == 0} {
-                  # Teste si le fichier de précharge existe bien (dans le cas où l'option
+                  # Teste si le fichier de precharge existe bien (dans le cas ou l'option
                   #   retenue est optimisation ou rapp. tps de pose) ou bien si le noir
-                  #   ne contient pas la précharge: J'ai alors besoin de la précharge
+                  #   ne contient pas la precharge: J'ai alors besoin de la precharge
                   set nomFich $audace(rep_images)
                   append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
                   if {[file exists $nomFich] == 0} {
-                     # Dans ce cas, je regarde si je peux calculer la précharge...
+                     # Dans ce cas, je regarde si je peux calculer la precharge...
                      testPrecharge
                      if {$integre(precharge) == "non"} {
-                     # Je n'ai pas les éléments pour faire la précharge
+                     # Je n'ai pas les elements pour faire la precharge
                         tk_messageBox -title $caption(pretrfc,pb) -type ok \
                            -message $caption(pretrfc,fichPrechBrutAbs)
                         set integre(brut) non
                         set conf_pt_fc(precharge_ok) non
                         } else {
-                        # Alors je dois prévoir de faire le calcul du PLU pendant le traitement
+                        # Alors je dois prevoir de faire le calcul du PLU pendant le traitement
                         set conf_pt_fc(precharge_a_faire_br) oui
                         set conf_pt_fc(precharge_ok) oui
                      }
@@ -1325,7 +1316,7 @@ namespace eval ::pretraitFC {
                   }
                }
             }
-            # Teste qu'un mode est bien sélectionné
+            # Teste qu'un mode est bien selectionne
             if {$conf_pt_fc(modeBrut) == ""} {
                tk_messageBox -title $caption(pretrfc,pb) -type ok \
                   -message $caption(pretrfc,fichModeBrutAbs)
@@ -1337,19 +1328,19 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure testBrut **********************************
 
-#***** Procédure traiteBrut ******************************************
+#***** Procedure traiteBrut ******************************************
    proc traiteBrut { } {
       global audace caption conf_pt_fc integre
 
       # Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
 
-      # Le cas échéant, je lance les opération préliminéires
+      # Le cas echeant, je lance les operation prelimineires
       if {$conf_pt_fc(PLU_a_faire_br) == "oui"} {
          traitePLU
       }
       if {$conf_pt_fc(precharge_a_faire_br) == "oui"} {
-         # Je vérifie que le fichier n'existe pas déjà (il a pu être crée par le traitement de PLU...)
+         # Je verifie que le fichier n'existe pas deja (il a pu etre cree par le traitement de PLU...)
          set nomFich $audace(rep_images)
          append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
          if {[file exists $nomFich] == 0} {
@@ -1357,7 +1348,7 @@ namespace eval ::pretraitFC {
          }
       }
       if {$conf_pt_fc(noir_a_faire_br) == "oui"} {
-         # Je vérifie que le fichier n'existe pas déjà (il a pu être crée par le traitement de PLU...)
+         # Je verifie que le fichier n'existe pas deja (il a pu etre cree par le traitement de PLU...)
          set nomFich $audace(rep_images)
          append nomFich "/" $conf_pt_fc(nmNoirRes) $ext
          if {[file exists $nomFich] == 0} {
@@ -1370,7 +1361,7 @@ namespace eval ::pretraitFC {
 
       desactiveBoutons
 
-      # Affichage du message de démarrage du prétraitement des noirs
+      # Affichage du message de demarrage du pretraitement des noirs
       Message consolog $caption(pretrfc,debBrut)
       switch -exact $conf_pt_fc(modeBrut) {
          simple {
@@ -1385,7 +1376,7 @@ namespace eval ::pretraitFC {
       }
 
       if {$conf_pt_fc(cosmBrut) == 1} {
-         # Dans le cas où la correction cosmétique est demandée
+         # Dans le cas ou la correction cosmetique est demandee
          Message consolog $caption(pretrfc,lanceCosmStellaire)
          for {set i 1} {$i <= $conf_pt_fc(nbBrut)} {incr i} {
             set instr "loadima $conf_pt_fc(nmBrutSce)$i"
@@ -1403,7 +1394,7 @@ namespace eval ::pretraitFC {
          }
       }
 
-      # Affichage de la première image stellaire
+      # Affichage de la premiere image stellaire
       set nomFich $conf_pt_fc(nmBrutSce)
       append nomFich "1"
       Message consolog $caption(pretrfc,chargPremBrut)
@@ -1420,7 +1411,7 @@ namespace eval ::pretraitFC {
             Message consolog $instr
             Message consolog "\n"
             eval $instr
-            # Si le noir ne contient pas la précharge, soustraction de la précharge
+            # Si le noir ne contient pas la precharge, soustraction de la precharge
             if {$conf_pt_fc(NrContientPrech) == 0} {
                set instr "sub2 $conf_pt_fc(nmBrutSce)"
                append instr "_moinsnoir_ $conf_pt_fc(nmPrechRes) $conf_pt_fc(nmBrutSce)"
@@ -1433,13 +1424,13 @@ namespace eval ::pretraitFC {
          }
          rapTps {
             # Lecture du temps de pose des images stellaires
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je verifie que le champ exposure est bien present dans l'en-tete FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
                set motCle EXPTIME
             }
-		set instr "set temps_stellaire [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            set instr "set temps_stellaire [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(pretrfc,LitTpsStellaire)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1449,18 +1440,18 @@ namespace eval ::pretraitFC {
             Message consolog "%s\n" $instr
             eval $instr
             # Lecture du temps de pose du noir
-            # Je vérifie que le champ exposure est bien présent dans l'entête FITS
+            # Je verifie que le champ exposure est bien present dans l'en-tete FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
             } else {
                set motCle EXPTIME
             }
-		set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(pretrfc,LitTpsNoir)
             Message consolog "%s\n" $instr
             eval $instr
             # Calcul du rapport de temps entre noir et PLU
-		set instr "set rapport [expr double($temps_stellaire) / double($temps_noir)]"
+            set instr "set rapport [expr double($temps_stellaire) / double($temps_noir)]"
             Message consolog $caption(pretrfc,calcRapp)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1476,7 +1467,7 @@ namespace eval ::pretraitFC {
             Message consolog $caption(pretrfc,multNoir)
             Message consolog "%s\n" $instr
             eval $instr
-            # Sauvegarde le noir pondéré
+            # Sauvegarde le noir pondere
             set instr "saveima noir_pondere_temp"
             Message consolog $caption(pretrfc,SauveNoirPond)
             Message consolog "%s\n" $instr
@@ -1488,26 +1479,26 @@ namespace eval ::pretraitFC {
             Message consolog $caption(pretrfc,SoustrPrechStelProv)
             Message consolog "%s\n" $instr
             eval $instr
-            # Retire le noir pondéré de toutes les images stellaires
+            # Retire le noir pondere de toutes les images stellaires
             set instr "sub2 $nom_fich noir_pondere_temp $nom_fich 0 $conf_pt_fc(nbBrut)"
             Message consolog $caption(pretrfc,SoustrNoirPondStel)
             Message consolog "%s\n" $instr
             eval $instr
          }
          opt {
-            # Vérifie si le noir contient la précharge... et agit en conséquence
+            # Verifie si le noir contient la precharge... et agit en consequence
             if {$conf_pt_fc(NrContientPrech) == 0} {
                # Si offset non inclus... chargement de l'image de noir
                set instr "loadima $conf_pt_fc(nmNoirRes)"
                Message consolog $caption(pretrfc,ChargeNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Addition de la précharge
+               # Addition de la precharge
                set instr "add $conf_pt_fc(nmPrechRes) 0"
                Message consolog $caption(pretrfc,ajoutePrechNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               # Sauvegarde le noir contenant la précharge
+               # Sauvegarde le noir contenant la precharge
                set instr "saveima noir_avec_prech"
                Message consolog $caption(pretrfc,SauveNoirAvecPrech)
                Message consolog "%s\n" $instr
@@ -1520,7 +1511,7 @@ namespace eval ::pretraitFC {
             }
             set nom_fich_sortie $conf_pt_fc(nmBrutSce)
             append nom_fich_sortie "_moinsnoir_"
-            # Lancement de l'optimisation; le noir doit contenir la précharge !
+            # Lancement de l'optimisation; le noir doit contenir la precharge !
             set instr "opt2 $conf_pt_fc(nmBrutSce) $noir_avec_prech $conf_pt_fc(nmPrechRes) \
                $nom_fich_sortie $conf_pt_fc(nbBrut)"
             Message consolog $caption(pretrfc,OptBrutes)
@@ -1553,7 +1544,7 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Affichage de la première image résultante
+      # Affichage de la premiere image resultante
       set nomFich $conf_pt_fc(nmBrutRes)
       append nomFich "1"
       Message consolog $caption(pretrfc,chargBrutRes)
@@ -1562,7 +1553,7 @@ namespace eval ::pretraitFC {
       Message consolog "\n"
       eval $instr
 
-      # Effacement du disque des images générées par le prétraitement:
+      # Effacement du disque des images generees par le pretraitement:
       Message consolog $caption(pretrfc,effaceBrutsInter)
       for {set i 1} {$i <= $conf_pt_fc(nbBrut)} {incr i} {
          set nomFich $audace(rep_images)
@@ -1580,14 +1571,14 @@ namespace eval ::pretraitFC {
          file delete $nomFich
       }
 
-      # Affichage du message de fin du prétraitement des noirs
+      # Affichage du message de fin du pretraitement des noirs
       Message consolog $caption(pretrfc,finBrut)
       activeBoutons
       focus $audace(base).fenetrePretr
    }
 #***** Fin de la procedure traiteBrut ********************************
 
-#***** Procédure de désactivation des boutons de la fenêtre **********
+#***** Procedure de desactivation des boutons de la fenetre **********
    proc desactiveBoutons { } {
       global audace
 
@@ -1630,9 +1621,9 @@ namespace eval ::pretraitFC {
       $audace(base).fenetrePretr.et6.ligne3.rad2 configure -state disabled
       $audace(base).fenetrePretr.et6.ligne3.rad3 configure -state disabled
    }
-#***** Fin procédure de désactivation des boutons de la fenêtre ******
+#***** Fin procedure de desactivation des boutons de la fenetre ******
 
-#***** Procédure d'activation des boutons de la fenêtre **************
+#***** Procedure d'activation des boutons de la fenetre **************
    proc activeBoutons { } {
       global audace
 
@@ -1675,10 +1666,10 @@ namespace eval ::pretraitFC {
       $audace(base).fenetrePretr.et6.ligne3.rad2 configure -state normal
       $audace(base).fenetrePretr.et6.ligne3.rad3 configure -state normal
    }
-#***** Fin de la procédure d'activation des boutons de la fenêtre ****
+#***** Fin de la procedure d'activation des boutons de la fenetre ****
 
-#***** Procedure de test de validité d'un nom de fichier *************
-# Cette procédure (copiée de Methking) vérifie que la chaine passée en argument est un
+#***** Procedure de test de validite d'un nom de fichier *************
+# Cette procedure (copiee de methking.tcl) verifie que la chaine passee en argument est un
 # nom de fichier valide.
    proc TestNomFichier { valeur } {
       set test 1
@@ -1690,16 +1681,16 @@ namespace eval ::pretraitFC {
       if {[llength $valeur] > 1} {
          set test 0
       }
-      # Teste que le nom des images ne contient pas de caractèrs interdits
+      # Teste que le nom des images ne contient pas de caracters interdits
       if {[TestChaine $valeur] == 0} {
          set test 0
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'un nom de fichier ***
+#***** Fin de la procedure de test de validite d'un nom de fichier ***
 
-#***** Procedure de test de validité d'un entier *********************
-# Cette procédure (copiée de Methking) vérifie que la chaine passée en argument décrit
+#***** Procedure de test de validite d'un entier *********************
+# Cette procedure (copiee de methking.tcl) verifie que la chaine passee en argument decrit
 # bien un entier. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
    proc TestEntier { valeur } {
       set test 1
@@ -1708,46 +1699,46 @@ namespace eval ::pretraitFC {
       }
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[0-9]} $a]} {
+         if {![string match {[0-9]} $a]} {
             set test 0
          }
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'un entier ***********
+#***** Fin de la procedure de test de validite d'un entier ***********
 
-#***** Procedure de test de validité d'une chaine de caractères ******
-# Cette procédure vérifie que la chaine passée en argument ne contient que des caractères
+#***** Procedure de test de validite d'une chaine de caracteres ******
+# Cette procedure verifie que la chaine passee en argument ne contient que des caracteres
 # valides. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
    proc TestChaine { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[-a-zA-Z0-9_]} $a]} {
+         if {![string match {[-a-zA-Z0-9_]} $a]} {
             set test 0
          }
       }
       return $test
    }
-#***** Fin procedure de test de validité d'une chaine de caractères **
+#***** Fin procedure de test de validite d'une chaine de caracteres **
 
-#***** Procedure de test de validité d'un nombre réel ****************
-# Cette procédure (inspirée de Methking) vérifie que la chaine passée en argument décrit
-# bien un réel. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
+#***** Procedure de test de validite d'un nombre reel ****************
+# Cette procedure (inspiree de methking.tcl) verifie que la chaine passee en argument decrit
+# bien un reel. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
    proc TestReel { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[0-9.]} $a]} {
+         if {![string match {[0-9.]} $a]} {
             set test 0
          }
       }
       return $test
    }
-#***** Fin de la procedure de test de validité d'un nombre réel ******
+#***** Fin de la procedure de test de validite d'un nombre reel ******
 
 #***** Procedure d'affichage des messages ****************************
-# Cette procédure est recopiée de Methking.tcl. Elle permet l'affichage de differents
+# Cette procedure est recopiee de methking.tcl, elle permet l'affichage de differents
 # messages (dans la console, le fichier log, etc...)
    proc Message { niveau args } {
       variable This
@@ -1759,9 +1750,9 @@ namespace eval ::pretraitFC {
             update idletasks
          }
          log {
-		set temps [clock format [clock seconds] -format %H:%M:%S]
-		append temps " "
-		catch { puts -nonewline $::pretraitFC::log_id [eval [concat {format} $args]] }
+            set temps [clock format [clock seconds] -format %H:%M:%S]
+            append temps " "
+            catch { puts -nonewline $::pretraitFC::log_id [eval [concat {format} $args]] }
             #--- Force l'ecriture immediate sur le disque
             flush $::pretraitFC::log_id
          }
@@ -1770,19 +1761,19 @@ namespace eval ::pretraitFC {
                set conf(messages_console_pretrfc) "1"
             }
             if { $conf(messages_console_pretrfc) == "1" } {
-		   ::console::disp [eval [concat {format} $args]]
-		   update idletasks
+               ::console::disp [eval [concat {format} $args]]
+               update idletasks
             }
-		set temps [clock format [clock seconds] -format %H:%M:%S]
-		append temps " "
-		catch { puts -nonewline $::pretraitFC::log_id [eval [concat {format} $args]] }
+            set temps [clock format [clock seconds] -format %H:%M:%S]
+            append temps " "
+            catch { puts -nonewline $::pretraitFC::log_id [eval [concat {format} $args]] }
             #--- Force l'ecriture immediate sur le disque
             flush $::pretraitFC::log_id
          }
-	   default {
+         default {
             set b [ list "%s\n" $caption(pretrfc,pbmesserr) ]
             ::console::disp [ eval [ concat {format} $b ] ]
-		update idletasks
+            update idletasks
          }
       }
    }
@@ -1799,7 +1790,7 @@ proc pretraitFCBuildIF { This } {
    global audace panneau caption
 
    #--- Trame du panneau
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(pretraitFC,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Trame du titre du panneau
       frame $This.titre -borderwidth 2 -relief groove
@@ -1808,21 +1799,19 @@ proc pretraitFCBuildIF { This } {
            -command {
               ::audace::showHelpPlugin tool pretrfc pretrfc.htm
            }
-        pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top
+        pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
         DynamicHelp::add $This.titre.but -text $caption(pretrfc,help,titre)
 
-      place $This.titre -x 4 -y 4 -height 22 -width [ expr $panneau(pretraitFC,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
-
+      pack $This.titre -side top -fill x
+      
       #--- Trame du bouton Lancement
-      frame $This.go_stop -borderwidth 1 -relief groove
+      frame $This.lance -borderwidth 1 -relief groove
 
-         button $This.go_stop.but -text $caption(pretrfc,lance) \
+         button $This.lance.but -text $caption(pretrfc,lance) \
             -borderwidth 2 -command ::pretraitFC::fenetrePretr
-         pack $This.go_stop.but -in $This.go_stop -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
+         pack $This.lance.but -in $This.lance -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
 
-      place $This.go_stop -x 4 -y 32 -height 42 -width [ expr $panneau(pretraitFC,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.lance -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1833,11 +1822,11 @@ proc creeFenetrePrFC { } {
    global audace caption conf_pt_fc panneau
 
 # Note du 21 mars 2002: Comme j'ajoute la partie offset, je mets un peu le bazar
-# dans les numérotations...
+# dans les numerotations...
 
-   #--- Trame de l'étape 1
+   #--- Trame de l'etape 1
    frame $audace(base).fenetrePretr.et1 -borderwidth 2 -relief groove
-      #--- Titre de l'étape 1: Prétraitement des noirs & option cosmétique
+      #--- Titre de l'etape 1: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et1.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetrePretr.et1.titre.nom -text $caption(pretrfc,titret1) \
@@ -1847,7 +1836,7 @@ proc creeFenetrePrFC { } {
       #--- Bouton TEST
       button $audace(base).fenetrePretr.et1.test -borderwidth 2 -width 4 -text $caption(pretrfc,test) \
          -font $audace(font,arial_12_n) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 1
             ::pretraitFC::goCosm
@@ -1856,13 +1845,13 @@ proc creeFenetrePrFC { } {
       #--- Bouton Recharge
       button $audace(base).fenetrePretr.et1.recharge -borderwidth 2 -text $caption(pretrfc,recharge) \
          -font $audace(font,arial_12_n) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 1
             ::pretraitFC::rechargeCosm
          }
       pack $audace(base).fenetrePretr.et1.recharge -side right -anchor sw -in $audace(base).fenetrePretr.et1
-      #--- Première ligne de l'étape 1
+      #--- Premiere ligne de l'etape 1
       frame $audace(base).fenetrePretr.et1.ligne1
          # Affichage du label "Fichier du script"
          label $audace(base).fenetrePretr.et1.ligne1.nmFichScr -text $caption(pretrfc,FichScript) \
@@ -1873,28 +1862,28 @@ proc creeFenetrePrFC { } {
             -textvariable conf_pt_fc(FichScript) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et1.ligne1.entnmFichScr -side left
       pack $audace(base).fenetrePretr.et1.ligne1 -side top -fill x
-      #--- Seconde ligne de l'étape 1
+      #--- Seconde ligne de l'etape 1
       frame $audace(base).fenetrePretr.et1.ligne2
-         # Affichage du label "Procédure de correction cosmétique"
+         # Affichage du label "Procedure de correction cosmetique"
          label $audace(base).fenetrePretr.et1.ligne2.lab1 -text $caption(pretrfc,procCorr) \
             -font $audace(font,arial_10_n) -width 29 -justify right
          pack $audace(base).fenetrePretr.et1.ligne2.lab1 -side left
-         # Affichage du champ de saisie "Procédure de correction cosmétique"
+         # Affichage du champ de saisie "Procedure de correction cosmetique"
          entry $audace(base).fenetrePretr.et1.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable conf_pt_fc(procCorr) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et1.ligne2.ent1 -side left
       pack $audace(base).fenetrePretr.et1.ligne2 -side top -fill x
    pack $audace(base).fenetrePretr.et1 -side top -fill x
 
-   #--- Trame de l'étape 2
+   #--- Trame de l'etape 2
    frame $audace(base).fenetrePretr.et2 -borderwidth 2 -relief groove
-      #--- Titre de l'étape 2: Prétraitement des noirs & option cosmétique
+      #--- Titre de l'etape 2: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et2.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetrePretr.et2.titre.nom -text $caption(pretrfc,titret2) \
             -font $audace(font,arial_10_b) -justify left
          pack $audace(base).fenetrePretr.et2.titre.nom -side left -in $audace(base).fenetrePretr.et2.titre
-         # Affichage de la case à cocher pour l'activation de la correction cosmétique
+         # Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et2.titre.case -text $caption(pretrfc,corcosm) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmPrech)
          pack $audace(base).fenetrePretr.et2.titre.case -side right -in $audace(base).fenetrePretr.et2.titre
@@ -1902,13 +1891,13 @@ proc creeFenetrePrFC { } {
       #--- Bouton GO
       button $audace(base).fenetrePretr.et2.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 2
             ::pretraitFC::goPrecharge
          }
       pack $audace(base).fenetrePretr.et2.go -side right -anchor sw -in $audace(base).fenetrePretr.et2
-      #--- Première ligne de l'étape 2
+      #--- Premiere ligne de l'etape 2
       frame $audace(base).fenetrePretr.et2.ligne1
          # Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et2.ligne1.nmPrechSce -text $caption(pretrfc,nmPrechSce) \
@@ -1926,7 +1915,7 @@ proc creeFenetrePrFC { } {
             -textvariable conf_pt_fc(nbPrech) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et2.ligne1.entNbPrech -side left
       pack $audace(base).fenetrePretr.et2.ligne1 -side top -fill x
-      #--- Seconde ligne de l'étape 2
+      #--- Seconde ligne de l'etape 2
       frame $audace(base).fenetrePretr.et2.ligne2
          # Affichage du label "Nom du fichier destination"
          label $audace(base).fenetrePretr.et2.ligne2.lab1 -text $caption(pretrfc,nmPrechRes) \
@@ -1936,7 +1925,7 @@ proc creeFenetrePrFC { } {
          entry $audace(base).fenetrePretr.et2.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable conf_pt_fc(nmPrechRes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et2.ligne2.ent1 -side left
-         # Affichage de la case à cocher pour filtrer la médiane
+         # Affichage de la case a cocher pour filtrer la mediane
          checkbutton $audace(base).fenetrePretr.et2.ligne2.case -text $caption(pretrfc,medFiltree) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(medFiltree)
          pack $audace(base).fenetrePretr.et2.ligne2.case -side left -in $audace(base).fenetrePretr.et2.ligne2
@@ -1947,15 +1936,15 @@ proc creeFenetrePrFC { } {
       pack $audace(base).fenetrePretr.et2.ligne2 -side top -fill x
    pack $audace(base).fenetrePretr.et2 -side top -fill x
 
-   #--- Trame de l'étape 3
+   #--- Trame de l'etape 3
    frame $audace(base).fenetrePretr.et3 -borderwidth 2 -relief groove
-      #--- Titre de l'étape 3: Prétraitement des noirs & option cosmétique
+      #--- Titre de l'etape 3: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et3.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetrePretr.et3.titre.nom -text $caption(pretrfc,titret3) \
             -font $audace(font,arial_10_b) -justify left
          pack $audace(base).fenetrePretr.et3.titre.nom -side left -in $audace(base).fenetrePretr.et3.titre
-         # Affichage de la case à cocher pour l'activation de la correction cosmétique
+         # Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et3.titre.case -text $caption(pretrfc,corcosm) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmNoir)
          pack $audace(base).fenetrePretr.et3.titre.case -side right -in $audace(base).fenetrePretr.et3.titre
@@ -1963,13 +1952,13 @@ proc creeFenetrePrFC { } {
       #--- Bouton GO
       button $audace(base).fenetrePretr.et3.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 3
             ::pretraitFC::goNoir
          }
       pack $audace(base).fenetrePretr.et3.go -side right -anchor sw -in $audace(base).fenetrePretr.et3
-      #--- Première ligne de l'étape 3
+      #--- Premiere ligne de l'etape 3
       frame $audace(base).fenetrePretr.et3.ligne1
          # Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et3.ligne1.nmNrSce -text $caption(pretrfc,nmNrSce) \
@@ -1987,7 +1976,7 @@ proc creeFenetrePrFC { } {
             -textvariable conf_pt_fc(nbNoirs) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et3.ligne1.entNbNr -side left
       pack $audace(base).fenetrePretr.et3.ligne1 -side top -fill x
-      #--- Seconde ligne de l'étape 3
+      #--- Seconde ligne de l'etape 3
       frame $audace(base).fenetrePretr.et3.ligne2
          # Affichage du label "Nom du fichier destination"
          label $audace(base).fenetrePretr.et3.ligne2.lab1 -text $caption(pretrfc,nmNrRes) \
@@ -1997,22 +1986,22 @@ proc creeFenetrePrFC { } {
          entry $audace(base).fenetrePretr.et3.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable conf_pt_fc(nmNoirRes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et3.ligne2.ent1 -side left
-         # Affichage de la case à cocher pour indiquer si le noir contient la précharge
+         # Affichage de la case a cocher pour indiquer si le noir contient la precharge
          checkbutton $audace(base).fenetrePretr.et3.ligne2.case -text $caption(pretrfc,NrContientPrech) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(NrContientPrech)
          pack $audace(base).fenetrePretr.et3.ligne2.case -side left -in $audace(base).fenetrePretr.et3.ligne2
       pack $audace(base).fenetrePretr.et3.ligne2 -side top -fill x
    pack $audace(base).fenetrePretr.et3 -side top -fill x
 
-   #--- Trame de l'étape 4
+   #--- Trame de l'etape 4
    frame $audace(base).fenetrePretr.et4 -borderwidth 2 -relief groove
-      #--- Titre de l'étape 4: Prétraitement des noirs & option cosmétique
+      #--- Titre de l'etape 4: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et4.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetrePretr.et4.titre.nom -text $caption(pretrfc,titret4) \
             -font $audace(font,arial_10_b) -justify left
          pack $audace(base).fenetrePretr.et4.titre.nom -side left -in $audace(base).fenetrePretr.et4.titre
-         # Affichage de la case à cocher pour l'activation de la correction cosmétique
+         # Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et4.titre.case -text $caption(pretrfc,corcosm) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmNrPLU)
          pack $audace(base).fenetrePretr.et4.titre.case -side right -in $audace(base).fenetrePretr.et4.titre
@@ -2020,13 +2009,13 @@ proc creeFenetrePrFC { } {
       #--- Bouton GO
       button $audace(base).fenetrePretr.et4.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 4
             ::pretraitFC::goNoirDePLU
          }
       pack $audace(base).fenetrePretr.et4.go -side right -anchor sw -in $audace(base).fenetrePretr.et4
-      #--- Première ligne de l'étape 4
+      #--- Premiere ligne de l'etape 4
       frame $audace(base).fenetrePretr.et4.ligne1
          # Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et4.ligne1.nmNrPLUSce -text $caption(pretrfc,nmNrPLUSce) \
@@ -2044,7 +2033,7 @@ proc creeFenetrePrFC { } {
             -textvariable conf_pt_fc(nbNrPLU) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et4.ligne1.entNbNrPLU -side left
       pack $audace(base).fenetrePretr.et4.ligne1 -side top -fill x
-      #--- Seconde ligne de l'étape 4
+      #--- Seconde ligne de l'etape 4
       frame $audace(base).fenetrePretr.et4.ligne2
          # Affichage du label "Nom du fichier destination"
          label $audace(base).fenetrePretr.et4.ligne2.lab1 -text $caption(pretrfc,nmNrPLURes) \
@@ -2058,15 +2047,15 @@ proc creeFenetrePrFC { } {
       pack $audace(base).fenetrePretr.et4.ligne2 -side top -fill x
    pack $audace(base).fenetrePretr.et4 -side top -fill x
 
-   #--- Trame de l'étape 5
+   #--- Trame de l'etape 5
    frame $audace(base).fenetrePretr.et5 -borderwidth 2 -relief groove
-      #--- Titre de l'étape 5: Prétraitement des PLU
+      #--- Titre de l'etape 5: Pretraitement des PLU
       frame $audace(base).fenetrePretr.et5.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetrePretr.et5.titre.nom -text $caption(pretrfc,titret5) \
             -font $audace(font,arial_10_b) -justify left
          pack $audace(base).fenetrePretr.et5.titre.nom -side left -in $audace(base).fenetrePretr.et5.titre
-         # Affichage de la case à cocher pour l'activation de la correction cosmétique
+         # Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et5.titre.case -text $caption(pretrfc,corcosm) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmPLU)
          pack $audace(base).fenetrePretr.et5.titre.case -side right -in $audace(base).fenetrePretr.et5.titre
@@ -2074,13 +2063,13 @@ proc creeFenetrePrFC { } {
       #--- Bouton GO
       button $audace(base).fenetrePretr.et5.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 5
             ::pretraitFC::goPLU
          }
       pack $audace(base).fenetrePretr.et5.go -side right -anchor sw -in $audace(base).fenetrePretr.et5
-      #--- Première ligne de l'étape 5
+      #--- Premiere ligne de l'etape 5
       frame $audace(base).fenetrePretr.et5.ligne1
          # Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et5.ligne1.nmPLUSce -text $caption(pretrfc,nmPLUSce) \
@@ -2098,18 +2087,18 @@ proc creeFenetrePrFC { } {
             -textvariable conf_pt_fc(nbPLU) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et5.ligne1.entNbPLU -side left
       pack $audace(base).fenetrePretr.et5.ligne1 -side top -fill x
-      #--- Seconde ligne de l'étape 5
+      #--- Seconde ligne de l'etape 5
       frame $audace(base).fenetrePretr.et5.ligne2
-         # Affichage du label "Nom du fichier résultant"
+         # Affichage du label "Nom du fichier resultant"
          label $audace(base).fenetrePretr.et5.ligne2.lab1 -text $caption(pretrfc,nmPLURes) \
             -font $audace(font,arial_10_n) -width 29 -justify right
          pack $audace(base).fenetrePretr.et5.ligne2.lab1 -side left
-         # Affichage du champ de saisie "Nom du fichier résultant"
+         # Affichage du champ de saisie "Nom du fichier resultant"
          entry $audace(base).fenetrePretr.et5.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable conf_pt_fc(nmPLURes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et5.ligne2.ent1 -side left
       pack $audace(base).fenetrePretr.et5.ligne2 -side top -fill x
-      #--- Troisième ligne de l'étape 5
+      #--- Troisieme ligne de l'etape 5
       frame $audace(base).fenetrePretr.et5.ligne3
          label $audace(base).fenetrePretr.et5.ligne3.lab1 -text $caption(pretrfc,SoustrNrPLU) \
             -font $audace(font,arial_10_n)
@@ -2126,15 +2115,15 @@ proc creeFenetrePrFC { } {
       pack $audace(base).fenetrePretr.et5.ligne3 -side top -fill x
    pack $audace(base).fenetrePretr.et5 -side top -fill x
 
-   #--- Trame de l'étape 6
+   #--- Trame de l'etape 6
    frame $audace(base).fenetrePretr.et6 -borderwidth 2 -relief groove
-      #--- Titre de l'étape 6: Prétraitement des PLU
+      #--- Titre de l'etape 6: Pretraitement des PLU
       frame $audace(base).fenetrePretr.et6.titre -borderwidth 1 -relief groove
          # Affichage du titre
          label $audace(base).fenetrePretr.et6.titre.nom -text $caption(pretrfc,titret6) \
             -font $audace(font,arial_10_b) -justify left
          pack $audace(base).fenetrePretr.et6.titre.nom -side left -in $audace(base).fenetrePretr.et6.titre
-         # Affichage de la case à cocher pour l'activation de la correction cosmétique
+         # Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et6.titre.case -text $caption(pretrfc,corcosm) \
             -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmBrut)
          pack $audace(base).fenetrePretr.et6.titre.case -side right -in $audace(base).fenetrePretr.et6.titre
@@ -2142,13 +2131,13 @@ proc creeFenetrePrFC { } {
       #--- Bouton GO
       button $audace(base).fenetrePretr.et6.go -borderwidth 2 -width 5 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_15_b) -command {
-            # Sauvegarde des paramètres dans le fichier de config
+            # Sauvegarde des parametres dans le fichier de config
             ::pretraitFC::SauvegardeParametres
             # Traitement etape 6
             ::pretraitFC::goBrut
          }
       pack $audace(base).fenetrePretr.et6.go -side right -anchor sw -in $audace(base).fenetrePretr.et6
-      #--- Première ligne de l'étape 6
+      #--- Premiere ligne de l'etape 6
       frame $audace(base).fenetrePretr.et6.ligne1
          # Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et6.ligne1.nmBrutSce -text $caption(pretrfc,nmBrutSce) \
@@ -2166,18 +2155,18 @@ proc creeFenetrePrFC { } {
             -textvariable conf_pt_fc(nbBrut) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et6.ligne1.entNbBrut -side left
       pack $audace(base).fenetrePretr.et6.ligne1 -side top -fill x
-      #--- Seconde ligne de l'étape 6
+      #--- Seconde ligne de l'etape 6
       frame $audace(base).fenetrePretr.et6.ligne2
-         # Affichage du label "Nom du fichier résultant"
+         # Affichage du label "Nom du fichier resultant"
          label $audace(base).fenetrePretr.et6.ligne2.lab1 -text $caption(pretrfc,nmBrutRes) \
             -font $audace(font,arial_10_n) -width 29 -justify right
          pack $audace(base).fenetrePretr.et6.ligne2.lab1 -side left
-         # Affichage du champ de saisie "Nom du fichier résultant"
+         # Affichage du champ de saisie "Nom du fichier resultant"
          entry $audace(base).fenetrePretr.et6.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable conf_pt_fc(nmBrutRes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et6.ligne2.ent1 -side left
       pack $audace(base).fenetrePretr.et6.ligne2 -side top -fill x
-      #--- Troisième ligne de l'étape 6
+      #--- Troisieme ligne de l'etape 6
       frame $audace(base).fenetrePretr.et6.ligne3
          label $audace(base).fenetrePretr.et6.ligne3.lab1 -text $caption(pretrfc,SoustrNr) -font $audace(font,arial_10_n)
          pack $audace(base).fenetrePretr.et6.ligne3.lab1 -side left

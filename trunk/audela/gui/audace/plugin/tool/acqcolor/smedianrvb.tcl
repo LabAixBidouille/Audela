@@ -2,7 +2,7 @@
 # Fichier : smedianrvb.tcl
 # Description : Outil pour calculer la mediane d'une pile d'images
 # Auteur : Pierre THIERRY
-# Date de mise a jour : 22 juillet 2005
+# Date de mise a jour : 11 decembre 2005
 #
 
 global audace caption conf infos
@@ -69,7 +69,7 @@ pack $audace(base).test2.frame1 \
          set title $caption(smedianrvb,rep_images)
          set infos(dir_images) [ tk_chooseDirectory -title "$title" -initialdir "$initialdir" \
             -parent "$audace(base).test2" ]
-	   if { $infos(dir_images) == "" } {
+         if { $infos(dir_images) == "" } {
             set infos(dir_images) "$initialdir"
          }
          set infos(dir) "$infos(dir_images)"
@@ -176,8 +176,8 @@ button $audace(base).test2.but_valid \
    -command { 
       catch {
          set nom "$infos(nom_image)"
-	   set nom1 "$infos(nom_mediane)" 
-	   set nb "$infos(nbre_images)"    
+         set nom1 "$infos(nom_mediane)" 
+         set nb "$infos(nbre_images)"    
          set infos(type_image) "couleur"
          #--- Separe les couleurs
          for { set k 1 } { $k <= $infos(nbre_images) } { incr k } {
@@ -195,7 +195,7 @@ button $audace(base).test2.but_valid \
          #--- Charge l'image dans 3 fichiers
          set nom1r [ file join $infos(dir) $infos(nom_mediane)r ]
          set nom1v [ file join $infos(dir) $infos(nom_mediane)v ]
-	   set nom1b [ file join $infos(dir) $infos(nom_mediane)b ]
+         set nom1b [ file join $infos(dir) $infos(nom_mediane)b ]
          rgb_load {$nom1r$conf(extension,defaut)} {$nom1v$conf(extension,defaut)} {$nom1b$conf(extension,defaut)}
          #--- Affiche l'image
          set infos(type_image) "couleur"

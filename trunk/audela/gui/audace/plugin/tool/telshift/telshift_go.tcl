@@ -1,8 +1,8 @@
 #
 # Fichier : telshift_go.tcl
-# Description : Outil pour observation avec shift de telescope entre les poses
+# Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Date de mise a jour : 18 juin 2005
+# Date de mise a jour : 13 janvier 2006
 #
 
 package provide telshift 1.0
@@ -24,14 +24,6 @@ namespace eval ::ImagerDeplacer {
       global caption
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(ImagerDeplacer,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(ImagerDeplacer,largeur_outil) "130"
-      } else {
-         set panneau(ImagerDeplacer,largeur_outil) "101"
-      }
       #---
       set panneau(menu_name,ImagerDeplacer) "$caption(telshift_go,telshift)"
       set panneau(ImagerDeplacer,aide)      "$caption(telshift_go,help_titre)"
@@ -40,20 +32,16 @@ namespace eval ::ImagerDeplacer {
       ImagerDeplacerBuildIF $This
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
 
-      set unpackFunction ::ImagerDeplacer::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack forget $This
    }
 
 }
@@ -62,7 +50,7 @@ proc ImagerDeplacerBuildIF { This } {
    global audace
    global panneau
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(ImagerDeplacer,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -72,11 +60,10 @@ proc ImagerDeplacerBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool telshift telshift.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(ImagerDeplacer,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 22 -width [ expr $panneau(ImagerDeplacer,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame du bouton
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -90,8 +77,7 @@ proc ImagerDeplacerBuildIF { This } {
             -command { source [ file join $audace(rep_plugin) tool telshift telshift.tcl ] }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 10 -ipadx 5 -ipady 5
 
-      place $This.fra2 -x 4 -y 32 -height 80 -width [ expr $panneau(ImagerDeplacer,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

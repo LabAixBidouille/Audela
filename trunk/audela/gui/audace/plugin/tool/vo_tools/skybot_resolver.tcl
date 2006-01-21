@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 15 novembre 2005
+# Date de mise a jour : 03 decembre 2005
 #
 
 namespace eval skybot_Resolver {
@@ -541,7 +541,7 @@ namespace eval skybot_Resolver {
    # Affiche l'outil Telescope
    #
    proc affiche_Outil_Tlscp { } {
-      global conf
+      global audace
       global panneau
 
       #---
@@ -554,7 +554,7 @@ namespace eval skybot_Resolver {
          if { $m == "menu_name,Tlscp" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
                #--- Lancement automatique de l'outil Telescope
-               ::audace::selection_Outil ::$ns
+               ::confVisu::selectTool $audace(visuNo) ::$ns
             }
          }
       }

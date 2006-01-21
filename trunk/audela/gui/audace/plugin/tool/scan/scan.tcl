@@ -1,9 +1,9 @@
 #
 # Fichier : scan.tcl
-# Description : Outil de controle du mode d'acquisition scan
-# Compatible : Telescope LX200, AudeCom et Ouranos avec camera Audine
+# Description : Outil pour l'acquisition en mode scan
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 18 juin 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 package provide scan 1.0
@@ -26,14 +26,6 @@ namespace eval ::Dscan {
       global caption
 
       set This $this
-      #--- Largeur de l'outil en fonction de l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set panneau(Dscan,largeur_outil) "130"
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         set panneau(Dscan,largeur_outil) "130"
-      } else {
-         set panneau(Dscan,largeur_outil) "101"
-      }
       #---
       set panneau(Dscan,choix_bin)   "1x1 2x2 4x4"
       set panneau(Dscan,binning)     "2x2"
@@ -106,22 +98,19 @@ namespace eval ::Dscan {
       }
    }
 
-   proc pack { } {
+   proc startTool { visuNo } {
       variable This
-      global unpackFunction
+      global audace
 
       ::Dscan::Chargement_Var
-      set unpackFunction ::Dscan::unpack
-      set a_executer "pack $This -anchor center -expand 0 -fill y -side left"
-      uplevel #0 $a_executer
+      pack $This -side left -fill y
    }
 
-   proc unpack { } {
+   proc stopTool { visuNo } {
       variable This
 
       ::Dscan::Enregistrement_Var
-      set a_executer "pack forget $This"
-      uplevel #0 $a_executer
+      pack forget $This
    }
 
    proc int { value } {
@@ -172,22 +161,22 @@ namespace eval ::Dscan {
          #--- Temporisation ou non entre l'arret moteur et le debut de la pose
          if { [ info exists conf(tempo_scan,active) ] == "0" } {
             set conf(tempo_scan,active) "1"
-            set conf(tempo_scan)        "3"
+            set conf(tempo_scan,delai)  "3"
          }
 
          #--- Attente du demarrage du scan
          if { $conf(tempo_scan,active) == "1" } {
             #--- Decompte du temps d'attente
-            set attente $conf(tempo_scan)
-            if { $conf(tempo_scan) > "0" } {
-               while { $conf(tempo_scan) > "0" } {
+            set attente $conf(tempo_scan,delai)
+            if { $conf(tempo_scan,delai) > "0" } {
+               while { $conf(tempo_scan,delai) > "0" } {
                   ::camera::Avancement_scan "-10" $panneau(Dscan,lig1)
                   update
                   after 1000	
-                  incr conf(tempo_scan) "-1"
+                  incr conf(tempo_scan,delai) "-1"
                }
             }
-            set conf(tempo_scan) $attente
+            set conf(tempo_scan,delai) $attente
          }
 
          #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
@@ -205,7 +194,7 @@ namespace eval ::Dscan {
          update
 
          #--- Visualisation de l'image
-         ::audace::autovisu visu$audace(visuNo)
+         ::audace::autovisu $audace(visuNo)
 
          #--- Gestion du moteur d'A.D.
          if { $motor == "motoroff" } {
@@ -258,7 +247,7 @@ namespace eval ::Dscan {
          set t [ expr $panneau(Dscan,lig1)/$panneau(Dscan,nblg1) ]
          ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1)
       }
- 
+
       #--- Attente de la fin de la pose
       vwait scan_result$audace(camNo)
 
@@ -288,7 +277,7 @@ namespace eval ::Dscan {
                cam$audace(camNo) breakscan
                after 200
                #--- Visualisation de l'image
-               ::audace::autovisu visu$audace(visuNo)
+               ::audace::autovisu $audace(visuNo)
                #--- Gestion du moteur d'A.D.
                if { [ ::tel::list ] != "" } {
                   #--- Remise en marche du moteur d'AD
@@ -382,7 +371,7 @@ proc DscanBuildIF { This } {
    global panneau
    global caption
 
-   frame $This -borderwidth 2 -relief groove -height 75 -width $panneau(Dscan,largeur_outil)
+   frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
@@ -392,11 +381,10 @@ proc DscanBuildIF { This } {
             -command {
                ::audace::showHelpPlugin tool scan scan.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
+         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Dscan,aide)
 
-      place $This.fra1 -x 4 -y 4 -height 22 -width [ expr $panneau(Dscan,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra1 -side top -fill x
 
       #--- Frame des colonnes, des lignes et de la dimension des pixels
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -452,8 +440,7 @@ proc DscanBuildIF { This } {
 
          pack $This.fra2.fra3 -in $This.fra2 -anchor center -fill none
 
-      place $This.fra2 -x 4 -y 28 -height 98 -width [ expr $panneau(Dscan,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra2 -side top -fill x
 
       #--- Binding sur la zone des infos de la camera
       set zone(camera) $This.fra2
@@ -492,16 +479,16 @@ proc DscanBuildIF { This } {
 
             #--- Label pour la focale
             label $This.fra3.fra2.lab1 -text $panneau(Dscan,focale) -relief flat
-            pack $This.fra3.fra2.lab1 -in $This.fra3.fra2 -side left -fill none -pady 2 -padx 1
+            pack $This.fra3.fra2.lab1 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
             #--- Entry pour la focale
             entry $This.fra3.fra2.ent1 -textvariable panneau(Dscan,foc) -font $audace(font,arial_8_b) \
                -relief groove -width 5 -justify center
-            pack $This.fra3.fra2.ent1 -in $This.fra3.fra2 -side left -fill none -pady 2 -padx 1
+            pack $This.fra3.fra2.ent1 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
             #--- Label pour l'unite de la focale
             label $This.fra3.fra2.lab2 -text $panneau(Dscan,metres) -relief flat
-            pack $This.fra3.fra2.lab2 -in $This.fra3.fra2 -side left -fill none -pady 2 -padx 1
+            pack $This.fra3.fra2.lab2 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
          pack $This.fra3.fra2 -in $This.fra3 -anchor center -fill none
 
@@ -515,7 +502,7 @@ proc DscanBuildIF { This } {
 
             #--- Entry pour la dec
             entry $This.fra3.fra3.ent2 -textvariable panneau(Dscan,dec) -font $audace(font,arial_8_b) \
-               -relief groove -width 15
+               -relief groove -width 10
             pack $This.fra3.fra3.ent2 -in $This.fra3.fra3 -side right -fill none -pady 1
 
          pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
@@ -531,16 +518,15 @@ proc DscanBuildIF { This } {
             #--- Entry pour les millisecondes
             entry $This.fra3.fra1.ent1 -width 7 -relief groove -font $audace(font,arial_8_b) \
               -textvariable panneau(Dscan,interlig1) -state disabled
-            pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -pady 2 -padx 1
+            pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -padx 1 -pady 2
 
             #--- Label pour l'unite
             label $This.fra3.fra1.ent2 -text $panneau(Dscan,ms) -relief flat
-            pack $This.fra3.fra1.ent2 -in $This.fra3.fra1 -side left -fill none -pady 2 -padx 1
+            pack $This.fra3.fra1.ent2 -in $This.fra3.fra1 -side left -fill none -padx 1 -pady 2
 
          pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
 
-      place $This.fra3 -x 4 -y 129 -height 168 -width [ expr $panneau(Dscan,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra3 -side top -fill x
 
       #--- Frame de l'acquisition
       frame $This.fra4 -borderwidth 1 -relief groove
@@ -556,10 +542,9 @@ proc DscanBuildIF { This } {
          #--- Bouton STOP
          button $This.fra4.but2 -borderwidth 2 -text $panneau(Dscan,stop) \
             -command { ::Dscan::cmdStop }
-         pack $This.fra4.but2 -in $This.fra4 -anchor center -fill x -pady 5 -padx 5 -ipadx 15 -ipady 3
+         pack $This.fra4.but2 -in $This.fra4 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
 
-      place $This.fra4 -x 4 -y 300 -height 100 -width [ expr $panneau(Dscan,largeur_outil) - 9 ] -anchor nw \
-         -bordermode ignore
+      pack $This.fra4 -side top -fill x
 
    bind $This.fra4.but1 <ButtonPress-3> { ::Dscan::cmdGo motoron }
    bind $This <Visibility> { ::Dscan::cmdVisib }
