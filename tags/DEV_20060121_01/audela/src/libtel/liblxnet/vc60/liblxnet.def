@@ -1,0 +1,21 @@
+;
+; $Log: not supported by cvs2svn $
+; Revision 1.1  2005/02/12 22:04:54  Administrateur
+; *** empty log message ***
+;
+; Revision 1.0  2003-06-07 10:46:48+02  michel
+; Initial revision
+;
+; Revision 1.1  2003-05-08 05:15:30+02  michel
+; <>
+;
+; Revision 1.0  2002-06-28 23:24:58+02  michel
+; initial revision
+;
+; Revision 1.1  2002-06-28 23:16:48+02  michel
+; initial revision
+;
+;
+ 
+LIBRARY liblxnet
+EXPORTS Lxnet_Init @1

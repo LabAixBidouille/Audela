@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLIList</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLIList</A></H2><H2>(<!1><A HREF="flidomain_t.html">flidomain_t</A> domain,  char*** names)</H2><BLOCKQUOTE>
+ List available devices.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+List available devices.  This function returns a pointer to a NULL
+terminated list of device names.  The pointer should be freed later
+with <TT>FLIFreeList()</TT>.  Each device name in the returned list
+includes the filename needed by <TT>FLIOpen()</TT>, a separating
+semicolon, followed by the model name or user assigned device name.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>domain</B> -  Domain to list the devices of.  This is a bitwise
+ORed combination of interface method and device type.  Valid
+interfaces include <TT>FLIDOMAIN_PARALLEL_PORT</TT>,
+<TT>FLIDOMAIN_USB</TT>, <TT>FLIDOMAIN_SERIAL</TT>, and
+<TT>FLIDOMAIN_INET</TT>.  Valid device types include
+<TT>FLIDEVICE_CAMERA</TT>, <TT>FLIDOMAIN_FILTERWHEEL</TT>, and
+<TT>FLIDOMAIN_FOCUSER</TT>.
+
+<BR><B>names</B> -  Pointer to where the device name list will be placed.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="flidomain_t.html">flidomain_t</A>
+<BR><!1><A HREF="FLIFreeList.html">FLIFreeList</A>
+<BR><!1><A HREF="FLIOpen.html">FLIOpen</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

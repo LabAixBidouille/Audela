@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>R&egrave;gles pour les scripts Tcl</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
+<h1>R&egrave;gles &agrave; respecter lors de la cr&eacute;ation d'un script ou d'un outil pour son int&eacute;gration dans Aud'ACE </h1>
+<h1> 1. Introduction</h1>
+<p>Audela, et son interface graphique Aud'ACE sont des logiciels ouverts, qui permettent &agrave; tout le monde d&#8217;ajouter ou de personnaliser toutes les fonctions possibles et imaginables. Mais l&#8217;exp&eacute;rience nous a montr&eacute; que pour une parfaite int&eacute;gration dans le logiciel, plusieurs r&egrave;gles de programmation sont &agrave; respecter. Ce document a pour objet de lister, expliquer et d&eacute;crire ces r&egrave;gles. Il doit servir aux programmeurs lors de leurs d&eacute;veloppements. Il est destin&eacute; aussi &agrave; valider de nouveaux scripts avant leur int&eacute;gration dans une prochaine r&eacute;vision de Audela/Aud'ACE. Si donc votre application est destin&eacute;e &agrave; faire partie int&eacute;grante du logiciel, nous vous invitons &agrave; respecter scrupuleusement ces r&egrave;gles. Cette contrainte n&#8217;a bien s&ucirc;r aucun caract&egrave;re obligatoire si votre d&eacute;veloppement est limit&eacute; &agrave; un usage personnel. Elle reste n&eacute;anmoins utile pour &eacute;viter les surprises... </p>
+<p>On peut d&eacute;composer les r&egrave;gles d'int&eacute;gration en plusieurs cat&eacute;gories :
+  
+<ul>
+  <li>Les r&egrave;gles concernant la structure g&eacute;n&eacute;rale et les fichiers li&eacute;s au script. </li>
+  <li>Les r&egrave;gles portant sur l'utilisation de variables g&eacute;n&eacute;rales, par exemple pour pointer sur les bons r&eacute;pertoires...</li>
+  <li>Les r&egrave;gles portant sur l'internationalisation (traduction en multiples langues).</li>
+</ul>
+<p>Ce document est appel&eacute; &agrave; &eacute;voluer en fonction des exp&eacute;riences des uns et des autres : N&#8217;h&eacute;sitez pas &agrave; faire des propositions d&#8217;am&eacute;lioration &agrave; l&#8217;&eacute;quipe de d&eacute;veloppement Audela/Aud'ACE. </p>
+<h1> 2. Structure g&eacute;n&eacute;rale</h1>
+<h2>2.1. Cr&eacute;ation d&#8217;une nouvelle application</h2>
+<p>Un script peut prendre principalement deux formes dans Aud'ACE : </p>
+<ul>
+  <li> Soit il est appel&eacute; par le menu d&eacute;roulant Fichier, et est donc ind&eacute;pendant de l&#8217;interface graphique Aud'ACE (s&#8217;il contient une interface graphique, alors c&#8217;est dans une fen&ecirc;tre ind&eacute;pendante). Dans ce cas, le respect des pr&eacute;sentes r&egrave;gles permettra l'utilisation du script depuis Audela, ind&eacute;pendamment de l'environnement graphique de Aud'ACE.</li>
+  <li> Soit il prend la forme d&#8217;un nouveau outil ou nouvelle fonctionnalit&eacute;, c&#8217;est &agrave; dire qu&#8217;il s&#8217;int&egrave;gre dans l&#8217;interface graphique de Aud'ACE. Dans ce cas, le script doit respecter la structure d&eacute;crite dans la documentation du logiciel (cf. rubrique Cr&eacute;er un nouvel outil). Cette structure d&eacute;crit en d&eacute;tail les proc&eacute;dures d&#8217;appel et de fermeture du script, ainsi que la g&eacute;om&eacute;trie de l'outil.</li>
+</ul>
+<p>Si vous souhaitez faire profiter tous les utilisateurs de votre travail, nous vous invitons alors &agrave; faire enregistrer votre travail sur notre site web. Cela &eacute;vitera &agrave; d'autres personnes de partir dans un d&eacute;veloppement similaire, et de faire converger nos efforts. </p>
+<h2> 2.2. Convention sur les noms et les r&eacute;pertoires</h2>
+<p>Dans le cas d'un script simple, la seule r&egrave;gle &agrave; respecter est de mettre votre fichier .tcl dans le r&eacute;pertoire "scripts". </p>
+<p>Dans le cas d'un outil Aud'ACE, il vous faut d&eacute;finir deux noms : Le premier sera celui du script lui-m&ecirc;me, et le second sera celui affich&eacute; dans le menu d&eacute;roulant Outils (ce sera aussi le titre de l'outil). Dans la mesure du possible, nous vous invitons &agrave; utiliser un seul nom pour ces deux fonctions, mais ce n'est pas toujours &eacute;vident du fait du peu de place disponible pour le titre de l'outil. Faisons l'hypoth&egrave;se que votre fichier s'appelle "mon_fichier_a_moi.tcl", et que le titre de votre application est "MonFich". Dans ce cas, les diff&eacute;rents fichiers utilis&eacute;s par votre application devront respecter les r&egrave;gles suivantes : </p>
+<p>Le fichier mon_fichier_a_moi.tcl sera &eacute;crit uniquement avec des minuscules, et sera install&eacute; dans le r&eacute;pertoire "[...]/Audela/audace/panneau". </p>
+<p>Si vous avez besoin de fichiers compl&eacute;mentaires (par exemple, un fichier de configuration), vous le placerez dans un sous-r&eacute;pertoire ayant le m&ecirc;me nom que votre fichier. Dans notre exemple, il s'agira du r&eacute;pertoire [...]/audace/plugin/tool/mon_fichier_a_moi. </p>
+<p>Dans ce r&eacute;pertoire, le cas &eacute;ch&eacute;ant, le fichier de configuration aura le m&ecirc;me nom que votre fichier de script, mais avec l'extension .ini : Dans notre cas, il s'agira de mon_fichier_a_moi.ini . Il est imp&eacute;ratif de ne pas utiliser le nom "config.ini" qui est r&eacute;serv&eacute; au fichier de configuration de l'application Aud'ACE. </p>
+<p>Dans la mesure du possible, tous les autres fichiers compl&eacute;mentaires dont vous aurez besoin devront respecter cette m&ecirc;me r&egrave;gle de nom (m&ecirc;me nom que le fichier de script). Ceci facilitera son identification ult&eacute;rieure. </p>
+<p>Si vous travaillez avec un fichier de log (un fichier g&eacute;n&eacute;r&eacute; par votre application, et qui enregistre des r&eacute;sultats sur le disque), son nom commencera par le nom du fichier .tcl, et aura cette fois l'extension .log. En g&eacute;n&eacute;ral, le nom du fichier contient aussi la date, voire l'heure de sa cr&eacute;ation, pour &eacute;viter l'&eacute;crasement quand on lance l'application plusieurs fois. Pour notre exemple, on peut imaginer un fichier de log cr&eacute;e le 22 mai 2002 - Il pourrait alors porter le nom "mon_fichier_a_moi_20020522.log". En g&eacute;n&eacute;ral, ce fichier est &eacute;crit dans le r&eacute;pertoire images. Ceci n'est qu'un exemple, la seule convention &agrave; respecter est que le nom du fichier de script apparaisse clairement dans le nom du fichier de log. </p>
+<p>Si vous faites un fichier de documentation (nous vous y invitons fortement), il devra &ecirc;tre au format .htm ou .pdf (l'&eacute;quipe de d&eacute;veloppement saura vous aider si vous ne savez pas g&eacute;n&eacute;rer ce format), et son nom sera toujours mon_fichier_a_moi.htm ou mon_fichier_a_moi.pdf. En effet, il est important que l'utilisateur trouve le fichier d'aide sous le m&ecirc;me nom que le panneau sur lequel il cherche de l'aide... Ce fichier sera install&eacute; dans le r&eacute;pertoiremon_fichier_a_moi/french pour la version fran&ccedil;aise et mon_fichier_a_moi/english pour la version anglaise, pour &ecirc;tre accessible depuis le menu Aide de l'outil (bouton du nom de l'outil). </p>
+<p>Il y a un dernier fichier important &agrave; prendre en compte : Celui des captions (fichier contenant toutes les cha&icirc;nes de caract&egrave;res utilis&eacute;es par votre application, et traduites dans toutes les langues de Aud'ACE). Ce fichier, install&eacute; dans le r&eacute;pertoire [...]audace/plugin/tool/mon_fichier_a_moi aura pour extension .cap, et se commencera par le nom du fichier de script. Avec notre exemple, cela donne "mon_fichier_a_moi.cap". Nous reviendrons sur ce fichier dans la partie "Internationalisation" du pr&eacute;sent document. </p>
+<h1> 3. Variables g&eacute;n&eacute;rales</h1>
+<h2> 3.1. Variables globales Aud'ACE</h2>
+<p>Plusieurs variables g&eacute;n&eacute;rales sont disponibles pour une bonne int&eacute;gration de votre script. Il s&#8217;agit de variables que vous pouvez lire sans probl&egrave;me, mais en aucun cas, vous ne devez en modifier le contenu sauf en parfaite connaissance de cause : Vous risqueriez des effets inattendus dans le d&eacute;roulement du reste du programme. Il s&#8217;agit des variables suivantes : </p>
+<ul>
+  <li> audace(rep_images) qui contient le nom du r&eacute;pertoire o&ugrave; sont sauvegard&eacute;es les images (d&eacute;clarer en d&eacute;but de script : global audace).</li>
+  <li> audace(rep_scripts) qui contient le nom du r&eacute;pertoire o&ugrave; sont sauvegard&eacute;s les scripts (d&eacute;clarer en d&eacute;but de script : global audace).</li>
+  <li> audace(rep_cat) qui contient le nom du r&eacute;pertoire o&ugrave; sont sauvegard&eacute;s les catalogues (d&eacute;clarer en d&eacute;but de script : global audace).</li>
+  <li> audace(rep_plugin) qui contient le nom du r&eacute;pertoire o&ugrave; sont sauvegard&eacute;es les diff&eacute;rents plugins (d&eacute;clarer en d&eacute;but de script : global audace).</li>
+  <li> audace(rep_caption) qui contient le nom du r&eacute;pertoire des fichiers de captions (cf. internationalisation - d&eacute;clarer en d&eacute;but de script : global audace).</li>
+</ul>
+<p>Toutes ces variables sont initialis&eacute;es &agrave; l'installation ou au lancement de Audela, et permettent de pointer sur les bons r&eacute;pertoires, quelque soit le r&eacute;pertoire d'installation de Audela. </p>
+<h2> 3.2. Format des fichiers d'images (extension .fit ou .fit.gz)</h2>
+<p>Plusieurs format de fichiers d&#8217;images sont support&eacute;s par Audela, selon qu&#8217;ils sont compress&eacute;s ou non. Si vous avez besoin, dans votre script de g&eacute;n&eacute;rer des noms complets de fichiers, vous devez respecter l&#8217;extension du nom de fichier. Elle est accessible par la variable conf(extension,defaut). A la cr&eacute;ation d&#8217;un nouveau buffer, vous devez attribuer cette valeur au buffer : </p>
+<ul>
+<p><code>buf$audace(bufNo) extension</code> : Pour l'extension .fit </p>
+</ul>
+<p>et </p>
+<ul>
+<p><code>[buf$audace(bufNo) extension].gz</code> : Pour l'extension .fit.gz </p>
+</ul>
+<p>Attention, vous devez d&eacute;clarer dans le script les variables globales audace, et le cas &eacute;ch&eacute;ant conf. </p>
+<h2> 3.3. Autres r&egrave;gles</h2>
+<p>Le num&eacute;ro des buffers de Aud'ACE est g&eacute;r&eacute; par l&#8217;application. Pour permettre les &eacute;volutions futures, vous ne devez pas mettre dans vos scripts des commandes telles que buf1 mais vous devez les remplacer par la forme suivante : </p>
+<ul>
+<p><code>buf$audace(bufNo)</code> </p>
+</ul>
+<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
+<p>Dans le m&ecirc;me esprit, vous devez proscrire les commandes cam1 mais vous devez les remplacer par la forme suivante : </p>
+<ul>
+<p><code>cam$audace(camNo)</code> </p>
+</ul>
+<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
+<p>Toujours dans la m&ecirc;me veine, vous devez proscrire les commandes tel1 mais vous devez les remplacer par la forme suivante : </p>
+<ul>
+<p><code>tel$audace(telNo)</code> </p>
+</ul>
+<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
+<p>Enfin, vous devez proscrire les commandes visu1 mais vous devez les remplacer par la forme suivante : </p>
+<ul>
+<p><code>visu$audace(visuNo)</code> </p>
+</ul>
+<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
+<h2> 4. Internationalisation</h2>
+<p> Audela a &eacute;t&eacute; pr&eacute;vu pour travailler avec plusieurs langues. Pour que cela puisse fonctionner dans tous les cas, il a &eacute;t&eacute; d&eacute;fini que toutes les cha&icirc;nes de caract&egrave;res g&eacute;n&eacute;r&eacute;es par le programme sont &eacute;crites dans des variables caption(mon_fichier_a_moi,xxx). Ces variables sont rassembl&eacute;es dans un fichier cap_mon_fichier_a_moi.tcl (le nom est bien s&ucirc;r &agrave; adapter en fonction de votre fichier), qui est appel&eacute; au d&eacute;but du script (voir plus haut la partie "convention sur les noms et les r&eacute;pertoires" pour le nom de ce fichier et son r&eacute;pertoire d'installation). Le fichier cap_mon_fichier_a_moi.tcl doit &ecirc;tre install&eacute; dans le r&eacute;pertoire audace/caption. </p>
+<p>Le fait de mettre les captions dans un fichier &agrave; part simplifie le travail de traduction (comme il est peu probable que vous parliez toutes les langues du logiciel, le fichier mon_fichier_a_moi.cap pourra &ecirc;tre transmis &agrave; plusieurs traducteurs de l&#8217;&eacute;quipe de d&eacute;veloppement). Le contenu du fichier mon_fichier_a_moi.cap aura la structure suivante : </p>
+<p><code>#</code><br />
+  <code># Fichier : Audela.cap</code><br />
+  <code># Date de mise a jour : 10 octobre 2004</code><br />
+  <code>#</code><br />
+  <br />
+  <code>#=========================================================================</code><br />
+  <code># D&eacute;but de la d&eacute;claration des textes localis&eacute;s (internationalisation)</code><br />
+  <code>#=========================================================================</code><br />
+  <br />
+  <code>global caption</code><br />
+  <br />
+  <code># *************** Version anglaise ****************************</code><br />
+  <br />
+  <code>set caption(Audela,main_title)    "Audela: Interface Selection"</code><br />
+  <code>set caption(Audela,language)      "Language Selection:"</code><br />
+  <code>set caption(Audela,description)   "Choose the interface you want to use:"</code><br />
+  <code>set caption(Audela,soft1)         "Tutorial"</code><br />
+  <code>set caption(Audela,soft2)         "Aud'ACE"</code><br />
+  <code>set caption(Audela,launch)        "Run"</code><br />
+  <code>set caption(Audela,dirtcl)        "../test test.tcl"</code><br />
+  <code>set caption(Audela,direct_audace) "Do not display this interface any more."</code><br />
+  <br />
+  <code># *************** Version fran&ccedil;aise ***************************</code><br />
+  <code>if { [ string compare $langage "french" ] == "0" } {</code><br />
+  <br />
+  <code>set caption(Audela,main_title)    "Audela : S&eacute;lection de l'interface utilisateur"</code><br />
+  <code>set caption(Audela,language)      "S&eacute;lection de la langue :"</code><br />
+  <code>set caption(Audela,description)   "S&eacute;lectionnez l'interface que vous voulez utiliser :"</code><br />
+  <code>set caption(Audela,soft1)         "Tutorial"</code><br />
+  <code>set caption(Audela,soft2)         "Aud'ACE"</code><br />
+  <code>set caption(Audela,launch)        "Lancer"</code><br />
+  <code>set caption(Audela,dirtcl)        "../test test.tcl"</code><br />
+  <code>set caption(Audela,direct_audace) "Ne plus afficher cette interface."</code><br />
+  <br />
+  <code># *************** Version italienne ***************************</code><br />
+  <code>} elseif { [ string compare $langage "italian" ] == "0" } {</code><br />
+  <br />
+  <code>set caption(Audela,main_title)    "Audela: Scelta dell'interfaccia utente"</code><br />
+  <code>set caption(Audela,language)      "Scelta delle lingue:"</code><br />
+  <code>set caption(Audela,description)   "Scegliere l'interfaccia d'uso:"</code><br />
+  <code>set caption(Audela,soft1)         "Tutorial"</code><br />
+  <code>set caption(Audela,soft2)         "Aud'ACE"</code><br />
+  <code>set caption(Audela,launch)        "Esegui"</code><br />
+  <code>set caption(Audela,dirtcl)        "../test test.tcl"</code><br />
+  <code>set caption(Audela,direct_audace) "Non visualizzare piu` questa interfaccia."</code><br />
+  <br />
+  <code># *************** Version espagnole ***************************</code><br />
+  <code>} elseif { [ string compare $langage "spanish" ] == "0" } {</code><br />
+  <br />
+  <code>set caption(Audela,main_title)    "Audela: Alternativas de interfaz de usuario"</code><br />
+  <code>set caption(Audela,language)      "Selecci&oacute; de idioma:"</code><br />
+  <code>set caption(Audela,description)   "Escoger la interfaz de usuario a utilizar:"</code><br />
+  <code>set caption(Audela,soft1)         "Tutorial"</code><br />
+  <code>set caption(Audela,soft2)         "Aud'ACE"</code><br />
+  <code>set caption(Audela,launch)        "Arrancar"</code><br />
+  <code>set caption(Audela,dirtcl)        "../test test.tcl"</code><br />
+  <code>set caption(Audela,direct_audace) "No mostrar esta interfaz m&aacute;s."</code><br />
+  <br />
+  <code># *************** Version allemande ***************************</code><br />
+  <code>} elseif { [ string compare $langage "german" ] == "0" } {</code><br />
+  <br />
+  <code>set caption(Audela,main_title)    "### Audela : S&eacute;lection de l'interface utilisateur"</code><br />
+  <code>set caption(Audela,language)      "### S&eacute;lection de la langue :"</code><br />
+  <code>set caption(Audela,description)   "### S&eacute;lectionnez l'interface que vous voulez utiliser :"</code><br />
+  <code>set caption(Audela,soft1)         "### Tutorial"</code><br />
+  <code>set caption(Audela,soft2)         "Aud'ACE"</code><br />
+  <code>set caption(Audela,launch)        "### Lancer"</code><br />
+  <code>set caption(Audela,dirtcl)        "../test test.tcl"</code><br />
+  <code>set caption(Audela,direct_audace) "### Ne plus afficher cette interface."</code><br />
+  <br />
+  <code># *************** Version danoise *****************************</code><br />
+  <code>} elseif { [ string compare $langage "danish" ] == "0" } {</code><br />
+  <br />
+  <code>set caption(Audela,main_title)    "Audela: Valg af brugerflade"</code><br />
+  <code>set caption(Audela,language)      "Valg af sprog:"</code><br />
+  <code>set caption(Audela,description)   "V&aelig;lg den brugerflade, du &oslash;nsker!"</code><br />
+  <code>set caption(Audela,soft1)         "Tutorial"</code><br />
+  <code>set caption(Audela,soft2)         "Aud'ACE"</code><br />
+  <code>set caption(Audela,launch)        "K&oslash;r"</code><br />
+  <code>set caption(Audela,dirtcl)        "../test test.tcl"</code><br />
+  <code>set caption(Audela,direct_audace) "Vis ikke denne meddelelse igen!"</code><br />
+  <br />
+  <code>}</code><br />
+  <br />
+  <code>#=========================================================================</code><br />
+  <code># Fin de la d&eacute;claration des textes localis&eacute;s (internationalisation)</code><br />
+  <code>#=========================================================================</code><br />
+  <br />
+</p>
+<p>Si vous ne connaissez pas la traduction de vos messages dans l&#8217;une ou l&#8217;autre langue, laissez le message dans votre langue natale, en le faisant pr&eacute;c&eacute;der de ### pour aider leur d&eacute;tection par les traducteurs (&agrave; titre d'exemple, vous constaterez ci-dessus que la partie espagnole est en attente de traduction). Bien s&ucirc;r, dans le corps de votre script, vous devrez lancer au tout d&eacute;but la lecture de ce fichier de captions (commande du type "source [ file join $audace(rep_plugin) toolmon_fichier_a_moi mon_fichier_a_moi.cap ]" ), et vous ne devrez utiliser que les variables contenant les captions (par exemple : Message console $caption(mon_fichier_a_moi,titre) ). </p>
+</body>
+
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Convertisseur d'images vers FITS</title>
+</head>
+<body>
+<p class="date">Date de mise &agrave; jour : 14 mars 2005</p>
+<h1>Convertisseur d'images vers FITS </h1>
+<h2>Raoul Behrend</h2>
+<br />
+Observatoire de Gen&egrave;ve <br />
+CH-1290 Sauverny - Suisse <br />
+<a href="mailto:Raoul.Behrend@Obs.UniGe.CH">Raoul.Behrend@Obs.UniGe.CH</a>
+<table>
+  <tr>
+    <td><p><strong>BifsConv, qu'est-ce ?</strong><br />
+      Ce logiciel permet de convertir vers le format FITS (fit) divers formats d'images, tels que: </p></td>
+    <td><p><strong>BifsConv, what is it?</strong><br />
+      This software is a to-FITS (fit) image converter; it accepts images in various formats like: </p></td>
+  </tr>
+  <tr>
+    <td colspan="2"> bmp, imq, st4, stx, ima, cpa, pic, tif, tiff, nef, gif, mx5, hx5 (660x500), xl8 (510x500), sxl (510x512), dat, pcx, per, dib, arn, blu, bb1, bb2, bb3, bb4, grn, irq, ibg, img, ir1, ir2, ir3, n07, n15, pds, red, ihw sgr, sur, sun, vio, cpt, fts, fits, ftz, at1, 08b, raw, sbi, st5, st6, st7, st8, st9, 237, imi, ccd, tga, pnm, ppm, pbm, pgm, ras. </td>
+  </tr>
+  <tr>
+    <td> Quelques variantes et parfums ne sont toutefois pas traduits, par manque de documentation. Plus de probl&egrave;mes pour voir/travailler, avec son imageur astronomique favori, des images satellitales au format Titus, PDS (sauf les images Cl&eacute;mentine et Mars Global Surveyor <em>compress&eacute;es</em>), VICAR, TIFF, celles de SBIG et Lumi&egrave;reStellaire, etc. Les fichiers FITS peuvent &ecirc;tre compress&eacute;s par les algorithmes Rice ou IHW.</td>
+    <td> Some variants and flavours aren't translated, due to some undocumented things. No more problems viewing/working, with its favourite astronomical image processor, satellite images in Titus format, PDS (except the <em>compressed</em> Clementine's and Mars Global Surveyor's images), VICAR, TIFF, SBIG's and StarLight's ones, etc. FITS files can be Rice or IHW compressed. </td>
+  </tr>
+  <tr>
+    <td> Le logiciel ins&egrave;re automatiquement les dates d'observation et les caract&eacute;ristiques instrumentales disponibles dans certains formats; pour les autres, me contacter.
+      <p>Au passage, BifsConv corrige certaines fautes dans le format FITS de certains logiciels (comme Meade, AstroArt, Pisco, Avi2Bmp). </p></td>
+    <td> The software automatically inserts the observation date and the instrumental characteristics present in some format; for the other ones, feel free to contact me.
+      <p> On the fly, BifsConv corrects some errors made by some FITS generating software (like Meade, AstroArt, Pisco, Avi2Bmp). </p></td>
+  </tr>
+  <tr>
+    <td><strong>Utilisation</strong> </td>
+    <td><strong>Usage</strong> </td>
+  </tr>
+  <tr>
+    <td colspan="2"> BIFSCONV "image" [=] [+] [Cr,v,b,a|R|V|B|A] [Zh,v] [Fz,s] [Ll] [M[H][MV]] [Ih,v,o [B|W|Q|S]] [HD|HM|HF|HO|HP|HQ|HR|Hs] [Xobs,con] [K[asc],[dec],[foc],[ph],[pv],[e/adu]] [Nn] [TW] [Y(:|+|=|-)c=v]</td>
+  </tr>
+  <tr>
+    <td> La premi&egrave;re option de lancement est toujours le nom du fichier &agrave; convertir. Les guillemets permettent d'utiliser des fichiers dont les noms comportent un ou plusieurs espaces (au plus un &agrave; la fois) - facultatifs pour les autres fichiers. Le fichier de sortie porte le m&ecirc;me nom et l'extension fit ou, si d&eacute;j&agrave; pr&eacute;sent et l'option = absente, est num&eacute;rot&eacute; <code>bifs####.fit</code>. <br />
+      D'autres options (analys&eacute;es de gauche &agrave; droite) sont possibles/n&eacute;cessaires/sans utilit&eacute; selon le type de fichier d'images &agrave; convertir:
+      <ul>
+        <li>Pour les images en couleur, Cr,v,b,a donnent la pond&eacute;ration du rouge, du vert, du bleu et du canal de transparence. R|V|B|A s&eacute;lectionne rapidement une composante. </li>
+        <li>Zh,v donne les facteurs de compactage des pixels horizontalement et verticalement. </li>
+        <li>M[H][V]retournent horizontalement et verticalement l'image. </li>
+        <li>Fz,s impose l'&eacute;quivalent de bzero et bscale des images fit, pour certains formats. </li>
+        <li>Ih,v,o donne les dimensions horizontale et verticale des images, ainsi que la taille en octets de l'ent&ecirc;te &agrave; sauter; pour certains formats, on peut mettre une des dimensions &agrave; z&eacute;ro et laisser le logiciel la recalculer &agrave; partir de la taille du fichier. B|W|Q signifie que les donn&eacute;es sont cod&eacute;es sur 1, 2 ou de 4 octets; S demande l'&eacute;change de l'ordre des octets. </li>
+        <li>HD|HM|HF demande d'interpr&eacute;ter les &eacute;ventuels instants marqu&eacute;s dans l'image originale comme &eacute;tant le d&eacute;but, le milieu ou la fin de l'exposition. Hs donne une correction en secondes &agrave; appliquer au temps ci-dessus. </li>
+        <li>Xobs,con charge les caract&eacute;ristiques d'une configuration instrumentale d'un observatoire particulier; me contacter pour cela. Actuellement d&eacute;finis: 143,1, 517,1, 178,1, 178,2. Les valeurs de cette option priment sur celles de l'ent&ecirc;te originale et celles du logiciel. </li>
+        <li>K[asc],[dec],[foc],[ph],[pv],[e/adu] permet de marquer et de corriger la positition vis&eacute;e par le t&eacute;lescope (hh.mmsss et &#177&#176&#176.''""), sa focale &eacute;quivalente (en mm), ainsi que les dimensions logiques (&eacute;galement en mm) des pixels de la cam&eacute;ra (tenir compte du compactage) et du gain de la cam&eacute;ra. Si sp&eacute;cifi&eacute;es, ces valeurs priment sur celles de l'ent&ecirc;te originale et celles en m&eacute;moire. Nn o&ugrave; n=1..2 permet d'&eacute;crire les coordonn&eacute;es du centre du champ dans le dialecte <em>non-standard</em> de Astrometrica et PinPoint. </li>
+        <li>+ permet d'acc&eacute;der aux enregistrements d'ing&eacute;ni&eacute;rie des images des sondes spaciales. </li>
+        <li>TW impose une sortie sur 16 binons, m&ecirc;me si c'est possible en 8 binons. </li>
+        <li>Y(:|+|=|-)c=v permet de remplacer ou ajouter, ajouter, remplacer ou supprimer une cl&eacute; c et sa valeur v de l'ent&ecirc;te du fichier de sortie - maximum 16 cl&eacute;s. </li>
+      </ul>
+    <td> The first parameter is always the name of the file to be converted. The quotations marks permit to use files with names containing one or more spaces (but one at a time) - facultative for other files. The ouput file has the same name and fit as the extension or, if already present and that the = option is absent, is numbered <code>bifs####.fit</code> . <br />
+      Other options (processed from left to right) are possible/needed/useless depending on the type of the image file to be converted:
+      <ul>
+        <li>For colour pictures, Cr,v,b,a gives the weigthening of red, green, blue and transparency channels. R|V|B|A select more easily a specific channel. </li>
+        <li>Zh,v represents the horizontal and vertical binning factors. </li>
+        <li>M[H][V]mirror horizontaly and verticaly the image. </li>
+        <li>Fz,s fixes bzero and bscale in the same manner as for fit images, for some formats. </li>
+        <li>Ih,v,o imposes horizontal and vertical dimensions of the image to be converted, as well as the size in bytes of the skipped header; for some formats, one can give 0 for one of the sizes and the software will compute the real value from the filesize. B|W|Q specify that the data are coded on 1, 2 or 4 bytes; S swaps low and high bytes. </li>
+        <li>HD|HM|HF says that the time, if present in the original file, is for the beggining, middle or end of exposure. Hs specify a correction in seconds to the previous time. </li>
+        <li>Xobs,con specify the default instrumental parameters for the configurattion of a particular observatory; contact me for details. Actually defined: 143,1, 517,1, 178,1, 178,2. The values from the option overread the ones in the original header or in memory. </li>
+        <li>K[asc],[dec],[foc],[ph],[pv],[e/adu] is an easy way to specify and correct the pointing direction of the telescope (as hh.mmsss and &#177&#176&#176.''""), its equivalent focal length (in mm), and the sizes (also in mm) of the logical pixels of the CCD camera (keep in mind the binning factors), and the gain of the camera. These values, if specified, overread the ones in the original header or in the software. Nn with n=1..2 permits to write the coordinates of the center of the field in the <em>non-standard</em> dialect of Astrometrica and PinPoint. </li>
+        <li>+ gives access to the engineering records of spacecraft images. </li>
+        <li>TW specify to output file to be on 16 bits, even if it is possible with 8 bits. </li>
+        <li>Y(:|+|=|-)c=v allows the software to change or add, add, change, erase a key c and its value v in the output file - at most 16 keys. </li>
+      </ul>
+  </tr>
+  <tr>
+    <td>Si un nom de fichier ou un parametre comporte un ou plusieurs espaces (au plus un &agrave; la fois), il faut l'encadrer par des guillemets. </td>
+    <td>A filename or a parameter containing one or more spaces (atmost one at a time) must be enclosed in quotation marks. </td>
+  </tr>
+  <tr>
+    <td><em>Attention</em>: l'option = autorise le logiciel &agrave; &eacute;craser un fichier avec l'extension fit. A n'utiliser que si vous avez sauvegard&eacute; vos images originales dans un autre r&eacute;pertoire/disque &#033 Je d&eacute;cline toutes responsabilit&eacute;s. </td>
+    <td><em>Caution</em>: the = option authorize the software to overwrite a file with a fit extension. Use it only if you have copied your original images in a different directory/disc&#033 I decline all responsibilities. </td>
+  </tr>
+  <tr>
+    <td><strong>Exemple </strong></td>
+    <td><strong>Example</strong> </td>
+  </tr>
+  <tr>
+    <td colspan="2"><code>bifsconv 12222001.fts = k12.42201,-4.3327,666.7,0.0148,0.0148 "y:object='2003 EM1'"</code> </td>
+  </tr>
+  <tr>
+    <td> charge l'image <code>12222001.fts</code> puis cr&eacute;e <code>12222001.fit</code> ; si cette derni&egrave;re existe d&eacute;j&agrave;, elle est &eacute;cras&eacute;e (option =). La position asc=12<sup>h</sup>42<sup>m</sup>20,1<sup>s</sup> dec=-4&#176 33'27" est ins&eacute;r&eacute;e dans l'ent&ecirc;te. La longueur focale &eacute;quivalente de l'instrument est de 666,7mm; les pixels font 0,0148x0,0148mm. Si une cl&eacute; OBJECT existe, sa valeur est chang&eacute;e &agrave; '2003 EM1'; sinon, elle est cr&eacute;&eacute;e. </td>
+    <td> reads the image <code>12222001.fts</code> and create a file named <code>12222001.fit</code> ; if this file already exists, it is overwritten (= option). The coordinates RA=12<sup>h</sup>42<sup>m</sup>20.1<sup>s</sup> and DEC=-4&#176 33'27" are added in the header. The equivalent focal length is 666.7mm; the pixels are sized 0.0148x0.0148mm. If there exists an OBJECT key, its value is changed to '2003 EM1', else its created. </td>
+  </tr>
+  <tr>
+    <td><strong>Astuces</strong>
+      <ul>
+        <li>Pour convertir du FITS en FITS, commencer par renommer les images avec une extension fts.</li>
+        <li>Les images Mariner 10 doivent &ecirc;tre renom&eacute;es avec l'extension vic - ou une autre de la s&eacute;rie PDS.</li>
+        <li>Pour convertir les images du programme International Halley Watch au PDS, il faut mettre bout &agrave; bout l'ent&ecirc;te hdr (respectivement lbl) au corps imq et placer le tout dans un fichier fts (respectivement ihw); effacer ensuite le fichier imq:</li>
+      </ul></td>
+    <td><strong>Tricks</strong>
+      <ul>
+        <li>To convert from FITS to FITS, rename your images with a fts extension.</li>
+        <li>Mariner 10's images must be renamed with a vic extension - or an other PDS-like extension.</li>
+        <li>To convert images from the International Halley Watch program at PDS, first append the hdr (respectively lbl) header and the imq content in a fts (respectively ihw) file; then erase the imq file:</li>
+      </ul></td>
+  </tr>
+  <tr>
+    <td colspan="2"> ms-dos: <code>copy /b a.hdr+a.imq a.fts</code> <br />
+      ou/or: <code>copy /b a.lbl+a.imq a.ihw</code> <br />
+      linux: <code>cat a.hdr a.imq &gt; a.fts</code> <br />
+      ou/or: <code>cat a.lbl a.imq &gt; a.ihw</code> </td>
+  </tr>
+  <tr>
+    <td> Sous DOS/Windows, commencer par ouvrir une fen&ecirc;tre ms-dos. Apr&egrave;s quoi, la commande </td>
+    <td> In DOS/Windows, first open a ms-dos box. Then, the command </td>
+  </tr>
+  <tr>
+    <td colspan="2"><code>for %%f in (*.*) do bifsconw "%%f" =</code> </td>
+  </tr>
+  <tr>
+    <td> converti toutes les images reconnues d'un r&eacute;pertoire. Cette commande marche tant en ligne de commande qu'en fichier de commande. On peut aussi assigner un bouton de la souris pour convertir une image depuis l'explorateur, avec l'action suivante: </td>
+    <td> converts all recognised images from a directory. This command works both as a command line or in a batch file. To convert a file using the explorer, one can also assign a mouse-button to the following action: </td>
+  </tr>
+  <tr>
+    <td colspan="2"><code>bifsconw.exe "%1" =</code> </td>
+  </tr>
+  <tr>
+    <td> Sous Linux, la conversion en bloc s'obtient avec </td>
+    <td> With Linux, the in-mass conversion is obtained by </td>
+  </tr>
+  <tr>
+    <td colspan="2"><code>find . -name '*\.???' -exec bifsconx.exe {} = \;</code> </td>
+  </tr>
+  <tr>
+    <td><strong>Mais encore...</strong>
+      <p>Quatre versions de BifsConv existent: </p>
+      <li>bifsconv.exe (286+; DOS/boîte-DOS; noms de fichiers &agrave; la "8.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconv.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconv.exe"><em>http</em></a>;</li>
+      <li>bifsconl.exe (386+; DOS et Windows; noms de fichiers &agrave; la "*.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconl.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconl.exe"><em>http</em></a>;</li>
+      <li>bifsconw.exe (486+; Windows; noms de fichiers &agrave; la "*.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconw.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconw.exe"><em>http</em></a>;</li>
+      <li>bifsconv (386+; Linux; noms de fichiers &agrave; la "*.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconx.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconx.exe"><em>http</em></a>.</li>
+      <br />
+      Elles sont disponibles dans ma <a href="ftp://obsftp.unige.ch/pub/behrend"><em>zone ftp</em></a>. Les versions bifsconv et bifsconw sont mis &agrave; jour fr&eacute;quement; pour les deux autres, le d&eacute;lai peut atteindre quelques jours... Ce logiciel est un "timbriciel": il est gratuit, mais il faut s'enregister en envoyant simplement une carte postale avec un timbre magnifique &#033 Un lien vers la pr&eacute;sente page est aussi le bienvenu... </td>
+    <td><strong>Some more...</strong>
+      <p>Four versions of BifsConv are available: </p>
+      <li>bifsconv.exe (286+; DOS/DOS-box; filenames &agrave; la "8.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconv.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconv.exe"><em>http</em></a>;</li>
+      <li>bifsconl.exe (386+; DOS and Windows; filenames &agrave; la "*.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconl.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconl.exe"><em>http</em></a>;</li>
+      <li>bifsconw.exe (486+; Windows; filenames &agrave; la "*.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconw.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconw.exe"><em>http</em></a>;</li>
+      <li>bifsconv (386+; Linux; filenames &agrave; la "*.3") <a href="ftp://obsftp.unige.ch/pub/behrend/bifsconx.exe"><em>ftp</em></a>, <a href="http://obswww.unige.ch/%7Ebehrend/bifsconx.exe"><em>http</em></a>.</li>
+      <br />
+      They can be downloaded from my <a href="ftp://obsftp.unige.ch/pub/behrend"><em>ftp-zone</em></a>. The bifsconv and bifsconw versions are frequently updated; for the two other ones, there is sometime a delay of a few days... This software is a "stampware": it's free, but registration is needed by just sending a postcard with a wonderful stamp&#033 A link to this page is also welcomed... </td>
+  </tr>
+  <tr>
+    <td> BifsConv est d&eacute;velopp&eacute; en Pascal; deux des versions sont compil&eacute;es avec Borland Pascal/Delphi, et les deux autres avec <a href="http://www.freepascal.org/"><em>Free Pascal</em></a>. Commentaires bienvenus. <br />
+      Tous usages militaires strictement interdits; itou pour la redistribution massive sans mon accord explicite. </td>
+    <td> BifsConv is developped in Pascal; two versions are compiled with Borland Pascal/Delphi, the two other ones with <a href="http://www.freepascal.org/"><em>Free Pascal</em></a>. Comments are welcome. <br />
+      All military uses strictly prohibited; idem for the mass redistribution without my explicit permission. </td>
+  </tr>
+  <tr>
+    <td><strong>Autres formats d'image...</strong>
+      <p>Il existe des centaines de formats d'images diff&eacute;rents... et je n'ai pas une envie folle de tous les programmer. Fort heureusement, plusieurs convertisseurs acceptent de nombreux formats en entr&eacute;e (dont le JPEG et le PNG) et permettent une sortie en TIFF ou un des autres formats compris par BifsConv; il suffit alors de faire la conversion en deux temps, en utilisant par exemple le graticiel <a href="http://perso.wanadoo.fr/pierre.g/" target="_"><em>XnView</em></a> ou le partagiciel <a href="http://www.logipole.com/download_konv_fr.htm" target="_"><em>Konvertor</em></a> pour le premier pas. </p></td>
+    <td><strong>Other image formats...</strong>
+      <p>There exists hundreds of different image formats... and I don't want to code all of them. Some converters can input many formats (including JPEG and PNG) and output them in TIFF or in an other format understand by BifsConv; the translation can thus be done in two steps, using for example the freeware <a href="http://perso.wanadoo.fr/pierre.g/" target="_"><em>XnView</em></a> or the shareware <a href="http://www.logipole.com/download_konv_us.htm" target="_"><em>Konvertor</em></a> for the first step. </p></td>
+  </tr>
+  <tr>
+    <td>BifsConv ne marche pas avec une image &#063 <a href="mailto:raoul.behrend@obs.unige.ch?subject=Image%20pour%20bifsconv">Envoyez-la moi</a> &#033 </td>
+    <td>BifsConv does not work correctly with an image&#063 <a href="mailto:raoul.behrend@obs.unige.ch?subject=Image%20pour%20bifsconv">Send it to me</a>&#033 </td>
+  </tr>
+  <tr>
+    <td></tbody>
+    </td>
+  </tr>
+</table>
+</p>
+<p><strong>Quelques liens/some links</strong>: </p>
+<li><a href="http://obswww.unige.ch/%7Ebehrend/plansite.html"><em>Plan du site</em></a></li>
+<li><a href="http://obswww.unige.ch/%7Ebehrend/welcome.html"><em>Page personnelle</em></a></li>
+<li><a href="http://obswww.unige.ch/%7Ebehrend/page_omg.html"><em>Traitement num&eacute;rique des images</em></a></li>
+<li><a href="http://obswww.unige.ch/%7Ebehrend/page_mgo.html"><em>Digital image processing</em></a></li>
+<li><a href="http://www.unige.ch/sciences/astro"><em>Page d'accueil de l'Observatoire</em></a></li>
+<li><a href="http://www-pdsimage.jpl.nasa.gov/PDS/public/jukebox.html"><em>PDS imaging-node - Online CD-roms</em></a>
+  <p> </p>
+</li>
+</body>
+</html>

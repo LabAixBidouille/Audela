@@ -1,0 +1,8 @@
+LIBRARY quicka
+EXPORTS usb_loadlib @1
+EXPORTS usb_closelib @2
+EXPORTS usb_init @3
+EXPORTS usb_end @4
+EXPORTS usb_write @5
+EXPORTS usb_start @6
+EXPORTS usb_readaudine @7

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLISetFrameType</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLISetFrameType</A></H2><H2>(<!1><A HREF="flidev_t.html">flidev_t</A> dev,  <!1><A HREF="fliframe_t.html">fliframe_t</A> frametype)</H2><BLOCKQUOTE>
+ Set the frame type for a given camera.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Set the frame type for a given camera.  This function sets the frame type
+for camera <TT>dev</TT> to <TT>frametype</TT>.  The <TT>frametype</TT>
+parameter is either <TT>FLI_FRAME_TYPE_NORMAL</TT> for a normal frame
+where the shutter opens or <TT>FLI_FRAME_TYPE_DARK</TT> for a dark frame
+where the shutter remains closed.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>cam</B> -  Camera to set the frame type of.
+
+<BR><B>frametype</B> -  Frame type: <TT>FLI_FRAME_TYPE_NORMAL</TT> or <TT>FLI_FRAME_TYPE_DARK</TT>.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="fliframe_t.html">fliframe_t</A>
+<BR><!1><A HREF="FLIExposeFrame.html">FLIExposeFrame</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fonctions du namespace plotxy</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
+<h1>Fonctions du namespace plotxy </h1>
+<p>Le fichier plotxy.tcl apporte des fonctions graphiques simples &agrave; manipuler. Elles fonctionnent avec les fonctions de <a href="blt1.htm">la librairie graphique BLT</a> et constituent une facilit&eacute; &eacute;vitant de rentrer dans le d&eacute;tail de BLT. Les noms des fonctions du namespace plotxy sont tr&egrave;s voisins de ceux du logiciel Matlab. Les fonctions du namespace ::plotxy sont toutes d&eacute;finies dans le seul fichier plotxy.tcl qui peut &ecirc;tre employ&eacute; hors du contexte de l'interface Aud'ACE.</p>
+<h2> 1. Manuel de r&eacute;f&eacute;rence</h2>
+<h3> <a name="::plotxy::figure" id="::plotxy::figure"></a><code>::plotxy::figure ?num?</code></h3>
+<p>S&eacute;lectionne un num&eacute;ro de figure &agrave; activer. Le nombre de figures n'est pas limit&eacute;</p>
+<h3> <a name="::plotxy::plot" id="::plotxy::plot"></a><code>::plotxy::plot ?ListX? ?ListY? ?colorsymbol?</code></h3>
+<p>Affiche le graphique des points (x,y) d&eacute;finis par deux listes Tcl : ListX pour les coordonn&eacute;es sur l'axe X et ListY pour les coordonn&eacute;es sur l'axe Y, sur la figure active. Les points sont reli&eacute;s par des traits. L'option colorsymbol permet de s&eacute;lectionner la couleur et la forme des points:</p>
+<table>
+  <tr>
+    <td> couleur </td>
+    <td> symbole </td>
+  </tr>
+  <tr>
+    <td> rouge </td>
+    <td> r </td>
+  </tr>
+  <tr>
+    <td> vert </td>
+    <td> g </td>
+  </tr>
+  <tr>
+    <td> bleu </td>
+    <td> b </td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td> forme du point (BLT) </td>
+    <td> symbole </td>
+  </tr>
+  <tr>
+    <td> splus </td>
+    <td> + </td>
+  </tr>
+  <tr>
+    <td> scross </td>
+    <td> x </td>
+  </tr>
+  <tr>
+    <td> circle </td>
+    <td> o </td>
+  </tr>
+  <tr>
+    <td> diamond </td>
+    <td> * </td>
+  </tr>
+</table>
+<p>On peut combiner les symboles de couleur et de forme. Par exemple or va afficher le graphe avec des ronds rouges &agrave; chaque point.</p>
+<img src="../images/plotxy1.jpg" height="227" width="258" alt="" />
+<p><code>::plotxy::plot {0 1 2} {0 1 4} +b</code></p>
+<h3> <a name="::plotxy::xlabel" id="::plotxy::xlabel"></a><code>::plotxy::xlabel ?mystring?</code></h3>
+<p>Modifie le texte de l'intitul&eacute; de l'axe X sur la figure active.</p>
+<img src="../images/plotxy2.jpg" height="227" width="258" alt="" />
+<p><code>::plotxy::xlabel "temps (s)"</code></p>
+<h3> <a name="::plotxy::ylabel" id="::plotxy::ylabel"></a><code>::plotxy::ylabel ?mystring?</code></h3>
+<p>Modifie le texte de l'intitul&eacute; de l'axe Y sur la figure active.</p>
+<img src="../images/plotxy3.jpg" height="227" width="258" alt="" />
+<p><code>::plotxy::ylabel "distance (m)"</code></p>
+<h3> <a name="::plotxy::title" id="::plotxy::title"></a><code>::plotxy::title ?mystring?</code></h3>
+<p>Modifie le texte de l'intitul&eacute; de la figure active.</p>
+<p><img src="../images/plotxy4.jpg" height="227" width="258" alt="" /> </p>
+<p><code>::plotxy::title "y=x*x"</code> </p>
+<h3> <a name="::plotxy::clg" id="::plotxy::clg"></a><code>::plotxy::clg ?num?</code></h3>
+<p>Efface la fen&ecirc;tre graphique de num&eacute;ro <em>num</em>. Si <em>num</em> n'est pas pr&eacute;cis&eacute;, toutes les fen&ecirc;tres de graphique plotxy sont effac&eacute;es.</p>
+<h3> <a name="::plotxy::fileread" id="::plotxy::fileread"></a><code>::plotxy::fileread filename</code></h3>
+<p>Lit un fichier texte constitu&eacute; de lignes et de colonnes de valeurs num&eacute;riques et retourne des listes Tcl de ces valeurs pour chaque colonne (le s&eacute;parateur est un espace ou un Tab). Par exemple le fichier texte val.txt contient les donn&eacute;es suivantes:</p>
+<p><code>0 0</code> <code>1 1</code> <code>2 4</code></p>
+<p>On utilisera les fonctions suivantes pour lire les donn&eacute;es et les afficher:</p>
+<code>set val [::plotxy::fileread val.txt]</code> <code>set vecx [lindex $val 0]</code> <code>set vecy [lindex $val 1]</code> <code>::plotxy::plot $vecx $vecy</code>
+</body>
+
+</html>
