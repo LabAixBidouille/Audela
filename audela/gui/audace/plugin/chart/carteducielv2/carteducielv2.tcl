@@ -4,26 +4,26 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Date de mise a jour : 08 aout 2005
+# Date de mise a jour : 22 decembre 2005
 #
 
 package provide carteducielv2 1.0
 
 #
 # Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,..)
-#     init 			: initialise le namespace (appelee pendant le chargement de ce source)   
-#     getLabel     	: retourne le nom affichable du driver 
+#     init              : initialise le namespace (appelee pendant le chargement de ce source)
+#     getLabel          : retourne le nom affichable du driver 
 #     getHelp           : retourne la documentation htm associee
-#     getDriverType 	: retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf     	: initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
-#     fillConfigPage 	: affiche la fenetre de configuration de ce driver 
-#     confToWidget   	: copie le tableau conf() dans les variables des widgets
-#     widgetToConf 	: copie les variables des widgets dans le tableau conf()
-#     configureDriver	: configure le driver 
-#     stopDriver	      : arrete le driver 
-#     isReady 		: informe de l'etat de fonctionnement du driver
+#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     confToWidget      : copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : copie les variables des widgets dans le tableau conf()
+#     configureDriver   : configure le driver 
+#     stopDriver        : arrete le driver 
+#     isReady           : informe de l'etat de fonctionnement du driver
 #
-# Procedures specifiques a ce driver :  
+# Procedures specifiques a ce driver :
 #     gotoObject        : centre le champ de la carte  sur un objet 
 #     getSelectedObject : recupere les coordonnees de l'objet selectionne sur la carte
 #    
@@ -52,8 +52,8 @@ namespace eval carteducielv2 {
          return ""
       } else {
          #--- Je charge les variables d'environnement
-	   initConf 
-	   #--- charge le fichier caption
+         initConf 
+         #--- charge le fichier caption
          uplevel #0  "source \"[ file join $audace(rep_plugin) chart carteducielv2 carteducielv2.cap ]\" " 
          return [ namespace current ]
       }
@@ -67,7 +67,7 @@ namespace eval carteducielv2 {
    #------------------------------------------------------------
    proc getDriverType { } {
       return "catalog"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getLabel
@@ -79,7 +79,7 @@ namespace eval carteducielv2 {
       global caption
 
       return "$caption(carteducielv2,titre)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getHelp
@@ -90,7 +90,7 @@ namespace eval carteducielv2 {
    proc getHelp { } {
 
       return "carteducielv2.htm"
-   }	
+   }
 
    #------------------------------------------------------------
    #  initConf 
@@ -184,7 +184,7 @@ namespace eval carteducielv2 {
       set conf(carteducielv2,exec)          "$widget(fichier_recherche)"
       set conf(carteducielv2,dirname)       "$widget(dirname)"
       set conf(carteducielv2,binarypath)    "$widget(binarypath)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  fillConfigPage 
@@ -201,7 +201,7 @@ namespace eval carteducielv2 {
       #--- je memorise la reference de la frame 
       set widget(frm) $frm
       
-	#--- j'initialise les valeurs 
+      #--- j'initialise les valeurs 
       confToWidget
 
       #--- Creation des differents frames
@@ -222,27 +222,27 @@ namespace eval carteducielv2 {
 
       #--- Definition du champ (FOV)
       label $frm.frame1.labFOV -text "$caption(carteducielv2,fov_label)"
-	pack $frm.frame1.labFOV -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFOV -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       checkbutton $frm.frame1.fovState -text "$caption(carteducielv2,fov_state)" \
          -highlightthickness 0 -variable carteducielv2::widget(fixedfovstate)
-    	pack $frm.frame1.fovState -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.fovState -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame1.labFovValue -text "$caption(carteducielv2,fov_value)"
-	pack $frm.frame1.labFovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame1.fovValue -textvariable carteducielv2::widget(fixedfovvalue) -width 10
-	pack $frm.frame1.fovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.fovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       #--- Initialisation du chemin du fichier
       label $frm.frame2.labFichier -text "$caption(carteducielv2,fichier)"
-	pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame2.nomFichier -textvariable carteducielv2::widget(fichier_recherche) -width 12 -justify center
-	pack $frm.frame2.nomFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame2.nomFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame2.labA_partir_de -text "$caption(carteducielv2,a_partir_de)"
-	pack $frm.frame2.labA_partir_de -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame2.labA_partir_de -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
       button $frm.frame2.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
          -command {
@@ -256,10 +256,10 @@ namespace eval carteducielv2 {
 
       button $frm.recherche -text "$caption(carteducielv2,rechercher)" -relief raised -state normal \
          -command { ::carteducielv2::Recherche_Fichier }
-	pack $frm.recherche -in $frm.frame3 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
+      pack $frm.recherche -in $frm.frame3 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
 
       entry $frm.chemin -textvariable carteducielv2::widget(binarypath) -width 55 -state disabled
-	pack $frm.chemin -in $frm.frame3 -anchor center -side right -padx 10
+      pack $frm.chemin -in $frm.frame3 -anchor center -side right -padx 10
 
       #--- Site web officiel de Cartes du Ciel
       label $frm.labSite -text "$caption(carteducielv2,site_web)"
@@ -743,7 +743,7 @@ namespace eval carteducielv2 {
                set usualName [string trim [string range $detail $index1 $index2 ] ]
             }
          }
-           
+
          # je recherche tous les catalogues cites dans la ligne de detail
          set index [string first "Fl:" $detail] 
          if { $index >= 0 } {
@@ -810,7 +810,7 @@ namespace eval carteducielv2 {
             set ocl [string range $detail $index [expr $index + 6 ] ]
          }
       }
-                   
+
       # je choisi la reference et le catalogue en fonction du type de l'objet
       if { $objType=="*" } {  
          #pour une étoile : nom usuel ou numero d'un catalogue         

@@ -2,24 +2,24 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Date de mise a jour : 08 aout 2005
+# Date de mise a jour : 22 decembre 2005
 #
 
 package provide guide 1.0
 
 #
 # Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,...)
-#     init 			: initialise le namespace (appelee pendant le chargement de ce source)   
-#     getLabel     	: retourne le nom affichable du driver 
+#     init              : initialise le namespace (appelee pendant le chargement de ce source)
+#     getLabel          : retourne le nom affichable du driver 
 #     getHelp           : retourne la documentation htm associee
-#     getDriverType 	: retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf     	: initialise les parametres de configuration s'il n'existe pas dans le tableau conf()  
-#     fillConfigPage 	: affiche la fenetre de configuration de ce driver 
-#     confToWidget   	: copie le tableau conf() dans les variables des widgets
-#     widgetToConf 	: copie les variables des widgets dans le tableau conf()
-#     configureDriver	: configure le driver 
-#     stopDriver	      : arrete le driver 
-#     isReady 		: informe de l'etat de fonctionnement du driver
+#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     confToWidget      : copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : copie les variables des widgets dans le tableau conf()
+#     configureDriver   : configure le driver 
+#     stopDriver        : arrete le driver 
+#     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
 #     gotoObject        : affiche la carte de champ de l'objet
@@ -47,8 +47,8 @@ namespace eval guide {
          return ""
       } else {
          #--- Je charge les variables d'environnement
-	   initConf   
-	   #--- Charge le fichier caption
+         initConf   
+         #--- Charge le fichier caption
          uplevel #0 "source \"[ file join $audace(rep_plugin) chart guide guide.cap ]\" " 
          return [ namespace current ]
       }
@@ -62,7 +62,7 @@ namespace eval guide {
    #------------------------------------------------------------
    proc getDriverType { } {
       return "catalog"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getLabel
@@ -74,7 +74,7 @@ namespace eval guide {
       global caption
 
       return "$caption(guide,titre)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  getHelp
@@ -85,7 +85,7 @@ namespace eval guide {
    proc getHelp { } {
 
       return "guide.htm"
-   }	
+   }
 
    #------------------------------------------------------------
    #  initConf 
@@ -179,7 +179,7 @@ namespace eval guide {
       set conf(guide,exec)       "$widget(fichier_recherche)"
       set conf(guide,dirname)    "$widget(dirname)"
       set conf(guide,binarypath) "$widget(binarypath)"
-   }	
+   }
 
    #------------------------------------------------------------
    #  fillConfigPage 
@@ -193,10 +193,10 @@ namespace eval guide {
       global caption
       global color
 
-	#--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame 
       set widget(frm) $frm
       
-	#--- J'initialise les valeurs 
+      #--- J'initialise les valeurs 
       confToWidget
 
       #--- Creation des differents frames
@@ -214,13 +214,13 @@ namespace eval guide {
 
       #--- Initialisation du chemin du fichier
       label $frm.frame1.labFichier -text "$caption(guide,fichier)"
-	pack $frm.frame1.labFichier -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFichier -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame1.nomFichier -textvariable ::guide::widget(fichier_recherche) -width 12 -justify center
-	pack $frm.frame1.nomFichier -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.nomFichier -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame1.labA_partir_de -text "$caption(guide,a_partir_de)"
-	pack $frm.frame1.labA_partir_de -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labA_partir_de -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
          -command {
@@ -234,10 +234,10 @@ namespace eval guide {
 
       button $frm.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
          -command { ::guide::Recherche_Fichier }
-	pack $frm.recherche -in $frm.frame2 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
+      pack $frm.recherche -in $frm.frame2 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
 
       entry $frm.chemin -textvariable ::guide::widget(binarypath) -width 55 -state disabled
-	pack $frm.chemin -in $frm.frame2 -anchor center -side right -padx 10
+      pack $frm.chemin -in $frm.frame2 -anchor center -side right -padx 10
 
       #--- Site web officiel de guide
       label $frm.labSite -text "$caption(guide,site_web)"
@@ -274,7 +274,7 @@ namespace eval guide {
       if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
          catch { load libgs.dll }
       }
-	return 
+      return
    }
 
    #------------------------------------------------------------
@@ -299,7 +299,7 @@ namespace eval guide {
 
       #--- Je teste si la librairie libgs.dll est chargee
       set erreur [ catch { gs_version } result ]
-	if { $erreur != "0"  || $result == "" } { 					 
+      if { $erreur != "0"  || $result == "" } { 					 
          #--- La librairie libgs.dll est chargee
          set ready 1  
       } else {          
