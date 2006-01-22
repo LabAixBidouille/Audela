@@ -4,14 +4,14 @@
 
 #************* Liste des focntions **********************#
 #
-# centergauss : détermination du centre d'une raie spectrale par calcul du centre de gravité.
-# centergauss : détermination du centre d'une raie spectrale modelisee par une gaussienne.
-# centergaussl : détermination du centre d'une raie spectrale calibrée modelisee par une gaussienne.
-# lintensity : détermination de l'intensité d'une raie spectrale modelisee par une gaussienne.
-# spcew : détermination de la largeur équivalente d'une raie spectrale modelisee par une gaussienne.
+# spc_centergauss : détermination du centre d'une raie spectrale par calcul du centre de gravité.
+# spc_centergauss : détermination du centre d'une raie spectrale modelisee par une gaussienne.
+# spc_centergaussl : détermination du centre d'une raie spectrale calibrée modelisee par une gaussienne.
+# spc_intensity : détermination de l'intensité d'une raie spectrale modelisee par une gaussienne.
+# spc_ew : détermination de la largeur équivalente d'une raie spectrale modelisee par une gaussienne.
 # lechant : rééchantillonne les valeurs d'un profil de raie.
-# lnorma : normalise un profil de raies  à un continuum avoisinant 1.
-# llinear : linéarise un profil de raies pour obtenir le continuum du profil.
+# spc_norma : normalise un profil de raies  à un continuum avoisinant 1.
+# spc_linear : linéarise un profil de raies pour obtenir le continuum du profil.
 # lselect : sélection (crop) d'une partie d'un profil de raie
 #
 ##########################################################
@@ -35,11 +35,11 @@
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 12-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
-proc centergauss { args } {
+proc spc_centergauss { args } {
 
    global audace
    global conf
@@ -50,8 +50,8 @@ proc centergauss { args } {
      set xfin [ expr int([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
-     #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
 	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
@@ -68,7 +68,7 @@ proc centergauss { args } {
      return $centre
 
    } else {
-     ::console::affiche_erreur "Usage: centerg nom_fichier (de type fits) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_centergauss nom_fichier (de type fits) x_debut x_fin a/e\n\n"
    }
 }
 #****************************************************************#
@@ -79,11 +79,11 @@ proc centergauss { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 12-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
-proc centergaussl { args } {
+proc spc_centergaussl { args } {
 
    global audace
    global conf
@@ -94,8 +94,8 @@ proc centergaussl { args } {
      set lfin [ expr int([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
-     #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
      set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
      set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
@@ -118,7 +118,7 @@ proc centergaussl { args } {
      return $centre
 
    } else {
-     ::console::affiche_erreur "Usage: centergl nom_fichier (de type fits) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_centergaussl nom_fichier (de type fits) x_debut x_fin a/e\n\n"
    }
 }
 #****************************************************************#
@@ -129,11 +129,11 @@ proc centergaussl { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 30-08-2005
-# Date de mise à jour : 30-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel)
 ##########################################################
 
-proc centergrav { args } {
+proc spc_centergrav { args } {
 
     global audace
     global conf
@@ -143,7 +143,7 @@ proc centergrav { args } {
 	set xdeb [ expr int([lindex $args 1 ]) ]
 	set xfin [ expr int([lindex $args 2]) ]
 
-	buf$audace(bufNo) load $fichier
+	buf$audace(bufNo) load $audace(rep_images)/$fichier
 	set listcoords [list $xdeb 1 $xfin 1]
 	set listecoefscale [ list 1 3 ]
 	buf$audace(bufNo) scale $listecoefscale 1
@@ -152,11 +152,53 @@ proc centergrav { args } {
 	::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
      return $centre
     } else {
-	::console::affiche_erreur "Usage: centerg nom_fichier (de type fits) x_debut x_fin\n\n"
+	::console::affiche_erreur "Usage: spc_centergrav nom_fichier (de type fits) x_debut x_fin\n\n"
     }
 }
 #****************************************************************#
 
+
+##########################################################
+#  Procedure de détermination du centre d'une raie spectrale modelisee par une gaussienne.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 21-12-2005
+# Date de mise à jour : 21-12-2005
+# Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel), a/e (renseigne sur raie emission ou absorption)
+##########################################################
+
+proc spc_centerauto { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 3} {
+     set fichier [ lindex $args 0 ]
+     set xcentre [ expr int([lindex $args 1 ]) ]
+     set type [ lindex $args 2 ]
+
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
+     set listcoords [list $xdeb 1 $xfin 1]
+     if { [string compare $type "a"] == 0 } {
+	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+	 buf$audace(bufNo) mult -1.0
+	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+	 # Inverse de nouveau le spectre pour le rendre comme l'original
+	 buf$audace(bufNo) mult -1.0
+     } elseif { [string compare $type "e"] == 0 } {
+	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+     }
+     # Le second element de la liste reponse est le centre X de la gaussienne
+     set centre [lindex $lreponse 1]
+     ::console::affiche_resultat "Le centre de la raie est : $centre (pixels)\n"
+     return $centre
+
+   } else {
+     ::console::affiche_erreur "Usage: spc_centergauss nom_fichier (de type fits) x_debut x_fin a/e\n\n"
+   }
+}
+#****************************************************************#
 
 
 ##########################################################
@@ -164,11 +206,11 @@ proc centergrav { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 12-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
-proc lintensity { args } {
+proc spc_intensity { args } {
 
    global audace
    global conf
@@ -179,8 +221,8 @@ proc lintensity { args } {
      set lfin [ expr int([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
-     #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
      set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
      set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
@@ -203,7 +245,7 @@ proc lintensity { args } {
      return $intensity
 
    } else {
-     ::console::affiche_erreur "Usage: lintensity nom_fichier (de type fits) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_intensity nom_fichier (de type fits) x_debut x_fin a/e\n\n"
    }
 }
 #****************************************************************#
@@ -215,11 +257,11 @@ proc lintensity { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 12-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, l_debut (wavelength), l_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
-proc spcew { args } {
+proc spc_ew { args } {
 
    global audace
    global conf
@@ -230,8 +272,8 @@ proc spcew { args } {
      set lfin [ expr int([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
-     #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
      set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
      set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
@@ -262,51 +304,12 @@ proc spcew { args } {
      return $eqw
 
    } else {
-     ::console::affiche_erreur "Usage: lintensity nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_intensity nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
    }
 }
 #****************************************************************#
 
 
-##########################################################
-# Procedure de normalisation de profil de raie
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date de création : 15-08-2005
-# Date de mise à jour : 15-08-2005
-# Arguments : fichier .fit du profil de raie, largeur de raie (optionnelle)
-##########################################################
-
-proc lnorma { args } {
-
-   global audace
-   global conf
-   set pourcent 0.95
-
-   if {[llength $args] == 2} {
-     set infichier [ lindex $args 0 ]
-     set lraie [lindex $args 1 ]
-     set fichier [ file rootname $infichier ]
-     # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_norm$conf(extension,defaut)
-     ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
-   } elseif {[llength $args] == 1} {
-     set fichier [ lindex $args 0 ]
-     set lraie 20
-     # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent div"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_norm$conf(extension,defaut)
-     ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
-   } else {
-     ::console::affiche_erreur "Usage : lnorm nom_fichier ?largeur de raie?\n\n"
-   }
-}
-##########################################################
 
 
 
@@ -315,11 +318,11 @@ proc lnorma { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 15-08-2005
-# Date de mise à jour : 15-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, largeur de raie (optionnelle)
 ##########################################################
 
-proc llinear { args } {
+proc spc_linear { args } {
 
    global audace
    global conf
@@ -329,23 +332,23 @@ proc llinear { args } {
      set infichier [ lindex $args 0 ]
      set lraie [lindex $args 1 ]
      set fichier [ file rootname $infichier ]
-     # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
      buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_cont$conf(extension,defaut)
+     buf$audace(bufNo) save $audace(rep_images)/${fichier}_cont$conf(extension,defaut)
      ::console::affiche_resultat "Continuum sauvé sous ${fichier}_cont$conf(extension,defaut)\n"
    } elseif {[llength $args] == 1} {
      set fichier [ lindex $args 0 ]
      set lraie 20
-     # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
      buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_cont$conf(extension,defaut)
-     ::console::affiche_resultat "Continuum sauvé sous ${fichier}_cont$conf(extension,defaut)\n"
+     buf$audace(bufNo) save $audace(rep_images)/${fichier}_cont$conf(extension,defaut)
+     ::console::affiche_resultat "Continuum sauvé sous $audace(rep_images)/${fichier}_cont$conf(extension,defaut)\n"
    } else {
-     ::console::affiche_erreur "Usage : llinear nom_fichier ?largeur de raie?\n\n"
+     ::console::affiche_erreur "Usage : spc_linear nom_fichier ?largeur de raie?\n\n"
    }
 }
 ##########################################################
@@ -357,11 +360,11 @@ proc llinear { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 31-08-2005
-# Date de mise à jour : 31-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie
 ##########################################################
 
-proc spcsmooth { args } {
+proc spc_smooth { args } {
 
    global audace
    global conf
@@ -371,11 +374,11 @@ proc spcsmooth { args } {
    if {[llength $args] == 1} {
      set infichier [ lindex $args 0 ]
      set fichier [ file rootname $infichier ]
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load $audace(rep_images)/$fichier
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
      buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_smo$conf(extension,defaut)
-     ::console::affiche_resultat "Spectre adoucis sauvé sous ${fichier}_smo$conf(extension,defaut)\n"
+     buf$audace(bufNo) save $audace(rep_images)/${fichier}_smo$conf(extension,defaut)
+     ::console::affiche_resultat "Spectre adoucis sauvé sous $audace(rep_images)/${fichier}_smo$conf(extension,defaut)\n"
    } else {
      ::console::affiche_erreur "Usage : spcsmooth nom_fichier\n\n"
    }
@@ -389,11 +392,11 @@ proc spcsmooth { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 15-08-2005
-# Date de mise à jour : 15-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, nouvelle dispersion
 ##########################################################
 
-proc spcechant { args } {
+proc spc_echant { args } {
 
    global audace
    global conf
@@ -402,8 +405,8 @@ proc spcechant { args } {
        set infichier [ lindex $args 0 ]
        set newdisp [lindex $args 1 ]
        set fichier [ file rootname $infichier ]
-       # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-       buf$audace(bufNo) load $fichier
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       #buf$audace(bufNo) load $fichier
        set olddisp [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
        set facteur [ expr $newdisp/$olddisp ]
        # rééchantillone selon l'axe X, donc facteur_y=1.
@@ -412,8 +415,8 @@ proc spcechant { args } {
        buf$audace(bufNo) scale  $factors 1
        buf$audace(bufNo) setkwd [list "CDELT1" "$newdisp" float "" ""]
        buf$audace(bufNo) bitpix float
-       buf$audace(bufNo) save ${fichier}_ech$conf(extension,defaut)
-       ::console::affiche_resultat "Profil rééchantillonné sauvé sous ${fichier}_ech$conf(extension,defaut)\n"
+       buf$audace(bufNo) save $audace(rep_images)/${fichier}_ech$conf(extension,defaut)
+       ::console::affiche_resultat "Profil rééchantillonné sauvé sous $audace(rep_images)/${fichier}_ech$conf(extension,defaut)\n"
        return ${fichier}_ech$conf(extension,defaut)
    } else {
        ::console::affiche_erreur "Usage: lechant nom_fichier (de type fits) nouvelle_dispersion\n\n"
@@ -428,11 +431,11 @@ proc spcechant { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 12-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
-proc lfwhm { args } {
+proc spc_fwhm { args } {
 
    global audace
    global conf
@@ -443,8 +446,8 @@ proc lfwhm { args } {
      set lfin [ expr int([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
-     #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
+     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+     #buf$audace(bufNo) load $fichier
      set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
      set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
      set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
@@ -468,7 +471,7 @@ proc lfwhm { args } {
      return $fwhm
 
    } else {
-     ::console::affiche_erreur "Usage: lfwhm nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_fwhm nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
    }
 }
 #****************************************************************#
@@ -480,11 +483,11 @@ proc lfwhm { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 02-09-2005
-# Date de mise à jour : 02-09-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : fichier .fit du profil de raie, lambda_deb, lambda_fin
 ##########################################################
 
-proc spcselect { args } {
+proc spc_select { args } {
 
    global audace
    global conf
@@ -495,7 +498,7 @@ proc spcselect { args } {
        set xfin [ lindex $args 2 ]
        set fichier [ file rootname $infichier ]
 
-       buf$audace(bufNo) load $fichier
+       buf$audace(bufNo) load $audace(rep_images)/$fichier
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
        # Valeur minimale de l'abscisse : =0 si profil non étalonné
        set xdepart [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
@@ -548,11 +551,11 @@ proc spcselect { args } {
 
        # Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float
-       buf$audace(bufNo) save ${fichier}_sel$conf(extension,defaut)
-       ::console::affiche_resultat "Sélection sauvée sous ${fichier}_sel$conf(extension,defaut)\n"
+       buf$audace(bufNo) save $audace(rep_images)/${fichier}_sel$conf(extension,defaut)
+       ::console::affiche_resultat "Sélection sauvée sous $audace(rep_images)/${fichier}_sel$conf(extension,defaut)\n"
        return ${fichier}_sel$conf(extension,defaut)
    } else {
-       ::console::affiche_erreur "Usage: spcselect nom_fichier (de type fits) x_début x_fin\n\n"
+       ::console::affiche_erreur "Usage: spc_select nom_fichier (de type fits) x_début x_fin\n\n"
    }
 }
 ##########################################################

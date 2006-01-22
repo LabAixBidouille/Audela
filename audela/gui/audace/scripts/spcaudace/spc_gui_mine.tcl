@@ -7,7 +7,7 @@
 # Auteur : Alain KLOTZ
 # Date de creation : 17-08-2003
 # Modification : Benjamin Mauclaire
-# Date de mise à jour : 25-02-2005
+# Date de mise à jour : 26-04-2004
 # Argument : fichier fits du spectre spatial
 ################################################
 
@@ -41,9 +41,7 @@ proc open_fitfile { {filenamespc_spatial ""} } {
       }
       ## set filenamespc [tk_getOpenFile -title $captionspc(loadspc) -filetypes [list [list "$captionspc(spc_profile)" {.spc}]] -initialdir $idir -initialfile $ifile ]
       #set filenamespc_spatial [tk_getOpenFile -title $captionspc(open_fitfile) -filetypes [list [list "$captionspc(spc_profile)" {.fit}]] -initialdir $idir -initialfile $ifile ]
-#--- Debut modif Robert
-      set filenamespc_spacial [tk_getOpenFile -title "$captionspc(spc_open_fitfile)" -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ]
-#--- Fin modif Robert
+      set filenamespc_spacial [tk_getOpenFile -title "$captionspc(open_fitfile)" -filetypes [list [list "$caption(fichier,image,fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ]
 
 ### Debut modif Robert (supprime le bug de la fermeture par la croix (x) de la fenetre "Charger un profil de raie")
       if {[string compare $filenamespc_spacial ""] == 0 } {
@@ -79,7 +77,7 @@ proc spc_winini { } {
    if {[info command .spc] == "" } {
       toplevel .spc -class Toplevel
    }
-   wm title .spc "$captionspc(main_title) - $profilspc(initialfile)"   
+   wm title .spc "$captionspc(main_title) : $profilspc(initialfile)"   
    wm geometry .spc 640x480+0+100
    wm maxsize .spc [winfo screenwidth .spc] [winfo screenheight .spc]
    wm minsize .spc 320 200
@@ -103,21 +101,14 @@ proc spc_winini { } {
       # set printernames [blt::printer names]
       set printernames "hplj"
       set nbprinters [llength $printernames]
-
-
-      #--- Menu Fichier ---#
+      # --- menu File ---
       menu .spc.menuBar -tearoff 0
       .spc.menuBar add cascade -menu .spc.menuBar.file -label $captionspc(file) -underline 0
       menu .spc.menuBar.file -tearoff 0
+      .spc.menuBar.file add command -label $captionspc(open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-N"
       .spc.menuBar.file add command -label $captionspc(loadspcfit) -command "spc_loadfit" -underline 0 -accelerator "Ctrl-O"
       .spc.menuBar.file add command -label $captionspc(loadspctxt) -command "spc_loaddat" -underline 0 -accelerator "Ctrl-T"
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png_w) -command "spc_spc2png" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png2_w) -command "spc_spc2png2" -underline 0
       .spc.menuBar.file add command -label $captionspc(writeps) -command "spc_postscript" -underline 0 -accelerator "Ctrl-E"
-      .spc.menuBar.file add command -label $captionspc(spc_fits2dat_w) -command "spc_fits2dat" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_dat2fits_w) -command "spc_dat2fits" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spc2fits_w) -command "spc_spc2fits" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
 	     # .spc.menuBar.file add command -label "$captionspc(print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P" -state disabled
@@ -127,11 +118,13 @@ proc spc_winini { } {
 
       .spc.menuBar.file add command -label $captionspc(quitspc) -command "destroy .spc" -underline 0 -accelerator "Ctrl-Q"
       .spc configure -menu .spc.menuBar
+      bind .spc <Control-N> open_fitfile
       bind .spc <Control-O> spc_loadfit
       bind .spc <Control-A> spc_loaddat
       bind .spc <Control-P> spc_print
       bind .spc <Control-E> spc_postscript
       bind .spc <Control-Q> { destroy .spc }
+      bind .spc <Control-n> open_fitfile
       bind .spc <Control-o> spc_loadfit
       bind .spc <Control-a> spc_loaddat
       bind .spc <Control-p> spc_print
@@ -140,48 +133,11 @@ proc spc_winini { } {
       #bind .spc <F1> aboutBox
 
 
-      #--- Menu Géométrie ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.geometrie -label $captionspc(spc_geometrie) -underline 0
-      menu .spc.menuBar.geometrie -tearoff 0
-      # .spc configure -menu .spc.menuBar
-      .spc.menuBar.geometrie add command -label $captionspc(spc_register_w) -command "spc_register" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_rot180) -command "spc_rot180" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_tiltauto) -command "spc_tiltauto" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_tilt_w) -command "spc_tilt" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_slant_w) -command "spc_slant" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_smile_w) -command "spc_smile" -underline 0
-
-
-      #--- Menu Profil de raies ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.profil -label $captionspc(spc_profil) -underline 0
-      menu .spc.menuBar.profil -tearoff 0
-      .spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
-      .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
-      .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
-      .spc configure -menu .spc.menuBar
-      bind .spc <Control-N> spc_open_fitfile
-      bind .spc <Control-n> spc_open_fitfile
-
-
-      #--- Menu Mesures ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.mesures -label $captionspc(spc_mesures) -underline 0
-      menu .spc.menuBar.mesures -tearoff 0
-      # .spc configure -menu .spc.menuBar
-      .spc.menuBar.mesures add command -label $captionspc(spc_centergrav_w) -command "spc_centergrav" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_centergauss_w) -command "spc_centergauss" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_fwhm_w) -command "spc_fwhm" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_ew_w) -command "spc_ew" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_intensity_w) -command "spc_intensity" -underline 0
-
-
-      #--- Menu Calibration ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(spc_calibration) -underline 0
+      # --- Menu Calibration ---
+      .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(calibration) -underline 0
       menu .spc.menuBar.calibration -tearoff 0
-      # .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "spc_calibre2" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(cali_flux) -command "spc_calibref" -underline 0 -accelerator "Ctrl-F"
-      .spc.menuBar.calibration add command -label $captionspc(spc_norma) -command "spc_norma" -underline 0
-      .spc.menuBar.calibration add command -label $captionspc(spc_rinstrum_w) -command "spc_rinstrum" -underline 0
+      .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
+      .spc.menuBar.calibration add command -label $captionspc(cali_flux) -command "cali_flux" -underline 0 -accelerator "Ctrl-F"
       .spc configure -menu .spc.menuBar
       bind .spc <Control-L> cali_lambda
       bind .spc <Control-l> cali_lambda
@@ -189,33 +145,22 @@ proc spc_winini { } {
       bind .spc <Control-f> cali_flux
 
 
-      #--- Menu Analyse ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0
-      menu .spc.menuBar.analyse -tearoff 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-E"
-      .spc.menuBar.analyse add command -label $captionspc(spc_vradiale_w) -command "spc_vradiale" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_vexp_w) -command "spc_vexp" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_vrot_w) -command "spc_vrot" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_npte_w) -command "spc_npte" -underline 0 -accelerator "Ctrl-T"
-      .spc.menuBar.analyse add command -label $captionspc(spc_npne_w) -command "spc_npne" -underline 0 -accelerator "Ctrl-D"
-      .spc.menuBar.analyse add command -label $captionspc(spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
+      # --- Menu Mesures ---
+      .spc.menuBar add cascade -menu .spc.menuBar.mesures -label $captionspc(mesures) -underline 0
+      menu .spc.menuBar.mesures -tearoff 0
+      .spc.menuBar.mesures add command -label $captionspc(mes_especes) -command "mes_especes" -underline 0 -accelerator "Ctrl-E"
+      .spc.menuBar.mesures add command -label $captionspc(mes_TE) -command "mes_TE" -underline 0 -accelerator "Ctrl-T"
+      .spc.menuBar.mesures add command -label $captionspc(mes_DE) -command "mes_DE" -underline 0 -accelerator "Ctrl-D"
       .spc configure -menu .spc.menuBar
       bind .spc <Control-A> mes_especes
       bind .spc <Control-a> mes_especes
-      bind .spc <Control-T> spc_npte_w
-      bind .spc <Control-t> spc_npte_w
-      bind .spc <Control-D> spc_npne_w
-      bind .spc <Control-d> spc_npne_w
+      bind .spc <Control-T> mes_TE
+      bind .spc <Control-t> mes_TE
+      bind .spc <Control-D> mes_DE
+      bind .spc <Control-d> mes_DE
 
 
-      #--- Menu Aide ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.aide -label $captionspc(spc_aide) -underline 0
-      menu .spc.menuBar.aide -tearoff 0
-      .spc.menuBar.aide add command -label $captionspc(spc_about_w) -command "spc_about" -underline 0
-      .spc configure -menu .spc.menuBar
-      bind .spc <Control-A> spc_about_w
-
-      #--- Fenêtre de graphe BLT ---#
+      # --- graphe BLT ---
       blt::graph .spc.g -plotbackground $colorspc(plotbackground)
       pack .spc.g -in .spc
       pvisutools
