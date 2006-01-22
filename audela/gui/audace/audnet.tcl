@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 01 avril 2005
+# Date de mise a jour : 13 janvier 2006
 #
 
 # ====================================================================
@@ -12,45 +12,45 @@
 # ====================================================================
 
 proc send args {
-	sock_send [lindex $args 0]
+   sock_send [lindex $args 0]
 }
 
 proc create_server { {args ""} } {
-	if {$args==""} {
-		sock_create_server
-	} else {
-		sock_create_server $args
-	}
+   if {$args==""} {
+      sock_create_server
+   } else {
+      sock_create_server $args
+   }
 }
 
 proc delete_server { {args ""} } {
-	if {$args==""} {
-		sock_delete_server
-	} else {
-		sock_delete_server $args
-	}
+   if {$args==""} {
+      sock_delete_server
+   } else {
+      sock_delete_server $args
+   }
 }
 
 proc create_client { {args ""} } {
    # create_client 195.83.102.71 5000 195.83.102.71 5001
    # create_client localhost 5000 localhost 5001
-	if {$args==""} {
-		sock_create_client
-	} else {
-		if { [lindex $args 2]==""} {
-			sock_create_client [lindex $args 0] [lindex $args 1] [lindex $args 2] [lindex $args 3]
-		} else {
-			sock_create_client [lindex $args 0] [lindex $args 1]
-		}
-	}
+   if {$args==""} {
+      sock_create_client
+   } else {
+      if { [lindex $args 2]==""} {
+         sock_create_client [lindex $args 0] [lindex $args 1] [lindex $args 2] [lindex $args 3]
+      } else {
+         sock_create_client [lindex $args 0] [lindex $args 1]
+      }
+   }
 }
 
 proc delete_client { {args ""} } {
-	if {$args==""} {
-		sock_delete_client
-	} else {
-		sock_delete_client $args
-	}
+   if {$args==""} {
+      sock_delete_client
+   } else {
+      sock_delete_client $args
+   }
 }
 
 # ====================================================================
@@ -73,27 +73,27 @@ proc sock_create_server { {port 5000} } {
 
 # --- proc qui est appellée pour l'écoute du socket serveur
 proc sock_accept {fidsockc ip port} {
-      global caption
-      ::console::affiche_saut "\n"
-	::console::affiche_resultat "====================================\n"
-	::console::affiche_resultat "[mc_date2iso8601 now] : $caption(audace,reseau,connexion_client) $fidsockc (IP = $ip - Port = $port)\n"
-	fconfigure $fidsockc -buffering line
-	fileevent $fidsockc readable [list sock_respons $fidsockc]
+   global caption
+   ::console::affiche_saut "\n"
+   ::console::affiche_resultat "====================================\n"
+   ::console::affiche_resultat "[mc_date2iso8601 now] : $caption(audace,reseau,connexion_client) $fidsockc (IP = $ip - Port = $port)\n"
+   fconfigure $fidsockc -buffering line
+   fileevent $fidsockc readable [list sock_respons $fidsockc]
 }
 
 # --- proc qui est appelée lorsque le socket serveur a reçu un message terminé par \n
 proc sock_respons {fidsockc} {
-	if {[eof $fidsockc] || [catch {gets $fidsockc line}]} {
-		close $fidsockc
-	} else {
-		if {$line!=""} {
-			# ::console::affiche_resultat "eval $line\n"
-			catch {uplevel $line} texte
-			catch {puts $fidsockc "$texte"}
-			::console::affiche_resultat "$texte\n"
-			::console::affiche_resultat "====================================\n"
-		}
-	}
+   if {[eof $fidsockc] || [catch {gets $fidsockc line}]} {
+      close $fidsockc
+   } else {
+      if {$line!=""} {
+         # ::console::affiche_resultat "eval $line\n"
+         catch {uplevel $line} texte
+         catch {puts $fidsockc "$texte"}
+         ::console::affiche_resultat "$texte\n"
+         ::console::affiche_resultat "====================================\n"
+      }
+   }
 }
 
 proc sock_delete_server { {id "?"} } {
@@ -203,7 +203,7 @@ proc sock_send { arg } {
 # --- proc pour tester la communication depuis une autre console Aud'ACE
 proc sock_client {} {
    set fidsockc [socket localhost 5000]
-	::console::affiche_resultat "fidsockc=$fidsockc\n"
+   ::console::affiche_resultat "fidsockc=$fidsockc\n"
    fconfigure $fidsockc -buffering line -blocking 1
    set texte "set a 5"
    puts $fidsockc "$texte"
@@ -371,51 +371,51 @@ set rpcid(ftp,chanel) ""
 set rpcid(ftp,server) ""
 
 proc audnet_createChannelServer {{port 1234}} {
-    global rpcid
-    set server [dp_connect tcp -server 1 -myport $port]
-    set rpcid(ftp,server) $server
-    dp_admin register $server
-    fileevent $server readable "audnet_acceptConnection $server"
-    dp_atexit appendUnique "close $server"
-    dp_atclose $server append "dp_ShutdownServer $server"
-    return $server
+   global rpcid
+   set server [dp_connect tcp -server 1 -myport $port]
+   set rpcid(ftp,server) $server
+   dp_admin register $server
+   fileevent $server readable "audnet_acceptConnection $server"
+   dp_atexit appendUnique "close $server"
+   dp_atclose $server append "dp_ShutdownServer $server"
+   return $server
 }
 
 proc audnet_acceptConnection {file} {
-    global rpcid
-    set connection [dp_accept $file]
-    ::console::affiche_resultat "file=$file, connection=$connection\n";
-    set newFile [lindex $connection 0]
-    set inetAddr [lindex $connection 1]
-    ::console::affiche_resultat "newFile=$newFile, inetAddr=$inetAddr\n";
-    ::console::affiche_resultat "Talk on $newFile\n";
-    puts $newFile "Connection accepted"
-    set rpcid(ftp,chanel) $newFile
-    dp_admin register $newFile
+   global rpcid
+   set connection [dp_accept $file]
+   ::console::affiche_resultat "file=$file, connection=$connection\n";
+   set newFile [lindex $connection 0]
+   set inetAddr [lindex $connection 1]
+   ::console::affiche_resultat "newFile=$newFile, inetAddr=$inetAddr\n";
+   ::console::affiche_resultat "Talk on $newFile\n";
+   puts $newFile "Connection accepted"
+   set rpcid(ftp,chanel) $newFile
+   dp_admin register $newFile
 }
 
 proc audnet_connectChannel {{host "127.0.0.1"} {port 1234}} {
-    global rpcid
-    ::console::affiche_resultat "attempting to connect\n";
-    set client [dp_connect tcp -host $host -port $port];
-    ::console::affiche_resultat "connected -- waiting for reply\n";
-    ::console::affiche_resultat "[gets $client]\n";
-    set rpcid(ftp,client) $client
-    return $client
+   global rpcid
+   ::console::affiche_resultat "attempting to connect\n";
+   set client [dp_connect tcp -host $host -port $port];
+   ::console::affiche_resultat "connected -- waiting for reply\n";
+   ::console::affiche_resultat "[gets $client]\n";
+   set rpcid(ftp,client) $client
+   return $client
 }
 
 proc audnet_put { filename } {
-	 global rpcid
-	 if {$rpcid(ftp,chanel)!=""} {
+   global rpcid
+   if {$rpcid(ftp,chanel)!=""} {
       set f [open "$filename" r]
       dp_send $rpcid(ftp,chanel) [read $f]
       close $f
-    }
+   }
 }
 
 proc audnet_get { filename } {
-	 global rpcid
-	 if {$rpcid(ftp,client)!=""} {
+   global rpcid
+   if {$rpcid(ftp,client)!=""} {
       set f [open "$filename" w]
       puts $f [dp_recv $rpcid(ftp,client)]
       close $f
@@ -423,7 +423,7 @@ proc audnet_get { filename } {
 }
 
 proc audnet_deleteChannel { } {
-	 global rpcid
+   global rpcid
    close $rpcid(ftp,client)
    set rpcid(ftp,client) ""
    set rpcid(ftp,chanel) ""
@@ -431,7 +431,7 @@ proc audnet_deleteChannel { } {
 }
 
 proc audnet_deleteChannelServer { } {
-	 global rpcid
+   global rpcid
    dp_admin delete $rpcid(ftp,server)
    close $rpcid(ftp,server)
    set rpcid(ftp,client) ""

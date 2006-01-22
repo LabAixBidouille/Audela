@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Date de mise a jour : 24 avril 2005
+# Date de mise a jour : 10 janvier 2006
 #
 
 namespace eval camera {
@@ -86,11 +86,11 @@ namespace eval camera {
          label $audace(base).progress_scan.lab_status -text "" -font $audace(font,arial_12_b) -justify center
          uplevel #0 { pack $audace(base).progress_scan.lab_status -side top -fill x -expand true -pady 5 }
          if { $tt == "-10" } {
-            if { $conf(tempo_scan) > "1" } {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan) \
+            if { $conf(tempo_scan,delai) > "1" } {
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
                   $caption(camera,secondes)"
             } else {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan) \
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
                   $caption(camera,seconde)"
             }
          } else {
@@ -99,11 +99,11 @@ namespace eval camera {
          }
       } else {
          if { $tt == "-10" } {
-            if { $conf(tempo_scan) > "1" } {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan) \
+            if { $conf(tempo_scan,delai) > "1" } {
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
                   $caption(camera,secondes)"
             } else {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan) \
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
                   $caption(camera,seconde)"
             }
          } else {
@@ -196,15 +196,6 @@ namespace eval camera {
          ::camera::Avancement_pose "1"
 
       }
-
-      #--- Retournement de l'image
-      if { $conf($conf(camera),mirx) == "1" } {
-         $BufferName mirrorx
-      }
-      if { $conf($conf(camera),miry) == "1" } {
-         $BufferName mirrory
-      }
-
    }
 
    #
@@ -330,7 +321,7 @@ namespace eval camera {
    # Decompte du temps d'exposition
    # Utilisation dans les scripts : acqfc.tcl
    #
-   proc dispTime_2 { CameraName Label_Time { Proc_Avancement_pose "" } } {
+   proc dispTime_2 { CameraName Label_Time { Proc_Avancement_pose "" } { visuNo "" } } {
       global caption
 
       set t "[ $CameraName timer -1 ]"
@@ -338,14 +329,14 @@ namespace eval camera {
       if { $t > "1" } {
          $Label_Time configure -text "[ expr $t-1 ] / [ format "%d" [ expr int([ $CameraName exptime ]) ] ]"
          update
-         after 1000 ::camera::dispTime_2 $CameraName $Label_Time $Proc_Avancement_pose
+         after 1000 ::camera::dispTime_2 $CameraName $Label_Time $Proc_Avancement_pose $visuNo
       } else {
          $Label_Time configure -text "$caption(camera,numerisation)"
          update
       }
 
       if { $Proc_Avancement_pose != "" } {
-         $Proc_Avancement_pose $t
+         $Proc_Avancement_pose $visuNo $t
       }
    }
 

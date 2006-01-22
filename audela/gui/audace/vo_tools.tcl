@@ -2,7 +2,7 @@
 # File : vo_tools.tcl
 # Description : Virtual Observatory Tools
 # Auteur : Alain KLOTZ & Jerome BERTHIER
-# Update : 19 october 2005
+# Update : 10 december 2005
 #
 
 # ------------------------------------------------------------------------------------
@@ -63,15 +63,15 @@ proc vo_aladin { args } {
 		#
 		set catalogs [lindex $args 2]
 		if {[llength $catalogs]>0} {
-			buf1 load "$fname"
-			set naxis1 [lindex [buf1 getkwd NAXIS1] 1]
-			set naxis2 [lindex [buf1 getkwd NAXIS2] 1]
-			set res [buf1 xy2radec [list [expr $naxis1/2] [expr $naxis2/2]] ]
+			buf$audace(bufNo) load "$fname"
+			set naxis1 [lindex [buf$audace(bufNo) getkwd NAXIS1] 1]
+			set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
+			set res [buf$audace(bufNo) xy2radec [list [expr $naxis1/2] [expr $naxis2/2]] ]
 			set ra [mc_angle2hms [lindex $res 0]]
 			set dec [mc_angle2dms [lindex $res 1] 90]
 			set coords "$ra $dec"
-			set cdelt1 [lindex [buf1 getkwd CDELT1] 1]
-			set cdelt2 [lindex [buf1 getkwd CDELT2] 1]
+			set cdelt1 [lindex [buf$audace(bufNo) getkwd CDELT1] 1]
+			set cdelt2 [lindex [buf$audace(bufNo) getkwd CDELT2] 1]
 			set fieldx [expr $cdelt1*$naxis1*60.]
 			set fieldy [expr $cdelt2*$naxis2*60.]
 			if {$fieldx>$fieldy} {

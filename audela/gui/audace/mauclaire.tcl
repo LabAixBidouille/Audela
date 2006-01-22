@@ -3,27 +3,23 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'audela
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Date de mise a jour : 03 decembre 2004
+# Date de mise a jour : 15 janvier 2006
 #
 #-----------------------------------------------------------------------------#
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
-# bm_masque_flou     : convolution par un filtre passe-bas effectuant un masque flou d'une image
-# bm_passe_bas       : convolution par un filtre passe-bas "éliminant le bruit"
-# bm_passe_haut      : convolution par un filtre passe-haut "éliminant les formes"
-# bm_filtre_median   : convolution par un filtre median effectuant un genre de "moyenne"
-# bm_filtre_min      : convolution par un filtre minimum
-# bm_filtre_max      : convolution par un filtre maximum
-# bm_filtre_gauss    : convolution d'image par un filtre de forme gaussienne (lisse l'image)
-# bm_ondelette_mor   : convolution d'image par un filtre de forme chapeau type morlet 
-#                      (met en évidence les détails noyés dans la nébulosité)
-# bm_ondelette_mex   : convolution d'image par un filtre de forme chapeau type mexicain 
-#                      (met en évidence les détails noyés dans la nébulosité)
-# bm_cutima          : découpage d'une zone sélectionnée à la sourie d'une image chargée
-# bm_zoomima         : zoom de l'image ou d'une partie sélectionnée de l'image chargée
-# bm_logima          : logarithme d'une image avec des coeficients adpatés a une image brillante
+# bm_renameext       : renome l'extension de fichiers en extension par defaut d'Audela
+# bm_renumfile       : renome les fichier de numérotation collée au nom
+# bm_pregister_lin   : regsitration planetaire sur un point initial et finale : translation lineaire
+# bm_sflat           : créée un flat synthétique (image d'intensité uniforme) de nxp pixels.
+# bm_pretrait        : effectue le prétraitement d'une série d'images à l'aide du dark, plu, dark de plu.
+# bm_sadd            : effectue la somme d'une série d'images.
+# bm_somes           : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees.
+# bm_fwhm            : calcul la largeur équivalente d'une étoile en secondes d'arc.
 #
+#-----------------------------------------------------------------------------#
+
 #---------------------- Artifice ---------------------------------------------#
 #
 # La variable "audace(artifice)" vaut toujours "@@@@" c'est un artifice qui
@@ -35,442 +31,514 @@
 
 #*****************************************************************************#
 #
-# Description : Convolution par un filtre passe-bas effectuant un masque flou d'une image
-# Date creation: 17 mai 2003
-# Date de mise a jour : 30 novembre 2004
+# Description : se met dans le répertoire de travail d'Audace pour éviter de 
+# mettre le chemin des images devant chaque image
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 17-12-2005
+# Date de mise a jour : 17-12-2005
+# Arguments : aucun
+#
+#*****************************************************************************#
+proc bm_goodrep {} {
+
+    global audace
+    global conf
+    set repdflt [pwd]
+    cd $audace(rep_images)
+    return $repdflt
+}
+#-----------------------------------------------------------------------------#
+
+#*****************************************************************************#
+#
+# Description : renome les fichier de numérotation collée au nom
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 16-12-2005
+# Date de mise a jour : 16-12-2005
+# Arguments : nom générique
 #
 #*****************************************************************************#
 
-# Dans ce fichier, les commandes des messages en console/caption sont commentes lorsqu'il est dans
-# le repertoire des scripts
-proc bm_masque_flou { args } {
-   # arg : fichier coefg coefm
-   # Arguments : coefg = coefficient du filtre gaussien (0.8 en general), coefm = coefficient de multiplication
-   # des "details" (en general 1.3)
-   # Les variables nommees audace_* sont globales
+proc bm_renumfile { args } {
+
+    global audace
+    global conf
+
+    if { [llength $args] == 1 } {
+	set nom_generique [lindex $args 0]
+	#set liste_images [ glob ${nom_generique}*$conf(extension,defaut) ]
+	set liste_images [ lsort -dictionary [glob ${nom_generique}*$conf(extension,defaut)] ]
+	set nbimg [ llength $liste_images ]
+	set nom1 [ lindex $liste_images 0 ]
+	regexp {(.+)[0-9]{1,2}} $nom1 match pref_nom_generique
+	::console::affiche_resultat "Prefixe : $pref_nom_generique\n"
+	file mkdir sortie
+	foreach fichier $liste_images {
+	    # regexp {.+([0-9]{1,2})} $fichier match numero
+	    regexp {.+[a-zA-Z]([0-9]+)} $fichier match numero
+	    ::console::affiche_resultat "Copie de $fichier de buméro $numero vers sortie/${pref_nom_generique}-$numero$conf(extension,defaut)\n"
+	    file copy ${fichier} sortie/${pref_nom_generique}-$numero$conf(extension,defaut)
+	}
+	::console::affiche_resultat "Fichiers renomés dans les le répertoire sortie.\n"
+    } else {
+	::console::affiche_erreur "Usage: bm_renumfile nom_générique de fichier à la numérotation collée.\n"
+    }
+}
+#-----------------------------------------------------------------------------#
+
+#*****************************************************************************#
+#
+# Description : renome l'extension de fichiers en extension par defaut d'Audela
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 17-12-2005
+# Date de mise a jour : 17-12-2005
+# Arguments : répertoire, extension actuelle des fichiers
+#
+#*****************************************************************************#
+
+proc bm_renameext { args } {
+
+    global audace
+    global conf
+
+    if { [llength $args] == 2 } {
+	set repertoire [lindex $args 0]
+	set old_extension [ lindex $args 1 ]
+
+	set repdflt [pwd]
+	cd $repertoire
+	set liste_fichiers [ lsort -dictionary [glob *$old_extension] ]
+	set nbimg [ llength $liste_fichiers ]
+	::console::affiche_resultat "$nbimg fichiers à renomer.\n"
+
+	foreach fichier $liste_fichiers {
+	    #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
+	    set prefixe_nom [ file rootname $fichier ]	    
+	    ::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}$conf(extension,defaut)\n"
+	    file copy $fichier ${prefixe_nom}$conf(extension,defaut)
+	}
+	cd $repdflt
+    } else {
+	::console::affiche_erreur "Usage: bm_renameext répertoire extension_actuelle.\n"
+    }
+}
+#-----------------------------------------------------------------------------#
+
+#*****************************************************************************#
+#
+# Description : regsitration planetaire sur un point initial et finale : translation lineaire
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 16-12-2005
+# Date de mise a jour : 16-12-2005
+# Argument : nom_generique_fichier (sans extension)
+#
+#*****************************************************************************#
+
+proc bm_pregister_lin { args } {
+
+    global audace
+    global conf
+    global flag_ok
+
+    if {[llength $args] == 1} {
+	set nom_generique [ lindex $args 0 ]
+	set repdflt [bm_goodrep]
+
+	#--- Renumerote la série de fichier ----
+	#renumerote $nom_generique
+	#set liste_images [ glob ${nom_generique}*$conf(extension,defaut) ]
+	set liste_images [ lsort -dictionary [glob ${nom_generique}*$conf(extension,defaut)] ]
+	set nbimg [ llength $liste_images ]
+	
+	#--- Reperage du point de depart ----
+	set image_depart [lindex $liste_images 0]
+	loadima $image_depart
+	set flag_ok 0
+	#-- Création de la fenêtre
+	if { [ winfo exists .benji ] } {
+	    destroy .benji
+	}
+	toplevel .benji
+	wm geometry .benji
+	wm title .benji "Get zone"
+	wm transient .benji .audace
+	#-- Textes d'avertissement
+	label .benji.lab -text "Sélectionnez l'objet à suivre (boîte petite)"
+	pack .benji.lab -expand true -expand true -fill both
+	#-- Sous-trame pour boutons
+	frame .benji.but
+	pack .benji.but -expand true -fill both
+	#-- Bouton "Ok"
+	button .benji.but.1  -command {set flag_ok 1} -text "Ok"
+	pack .benji.but.1 -side left -expand true -fill both
+	#-- Bouton "Annuler"
+	button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+	pack .benji.but.2 -side right -expand true -fill both
+	#-- Attend que la variable $flag_ok change
+	vwait flag_ok
+	if { $flag_ok == "1" } {
+	    set coords_zone $audace(box)
+	    set flag_ok 2
+	    destroy .benji
+	} elseif { $flag_ok == "2" } {
+	    set flag_ok 2
+	    destroy .benji
+            return 0
+	}
+	#-- Determine le photocentre de la zone sélectionée
+	set stats [ buf$audace(bufNo) stat ]
+	#set point_depart [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ]
+	set point_depart [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
+	::console::affiche_resultat "Point A : $point_depart\n"
+
+	#---------------------------------------------------------#
+	#--- Reperage du point final ----
+	set image_finale [lindex $liste_images [expr $nbimg-1] ]
+	loadima $image_finale
+	set flag_ok 0
+	#-- Création de la fenêtre
+	if { [ winfo exists .benji ] } {
+	    destroy .benji
+	}
+	toplevel .benji
+	wm geometry .benji
+	wm title .benji "Get zone"
+	wm transient .benji .audace
+	#-- Textes d'avertissement
+	label .benji.lab -text "Sélectionnez l'objet à suivre (boîte petite)"
+	pack .benji.lab -expand true -expand true -fill both
+	#-- Sous-trame pour boutons
+	frame .benji.but
+	pack .benji.but -expand true -fill both
+	#-- Bouton "Ok"
+	button .benji.but.1  -command {set flag_ok 1} -text "Ok"
+	pack .benji.but.1 -side left -expand true -fill both
+	#-- Bouton "Annuler"
+	button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+	pack .benji.but.2 -side right -expand true -fill both
+	#-- Attend que la variable $flag_ok change
+	vwait flag_ok
+	if { $flag_ok == "1" } {
+	    set coords_zone $audace(box)
+	    set flag_ok 2
+	    destroy .benji
+	} elseif { $flag_ok == "2" } {
+	    set flag_ok 2
+	    destroy .benji
+            return 0
+	}
+	#-- Determine le photocentre de la zone sélectionée
+	set stats [ buf$audace(bufNo) stat ]
+	set point_final [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
+	::console::affiche_resultat "Point B : $point_final\n"
+
+	#--- Caclul le deplacement de la comete entre chaque image
+	set erra [ lindex $point_depart 2 ]
+	#set erra 0.1
+	if { $erra >=0.3 } {
+	    set x_depart [expr [lindex $point_depart 0]+$erra ]
+	    set y_depart [expr [lindex $point_depart 1]+$erra ]
+	} else {
+	    set x_depart [ lindex $point_depart 0 ]
+	    set y_depart [ lindex $point_depart 1 ]
+	}
+	set errb [ lindex $point_final 2 ]
+	if { $erra >=0.3 } {
+	    set x_final [expr [lindex $point_final 0]+$errb ]
+	    set y_final [expr [lindex $point_final 1]+$errb ]
+	} else {
+	    set x_final [ lindex $point_final 0 ]
+	    set y_final [ lindex $point_final 1 ]
+	}
+	#set x_final [ lindex $point_final 0 ]
+	#set y_final [ lindex $point_final 1 ]
+	set ecart_x [expr $x_final-$x_depart ]
+	set ecart_y [expr $y_final-$y_depart ]
+	::console::affiche_resultat "Écart total en x : $ecart_x ; Écart total en y : $ecart_y\n"
+	set deplacement_x [ expr -1.0*$ecart_x/$nbimg ]
+	set deplacement_y [ expr -1.0*$ecart_y/$nbimg ]
+	::console::affiche_resultat "Déplacement sur chaque image : $deplacement_x ; $deplacement_y\n"
+
+	#--- Recalage de chaque image (sauf n°1)
+	#-- le deplacement de l'objet est suppose lineaire
+	#-- Isole le préfixe des noms de fichiers
+	regexp {(.+)\-} $nom_generique match pref_nom_generique
+	::console::affiche_resultat "Appariement de $nbimg images...\n"
+	#- trans2 est Buggé !
+	#trans2 $nom_generique ${pref_nom_generique}_reg- $nbimg $deplacement_x $deplacement_y
+	set i 1
+	foreach fichier $liste_images {
+	    set delta_x [expr $deplacement_x*($i-1)]
+	    set delta_y [expr $deplacement_y*($i-1)]
+	    buf$audace(bufNo) load $fichier
+	    buf$audace(bufNo) imaseries "TRANS trans_x=$delta_x trans_y=$delta_y"
+	    buf$audace(bufNo) save ${pref_nom_generique}_reg-$i
+	    incr i
+	}
+	file delete ${pref_nom_generique}_reg-1$conf(extension,defaut)
+	file copy ${pref_nom_generique}-1$conf(extension,defaut) ${pref_nom_generique}_reg-1$conf(extension,defaut)
+	::console::affiche_resultat "Images recalées sauvées sous ${pref_nom_generique}_reg-n°$conf(extension,defaut)\n"
+
+	#--- Somme des images :
+	::console::affiche_resultat "Somme de $nbimg images... sauvées sous ${pref_nom_generique}_s$nbimg\n"
+	sadd ${pref_nom_generique}_reg- ${pref_nom_generique}_s$nbimg $nbimg
+	loadima ${pref_nom_generique}_s$nbimg
+	delete2 ${pref_nom_generique}_reg- $nbimg
+	cd $repdflt
+    } else {
+	::console::affiche_erreur "Usage : bm_pregister_lin nom_generique_images\n\n"
+    }
+}
+#-----------------------------------------------------------------------------#
+
+#*****************************************************************************#
+#
+# Description : créée un flat synthétique (image d'intensité uniforme) de nxp pixels.
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 08-09-2005
+# Date de mise a jour : 03-12-2005
+# Arguments : nom de l'image de sortie, naxis1, naxis2, valeur des pixels.
+# Methode : par soustraction du noir et sans offset.
+#
+#*****************************************************************************#
+
+proc bm_sflat { args } {
+
    global audace
    global conf
-   global caption
 
-   if {[llength $args] == 3} {
-      set fichier [ lindex $args 0 ]
-      set coefg [ lindex $args 1 ]
-      set coefm [ lindex $args 2 ]
+   if {[llength $args] == 4} {
+       set nom_flat [ lindex $args 0 ]
+       set naxis1 [ lindex $args 1 ]
+       set naxis2 [ lindex $args 2 ]
+       set intensite [ lindex $args 3 ]
 
-      if {($fichier == "") || ($coefg == "") || ($coefm == "")} {
-         ::console::affiche_erreur "Usage: bm_masque_flou filename coef_gauss mult\n\n"
-      } else {
-         ## Verif existence
-         set filein   "$fichier$conf(extension,defaut)"
-         set filetmp  "${fichier}_tmp$conf(extension,defaut)"
-         set filetmp1 "${fichier}_tmp1$conf(extension,defaut)"
-         ## Algo
-         if { $fichier != "$audace(artifice)" } {
-            if { [ file exist $filein ] == "1" } {
-               ::console::affiche_resultat "$caption(mauclaire,chargement) $fichier$conf(extension,defaut)\n"
-               buf$audace(bufNo) load "$filein"
-               convgauss $coefg
-               buf$audace(bufNo) save "$filetmp"
-               buf$audace(bufNo) load "$filein"
-               buf$audace(bufNo) sub $filetmp 0
-               buf$audace(bufNo) mult $coefm
-               buf$audace(bufNo) add "$filein" 0
-               ::audace::autovisu visu$audace(visuNo)
-               catch {file delete -force "$filetmp"}
-               ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-            } else {
-               ::console::affiche_erreur "$caption(mauclaire,pas_de_fichier)\n"
-            }
-         } else {
-            if { [ buf$audace(bufNo) imageready ] == "0" } {
-               ::console::affiche_erreur "$caption(mauclaire,pas_image_memoire)\n\n"
-            } else {
-               buf$audace(bufNo) save "$filetmp1"
-               convgauss $coefg
-               buf$audace(bufNo) save "$filetmp"
-               buf$audace(bufNo) load "$filetmp1"
-               buf$audace(bufNo) sub $filetmp 0
-               buf$audace(bufNo) mult $coefm
-               buf$audace(bufNo) add "$filetmp1" 0
-               ::audace::autovisu visu$audace(visuNo)
-               catch {file delete -force "$filetmp"}
-               catch {file delete -force "$filetmp1"}
-               ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-            }
-         }
-      }
+       buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $naxis2 FORMAT_USHORT COMPRESS_NONE 0
+       buf$audace(bufNo) offset $intensite
+       #for {set y 1} {$y<=$naxis2} {incr y} {
+	#   for {set x 1} {$x<=$naxis1} {incr x} {
+	 #      buf$audace(bufNo) setpix [ list $x $y ] $intensite
+	  # }
+       #}
+       buf$audace(bufNo) save $nom_flat
+       ::console::affiche_resultat "Flat artificiel sauvé sous $nom_flat\n"
+       return $nom_flat
    } else {
-      ::console::affiche_erreur "Usage: bm_masque_flou filename coef_gauss mult\n\n"
+       ::console::affiche_erreur "Usage: bm_sflat nom_flat_sortie largeur hauteur valeur\n"
    }
 }
+#-----------------------------------------------------------------------------#
 
 #*****************************************************************************#
-# Description : Filtres passe-bas, passe-haut, median, min, max
-# Date creation : 29 aout 2003
-# Date de mise a jour : 30 novembre 2004
+#
+# Description : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 27-08-2005
+# Date de mise a jour : 21-12-2005
+# Arguments : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu
+# Methode : par soustraction du noir et sans offset.
+# Bug : Il faut travailler dans le rep parametre d'Audela, donc revoir toutes les operations !!
 #
 #*****************************************************************************#
 
-proc bm_filter { args } {
-   ## arg : type_filtre fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-   ## Les variables nommees audace_* sont globales
+proc bm_pretrait { args } {
+
    global audace
    global conf
-   global caption
 
-   if {[llength $args] == 3} {
-      set type_filtre [ lindex $args 0 ]
-      set fichier [ lindex $args 1 ]
-      set efficacite [ lindex $args 2 ]
+   if {[llength $args] == 4} {
+       #--- On se place dans le répertoire d'images configuré dans Audace
+       set repdflt [ bm_goodrep ]
+       set nom_stellaire [ lindex $args 0 ]
+       set nom_dark [ lindex $args 1 ]
+       set nom_flat [ lindex $args 2 ]
+       set nom_darkflat [ lindex $args 3 ]
 
-      if { ($fichier == "") || ($efficacite == "") } {
-         if { $type_filtre == "fb" } {
-            ::console::affiche_erreur "Usage: bm_passe_bas filename \[efficiency 0.1\]\n\n"
-         } elseif { $type_filtre == "fh" } {
-            ::console::affiche_erreur "Usage: bm_passe_haut filename \[efficiency 0.1\]\n\n"
-         } elseif { $type_filtre == "med" } {
-            ::console::affiche_erreur "Usage: bm_filtre_median filename \[efficiency 0.1\]\n\n"
-         } elseif { $type_filtre == "min" } {
-            ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0.1\]\n\n"
-         } elseif { $type_filtre == "max" } {
-            ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0.1\]\n\n"
-         }          
-      } else {
-         ## Verif existence
-         set filein  "$fichier$conf(extension,defaut)"
-         ## Algo
-         if { $fichier != "$audace(artifice)" } {
-            if { [ file exist $filein ] == "1" } {
-               ::console::affiche_resultat "$caption(mauclaire,chargement) $fichier$conf(extension,defaut)\n"
-               buf$audace(bufNo) load "$filein"
-               buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite"
-               ::audace::autovisu visu$audace(visuNo)
-               ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-            } else {
-               ::console::affiche_erreur "$caption(mauclaire,pas_de_fichier)\n"
-            }
-         } else {
-            if { [ buf$audace(bufNo) imageready ] == "0" } {
-               ::console::affiche_erreur "$caption(mauclaire,pas_image_memoire)\n\n"
-            } else {
-               buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite"
-               ::audace::autovisu visu$audace(visuNo)
-               ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-            }
-         }
-      }
+       ## Renumerote chaque série de fichier
+       renumerote $nom_stellaire
+       renumerote $nom_dark
+       renumerote $nom_flat
+       renumerote $nom_darkflat
+
+       ## Isole le préfixe des noms de fichiers
+       regexp {(.+)\-} $nom_stellaire match pref_stellaire
+       regexp {(.+)\-} $nom_dark match pref_dark
+       regexp {(.+)\-} $nom_flat match pref_flat
+       regexp {(.+)\-} $nom_darkflat match pref_darkflat
+
+       ## Détermine les listes de fichiers de chasue série
+       set stellaire_liste [ glob -dir $audace(rep_images) ${nom_stellaire}*$conf(extension,defaut) ]
+       set nb_stellaire [ llength $stellaire_liste ]
+       set dark_liste [ glob -dir $audace(rep_images) ${nom_dark}*$conf(extension,defaut) ]
+       set nb_dark [ llength $dark_liste ]
+       set flat_liste [ glob -dir $audace(rep_images) ${nom_flat}*$conf(extension,defaut) ]
+       set nb_flat [ llength $flat_liste ]
+       set darkflat_liste [ glob -dir $audace(rep_images) ${nom_darkflat}*$conf(extension,defaut) ]
+       set nb_darkflat [ llength $darkflat_liste ]
+
+       ## Prétraitement des fichiers de darks, de flats, de darkflats
+       if { $nb_dark == 1 } {
+	   ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
+	   set pref_dark $nom_dark
+	   file copy $nom_dark$conf(extension,defaut) ${pref_dark}_smd$nb_dark$conf(extension,defaut)
+       } else {
+	   ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
+	   smedian "$nom_dark" "${pref_dark}_smd$nb_dark" $nb_dark
+       }
+       if { $nb_darkflat == 1 } {
+	   ::console::affiche_resultat "L'image de dark de flat est $nom_darkflat$conf(extension,defaut)\n"
+	   set pref_darkflat "$nom_darkflat"
+	   file copy $nom_darkflat$conf(extension,defaut) ${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)
+       } else {
+	   ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
+	   smedian "$nom_darkflat" "${pref_darkflat}_smd$nb_darkflat" $nb_darkflat
+       }
+       if { $nb_flat == 1 } {
+	   set pref_flat $nom_flat
+	   buf$audace(bufNo) load "$nom_flat"
+	   sub "${pref_darkflat}_smd$nb_darkflat" 0
+	   buf$audace(bufNo) save "${pref_flat}_smd$nb_flat"
+       } else {
+	   sub2 "$nom_flat" "${pref_darkflat}_smd$nb_darkflat" "${pref_flat}_moinsnoir-" 0 $nb_flat
+	   set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-*$conf(extension,defaut) ] ] 0 ]
+	   #set flat_traite_1 [ lindex [ glob ${pref_flat}_moinsnoir-*$conf(extension,defaut) ] 0 ]
+       }
+
+       if { $nb_flat == 1 } {
+	   # Calcul du niveau moyen de la première image
+	   #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
+	   #set intensite_moyenne [lindex [stat] 4]
+	   ## Mise au même niveau de toutes les images de PLU
+	   #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
+	   #ngain $intensite_moyenne
+	   #buf$audace(bufNo) save "${pref_flat}_smd$nb_flat"
+	   #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}_smd$nb_flat$conf(extension,defaut)
+	   ::console::affiche_resultat "Le flat prétraité est ${pref_flat}_smd$nb_flat\n"
+       } else {
+	   # Calcul du niveau moyen de la première image
+	   buf$audace(bufNo) load "$flat_moinsnoir_1"
+	   set intensite_moyenne [lindex [stat] 4]
+	   # Mise au même niveau de toutes les images de PLU
+	   ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
+	   ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
+	   ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
+	   smedian "${pref_flat}_auniveau-" "${pref_flat}_smd$nb_flat" $nb_flat
+	   #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
+	   delete2 "${pref_flat}_auniveau-" $nb_flat
+	   delete2 "${pref_flat}_moinsnoir-" $nb_flat
+       }
+
+       ## Prétraitement des images stellaires
+       # Soustraction du noir des images stellaires
+       ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
+       sub2 "$nom_stellaire" "${pref_dark}_smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
+       # Calcul du niveau moyen de la PLU traitée
+       buf$audace(bufNo) load "${pref_flat}_smd$nb_flat"
+       set intensite_moyenne [lindex [stat] 4]
+       # Division des images stellaires par la PLU
+       ::console::affiche_resultat "Division des images stellaires par la PLU...\n"
+       div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}_smd$nb_flat" "${pref_stellaire}_t-" $intensite_moyenne $nb_stellaire
+       set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}_t-*$conf(extension,defaut) ] ] 0 ]
+       loadima "$image_traite_1"
+       ::console::affiche_resultat "Affichage de la première image prétraitée\n"
+       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
+       #--- Retour dans le répertoire de départ avnt le script
+       cd $repdflt
+       return ${pref_stellaire}_t-
    } else {
-      ::console::affiche_erreur "Usage: bm_filter filter_type filename efficiency\n\n"
+       ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu\n\n"
    }
 }
-
 #-----------------------------------------------------------------------------#
-proc bm_passe_bas { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-
-   if {[llength $args] == 2} {
-      set fichier [ lindex $args 0 ]
-      set efficacite [ lindex $args 1 ]
-      bm_filter fb $fichier $efficacite
-   } else {
-      ::console::affiche_erreur "Usage: bm_passe_bas filename \[efficiency 0.1\]\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_passe_haut { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-
-   if {[llength $args] == 2} {
-      set fichier [ lindex $args 0 ]
-      set efficacite [ lindex $args 1 ]
-      bm_filter fh $fichier $efficacite
-   } else {
-      ::console::affiche_erreur "Usage: bm_passe_haut filename \[efficiency 0.1\]\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_filtre_median { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-
-   if {[llength $args] == 2} {
-      set fichier [ lindex $args 0 ]
-      set efficacite [ lindex $args 1 ]
-      bm_filter med $fichier $efficacite
-   } else {
-      ::console::affiche_erreur "Usage: bm_filtre_median filename \[efficiency 0.1\]\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_filtre_min { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-
-   if {[llength $args] == 2} {
-      set fichier [ lindex $args 0 ]
-      set efficacite [ lindex $args 1 ]
-      bm_filter min $fichier $efficacite
-   } else {
-      ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0.1\]\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_filtre_max { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-
-   if {[llength $args] == 2} {
-      set fichier [ lindex $args 0 ]
-      set efficacite [ lindex $args 1 ]
-      bm_filter max $fichier $efficacite
-   } else {
-      ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0.1\]\n\n"
-   }
-}
 
 #*****************************************************************************#
 #
-# Description : Filtres de convolution gaussian, morlet, mexican
-# Date creation : 29 aout 2003
-# Date de mise a jour : 30 novembre 2004
+# Description : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 06 aout 2005
+# Date de mise a jour : 27-12-05
+# Argument : nom_generique_fichier (sans extension)
 #
 #*****************************************************************************#
 
-proc bm_convo { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-   ## Les variables nommees audace_* sont globales
+proc bm_sadd { args } {
+
    global audace
    global conf
-   global caption
-
-   if {[llength $args] == 3} {
-      set type_filtre [ lindex $args 0 ]
-      set fichier [ lindex $args 1 ]
-      set largeur [ lindex $args 2 ]
-
-      if { ($fichier == "") || ($largeur == "")} {
-         if { $type_filtre == "gaussian" } {
-            ::console::affiche_erreur "Usage: bm_filtre_gauss filename \[width 0.5\]\n\n"
-         } elseif { $type_filtre == "morlet" } {
-            ::console::affiche_erreur "Usage: bm_ondelette_mor filename \[width 2\]\n\n"
-         } elseif { $type_filtre == "mexican" } {
-            ::console::affiche_erreur "Usage: bm_ondelette_mex filename \[width 2\]\n\n"
-         }          
-      } else {
-         ## Verif existence
-         set filein  "$fichier$conf(extension,defaut)"
-         ## Algo
-         if { $fichier != "$audace(artifice)" } {
-            if { [ file exist $filein ] == "1" } {
-               ::console::affiche_resultat "$caption(mauclaire,chargement) $fichier$conf(extension,defaut)\n"
-               buf$audace(bufNo) load "$filein"
-               if { [ lindex $args 2 ] == 0 } {
-                  buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre"
-               } else {
-                  buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre sigma=$largeur"
-               }
-               ::audace::autovisu visu$audace(visuNo)
-               ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-            } else {
-               ::console::affiche_erreur "$caption(mauclaire,pas_de_fichier)\n"
-            }
-         } else {
-            if { [ buf$audace(bufNo) imageready ] == "0" } {
-               ::console::affiche_erreur "$caption(mauclaire,pas_image_memoire)\n\n"
-            } else {
-               if { [ lindex $args 2 ] == 0 } {
-                  buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre"
-               } else {
-                  buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre sigma=$largeur"
-               }
-               ::audace::autovisu visu$audace(visuNo)
-               ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-            }
-         }
-      }
-   } else {
-      ::console::affiche_erreur "Usage: bm_convo filter_type filename width\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_filtre_gauss { args } {
-   ## arg : fichier largeur
-   ## Arguments : largeur = largeur du filtre
-
-   if { [llength $args] == 2 } {
-      set fichier [ lindex $args 0 ]
-      set largeur [ lindex $args 1 ]
-      bm_convo gaussian $fichier $largeur
-   } elseif { [llength $args] == 1 } {
-      set fichier [ lindex $args 0 ]
-      set largeur 0
-      bm_convo gaussian $fichier $largeur
-   } else {
-      ::console::affiche_erreur "Usage: bm_filtre_gauss filename \[width 0.5\]\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_ondelette_mor { args } {
-   ## arg : fichier largeur
-   ## Arguments : largeur = largeur du filtre
-
-   if { [llength $args] == 2 } {
-      set fichier [ lindex $args 0 ]
-      set largeur [ lindex $args 1 ]
-      bm_convo morlet $fichier $largeur
-   } elseif { [llength $args] == 1 } {
-      set fichier [ lindex $args 0 ]
-      set largeur 0
-      bm_convo morlet $fichier $largeur
-   } else {
-      ::console::affiche_erreur "Usage: bm_ondelette_mor filename \[width 2\]\n\n"
-   }
-}
-
-#-----------------------------------------------------------------------------#
-proc bm_ondelette_mex { args } {
-   ## arg : fichier largeur
-   ## Arguments : largeur = largeur du filtre
-
-   if { [llength $args] == 2 } {
-      set fichier [ lindex $args 0 ]
-      set largeur [ lindex $args 1 ]
-      bm_convo mexican $fichier $largeur
-   } elseif { [llength $args] == 1 } {
-      set fichier [ lindex $args 0 ]
-      set largeur 0
-      bm_convo mexican $fichier $largeur
-   } else {
-      ::console::affiche_erreur "Usage: bm_ondelette_mex filename \[width 2\]\n\n"
-   }
-}
-
-#*****************************************************************************#
-#
-# Description : Decoupage d'une zone selectionnee a la souris
-# Date creation : 9 septembre 2003
-# Date de mise a jour : 30 novembre 2004
-#
-#*****************************************************************************#
-
-proc bm_cutima {} {
-   global audace
-
-   if { [info exists audace(box)] == 1 } {
-      buf$audace(bufNo) window $audace(box)
-      #--- Suppression de la zone selectionnee avec la souris
-      catch {
-         unset audace(box)
-         $audace(hCanvas) delete $audace(hBox)
-      }
-      ::audace::autovisu visu$audace(visuNo)
-   } else {
-      ::console::affiche_erreur "Usage: Select zone with mouse\n\n"
-   }
-}
-
-#*****************************************************************************#
-#
-# Description : Zoom d'une image ou d'une zone selectionnee a la souris
-# Date creation : 9 septembre 2003
-# Date de mise a jour : 30 novembre 2004
-#
-#*****************************************************************************#
-
-#buf$audace(bufNo) imaseries "RESAMPLE options"
-#IMA/SERIES ... RESAMPLE "paramresample=$gross 0 0 0 $gross 0 normaflux=1"
-
-proc bm_zoomima { args } {
-   global audace
 
    if {[llength $args] == 1} {
-      set gross $args
-      set factor [list $gross $gross]
-      if { [info exists audace(box)] == 0 } {
-         set xmax [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-         set ymax [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-         buf$audace(bufNo) window "1 $ymax $xmax 1"
-      } else {
-         buf$audace(bufNo) window $audace(box)
-         #--- Suppression de la zone selectionnee avec la souris
-         catch {
-            unset audace(box)
-            $audace(hCanvas) delete $audace(hBox)
-         }
-      }
-      buf$audace(bufNo) scale $factor 1
-      ::audace::autovisu visu$audace(visuNo)
+       set repdflt [bm_goodrep]
+       set nom_generique [ lindex $args 0 ]
+       set nb_file [ llength [  glob -dir $audace(rep_images) ${nom_generique}*$conf(extension,defaut) ] ]
+       regexp {(.+)\-} $nom_generique match pref_nom
+
+       ::console::affiche_resultat "Somme de $nb_file images... sauvées sous ${pref_nom}_s$nb_file\n"
+       sadd $nom_generique ${pref_nom}_s$nb_file $nb_file
+       cd $repdflt
+       return ${pref_nom}_s$nb_file
    } else {
-      ::console::affiche_erreur "Usage: bm_zoomima mult\n\n"
+       ::console::affiche_erreur "Usage: bm_sadd nom_generique_fichier (sans extension)\n\n"
    }
 }
+#-----------------------------------------------------------------------------#
 
 #*****************************************************************************#
 #
-# Description : Logarithme d'une image avec des coeficients adpates a une image
-# brillante
-# Evolution future : Fenetre avec reglage des coefficients a l'aide d'ascenseurs
-# Date creation : 9 septembre 2003
-# Date de mise a jour : 30 novembre 2004
+# Description : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 06 aout 2005
+# Date de mise a jour : 06 aout 2005
+# Argument : nom_generique_fichier (sans extension)
 #
 #*****************************************************************************#
 
-proc bm_logima { args } {
-   #chaque pixel (intensit? p) prend la valeur coef*log10(p-offset).
+proc bm_somes { args } {
+
    global audace
    global conf
-   global caption
 
-   if {[llength $args] == 3} {
-      set fichier [ lindex $args 0 ]
-      set mult [ lindex $args 1 ]
-	set attenuation [ lindex $args 2 ]
-      if { ($fichier == "") || ($mult == "") || ($attenuation == "")} {
-         ::console::affiche_erreur "Usage: bm_logima mult attenuation\n\n"
-      } else {
-         ## Verif existence
-         set filein  "$fichier$conf(extension,defaut)"
-         ## Algo
-         if { $fichier != "$audace(artifice)" } {
-            if { [ file exist $filein ] == "1" } {
-               ::console::affiche_resultat "$caption(mauclaire,chargement) $fichier$conf(extension,defaut)\n"
-               buf$audace(bufNo) load "$filein"
-               set erreur [ catch { log $mult $attenuation } msg ]
-               if { $erreur == "1" } {
-                  ::console::affiche_erreur "$caption(mauclaire,charge_image)\n"
-               } else {
-                  ::audace::autovisu visu$audace(visuNo)
-                  ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-               }
-            } else {
-               ::console::affiche_erreur "$caption(mauclaire,pas_de_fichier)\n"
-            }
-         } else {
-            if { [ buf$audace(bufNo) imageready ] == "0" } {
-               ::console::affiche_erreur "$caption(mauclaire,pas_image_memoire)\n\n"
-            } else {
-               set erreur [ catch { log $mult $attenuation } msg ]
-               if { $erreur == "1" } {
-                  ::console::affiche_erreur "$caption(mauclaire,charge_image)\n"
-               } else {
-                  ::audace::autovisu visu$audace(visuNo)
-                  ::console::affiche_resultat "$caption(mauclaire,fin_traitement)\n"
-               }
-            }
-         }
-      }
+   if {[llength $args] == 1} {
+       set nom_generique [ lindex $args 0 ]
+       set nombre [ llength [  glob ${nom_generique}*$conf(extension,defaut) ] ]
+       regexp {(.+)\-} $nom_generique match pref_nom
+
+       ::console::affiche_resultat "smean $nom_generique ${pref_nom}_sme$nombre$conf(extension,defaut) $nombre...\n"
+       smean "$nom_generique" "${pref_nom}_sme$nombre" $nombre
+       ::console::affiche_resultat "smedian $nom_generique ${pref_nom}_smd$nombre$conf(extension,defaut) $nombre...\n"
+       smedian "$nom_generique" "${pref_nom}_smd$nombre" $nombre
+       ::console::affiche_resultat "ssk $nom_generique ${pref_nom}_ssk$nombre$conf(extension,defaut) $nombre 0,5...\n"
+       ssk "$nom_generique" "${pref_nom}_ssk$nombre" $nombre 0.5
    } else {
-      ::console::affiche_erreur "Usage: bm_logima mult attenuation\n\n"
+     ::console::affiche_erreur "Usage: bm_somes nom_generique_fichier (sans extension)\n\n"
    }
 }
+#-----------------------------------------------------------------------------#
+
+#*****************************************************************************#
+#
+# Description : calcul la largeur équivalente d'une étoile en secondes d'arc
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20 juillet 2005
+# Date de mise a jour : 20 juillet 2005
+#
+#*****************************************************************************#
+
+proc bm_fwhm { args } {
+# arguments : fwhm de l'étoile en pixels, taille d'un pixel en micons, focale du téléscope en mm
+
+   global audace
+   global conf
+
+   if {[llength $args] == 3} {
+     set fwhm [ lindex $args 0 ]
+     set tpixel [ lindex $args 1 ]
+     set focale [ lindex $args 2 ]
+		     
+     set sfwhm [ expr atan($tpixel*$fwhm*1E-6/($focale/1000))*(180/acos(-1))*3600 ]
+     ::console::affiche_resultat "FWHM étoile : $sfwhm secondes d'arc\n"
+   } else {
+     ::console::affiche_erreur "Usage: bm_fwhm fwhm-etoile taille-pixel(um) distance-focale(mm)\n\n"
+   }
+}
+#-----------------------------------------------------------------------------#
 

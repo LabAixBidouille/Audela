@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Date de mise a jour : 13 novembre 2005
+# Date de mise a jour : 09 decembre 2005
 #
 
 namespace eval tkutil {
@@ -49,7 +49,7 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_file)"       {.xbm}       ] \
          [ list "$caption(tkutil,image_file)"       {.xpm}       ] \
          [ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
-         [ list "$caption(tkutil,image_file)"       {.crw .nef}  ] \
+         [ list "$caption(tkutil,image_file)"       {.crw .nef .cr2 .dng} ] \
          [ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
          [ list "$caption(tkutil,image_fits)"       {.fit}       ] \
          [ list "$caption(tkutil,image_fits)"       {.fit.gz}    ] \
@@ -77,14 +77,14 @@ namespace eval tkutil {
    # tkutil::box_load parent initialdir numero_buffer type
    # Ouvre la fenetre de selection des fichiers a proposer au chargement (hors fichiers html)
    #
-   proc box_load { { parent } { initialdir } { numero_buffer } { type } } {
+   proc box_load { { parent } { initialdir } { numero_buffer } { type } { visuNo "1" } } {
       variable openFileType
       global audace
       global caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {
-         set title "$caption(tkutil,charger_image)"
+         set title "$caption(tkutil,charger_image) (visu$visuNo)"
          ::tkutil::getOpenFileType
          set filetypes "$openFileType"
       } elseif { $type == "2" } {
@@ -196,18 +196,18 @@ namespace eval tkutil {
    # tkutil::box_save parent initialdir numero_buffer type
    # Ouvre la fenetre de selection des fichiers a proposer au chargement
    #
-   proc box_save { { parent } { initialdir } { numero_buffer } { type } } {
+   proc box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo "" } } {
       variable saveFileType
       global audace
       global caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {
-         set title "$caption(tkutil,sauver_image)"
+         set title "$caption(tkutil,sauver_image) (visu$visuNo)"
          ::tkutil::getSaveFileType
          set filetypes "$saveFileType"
       } elseif { $type == "2" } {
-         set title "$caption(tkutil,sauver_image_jpeg)"
+         set title "$caption(tkutil,sauver_image_jpeg) (visu1)"
          set filetypes [ list [ list "$caption(tkutil,image_jpeg)" ".jpg" ] ]
       }
       set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]

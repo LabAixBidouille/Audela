@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Date de mise a jour : 30 octobre 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 namespace eval confColor {
@@ -111,7 +111,10 @@ namespace eval confColor {
       }
 
       #--- J'affiche les couleurs
-      ::confColor::applyColor $audace(base)
+      foreach visuNo [ ::visu::list ] {
+         set base [ ::confVisu::getBase $visuNo ]
+         ::confColor::applyColor $base
+      }
       ::confColor::applyColor $audace(Console)
    }
 
@@ -119,10 +122,10 @@ namespace eval confColor {
    #  ::confColor::run
    #  ouverture de la fenêtre de configuration
    #------------------------------------------------------------
-   proc run { } {
+   proc run { visuNo } {
       global audace
 
-      ::confGenerique::run "$audace(base).select_color" "::confColor"
+      ::confGenerique::run "$audace(base).select_color" "::confColor" $visuNo
    }
 
    #------------------------------------------------------------
@@ -149,7 +152,7 @@ namespace eval confColor {
    #  ::confColor::confToWidget { }
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
-   proc confToWidget {  } {   
+   proc confToWidget { visuNo } {
       variable widget  
       global conf  
 
@@ -168,7 +171,7 @@ namespace eval confColor {
    #  ::confColor::widgetToConf { }
    #  copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
-   proc widgetToConf {  } {   
+   proc widgetToConf { visuNo } {
       variable widget 
       global audace
       global conf
@@ -202,7 +205,10 @@ namespace eval confColor {
       set conf(confcolor,position) "+[ string range $geom $deb $fin ]"
 
       #--- J'affiche les couleurs
-      ::confColor::applyColor $audace(base)
+      foreach visuNo [ ::visu::list ] {
+         set base [ ::confVisu::getBase $visuNo ]
+         ::confColor::applyColor $base
+      }
       ::confColor::applyColor $audace(Console)
    }   
 
@@ -211,7 +217,7 @@ namespace eval confColor {
    #  fenetre de configuration 
    #  
    #------------------------------------------------------------
-   proc fillConfigPage { frm } {
+   proc fillConfigPage { frm visuNo } {
       variable widget 
       global conf
       global caption
@@ -223,7 +229,7 @@ namespace eval confColor {
       wm geometry [ winfo toplevel $widget(frm) ]  $conf(confcolor,position)
 
       #--- J'initialise les variables des widgets
-      confToWidget
+      confToWidget $visuNo
 
       #--- Je place les radiobuttons de selection de l'apparence
       frame $frm.select -borderwidth 1 -relief groove
@@ -261,7 +267,7 @@ namespace eval confColor {
    #     
    #  param : aucun
    #------------------------------------------------------------
-   proc fermer {  } {
+   proc fermer { } {
       variable widget
       global audace
       global conf
@@ -274,8 +280,11 @@ namespace eval confColor {
             set audace(color,$colorType) $value
          }
          #--- J'applique les couleurs precedentes
-         ::confColor::applyColor $audace(base)
-         ::confColor::applyColor $audace(Console)   
+         foreach visuNo [ ::visu::list ] {
+            set base [ ::confVisu::getBase $visuNo ]
+            ::confColor::applyColor $base
+         }
+         ::confColor::applyColor $audace(Console)
       }
    }
    
@@ -285,7 +294,7 @@ namespace eval confColor {
    #     
    #  param : type de couleur  ( background, foreground, ...)
    #------------------------------------------------------------
-   proc chooseAppearance {  } {
+   proc chooseAppearance { } {
       variable widget
       global audace
       global conf
@@ -300,7 +309,10 @@ namespace eval confColor {
       }
 
       #--- J'affiche les couleurs avec l'apparence qui vient d'etre choisie
-      ::confColor::applyColor $audace(base)
+      foreach visuNo [ ::visu::list ] {
+         set base [ ::confVisu::getBase $visuNo ]
+         ::confColor::applyColor $base
+      }
       ::confColor::applyColor $audace(Console)
 
       #--- Je met à jour la couleur des boutons de la fenetre de configuration
@@ -341,7 +353,10 @@ namespace eval confColor {
       $buttonName configure -relief raised
 
       #--- J'affiche les couleurs avec l'apparence qui vient d'etre choisie
-      ::confColor::applyColor $audace(base)
+      foreach visuNo [ ::visu::list ] {
+         set base [ ::confVisu::getBase $visuNo ]
+         ::confColor::applyColor $base
+      }
       ::confColor::applyColor $audace(Console)
    }
 
@@ -529,11 +544,14 @@ namespace eval confColor {
       confColor::init	
 
       #--- Je mets a jour les couleurs de la fenetre audace
-      ::confColor::applyColor $audace(base)
+      foreach visuNo [ ::visu::list ] {
+         set base [ ::confVisu::getBase $visuNo ]
+         ::confColor::applyColor $base
+      }
       ::confColor::applyColor $audace(Console)
 
       #--- Je mets a jour les couleurs de la fenetre de configuration 
-      foreach {key value} [array get widget color,$appearance,*] {         
+      foreach {key value} [array get widget color,$appearance,*] {
          set i [lindex [split $key ,] 2]
          set widget(color,$appearance,$i) $conf(confcolor,$appearance,$i)
          $widget(frm).but.b_color_invariant$i configure -fg $widget(color,$appearance,$i) \

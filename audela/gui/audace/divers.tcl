@@ -2,16 +2,16 @@
 # Fichier divers.tcl
 # Ce script regroupe diverses petites fonctions.
 # Auteur : Benoît Maugis
-# Version : 1.18.3
-# Date de MAJ : 10 avril 2005
+# Version : 1.18.3 ---> 1.18.4
+# Date de MAJ : 10 avril 2005 ---> 24 decembre 2005
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
 
-
 ######################################################
 ###############   Fonctions basiques   ###############
 ######################################################
+
 
 proc charge {args} {
   global audace caption conf confFichierIma tcl_platform
@@ -85,7 +85,7 @@ proc charge {args} {
       if {[file pathtype $fichier] == "absolute"} {
         set nom_complet $fichier
       } else {
-	set nom_complet [file join "$rep" "$fichier"]
+        set nom_complet [file join "$rep" "$fichier"]
       }
       # Extension comprise ou pas...
       if {[file extension $fichier] == ""} {
@@ -105,12 +105,12 @@ proc charge {args} {
 
       if {[file extension $nom_complet] == ".bz2"} {
 
-      switch $tcl_platform(os) {
+        switch $tcl_platform(os) {
         "Linux" {
           # Sous Linux, on copie le fichier dans un sous-répertoire de /tmp/.audela
           # on le décompresse et on essaie de le recharger à partir de là.
-	  set dossier_tmp [cree_sousrep -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
-	  set fichier_tmp [file join $dossier_tmp [file tail $nom_complet]]
+          set dossier_tmp [cree_sousrep -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
+          set fichier_tmp [file join $dossier_tmp [file tail $nom_complet]]
           file copy $nom_complet $fichier_tmp
           exec bunzip2 $fichier_tmp
           charge [file rootname $fichier_tmp] -buf $buf -novisu
@@ -121,9 +121,11 @@ proc charge {args} {
           if {[string compare $buf $audace(bufNo)] == 0} {
             if {$novisu != "-novisu"} {
               wm title $audace(base) "$caption(divers,audace) - $nom_complet"
-	      audace::autovisu visu$audace(visuNo)
-	      }
-	    }
+#--- Debut modif Robert
+              audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
+              }
+            }
           }
         default {
           # Sous les autres systèmes d'exploitation (dont Windows)
@@ -147,8 +149,8 @@ proc charge {args} {
             }
         } else {
 
-        # Le nom complet de fichier comporte des caractères accentués.
-        switch $tcl_platform(os) {
+          # Le nom complet de fichier comporte des caractères accentués.
+          switch $tcl_platform(os) {
           "Linux" {
             # Sous Linux, on copie le fichier dans /tmp/.audela
             # en supprimant les caractères accentués et on essaie 
@@ -163,8 +165,10 @@ proc charge {args} {
             if {[string compare $buf $audace(bufNo)] == 0} {
               if {$novisu != "-novisu"} {
                 wm title $audace(base) "$caption(divers,audace) - $nom_complet"
-	        audace::autovisu visu$audace(visuNo)
-	        }
+#--- Debut modif Robert
+                audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
+                }
               }
             }
           default {
@@ -245,8 +249,8 @@ proc sauve {args} {
       if {[file pathtype $fichier] == "absolute"} {
         set nom_complet $fichier
       } else {
-	set nom_complet [file join "$rep" "$fichier"]
-      }
+        set nom_complet [file join "$rep" "$fichier"]
+        }
       # Extension comprise ou pas...
       if {[file extension $fichier] == ""} {
         set nom_complet $nom_complet$ext
@@ -256,18 +260,18 @@ proc sauve {args} {
     if {[string compare $nom_complet ""] != 0 } {
       if { [ buf$buf imageready ] == "1" } {
         # Si le fichier de destination n'existe pas, on ne tient pas compte du n° de buffer dans lequel sauvegarder
-	if {[file exist $nom_complet] == "0"} {
+        if {[file exist $nom_complet] == "0"} {
           set result [buf$buf save "$nom_complet"]
         } else {
           # Fichier existant avec éventuellement plusieurs plans couleurs :
 
           # 1er cas : on veut sauvegarder sur un numéro de plan couleur
           # supérieur à tous ceux existants : pas de problèmes.
-  	  set dern_num_buf [buf::create]
+          set dern_num_buf [buf::create]
           if [catch {charge $nom_complet -buf $dern_num_buf -polyNo $polyNo}] {
             buf::delete $dern_num_buf
-	    set result [buf$buf save "$nom_complet;$polyNo"]
-	  } else {
+            set result [buf$buf save "$nom_complet;$polyNo"]
+          } else {
 
             buf::delete $dern_num_buf
 
@@ -280,15 +284,15 @@ proc sauve {args} {
             set liste_buf_tmp ""
             set no_plan 1
             while {$continuer==1} {
-	      set dern_num_buf [buf::create]
+              set dern_num_buf [buf::create]
               if [catch {charge $nom_complet -buf $dern_num_buf -polyNo $no_plan}] {
                 set continuer 0
                 buf::delete $dern_num_buf
-  	      } else {
+              } else {
                 lappend liste_buf_tmp $dern_num_buf
                 }
               incr no_plan
-	      }
+            }
 
             # Effacement du fichier
             file delete $nom_complet
@@ -297,24 +301,24 @@ proc sauve {args} {
 
             # On fait le premier plan à part...
             if {"1" == $polyNo} {
-	      set result [buf$buf save "$nom_complet"]
+              set result [buf$buf save "$nom_complet"]
             } else {
-	      set result [buf[lindex $liste_buf_tmp 0] save "$nom_complet"]
-	      }
+              set result [buf[lindex $liste_buf_tmp 0] save "$nom_complet"]
+              }
             buf::delete [lindex $liste_buf_tmp 0]
 
             # ... puis les autres.
             for {set no_plan 2} {$no_plan <= [llength $liste_buf_tmp]} {incr no_plan} {
-	      if {$no_plan == $polyNo} {
-	        set result [buf$buf save "$nom_complet;$no_plan"]
+              if {$no_plan == $polyNo} {
+                set result [buf$buf save "$nom_complet;$no_plan"]
               } else {
-		set result [buf[lindex $liste_buf_tmp [expr $no_plan-1]] save "$nom_complet;$no_plan"]
+                set result [buf[lindex $liste_buf_tmp [expr $no_plan-1]] save "$nom_complet;$no_plan"]
                 }
-	        buf::delete [lindex $liste_buf_tmp [expr $no_plan-1]]
+              buf::delete [lindex $liste_buf_tmp [expr $no_plan-1]]
               }
-	    }
-	  set nom_complet "nom_complet;$polyNo"
-	  }
+            }
+            set nom_complet "nom_complet;$polyNo"
+          }
         if {$result == "" && [string compare $buf $audace(bufNo)] == 0} {
           wm title $audace(base) "$caption(divers,audace) - $nom_complet"
         }
@@ -378,7 +382,7 @@ proc sauve_jpeg {args} {
         # - si la palette est monochrome, on enregistre en jpeg N&B.
         # - si la palette est polychrome, on enregistre en jpeg couleurs
 
-	if {$conf(visu_palette)<=2} {
+        if {$conf(visu_palette)<=2} {
           # Sauvegarde en jpeg monochrome
 
           # On récupère la fonction de transfert
@@ -387,7 +391,7 @@ proc sauve_jpeg {args} {
           set palette_R ""
           for {set k 0} {$k<256} {incr k} {
             gets $fileId ligne
-	    lappend palette_R [lindex $ligne 0]
+            lappend palette_R [lindex $ligne 0]
             }
           close $fileId
 
@@ -396,7 +400,7 @@ proc sauve_jpeg {args} {
           buf$audace(bufNo) copyto $num_buf_tmp 
 
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
-  
+
           # Enregistrement de l'image
           buf$num_buf_tmp savejpeg $nom_complet $conf(jpegquality,defaut) [lindex [visu$audace(visuNo) cut] 1] [lindex [visu$audace(visuNo) cut] 0]
 
@@ -413,9 +417,9 @@ proc sauve_jpeg {args} {
           set palette_B ""
           for {set k 0} {$k<256} {incr k} {
             gets $fileId ligne
-	    lappend palette_R [lindex $ligne 0]
-	    lappend palette_V [lindex $ligne 1]
-  	    lappend palette_B [lindex $ligne 2]
+            lappend palette_R [lindex $ligne 0]
+            lappend palette_V [lindex $ligne 1]
+            lappend palette_B [lindex $ligne 2]
             }
           close $fileId
 
@@ -428,17 +432,17 @@ proc sauve_jpeg {args} {
           # Enregistrement des plans R, V et B
           # plan R
           buf$audace(bufNo) copyto $num_buf_tmp
-	  bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
+          bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
           sauve plan_R -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)
           # plan V
           buf$audace(bufNo) copyto $num_buf_tmp
-	  bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_V}
+          bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_V}
           sauve plan_V -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)
           # plan B
           buf$audace(bufNo) copyto $num_buf_tmp
-	  bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_B}
+          bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_B}
           sauve plan_B -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)	
-  
+
           # Suppression du buffer temporaire
           buf::delete $num_buf_tmp
 
@@ -446,9 +450,9 @@ proc sauve_jpeg {args} {
           fits2colorjpeg [file join $rep_tmp plan_R$conf(extension,defaut)] [file join $rep_tmp plan_V$conf(extension,defaut)] [file join $rep_tmp plan_B$conf(extension,defaut)] $nom_complet $conf(jpegquality,defaut) [lindex [visu$audace(visuNo) cut] 1] [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] [lindex [visu$audace(visuNo) cut] 0]
 
           # Suppression des fichiers temporaires
-	  file delete [file join $rep_tmp plan_R$conf(extension,defaut)]
-	  file delete [file join $rep_tmp plan_V$conf(extension,defaut)]
-	  file delete [file join $rep_tmp plan_B$conf(extension,defaut)]
+          file delete [file join $rep_tmp plan_R$conf(extension,defaut)]
+          file delete [file join $rep_tmp plan_V$conf(extension,defaut)]
+          file delete [file join $rep_tmp plan_B$conf(extension,defaut)]
           file delete $rep_tmp
           }
         }
@@ -508,7 +512,9 @@ proc soustrait {args} {
     
     # Si le buffer de travail est le buffer Aud'ACE, on refraîchit l'affichage
     if {$audace(bufNo) == $buf} {
-	audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+      audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
       }
 
   } else {
@@ -574,7 +580,9 @@ proc normalise {args} {
 
     # Si le buffer de travail est le buffer Aud'ACE, on rafraîchit l'affichage
     if {$audace(bufNo) == $buf} {
-	audace::autovisu visu$audace(visuNo)
+#--- Debut modif Robert
+      audace::autovisu $audace(visuNo)
+#--- Fin modif Robert
       }
 
   } else {
@@ -587,7 +595,7 @@ proc normalise {args} {
 ###############   Fonctions de séries  ###############
 ######################################################
 
-    
+
 proc suppr_serie {args} {
   global audace caption conf confFichierIma
 
@@ -604,7 +612,7 @@ proc suppr_serie {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
     set ext_index [lsearch -regexp $options_1param "-ext"]
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -642,7 +650,7 @@ proc suppr_fin_serie {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
     set ext_index [lsearch -regexp $options_1param "-ext"]
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -653,7 +661,7 @@ proc suppr_fin_serie {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
+
     # Procédure principale  
     set index_cibles [lsort -integer [liste_index $nom_generique -rep "$rep" -ext $ext]]
     set index_fin [lsearch -regexp -exact $index_cibles $index_fin]
@@ -686,7 +694,7 @@ proc suppr_debut_serie {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
     set ext_index [lsearch -regexp $options_1param "-ext"]
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -697,7 +705,7 @@ proc suppr_debut_serie {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
+
     # Procédure principale  
     set index_cibles [lsort -integer [liste_index $nom_generique -rep "$rep" -ext $ext]]
     set index_debut [lsearch -exact $index_cibles $index_debut]
@@ -728,7 +736,7 @@ proc renumerote {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
     set ext_index [lsearch -regexp $options_1param "-ext"]
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -815,7 +823,7 @@ proc renomme {args} {
       }
     if {$ex_ext_index>=0} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
-      }    
+      }
 
     # Procédure principale  
     # On ne continue que si l'on n'écrase pas la série...
@@ -828,47 +836,47 @@ proc renomme {args} {
       if {[llength $index_newserie]==0} {
         # Deux cas sont possibles : 1) les deux séries ont le même type de compression, et alors pas de problème. 2) les deux séries n'ont pas le même type de compression, et alors il faut passer par un répertoire temporaire pour gérer les compressions / décompressions.
 
-	if {[lindex [decomp $in_ext] 4] == [lindex [decomp $ex_ext] 4]} {
+        if {[lindex [decomp $in_ext] 4] == [lindex [decomp $ex_ext] 4]} {
           foreach index $index_oldserie {
             file rename [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
-	    }
-	} else {
+            }
+        } else {
           # Création d'un répertoire temporaire
           set rep_tmp [cree_sousrep -nom_base "tmp_renomme"]
 
           renomme $ancien_nom_generique $nouveau_nom_generique -in_rep $in_rep -ex_rep $rep_tmp -ext $in_ext
           switch [lindex [decomp $in_ext] 4] {
-	  "" {
+          "" {
             # Rien à faire (...)
-	    }
-	  ".gz" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
-	      gunzip [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
-	      }
-	    }
-	  ".bz2" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
-	      exec bunzip2 [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
-	      }
-	    }
+            }
+          ".gz" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+              gunzip [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
+              }
+            }
+          ".bz2" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+              exec bunzip2 [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
+              }
+            }
           }
 
-	  switch [lindex [decomp $ex_ext] 4] {
-	  "" {
+          switch [lindex [decomp $ex_ext] 4] {
+          "" {
             # Rien à faire (...)
-	    }
-	  ".gz" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
-	      gzip [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
-	      }
-	    }
-	  ".bz2" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
-	      exec bzip2 [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
-	      }
-	    }
+            }
+          ".gz" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+              gzip [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
+              }
+            }
+          ".bz2" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+              exec bzip2 [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
+              }
+            }
           }
-          
+
           renomme $nouveau_nom_generique -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3][lindex [decomp $ex_ext] 4] -ex_rep $ex_rep
 
           # Suppression du répertoire temporaire (qui est vide car on vient d'en déplacer les fichiers qui y étaient temporairement).
@@ -900,9 +908,9 @@ proc renomme {args} {
       switch $tcl_platform(os) {
       "Linux" {
         foreach index [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext] {
-	  if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
+          if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
             exec chmod u+w [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
-	    }
+            }
           }
         }
       default {
@@ -985,47 +993,47 @@ proc copie {args} {
       if {[llength $index_newserie]==0} {
         # Deux cas sont possibles : 1) les deux séries ont le même type de compression, et alors pas de problème. 2) les deux séries n'ont pas le même type de compression, et alors il faut passer par un répertoire temporaire pour gérer les compressions / décompressions.
 
-	if {[lindex [decomp $in_ext] 4] == [lindex [decomp $ex_ext] 4]} {
+        if {[lindex [decomp $in_ext] 4] == [lindex [decomp $ex_ext] 4]} {
           foreach index $index_oldserie {
             file copy [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
-	    }
-	} else {
+            }
+        } else {
           # Création d'un répertoire temporaire
           set rep_tmp [cree_sousrep -nom_base "tmp_renomme"]
 
           copie $ancien_nom_generique $nouveau_nom_generique -in_rep $in_rep -ex_rep $rep_tmp -ext $in_ext
           switch [lindex [decomp $in_ext] 4] {
-	  "" {
+          "" {
             # Rien à faire (...)
-	    }
-	  ".gz" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
-	      gunzip [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
-	      }
-	    }
-	  ".bz2" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
-	      exec bunzip2 [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
-	      }
-	    }
+            }
+          ".gz" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+              gunzip [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
+              }
+            }
+          ".bz2" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+              exec bunzip2 [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
+              }
+            }
           }
 
-	  switch [lindex [decomp $ex_ext] 4] {
-	  "" {
+          switch [lindex [decomp $ex_ext] 4] {
+          "" {
             # Rien à faire (...)
-	    }
-	  ".gz" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
-	      gzip [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
-	      }
-	    }
-	  ".bz2" {
-	    foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
-	      exec bzip2 [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
-	      }
-	    }
+            }
+          ".gz" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+              gzip [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
+              }
+            }
+          ".bz2" {
+            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+              exec bzip2 [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
+              }
+            }
           }
-          
+
           renomme $nouveau_nom_generique -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3][lindex [decomp $ex_ext] 4] -ex_ext $ex_ext
 
           # Suppression du répertoire temporaire (qui est vide car on vient d'en déplacer les fichiers qui y étaient temporairement).
@@ -1057,10 +1065,10 @@ proc copie {args} {
       switch $tcl_platform(os) {
       "Linux" {
         foreach index [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext] {
-	  if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
+          if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
             exec chmod u+w [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
-	    }
-	  }
+            }
+          }
         }
       default {
         }
@@ -1135,13 +1143,13 @@ proc copie_partielle {args} {
       set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep $in_rep -ext $ex_ext]]
       # On ne garde de la vieille série que les index que l'on veut copier
       set index_oldserie [lrange $index_oldserie [expr $debut-1] [expr $fin-1]]
- 
+
       # Création d'un répertoire temporaire
       set rep_tmp [cree_sousrep -nom_base "tmp_renomme"]
 
       # On copie la sous-série vers ce répertoire temporaire
       foreach index $index_oldserie {
-	file copy [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $rep_tmp $ancien_nom_generique$index$in_ext]
+        file copy [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $rep_tmp $ancien_nom_generique$index$in_ext]
         }
       
       # On copie la sous-série
@@ -1173,7 +1181,7 @@ proc serie_charge {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
     set ext_index [lsearch -regexp $options_1param "-ext"]
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+       set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -1272,10 +1280,10 @@ proc serie_fenetre {args} {
     # Procédure principale
     # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
-  
+
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
-  
+
     # Fenêtrage des fichiers
     foreach index $liste_index {
       charge $in$index -buf $num_buf_tmp -rep $in_rep -ext $in_ext -polyNo $in_polyNo
@@ -1440,10 +1448,10 @@ proc serie_rot {args} {
     # Procédure principale
     # On récupère la liste des index de la série initiale...	  
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
-  
+
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
-  
+
     # Rotation des fichiers
     foreach index $liste_index {
       charge $in$index -buf $num_buf_tmp -rep $in_rep -ext $in_ext -polyNo $in_polyNo
@@ -1532,10 +1540,10 @@ proc serie_trans {args} {
     # Procédure principale
     # On récupère la liste des index de la série initiale...	  
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
-  
+
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
-  
+
     # Rotation des fichiers
     foreach index $liste_index {
       charge $in$index -buf $num_buf_tmp -rep $in_rep -ext $ext -polyNo $in_polyNo
@@ -1607,7 +1615,7 @@ proc series_traligne {args} {
     poly2serie $serie_ref $in_polyNo $ex -in_rep $in_rep -ex_rep $ex_rep -ext $ext
     # Tex au plus on la renumérote.
     renumerote $ex -rep $ex_rep -ext $ext
- 
+
     # On garde en mémoire le nom du dernier fichier de cette série, qui servira de 
     # référence pour recaler la série suivante
     set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
@@ -1689,6 +1697,7 @@ proc series_traligne {args} {
     error $caption(divers,syntax,series_traligne)
     }
   }
+
 
 proc serie_sauvejpeg {args} {
   global audace caption conf confFichierIma
@@ -1781,10 +1790,10 @@ proc serie_sauvejpeg {args} {
     # Procédure principale
     # On récupère la liste des index de la série initiale...	  
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
-  
+
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
-  
+
     # Sauvegarde des fichiers
     foreach index $liste_index {
       buf$num_buf_tmp load [file join $in_rep "$in$index$in_ext;$in_polyNo"]
@@ -1804,7 +1813,7 @@ proc serie_sauvejpeg {args} {
         histoauto {
           buf$num_buf_tmp imaseries "CUTS lofrac=[expr 0.01 * $histo_bas] hifrac=[expr 0.01 * $histo_haut]"
           set list_seuils [list [lindex [buf$num_buf_tmp getkwd MIPS-HI] 1] [lindex [buf$num_buf_tmp getkwd MIPS-LO] 1]]
-	  }
+          }
         }
         set seuil_haut [lindex $list_seuils 0]
         set seuil_bas [lindex $list_seuils 1]
@@ -1881,13 +1890,13 @@ proc mediane {args} {
       # Cas d'une série compressée .bz2
       if {[file extension $ext] == ".bz2"} {
         copie $serie $serie -in_rep "$rep" -ex_rep $rep_tmp -ext $ext
-	foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
-	  exec chmod u+w $fichier
-	  exec bunzip2 $fichier
-	  }
-	ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images [file rootname $ext] \"$rep_tmp\" mediane . [file rootname $ext] MED"
-	suppr_serie $serie -rep $rep_tmp -ext [file rootname $ext]
-	exec bzip2 [file join $rep_tmp mediane[file rootname $ext]]
+        foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
+          exec chmod u+w $fichier
+          exec bunzip2 $fichier
+          }
+        ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images [file rootname $ext] \"$rep_tmp\" mediane . [file rootname $ext] MED"
+        suppr_serie $serie -rep $rep_tmp -ext [file rootname $ext]
+        exec bzip2 [file join $rep_tmp mediane[file rootname $ext]]
       } else {
         ttscript2 "IMA/STACK \"$rep\" $serie 1 $nb_images $ext \"$rep_tmp\" mediane . $ext MED"
         }
@@ -1896,17 +1905,17 @@ proc mediane {args} {
       copie $serie $serie -in_rep "$rep" -ex_rep $rep_tmp -ext $ext
       # Cas d'une série compressée .bz2
       if {[file extension $ext] == ".bz2"} {
-	foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
-	  exec chmod a+w $fichier
-	  }
+        foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
+          exec chmod a+w $fichier
+          }
         renumerote $serie -rep "$rep_tmp" -ext $ext
-	foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
+        foreach fichier [glob [file join $rep_tmp ${serie}*$ext]] {
           exec bunzip2 $fichier
-	  }
-	exec bunzip2 [file join $rep_tmp ${serie}*$ext]
-	ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images [file rootname $ext] \"$rep_tmp\" mediane . [file rootname $ext] MED"
-	suppr_serie $serie -rep $rep_tmp -ext [file rootname $ext]
-	exec bzip2 [file join $rep_tmp mediane[file rootname $ext]]
+          }
+        exec bunzip2 [file join $rep_tmp ${serie}*$ext]
+        ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images [file rootname $ext] \"$rep_tmp\" mediane . [file rootname $ext] MED"
+        suppr_serie $serie -rep $rep_tmp -ext [file rootname $ext]
+        exec bzip2 [file join $rep_tmp mediane[file rootname $ext]]
       } else {
         renumerote $serie -rep "$rep" -ext $ext
         ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images $ext \"$rep_tmp\" mediane . $ext MED"
@@ -2018,7 +2027,7 @@ proc serie_soustrait {args} {
 
     # On récupère la liste des index de la série initiale...	  
     set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
-  
+
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
 
@@ -2133,7 +2142,7 @@ proc serie_normalise {args} {
 
     # On récupère la liste des index de la série initiale...	  
     set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
-  
+
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
 
@@ -2358,7 +2367,7 @@ proc aligne {args} {
     } else {
       # On sauve dans le répertoire temporaire les images associées chacune à un catalogue d'objet qu'elles contiennent
       foreach index $liste_index {
-	ttscript2 "IMA/SERIES \"$in_rep\" $in_serie $index $index $in_ext \"$rep_tmp\" tmp_ima_ $index [lindex [decomp $in_ext] 3] STAT objefile"
+        ttscript2 "IMA/SERIES \"$in_rep\" $in_serie $index $index $in_ext \"$rep_tmp\" tmp_ima_ $index [lindex [decomp $in_ext] 3] STAT objefile"
         }
       }
 
@@ -2375,11 +2384,11 @@ proc aligne {args} {
       foreach index $liste_index {
         charge tmp_ima2_$index -ext [lindex [decomp $ex_ext] 3] -rep $rep_tmp -buf $num_buf_tmp
         set TT_num 1
-	  while {[lindex [buf$num_buf_tmp getkwd TT${TT_num}] 1] != "IMA/SERIES REGISTER"} {
-            incr TT_num
-	    }
-          lappend depl_x [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+1]] 1] 2]
-          lappend depl_y [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+2]] 1] 2]
+        while {[lindex [buf$num_buf_tmp getkwd TT${TT_num}] 1] != "IMA/SERIES REGISTER"} {
+          incr TT_num
+          }
+        lappend depl_x [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+1]] 1] 2]
+        lappend depl_y [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+2]] 1] 2]
         }
       set naxis1 [lindex [buf$num_buf_tmp getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$num_buf_tmp getkwd NAXIS2] 1]
@@ -2401,11 +2410,11 @@ proc aligne {args} {
       for {set index 1} {$index <= [llength $liste_index]} {incr index} {
         charge tmp_ima2_$index -ext [lindex [decomp $ex_ext] 3] -rep $rep_tmp -buf $num_buf_tmp
         set TT_num 1
-	  while {[lindex [buf$num_buf_tmp getkwd TT${TT_num}] 1] != "IMA/SERIES REGISTER"} {
-            incr TT_num
-	    }
-          lappend depl_x [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+1]] 1] 2]
-          lappend depl_y [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+2]] 1] 2]
+        while {[lindex [buf$num_buf_tmp getkwd TT${TT_num}] 1] != "IMA/SERIES REGISTER"} {
+          incr TT_num
+          }
+        lappend depl_x [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+1]] 1] 2]
+        lappend depl_y [lindex [lindex [buf$num_buf_tmp getkwd TT[expr ${TT_num}+2]] 1] 2]
         }
       set naxis1 [lindex [buf$num_buf_tmp getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$num_buf_tmp getkwd NAXIS2] 1]
@@ -2433,6 +2442,7 @@ proc aligne {args} {
 ###############   Fonctions avancées   ###############
 ######################################################
 
+
 proc TestEntier {args} {
   global caption
   if {[syntaxe_args $args 1 0 ""]=="1"} {
@@ -2455,6 +2465,7 @@ proc TestEntier {args} {
     }
   }
 
+
 proc TestReel {args} {
   global caption
   if {[syntaxe_args $args 1 0 ""]=="1"} {
@@ -2475,6 +2486,7 @@ proc TestReel {args} {
     }
   }
 
+
 proc dernier_est_chiffre {args} {
   global caption
 
@@ -2487,18 +2499,18 @@ proc dernier_est_chiffre {args} {
     # La procédure retourne "1" si le dernier caractère du mot est un chiffre, "0" sinon.
     set caractere [string index $chaine [expr [string length $chaine]-1]]
     switch -exact -- $caractere {
-      0 {return 1}
-      1 {return 1}
-      2 {return 1}
-      3 {return 1}
-      4 {return 1}
-      5 {return 1}
-      6 {return 1}
-      7 {return 1}
-      8 {return 1}
-      9 {return 1}
-      default {return 0}
-      }	  
+    0 {return 1}
+    1 {return 1}
+    2 {return 1}
+    3 {return 1}
+    4 {return 1}
+    5 {return 1}
+    6 {return 1}
+    7 {return 1}
+    8 {return 1}
+    9 {return 1}
+    default {return 0}
+    }
   } else {
     error $caption(divers,syntax,dernier_est_chiffre)
     }
@@ -2647,7 +2659,7 @@ proc decomp {args} {
       set extension $ext
       }
     }
-  
+
     set nom_fichier [file rootname $filename]
     # On sépare à présent le nom générique et l'index
     set index ""
@@ -2662,7 +2674,7 @@ proc decomp {args} {
     error $caption(divers,syntax,decomp)
     }
   }
-         
+
 
 proc liste_index {args} {
   global audace caption conf confFichierIma
@@ -2682,7 +2694,7 @@ proc liste_index {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -2695,7 +2707,7 @@ proc liste_index {args} {
       }
       
     # Procédure principale  
- 
+
     # NB : On renvoie les index des fichiers dont le nom générique correspond à {nom_generique}
     # Sous-entendu : on s'occupe d'une série indexée...
     # On fait une première sélection
@@ -2722,10 +2734,10 @@ proc liste_index {args} {
     # un "_" dans tous les noms de fichiers
     if {[dernier_est_chiffre $nom_generique]=="1"} {
       set new_panier ""
-	set borneinter [string length [file join "$rep" $nom_generique]]
+      set borneinter [string length [file join "$rep" $nom_generique]]
       foreach name $panier {
         lappend new_panier [string range $name 0 [expr $borneinter-1]]_[string range $name $borneinter [expr [string length $name]-1]]
-	}
+        }
       set panier $new_panier
       set nom_generique ${nom_generique}_
       }
@@ -2762,7 +2774,7 @@ proc liste_series {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -2792,7 +2804,7 @@ proc liste_series {args} {
   } else {
     error $caption(divers,syntax,liste_series)
     }
-  }                   
+  }
 
 
 proc liste_sousreps {args} {
@@ -2811,13 +2823,13 @@ proc liste_sousreps {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
        
     # Procédure principale  
- 
+
     # On récupère la liste des fichiers du répertoire courant
     set panier [glob -nocomplain [file join "$rep" *]]
 
@@ -2833,7 +2845,7 @@ proc liste_sousreps {args} {
   } else {
     error $caption(divers,syntax,liste_sousreps)
     }
-  }                   
+  }
 
 
 proc serie_existe {args} {
@@ -2854,7 +2866,7 @@ proc serie_existe {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -2876,7 +2888,8 @@ proc serie_existe {args} {
   } else {
     error $caption(divers,syntax,serie_existe)
     }
-  } 
+  }
+
 
 proc numerotation_usuelle {args} { 
   global audace caption conf confFichierIma
@@ -2896,7 +2909,7 @@ proc numerotation_usuelle {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -2947,7 +2960,7 @@ proc compare_index_series {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }
@@ -2968,10 +2981,10 @@ proc compare_index_series {args} {
       set sortie 1
       set liste_index_ref [lsort [liste_index [lindex $liste_series 0] -rep "$rep" -ext $ext]]
       foreach serie [lrange $liste_series 1 [expr $nb_series-1]] {
-	if {$liste_index_ref != [lsort [liste_index $serie -rep "$rep" -ext $ext]]} {
+        if {$liste_index_ref != [lsort [liste_index $serie -rep "$rep" -ext $ext]]} {
           set sortie 0
           break
-	  }
+          }
         }
       return $sortie
       }
@@ -2998,7 +3011,7 @@ proc cree_sousrep {args} {
     set rep_index [lsearch -regexp $options_1param "-rep"]
 
     if {$nom_base_index>=0} {
-	set nom_base [lindex [lindex $options_1param $nom_base_index] 1]
+      set nom_base [lindex [lindex $options_1param $nom_base_index] 1]
     } else {
       set nom_base "tmp"
       }
@@ -3013,7 +3026,7 @@ proc cree_sousrep {args} {
       switch $tcl_platform(os) {
       "Linux" {
         # Pour linux : le sous-répertoire est créé dans /tmp/.audela
-	set rep [file join /tmp .audela]
+        set rep [file join /tmp .audela]
         }
       default {
         # Sous les autres OS, pas de solution pour l'instant !
@@ -3054,7 +3067,7 @@ proc cree_fichier {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$nom_base_index>=0} {
-	set nom_base [lindex [lindex $options_1param $nom_base_index] 1]
+      set nom_base [lindex [lindex $options_1param $nom_base_index] 1]
     } else {
       set nom_base "tmp"
       }
@@ -3080,9 +3093,9 @@ proc cree_fichier {args} {
     "Linux"} {
       # Pour linux : le fichier est créé dans /tmp/.audela
       if {[file exist [file join /tmp .audela]]=="0"} {
-	file mkdir [file join /tmp .audela]
+        file mkdir [file join /tmp .audela]
         exec "chmod a+w [file join /tmp .audela]"
-	}
+        }
       set rep [file join /tmp .audela]
       }
     default {
@@ -3281,7 +3294,7 @@ proc calcul_trzaligne {args} {
     # Soient (x'I,y'I) les coordonnées du milieu du segment (x'1,y'1), (x'2,y'2)
     set x'I [expr 0.5*(${x'1}+${x'2})]
     set y'I [expr 0.5*(${y'1}+${y'2})]
-  
+
     # Soient (v1,v2) les coordonnées d'un vecteur directeur de la médiatrice du 1er segment, 
     set v1 [expr $y2-$y1]
     set v2 [expr $x1-$x2]
@@ -3289,7 +3302,7 @@ proc calcul_trzaligne {args} {
     set N [expr sqrt( pow( $v1 , 2) + pow( $v2 , 2) )]
     set v1 [expr 1.0 * $v1 / $N]
     set v2 [expr 1.0 * $v2 / $N]
- 
+
     # Soient (v'1,v'2) les coordonnées d'un vecteur directeur de la médiatrice du 1er segment,
     # que l'on norme
     set v'1 [expr ${y'2}-${y'1}]
@@ -3329,6 +3342,7 @@ proc calcul_trzaligne {args} {
     }
   }
 
+
 proc date_chiffresAlettres {args} {
   global caption
 
@@ -3343,44 +3357,44 @@ proc date_chiffresAlettres {args} {
     set jour [lindex ${date_chiffres} 2]
 
     switch ${mois_chiffre} {
-      "1" {
-        set mois_lettres "janvier"
-        }
-      "2" {
-        set mois_lettres "février"
-        }
-      "3" {
-        set mois_lettres "mars"
-        }
-      "4" {
-        set mois_lettres "avril"
-        }
-      "5" {
-        set mois_lettres "mai"
-        }
-      "6" {
-        set mois_lettres "juin"
-        }
-      "7" {
-        set mois_lettres "juillet"
-        }
-      "8" {
-        set mois_lettres "août"
-        }
-      "9" {
-        set mois_lettres "septembre"
-        }
-      "10" {
-        set mois_lettres "octobre"
-        }
-      "11" {
-        set mois_lettres "novembre"
-        }
-      "12" {
-        set mois_lettres "décembre"
-        }
+    "1" {
+      set mois_lettres "janvier"
       }
-      
+    "2" {
+      set mois_lettres "février"
+      }
+    "3" {
+      set mois_lettres "mars"
+      }
+    "4" {
+      set mois_lettres "avril"
+      }
+    "5" {
+      set mois_lettres "mai"
+      }
+    "6" {
+      set mois_lettres "juin"
+      }
+    "7" {
+      set mois_lettres "juillet"
+      }
+    "8" {
+      set mois_lettres "août"
+      }
+    "9" {
+      set mois_lettres "septembre"
+      }
+    "10" {
+      set mois_lettres "octobre"
+      }
+    "11" {
+      set mois_lettres "novembre"
+      }
+    "12" {
+      set mois_lettres "décembre"
+      }
+    }
+
     if {$jour == "1"} {
       set jour "1er"
       }
