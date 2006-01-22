@@ -246,22 +246,22 @@ int CmdTtScript(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    if(argc>nb_params) {
       for(int i=nb_params;i<argc;i++) {
          if(audela_strcasecmp(argv[i],"-START_IN")==0) {
-            i=i++;
+            i++;
             params->Set(TT_START_IN,argv[i]);
          } else if(audela_strcasecmp(argv[i],"-START_OUT")==0) {
-            i=i++;
+            i++;
             params->Set(TT_START_OUT,argv[i]);
          } else if(audela_strcasecmp(argv[i],"-DIR_IN")==0) {
-            i=i++;
+            i++;
             params->Set(TT_DIR_IN,argv[i]);
          } else if(audela_strcasecmp(argv[i],"-DIR_OUT")==0) {
-            i=i++;
+            i++;
             params->Set(TT_DIR_OUT,argv[i]);
          } else if(audela_strcasecmp(argv[i],"-EXT_IN")==0) {
-            i=i++;
+            i++;
             params->Set(TT_EXT_IN,argv[i]);
          } else if(audela_strcasecmp(argv[i],"-EXT_OUT")==0) {
-            i=i++;
+            i++;
             params->Set(TT_EXT_OUT,argv[i]);
          }
       }
