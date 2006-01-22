@@ -21,20 +21,7 @@
  */
 
 /* 
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.2  2003-05-11 16:53:54+02  michel
- * supprime pixval et photoHandle
- *
- * Revision 1.1  2003-04-25 13:52:51+02  michel
- * add mirx, miry, dt
- *
- * Revision 1.0  2003-03-30 00:46:18+01  michel
- * Initial revision
- *
- *
+ * $ID: contstruct.h,v $
  */
 
 #ifndef __CONTSTRUCT_H__

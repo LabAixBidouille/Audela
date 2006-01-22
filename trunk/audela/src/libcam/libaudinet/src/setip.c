@@ -24,37 +24,7 @@
  * set AudiNet IP address
  *
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2005/06/16 19:38:47  Administrateur
- * Passage sous MACOS-X.
- *
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.6  2003-12-27 16:27:58+01  michel
- * suppression ligne include inutile
- *
- * Revision 1.5  2003-12-27 13:04:55+01  michel
- * suppression des warning Linux signalees par Remi
- *
- * Revision 1.4  2003-12-27 12:47:48+01  michel
- * modif JM :
- * remplace include <ioctls.h>par  include <sys/ioctl.h>
- * ajoute return 0  a la fin de broadcastBootpReply()
- *
- * Revision 1.3  2003-06-16 23:18:35+02  michel
- * remplace SendBootpReply par sendBootpReply
- *
- * Revision 1.2  2003-06-07 10:28:34+02  michel
- * ajout errorMessage en sortie de setip()
- *
- * Revision 1.1  2003-06-06 15:09:38+02  michel
- * correction p[6] dans setip()
- *
- * Revision 1.0  2003-06-06 11:59:50+02  michel
- * Initial revision
- *
- *
+ * $Id: setip.c,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 

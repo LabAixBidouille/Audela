@@ -23,30 +23,7 @@
 /*
  * Fonctions C-Tcl specifiques a cette camera. A programmer.
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.7  2003-12-05 00:56:48+01  michel
- * suppression cmdCamStartCont
- *
- * Revision 1.6  2003-06-06 15:53:49+02  michel
- * ajout cmdSetIP
- *
- * Revision 1.5  2003-04-25 13:50:29+02  michel
- * add cmdCamScan, cmdCamBreakScan
- * add  cmdCamStartCont, cmdCamStopCont
- * add cmdCamWipe, cmdCamRead,cmdCamScanLoop
- *
- * Revision 1.4  2003-03-26 11:46:11+01  michel
- * ajouter startScan(), scanReadLine()
- *
- * Revision 1.1  2002-09-27 18:33:44+02  michel
- * ajoute cmdCamShutterType()
- *
- * Revision 1.0  2001-12-10 15:17:40+01  michel
- * initial revision
- *
+ * $Id: camtcl.h,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 #ifndef __CAMTCL_H__

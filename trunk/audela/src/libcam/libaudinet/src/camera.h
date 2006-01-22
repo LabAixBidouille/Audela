@@ -24,43 +24,7 @@
  * Adapter le contenu de ce fichier a votre camera preferee
  * notamment la structure "camprop"
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.11  2003-12-05 00:57:28+01  michel
- * suppression cmdCamStartCont
- *
- * Revision 1.10  2003-06-06 15:56:04+02  michel
- * <>
- *
- * Revision 1.9  2003-04-25 13:46:54+02  michel
- * add  startContinuousAcq, stopContinuousAcq, readContinuousAcq
- *
- * Revision 1.8  2003-03-26 11:45:23+01  michel
- * ajouter startScan(), scanReadLine()
- *
- * Revision 1.6  2003-01-01 11:46:54+01  michel
- * ajouter driftscan
- *
- * Revision 1.5  2002-09-04 21:46:49+02  michel
- * remplace setShutterOn, setShutterOff par setShutter
- *
- * Revision 1.4  2002-08-22 22:20:27+02  michel
- * ajout udpTempo dans struct camprop
- *
- * Revision 1.3  2002-07-23 19:42:19+02  michel
- * supprime read_tcp_win_inv
- *
- * Revision 1.2  2002-06-28 22:52:36+02  michel
- * delete obtu_pierre
- *
- * Revision 1.1  2002-04-15 16:43:30+02  michel
- * add #define TRUE 1, #define FALSE 0
- *
- * Revision 1.0  2001-12-10 15:17:39+01  michel
- * initial revision
- *
+ * $Id: camera.h,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 
