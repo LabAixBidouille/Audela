@@ -21,16 +21,7 @@
  */
 
 /*
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.1  2003-04-25 13:45:39+02  michel
- * <>
- *
- * Revision 1.0  2001-12-10 15:17:40+01  michel
- * initial revision
- *
+ * $Id: libname.h,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 #ifndef __LIBNAME_H__

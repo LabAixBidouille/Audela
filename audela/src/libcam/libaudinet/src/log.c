@@ -24,25 +24,7 @@
  * fonctions utilitaires pour ecrire des traces
  * a l'ecran ou dans un fichier
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2005/06/16 19:39:16  Administrateur
- * Passage sous MACOS-X.
- *
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.3  2003-05-11 16:53:00+02  michel
- * ajoute la date dans les traces
- *
- * Revision 1.2  2003-04-25 13:47:42+02  michel
- * deplace logFileName  dasn une variable globale
- *
- * Revision 1.1  2002-04-15 16:44:08+02  michel
- * add include stdarg.h for unix (D.M.)
- *
- * Revision 1.0  2001-12-10 15:17:05+01  michel
- * initial revision
- *
+ * $Id: log.c,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 

@@ -26,26 +26,7 @@
  * pour dialoguer a un périphérique connecte par liaison
  * ethernet
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2005/06/16 19:38:34  Administrateur
- * Passage sous MACOS-X.
- *
- * Revision 1.1  2005/02/12 22:04:18  Administrateur
- * *** empty log message ***
- *
- * Revision 1.14  2003-12-27 13:05:57+01  michel
- * suppression des warning Linux signalees par Remi (suppression ; apres les #endif
- *
- * Revision 1.13  2003-06-07 10:29:09+02  michel
- * ajoute hostname dans les traces
- *
- * Revision 1.12  2003-04-25 13:52:18+02  michel
- * add sockudp_shutdown()  (verified with windows only)
- *
- * Revision 1.11  2003-02-16 21:46:11+01  michel
- * correction select() et sleep() pourLinux (Benoit M.)
- *
- *
+ * $Id: socketaudinet.c,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 

@@ -21,14 +21,7 @@
  */
 
 /* 
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:17  Administrateur
- * *** empty log message ***
- *
- * Revision 1.0  2003-05-12 23:49:51+02  michel
- * Initial revision
- *
- *
+ * $Id: scanstruct.h,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 #ifndef __SCANSTRUCT_H__

@@ -21,20 +21,7 @@
  */
 
 /*
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:18  Administrateur
- * *** empty log message ***
- *
- * Revision 1.2  2003-12-27 13:05:27+01  michel
- * suppression des warning Linux signalees par Remi (ajout ligne vide en fin de fichier)
- *
- * Revision 1.1  2003-06-07 10:28:12+02  michel
- * ajout errorMessage en sortie de setip()
- *
- * Revision 1.0  2003-06-06 14:46:07+02  michel
- * Initial revision
- *
- *
+ * $Id: setip.h,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
  */
 
 #ifndef __SETIP_H__
