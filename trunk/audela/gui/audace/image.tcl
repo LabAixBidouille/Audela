@@ -36,7 +36,7 @@ namespace eval ::Image {
       $audace(hCanvas) configure -scrollregion [list 0 0 $w_zoomed $h_zoomed ]
 
       #--- je raffraichis l'affichage du reticule
-      ::Crosshair::redrawCrosshair   
+      ::confVisu::redrawCrosshair $audace(visuNo)  
    }      
    
 

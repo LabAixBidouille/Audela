@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Date de mise a jour : 29 octobre 2005
+# Date de mise a jour : 08 janvier 2006
 #
 
 namespace eval ::confPad {
@@ -150,7 +150,7 @@ namespace eval ::confPad {
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
       set index [lsearch -exact $private(driverlist) $label ] 
       if { $index != -1 } {
-         set private(conf_confPad) [lindex $private(namespacelist) $index]
+         set private(conf_confPad) [ lindex $private(namespacelist) $index ]
       } else {
          set private(conf_confPad) ""
       }
@@ -193,7 +193,7 @@ namespace eval ::confPad {
       set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
       #---
       set conf(confPad,position) $private(confPad,position)
-   }	
+   }
 
    #------------------------------------------------------------
    # createDialog
@@ -251,7 +251,7 @@ namespace eval ::confPad {
 
       #--- je demande a chaque driver d'afficher sa page de config 
       set indexOnglet 1
-      foreach name $private(namespacelist) {      
+      foreach name $private(namespacelist) {
          set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]    
          incr indexOnglet
       }
@@ -298,9 +298,9 @@ namespace eval ::confPad {
       variable private
  
       #--- je recupere le label correspondant au namespace  
-      set index [lsearch -exact $private(namespacelist) "$name" ] 
+      set index [ lsearch -exact $private(namespacelist) "$name" ] 
       if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [lindex  $private(driverlist)  $index] 
+         Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ] 
       } 
    }
 
@@ -359,8 +359,9 @@ namespace eval ::confPad {
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
    proc findDriver { } {
-      variable private 
-      global audace  
+      variable private
+      global audace
+      global caption
 
       #--- j'initialise les listes vides
       set private(namespacelist)  ""
@@ -373,7 +374,7 @@ namespace eval ::confPad {
          #--- aucun fichier correct 
          return 1
       }
-      
+
       #--- je recherche les drivers repondant au filtre driverPattern
       foreach fichier [glob $private(driverPattern)] {
          uplevel #0 "source $fichier"
@@ -385,7 +386,7 @@ namespace eval ::confPad {
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $padname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#pad $driverlabel v[package present $padname]\n"                 
+               $audace(console)::affiche_prompt "#$caption(confpad,raquette) $driverlabel v[package present $padname]\n"                 
             }
          }        
       }

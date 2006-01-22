@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'catalog'
 # Auteur : Michel PUJOL
-# Date de mise a jour : 29 octobre 2005
+# Date de mise a jour : 08 janvier 2006
 #
 
 namespace eval ::confCat {
@@ -38,7 +38,9 @@ namespace eval ::confCat {
 
       #--- charge le fichier caption
       uplevel #0  "source \"[ file join $audace(rep_caption) confcat.cap ]\"" 
-      
+
+      findDriver
+
       #--- configure le driver selectionne par defaut
       #if { $conf(confCat,start) == "1" } {  
       #   configureDriver
@@ -56,7 +58,7 @@ namespace eval ::confCat {
       global caption
 
       return "$caption(confcat,config)"
-   }	
+   }
 
    #------------------------------------------------------------
    # run
@@ -195,7 +197,7 @@ namespace eval ::confCat {
       set private(confCat,position) "+[ string range $private(confCat,geometry) $deb $fin ]"
       #---
       set conf(confCat,position) $private(confCat,position)
-   }	
+   }
 
    #------------------------------------------------------------
    # createDialog
@@ -338,7 +340,7 @@ namespace eval ::confCat {
          $audace(console)::affiche_prompt "# $fichier\n" 
       }
 
-   }  
+   }
 
    #------------------------------------------------------------
    #  stopDriver
@@ -370,12 +372,13 @@ namespace eval ::confCat {
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
    proc findDriver { } {
-      variable private 
-      global audace  
+      variable private
+      global audace
+      global caption
 
       #--- j'initialise les listes vides
-      set private(namespacelist)  ""
-      set private(driverlist)     ""
+      set private(namespacelist) ""
+      set private(driverlist)    ""
 
       #--- chargement des differentes fenetres de configuration des drivers
       set error [catch { glob -nocomplain $private(driverPattern) } filelist ]  
@@ -396,7 +399,7 @@ namespace eval ::confCat {
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $catname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#cat $driverlabel v[package present $catname]\n"                 
+               $audace(console)::affiche_prompt "#$caption(confcat,carte) $driverlabel v[package present $catname]\n"                 
             }
          }        
       }
@@ -411,7 +414,7 @@ namespace eval ::confCat {
       }
    }
 
-}  
+}
 
 #--- connexion au demarrage du driver selectionne par defaut
 ::confCat::init

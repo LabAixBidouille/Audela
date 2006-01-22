@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Date de mise a jour : 26 juillet 2005
+# Date de mise a jour : 14 janvier 2006
 #
 
 ##############################################################################
@@ -21,16 +21,6 @@ namespace eval ::ftpclient {
    #--- Chargement des captions
    source [ file join $audace(rep_caption) ftpclient.cap ]
 
-   array set private { 
-      connection  ""
-      password    "" 
-      targetsize  0
-      hostname    ""
-      port        ""
-      user        ""
-      directory   ""
-      password    ""
-   }
    
    #--------------------------------------------------------------------------
    # ftpclient::init
@@ -40,10 +30,12 @@ namespace eval ::ftpclient {
    proc init { } {
       variable private 
       
+      #--- je cree les variables par defaut
+      set private(connection) ""
       #--- je charge les parametres par defaut      
       initConf
    }
- 
+
    #------------------------------------------------------------------------------
    # ftpclient::selectConnection
    #
@@ -66,6 +58,15 @@ namespace eval ::ftpclient {
          tk_messageBox -title "ftpclient" -type ok -message "$message" -icon error
          return 0
       }
+
+      set private(connection)  ""
+      set private(password)    "" 
+      set private(targetsize)  0
+      set private(hostname)    ""
+      set private(port)        ""
+      set private(user)        ""
+      set private(directory)   ""
+      set private(password)    ""
       
       #--- affiche la fenetre de connexion 
       set confResult [::confGenerique::run "$audace(base).ftpclient" "::ftpclient"]
@@ -130,7 +131,7 @@ namespace eval ::ftpclient {
          set private(connection) ""
       }
    }   
-   
+
    #------------------------------------------------------------------------------
    # ftpclient::getDirectory
    #
@@ -142,7 +143,7 @@ namespace eval ::ftpclient {
       
       return "$private(directory)"
    }   
-   
+
    #------------------------------------------------------------------------------
    # ftpclient::getUrl
    # retourne l'URL du serveur FTP
@@ -207,7 +208,7 @@ namespace eval ::ftpclient {
       }   
       return $filenames
    }   
-   
+
    #------------------------------------------------------------------------------
    # ftpclient::get
    #
@@ -287,7 +288,7 @@ namespace eval ::ftpclient {
 
       #--- bouton OK
       button $audace(base).ftpprogress.but_ok -text " OK " -width 12  -justify center -state disabled \
-         -command { ftpclient::stopProgress } 
+         -command "ftpclient::stopProgress"
       pack $audace(base).ftpprogress.but_ok -side bottom  -fill none -expand true -pady 5 -ipady 5
 
       #--- La nouvelle fenetre est active
@@ -423,13 +424,13 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------
    proc getLabel { } {
        return "ftpclient"
-   }	
+   }
 
    #------------------------------------------------------------
    #  ftpclient::confToWidget { } (utilise par ::confGenerique)
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
-   proc confToWidget { } {   
+   proc confToWidget { } {
       variable private  
       variable widget 
       global conf
@@ -441,7 +442,7 @@ namespace eval ::ftpclient {
          #--- je mets les valeurs dans un array (de-serialisation)
          array set connection $value
          #--- je prepare la ligne a afficher dans la combobox
-         set line [format "ftp://%s:%s%s " $connection(hostname) $connection(port) $connection(directory) ]         
+         set line [format "ftp://%s:%s%s " $connection(hostname) $connection(port) $connection(directory) ]
          #--- j'ajoute la ligne
          lappend widget(cbprev) "$line"
       }      
@@ -459,7 +460,7 @@ namespace eval ::ftpclient {
    #  copie les variables des widgets dans le tableau conf() ou private()
    #  et ouvre la connexion ftp
    #------------------------------------------------------------
-   proc widgetToConf {  } {   
+   proc widgetToConf { $visuNo } {
       variable private
       variable widget  
       global conf
@@ -519,7 +520,7 @@ namespace eval ::ftpclient {
          set message "$caption(ftpclient,connection_error) ftp://$widget(user)@$widget(hostname):$widget(port)"
          tk_messageBox -title "ftpclient" -type ok -message "$message" -icon error
        }
-   }	
+   }
 
    #------------------------------------------------------------
    #  ftpclient::fillConfigPage { }  
@@ -528,7 +529,7 @@ namespace eval ::ftpclient {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc fillConfigPage { frm } {
+   proc fillConfigPage { frm visuNo } {
       variable widget 
       variable private
       global caption
@@ -537,132 +538,132 @@ namespace eval ::ftpclient {
       #--- je memorise la reference de la frame 
       set widget(frm) $frm
       #--- quelques raccourcis utiles
-      set private(cbprev) $frm.frameprev.cbprev
+      set private(cbprev) $widget(frm).frameprev.cbprev
 
-	#--- j'initialise les valeurs des widgets 
+      #--- j'initialise les valeurs des widgets 
       confToWidget
       
       #--- frame previous connections
-      frame $frm.frameprev -borderwidth 1 -relief raised
-      pack $frm.frameprev -side top -fill both -expand 1      
+      frame $widget(frm).frameprev -borderwidth 1 -relief raised
+      pack $widget(frm).frameprev -side top -fill both -expand 1
 
       #--- combobox
-      ComboBox $frm.frameprev.cbprev 
-      $frm.frameprev.cbprev configure -relief sunken
-      $frm.frameprev.cbprev configure -borderwidth 1
-      $frm.frameprev.cbprev configure -editable 0
-      $frm.frameprev.cbprev configure -takefocus 0
-      $frm.frameprev.cbprev configure -modifycmd  { ::ftpclient::cbCommand  $frm.frameprev.cbprev }
-      $frm.frameprev.cbprev configure -values $widget(cbprev)
+      ComboBox $widget(frm).frameprev.cbprev 
+      $widget(frm).frameprev.cbprev configure -relief sunken
+      $widget(frm).frameprev.cbprev configure -borderwidth 1
+      $widget(frm).frameprev.cbprev configure -editable 0
+      $widget(frm).frameprev.cbprev configure -takefocus 0
+      $widget(frm).frameprev.cbprev configure -modifycmd "::ftpclient::cbCommand $widget(frm).frameprev.cbprev"
+      $widget(frm).frameprev.cbprev configure -values $widget(cbprev)
       
-      pack $frm.frameprev.cbprev -in $frm.frameprev -anchor center -expand 0 -fill x -side top -padx 10 -pady 5 
+      pack $widget(frm).frameprev.cbprev -in $widget(frm).frameprev -anchor center -expand 0 -fill x -side top -padx 10 -pady 5
 
       #--- frame connection
-      frame $frm.framecnx -borderwidth 1 -relief raised
-      pack $frm.framecnx -side top -fill both -expand 1      
+      frame $widget(frm).framecnx -borderwidth 1 -relief raised
+      pack $widget(frm).framecnx -side top -fill both -expand 1
 
       #--- frame host
-      frame $frm.framecnx.framehost -borderwidth 0 -relief raised
-      pack $frm.framecnx.framehost -side top -fill both -expand 1      
+      frame $widget(frm).framecnx.framehost -borderwidth 0 -relief raised
+      pack $widget(frm).framecnx.framehost -side top -fill both -expand 1
 
       #--- hostname
-      label $frm.framecnx.framehost.labelHost -text "$caption(ftpclient,hostname)" 
-	   pack $frm.framecnx.framehost.labelHost -in $frm.framecnx.framehost -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framehost.entHost -textvariable ftpclient::widget(hostname) -width 30
-	   pack $frm.framecnx.framehost.entHost -in $frm.framecnx.framehost -anchor center -side left -padx 10 -pady 5   
+      label $widget(frm).framecnx.framehost.labelHost -text "$caption(ftpclient,hostname)" 
+      pack $widget(frm).framecnx.framehost.labelHost -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framehost.entHost -textvariable ftpclient::widget(hostname) -width 30
+      pack $widget(frm).framecnx.framehost.entHost -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 5
 
       #--- port
-      label $frm.framecnx.framehost.labelPort -text "$caption(ftpclient,port)" 
-	   pack $frm.framecnx.framehost.labelPort -in $frm.framecnx.framehost -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framehost.entPort -textvariable ftpclient::widget(port) -width 4 -justify right \
+      label $widget(frm).framecnx.framehost.labelPort -text "$caption(ftpclient,port)" 
+      pack $widget(frm).framecnx.framehost.labelPort -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framehost.entPort -textvariable ftpclient::widget(port) -width 4 -justify right \
          -validatecommand {string is integer %P} -validate key -invcmd bell
-	   pack $frm.framecnx.framehost.entPort -in $frm.framecnx.framehost -anchor center -side left -padx 10 -pady 5   
+      pack $widget(frm).framecnx.framehost.entPort -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 5
 
       #--- frame login
-      frame $frm.framecnx.framelogin -borderwidth 0 -relief raised
-      pack $frm.framecnx.framelogin -side top -fill both -expand 1 
+      frame $widget(frm).framecnx.framelogin -borderwidth 0 -relief raised
+      pack $widget(frm).framecnx.framelogin -side top -fill both -expand 1
 
       #--- user
-      label $frm.framecnx.framelogin.labelUser -text "$caption(ftpclient,user)" 
-	   pack $frm.framecnx.framelogin.labelUser -in $frm.framecnx.framelogin -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framelogin.entUser -textvariable ftpclient::widget(user) -width 20
-	   pack $frm.framecnx.framelogin.entUser -in $frm.framecnx.framelogin -anchor center -side left -padx 10 -pady 5   
+      label $widget(frm).framecnx.framelogin.labelUser -text "$caption(ftpclient,user)" 
+      pack $widget(frm).framecnx.framelogin.labelUser -in $widget(frm).framecnx.framelogin -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framelogin.entUser -textvariable ftpclient::widget(user) -width 20
+      pack $widget(frm).framecnx.framelogin.entUser -in $widget(frm).framecnx.framelogin -anchor center -side left -padx 10 -pady 5
 
       #--- password
-      label $frm.framecnx.framelogin.labelPassword -text "$caption(ftpclient,password)" 
-	   pack $frm.framecnx.framelogin.labelPassword -in $frm.framecnx.framelogin -anchor center -side left \
+      label $widget(frm).framecnx.framelogin.labelPassword -text "$caption(ftpclient,password)" 
+      pack $widget(frm).framecnx.framelogin.labelPassword -in $widget(frm).framecnx.framelogin -anchor center -side left \
             -padx 10 -pady 10        
-      entry $frm.framecnx.framelogin.entPassword -textvariable ftpclient::widget(password) -width 20 -show "*"
-	   pack $frm.framecnx.framelogin.entPassword -in $frm.framecnx.framelogin -anchor center -side left \
+      entry $widget(frm).framecnx.framelogin.entPassword -textvariable ftpclient::widget(password) -width 20 -show "*"
+      pack $widget(frm).framecnx.framelogin.entPassword -in $widget(frm).framecnx.framelogin -anchor center -side left \
             -padx 10 -pady 5   
 
       #--- frame dir
-      frame $frm.framecnx.framedir -borderwidth 0 -relief raised
-      pack $frm.framecnx.framedir -side top -fill both -expand 1 
+      frame $widget(frm).framecnx.framedir -borderwidth 0 -relief raised
+      pack $widget(frm).framecnx.framedir -side top -fill both -expand 1
 
       #--- directory
-      label $frm.framecnx.framedir.labelDir -text "$caption(ftpclient,directory)" 
-	   pack $frm.framecnx.framedir.labelDir -in $frm.framecnx.framedir -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framedir.entDir -textvariable ftpclient::widget(directory) -width 40
-	   pack $frm.framecnx.framedir.entDir -in $frm.framecnx.framedir -anchor center -side left -padx 10 -pady 5   
+      label $widget(frm).framecnx.framedir.labelDir -text "$caption(ftpclient,directory)" 
+      pack $widget(frm).framecnx.framedir.labelDir -in $widget(frm).framecnx.framedir -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framedir.entDir -textvariable ftpclient::widget(directory) -width 40
+      pack $widget(frm).framecnx.framedir.entDir -in $widget(frm).framecnx.framedir -anchor center -side left -padx 10 -pady 5
 
       #--- timeout
-      label $frm.framecnx.framedir.labelTimeout -text "$caption(ftpclient,timeout)" 
-	   pack $frm.framecnx.framedir.labelTimeout -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framedir.entTimeout -textvariable ftpclient::widget(timeout) -width 4 -justify right \
+      label $widget(frm).framecnx.framedir.labelTimeout -text "$caption(ftpclient,timeout)" 
+      pack $widget(frm).framecnx.framedir.labelTimeout -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framedir.entTimeout -textvariable ftpclient::widget(timeout) -width 4 -justify right \
          -validatecommand {string is integer %P} -validate key -invcmd bell
-	   pack $frm.framecnx.framedir.entTimeout -anchor center -side left -padx 10 -pady 5   
+      pack $widget(frm).framecnx.framedir.entTimeout -anchor center -side left -padx 10 -pady 5
 
       #--- frame position
-      frame $frm.framecnx.framePosition -borderwidth 0 -relief raised
-      pack $frm.framecnx.framePosition -side top -fill both -expand 1 
+      frame $widget(frm).framecnx.framePosition -borderwidth 0 -relief raised
+      pack $widget(frm).framecnx.framePosition -side top -fill both -expand 1
 
       #--- sizePosition
-      label $frm.framecnx.framePosition.labelSize -text "$caption(ftpclient,sizePosition)" 
-	   pack $frm.framecnx.framePosition.labelSize -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framePosition.entSize -textvariable ftpclient::widget(sizePosition) -width 4 -justify right \
+      label $widget(frm).framecnx.framePosition.labelSize -text "$caption(ftpclient,sizePosition)" 
+      pack $widget(frm).framecnx.framePosition.labelSize -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framePosition.entSize -textvariable ftpclient::widget(sizePosition) -width 4 -justify right \
          -validatecommand {string is integer %P} -validate key -invcmd bell
-	   pack $frm.framecnx.framePosition.entSize  -anchor center -side left -padx 10 -pady 5   
+      pack $widget(frm).framecnx.framePosition.entSize  -anchor center -side left -padx 10 -pady 5
 
       #--- namePositionBegin
-      label $frm.framecnx.framePosition.labelNameBegin -text "$caption(ftpclient,namePositionBegin)" 
-	   pack  $frm.framecnx.framePosition.labelNameBegin -anchor center -side left -padx 10 -pady 10        
-      entry $frm.framecnx.framePosition.entNameBegin -textvariable ftpclient::widget(namePositionBegin) -width 4 \
+      label $widget(frm).framecnx.framePosition.labelNameBegin -text "$caption(ftpclient,namePositionBegin)" 
+      pack  $widget(frm).framecnx.framePosition.labelNameBegin -anchor center -side left -padx 10 -pady 10
+      entry $widget(frm).framecnx.framePosition.entNameBegin -textvariable ftpclient::widget(namePositionBegin) -width 4 \
          -justify right -validatecommand {string is integer %P} -validate key -invcmd bell
-	   pack  $frm.framecnx.framePosition.entNameBegin  -anchor center -side left -padx 2 -pady 2   
+      pack  $widget(frm).framecnx.framePosition.entNameBegin  -anchor center -side left -padx 2 -pady 2
 
       #--- preview button 
-      button $frm.framecnx.framePosition.butPreview -text "$caption(ftpclient,preview)" \
-         -command " ftpclient::preview $frm.framepreview.listpreview $frm.framepreview.detail.name $frm.framepreview.detail.size"
-	   pack  $frm.framecnx.framePosition.butPreview  -anchor center -side left -padx 10 -pady 10 -ipady 5
+      button $widget(frm).framecnx.framePosition.butPreview -text "$caption(ftpclient,preview)" \
+         -command "ftpclient::preview $widget(frm).framepreview.listpreview $widget(frm).framepreview.detail.name $widget(frm).framepreview.detail.size"
+      pack  $widget(frm).framecnx.framePosition.butPreview  -anchor center -side left -padx 10 -pady 10 -ipady 5
 
       #--- frame preview (cette frame est affcihee quand on clique sur le bouton preview)
-      frame $frm.framepreview -borderwidth 1 -relief raised
-      #pack  $frm.framepreview -side top -fill both -expand 1 
+      frame $widget(frm).framepreview -borderwidth 1 -relief raised
+      #pack  $widget(frm).framepreview -side top -fill both -expand 1
 
       #--- listpreview 
-      label $frm.framepreview.listpreview  -font $audace(font,listbox) -justify left
-      pack $frm.framepreview.listpreview -anchor center -side top  -padx 2 -pady 2 -fill both -expand 1 
+      label $widget(frm).framepreview.listpreview  -font $audace(font,listbox) -justify left
+      pack $widget(frm).framepreview.listpreview -anchor center -side top  -padx 2 -pady 2 -fill both -expand 1
 
       #--- frame preview detail
-      frame $frm.framepreview.detail -borderwidth 1 -relief raised
-      pack  $frm.framepreview.detail -side top -fill both -expand 1 
+      frame $widget(frm).framepreview.detail -borderwidth 1 -relief raised
+      pack  $widget(frm).framepreview.detail -side top -fill both -expand 1
 
       #--- name preview 
-      label $frm.framepreview.detail.name  -font $audace(font,listbox) -justify left
-      pack $frm.framepreview.detail.name -anchor center -side left  -padx 2 -pady 2 -fill both -expand 1 
+      label $widget(frm).framepreview.detail.name  -font $audace(font,listbox) -justify left
+      pack $widget(frm).framepreview.detail.name -anchor center -side left  -padx 2 -pady 2 -fill both -expand 1
       
       #--- size preview 
-      label $frm.framepreview.detail.size  -font $audace(font,listbox) -justify left
-      pack $frm.framepreview.detail.size -anchor center -side left -padx 2 -pady 2 -fill both -expand 1 
+      label $widget(frm).framepreview.detail.size  -font $audace(font,listbox) -justify left
+      pack $widget(frm).framepreview.detail.size -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
 
       #--- je selectionne le premier element de la combobox
-      $frm.frameprev.cbprev setvalue first
-      cbCommand $frm.frameprev.cbprev 
+      $widget(frm).frameprev.cbprev setvalue first
+      cbCommand $widget(frm).frameprev.cbprev 
    }
 
    #------------------------------------------------------------
-   #  ftpclient::cbCommand { }  
+   #  ftpclient::cbCommand { }
    #  (appelee par la combobox a chaque changement de selection)
    #  affiche les valeurs dans les widgets
    #  
@@ -689,9 +690,9 @@ namespace eval ::ftpclient {
       set widget(sizePosition)      $connection(sizePosition)  
       set widget(namePositionBegin) $connection(namePositionBegin)
    }
-   
+
    #------------------------------------------------------------
-   #  ftpclient::preview  { }  
+   #  ftpclient::preview { }
    #  (appelee par le bouton de pre-visualisation)
    #  affiche les valeurs dans les autres widgets
    #  
