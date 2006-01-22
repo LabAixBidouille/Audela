@@ -33,7 +33,7 @@ class CPixelsGray : public CPixels
 {
 public:
 	virtual ~CPixelsGray();
-   CPixelsGray(int naxis1, int naxis2, TPixelFormat pixelFormat, TPixelCompression compression, int pixels);
+   CPixelsGray(int naxis1, int naxis2, TPixelFormat pixelFormat, void * pixels, int reverseY);
 
    void Add(char *filename, float offset);
    void Autocut(double *phicut,double *plocut,double *pmode);
@@ -53,11 +53,12 @@ public:
    int  GetHeight(void);
    int  GetPlanes(void);
    int  GetWidth(void);
-   void GetPixGray(TYPE_PIXELS *val,int x, int y);
+   void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixelsPointer(TYPE_PIXELS **pixels);
    void GetPixels(int x1, int x2, int y1, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
    void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
-   void GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
+   void GetPixelsVisu( int x1,int y1,int x2, int y2, 
+            int mirrorX, int mirrorY,
             double hicutRed,   double locutRed, 
             double hicutGreen, double locutGreen,
             double hicutBlue,  double locutBlue,

@@ -22,6 +22,7 @@
 #ifndef __CPIXELSH__
 #define __CPIXELSH__
 
+
 #include "cdevice.h"
 #include "libstd.h"
 #include "cpixels.h"
@@ -30,9 +31,10 @@
 
 typedef float TYPE_PIXELS;
 
+
 typedef enum { CLASS_GRAY, CLASS_RGB, CLASS_3D, CLASS_VIDEO, CLASS_UNKNOWN} TPixelClass;
-typedef enum { FORMAT_BYTE, FORMAT_USHORT, FORMAT_FLOAT, FORMAT_UNKNOWN} TPixelFormat;
-typedef enum { COMPRESS_NONE, COMPRESS_RGB, COMPRESS_I420, COMPRESS_UNKNOWN} TPixelCompression;
+typedef enum { FORMAT_BYTE, FORMAT_SHORT, FORMAT_FLOAT, FORMAT_UNKNOWN} TPixelFormat;
+typedef enum { COMPRESS_NONE, COMPRESS_RGB, COMPRESS_I420, COMPRESS_JPEG, COMPRESS_RAW, COMPRESS_UNKNOWN} TPixelCompression;
 typedef enum { PLANE_GREY, PLANE_RGB, PLANE_R, PLANE_G, PLANE_B, PLANE_UNKNOWN} TColorPlane;
 
 class CPixels 
@@ -45,7 +47,7 @@ public:
                      TYPE_PIXELS seuil,float* sx, float* sy, float* r);
    void AstroFlux(int x1, int y1, int x2, int y2, 
                      TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax, 
-                     TYPE_PIXELS *moy, TYPE_PIXELS *seuil);
+                     TYPE_PIXELS *moy, TYPE_PIXELS *seuil, int * nbpix);
    void AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax, 
                      TYPE_PIXELS moy, double *dFlux, int* ntot);
    void AstroPhotometry(int x1, int y1, int x2, int y2, int method, double r1, double r2,double r3, 
@@ -67,11 +69,12 @@ public:
    virtual int  GetHeight(void)=0;
    virtual int  GetPlanes(void)=0;
    virtual int  GetWidth(void)=0;
-   virtual void GetPixGray(TYPE_PIXELS *val,int x, int y)=0;
+   virtual void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)=0;
    virtual void GetPixelsPointer(TYPE_PIXELS **pixels)=0;
    virtual void GetPixels(int x1, int x2, int y1, int y2, TPixelFormat pixelFormat, TColorPlane plane,int pixels)=0;
    virtual void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels)=0;
-   virtual void GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
+   virtual void GetPixelsVisu( int x1,int y1,int x2, int y2,
+                  int mirrorX, int mirrorY,
                   double hicutRed,   double locutRed, 
                   double hicutGreen, double locutGreen,
                   double hicutBlue,  double locutBlue,

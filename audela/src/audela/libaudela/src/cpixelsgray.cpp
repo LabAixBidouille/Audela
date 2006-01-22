@@ -61,16 +61,10 @@ CPixelsGray::CPixelsGray(int width, int height, TYPE_PIXELS *ppix)
             
 }
 
-CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, int pixels)
+CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseY)
 {
-   int t, u, x, y, reverse = 0;         
+   int t, u, x, y;         
    
-   // Le fait de passer une hauteur negative permet de retourner l'image (cas des gif et autres)...
-   if (height<0) {
-      height = -height;
-      reverse = 1;
-   }
-
    naxis1 = width;
    naxis2 = height;
    
@@ -88,7 +82,7 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, TPixel
       case FORMAT_BYTE:
          {
             unsigned char * pixelPtr = (unsigned char *) pixels;
-            if (reverse == 0) {
+            if (reverseY == 0) {
                while(--t>=0) *(pix+t) = (TYPE_PIXELS)*((pixelPtr+t));
             } else {
                for (u=0, y=height-1; y>=0; y--) {
@@ -101,10 +95,10 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, TPixel
          }
          break;
          
-      case FORMAT_USHORT:
+      case FORMAT_SHORT:
          {
-            unsigned short * pixelPtr = (unsigned short *) pixels;
-            if (reverse == 0) {
+            short * pixelPtr = (short *) pixels;
+            if (reverseY == 0) {
                while(--t>=0) *(pix+t) = (TYPE_PIXELS)*((pixelPtr+t));
             } else {
                for (u=0, y=height-1; y>=0; y--) {
@@ -119,7 +113,7 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, TPixel
       case FORMAT_FLOAT: 
          {
             float * pixelPtr = (float *) pixels;
-            if (reverse == 0) {
+            if (reverseY == 0) {
                while(--t>=0) *(pix+t) = (TYPE_PIXELS)*((pixelPtr+t));
             } else {
                for (u=0, y=height-1; y>=0; y--) {
@@ -142,7 +136,7 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, TPixel
    }
 }
 
-void CPixelsGray::GetPixGray(TYPE_PIXELS *val,int x, int y)
+void CPixelsGray::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)
 {
    
    if((x<0)||(x>=naxis1)) {
@@ -150,7 +144,10 @@ void CPixelsGray::GetPixGray(TYPE_PIXELS *val,int x, int y)
    } else if ((y<0)||(y>=naxis2)) {
       throw CError( ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);
    }
-   *val = *(pix+x+y*naxis1);
+   *plane = 1;
+   *val1 = *(pix+x+y*naxis1);
+   *val2 = *val1;
+   *val3 = *val1;
 }
 
 /*
@@ -364,10 +361,15 @@ void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
    *pixels = pix;
 }
 
+/** 
+  GetPixels
+  retourne le tableau de pixels correspondant à la fenetre (x1,y1)-(x2,y2)
+  
+
+**/
 void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
    int width  = x2-x1+1;
    int x, y;
-   TYPE_PIXELS *ptr, *out;
 
       switch( pixelFormat ) {
       case FORMAT_BYTE:
@@ -381,12 +383,12 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
          }
          break;
          
-      case FORMAT_USHORT:
+      case FORMAT_SHORT:
          {
-            unsigned short * outPtr = (unsigned short *) pixels;
+            short * outPtr = (short *) pixels;
             for(y=y1;y<=y2;y++) {
                for(x=x1;x<=x2;x++) {
-                  *(outPtr+width*(y-y1)+(x-x1)) = (unsigned short) *(pix+naxis1*y+x);
+                  *(outPtr+width*(y-y1)+(x-x1)) = (short) *(pix+naxis1*y+x);
                }
             }
          }
@@ -395,16 +397,14 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
          {
             float * outPtr = (float *) pixels;
             for(y=y1;y<=y2;y++) {
-               ptr = pix +(naxis1*y+x1);
-               out = outPtr + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (float) (*ptr++);
+                  *(outPtr+width*(y-y1)+(x-x1)) = (float) *(pix+naxis1*y+x);
                }
             }
          }
          break;
       default: 
-         throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
+         throw CError(ELIBSTD_PIXEL_FORMAT_UNKNOWN);
          break;
          
       }
@@ -429,12 +429,12 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
          }
          break;
          
-      case FORMAT_USHORT:
+      case FORMAT_SHORT:
          {
-            unsigned short * outPtr = (unsigned short *) pixels;
+            short * outPtr = (short *) pixels;
             for(y=y1;y<=y2;y++) {
                for(x=x1;x<=x2;x++) {
-                  *(outPtr+width*(y-y1)+(x-x1)) = (unsigned short) *(pix+naxis1*(naxis2-y-1)+x);
+                  *(outPtr+width*(y-y1)+(x-x1)) = (short) *(pix+naxis1*(naxis2-y-1)+x);
                }
             }
          }
@@ -452,7 +452,7 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
          }
          break;
       default: 
-         throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
+         throw CError(ELIBSTD_PIXEL_FORMAT_UNKNOWN);
          break;
          
       }
@@ -460,44 +460,27 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
 
 }
 
-void CPixelsGray::GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
+void CPixelsGray::GetPixelsVisu( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY,
             double hicutRed,   double locutRed, 
             double hicutGreen, double locutGreen,
             double hicutBlue,  double locutBlue,
             Pal_Struct *pal, unsigned char *ptr) 
 {
-   TYPE_PIXELS *ppix;
    int i, j;
-   unsigned char *pptr0;
-   int m, n;
-   int ww, wh;              // window width, height multiplied by zoom
-   int xx1, yy1, xx2, yy2;  // window coordinates
-   int orgw, orgh, orgww, orgwh;        // original window width, height
-   float val;
+   int orgww, orgwh;                // original window width, height
    float dyn;
-   float fpix;
    float fsh = (float) hicutRed;
    float fsb = (float) locutRed;
-   unsigned char ucval;
-   int tzoom;
-   int ii,jj,offp;
+   long base;
+   int xdest, ydest;
+   unsigned char colorIndex;
+   unsigned char (*pdest)[3];
 
-   xx1 = x1;
-   yy1 = y1;
-   xx2 = x2;
-   yy2 = y2;
-   orgw = naxis1;
-   orgh = naxis2;
+   pdest = (unsigned char (*)[3])ptr;
 
-   orgww = xx2 - xx1 + 1; // Largeur de la fenetre au depart
-   orgwh = yy2 - yy1 + 1; // Hauteur ...
-   if (zoom>0) {
-      ww = (int)ceil(zoom * orgww);     // Largeur de la fenetre a l'arrivee, en pixels unitaires
-      wh = (int)ceil(zoom * orgwh);     // Hauteur ...
-   } else {
-      ww=1;
-      wh=1;
-   }
+   orgww = x2 - x1 + 1;  // Largeur de la fenetre au depart
+   orgwh = y2 - y1 + 1;  // Hauteur ...
 
 // Spécifique log
 //   float a,b;
@@ -510,60 +493,29 @@ void CPixelsGray::GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom,
       dyn = 256. / (fsh - fsb);
    }
 */
-
    if(fsh==fsb) {
       fsb -= (float)1e-1;
    }
    dyn = (float)256. / (fsh - fsb);
 
-   if(zoom==1) {
-      ppix = pix + orgw * yy2 + xx1;
-      for(j=yy1;j<=yy2;j++) {
-         for(i=xx1;i<=xx2;i++) {
-            fpix = *ppix++;
-            val = (fpix-fsb)*dyn;
-//            val = a*log10(fabs(fpix-b));
-            ucval = (unsigned char) min(max(val,0),255);
-            *ptr++ = (pal->pal)[0][ucval];
-            *ptr++ = (pal->pal)[1][ucval];
-            *ptr++ = (pal->pal)[2][ucval];
-         }
-         ppix -= (orgw+ww);
+   for(j=y1;j<=y2;j++) {
+      if(mirrorY == 0) {
+         ydest = ((y2-y1) - (j -y1) )*orgww ;
+      } else {
+         ydest = (j - y1)*orgww ;
       }
-   } else if (zoom>1) {
-      tzoom=(int)zoom;
-      ppix = pix + orgw * yy2 + xx1;
-      for(j=yy1;j<=yy2;j++) {
-         for(n=0;n<tzoom;n++) {
-            for(i=xx1;i<=xx2;i++) {
-               fpix = *ppix++;
-               val = (fpix-fsb)*dyn;
-               ucval = (unsigned char) min(max(val,0),255);
-               for(m=0;m<tzoom;m++) {
-                  *ptr++ = (pal->pal)[0][ucval];
-                  *ptr++ = (pal->pal)[1][ucval];
-                  *ptr++ = (pal->pal)[2][ucval];
-               }
-            }
-            ppix -= orgww;
+    
+      for(i=x1;i<=x2;i++) {
+         if(mirrorX == 0) {
+            xdest = i-x1;
+         } else {
+            xdest = (x2-x1) - (i-x1) ;
          }
-         ppix -= orgw;
-      }
-   } else {
-      tzoom=(int)(1./zoom);
-      ppix = pix + orgw * yy2 + xx1;
-      for(j=yy1,jj=0;j<=yy2;j+=tzoom,jj++) {
-         for(i=xx1,ii=0;i<=xx2;i+=tzoom,ii++) {
-            ppix = pix + orgw * (yy2-j) + i;
-            fpix = *ppix;
-            val = (fpix-fsb)*dyn;
-            ucval = (unsigned char) min(max(val,0),255);
-            offp = 3*(ww * jj + ii);
-            pptr0 = ptr + offp;
-            *pptr0 = (pal->pal)[0][ucval];
-            *(pptr0+1) = (pal->pal)[1][ucval];
-            *(pptr0+2) = (pal->pal)[2][ucval];
-         }
+         base = j*naxis1+i;
+         colorIndex = (unsigned char)min(max(((float)pix[base]-fsb)*dyn,0),255);
+         pdest[ydest+xdest][0] = (pal->pal)[0][colorIndex];
+         pdest[ydest+xdest][1] = (pal->pal)[1][colorIndex];
+         pdest[ydest+xdest][2] = (pal->pal)[2][colorIndex];
       }
    }
 }
@@ -583,7 +535,7 @@ int CPixelsGray::GetPlanes(void) {
 //---------------------------------------------------------------------
 /**
  * IsPixelsReady
- *    informe si une image  est presente dans le buffer
+ *    informe si une image est presente dans le buffer
  *
  * Parameters: 
  *    none
@@ -593,7 +545,7 @@ int CPixelsGray::GetPlanes(void) {
  *    verifie si une image est chargée c.a.d si la taille est superieure a 1x1
  */
 int CPixelsGray::IsPixelsReady(void) {
-   if( naxis1 != 1 && naxis2 != 1 ) {
+   if( naxis1 != 0 && naxis2 != 0 ) {
       return 1;
    } else {
       return 0;

@@ -32,8 +32,11 @@ CPool *visu_pool;
 //------------------------------------------------------------------------------
 // Commande internes pour gerer les commandes d'une visu
 //
-int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuClear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuPalDir(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -43,12 +46,15 @@ int cmdVisuZoom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 
 static struct cmditem cmdlist[] = {
-   {"disp", (Tcl_CmdProc *)cmdVisuDisp},
+   {"clear", (Tcl_CmdProc *)cmdVisuClear},
    {"cut", (Tcl_CmdProc *)cmdVisuCut},
+   {"disp", (Tcl_CmdProc *)cmdVisuDisp},
    {"pal", (Tcl_CmdProc *)cmdVisuPal},
    {"paldir", (Tcl_CmdProc *)cmdVisuPalDir},
    {"buf", (Tcl_CmdProc *)cmdVisuBuf},
    {"image", (Tcl_CmdProc *)cmdVisuImage},
+   {"mirrorx", (Tcl_CmdProc *)cmdVisuMirrorX},
+   {"mirrory", (Tcl_CmdProc *)cmdVisuMirrorY},
    {"window", (Tcl_CmdProc *)cmdVisuWindow},
    {"zoom", (Tcl_CmdProc *)cmdVisuZoom},
    {NULL, NULL}
@@ -118,6 +124,26 @@ int cmdVisuBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          visu = (CVisu*)clientData;
          visu->CreateBuffer(buf);
       }
+   }
+   free(ligne);
+   return result;
+}
+
+int cmdVisuClear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result = TCL_OK;
+   char *ligne;
+   CVisu *visu;
+
+   ligne = (char*)calloc(200,sizeof(char));
+   if(argc!=2) {
+      sprintf(ligne,"Usage: %s %s ",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      visu = (CVisu*)clientData;
+      sprintf(ligne,"%d",visu->ClearImage() );
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
    free(ligne);
    return result;
@@ -211,8 +237,11 @@ int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          ((CVisu*)clientData)->CreatePalette(Pal_Blue1);
       } else if(strcmp(argv[2],"blue2")==0) {
          ((CVisu*)clientData)->CreatePalette(Pal_Blue2);
-      } else {
-         res = ((CVisu*)clientData)->CreatePaletteFromFile(argv[2]);
+      } else {         
+         // je traite les noms de repertoires contenant des caractères accentués
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
+         Tcl_Eval(interp,ligne); 
+         res = ((CVisu*)clientData)->CreatePaletteFromFile(interp->result);
          if(res!=0) {
             Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
             result = TCL_ERROR;
@@ -239,8 +268,14 @@ int cmdVisuPalDir(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       visu = (CVisu*)clientData;
       Tcl_SetResult(interp,visu->GetPaletteDir(),TCL_VOLATILE);
    } else {
+      ligne = (char*)calloc(200,sizeof(char));
       visu = (CVisu*)clientData;
-      visu->SetPaletteDir(argv[2]);
+
+      // je traite les noms de repertoires contenant des caractères accentués
+      sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
+      Tcl_Eval(interp,ligne); 
+      visu->SetPaletteDir(interp->result);
+      free(ligne);
    }
    return result;
 }
@@ -315,6 +350,7 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 // notamment en terme de gestion du resultat TCL.
 int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
+   int result;
    char *ligne;
    float sh=(float)0., sb=(float)0.;
    double dSh, dSb;
@@ -485,31 +521,48 @@ int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
       switch(i=visu->UpdateDisplay()) {
          case 0:
+            result = TCL_OK;
             break;
          case 1:
             sprintf(ligne,"buf%d does not exist (abnormal error)",visu->bufnum);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
             break;
          case 2:
             sprintf(ligne,"buf%d is empty (abnormal error)",visu->bufnum);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
             break;
          case 3:
             sprintf(ligne,"Can not find mandatory NAXIS1 FITS keyword");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
             break;
          case 4:
             sprintf(ligne,"Can not find mandatory NAXIS2 FITS keyword");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
             break;
+         case ELIBSTD_X1X2_NOT_IN_1NAXIS1:
+         case ELIBSTD_Y1Y2_NOT_IN_1NAXIS2:
+            {
+               int x1,y1,x2,y2;
+               visu->GetWindow(&x1,&y1,&x2,&y2);
+               sprintf(ligne,"current subwindow (x1,y1)-(x2,y2) (%d,%d)(%d,%d) is incompatible with the of this picture",x1,y1,x2,y2);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               result = TCL_ERROR;
+            }
+            break;
+
          default:
             sprintf(ligne,"Error %d in UpdateDisplay",i);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
             break;
       };
    }
    free(ligne);
-   return TCL_OK;
+   return result;
 }
 
 
@@ -525,7 +578,7 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
    ligne = (char*)calloc(200,sizeof(char));
    if((argc!=2)&&(argc!=3)) {
-      sprintf(ligne,"Usage: %s %s ?window?",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s ?{x1 y1 x2 y2}?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    } else if(argc==2) {
@@ -576,19 +629,30 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                   x2 = x1;
                   x1 = i;
                }
+               buffer = (CBuffer*)buf_pool->Chercher(visu->bufnum);
+               int naxis1 = buffer->GetW();
+               int naxis2 = buffer->GetH();
+
+               y1 = naxis2 -y1;
+               y2 = naxis2 -y2;
                if(y1>y2) {
                   i = y2;
                   y2 = y1;
                   y1 = i;
                }
-               buffer = (CBuffer*)buf_pool->Chercher(visu->bufnum);
-               int naxis1 = buffer->GetW();
-               int naxis2 = buffer->GetH();
                if((x1>0)&&(x1<=naxis1)&&
                   (y1>0)&&(y1<=naxis2)&&
                   (x2>0)&&(x2<=naxis1)&&
                   (y2>0)&&(y2<=naxis2)) {
-                  visu->SetWindow(x1,y1,x2,y2);
+                  switch( visu->SetWindow(x1,y1,x2,y2)) {
+                  case 0:
+                     result = TCL_OK;
+                     break;
+                  case ELIBSTD_SUB_WINDOW_ALREADY_EXIST:
+                     Tcl_SetResult(interp,"a window already exists",TCL_VOLATILE);
+                     result = TCL_ERROR;
+                     break;
+                  }
                } else {
                   sprintf(ligne,"Window not bound inside original picture");
                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -642,3 +706,64 @@ int cmdVisuZoom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    free(ligne);
    return result;
 }
+
+int cmdVisuMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result = TCL_OK;
+   char *ligne;
+   CVisu *visu;
+   int mirror;
+
+   ligne = (char*)calloc(200,sizeof(char));
+   if((argc!=2)&&(argc!=3)) {
+      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if(argc==2) {
+      visu = (CVisu*)clientData;
+      sprintf(ligne,"%d",visu->GetMirrorX());
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   } else {
+      if(Tcl_GetInt(interp,argv[2],&mirror)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s ?0|1?\nvlaue must be an integer in range 0 to 1",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         visu = (CVisu*)clientData;
+         visu->SetMirrorX(mirror);
+      }
+   }
+   free(ligne);
+   return result;
+}
+
+int cmdVisuMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result = TCL_OK;
+   char *ligne;
+   CVisu *visu;
+   int mirror;
+
+   ligne = (char*)calloc(200,sizeof(char));
+   if((argc!=2)&&(argc!=3)) {
+      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if(argc==2) {
+      visu = (CVisu*)clientData;
+      sprintf(ligne,"%d",visu->GetMirrorY());
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   } else {
+      if(Tcl_GetInt(interp,argv[2],&mirror)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s ?0|1?\nvlaue must be an integer in range 0 to 1",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         visu = (CVisu*)clientData;
+         visu->SetMirrorY(mirror);
+      }
+   }
+   free(ligne);
+   return result;
+}
+

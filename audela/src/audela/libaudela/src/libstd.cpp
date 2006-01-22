@@ -458,6 +458,7 @@ void audelaInit(Tcl_Interp *interp)
    tel_pool = new CPool(TEL_PREFIXE);
    cam_pool = new CPool(CAM_PREFIXE);
    visu_pool = new CPool(VISU_PREFIXE);
+   link_pool = new CPool(LINK_PREFIXE);
 /*
    // Initialisation du timer pour les temps de pose
    TimerExpiration = NULL;
@@ -507,10 +508,8 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"hostaddress",(Tcl_CmdProc *)CmdHostaddress,NULL,NULL);
    Tcl_CreateCommand(interp,"ping",(Tcl_CmdProc *)CmdPing,NULL,NULL);
 
-//MODIF MP DEBUT
    // Access aux port parallele et serie pour Windows NT, 2000, XP
    Tcl_CreateCommand(interp,"porttalk",(Tcl_CmdProc *)CmdPortTalk,NULL,NULL);
-//MODIF MP FIN
 
    // Gestion de la liste des buffers
    Tcl_CreateCommand(interp,"::buf::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)buf_pool,NULL);
@@ -532,7 +531,15 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::tel::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)tel_pool,NULL);
    Tcl_CreateCommand(interp,"::tel::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)tel_pool,NULL);
 
-   Tcl_CreateCommand(interp,"audela_version",(Tcl_CmdProc *)CmdAudelaVersion,(void*)tel_pool,NULL);
+//modif michel debut
+   // Gestion de la liste des liaisons
+   Tcl_CreateCommand(interp,"::link::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)link_pool,NULL);
+   Tcl_CreateCommand(interp,"::link::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)link_pool,NULL);
+   Tcl_CreateCommand(interp,"::link::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)link_pool,NULL);
+   Tcl_CreateCommand(interp,"::link::available",(Tcl_CmdProc *)CmdAvailablePoolItem,(void*)link_pool,NULL);
+//modif michel fin
+
+   Tcl_CreateCommand(interp,"audela_version",(Tcl_CmdProc *)CmdAudelaVersion,(void*)NULL,NULL);
 
    sprintf(s,"%d.%d.%d",AUDELA_VERSION_MAJOR,AUDELA_VERSION_MINOR,AUDELA_VERSION_PATCH);
    Tcl_PkgProvide(interp,"Audela",s);

@@ -94,6 +94,7 @@ extern CPool *buf_pool;
 extern CPool *visu_pool;
 extern CPool *cam_pool;
 extern CPool *tel_pool;
+extern CPool *link_pool;
 
 //------------------------------------------------------------------------------
 // Fonctions implementant la creations d'objets, et manipulation de leur liste.
@@ -101,6 +102,7 @@ extern CPool *tel_pool;
 extern int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdListPoolItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+extern int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 //------------------------------------------------------------------------------
@@ -110,6 +112,7 @@ extern int CmdBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 extern int CmdVisu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdCam(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdTel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+extern int CmdLink(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 //------------------------------------------------------------------------------

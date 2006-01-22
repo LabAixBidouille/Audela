@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBAUDELA_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\porttalk" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /D "USE_COMPOSITELESS_PHOTO_PUT_BLOCK" /D "USE_COMPAT_CONST" /Fo".\Release/" /Fd".\Release/" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include" /I "..\..\..\external\include\win" /I "..\..\..\external\porttalk" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /D "USE_COMPOSITELESS_PHOTO_PUT_BLOCK" /D "USE_COMPAT_CONST" /FR /Fo".\Release/" /Fd".\Release/" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tkstub84.lib ..\..\..\external\lib\tclstub84.lib wsock32.lib version.lib /nologo /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libaudela.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tkstub84.lib ..\..\..\external\lib\tclstub84.lib wsock32.lib version.lib libdcjpeg.lib libdcraw.lib /nologo /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libaudela.dll" /libpath:"..\..\..\external\lib"
 
 !ELSEIF  "$(CFG)" == "libaudela - Win32 Debug"
 
@@ -69,7 +69,8 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBAUDELA_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\porttalk" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /D "USE_COMPOSITELESS_PHOTO_PUT_BLOCK" /D "USE_COMPAT_CONST" /FR /Fo".\Debug/" /Fd".\Debug/" /FD /c
+# ADD CPP /nologo /W3 /GX /Zi /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\porttalk" /I "..\..\..\external\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /D "USE_COMPOSITELESS_PHOTO_PUT_BLOCK" /D "USE_COMPAT_CONST" /FR /Fo".\Debug/" /Fd".\Debug/" /FD /c
+# SUBTRACT CPP /u
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"
@@ -79,7 +80,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tkstub84.lib ..\..\..\external\lib\tclstub84.lib wsock32.lib version.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libaudela.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\tcl\tcl\lib\tkstub84.lib ..\..\..\external\tcl\tcl\lib\tclstub84.lib wsock32.lib version.lib libdcraw.lib libdcjpeg.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudela.dll " /pdbtype:sept /libpath:"..\..\..\external\lib"
+# SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
 
@@ -145,6 +147,10 @@ SOURCE=.\libaudela.def
 # Begin Source File
 
 SOURCE=..\src\libstd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\link_tcl.cpp
 # End Source File
 # Begin Source File
 
@@ -229,6 +235,10 @@ SOURCE=..\src\fitskw.h
 # Begin Source File
 
 SOURCE=..\src\history.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\jpegmemscr.h
 # End Source File
 # Begin Source File
 
