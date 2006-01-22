@@ -18,68 +18,6 @@
 
 
 
-###############################################################################
-#
-# Procédure de traitement de spectres 2D : prétraitement, vcrop, régistration, sadd, tilt, spcprofil. Pas de calibration en longueur d'onde ni en flux.
-# Auteur : Benjamin MAUCLAIRE
-# Date création :  27-08-2005
-# Date de mise à jour : 27-08-2005
-# Méthode : utilise bm_pretrait pour le prétraitement
-# Arguments : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu [yinf_crop]
-###############################################################################
-
-proc spctraite_a { args } {
-
-   global audace
-   global conf
-
-   if { [llength $args] == 5 } {
-       set f1 [ lindex $args 0 ]
-       set f2 [ lindex $args 1 ]
-       set f3 [ lindex $args 2 ]
-       set f4 [ lindex $args 3 ]
-       set nbimg [ llength [ glob ${f1}*$conf(extension,defaut) ] ]
-       ::console::affiche_resultat "\n**** Prétraitement des images ****\n"
-       set nom_generique_pretrait [ bm_pretrait $f1 $f2 $f3 $f4 ]
-       ::console::affiche_resultat "\n**** Découpage de la zone de travail des images ****\n"
-       set nom_generique_vcrop [ spcvcrop $nom_generique_pretrait [lindex $args 4] ]
-       delete2 $nom_generique_pretrait $nbimg
-       ::console::affiche_resultat "\n**** Appariement des images ****\n"
-       set nom_generique_reg [ spcregister $nom_generique_vcrop ]
-       delete2 $nom_generique_vcrop $nbimg
-       ::console::affiche_resultat "\n**** Addition des images ****\n"
-       set fichier_final1 [ bm_sadd $nom_generique_reg ]
-       delete2 $nom_generique_reg $nbimg
-       ::console::affiche_resultat "\n**** Redressement (rot) de l'image finale ****\n"
-       set fichier_final2 [ spctilt $fichier_final1 ]
-       ::console::affiche_resultat "\n**** Création du profil de raies ****\n"
-       set fichier_final3 [ spcprofil $fichier_final2 ]
-       loadspc_fit $fichier_final3
-   } elseif { [llength $args] == 4 } {
-       set f1 [ lindex $args 0 ]
-       set f2 [ lindex $args 1 ]
-       set f3 [ lindex $args 2 ]
-       set f4 [ lindex $args 3 ]
-       set nbimg [ llength [ glob ${f1}*$conf(extension,defaut) ] ]
-       ::console::affiche_resultat "\n**** Prétraitement des images ****\n"
-       set nom_generique_pretrait [ bm_pretrait $f1 $f2 $f3 $f4 ]
-       ::console::affiche_resultat "\n**** Appariement des images ****\n"
-       set nom_generique_reg [ spcregister $nom_generique_pretrait ]
-       delete2 $nom_generique_pretrait $nbimg
-       ::console::affiche_resultat "\n**** Addition des images ****\n"
-       set fichier_final1 [ bm_sadd $nom_generique_reg ]
-       delete2 $nom_generique_reg $nbimg
-       ::console::affiche_resultat "\n**** Redressement (rot) de l'image finale ****\n"
-       set fichier_final2 [ spctilt $fichier_final1 ]
-       ::console::affiche_resultat "\n**** Création du profil de raies ****\n"
-       set fichier_final3 [ spcprofil $fichier_final2 ]
-       loadspc_fit $fichier_final3
-   } else {
-       ::console::affiche_erreur "Usage: spctraite_abm nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu [yinf_crop]\n\n"
-   }
-}
-###############################################################################
-
 
 
 ###############################################################
@@ -92,7 +30,7 @@ proc spctraite_a { args } {
 # Arguments : fichier fits du spectre spatial
 ###############################################################
 
-proc extract_profil_zone { {filenamespc_spacial ""} } {
+proc spc_extract_profil_zone { {filenamespc_spacial ""} } {
 
     #****************************************************************#
     ## Chargement : source $audace(rep_scripts)/profil_raie.tcl
@@ -224,27 +162,32 @@ proc extract_profil_zone { {filenamespc_spacial ""} } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de creation : 27-08-2005
-# Date de mise a jour : 29-08-2005                                              
+# Date de mise a jour : 29-08-2005/27-12-05                                              
 # Arguments : fichier fits du spectre spatial
 ###############################################################
 
-proc spcprofil { {filenamespc_spacial ""} } {
+proc spc_profil { args } {
 
     global audace
     global conf
 
     # Retire l'extension .fit du nom du fichier
     # regsub -all .fit $filespacialspc - filespatialspc
-    set filespacialspc [ file rootname $filenamespc_spacial ]
 
-    #if {[file exist [file join $audace(rep_images)/$filespacialspc.$conf(extension,defaut)]]==1} {
-	buf$audace(bufNo) load $filenamespc_spacial
+    if {[llength $args] == 1} {    
+	#if {[file exist [file join $audace(rep_images)/$filespacialspc.$conf(extension,defaut)]]==1} 
+	set filespacialspc [ file rootname [lindex $args 0] ]
+	# buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
+	## 07/01/05
+	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
 	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
 	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
 
 	## Cree une liste de nom coords contenant les coordonnes d'un rectangle scroole avec la souris (demarre a 0)	
-	set gauss_params [ spcdetect $filenamespc_spacial ]
-	buf$audace(bufNo) load $filenamespc_spacial
+	set gauss_params [ spc_detect $filenamespc_spacial ]
+	#buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
+	## 07/01/05
+	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
 	set ycenter [ lindex $gauss_params 0 ] 
 	set largeur [ lindex $gauss_params 1 ]
 	#set y1 [expr int($ycenter-0.5*$largeur)]
@@ -286,12 +229,14 @@ proc spcprofil { {filenamespc_spacial ""} } {
 	buf$audace(bufNo) window $coords_zone
 	# ::console::affiche_resultat "$coords_zone ; ${filespacialspc}_zone\n"
 	# ::audace::conserve_seuils
-	buf$audace(bufNo) save ${filespacialspc}_zone
+	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
 	
 	##--------------- Traitement de la zone selectionnee -------------------#
 	set listcoords [list $ht_spectre $yinf $ysup $xinf_zone $xsup_zone $ht_dessous $ht_dessus 7]
-	spc_bin ${filespacialspc}_zone ${filespacialspc} $listcoords
-   #}
+	spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords
+   } else {
+	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits\n\n"
+   }
 }
 ###############################################################
 
@@ -306,12 +251,12 @@ proc spcprofil { {filenamespc_spacial ""} } {
 # Arguments : fichier fits du spectre spatial
 ###############################################################
 
-proc spcdetect { {filenamespc_spacial ""} } {
+proc spc_detect { {filenamespc_spacial ""} } {
 
     global audace
     global conf
 
-    buf$audace(bufNo) load $filenamespc_spacial
+    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
     set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
     set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
     set windowcoords [ list 1 1 1 $naxis2 ]
@@ -336,13 +281,15 @@ proc spcdetect { {filenamespc_spacial ""} } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de creation : 17-08-2004
-# Date de mise a jour : 31-01-2005                                           
+# Date de mise a jour n-2 : 31-01-2005
+# Date de mise a jour n-1 : 29-11-2005 (buf1 load en loadima)
+# Date de mise a jour : 27-12-05 (buf1 load rep/img
 # Arguments : 
 #  * fichier fits de la zone selectionnee du spectre spatial
 #  * fichier fits du spectre spatial
 ###############################################################
 
-proc spc_bin { {filenamespc_zone ""} {filenamespc_spatial ""} {listcoords ""} } {
+proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoords ""} } {
 # proc spc_bin { {filenamespc_zone ""} {filespacialspc ""} {ht_spectre ""} } {
 
     global audace
@@ -356,6 +303,8 @@ proc spc_bin { {filenamespc_zone ""} {filenamespc_spatial ""} {listcoords ""} } 
     set xsup_zone [lindex $listcoords 4]
     set ht_dessous [lindex $listcoords 5]
     set ht_dessus [lindex $listcoords 6]
+    set filenamespc_zone [file tail $filenamespc_zone_rep]
+    set filenamespc_spatial [file tail $filenamespc_spatial_rep]
 
     ## On binne sur les colonnes dans la region de l'image correspondant au spectre et on sauvegarde le résultat dans ${filespacialspc}_sp :
     ::console::affiche_resultat "Binning des colonnes de la région sélectionnée...\n"
@@ -364,13 +313,13 @@ proc spc_bin { {filenamespc_zone ""} {filenamespc_spatial ""} {listcoords ""} } 
     ##set ysup2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
     ##buf$audace(bufNo) biny 1 $ysup2
 
-    buf$audace(bufNo) load ${filenamespc_zone}
+    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_zone"
     #buf$audace(bufNo) biny 1 [expr $ysup-$yinf]
     buf$audace(bufNo) biny 1 $ht_spectre 1
     ## Pondération par la hauteur en pixels
     #buf$audace(bufNo) mult [expr 1.0/$ht_spectre]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save ${filenamespc_spatial}_sp
+    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_sp"
 
 
     ## ******** Calcul une moyenne du fond du ciel prit dessus et dessous le spectre ****** ##
@@ -380,47 +329,51 @@ proc spc_bin { {filenamespc_zone ""} {filenamespc_spatial ""} {listcoords ""} } 
     set coords_zonev [list $xsup_zone [expr $ysup+$ht_dessus] $xinf_zone [expr $yinf-$ht_dessous+1]]
     ## ::console::affiche_resultat "Coords_zone : $coords_zone\n"
     #::console::affiche_resultat "${filenamespc_spatial} ; Coords_zonev : $coords_zonev, ht_sup : $ht_dessus, ht_inf : $ht_dessous\n"
-    buf$audace(bufNo) load ${filenamespc_spatial}
+    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spatial"
     buf$audace(bufNo) window $coords_zonev
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save ${filenamespc_spatial}_zonev
+    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_zonev"
   
     ## On binne sur les colonnes dans la région de l'image au dessus du spectre et on sauvegarde le résultat dans ${filenamespc_spatial}_spsup	        
-    buf$audace(bufNo) load ${filenamespc_spatial}_zonev		
+    buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_spatial}_zonev"	
     buf$audace(bufNo) biny $ysup [expr $ysup+$ht_dessus-1] 1
     ## Pondération par la hauteur en pixels
     buf$audace(bufNo) mult [expr 1.0/$ht_dessus]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save ${filenamespc_spatial}_spsup
+    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spsup"
 
     ## On binne sur les colonnes dans la région de l'image au dessous du spectre et on sauvegarde le résultat dans ${filenamespc_spatial}_spinf
     ::console::affiche_resultat "Binning des colonnes.\n"
-    buf$audace(bufNo) load ${filenamespc_spatial}_zonev
+    buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_spatial}_zonev"
     buf$audace(bufNo) biny $yinf [expr $yinf-$ht_dessous+1] 1
     ## Pondération par la hauteur en pixels
     buf$audace(bufNo) mult [expr 1.0/$ht_dessous]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save ${filenamespc_spatial}_spinf
+    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spinf"
 
     ## Calcul une moyenne du fond du ciel prit dessus et dessous le spectre.
     ::console::affiche_resultat "Calcul de la moyenne du fond du ciel pris dessus et dessous l'image...\n"
-    buf$audace(bufNo) load ${filenamespc_spatial}_spsup
-    buf$audace(bufNo) add ${filenamespc_spatial}_spinf 0
+    buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_spatial}_spsup"
+    ##~~~~~ BUG ICI
+    buf$audace(bufNo) add "$audace(rep_images)/${filenamespc_spatial}_spinf" 0
+    
     ## Petites feintes : on multiplie l'image précédente par -0.5 pour avoir une moyenne, le chiffre négatif permettant d'obtenir spectre-fond de ciel simplement en ajoutant à cette image : le spectre !
     buf$audace(bufNo) mult -0.5
-    buf$audace(bufNo) add ${filenamespc_spatial}_sp 0
+    buf$audace(bufNo) add "$audace(rep_images)/${filenamespc_spatial}_sp" 0
     ## Initialisation des mots-clef spectroscopie
-    buf$audace(bufNo) bitpix float
     buf$audace(bufNo) setkwd [list "CRVAL1" "1" int "" ""]
     buf$audace(bufNo) setkwd [list "CDELT1" "1" float "" ""]
     buf$audace(bufNo) setkwd [list "CRPIX1" "1" int "" ""]
     buf$audace(bufNo) setkwd [list "CTYPE1" "LINEAR" string "" ""]
+    buf$audace(bufNo) bitpix float
 
     ## On sauvegarde le spectre avec correction du fond du ciel
-    buf$audace(bufNo) save ${filenamespc_spatial}_spc
+    ::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_spatial}_spc$conf(extension,defaut)\n"
+    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spc"
 
-    ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_spatial.${extsp}\n"
-    buf$audace(bufNo) load ${filenamespc_spatial}_spc
+    ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_spatial${extsp}\n"
+    #loadima ${filenamespc_spatial}_spc
+    buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_spatial}_spc"
     buf$audace(bufNo) imaseries "PROFILE filename=${filenamespc_spatial}_spc$extsp direction=x offset=1"
     #buf1 imaseries "PROFILE filename=$audace(rep_images)/${filenamespc_spatial}.$extsp direction=x offset=1"
 
@@ -436,12 +389,13 @@ proc spc_bin { {filenamespc_zone ""} {filenamespc_spatial ""} {listcoords ""} } 
     #file delete [ file join [ file rootname $filenamespc_spatial ]_spsup$conf(extension,defaut) ]
     #file delete [ file join [ file rootname $filenamespc_spatial ]_zone$conf(extension,defaut) ]
     #file delete [ file join [ file rootname $filenamespc_spatial ]_zonev$conf(extension,defaut) ]
-    file delete ${filenamespc_spatial}_sp$conf(extension,defaut)
-    file delete ${filenamespc_spatial}_spinf$conf(extension,defaut)
-    file delete ${filenamespc_spatial}_spsup$conf(extension,defaut)
-    file delete ${filenamespc_spatial}_zone$conf(extension,defaut)
-    file delete ${filenamespc_spatial}_zonev$conf(extension,defaut)
+    file delete $audace(rep_images)/${filenamespc_spatial}_sp$conf(extension,defaut)
+    file delete $audace(rep_images)/${filenamespc_spatial}_spinf$conf(extension,defaut)
+    file delete $audace(rep_images)/${filenamespc_spatial}_spsup$conf(extension,defaut)
+    file delete $audace(rep_images)/${filenamespc_spatial}_zone$conf(extension,defaut)
+    file delete $audace(rep_images)/${filenamespc_spatial}_zonev$conf(extension,defaut)
 
+    buf$audace(bufNo) bitpix short
     return ${filenamespc_spatial}_spc
     ## Tracer du profil de raie I=f(x)
     # trace_spec()
@@ -491,17 +445,18 @@ proc extract_profil_col { {filenamespc_spacial ""} } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 16-02-2005
-# Date de mise à jour : 16-02-2005
+# Date de mise à jour : 16-02-2005 / 17-12-2005
 # Arguments : fichier .fit du profil de raie                                  
 ##########################################################
 
-proc loadspc_fit { {filenamespc ""} } {
+proc spc_loadfit { {filenamespc ""} } {
 
    global profilspc
    global captionspc
    global colorspc
    global audace
    global conf
+    set rep_et_filename ""
 
    ## === Interfacage de l'ouverture du fichier profil de raie ===
    if {$filenamespc==""} {
@@ -516,21 +471,31 @@ proc loadspc_fit { {filenamespc ""} } {
       if {[info exists profilspc(initialfile)] == 1} {
          set ifile "$profilspc(initialfile)"
       }
+      #--- Mémorise le répertoire et nom du fichier accolés dans la variable filenamespc
       ## set filenamespc [tk_getOpenFile -title $captionspc(loadspc) -filetypes [list [list "$captionspc(spc_profile)" {.spc}]] -initialdir $idir -initialfile $ifile ]
       # set filenamespc [tk_getOpenFile -title $captionspc(loadspcfit) -filetypes [list [list "$captionspc(spc_profile)" {$conf(extension,defaut)}]] -initialdir $idir -initialfile $ifile ]
-      set filenamespc [tk_getOpenFile -title $captionspc(loadspcfit) -filetypes [list [list "$captionspc(spc_profile)" {.fit}]] -initialdir $idir -initialfile $ifile ]
+      set rep_et_filename [tk_getOpenFile -title $captionspc(loadspcfit) -filetypes [list [list "$captionspc(spc_profile)" {.fit}]] -initialdir $idir -initialfile $ifile ]
 
-      if {[string compare $filenamespc ""] == 0 } {
-         return 0
+      if {[string compare $rep_et_filename ""] == 0 } {
+	  return 0
       }
+   } else {
+       #set repertoire [pwd]
+       set repertoire $audace(rep_images)
+       set rep_et_filename "$repertoire/$filenamespc"
    }
+   #::console::affiche_resultat "$rep_et_filename\n"
 
    # liste contenant la liste des valeurs de l'intensité, NAXIS1, CRVAL1, CDELT1, CRPIX1, CTYPE1.
-   set profilspc(object) "$filenamespc"
-   set spectre [openspc ${filenamespc}]
+   set spectre [openspc $rep_et_filename]
+   #-- Ouverture meth 2 : Ajouté le 16/12/2005
+   #set filename [ file tail $filenamespc ]
+   #set spectre [openspc $filename]
+   #--
    set profilspc(naxis2) [lindex $spectre 1]
    set profilspc(intensite) [lindex $spectre 0]
    set profilspc(pixels) ""
+   set profilspc(object) "$filenamespc"
 
    if { [llength $spectre] == 2 } {
        # Spectre non calibré
@@ -563,7 +528,7 @@ proc loadspc_fit { {filenamespc ""} } {
 # Arguments : fichier .dat du profil de raie                                  
 ##########################################################
 
-proc loadspc_txt { {filenamespc ""} } {
+proc spc_loaddat { {filenamespc ""} } {
 
    global profilspc
    global captionspc
@@ -650,7 +615,7 @@ proc open_profil {{filenamespc ""}} {
 #####################################################################
 
 
-proc trace_profil {{filenamespc ""}} {
+proc spc_trace_profil {{filenamespc ""}} {
 
    global audace
    global profilspc

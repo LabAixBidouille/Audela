@@ -4,12 +4,13 @@
 
 #************* Liste des focntions **********************#
 #
-# vradial : calcul la vitesse radiale à partir de la FWHM de la raie modélisée par une gaussienne
-# vexp : calcul la vitesse d'epansion à partir de la FWHM de la raie modélisée par une gaussienne
-# npte : calcul la température électronique d'une nébuleuse
-# npne : calcul la densité électronique d'une nébuleuse
-# spcne : calcul de la densité électronique. Fonction applicable pour les nébuleuses à spectre d'émission.
-# spcte : calcul de la température électronique. Fonction applicable pour les nébuleuses à spectre d'émission.
+# spc_vradiale : calcul la vitesse radiale à partir de la FWHM de la raie modélisée par une gaussienne
+# spc_vexp : calcul la vitesse d'expansion à partir de la FWHM de la raie modélisée par une gaussienne
+# spc_vrot : calcul la vitesse de rotation à partir de la FWHM de la raie modélisée par une gaussienne
+# spc_npte : calcul la température électronique d'une nébuleuse
+# spc_npne : calcul la densité électronique d'une nébuleuse
+# spc_ne : calcul de la densité électronique. Fonction applicable pour les nébuleuses à spectre d'émission.
+# spc_te : calcul de la température électronique. Fonction applicable pour les nébuleuses à spectre d'émission.
 #
 ##########################################################
 
@@ -24,7 +25,7 @@
 # Modèle utilisé : A. Acker, Astronomie, méthodes et calculs, MASSON, p.104.
 ##########################################################
 
-proc npte { args } {
+proc spc_npte { args } {
 
    global audace
    global conf
@@ -34,12 +35,12 @@ proc npte { args } {
      set I_4959 [ expr int([lindex $args 1 ]) ]
      set I_4363 [ expr int([lindex $args 2]) ]
 
-     set R [ expr (I_5007+I_4959)/I_4363 ]
-     set Te [ expr (3.29*1E4)/(log(R/8.30)) ]
+     set R [ expr ($I_5007+$I_4959)/$I_4363 ]
+     set Te [ expr (3.29*1E4)/(log($R/8.30)) ]
      ::console::affiche_resultat "Le température électronique de la nébuleuse est : $Te Kelvin\n"
      return $Te
    } else {
-     ::console::affiche_erreur "Usage: npte I_5007 I_4959 I_4363\n\n"
+     ::console::affiche_erreur "Usage: spc_npte I_5007 I_4959 I_4363\n\n"
    }
 
 }
@@ -56,7 +57,7 @@ proc npte { args } {
 # Modèle utilisé : Practical Amateur Spectroscopy, Stephen F. TONKIN, Springer, p.164.
 ##########################################################
 
-proc npne { args } {
+proc spc_npne { args } {
 
    global audace
    global conf
@@ -67,12 +68,12 @@ proc npne { args } {
      set I_6548 [ expr int([lindex $args 2 ]) ]
      set I_5755 [ expr int([lindex $args 3]) ]
 
-     set R [ expr (I_6584+I_6548)/I_5755 ]
-     set Ne [ expr 1/(2.9*1E(-3))*((8.5*sqrt(Te)*10^(10800/Te))/R-1) ]
+     set R [ expr ($I_6584+$I_6548)/$I_5755 ]
+     set Ne [ expr 1/(2.9*1E(-3))*((8.5*sqrt($Te)*10^(10800/$Te))/$R-1) ]
      ::console::affiche_resultat "Le densité électronique de la nébuleuse est : $Ne Kelvin\n"
      return $Ne
    } else {
-     ::console::affiche_erreur "Usage: npne Te I_6584 I_6548 I_5755\n\n"
+     ::console::affiche_erreur "Usage: spc_npne Te I_6584 I_6548 I_5755\n\n"
    }
 
 }
@@ -90,7 +91,7 @@ proc npne { args } {
 # Arguments : nom générique des profils de raies normalisés à 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
 ##########################################################
 
-proc ewcourbe { args } {
+proc spc_ewcourbe { args } {
 
     global audace
     global conf
@@ -117,7 +118,7 @@ proc ewcourbe { args } {
 
 	    set ldeb [ expr $lambda-0.5*$largeur_raie ]
 	    set lfin [ expr $lambda+0.5*$largeur_raie ]
-	    lappend $list_ew [ spcew $fichier $ldeb $lfin $type_raie ]
+	    lappend $list_ew [ spc_ew $fichier $ldeb $lfin $type_raie ]
 	}
 
 	# Création du fichier de données
