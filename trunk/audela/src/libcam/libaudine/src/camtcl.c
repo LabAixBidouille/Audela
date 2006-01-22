@@ -329,7 +329,7 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
     //sprintf(s, "buf%d bitpix ushort", cam->bufno);
     //Tcl_Eval(interp, s);
 
-    sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_USHORT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) p);
+    sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_SHORT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) p);
     Tcl_Eval(interp, s);
     /* Add FITS keywords */
     sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
