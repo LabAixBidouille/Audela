@@ -28,9 +28,12 @@
    #include <stream.h>
 #endif
 
+#include "cbuffer.h"
 #include "cpixelsgray.h"
 #include "cpixelsrgb.h"
-#include "cbuffer.h"
+
+#include "libdcjpeg.h"          // decode jpeg  pictures
+#include "libdcraw.h"         // decode raw  pictures
 
 /**
  *  constructeur par defaut
@@ -52,8 +55,7 @@ CBuffer::CBuffer() : CDevice()
    FreeBuffer(DONT_KEEP_KEYWORDS);
 
    // je cree un tableau de pixels par defaut
-   SetPixels(PLANE_GREY,1,1,FORMAT_FLOAT,COMPRESS_NONE, (int) NULL, DONT_KEEP_KEYWORDS);
-   //pixTemp = new CPixelsGray(1,1,FORMAT_FLOAT,COMPRESS_NONE, (int) NULL);
+   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE, NULL, NULL, 0, 0);
 
    initialMipsLo = 0;
    initialMipsHi = 0;
@@ -163,17 +165,18 @@ void CBuffer::FreeBuffer(int keep_keywords)
 	if (keep_keywords == DONT_KEEP_KEYWORDS) {
 		if(keywords) {
 			delete keywords;
-			keywords = NULL;
 		}
+      // je cree un objet CFitsKeywords vide
+   	keywords = new CFitsKeywords();
 		if(p_ast) {
 			free(p_ast);
-			p_ast = NULL;
 	   }
+      // je cree un objet mc_ASTROM vide
+   	p_ast = (mc_ASTROM*)calloc(1,sizeof(mc_ASTROM));
 	}
-	if (pix != NULL) {
-	   delete pix ;
-	   pix = NULL;
-	}
+
+   // je cree un tableau de dimension nulle
+   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE,  NULL, NULL, 0, 0);
 }
 
 
@@ -190,7 +193,7 @@ void CBuffer::LoadFits(char *filename)
 {
    int msg;                         // Code erreur de libtt
    int datatype;                    // Type du pointeur de l'image
-   int naxis1,naxis2;
+   int naxis1,naxis2,naxis3;
    int nb_keys;
    char **keynames=NULL;
    char **values=NULL;
@@ -202,59 +205,99 @@ void CBuffer::LoadFits(char *filename)
 
    
    // Chargement proprement dit de l'image.FITS
-   datatype = TFLOAT;
-   msg = Libtt_main(TT_PTR_LOADIMA,11,filename,&datatype,&ppix,&naxis1,&naxis2,
-   	&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) throw CErrorLibtt(msg);
-
+   //datatype = TFLOAT;
+   //msg = Libtt_main(TT_PTR_LOADIMA,11,filename,&datatype,&ppix,&naxis1,&naxis2,
+   //&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+   //if(msg) throw CErrorLibtt(msg);
    //  memorisation des pixels
-   SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, (int) ppix, DONT_KEEP_KEYWORDS);
+   //SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, (int) ppix, 0, DONT_KEEP_KEYWORDS);
 
-   // On recupere les mots cles
-   keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+   try {
+      int iaxis3 = 3;
 
-   // On reinitialise les parametres astrometriques
-   p_ast->valid = 0;
-   saving_type = keywords->FindKeyword("BITPIX")->GetIntValue();
-   if(saving_type==16) {
-      k = keywords->FindKeyword("BZERO");
-      if((k)&&(k->GetIntValue()==32768)) {
-         saving_type = USHORT_IMG;
+      FreeBuffer(DONT_KEEP_KEYWORDS);
+
+      // Chargement proprement dit de l'image.
+      datatype = TFLOAT;
+      msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
+   	   &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) throw CErrorLibtt(msg);
+
+      if(naxis3 == 1) {
+         SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
+         // je recupere les mots cles
+         keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      } else if ( naxis3 == 3 ) {
+         // s'il y a 3 plans , je charge les deux autres plans
+         TYPE_PIXELS * ppixR = NULL;
+         TYPE_PIXELS * ppixG = NULL ;
+         TYPE_PIXELS * ppixB = ppix ;  // j'ai deja recupere le troisieme plan
+         
+         iaxis3 = 1;
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
+   	      &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         iaxis3 = 2;
+         msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
+   	      &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         // je cree le tableau de pixels
+         pix = new CPixelsRgb(naxis1, naxis2, FORMAT_FLOAT, ppixR, ppixG, ppixB);
+         // je recupere les mots cles
+         keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         naxis3 = 3;
+         keywords->Add("NAXIS", &naxis3,TINT,"","");
+         naxis3 = 3;
+         keywords->Add("NAXIS3",&naxis3,TINT,"","");
+
+      } else {
+         throw CError("LoadFits error: plane number is not 1 or 3");
       }
-   } else if(saving_type==32) {
-      k = keywords->FindKeyword("BZERO");
-      if((k)&&(k->GetIntValue()==-(2^31))) {
-         saving_type = ULONG_IMG;
-      }
-   }
 
-   // je sauvegarde les seuils initiaux et je convertis les seuils en float
-   if(keywords) {
+      
+      // On reinitialise les parametres astrometriques
+      p_ast->valid = 0;
+      saving_type = keywords->FindKeyword("BITPIX")->GetIntValue();
+      if(saving_type==16) {
+         k = keywords->FindKeyword("BZERO");
+         if((k)&&(k->GetIntValue()==32768)) {
+            saving_type = USHORT_IMG;
+         }
+      } else if(saving_type==32) {
+         k = keywords->FindKeyword("BZERO");
+         if((k)&&(k->GetIntValue()==-(2^31))) {
+            saving_type = ULONG_IMG;
+         }
+      }
+      
+      // je sauvegarde les seuils initiaux et je convertis les seuils en float
       k = keywords->FindKeyword("MIPS-HI");      
       if(k != NULL  ) {
          if( k->GetDatatype() == TINT ) {
+            // je convertis le seuil en float
             initialMipsHi = (float) k->GetIntValue();
-            //SetKeyword("MIPS-HI",(char *) &initialMipsHi,"float","Hight cut","ADU");
             keywords->Add("MIPS-HI",(char *) &initialMipsHi,TFLOAT,"Hight cut","ADU");
          } else {
             initialMipsHi = (float) k->GetFloatValue();
-         }
-            
+         }         
       }
-
+      
       k = keywords->FindKeyword("MIPS-LO");
       if(k) {
+          // je convertis le seuil en float
          initialMipsLo = k->GetFloatValue();
-         k = NULL;
          keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
-         //SetKeyword("MIPS-LO",(char *) &initialMipsLo,"float","Low cut","ADU");
-
       }
+      
+   } catch (const CError& e) {
+      // Liberation de la memoire allouée par libtt
+      Libtt_main(TT_PTR_FREEPTR,1,&ppix);
+      Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      // je transmet l'erreur
+      throw e;
    }
-
+   
    // Liberation de la memoire allouee par libtt (pas nécessire de catcher les erreurs)
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
    msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
+   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
 }
 
 /**
@@ -271,37 +314,107 @@ void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, in
    int x, y;
    int base;
    CFitsKeyword *k;
-
+   int naxis;
    
-   if( pixelSize == 1 || (offset[0] == offset[1] && offset[0] == offset[1] && offset[0] == offset[2] ) ) {
-      // s'il n'y a qu'un seul plan
-      // ou si les trois plans sont les mêmes, je cree un tableau GRAY
-      ppix1 = (TYPE_PIXELS*)malloc(width*height * sizeof(TYPE_PIXELS));
-      if(ppix1==NULL) {
-         throw CError(ELIBSTD_BUF_EMPTY);
+   
+   try {
+      FreeBuffer(DONT_KEEP_KEYWORDS);
+
+      if( pixelSize == 1 || (offset[0] == offset[1] && offset[0] == offset[1] && offset[0] == offset[2] ) ) {
+         // s'il n'y a qu'un seul plan
+         // ou si les trois plans sont les mêmes, je cree un tableau GRAY
+         ppix1 = (TYPE_PIXELS*)malloc(width*height * sizeof(TYPE_PIXELS));
+         if(ppix1==NULL) {
+            throw CError(ELIBSTD_BUF_EMPTY);
+         }
+         
+         // copie d'un seul plan
+         for(x=0;x<width;x++) {
+            for(y=0;y<height;y++) {
+               base=pixelSize*((height-y-1)*width+x);
+               level=0.;
+               ppix1[y*width+x]=(TYPE_PIXELS)(1.*(pixelPtr[base]));
+            }
+         }
+         
+         
+         SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, ppix1, 0, 0, 1);
+         free(ppix1);
+         
+         naxis = 2;
+         keywords->Add("NAXIS", &naxis,TINT,"","");
+         keywords->Add("NAXIS1",&width,TINT,"","");
+         keywords->Add("NAXIS2",&height,TINT,"","");
+      
+      } else {
+         int naxis3 = 3;
+
+         // si les plans de couleur sont différents , je cree un tableau RGB
+         FreeBuffer(DONT_KEEP_KEYWORDS);
+         SetPixels(width, height, pixelSize, offset, pitch, (unsigned char *) pixelPtr);
+         naxis = 3;
+         keywords->Add("NAXIS", &naxis,TINT,"","");
+         keywords->Add("NAXIS1",&width,TINT,"","");
+         keywords->Add("NAXIS2",&height,TINT,"","");
+         keywords->Add("NAXIS3",&naxis3,TINT,"","");
       }
 
-      // copie d'un seul plan
-      for(x=0;x<width;x++) {
-         for(y=0;y<height;y++) {
-            base=pixelSize*((height-y-1)*width+x);
-            level=0.;
-            ppix1[y*width+x]=(TYPE_PIXELS)(1.*(pixelPtr[base]));
+      // je sauvegarde les seuils initiaux 
+      if(keywords) {
+         k = keywords->FindKeyword("MIPS-LO");
+         if(k) {
+            initialMipsLo = k->GetFloatValue();
+         }
+         k = keywords->FindKeyword("MIPS-HI");
+         if(k) {
+            initialMipsHi = k->GetFloatValue();
          }
       }
-      try {
-         SetPixels(PLANE_GREY, width, -height, FORMAT_FLOAT, COMPRESS_NONE, (int) ppix1, DONT_KEEP_KEYWORDS);
-         free(ppix1);
-      } catch (const CError& e) {
-         // je libère la mémoire avant de tranmettre l'exception.
-         free(ppix1);
-         throw e;
-      }
-   } else {
-      // si les plans de couleur sont différents , je cree un tableau RGB
-      SetPixels(width, -height, pixelSize, offset, pitch, (unsigned char *) pixelPtr, DONT_KEEP_KEYWORDS);
+      
+      // On reinitialise les parametres astrometriques
+      p_ast->valid = 0;
+      
+      
+   } catch (const CError& e) {
+      // je libère la mémoire avant de tranmettre l'exception.
+      free(ppix1);
+      throw e;
    }
+   
+}
 
+/**
+ *  LoadRawFile
+ *  lecture d'un fichier contenant une image en mode raw
+ * 
+ *   @param filename : input file name
+ *
+ */
+void CBuffer::LoadRawFile(char * filename)
+{
+   int result;
+
+   CFitsKeyword *k;
+   int width, height, planes, naxis;
+   char * pixels;
+
+
+   FreeBuffer(DONT_KEEP_KEYWORDS);
+   result = libdcraw_decodeFile (filename, &width, &height, &pixels);
+   if( result == 0 ) {
+
+      SetPixels(PLANE_RGB, width, height, FORMAT_SHORT, COMPRESS_NONE, pixels, 0, 0, 0);
+      libdcraw_freeBuffer(pixels);
+   } else {
+      throw CError("LoadRawFile: libjpeg_decodeBuffer error=%d", result);
+   }
+   
+   naxis = 3;
+   planes = 3;
+   keywords->Add("NAXIS", &naxis,TINT,"","");
+   keywords->Add("NAXIS1",&width,TINT,"","");
+   keywords->Add("NAXIS2",&height,TINT,"","");
+   keywords->Add("NAXIS3",&planes,TINT,"","");
 
    // je sauvegarde les seuils initiaux 
    if(keywords) {
@@ -318,6 +431,8 @@ void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, in
    // On reinitialise les parametres astrometriques
    p_ast->valid = 0;
 }
+
+
 
 /**
  *  lecture d'un fichier qui n'est pas au format FIT
@@ -340,6 +455,8 @@ void CBuffer::Load3d(char *filename,int iaxis3)
    CFitsKeyword *k;
    TYPE_PIXELS *ppix=NULL;
 
+   FreeBuffer(DONT_KEEP_KEYWORDS);
+
    // Chargement proprement dit de l'image.
    datatype = TFLOAT;
    msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
@@ -348,7 +465,7 @@ void CBuffer::Load3d(char *filename,int iaxis3)
 
    // Recopie de pixels dans le buffer
    try {
-      SetPixels(PLANE_RGB, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, (int) ppix, DONT_KEEP_KEYWORDS);
+      SetPixels(PLANE_RGB, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
    } catch (const CError& e) {
       // Liberation de la memoire allouée par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
@@ -416,7 +533,17 @@ void CBuffer::SaveFits(char *filename)
    naxis1 = pix->GetWidth();
    naxis2 = pix->GetHeight();
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
-   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+
+   switch( pix->getPixelClass() ) {
+      case CLASS_GRAY : 
+         pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+         break;
+      case CLASS_RGB :  
+         //pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+         SaveFitsRGB(filename);
+         return;
+   }
+
    
    // Collecte de renseignements pour la suite
    nb_keys = keywords->GetKeywordNb();
@@ -504,8 +631,8 @@ void CBuffer::SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, i
          ptr = (unsigned char *)malloc(ww*hh * 2);  // deux octets pas pixel
          if(ptr==NULL) throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS);
          //  je recupere les pixels ( zoom =1, palette normale,   ) 
-         pix->GetPixelsReverse(0,0,ww-1,hh-1, FORMAT_USHORT, PLANE_GREY, (int) ptr);                        
-         // je parametres de sortie
+         pix->GetPixelsReverse(0,0,ww-1,hh-1, FORMAT_SHORT, PLANE_GREY, (int) ptr);                        
+         // je prepare les parametres de sortie
          *pixelPtr  = ptr;
          *width      = ww;
          *height     = hh;
@@ -523,7 +650,7 @@ void CBuffer::SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, i
          if(pixelPtr==NULL) throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS);                                          
          //  je ptr les pixels ( zoom =1, palettte normale  ) 
          pix->GetPixelsReverse(0,0,ww-1,hh-1, FORMAT_BYTE, PLANE_RGB, (int) ptr);                     
-         // je parametres de sortie
+         // je prepare parametres de sortie
          *pixelPtr  = ptr;
          *width      = ww;
          *height     = hh;
@@ -605,6 +732,65 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
 
 }
 
+
+void CBuffer::SaveFitsRGB(char *filename)
+{
+   int msg;                         // Code erreur de libtt
+   int datatype;                    // Type du pointeur de l'image
+   int bitpix;
+   int naxis1,naxis2,naxis3;
+   int nb_keys;
+   char **keynames=NULL;
+   char **values=NULL;
+   char **comments=NULL;
+   char **units=NULL;
+   int *datatypes=NULL;
+   TYPE_PIXELS_RGB *pixels, *pixelsR, *pixelsG, *pixelsB;
+   
+   
+   naxis1 = pix->GetWidth();
+   naxis2 = pix->GetHeight();
+   naxis3 = 3;
+
+   pixels = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2*naxis3 * sizeof(TYPE_PIXELS_RGB));
+      pixelsR = pixels;
+      pixelsG = pixels + naxis1*naxis2; 
+      pixelsB = pixels + naxis1*naxis2*2; 
+      
+      // je recupere l'image a traiter en séparant les 3 plans
+   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (int) pixelsR);
+   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (int) pixelsG);
+   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (int) pixelsB);
+   
+   // format des pixels en entree de libtt
+   datatype = TSHORT;
+   // format des pixels dans le fichier de sortie de libtt
+   bitpix = saving_type;
+
+   // Collecte de renseignements pour la suite
+   nb_keys = keywords->GetKeywordNb();
+
+   // Allocation de l'espace memoire pour les tableaux de mots-cles
+   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+   if(msg) throw CErrorLibtt(msg);
+
+   // Conversion keywords vers tableaux 'Made in Klotz'
+   keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
+
+   msg = Libtt_main(TT_PTR_SAVEIMA3D,13,filename,pixels,&datatype,&naxis1,&naxis2,&naxis3,
+         &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
+   if(msg) {
+      Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      throw CErrorLibtt(msg);
+   }
+
+   // Liberation de la memoire allouee par libtt
+   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+
+   free(pixels);
+
+}
+
 void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
 {
    int msg;                         // Code erreur de libtt
@@ -648,53 +834,19 @@ void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
 /*
  * int CBuffer::GetW() --
  *  Renvoie la largeur de l'image.
- *  Si la valeur est negative, c'est qu'il y a eu un probleme :
- *    * ELIBSTD_NO_KWDS       si pas de mots-cles,
- *    * ELIBSTD_NO_NAXIS1_KWD si pas de mot-cle NAXIS1
  */
 int CBuffer::GetW()
 {
-   CFitsKeyword *k;
-   int retour;
-
-   if(keywords) {
-      k = keywords->FindKeyword("NAXIS1");
-      if(k) {
-         retour = k->GetIntValue();
-      } else {
-         throw CError(ELIBSTD_NO_NAXIS1_KWD);
-      }
-   } else {
-      retour = ELIBSTD_NO_KWDS;
-   }
-
-   return retour;
+   return pix->GetWidth();
 }
 
 /*
  * int CBuffer::GetH() --
  *  Renvoie la hauteur de l'image.
- *  Si la valeur est negative, c'est qu'il y a eu un probleme :
- *    - ELIBSTD_NO_KWDS       si pas de mots-cles,
- *    - ELIBSTD_NO_NAXIS2_KWD si pas de mot-cle NAXIS2
  */
 int CBuffer::GetH()
 {
-   CFitsKeyword *k;
-   int retour;
-
-   if(keywords) {
-      k = keywords->FindKeyword("NAXIS2");
-      if(k) {
-         retour = k->GetIntValue();
-      } else {
-         throw CError(ELIBSTD_NO_NAXIS1_KWD);
-      }
-   } else {
-      throw CError(ELIBSTD_NO_KWDS);
-   }
-
-   return retour;
+   return pix->GetHeight();
 }
 
 
@@ -1213,57 +1365,93 @@ void CBuffer::SetPix(TYPE_PIXELS val,int x, int y)
  *  Return : 0
  *
  */
-void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, int pixels, int keep_keywords) {
-   int naxis, naxis1, naxis2;
+void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, void * pixels, long pixelSize, int reverseX, int reverseY) {
    CPixels  * pixTemp;   
 
-   // On fait de la place avant de recreer le contenu du buffer
-   FreeBuffer(keep_keywords);
-
    if( plane == PLANE_GREY) {
-      pixTemp = new CPixelsGray(width, height, pixelFormat, compression, pixels);
+      // cas d'une image grise
+      pixTemp = new CPixelsGray(width, height, pixelFormat, pixels, reverseY);
    } else {
-      pixTemp = new CPixelsRgb(plane, width, height, pixelFormat, compression, pixels);
+      // cas d'un image couleur
+      switch (compression) {
+      case COMPRESS_NONE:
+         {
+            pixTemp = new CPixelsRgb(plane, width, height, pixelFormat, pixels, reverseY);
+            break;
+         }         
+      case COMPRESS_JPEG :
+         {
+            char * decodedData;
+            long   decodedSize;
+            int   width, height;
+            int result = -1;
+
+            result  = libdcjpeg_decodeBuffer((char*) pixels, pixelSize, &decodedData, &decodedSize, &width, &height);            
+            if (result == 0 )  {
+               pixTemp = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, reverseY);
+               // l'espace memoire cree par la librairie doit etre desalloué par cette meme librairie.
+               libdcjpeg_freeBuffer(decodedData);
+            } else {
+               throw CError("libjpeg_decodeBuffer error=%d", result);
+            }
+            break;
+         } 
+      case COMPRESS_RAW :
+         {
+            int width, height;
+            int result = -1;
+            char * decodedData;
+            
+            //  ATTENTION : libdcraw_decodeBuffer peut réduire les dimensions de quelques pixels en largeur et hauteur
+            //  Exemple: dans le cas de certains fichiers .CRW  width et height ont deux pixels de moins.
+            result = libdcraw_decodeBuffer ((char*) pixels, pixelSize, &width, &height, &decodedData);
+            if (result == 0 )  {
+                pixTemp = new CPixelsRgb(plane, width, height, FORMAT_SHORT, decodedData, reverseY);
+                libdcraw_freeBuffer(decodedData);
+            } else {
+               throw CError("libdcraw_decodeBuffer error=%d", result);
+            }
+            break;
+         }   
+      default :
+         {
+            throw CError("SetPixels not implemented for compression=%s", CPixels::getPixelCompressionName(compression));
+            break;
+         }
+      }
+               
    }
 
+   if( reverseX == 1 ) {
+      pixTemp->MirX();
+   }
+
+   // s'il n'y a pas eu d'exception pendant la creation de pixTemp, je detruis l'ancienne image 
+	if (pix != NULL) {
+	   delete pix ;
+	   pix = NULL;
+	}
+
+   // j'affecte la nouvelle image
    pix = pixTemp;
-
-   if (keep_keywords == DONT_KEEP_KEYWORDS) {
-      keywords = new CFitsKeywords();
-      p_ast = (mc_ASTROM*)calloc(1,sizeof(mc_ASTROM));
-   }
-
-   naxis = 2;
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
-   keywords->Add("NAXIS",&naxis,TINT,"","");
-   keywords->Add("NAXIS1",&naxis1,TINT,"","");
-   keywords->Add("NAXIS2",&naxis2,TINT,"","");
 }
 
 
-void CBuffer::SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels, int keep_keywords) {
-   int naxis, naxis1, naxis2;
+void CBuffer::SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels) {
    CPixels  * pixTemp;   
 
    // On fait de la place avant de recreer le contenu du buffer
-   FreeBuffer(keep_keywords);
+   //FreeBuffer(keep_keywords);
 
    pixTemp = new CPixelsRgb(width, height, pixelSize, offset, pitch, pixels);
 
-   pix = pixTemp;
+   // s'il n'y a pas eu d'exception pendant la creation de pixTemp, je detruis l'ancienne image 
+	if (pix != NULL) {
+	   delete pix ;
+	   pix = NULL;
+	}
 
-   if (keep_keywords == DONT_KEEP_KEYWORDS) {
-      keywords = new CFitsKeywords();
-      p_ast = (mc_ASTROM*)calloc(1,sizeof(mc_ASTROM));
-   }
-
-   naxis = 2;
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
-   keywords->Add("NAXIS",&naxis,TINT,"","");
-   keywords->Add("NAXIS1",&naxis1,TINT,"","");
-   keywords->Add("NAXIS2",&naxis2,TINT,"","");
+   pix = pixTemp;   
 }
 
 
@@ -1336,7 +1524,8 @@ void CBuffer::CopyFrom(CFitsKeywords*hdr, TColorPlane plane, TYPE_PIXELS*pixels)
    naxis1 = hdr->FindKeyword("NAXIS1")->GetIntValue();
    naxis2 = hdr->FindKeyword("NAXIS2")->GetIntValue();
 
-   SetPixels(plane, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, (int) pixels, DONT_KEEP_KEYWORDS);
+   FreeBuffer(DONT_KEEP_KEYWORDS);
+   SetPixels(plane, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, pixels, 0, 0, 0);
 
    // La recopie des mots cles s'effectue en passant par les tableaux
    // format KLOTZ (j'ai pas envie de me faire chier a la main !
@@ -1404,8 +1593,8 @@ void CBuffer::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
 
 void CBuffer::AstroFlux(int x1, int y1, int x2, int y2, 
                      TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax, 
-                     TYPE_PIXELS *moy, TYPE_PIXELS *seuil){
-   pix->AstroFlux(x1, y1, x2, y2, flux, maxi, xmax, ymax, moy, seuil);
+                     TYPE_PIXELS *moy, TYPE_PIXELS *seuil, int * nbpix){
+   pix->AstroFlux(x1, y1, x2, y2, flux, maxi, xmax, ymax, moy, seuil, nbpix);
 }
 
 void CBuffer::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax, 
@@ -1461,9 +1650,9 @@ void CBuffer::Div(char *filename, float constante)
  *    - '-2' si pas de mot-cle 'NAXIS1'
  *
  */
-void CBuffer::GetPixGray(TYPE_PIXELS *val,int x, int y)
+void CBuffer::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)
 {
-   pix->GetPixGray(val, x, y);
+   pix->GetPix(plane , val1, val2, val3, x, y);
 }
 
 
@@ -1501,13 +1690,14 @@ void CBuffer::GetPixelsPointer(TYPE_PIXELS **ppixels)
 }
 
 
-void CBuffer::GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
+void CBuffer::GetPixelsVisu( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY,
             double hicutRed,   double locutRed, 
             double hicutGreen, double locutGreen,
             double hicutBlue,  double locutBlue, 
             Pal_Struct *pal, unsigned char *ptr)
 {
-   pix->GetPixelsZoom(x1,y1,x2, y2, zoom, 
+   pix->GetPixelsVisu(x1,y1,x2, y2, mirrorX, mirrorY, 
       hicutRed, locutRed, hicutGreen, locutGreen, hicutBlue, locutBlue, 
       pal, ptr);
 }
@@ -1785,7 +1975,8 @@ void CBuffer::Scar( int x1,int y1,int x2,int y2)
    }
 
    //  memorisation des pixels
-   SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, (int) ppix, KEEP_KEYWORDS);
+   //FreeBuffer(DONT_KEEP_KEYWORDS);
+   SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
 
    free(ppix);
 }
@@ -1850,7 +2041,7 @@ void CBuffer::SyntheGauss(double xc, double yc, double imax, double fwhmx, doubl
    }
 
    //  memorisation des pixels
-   SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, (int) ppix, KEEP_KEYWORDS);
+   SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
 
    free(ppix);
 
@@ -2022,8 +2213,8 @@ void CBuffer::MedY(int y1, int y2, int height)
    TYPE_PIXELS *out;
 
    if(pix==NULL) {return ELIBSTD_BUF_EMPTY;}
-   if((w=GetW())<0) {return w;}
-   if((h=GetH())<0) {return h;}
+   w=GetW();
+   h=GetH();
 
    
    if (height < 0)
@@ -2062,9 +2253,6 @@ int CBuffer::A_StarList(double threshin,char *filename,double fwhm,int radius,
    int naxis1,naxis2;
 
    // seulement pour les images non couleur
-   if( pix->getPixelClass() != CLASS_GRAY) {
-      throw CError(ELIBSTD_NOT_IMPLEMENTED);
-   }
 
    naxis1 = pix->GetWidth();
    naxis2 = pix->GetHeight();
@@ -2089,7 +2277,7 @@ int CBuffer::A_StarList(double threshin,char *filename,double fwhm,int radius,
    if(after_gauss!=0 && retour>=0)
    {
       CPixelsGray * newpix;
-      newpix = new CPixelsGray(naxis1, naxis2, FORMAT_USHORT, COMPRESS_NONE, (int) temp_pic);
+      newpix = new CPixelsGray(naxis1, naxis2, FORMAT_SHORT, temp_pic, 0);
 
       delete pix;
       pix = newpix;
@@ -2244,5 +2432,6 @@ void CBuffer::UnifyBg()
 {
    pix->UnifyBg();
 }
+
 
 

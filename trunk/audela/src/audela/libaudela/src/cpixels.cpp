@@ -25,8 +25,8 @@
 #include "cpixels.h"
 
 char  *  CPixels::PixelClassName  []= {"CLASS_GRAY", "CLASS_RGB", "CLASS_3D", "CLASS_VIDEO"} ;
-char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_USHORT", "FORMAT_FLOAT"} ;
-char  *  CPixels::CompressionName []= {"COMPRESS_NONE", "COMPRESS_RGB", "COMPRESS_I420", "COMPRESS_UNKNOWN"} ;
+char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_SHORT", "FORMAT_FLOAT"} ;
+char  *  CPixels::CompressionName []= {"COMPRESS_NONE", "COMPRESS_RGB", "COMPRESS_I420", "COMPRESS_JPEG", "COMPRESS_RAW", "COMPRESS_UNKNOWN"} ;
 char  *  CPixels::ColorPlaneName  []= {"PLANE_GRAY", "PLANE_RGB", "PLANE_RED", "PLANE_GREEN","PLANE_BLUE", "PLANE_UNKNOWN"} ;
 
 
@@ -86,10 +86,10 @@ void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
-   naxis1 = x2-x1+1;
-   naxis2 = y2-y1+1;
+   naxis1 = x2-x1;
+   naxis2 = y2-y1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2-1, y2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
 
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
@@ -123,28 +123,37 @@ void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
 }
 
 void CPixels::AstroFlux(int x1, int y1, int x2, int y2, 
-                              TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax, TYPE_PIXELS *moy, TYPE_PIXELS *seuil) {
+                        TYPE_PIXELS* flux, TYPE_PIXELS* maxi, 
+                        int *xmax, int* ymax, TYPE_PIXELS *moy, 
+                        TYPE_PIXELS *seuil, int *nbpix) {
    int i, j;                          // Index de parcours de l'image
    TYPE_PIXELS *offset;
-   int nbpix = 0;                     // Nombre de pixels pris en compte
    TYPE_PIXELS fond;
    double *vec;
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
-   naxis1 = x2-x1+1;
-   naxis2 = y2-y1+1;
+   naxis1 = x2-x1;
+   naxis2 = y2-y1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2-1, y2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+
+   *nbpix=naxis1 * naxis2;
+
+   // Vecteur pour le calcul de l'histogramme du fond
+   if ( (vec=(double*)calloc((*nbpix)+1,sizeof(double)))==NULL) {
+      throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS);;
+   }
 
    *maxi=*(pixTemp);
-   nbpix=0;
    *flux=(float)0.;
+   *nbpix=0;
    for(j=0;j<naxis2;j++) {
       offset = pixTemp + j * naxis1;
       for(i=0;i<naxis1;i++) {
          *flux += *(offset+i);
-         nbpix++;
+         (*nbpix)++;
+         vec[*nbpix]=*(offset+i);
          if (*(offset+i)>=*maxi) {
             *maxi=*(offset+i);
             *xmax=i;
@@ -153,23 +162,19 @@ void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
       }
    }
    
-   // Calcule l'histogramme du fond
-   if ( (vec=(double*)calloc(nbpix+1,sizeof(double)))==NULL) {
-      throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS);;
-   }
-   nbpix=0;
-   for(j=0;j<naxis2;j++) {
-      offset = pixTemp + j * naxis1;
-      for(i=0;i<naxis1;i++) {
-         vec[nbpix]=*(offset+i);
-         nbpix++;
-      }
-   }
-   util_qsort_double(vec,0,nbpix-2,NULL);
+//   nbpix=0;
+//   for(j=0;j<naxis2;j++) {
+//      offset = pixTemp + j * naxis1;
+//      for(i=0;i<naxis1;i++) {
+//         vec[*nbpix]=*(offset+i);
+//         nbpix++;
+//      }
+//   }
+   util_qsort_double(vec,0,*nbpix-2,NULL);
    // calcule la valeur du fond pour 20 pourcent de l'histogramme
-   fond=(float)vec[(int)(0.2*(nbpix-1))];
+   fond=(float)vec[(int)(0.2*(*nbpix-1))];
    // calcule la valeur du fond photometrique a 60 pourcent de l'histogramme
-   *moy=(float)vec[(int)(0.6*(nbpix-1))];
+   *moy=(float)vec[(int)(0.6*(*nbpix-1))];
    // calcule le seuil de coupure pour le centroide et le phot
    *seuil=fond+(TYPE_PIXELS)0.7*(*maxi-fond);  
 
@@ -192,10 +197,10 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
-   naxis1 = x2-x1+1;
-   naxis2 = y2-y1+1;
+   naxis1 = x2-x1;
+   naxis2 = y2-y1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2-1, y2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
    
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
@@ -213,10 +218,10 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
       xx2=xmax+rr;
       yy1=ymax-rr;
       yy2=ymax+rr;
-      if (xx1<x1) { sortie=1; break; }
-      if (xx2>=x2) { sortie=1; break; }
-      if (yy1<y1) { sortie=1; break; }
-      if (yy2>=y2) { sortie=1; break; }
+      if (xx1<0) { sortie=1; break; }
+      if (xx2>=naxis1) { sortie=1; break; }
+      if (yy1<0) { sortie=1; break; }
+      if (yy2>=naxis2) { sortie=1; break; }
       nneg=0;
       npos=0;
       flux=(float)0.;
@@ -245,13 +250,13 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
          flux+=flux_pix;
       }
       if (npos>nneg) {
-         *dFlux+=flux;
-         *ntot+=(npos+nneg);
+         (*dFlux)+=flux;
+         (*ntot)+=(npos+nneg);
       } else {
          sortie=1; break;
       }
    }
-   if (*dFlux<=0.) {*dFlux=1.;}
+   if ((*dFlux)<=0.) {(*dFlux)=1.;}
    free(pixTemp);
 }
 

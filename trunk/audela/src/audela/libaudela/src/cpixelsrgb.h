@@ -28,14 +28,14 @@
 #include "cpixels.h"
 #include "cerror.h"
 
-typedef float TYPE_PIXELS_RGB;
+typedef  short TYPE_PIXELS_RGB;
 
 
 class CPixelsRgb : public CPixels
 {
 public:
-   CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, int pixels);
-   CPixelsRgb(int width, int height, TYPE_PIXELS_RGB *pixelsR, TYPE_PIXELS_RGB *pixelsG, TYPE_PIXELS_RGB *pixelsB);
+   CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseY);
+   CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pixelsR, void *pixelsG, void *pixelsB);
    CPixelsRgb(int naxis1, int naxis2, int pixelSize, int offset[4], int pitch, unsigned char * pixels);
 	virtual ~CPixelsRgb();
 
@@ -57,7 +57,7 @@ public:
    int  GetHeight(void);
    int  GetPlanes(void);
    int  GetWidth(void);
-   void GetPixGray(TYPE_PIXELS *val,int x, int y);
+   void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixelsPointer(TYPE_PIXELS **pixels);
    void GetPixels(TYPE_PIXELS_RGB *pixelsR, TYPE_PIXELS_RGB *pixelsG, TYPE_PIXELS_RGB *pixelsB);
    void GetPixels(int x1, int x2, int y1, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
@@ -65,7 +65,8 @@ public:
    
    //void GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
    //         double hicut, double locut, Pal_Struct *pal, unsigned char *ptr);
-   void GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
+   void GetPixelsVisu( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY,
             double hicutRed,   double locutRed, 
             double hicutGreen, double locutGreen,
             double hicutBlue,  double locutBlue,

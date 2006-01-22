@@ -236,7 +236,14 @@ CFitsKeywords::~CFitsKeywords()
 //
 CFitsKeyword* CFitsKeywords::FindKeyword(char*kw_name)
 {
-   CFitsKeyword *kwd = kw;
+   CFitsKeyword *kwd;
+
+   if(kw==NULL) { // S'il n'y a pas de mots-cles, c'est pas la peine de chercher
+      return NULL;
+   } else {
+      kwd = kw;
+   }
+
    // On recherche deja si le mot-cle existe. Si tel est le cas, alors il
    // prendra les nouvelles valeurs.
    for(;;) {

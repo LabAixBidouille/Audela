@@ -27,6 +27,7 @@
 // publiques de l'objet.
 //
 
+
 #ifndef __BUFH__
 #define __BUFH__
 
@@ -80,7 +81,7 @@ typedef struct {
 } mc_ASTROM;
 
 class CBuffer : public CDevice {
-      protected:
+protected:
    mc_ASTROM *p_ast;
    int saving_type;
    /* utilise les définitions suivantes :
@@ -102,7 +103,8 @@ class CBuffer : public CDevice {
    float          initialMipsHi;
    static char    *FileFormatName [];
 
-      public:
+
+public:
    CBuffer();
    ~CBuffer();
    int A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
@@ -111,14 +113,10 @@ class CBuffer : public CDevice {
 						   int size_x,int size_y,int gmsize,int border);
    int A_StarList(double threshin,char *filename,double fwhm,int radius,
 						int border,double threshold,int after_gauss);
-/**
-*  ajoute  un offset au fichier
-*
-*/
    void Add(char *filename, float offset);
    void AstroFlux(int x1, int y1, int x2, int y2, 
                      TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax, 
-                     TYPE_PIXELS *moy, TYPE_PIXELS *seuil);
+                     TYPE_PIXELS *moy, TYPE_PIXELS *seuil, int *nbpix);
    void AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
                      TYPE_PIXELS seuil,float* sx, float* sy, float* r);
    void AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax, 
@@ -148,11 +146,12 @@ class CBuffer : public CDevice {
    void GetDataType(TDataType *dt);
    int  GetH();
    CFitsKeywords* GetKeywords() {return keywords;};
-   void GetPixGray(TYPE_PIXELS*,int,int);
+   void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixels(TYPE_PIXELS* pixels);
    void GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane);
    void GetPixelsPointer(TYPE_PIXELS **ppixels);
-   void GetPixelsZoom( int x1,int y1,int x2, int y2, double zoom, 
+   void GetPixelsVisu( int x1,int y1,int x2, int y2, 
+            int mirrorX, int mirrorY,
             double hicutRed,   double locutRed, 
             double hicutGreen, double locutGreen,
             double hicutBlue,  double locutBlue, 
@@ -166,6 +165,8 @@ class CBuffer : public CDevice {
                      int ismini,float mini,int ismaxi,float maxi);
    //int  InitBuffer(CPixels  * pixels);
    void LoadFits(char *filename);
+   //void LoadFitsRGB(char *filename);
+   void LoadRawFile(char * filename);
    void LoadNoFits(int pixelSize, int offset[4], int pitch , int width, int height, unsigned char *pixelPtr);
    void Load3d(char *filename,int iaxis3);
    void Log(float coef, float offset);
@@ -182,6 +183,7 @@ class CBuffer : public CDevice {
    void RestoreInitialCut();
    void Rot(float x0, float y0, float angle);
    void SaveFits(char *filename);
+   void SaveFitsRGB(char *filename);
    void Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end);
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);
    void SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, int *height, unsigned char **pixelPtr);
@@ -189,8 +191,8 @@ class CBuffer : public CDevice {
    void SetExtension(char *ext);
    void SetKeyword(char *nom, char *data, char *datatype, char *comment, char *unit);
    void SetPix(TYPE_PIXELS,int,int);
-   void SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, int pixels, int keep_keywords);
-   void SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels, int keep_keywords);
+   void SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, void * pixels, long pixelSize, int reverse_x, int reverse_y);
+   void SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels);
    void SetSavingType(int st);
    void Sub(char *filename, float offset);
    void TtImaSeries(char *s);

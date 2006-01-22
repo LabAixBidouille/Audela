@@ -62,27 +62,39 @@ class CVisu : public CDevice {
    int imgnum;
    int box_set;
    double zoom;
+   int mirrorX;
+   int mirrorY;
+   int mirrorDiag;
+
    Pal_Struct pal;
    
 
    CVisu(Tcl_Interp *Interp, int buf, int img);
    ~CVisu();
-   void SetWindow(int xx1, int yy1, int xx2, int yy2);
+   int SetWindow(int xx1, int yy1, int xx2, int yy2);
    void SetWindowFull();
    int IsFull();
-   int GetWindow(int *xx1, int *yy1, int *xx2, int *yy2);
+   int GetMirrorX();
+   int GetMirrorY();
+   int GetMirrorDiag();
+
+   int ClearImage();
    int CreateBuffer(int num);
    int CreateImage(int num);
    int CreatePaletteFromFile(char *filename);
    int CreatePalette(Pal_Type t);
    Lut_Cut GetGrayHicut();
    Lut_Cut GetGrayLocut();
+   char* GetPaletteDir();
+   void GetZoom(double *zoom);
+   int GetWindow(int *xx1, int *yy1, int *xx2, int *yy2);
    void SetGrayCuts(Lut_Cut hc, Lut_Cut lc);
    void SetRgbCuts(Lut_Cut hcRed, Lut_Cut lcRed, Lut_Cut hcGreen, Lut_Cut lcGreen, Lut_Cut hcBlue, Lut_Cut lcBlue);
    double SetZoom(double z);
-   void GetZoom(double *zoom);
    void SetPaletteDir(char *dir);
-   char* GetPaletteDir();
+   void SetMirrorX( int val);
+   void SetMirrorY( int val);
+   void SetMirrorDiag( int val);
    int UpdateDisplay();
 };
 

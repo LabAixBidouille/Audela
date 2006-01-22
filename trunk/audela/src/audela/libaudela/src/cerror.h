@@ -53,6 +53,8 @@ extern char* message(int error);
 #define ELIBSTD_PALETTE_CANT_FIND_FILE     -20
 #define ELIBSTD_PALETTE_MALFORMED_FILE     -21
 #define ELIBSTD_PALETTE_NOTCOMPLETE        -22
+#define ELIBSTD_SUB_WINDOW_ALREADY_EXIST   -23
+#define ELIBSTD_PIXEL_FORMAT_UNKNOWN       -24
 
 #define ELIBSTD_CANT_OPEN_FILE				 -25
 #define ELIBSTD_LIBTT_ERROR    				 -29

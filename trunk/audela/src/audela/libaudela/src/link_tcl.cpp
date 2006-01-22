@@ -1,4 +1,4 @@
-/* cdevice.h
+/* cam_tcl.cpp
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -20,26 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef __CDEVICEH__
-#define __CDEVICEH__
+#include "cpool.h"
 
-#define BUF_PREFIXE "buf"
-#define TEL_PREFIXE "tel"
-#define CAM_PREFIXE "cam"
-#define VISU_PREFIXE "visu"
-#define LINK_PREFIXE "link"
-
-class CDevice {
-      protected:
-      public:
-   CDevice *next;
-   CDevice *prev;
-   int no;
-   char channel[256];
-   CDevice();
-   virtual ~CDevice();
-};
-
-#endif
-
+//------------------------------------------------------------------------------
+// La variable globale est definie de maniere unique ici.
+//
+CPool *link_pool;
 

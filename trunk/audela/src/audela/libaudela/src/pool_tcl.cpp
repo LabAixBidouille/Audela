@@ -31,6 +31,7 @@
 int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdListPoolItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 int CmdListPoolItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -94,6 +95,40 @@ int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
    return TCL_OK;
 }
 
+int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result;
+   char *ligne;
+   CPool *pool;
+   char*classname;
+   pool = (CPool*)clientData;
+   classname = pool->GetClassname();
+   ligne = (char*)calloc(200,sizeof(char));
+   if(argc==2) {
+      // chargement de la lib'argv[1]'
+      sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
+         sprintf(ligne,"error when loading driver lib%s ", interp->result);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         free(ligne);
+         return TCL_ERROR;
+      } else {
+         sprintf(ligne,"%s available",argv[1]);
+         Tcl_Eval(interp,ligne);
+         result = TCL_OK;
+      }
+   } else {
+      sprintf(ligne,"Usage: %s available",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   }
+   free(ligne);
+   return result;
+}
+
+
+
 #define ENREGISTRER_CMD(cmd) {sprintf(ligne,"%s%d",classname,toto->no);\
  Tcl_CreateCommand(interp,ligne,(Tcl_CmdProc *)(cmd),(ClientData)toto,(Tcl_CmdDeleteProc*)NULL);}
 
@@ -101,6 +136,7 @@ int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
 #define CASE_VISU      2
 #define CASE_CAMERA    3
 #define CASE_TELESCOPE 4
+#define CASE_LINK      5
 
 int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -122,10 +158,11 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
    ligne = (char*)calloc(1000,sizeof(char));
    strcpy(s,"");
 
-   if(strcmp(classname,BUF_PREFIXE)==0) CASE = CASE_BUFFER;
-   else if(strcmp(classname,VISU_PREFIXE)==0) CASE = CASE_VISU;
-   else if(strcmp(classname,CAM_PREFIXE)==0) CASE = CASE_CAMERA;
-   else if(strcmp(classname,TEL_PREFIXE)==0) CASE = CASE_TELESCOPE;
+   if(strcmp(classname,BUF_PREFIXE)==0)         CASE = CASE_BUFFER;
+   else if(strcmp(classname,VISU_PREFIXE)==0)   CASE = CASE_VISU;
+   else if(strcmp(classname,CAM_PREFIXE)==0)    CASE = CASE_CAMERA;
+   else if(strcmp(classname,TEL_PREFIXE)==0)    CASE = CASE_TELESCOPE;
+   else if(strcmp(classname,LINK_PREFIXE)==0)   CASE = CASE_LINK;
 
    switch(CASE) {
       case CASE_BUFFER :
@@ -285,6 +322,78 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             }
             // Enregistrement de la commande dans TCL si objet cree
   //          if((toto!=NULL)&&(dontCreateCommand==0)) ENREGISTRER_CMD(CmdTel);
+         }
+      case CASE_LINK :
+         if(argc!=3) {
+            sprintf(ligne,"Usage: %s liblink_driver ?options?",argv[0]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            free(ligne);
+            return TCL_ERROR;
+         } else {
+            // chargement de la lib'argv[1]'
+            sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
+               sprintf(ligne,"error when loading driver lib%s ", interp->result);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               free(ligne);
+               return TCL_ERROR;
+            } else {
+               char temp_drivername[64];
+               char temp_index[64];
+
+               // je cherche si le link est deja cree (meme type et meme index)
+               toto = ((CPool*)clientData)->dev;
+
+               while(toto) {
+                  sprintf(ligne,"lindex [::link%d drivername] 0",toto->no);
+                  if (Tcl_Eval(interp,ligne)==TCL_OK) {
+                     // interp->result contient l'index du link existant
+                     strcpy(temp_drivername, interp->result);
+                     sprintf(ligne,"::link%d index",toto->no);
+                     if (Tcl_Eval(interp,ligne)==TCL_OK) {
+                        // interp->result contient l'index du link existant
+                        strcpy(temp_index, interp->result);
+
+                        if( strcmp(argv[1], temp_drivername)==0 && strcmp(argv[2], temp_index)==0 ) {
+                           // le link existe deja , je retourne son numero
+                           sprintf(ligne,"%d", toto->no);
+                           Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                           free(ligne);
+                           return TCL_OK;
+                        }
+                     }
+                  }
+                  toto = toto->next;
+               }
+
+               // Instancie de l'objet en fonction du link demande
+               toto = new CDevice();
+               pool->Ajouter(0,toto);
+               dontCreateCommand = 1;      
+               // Cree la nouvelle commande par le biais de l'unique
+               // commande exportee de la librairie libtel.
+               sprintf(ligne,"%s link%d %s ",argv[1],toto->no,argv[2]);
+               for (kk=0;kk<argc;kk++) {
+                  strcat(ligne,argv[kk]);
+                  strcat(ligne," ");
+               }
+               if (Tcl_Eval(interp,ligne)==TCL_OK) {
+                  sprintf(ligne,"link%d channel",toto->no);
+                  if (Tcl_Eval(interp,ligne)==TCL_OK) {
+                     strcpy(toto->channel,interp->result);
+                  } else {
+                     strcpy(toto->channel,"");
+                  }
+                  break;
+               } else {
+                  strcpy(s,interp->result);
+                  sprintf(ligne,"::tel::delete %d",toto->no);
+                  Tcl_Eval(interp,ligne);
+                  toto=NULL;
+                  break;
+               }
+            }
          }
    }
 
