@@ -118,8 +118,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     HWND hwnd;
     int r;
     char exe_file[1000];
-    char cmdline[1000];
 #endif
+    char cmdline[1000];
 
     /* on n'utilise pas les fonctions du port // pour ce driver */
     cam->authorized = 1;
