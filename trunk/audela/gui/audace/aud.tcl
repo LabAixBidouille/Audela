@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 15 janvier 2006
+# Date de mise a jour : 25 janvier 2006
 #
 
 #--- Passage de TCL/TK 8.3 a 8.4
@@ -177,6 +177,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace focus.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace crosshair.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace carte.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace conflink.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confeqt.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confcam.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confcat.tcl ]\""
@@ -737,6 +738,7 @@ namespace eval ::audace {
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." ::confCam::run
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,monture)..." ::confTel::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,liaison)..." ::confLink::run
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,optique)..." \
          "::confGenerique::run $audace(base).confOptic ::confOptic $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,equipement)..." ::confEqt::run

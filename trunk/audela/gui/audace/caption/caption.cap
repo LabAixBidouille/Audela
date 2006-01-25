@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 16 janvier 2006
+# Date de mise a jour : 24 janvier 2006
 #
 
 #=========================================================================
@@ -111,6 +111,7 @@ set caption(audace,menu,raquette)                     "Hand Controller"
 set caption(audace,menu,equipement)                   "Equipment"
 set caption(audace,menu,carte)                        "Chart"
 set caption(audace,menu,optique)                      "Optical"
+set caption(audace,menu,liaison)                      "# Liaison"
 
 set caption(audace,menu,aide)                         "Help"
 set caption(audace,menu,sommaire)                     "Contents"
@@ -418,6 +419,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Equipement"
    set caption(audace,menu,carte)                     "Carte"
    set caption(audace,menu,optique)                   "Optique"
+   set caption(audace,menu,liaison)                   "Liaison"
 
    set caption(audace,menu,aide)                      "Aide"
    set caption(audace,menu,sommaire)                  "Sommaire"
@@ -725,6 +727,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Equipaggiamento"
    set caption(audace,menu,carte)                     "Mappa"
    set caption(audace,menu,optique)                   "Ottica"
+   set caption(audace,menu,liaison)                   "# Liaison"
 
    set caption(audace,menu,aide)                      "Aiuto"
    set caption(audace,menu,sommaire)                  "Sommario"
@@ -1032,6 +1035,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Equipo"
    set caption(audace,menu,carte)                     "Mapa"
    set caption(audace,menu,optique)                   "Óptico"
+   set caption(audace,menu,liaison)                   "# Liaison"
 
    set caption(audace,menu,aide)                      "Ayuda"
    set caption(audace,menu,sommaire)                  "Tabla de Contenidos"
@@ -1339,6 +1343,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Einrichtung"
    set caption(audace,menu,carte)                     "Karte"
    set caption(audace,menu,optique)                   "Optisch"
+   set caption(audace,menu,liaison)                   "# Liaison"
 
    set caption(audace,menu,aide)                      "Hilfe"
    set caption(audace,menu,sommaire)                  "Inhalt"
@@ -1646,6 +1651,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Udstyr"
    set caption(audace,menu,carte)                     "Kort"
    set caption(audace,menu,optique)                   "Optisk"
+   set caption(audace,menu,liaison)                   "# Liaison"
 
    set caption(audace,menu,aide)                      "Hjælp"
    set caption(audace,menu,sommaire)                  "Indhold"

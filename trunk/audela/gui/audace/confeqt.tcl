@@ -1,8 +1,8 @@
 #
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
-# Auteur : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 08 janvier 2006
+# Auteurs : Robert DELMAS et Michel PUJOL
+# Date de mise a jour : 24 janvier 2006
 #
 
 namespace eval ::confEqt {
@@ -101,7 +101,7 @@ namespace eval ::confEqt {
       $private(frm).cmd.appliquer configure -relief groove -state disabled
       $private(frm).cmd.fermer configure -state disabled
 
-      #--- j'arrete la raquette precedente
+      #--- j'arrete l'equipement precedent
       stopDriver
 
       #--- je recupere le namespace correspondant au label
@@ -177,7 +177,7 @@ namespace eval ::confEqt {
    #------------------------------------------------------------
    # confEqt::recup_position
    # Permet de recuperer et de sauvegarder la position de la
-   # fenetre de configuration de la raquette
+   # fenetre de configuration de l'equipement
    #------------------------------------------------------------
    proc recup_position { } {
       variable private
@@ -325,7 +325,7 @@ namespace eval ::confEqt {
          findDriver   
       }
 
-      #--- je configure le driver 
+      #--- j'arrete le driver 
       catch { $conf(confEqt)\:\:stopDriver }
       #--- je configure le driver 
       catch { $conf(confEqt)\:\:configureDriver }

@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 21 janvier 2006
+# Date de mise a jour : 22 janvier 2006
 #
 
 global confCam
@@ -33,6 +33,8 @@ namespace eval ::confCam {
       if { ! [ info exists conf(camera,A,start)   ] } { set conf(camera,A,start)   "0" }
       if { ! [ info exists conf(camera,B,camName) ] } { set conf(camera,B,camName) "" }
       if { ! [ info exists conf(camera,B,start)   ] } { set conf(camera,B,start)   "0" }
+      if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
+      if { ! [ info exists conf(camera,C,start)   ] } { set conf(camera,C,start)   "0" }
       if { ! [ info exists conf(camera,position)  ] } { set conf(camera,position)  "+25+45" }
       
       #--- Variables a declarer avant le chargement des outils
@@ -164,10 +166,13 @@ namespace eval ::confCam {
       #--- Initialisation des variables d'echange avec les widgets
       set confCam(camera,A,visuName) "visu1"
       set confCam(camera,B,visuName) $caption(confcam,nouvelle_visu)
+      set confCam(camera,C,visuName) $caption(confcam,nouvelle_visu)
       set confCam(camera,A,camNo)    "0"
       set confCam(camera,B,camNo)    "0"
+      set confCam(camera,C,camNo)    "0"
       set confCam(camera,A,visuNo)   "0"
       set confCam(camera,B,visuNo)   "0"
+      set confCam(camera,C,visuNo)   "0"
       set confCam(camName)           $conf(camera,$confCam(cam_item),camName)
       set confCam(camera,position)   $conf(camera,position)
    }
@@ -446,11 +451,11 @@ namespace eval ::confCam {
       #---
       toplevel $This
       if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $This 900x380$confCam(camera,position)
-         wm minsize $This 900 380
+         wm geometry $This 900x430$confCam(camera,position)
+         wm minsize $This 900 430
       } else {
-         wm geometry $This 670x380$confCam(camera,position)
-         wm minsize $This 670 380
+         wm geometry $This 670x430$confCam(camera,position)
+         wm minsize $This 670 430
       }
       wm resizable $This 1 0
       wm deiconify $This
@@ -478,7 +483,15 @@ namespace eval ::confCam {
          fillPage14 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
-      
+
+      #--- Je recupere la liste des visu
+      set list_visu [list ]
+      foreach visuNo [::visu::list] {
+         lappend list_visu "visu$visuNo"
+      }
+      lappend list_visu $caption(confcam,nouvelle_visu)
+      set confCam(camera,list_visu) $list_visu
+
       #--- Parametres de la camera A
       frame $This.startA -borderwidth 1 -relief raised
          radiobutton $This.startA.item -anchor w -highlightthickness 0 \
@@ -487,20 +500,15 @@ namespace eval ::confCam {
          pack $This.startA.item -side left -padx 3 -pady 3 -fill x
          label $This.startA.name -textvariable conf(camera,A,camName)
          pack $This.startA.name -side left -padx 3 -pady 3 -fill x        
-         set list_visu [list ]
-         foreach visuNo [::visu::list] {
-            lappend list_visu "visu$visuNo"
-         }
-         lappend list_visu $caption(confcam,nouvelle_visu)
          
          ComboBox $This.startA.visu \
             -width 8          \
-            -height [ llength $list_visu ]  \
+            -height [ llength $confCam(camera,list_visu) ]  \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
             -textvariable confCam(camera,A,visuName) \
-            -values $list_visu
+            -values $confCam(camera,list_visu)
          pack $This.startA.visu -side left -padx 3 -pady 3 -fill x
          button $This.startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopDriver A" 
          pack $This.startA.stop -side left -padx 3 -pady 3 -expand true
@@ -517,20 +525,15 @@ namespace eval ::confCam {
          pack $This.startB.item -side left -padx 3 -pady 3 -fill x
          label $This.startB.name -textvariable conf(camera,B,camName)
          pack $This.startB.name -side left -padx 3 -pady 3 -fill x
-         set list_visu [list ]
-         foreach visuNo [::visu::list] {
-            lappend list_visu "visu$visuNo"
-         }
-         lappend list_visu $caption(confcam,nouvelle_visu)
          
          ComboBox $This.startB.visu \
             -width 8          \
-            -height [ llength $list_visu ]  \
+            -height [ llength $confCam(camera,list_visu) ]  \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
             -textvariable confCam(camera,B,visuName) \
-            -values $list_visu
+            -values $confCam(camera,list_visu)
          pack $This.startB.visu -side left -padx 3 -pady 3 -fill x
          button $This.startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopDriver B"
          pack $This.startB.stop -side left -padx 3 -pady 3 -expand true
@@ -538,7 +541,33 @@ namespace eval ::confCam {
             -highlightthickness 0 -variable conf(camera,B,start)
          pack $This.startB.chk -side left -padx 3 -pady 3 -expand true
       pack $This.startB -side top -fill x
-      
+
+      #--- Parametres de la camera C
+      frame $This.startC -borderwidth 1 -relief raised
+         radiobutton $This.startC.item -anchor w -highlightthickness 0 \
+            -text "C :" -value "C" -variable confCam(cam_item) \
+            -command "::confCam::selectCamItem" 
+         pack $This.startC.item -side left -padx 3 -pady 3 -fill x
+         label $This.startC.name -textvariable conf(camera,C,camName)
+         pack $This.startC.name -side left -padx 3 -pady 3 -fill x
+         
+         ComboBox $This.startC.visu \
+            -width 8          \
+            -height [ llength $confCam(camera,list_visu) ]  \
+            -relief sunken    \
+            -borderwidth 1    \
+            -editable 0       \
+            -textvariable confCam(camera,C,visuName) \
+            -values $confCam(camera,list_visu)
+         pack $This.startC.visu -side left -padx 3 -pady 3 -fill x
+         button $This.startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopDriver C"
+         pack $This.startC.stop -side left -padx 3 -pady 3 -expand true
+         checkbutton $This.startC.chk -text "$caption(confcam,creer_au_demarrage)" \
+            -highlightthickness 0 -variable conf(camera,C,start)
+         pack $This.startC.chk -side left -padx 3 -pady 3 -expand true
+      pack $This.startC -side top -fill x
+
+      #--- Frame pour les boutons
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.ok -text "$caption(confcam,ok)" -width 7 -command "::confCam::ok"
          if { $conf(ok+appliquer) == "1" } {
@@ -3325,6 +3354,9 @@ namespace eval ::confCam {
       if { $confCam(camera,B,camNo) == $camNo } {
          stopDriver "B"
       }
+      if { $confCam(camera,C,camNo) == $camNo } {
+         stopDriver "C"
+      }
    }
 
 
@@ -3335,6 +3367,7 @@ namespace eval ::confCam {
    # conf(cam,A,...) -> proprietes de ce type de camera
    #
    proc configureCamera { cam_item } {
+      variable This
       global audace
       global caption
       global conf
@@ -3351,17 +3384,34 @@ namespace eval ::confCam {
       #--- Je recupere le numero de visu associe a la camera
       if { "$conf(camera,$cam_item,camName)" != "" } {
          if { $confCam(camera,$cam_item,visuName) == $caption(confcam,nouvelle_visu) } {         
-            set visuNo [::confVisu::create] 
+            set visuNo [::confVisu::create]
+            set confCam(camera,$cam_item,visuName) visu$visuNo
          } else {
             scan $confCam(camera,$cam_item,visuName) "visu%d" visuNo
          }
       } else {
-         #--- si c'est l'ouverture d'une camera au demarrage de Audela
-         #--- j'impose la visu :
+         #--- Si c'est l'ouverture d'une camera au demarrage de Audela
+         #--- J'impose la visu :
          if { $cam_item == "A" } { set visuNo 1 }
          if { $cam_item == "B" } { set visuNo [::confVisu::create] }
-         
+         if { $cam_item == "C" } { set visuNo [::confVisu::create] }
       }
+
+      #--- Remise a jour de la liste des visu
+      set list_visu [list ]
+      foreach visuNo [::visu::list] {
+         lappend list_visu "visu$visuNo"
+      }
+      lappend list_visu $caption(confcam,nouvelle_visu)
+      set confCam(camera,list_visu) $list_visu
+
+      #--- Je mets a jour les combobox
+      $This.startA.visu configure -height [ llength $confCam(camera,list_visu) ]
+      $This.startA.visu configure -values $confCam(camera,list_visu)
+      $This.startB.visu configure -height [ llength $confCam(camera,list_visu) ]
+      $This.startB.visu configure -values $confCam(camera,list_visu)
+      $This.startC.visu configure -height [ llength $confCam(camera,list_visu) ]
+      $This.startC.visu configure -values $confCam(camera,list_visu)
 
       #--- Je recupere le numero buffer associe a la camera
       set bufNo [::confVisu::getBufNo $visuNo]
