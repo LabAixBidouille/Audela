@@ -1,17 +1,17 @@
 #
-# Fichier : confeqt.tcl
-# Description : Gere des objets 'equipement' a vocation astronomique
+# Fichier : conflink.tcl
+# Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
 # Date de mise a jour : 28 janvier 2006
 #
 
-namespace eval ::confEqt {
+namespace eval ::confLink {
 
    #--- variables locales de ce namespace
    array set private {
-      namespace      "confEqt"
+      namespace      "confLink"
       frm            ""
-      driverType     "equipment"
+      driverType     "link"
       driverPattern  ""
       namespacelist  ""
       driverlist     ""
@@ -28,20 +28,20 @@ namespace eval ::confEqt {
       global conf
 
       #---
-      set private(driverPattern) [ file join audace plugin equipment * pkgIndex.tcl ]
-      set private(frm)           "$audace(base).confeqt"
+      set private(driverPattern) [ file join audace plugin link * pkgIndex.tcl ]
+      set private(frm)           "$audace(base).conflink"
       #--- cree les variables dans conf(..) si elles n'existent pas
-      if { ! [ info exists conf(confEqt) ] }          { set conf(confEqt)          "" }
-      if { ! [ info exists conf(confEqt,start) ] }    { set conf(confEqt,start)    "0" }
-      if { ! [ info exists conf(confEqt,position) ] } { set conf(confEqt,position) "+155+100" }
+      if { ! [ info exists conf(confLink) ] }          { set conf(confLink)          "" }
+      if { ! [ info exists conf(confLink,start) ] }    { set conf(confLink,start)    "0" }
+      if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
 
       #--- charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_caption) confeqt.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) conflink.cap ]\""
 
       findDriver
 
       #--- configure le driver selectionne par defaut
-      #if { $conf(confEqt,start) == "1" } {
+      #if { $conf(confLink,start) == "1" } {
       #   configureDriver
       #}
    }
@@ -55,7 +55,7 @@ namespace eval ::confEqt {
    proc getLabel { } {
       global caption
 
-      return "$caption(confeqt,config)"
+      return "$caption(conflink,config)"
    }
 
    #------------------------------------------------------------
@@ -68,7 +68,7 @@ namespace eval ::confEqt {
       global conf
 
       if { [createDialog ]==0 } {
-         select $conf(confEqt)
+         select $conf(confLink)
          catch { tkwait visibility $private(frm) }
       }
    }
@@ -102,36 +102,36 @@ namespace eval ::confEqt {
       $private(frm).cmd.appliquer configure -relief groove -state disabled
       $private(frm).cmd.fermer configure -state disabled
 
-      #--- j'arrete l'equipement precedent
+      #--- j'arrete la liaison precedente
       stopDriver
 
       #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
       set index [lsearch -exact $private(driverlist) $label ] 
       if { $index != -1 } {
-         set conf(confEqt) [lindex $private(namespacelist) $index]
+         set conf(confLink) [lindex $private(namespacelist) $index]
       } else {
-         set conf(confEqt) ""
+         set conf(confLink) ""
       }
 
       #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
       foreach name $private(namespacelist) {
-         set drivername [ $name\:\:widgetToConf ]    
+         set drivername [ $name\:\:widgetToConf ]
       }
 
       #--- Affichage d'un message d'alerte si necessaire
-      ::confEqt::Connect_Equipement
+      ::confLink::Connect_Liaison
 
       #--- je demarre le driver selectionne
-      configureDriver    
+      configureDriver
 
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -relief raised -state normal
       $private(frm).cmd.fermer configure -state normal
 
       #--- Effacement du message d'alerte s'il existe
-      if [ winfo exists $audace(base).connectEquipement ] {
-         destroy $audace(base).connectEquipement
+      if [ winfo exists $audace(base).connectLiaison ] {
+         destroy $audace(base).connectLiaison
       }
    }
 
@@ -150,18 +150,18 @@ namespace eval ::confEqt {
       $private(frm).cmd.aide configure -relief groove -state disabled
 
       #--- je recupere le label de l'onglet selectionne
-      set private(conf_confEqt) [Rnotebook:currentName $private(frm).usr.book ]
+      set private(conf_confLink) [Rnotebook:currentName $private(frm).usr.book ]
       #--- je recupere le namespace correspondant au label  
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
       set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
-         set private(conf_confEqt) [lindex $private(namespacelist) $index]
+         set private(conf_confLink) [lindex $private(namespacelist) $index]
       } else {
-         set private(conf_confEqt) ""
+         set private(conf_confLink) ""
       }
       #--- j'affiche la documentation
-      set driver_doc [ $private(conf_confEqt)\:\:getHelp ]
-      ::audace::showHelpPlugin equipment $private(conf_confEqt) "$driver_doc"
+      set driver_doc [ $private(conf_confLink)\:\:getHelp ]
+      ::audace::showHelpPlugin link $private(conf_confLink) "$driver_doc"
 
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -state normal
@@ -176,7 +176,7 @@ namespace eval ::confEqt {
    proc fermer { } {
       variable private
 
-      ::confEqt::recup_position
+      ::confLink::recup_position
       $private(frm).cmd.ok configure -state disabled
       $private(frm).cmd.appliquer configure -state disabled
       $private(frm).cmd.fermer configure -relief groove -state disabled
@@ -184,20 +184,20 @@ namespace eval ::confEqt {
    }
 
    #------------------------------------------------------------
-   # confEqt::recup_position
+   # confLink::recup_position
    # Permet de recuperer et de sauvegarder la position de la
-   # fenetre de configuration de l'equipement
+   # fenetre de configuration de la liaison
    #------------------------------------------------------------
    proc recup_position { } {
       variable private
       global conf
 
-      set private(confEqt,geometry) [ wm geometry $private(frm) ]
-      set deb [ expr 1 + [ string first + $private(confEqt,geometry) ] ]
-      set fin [ string length $private(confEqt,geometry) ]
-      set private(confEqt,position) "+[ string range $private(confEqt,geometry) $deb $fin ]"
+      set private(confLink,geometry) [ wm geometry $private(frm) ]
+      set deb [ expr 1 + [ string first + $private(confLink,geometry) ] ]
+      set fin [ string length $private(confLink,geometry) ]
+      set private(confLink,position) "+[ string range $private(confLink,geometry) $deb $fin ]"
       #---
-      set conf(confEqt,position) $private(confEqt,position)
+      set conf(confLink,position) $private(confLink,position)
    }
 
    #------------------------------------------------------------
@@ -224,27 +224,27 @@ namespace eval ::confEqt {
       }
 
       #---
-      set private(confEqt,position) $conf(confEqt,position)
+      set private(confLink,position) $conf(confLink,position)
 
       #---
-      if { [ info exists private(confEqt,geometry) ] } {
-         set deb [ expr 1 + [ string first + $private(confEqt,geometry) ] ]
-         set fin [ string length $private(confEqt,geometry) ]
-         set private(confEqt,position) "+[ string range $private(confEqt,geometry) $deb $fin ]"
+      if { [ info exists private(confLink,geometry) ] } {
+         set deb [ expr 1 + [ string first + $private(confLink,geometry) ] ]
+         set fin [ string length $private(confLink,geometry) ]
+         set private(confLink,position) "+[ string range $private(confLink,geometry) $deb $fin ]"
       }
 
       toplevel $private(frm)
       if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $private(frm) 620x405$private(confEqt,position)
-         wm minsize $private(frm) 620 405
+         wm geometry $private(frm) 620x370$private(confLink,position)
+         wm minsize $private(frm) 620 370
       } else {
-         wm geometry $private(frm) 460x405$private(confEqt,position)
-         wm minsize $private(frm) 460 405
+         wm geometry $private(frm) 580x370$private(confLink,position)
+         wm minsize $private(frm) 580 370
       }
       wm resizable $private(frm) 1 0
       wm deiconify $private(frm)
-      wm title $private(frm) "$caption(confeqt,config)"
-      wm protocol $private(frm) WM_DELETE_WINDOW "::confEqt::fermer"
+      wm title $private(frm) "$caption(conflink,config)"
+      wm protocol $private(frm) WM_DELETE_WINDOW "::confLink::fermer"
 
       frame $private(frm).usr -borderwidth 0 -relief raised
 
@@ -266,26 +266,26 @@ namespace eval ::confEqt {
 
       #--- frame checkbutton creer au demarrage
       frame $private(frm).start -borderwidth 1 -relief raised
-         checkbutton $private(frm).start.chk -text "$caption(confeqt,creer_au_demarrage)" \
-            -highlightthickness 0 -variable conf(confEqt,start)
+         checkbutton $private(frm).start.chk -text "$caption(conflink,creer_au_demarrage)" \
+            -highlightthickness 0 -variable conf(confLink,start)
          pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
       pack $private(frm).start -side top -fill x
 
       #--- frame bouton ok, appliquer, fermer
       frame $private(frm).cmd -borderwidth 1 -relief raised
-      button $private(frm).cmd.ok -text "$caption(confeqt,ok)" -relief raised -state normal -width 7 \
-         -command " ::confEqt::ok "
+      button $private(frm).cmd.ok -text "$caption(conflink,ok)" -relief raised -state normal -width 7 \
+         -command " ::confLink::ok "
       if { $conf(ok+appliquer)=="1" } {
          pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
       }
-      button $private(frm).cmd.appliquer -text "$caption(confeqt,appliquer)" -relief raised -state normal -width 8 \
-         -command " ::confEqt::appliquer "
+      button $private(frm).cmd.appliquer -text "$caption(conflink,appliquer)" -relief raised -state normal -width 8 \
+         -command " ::confLink::appliquer "
       pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.fermer -text "$caption(confeqt,fermer)" -relief raised -state normal -width 7 \
-         -command " ::confEqt::fermer "
+      button $private(frm).cmd.fermer -text "$caption(conflink,fermer)" -relief raised -state normal -width 7 \
+         -command " ::confLink::fermer "
       pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.aide -text "$caption(confeqt,aide)" -relief raised -state normal -width 8 \
-         -command " ::confEqt::afficheAide "
+      button $private(frm).cmd.aide -text "$caption(conflink,aide)" -relief raised -state normal -width 8 \
+         -command " ::confLink::afficheAide "
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $private(frm).cmd -side top -fill x    
 
@@ -309,7 +309,7 @@ namespace eval ::confEqt {
    proc select { { name "" } } {
       variable private
 
-      #--- je recupere le label correspondant au namespace  
+      #--- je recupere le label correspondant au namespace
       set index [ lsearch -exact $private(namespacelist) "$name" ]
       if { $index != -1 } {
          Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ]
@@ -318,13 +318,13 @@ namespace eval ::confEqt {
 
    #------------------------------------------------------------
    # configureDriver
-   # configure le driver dont le label est dans $conf(confEqt)
+   # configure le driver dont le label est dans $conf(confLink)
    #------------------------------------------------------------
    proc configureDriver { } {
       variable private
       global conf
 
-      if { $conf(confEqt) == "" } {
+      if { $conf(confLink) == "" } {
          #--- pas de driver selectionne par defaut
          return
       }
@@ -335,9 +335,9 @@ namespace eval ::confEqt {
       }
 
       #--- j'arrete le driver 
-      catch { $conf(confEqt)\:\:stopDriver }
+      catch { $conf(confLink)\:\:stopDriver }
       #--- je configure le driver 
-      catch { $conf(confEqt)\:\:configureDriver }
+      catch { $conf(confLink)\:\:configureDriver }
    }
 
    #------------------------------------------------------------
@@ -349,8 +349,8 @@ namespace eval ::confEqt {
    proc stopDriver { } {
       global conf
 
-      if { "$conf(confEqt)" != "" } {
-         catch { $conf(confEqt)\:\:stopDriver }
+      if { "$conf(confLink)" != "" } {
+         catch { $conf(confLink)\:\:stopDriver }
       }
    }
 
@@ -363,7 +363,7 @@ namespace eval ::confEqt {
    #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
    #  - le driver doit avoir une procedure getlabel
    # 
-   # si le driver remplit les conditions
+   # si le driver remplit les conditions 
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
    #    sinon le fichier tcl est ignore car ce n'est pas un driver
    #
@@ -390,14 +390,14 @@ namespace eval ::confEqt {
       foreach fichier [glob $private(driverPattern)] {
          uplevel #0 "source $fichier"
          catch {
-            set equipname [ file tail [ file dirname "$fichier" ] ]
-            package require $equipname
-            if { [$equipname\:\:getDriverType] == $private(driverType) } {
-               set driverlabel "[$equipname\:\:getLabel]" 
+            set linkname [ file tail [ file dirname "$fichier" ] ]
+            package require $linkname
+            if { [$linkname\:\:getDriverType] == $private(driverType) } {
+               set driverlabel "[$linkname\:\:getLabel]" 
                #--- si c'est un driver valide, je l'ajoute dans la liste
-               lappend private(namespacelist) $equipname
+               lappend private(namespacelist) $linkname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#$caption(confeqt,equipement) $driverlabel v[package present $equipname]\n"                 
+               $audace(console)::affiche_prompt "#$caption(conflink,liaison) $driverlabel v[package present $linkname]\n"                 
             }
          }
       }
@@ -413,50 +413,50 @@ namespace eval ::confEqt {
    }
 
    #------------------------------------------------------------
-   # Connect_Equipement
-   # Affichage d'un message d'alerte pendant la connexion d'un equipement au demarrage
+   # Connect_Liaison
+   # Affichage d'un message d'alerte pendant la connexion d'une liaison au demarrage
    #------------------------------------------------------------
-   proc Connect_Equipement { } {
+   proc Connect_Liaison { } {
       variable private
       global audace
       global caption
       global color
 
-      if [ winfo exists $audace(base).connectEquipement ] {
-         destroy $audace(base).connectEquipement
+      if [ winfo exists $audace(base).connectLiaison ] {
+         destroy $audace(base).connectLiaison
       }
 
-      toplevel $audace(base).connectEquipement
-      wm resizable $audace(base).connectEquipement 0 0
-      wm title $audace(base).connectEquipement "$caption(confeqt,attention)"
+      toplevel $audace(base).connectLiaison
+      wm resizable $audace(base).connectLiaison 0 0
+      wm title $audace(base).connectLiaison "$caption(conflink,attention)"
       if { [ info exists private(frm) ] } {
-         set posx_connectEquipement [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
-         set posy_connectEquipement [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
-         wm geometry $audace(base).connectEquipement +[ expr $posx_connectEquipement + 50 ]+[ expr $posy_connectEquipement + 100 ]
-         wm transient $audace(base).connectEquipement $private(frm)
+         set posx_connectLiaison [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
+         set posy_connectLiaison [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
+         wm geometry $audace(base).connectLiaison +[ expr $posx_connectLiaison + 50 ]+[ expr $posy_connectLiaison + 100 ]
+         wm transient $audace(base).connectLiaison $private(frm)
       } else {
-         wm geometry $audace(base).connectEquipement +200+100
-         wm transient $audace(base).connectEquipement $audace(base)
+         wm geometry $audace(base).connectLiaison +200+100
+         wm transient $audace(base).connectLiaison $audace(base)
       }
 
       #--- Cree l'affichage du message
-      label $audace(base).connectEquipement.labURL_1 -text "$caption(confeqt,connexion_texte1)" \
+      label $audace(base).connectLiaison.labURL_1 -text "$caption(conflink,connexion_texte1)" \
          -font $audace(font,arial_10_b) -fg $color(red)
-      uplevel #0 { pack $audace(base).connectEquipement.labURL_1 -padx 10 -pady 2 }
-      label $audace(base).connectEquipement.labURL_2 -text "$caption(confeqt,connexion_texte2)" \
+      uplevel #0 { pack $audace(base).connectLiaison.labURL_1 -padx 10 -pady 2 }
+      label $audace(base).connectLiaison.labURL_2 -text "$caption(conflink,connexion_texte2)" \
          -font $audace(font,arial_10_b) -fg $color(red)
-      uplevel #0 { pack $audace(base).connectEquipement.labURL_2 -padx 10 -pady 2 }
+      uplevel #0 { pack $audace(base).connectLiaison.labURL_2 -padx 10 -pady 2 }
       update
 
       #--- La nouvelle fenetre est active
-      focus $audace(base).connectEquipement
+      focus $audace(base).connectLiaison
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).connectEquipement
+      ::confColor::applyColor $audace(base).connectLiaison
    }
 
 }
 
 #--- connexion au demarrage du driver selectionne par defaut
-::confEqt::init
+::confLink::init
 
