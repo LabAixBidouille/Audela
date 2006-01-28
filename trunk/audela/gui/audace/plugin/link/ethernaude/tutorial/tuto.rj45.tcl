@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 17 novembre 2005
+# Date de mise a jour : 28 janvier 2006
 #
 
 #!/bin/sh
@@ -10,23 +10,23 @@ proc caption_def_plugcam { langage } {
    global texte caption
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
-  set texte(firstdark_1) "Tutorial pour les utilisateurs de l'Ethernaude"
-  set texte(firstdark_2) "Présentation du câble réseau."
-  set texte(firstdark_3) "\
+   set texte(firstdark_1) "Tutorial pour les utilisateurs de l'EthernAude"
+   set texte(firstdark_2) "Présentation du câble réseau."
+   set texte(firstdark_3) "\
 La photo du haut montre une prise de type RJ45 mâle. On utilisera un câble\
-muni d'une telle prise mâle aux deux bouts pour relier l'Ethernaude\
+muni d'une telle prise mâle aux deux bouts pour relier l'EthernAude\
 à un réseau informatique.\n\
 \n\
 Il faut noter qu'il existe deux types de câbles. Si l'on désire relier\
-directement le boîtier Ethernaude à la prise réseau de l'ordinateur,\
+directement le boîtier EthernAude à la prise réseau de l'ordinateur,\
 on devra utiliser un câble croisé. Si l'on désire relier le boîtier\
-Ethernaude à un boîtier de distribution (Hub ou Switch), il faudra\
+EthernAude à un boîtier de distribution (Hub ou Switch), il faudra\
 utiliser un câble droit. Ces câbles sont vendus dans les magasins\
 d'informatique. Attention à bien préciser si le câble doit être droit ou croisé.\n\
 \n\
 La photo du bas montre un Hub. C'est un boîtier muni de plusieurs prises RJ45 femelles qui\
 permet de faire communiquer plusieurs appareils reliés dessus.\
-Ainsi, le Hub devra être relié à l'Ethernaude et à l'ordinateur\
+Ainsi, le Hub devra être relié à l'EthernAude et à l'ordinateur\
 pour réaliser des images avec la caméra.\n\
 \n\
 Un Switch est un Hub intelligent. Le Switch permet une communication\
@@ -36,24 +36,24 @@ Il est très fortement recommandé de choisir un Switch plutôt\
 qu'un Hub. Cela permet de minimiser les collisions réseaux qui\
 peuvent engendrer des parasites sur les images.\
 "
-  set texte(firstdark_exit) " Retour à la page principale."
+   set texte(firstdark_exit) " Retour à la page principale."
 } else {
-  set texte(firstdark_1) "Tutorial for Ethernaude Users"
-  set texte(firstdark_2) "What is a Network Cable?"
-  set texte(firstdark_3) "\
+   set texte(firstdark_1) "Tutorial for EthernAude Users"
+   set texte(firstdark_2) "What is a Network Cable?"
+   set texte(firstdark_3) "\
 The top photo shows a male RJ45 socket. A cable with\
-such sockets at each end will be used to link Ethernaude to a network.\n\
+such sockets at each end will be used to link EthernAude to a network.\n\
 \n\
 Please note that there are two kinds of cables.\
-If you want to link the Ethernaude device directly to the computer\
+If you want to link the EthernAude device directly to the computer\
 socket, you must use a crossover cable.  If you want to link the\
-Ethernaude device to a hub or to a switch box, you must use a\
+EthernAude device to a hub or to a switch box, you must use a\
 non-crossover cable.  These cables are sold in computer shops.\
 Be carefull though to explain if you want a crossover cable or a non-crossover cable.\n\
 \n\
 The bottom photo shows a hub. It is a box that provides many female\
 RJ45 sockets. It allows you to link devices plugged into it.\
-As a result, the hub must be linked both to the Ethernaude\
+As a result, the hub must be linked both to the EthernAude\
 device and to the computer to acquire images with the camera.\n\
 \n\
 A switch is a smart hub.  With a switch, communication\
@@ -63,7 +63,7 @@ It is strongly recommended to choose a switch rather than a hub.\
 It allows you to limit network collisions that can generate\
 interferences on CCD images.\
 "
-  set texte(firstdark_exit) " Return to the Main Page."
+   set texte(firstdark_exit) " Return to the Main Page."
 }
 }
 
@@ -125,25 +125,25 @@ menu .second.menuBar.file -tearoff 0
 
 # On the Mac use the specia .apple menu for the about item
 if {$::tcl_platform(platform) == "macintosh"} {
-    .second.menuBar add cascade -menu .menuBar.apple
-    menu .second.menuBar.apple -tearoff 0
-    .second.menuBar.apple add command -label $caption(tuto_about)  -command "aboutBox"
+   .second.menuBar add cascade -menu .menuBar.apple
+   menu .second.menuBar.apple -tearoff 0
+   .second.menuBar.apple add command -label $caption(tuto_about)  -command "aboutBox"
 } else {
-    .second.menuBar.file add command -label $caption(tuto_about)  -command "aboutBox" \
-	-underline 0 -accelerator "<F1>"
-    .second.menuBar.file add sep
+   .second.menuBar.file add command -label $caption(tuto_about)  -command "aboutBox" \
+      -underline 0 -accelerator "<F1>"
+   .second.menuBar.file add sep
 }
 
 .second.menuBar.file add command -label $caption(tuto_quit) -command "tuto_exit" -underline 0 \
-    -accelerator "Meta-Q"
+   -accelerator "Meta-Q"
 .second configure -menu .second.menuBar
 bind .second <F1> aboutBox
 
 frame .second.statusBar
 label .second.statusBar.lab -text "   " -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 label .second.statusBar.foo -width 8 -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
@@ -151,9 +151,9 @@ pack .second.statusBar -side bottom -fill x -pady 2
 catch {image delete image1}
 image create photo image1
 if {[info exists audace]==1} {
-  set rep [ file join $audace(rep_plugin) camera ethernaude tutorial ]
+   set rep [ file join $audace(rep_plugin) link ethernaude tutorial ]
 } else {
-  set rep "."
+   set rep "."
 }
 image1 configure -file [ file join $rep rj45.gif ]
 image create photo image11
@@ -174,11 +174,11 @@ pack .second.photo1 -side right
 frame .second.textFrame
 pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
-    -takefocus 1
+   -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
 text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
+#   -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -195,46 +195,46 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 
 if {[winfo depth .second] == 1} {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .second.t tag configure hot -background black -foreground white
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure hot -background black -foreground white
 } else {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-foreground blue -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-foreground #303080 -underline 1
-    .second.t tag configure hot -foreground red -underline 1
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .second.t tag configure hot -foreground red -underline 1
 }
 .second.t tag bind demo <ButtonRelease-1> {
-    invoke [.second.t index {@%x,%y}] .second
+   invoke [.second.t index {@%x,%y}] .second
 }
 set lastLine ""
 .second.t tag bind demo <Enter> {
-    set lastLine [.second.t index {@%x,%y linestart}]
-    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .second.t config -cursor hand2
-    #showStatus [.second.t index {@%x,%y}]
+   set lastLine [.second.t index {@%x,%y linestart}]
+   .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .second.t config -cursor hand2
+   #showStatus [.second.t index {@%x,%y}]
 }
 .second.t tag bind demo <Leave> {
-    .second.t tag remove hot 1.0 end
-    .second.t config -cursor xterm
-    .second.statusBar.lab config -text ""
+   .second.t tag remove hot 1.0 end
+   .second.t config -cursor xterm
+   .second.statusBar.lab config -text ""
 }
 .second.t tag bind demo <Motion> {
-    set newLine [.second.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-	.second.t tag remove hot 1.0 end
-	set lastLine $newLine
+   set newLine [.second.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .second.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-	set tags [.second.t tag names {@%x,%y}]
-	set i [lsearch -glob $tags demo-*]
-	if {$i >= 0} {
-	    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-	}
-    }
-    #showStatus [.second.t index {@%x,%y}]
+      set tags [.second.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+         .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.second.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.

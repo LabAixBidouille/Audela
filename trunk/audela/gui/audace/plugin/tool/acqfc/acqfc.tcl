@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 27 janvier 2006
+# Date de mise a jour : 28 janvier 2006
 #
 
 package provide acqfc 2.1
@@ -560,17 +560,26 @@ namespace eval ::AcqFC {
             switch -exact -- $panneau(AcqFC,$visuNo,obt) {
                0  {
                   set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_ouvert)
-                  catch { $frm.foncobtu configure -values $confCam(conf_audine,foncobtu) }
+                  catch {
+                     $frm.foncobtu configure -height [ llength $confCam(conf_audine,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_audine,list_foncobtu)
+                  }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "opened"
                }
                1  {
                   set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_ferme)
-                  catch { $frm.foncobtu configure -values $confCam(conf_audine,foncobtu) }
+                  catch {
+                     $frm.foncobtu configure -height [ llength $confCam(conf_audine,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_audine,list_foncobtu)
+                  }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "closed"
                }
                2  {
                   set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_synchro)
-                  catch { $frm.foncobtu configure -values $confCam(conf_audine,foncobtu) }
+                  catch {
+                     $frm.foncobtu configure -height [ llength $confCam(conf_audine,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_audine,list_foncobtu)
+                  }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "synchro"
                }
             }

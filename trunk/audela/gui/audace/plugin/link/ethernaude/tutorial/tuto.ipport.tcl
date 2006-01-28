@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 17 novembre 2005
+# Date de mise a jour : 28 janvier 2006
 #
 
 #!/bin/sh
@@ -28,26 +28,27 @@ proc caption_def_plugcam { langage } {
    set ipeth(ipnumethernaudeping) [lindex [ping $ipeth(ipnumethernaude)] 0]
 
 if {[string compare $langage french] ==0 } {
-	set caption(connect) "Connecter"
-  set texte(firstdark_1) "Tutorial pour les utilisateurs de l'Ethernaude"
-  set texte(firstdark_2) "Connexion logicielle entre l'ordinateur et l'Ethernaude."
-  set texte(firstdark_3) "\
+   set caption(ethernaude) "EthernAude"
+   set caption(connect) "Connecter"
+   set texte(firstdark_1) "Tutorial pour les utilisateurs de l'EthernAude"
+   set texte(firstdark_2) "Connexion logicielle entre l'ordinateur et l'EthernAude."
+   set texte(firstdark_3) "\
 Pour communiquer sur un réseau informatique, l'ordinateur et\
-le boîtier Ethernaude possèdent un numéro IP (Internet Protocol).\
-La connexion de l'ordinateur sur l'Ethernaude est réalisée sur\
+le boîtier EthernAude possèdent un numéro IP (Internet Protocol).\
+La connexion de l'ordinateur sur l'EthernAude est réalisée sur\
 le port numéro 192. Ce numéro est fixe et vient en complément du\
 numéro IP. Avant de continuer, assurez-vous qu'un seul boîtier\
-Ethernaude est connecté sur votre réseau (cette restriction ne vaut\
+EthernAude est connecté sur votre réseau (cette restriction ne vaut\
 que pour ce test de connexion)."
    if {$ipeth(ipon)=="yes"} {
-	   if {$ipeth(ipnumethernaudeping)==1} {
-		   set textip "Un appareil, qui a ce numéro, a été détecté sur le réseau. Vérifier qu'il s'agisse bien de l'Ethernaude"
-	   } else {
-		   set textip "Ce numéro n'est pas encore utilisé"
-	   }
+      if {$ipeth(ipnumethernaudeping)==1} {
+         set textip "Un appareil, qui a ce numéro, a été détecté sur le réseau. Vérifier qu'il s'agisse bien de l'EthernAude."
+      } else {
+         set textip "Ce numéro n'est pas encore utilisé"
+      }
       set texte(firstdark_4) "\
 Actuellement, votre ordinateur possède le numéro IP $ipeth(ipnum).\
-Le boîtier Ethernaude doit être configuré pour avoir un\
+Le boîtier EthernAude doit être configuré pour avoir un\
 numéro IP dont les trois premiers nombres sont $ipeth(ipnumeth).\
 Le dernier numéro doit être différent de $ipeth(ipnumpc) (celui\
 de votre ordinateur). Par exemple, $ipeth(ipnumethernaude).\
@@ -55,10 +56,10 @@ $textip. Vérifier\
 que ce numéro est différent de ceux des autres appareils\
 branchés sur le réseau.\n\
 \n\
-Dans le panneau de droite, indiquer le numéro IP de l'Ethernaude\
+Dans le panneau de droite, indiquer le numéro IP de l'EthernAude\
 et appuyer sur le bouton Connecter pour établir\
 la connexion avec l'ordinateur.\
-Dans une première étape, le numéro IP de l'Ethernaude est mis à\
+Dans une première étape, le numéro IP de l'EthernAude est mis à\
 jour par le programme IPSetting (système Windows seulement). La seconde étape établit la connexion\
 entre l'ordinateur et le boîtier.\
 Si la connexion s'est bien passée alors le message\
@@ -68,36 +69,37 @@ Si la connexion s'est bien passée alors le message\
 Actuellement, votre ordinateur n'est pas configuré pour une utilisation\
 en réseau. Consulter l'aide de votre système d'exploitation.\n\n\
 "
-  }
+   }
    set texte(firstdark_5) ""
    if {$ipeth(ipnumethernaudeping)==1} {
       set texte(firstdark_5) "\n\n\
 N.B. Le programme IPSetting.exe, présent dans le dossier\
-bin permet de changer le numéro IP du boîtier Ethernaude.\
+bin permet de changer le numéro IP du boîtier EthernAude.\
 Il peut être utilisé indépendemment de ce logiciel.\
 "
-  }
-  set texte(firstdark_exit) " Retour à la page principale."
+   }
+   set texte(firstdark_exit) " Retour à la page principale."
 } else {
-	set caption(connect) "Connect"
-  set texte(firstdark_1) "Tutorial for Ethernaude Users"
-  set texte(firstdark_2) "Computer - Ethernaude Software Connection"
-  set texte(firstdark_3) "\
-To communicate through a network, both the computer and the Ethernaude\
+   set caption(ethernaude) "EthernAude"
+   set caption(connect) "Connect"
+   set texte(firstdark_1) "Tutorial for EthernAude Users"
+   set texte(firstdark_2) "Computer - EthernAude Software Connection"
+   set texte(firstdark_3) "\
+To communicate through a network, both the computer and the EthernAude\
 device have IP numbers (Internet Protocol).\
-Port 192 is used to connect the computer to the Ethernaude device.\
+Port 192 is used to connect the computer to the EthernAude device.\
 That number is constant and completes the IP number.\
-Before continuing, verify that only one Ethernaude device is connected\
+Before continuing, verify that only one EthernAude device is connected\
 to your network (this restriction only applies to this connection test)."
    if {$ipeth(ipon)=="yes"} {
-	   if {$ipeth(ipnumethernaudeping)==1} {
-		   set textip "A device with that number has been detected in the network.  Verify that it is the Ethernaude device"
-	   } else {
-		   set textip "This number is not yet used"
-	   }
+      if {$ipeth(ipnumethernaudeping)==1} {
+         set textip "A device with that number has been detected in the network.  Verify that it is the EthernAude device."
+      } else {
+         set textip "This number is not yet used"
+      }
       set texte(firstdark_4) "\
 Your computer currently has the IP $ipeth(ipnum) number.\
-The Ethernaude device must be set to have an IP number\
+The EthernAude device must be set to have an IP number\
 with the following three first numbers $ipeth(ipnumeth).\
 The last number must be different from $ipeth(ipnumpc) (=the\
 number for this computer). For example, $ipeth(ipnumethernaude).\
@@ -105,12 +107,12 @@ $textip. Verify\
 that this IP number is different from those of the other devices\
 linked to the network.\n\
 \n\
-On the right panel, write the IP number of the Ethernaude device\
+On the right panel, write the IP number of the EthernAude device\
 and push the Connect button to connect to the computer.\
-In a first step, the Ethernaude IP number is updated using\
+In a first step, the EthernAude IP number is updated using\
 the IPsetting software (Windows OS only).\
 The second step connects the computer\
-and the Ethernaude device.\
+and the EthernAude device.\
 If the connection process succeeds, the message\
 \"Camera connected\" should be displayed.\
 "
@@ -119,12 +121,12 @@ If the connection process succeeds, the message\
 Your computer is not currently configured to be used in a network.\
 Read the Help section of the OS manual.\n\n\
 "
-  }
+   }
    set texte(firstdark_5) ""
    if {$ipeth(ipnumethernaudeping)==1} {
       set texte(firstdark_5) "\n\n\
 Note: The IPSetting.exe utility in the bin folder\
-allows you to change the IP number of the Ethernaude device.\
+allows you to change the IP number of the EthernAude device.\
 It can be used independently of this software.\
 "
    }
@@ -133,30 +135,31 @@ It can be used independently of this software.\
 }
 
 proc connect_ethernaude {} {
-	global audace ipeth caption
+   global audace ipeth caption
    #ipeth(ipnumethernaude)
    if { [llength [cam::list] ] == 1 } {
-	   if {[lindex [cam1 drivername] 0]=="libethernaude"} {
+      if {[lindex [cam1 drivername] 0]=="libethernaude"} {
          tk_messageBox -message "Camera already connected" -icon info
-		   return
-	   }
-	   catch { cam::delete 1 }
+         return
+      }
+      catch { cam::delete 1 }
    }
    if {[info exists audace]==1} {
-	   set ipsetting_filename [ file join $audace(rep_install) bin IPSetting.exe ]
+      set ipsetting_filename [ file join $audace(rep_install) bin IPSetting.exe ]
    } else {
-	   set ipsetting_filename [ file join .. bin IPSetting.exe ]
+      set ipsetting_filename [ file join .. bin IPSetting.exe ]
    }
-   set erreur [catch { cam::create ethernaude udp -ip "$ipeth(ipnumethernaude)" -ipsetting "$ipsetting_filename"} msg]
+   set eth_canspeed [ expr round((-7.11)/(39.51-7.11)*30.) ]
+   set erreur [ catch { cam::create ethernaude udp -ip "$ipeth(ipnumethernaude)" \
+      -shutterinvert "1" -canspeed $eth_canspeed \
+      -ipsetting "$ipsetting_filename" } msg ]
    if { $erreur == "1" } {
       tk_messageBox -message "$msg" -icon error
       return
    } else {
       if {[info exists audace]==1} {
-         set confAudine(connect) "0"
-         set confWebCam(connect) "0"
          ::console::affiche_saut "\n"
-         ::console::affiche_erreur "$caption(camera,ethernaude)\n"
+         ::console::affiche_erreur "$caption(ethernaude)\n"
          set audace(camNo) $msg
          cam$audace(camNo) buf $audace(bufNo)
          ::audace::visuDynamix 32767 -32768
@@ -225,25 +228,25 @@ menu .second.menuBar.file -tearoff 0
 
 # On the Mac use the specia .apple menu for the about item
 if {$::tcl_platform(platform) == "macintosh"} {
-    .second.menuBar add cascade -menu .menuBar.apple
-    menu .second.menuBar.apple -tearoff 0
-    .second.menuBar.apple add command -label $caption(tuto_about)  -command "aboutBox"
+   .second.menuBar add cascade -menu .menuBar.apple
+   menu .second.menuBar.apple -tearoff 0
+   .second.menuBar.apple add command -label $caption(tuto_about)  -command "aboutBox"
 } else {
-    .second.menuBar.file add command -label $caption(tuto_about)  -command "aboutBox" \
-	-underline 0 -accelerator "<F1>"
-    .second.menuBar.file add sep
+   .second.menuBar.file add command -label $caption(tuto_about)  -command "aboutBox" \
+      -underline 0 -accelerator "<F1>"
+   .second.menuBar.file add sep
 }
 
 .second.menuBar.file add command -label $caption(tuto_quit) -command "tuto_exit" -underline 0 \
-    -accelerator "Meta-Q"
+   -accelerator "Meta-Q"
 .second configure -menu .second.menuBar
 bind .second <F1> aboutBox
 
 frame .second.statusBar
 label .second.statusBar.lab -text "   " -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 label .second.statusBar.foo -width 8 -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
@@ -251,9 +254,9 @@ pack .second.statusBar -side bottom -fill x -pady 2
 #catch {image delete image1}
 #image create photo image1
 #if {[info exists audace]==1} {
-#  set rep [ file join $audace(rep_plugin) camera ethernaude tutorial ]
+#   set rep [ file join $audace(rep_plugin) link ethernaude tutorial ]
 #} else {
-#  set rep "."
+#   set rep "."
 #}
 #image1 configure -file [ file join $rep ethernaude5.gif ]
 #image create photo image11
@@ -279,7 +282,7 @@ if {$ipeth(ipon)=="yes"} {
 
    #--- label
    label .second.second.lab1 \
-      -bg $color(backlight) -borderwidth 3 -text "IP Ethernaude" \
+      -bg $color(backlight) -borderwidth 3 -text "IP EthernAude" \
       -fg $color(text)
    pack .second.second.lab1 \
       -in .second.second -expand 1 -side top -anchor center -pady 10
@@ -307,11 +310,11 @@ if {$ipeth(ipon)=="yes"} {
 frame .second.textFrame
 pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
-    -takefocus 1
+   -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
 text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
+#   -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -328,46 +331,46 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 
 if {[winfo depth .second] == 1} {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .second.t tag configure hot -background black -foreground white
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure hot -background black -foreground white
 } else {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-foreground blue -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-foreground #303080 -underline 1
-    .second.t tag configure hot -foreground red -underline 1
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .second.t tag configure hot -foreground red -underline 1
 }
 .second.t tag bind demo <ButtonRelease-1> {
-    invoke [.second.t index {@%x,%y}] .second
+   invoke [.second.t index {@%x,%y}] .second
 }
 set lastLine ""
 .second.t tag bind demo <Enter> {
-    set lastLine [.second.t index {@%x,%y linestart}]
-    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .second.t config -cursor hand2
-    #showStatus [.second.t index {@%x,%y}]
+   set lastLine [.second.t index {@%x,%y linestart}]
+   .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .second.t config -cursor hand2
+   #showStatus [.second.t index {@%x,%y}]
 }
 .second.t tag bind demo <Leave> {
-    .second.t tag remove hot 1.0 end
-    .second.t config -cursor xterm
-    .second.statusBar.lab config -text ""
+   .second.t tag remove hot 1.0 end
+   .second.t config -cursor xterm
+   .second.statusBar.lab config -text ""
 }
 .second.t tag bind demo <Motion> {
-    set newLine [.second.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-	.second.t tag remove hot 1.0 end
-	set lastLine $newLine
+   set newLine [.second.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .second.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-	set tags [.second.t tag names {@%x,%y}]
-	set i [lsearch -glob $tags demo-*]
-	if {$i >= 0} {
-	    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-	}
-    }
-    #showStatus [.second.t index {@%x,%y}]
+      set tags [.second.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+         .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.second.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.
@@ -396,7 +399,7 @@ focus .second.s
 wm withdraw .main
 
 bind .second <Destroy> {
-	catch {unset ipeth}
+   catch {unset ipeth}
    wm deiconify .main
    destroy .second
 }

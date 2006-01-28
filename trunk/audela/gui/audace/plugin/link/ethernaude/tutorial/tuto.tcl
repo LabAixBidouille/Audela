@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 17 novembre 2005
+# Date de mise a jour : 28 janvier 2006
 #
 
 #!/bin/sh
@@ -16,67 +16,67 @@ proc caption_def { langage } {
    global texte caption
    #--- definition of captions
    if {[string compare $langage french] ==0 } {
-     set caption(main_title) "Un tutorial pour les utilisateurs de l'Ethernaude"
-     set caption(tuto_about) "A propos..."
-     set caption(tuto_quit)  "Quitter"
-     set caption(tuto_tools) "Outils"
-     set texte(tuto_1)    "Tutorial pour les utilisateurs de l'Ethernaude"
-     set texte(tuto_2)    "Ce tutorial vous permettra de réaliser vos premières images avec votre caméra CCD connectée avec un boîtier Ethernaude. Pour toute information complémentaire, consulter le site web http://www.astrosurf.com/ethernaude"
-     set texte(tuto_0)    "Présentation générale de l'Ethernaude."
-     set texte(tuto_3)    "Brancher l'Ethernaude avec une caméra Audine"
-     set texte(tuto_4)    "Connexions entre le boîtier et la caméra."
-     set texte(tuto_5)    "Présentation du câble réseau."
-     set texte(tuto_6)    "Connexion directe par un câble réseau croisé."
-     set texte(tuto_7)    "Connexion par un Hub ou par un Switch."
-     set texte(tuto_8)    "Mise en marche électrique."
-     set texte(tuto_10_0) "Tests de fonctionnement"
-     set texte(tuto_10)   "Connexion logicielle entre l'ordinateur et l'Ethernaude."
-     set texte(tuto_11)   "Premières images."
-     set texte(tuto_12)   "Pour aller plus loin."
-     set texte(tuto_20_0) "Câblage pour utiliser la prise DB9"
-     set texte(tuto_20)   "Câblage RS232."
-     set texte(tuto_21)   "Câblage I2C."
-     set texte(tuto_22)   "Brochage de la prise DB9."
-     set texte(tuto_30_0) "Visite à l'intérieur du boîtier"
-     set texte(tuto_30)   "Démontage du capot."
-     set texte(tuto_31)   "Choisir le CCD Kaf-0401E ou Kaf-1602E."
-     set texte(tuto_32)   "Reprogrammer le microcontrôleur caméra."
-     set texte(tuto_33)   "Reprogrammer le microcontrôleur Ethernet."
-     set texte(tuto_about0) "Tutorial Ethernaude"
-     set texte(tuto_about1) "Tutorial pour le boîtier Ethernaude\n\n\Aude (c) 2002\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
-     set texte(tuto_update) "Mise à jour du"
-     set texte(next_topic)  "Page suivante :"
+      set caption(main_title) "Un tutorial pour les utilisateurs de l'EthernAude"
+      set caption(tuto_about) "A propos..."
+      set caption(tuto_quit)  "Quitter"
+      set caption(tuto_tools) "Outils"
+      set texte(tuto_1)    "Tutorial pour les utilisateurs de l'EthernAude"
+      set texte(tuto_2)    "Ce tutorial vous permettra de réaliser vos premières images avec votre caméra CCD connectée avec un boîtier EthernAude. Pour toute information complémentaire, consulter le site web http://www.astrosurf.com/ethernaude"
+      set texte(tuto_0)    "Présentation générale de l'EthernAude."
+      set texte(tuto_3)    "Brancher l'EthernAude avec une caméra Audine"
+      set texte(tuto_4)    "Connexions entre le boîtier et la caméra."
+      set texte(tuto_5)    "Présentation du câble réseau."
+      set texte(tuto_6)    "Connexion directe par un câble réseau croisé."
+      set texte(tuto_7)    "Connexion par un Hub ou par un Switch."
+      set texte(tuto_8)    "Mise en marche électrique."
+      set texte(tuto_10_0) "Tests de fonctionnement"
+      set texte(tuto_10)   "Connexion logicielle entre l'ordinateur et l'EthernAude."
+      set texte(tuto_11)   "Premières images."
+      set texte(tuto_12)   "Pour aller plus loin."
+      set texte(tuto_20_0) "Câblage pour utiliser la prise DB9"
+      set texte(tuto_20)   "Câblage RS232."
+      set texte(tuto_21)   "Câblage I2C."
+      set texte(tuto_22)   "Brochage de la prise DB9."
+      set texte(tuto_30_0) "Visite à l'intérieur du boîtier"
+      set texte(tuto_30)   "Démontage du capot."
+      set texte(tuto_31)   "Choisir le CCD Kaf-0401E ou Kaf-1602E."
+      set texte(tuto_32)   "Reprogrammer le microcontrôleur caméra."
+      set texte(tuto_33)   "Reprogrammer le microcontrôleur Ethernet."
+      set texte(tuto_about0) "Tutorial EthernAude"
+      set texte(tuto_about1) "Tutorial pour le boîtier EthernAude\n\n\Aude (c) 2002\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set texte(tuto_update) "Mise à jour du"
+      set texte(next_topic)  "Page suivante :"
    } else {
-     set caption(main_title) "Tutorial for Ethernaude Users"
-     set caption(tuto_about) "About..."
-     set caption(tuto_quit)  "Exit"
-     set caption(tuto_tools) "Tools"
-     set texte(tuto_1)    "Tutorial for Ethernaude Users"
-     set texte(tuto_2)    "This tutorial helps you shoot your first images with your CCD camera connected to an Ethernaude device. For more information, please refer to http://www.astrosurf.com/ethernaude"
-     set texte(tuto_0)    "Ethernaude Overview."
-     set texte(tuto_3)    "Ethernaude with a Genesis/Audine camera"
-     set texte(tuto_4)    "Device - Camera Connections."
-     set texte(tuto_5)    "What is a Network Cable?"
-     set texte(tuto_6)    "Crossover Cable Direct Connection."
-     set texte(tuto_7)    "Connection through a Hub or a Switch."
-     set texte(tuto_8)    "Swiching On."
-     set texte(tuto_10_0) "Operation Tests"
-     set texte(tuto_10)   "Computer - Ethernaude Software Connection."
-     set texte(tuto_11)   "First Images."
-     set texte(tuto_12)   "Beyond Basics."
-     set texte(tuto_20_0) "Wiring for a DB9 socket"
-     set texte(tuto_20)   "RS232 Wiring."
-     set texte(tuto_21)   "I2C Wiring."
-     set texte(tuto_22)   "DB9 socket pins."
-     set texte(tuto_30_0) "A Tour Inside the Box"
-     set texte(tuto_30)   "Removing the Cover."
-     set texte(tuto_31)   "Choosing the Kaf-0401E or Kaf-1602E CCD."
-     set texte(tuto_32)   "Updating the Microcontroller Software for the Camera."
-     set texte(tuto_33)   "Updating the Microcontroller Software for Ethernet."
-     set texte(tuto_about0) "Audine Tutorial"
-     set texte(tuto_about1) "Tutorial for the Ethernaude device\n\n\Aude (c) 2002\n\nTo change the language, you must edit the langage.tcl file and write another language.\n"
-     set texte(tuto_update) "Updated On"
-     set texte(next_topic)  "Next Topic:"
+      set caption(main_title) "Tutorial for EthernAude Users"
+      set caption(tuto_about) "About..."
+      set caption(tuto_quit)  "Exit"
+      set caption(tuto_tools) "Tools"
+      set texte(tuto_1)    "Tutorial for EthernAude Users"
+      set texte(tuto_2)    "This tutorial helps you shoot your first images with your CCD camera connected to an EthernAude device. For more information, please refer to http://www.astrosurf.com/ethernaude"
+      set texte(tuto_0)    "EthernAude Overview."
+      set texte(tuto_3)    "EthernAude with a Genesis/Audine camera"
+      set texte(tuto_4)    "Device - Camera Connections."
+      set texte(tuto_5)    "What is a Network Cable?"
+      set texte(tuto_6)    "Crossover Cable Direct Connection."
+      set texte(tuto_7)    "Connection through a Hub or a Switch."
+      set texte(tuto_8)    "Swiching On."
+      set texte(tuto_10_0) "Operation Tests"
+      set texte(tuto_10)   "Computer - EthernAude Software Connection."
+      set texte(tuto_11)   "First Images."
+      set texte(tuto_12)   "Beyond Basics."
+      set texte(tuto_20_0) "Wiring for a DB9 socket"
+      set texte(tuto_20)   "RS232 Wiring."
+      set texte(tuto_21)   "I2C Wiring."
+      set texte(tuto_22)   "DB9 socket pins."
+      set texte(tuto_30_0) "A Tour Inside the Box"
+      set texte(tuto_30)   "Removing the Cover."
+      set texte(tuto_31)   "Choosing the Kaf-0401E or Kaf-1602E CCD."
+      set texte(tuto_32)   "Updating the Microcontroller Software for the Camera."
+      set texte(tuto_33)   "Updating the Microcontroller Software for Ethernet."
+      set texte(tuto_about0) "Audine Tutorial"
+      set texte(tuto_about1) "Tutorial for the EthernAude device\n\n\Aude (c) 2002\n\nTo change the language, you must edit the langage.tcl file and write another language.\n"
+      set texte(tuto_update) "Updated On"
+      set texte(next_topic)  "Next Topic:"
    }
 }
 
@@ -144,7 +144,7 @@ if {[info command .main.menuBar] == "" } {
       .main.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
    } else {
       .main.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
-	  -underline 0 -accelerator "<F1>"
+         -underline 0 -accelerator "<F1>"
       .main.menuBar.file add sep
    }
    .main.menuBar.file add command -label $caption(tuto_quit) -command "tuto_exit" -underline 0 \
@@ -189,46 +189,46 @@ pack .main.textFrame -expand yes -fill both
 .main.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
 if {[winfo depth .main] == 1} {
-    .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .main.t tag configure hot -background black -foreground white
+   .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .main.t tag configure hot -background black -foreground white
 } else {
-    .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-foreground blue -underline 1
-    .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-foreground #303080 -underline 1
-    .main.t tag configure hot -foreground red -underline 1
+   .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .main.t tag configure hot -foreground red -underline 1
 }
 .main.t tag bind demo <ButtonRelease-1> {
-    invoke [.main.t index {@%x,%y}] .main
+   invoke [.main.t index {@%x,%y}] .main
 }
 set lastLine ""
 .main.t tag bind demo <Enter> {
-    set lastLine [.main.t index {@%x,%y linestart}]
-    .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .main.t config -cursor hand2
-    #showStatus [.main.t index {@%x,%y}]
+   set lastLine [.main.t index {@%x,%y linestart}]
+   .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .main.t config -cursor hand2
+   #showStatus [.main.t index {@%x,%y}]
 }
 .main.t tag bind demo <Leave> {
-    .main.t tag remove hot 1.0 end
-    .main.t config -cursor xterm
-    .main.statusBar.lab config -text ""
+   .main.t tag remove hot 1.0 end
+   .main.t config -cursor xterm
+   .main.statusBar.lab config -text ""
 }
 .main.t tag bind demo <Motion> {
-    set newLine [.main.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-	.main.t tag remove hot 1.0 end
-	set lastLine $newLine
+   set newLine [.main.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .main.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-	set tags [.main.t tag names {@%x,%y}]
-	set i [lsearch -glob $tags demo-*]
-	if {$i >= 0} {
-	    .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-	}
-    }
-    #showStatus [.main.t index {@%x,%y}]
+      set tags [.main.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+         .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.main.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.
@@ -282,7 +282,7 @@ set lastLine ""
 .main.t insert end " \n " {demospace}
 .main.t insert end " \n " {demospace}
 
-.main.t insert end "$texte(tuto_update) 17 novembre 2005 (A. Klotz & C. Jasinski)\n\n"
+.main.t insert end "$texte(tuto_update) 28 janvier 2006 (A. Klotz & C. Jasinski)\n\n"
 
 .main.t configure -state disabled
 focus .main.s
@@ -295,49 +295,49 @@ focus .main.s
 # index -	The index of the character that the user clicked on.
 
 proc invoke {index base} {
-    global tk_library
-    global audace
-    if {[info exists audace]==1} {
-       set rep [ file join $audace(rep_plugin) camera ethernaude tutorial ]
-    } else {
-       set rep "."
-    }
-    set tags [$base.t tag names $index]
-    set i [lsearch -glob $tags demo-*]
-    if {$i < 0} {
-	return
-    }
-    set cursor [$base.t cget -cursor]
-    $base.t configure -cursor watch
-    update
-    set demo [string range [lindex $tags $i] 5 end]
+   global tk_library
+   global audace
+   if {[info exists audace]==1} {
+      set rep [ file join $audace(rep_plugin) link ethernaude tutorial ]
+   } else {
+      set rep "."
+   }
+   set tags [$base.t tag names $index]
+   set i [lsearch -glob $tags demo-*]
+   if {$i < 0} {
+      return
+   }
+   set cursor [$base.t cget -cursor]
+   $base.t configure -cursor watch
+   update
+   set demo [string range [lindex $tags $i] 5 end]
 
-    #uplevel [list source [file join $tk_library demos $demo.tcl]]
-    #--- nettoie la zone
-    #.main.t insert end \n {} "tutu\n" title
-    #destroy .main
-    #foreach w [winfo children .main] {
-    #   .main.t insert end \n {} "$w\n" title
-    #   pack forget $w
-    #   destroy $w
-    #}
-    #.main.t configure -state disabled
-    if {$base == ".second" } {
-       wm deiconify .main
-       destroy .second
-    }
-    if {[string compare $demo "exit"] == 0 } {
-       #uplevel [list source tuto.tcl]
-       focus -force .main
-    } else {
-       uplevel [ list source [ file join $rep tuto.$demo.tcl ] ]
-       focus -force .second
-    }
-    update
-    if {$base == ".main" } {
-       $base.t configure -cursor $cursor
-       $base.t tag add visited "$index linestart +1 chars" "$index lineend -1 chars"
-    }
+   #uplevel [list source [file join $tk_library demos $demo.tcl]]
+   #--- nettoie la zone
+   #.main.t insert end \n {} "tutu\n" title
+   #destroy .main
+   #foreach w [winfo children .main] {
+   #   .main.t insert end \n {} "$w\n" title
+   #   pack forget $w
+   #   destroy $w
+   #}
+   #.main.t configure -state disabled
+   if {$base == ".second" } {
+      wm deiconify .main
+      destroy .second
+   }
+   if {[string compare $demo "exit"] == 0 } {
+      #uplevel [list source tuto.tcl]
+      focus -force .main
+   } else {
+      uplevel [ list source [ file join $rep tuto.$demo.tcl ] ]
+      focus -force .second
+   }
+   update
+   if {$base == ".main" } {
+      $base.t configure -cursor $cursor
+      $base.t tag add visited "$index linestart +1 chars" "$index lineend -1 chars"
+   }
 }
 
 # showStatus --
@@ -346,21 +346,21 @@ proc invoke {index base} {
 #	is called when the user moves the cursor over a demo description.
 #
 proc showStatus index {
-    global tk_library
-    set tags [.main.t tag names $index]
-    set i [lsearch -glob $tags demo-*]
-    set cursor [.main.t cget -cursor]
-    if {$i < 0} {
-	.main.statusBar.lab config -text " "
-	set newcursor xterm
-    } else {
-	set demo [string range [lindex $tags $i] 5 end]
-	.main.statusBar.lab config -text "Run the \"$demo\" sample program"
-	set newcursor hand2
-    }
-    if [string compare $cursor $newcursor] {
-	.main.t config -cursor $newcursor
-    }
+   global tk_library
+   set tags [.main.t tag names $index]
+   set i [lsearch -glob $tags demo-*]
+   set cursor [.main.t cget -cursor]
+   if {$i < 0} {
+      .main.statusBar.lab config -text " "
+      set newcursor xterm
+   } else {
+      set demo [string range [lindex $tags $i] 5 end]
+      .main.statusBar.lab config -text "Run the \"$demo\" sample program"
+      set newcursor hand2
+   }
+   if [string compare $cursor $newcursor] {
+      .main.t config -cursor $newcursor
+   }
 }
 
 
@@ -370,8 +370,8 @@ proc showStatus index {
 #
 proc aboutBox {} {
    global texte
-    tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message \
-$texte(tuto_about1)
+   tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message \
+      $texte(tuto_about1)
 }
 
 bind .main <Destroy> {

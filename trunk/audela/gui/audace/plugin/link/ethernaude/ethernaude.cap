@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Date de mise a jour : 26 janvier 2006
+# Date de mise a jour : 28 janvier 2006
 #
 
 #=========================================================================
@@ -20,6 +20,9 @@ set caption(ethernaude,lecture_pixel)              "Reading of One Pixel:"
 set caption(ethernaude,micro_sec_bornes)           "microseconds (choose a value between 5.0 and 15.0 µs)"
 set caption(ethernaude,tutorial_ethernaude)        "Overview and Tutorial"
 set caption(ethernaude,coord_gps)                  "# Coordonnées GPS de l'observateur"
+set caption(ethernaude,longitude)                  "Longitude:"
+set caption(ethernaude,latitude)                   "Latitude:"
+set caption(ethernaude,altitude)                   "Altitude:"
 set caption(ethernaude,alaudine_nt)                "AlAudine NT Supply with I2C Port"
 
 set caption(ethernaude,appareil_connecte)          "There is a device at IP address:"
@@ -41,6 +44,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,micro_sec_bornes)        "microsecondes (choisir une valeur comprise entre 5.0 et 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Présentation et tutorial"
    set caption(ethernaude,coord_gps)               "Coordonnées GPS de l'observateur"
+   set caption(ethernaude,longitude)               "Longitude :"
+   set caption(ethernaude,latitude)                "Latitude :"
+   set caption(ethernaude,altitude)                "Altitude :"
    set caption(ethernaude,alaudine_nt)             "Alimentation AlAudine NT avec port I2C"
 
    set caption(ethernaude,appareil_connecte)       "Il y a un appareil à l'adresse IP :"
@@ -62,6 +68,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,micro_sec_bornes)        "microsecondi (scegliere un valore compreso tra 5.0 e 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Presentazione e tutorial"
    set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,longitude)               "Longitudine:"
+   set caption(ethernaude,latitude)                "Latitudine:"
+   set caption(ethernaude,altitude)                "Altitudine:"
    set caption(ethernaude,alaudine_nt)             "Alimentazione AlAudine NT con porta I2C"
 
    set caption(ethernaude,appareil_connecte)       "Vi e' un apparecchio all'indirizzo IP:"
@@ -83,6 +92,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,micro_sec_bornes)        "microsegundos (escoger un valor comprendido entre 5.0 y 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Introducción y Tutorial"
    set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,longitude)               "Longitud:"
+   set caption(ethernaude,latitude)                "Latitud:"
+   set caption(ethernaude,altitude)                "Altitud:"
    set caption(ethernaude,alaudine_nt)             "Alimentación AlAudine NT con puerto I2C"
 
    set caption(ethernaude,appareil_connecte)       "Ya existe un dispositivo en la dirección IP:"
@@ -104,6 +116,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,micro_sec_bornes)        "Mikrosekunden (Ein Wert zwischen 5.0 und 15.0 µs wählen)"
    set caption(ethernaude,tutorial_ethernaude)     "Vorstellung und Tutorial"
    set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,longitude)               "Länge:"
+   set caption(ethernaude,latitude)                "Breite:"
+   set caption(ethernaude,altitude)                "Höhe:"
    set caption(ethernaude,alaudine_nt)             "AlAudine NT mit I2C Port Stromversorgung"
 
    set caption(ethernaude,appareil_connecte)       "Ein Gerät mit diese IP Nummer existiert:"
@@ -125,6 +140,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,micro_sec_bornes)        "microseconds (choose a value between 5.0 and 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Overview and Tutorial"
    set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,longitude)               "Longitude:"
+   set caption(ethernaude,latitude)                "Latitude:"
+   set caption(ethernaude,altitude)                "Altitude:"
    set caption(ethernaude,alaudine_nt)             "AlAudine NT Supply with I2C Port"
 
    set caption(ethernaude,appareil_connecte)       "There is a device at IP address:"

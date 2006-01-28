@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 17 novembre 2005
+# Date de mise a jour : 28 janvier 2006
 #
 
 #!/bin/sh
@@ -10,43 +10,43 @@ proc caption_def_firstlight { langage } {
    global texte caption
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
-  set caption(main_title) "Snapshot : Premiers pas dans le monde du CCD"
-  set caption(description) "Appuyer sur le bouton rouge pour faire une image de"
-  set caption(go) "DEMARRER"
-  set caption(wait) "En cours..."
-  set caption(compute) "Analyse..."
-  set caption(exit) "Quitter"
-  set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
-  set caption(maxlight) "Valeur maximum ="
-  set caption(lowlevel) "Niveau bas ="
-  set caption(highlevel) "Niveau haut ="
+   set caption(main_title) "Snapshot : Premiers pas dans le monde du CCD"
+   set caption(description) "Appuyer sur le bouton rouge pour faire une image de"
+   set caption(go) "DEMARRER"
+   set caption(wait) "En cours..."
+   set caption(compute) "Analyse..."
+   set caption(exit) "Quitter"
+   set caption(thermlevel) "Niveau thermique ="
+   set caption(max_zero) "Problème de connexion"
+   set caption(satured) "Des pixels sont saturés"
+   set caption(maxlight) "Valeur maximum ="
+   set caption(lowlevel) "Niveau bas ="
+   set caption(highlevel) "Niveau haut ="
 
-  set texte(firstlight_1) "Tutorial pour les utilisateurs de l'Ethernaude"
-  set texte(firstlight_2) "Premières images."
-  set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur Ethernaude) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur.\n\n\
+   set texte(firstlight_1) "Tutorial pour les utilisateurs de l'EthernAude"
+   set texte(firstlight_2) "Premières images."
+   set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur EthernAude) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur.\n\n\
 Cliquer sur le bouton rouge $caption(go) pour faire une image en binning 2x2. L'image doit être grise parsemée de nombreux pixels blancs"
-  set texte(firstlight_exit) " Retour à la page principale."
+   set texte(firstlight_exit) " Retour à la page principale."
 } else {
-  set caption(main_title) "Snapshot:  First Steps in the CCD World"
-  set caption(description) "Push the red button to shoot an image of"
-  set caption(go) "START"
-  set caption(wait) "In Progress..."
-  set caption(compute) "Computing..."
-  set caption(exit) "Exit"
-  set caption(thermlevel) "Thermal Level ="
-  set caption(max_zero) "Connection Problem"
-  set caption(satured) "Some pixels are saturated"
-  set caption(maxlight) "Maximum Value ="
-  set caption(lowlevel) "Low Level ="
-  set caption(highlevel) "High Level ="
+   set caption(main_title) "Snapshot:  First Steps in the CCD World"
+   set caption(description) "Push the red button to shoot an image of"
+   set caption(go) "START"
+   set caption(wait) "In Progress..."
+   set caption(compute) "Computing..."
+   set caption(exit) "Exit"
+   set caption(thermlevel) "Thermal Level ="
+   set caption(max_zero) "Connection Problem"
+   set caption(satured) "Some pixels are saturated"
+   set caption(maxlight) "Maximum Value ="
+   set caption(lowlevel) "Low Level ="
+   set caption(highlevel) "High Level ="
 
-  set texte(firstlight_1) "Tutorial for Ethernaude Users"
-  set texte(firstlight_2) "First Images."
-  set texte(firstlight_3) "Install your CCD equipment (camera connected to the Ethernaude device) in a dark room.  It is recommended to do so during the night while the room you are in is only illuminated by the computer screen.\n\n\
+   set texte(firstlight_1) "Tutorial for EthernAude Users"
+   set texte(firstlight_2) "First Images."
+   set texte(firstlight_3) "Install your CCD equipment (camera connected to the EthernAude device) in a dark room.  It is recommended to do so during the night while the room you are in is only illuminated by the computer screen.\n\n\
 Click on the red button $caption(go) to shoot an image with a 2x2 binning. The image should be grey with many white pixels."
-  set texte(firstlight_exit) " Return to the Main Page."
+   set texte(firstlight_exit) " Return to the Main Page."
 }
 
 }
@@ -109,25 +109,25 @@ menu .second.menuBar.file -tearoff 0
 
 # On the Mac use the specia .apple menu for the about item
 if {$::tcl_platform(platform) == "macintosh"} {
-    .second.menuBar add cascade -menu .menuBar.apple
-    menu .second.menuBar.apple -tearoff 0
-    .second.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
+   .second.menuBar add cascade -menu .menuBar.apple
+   menu .second.menuBar.apple -tearoff 0
+   .second.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
 } else {
-    .second.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
-	-underline 0 -accelerator "<F1>"
-    .second.menuBar.file add sep
+   .second.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
+      -underline 0 -accelerator "<F1>"
+   .second.menuBar.file add sep
 }
 
 .second.menuBar.file add command -label $caption(tuto_quit) -command "tuto_exit" -underline 0 \
-    -accelerator "Meta-Q"
+   -accelerator "Meta-Q"
 .second configure -menu .second.menuBar
 bind .second <F1> aboutBox
 
 frame .second.statusBar
 label .second.statusBar.lab -text "   " -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 label .second.statusBar.foo -width 8 -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
@@ -205,11 +205,11 @@ $zone(image1) create image 1 1 -image image1 -anchor nw -tag img1
 frame .second.textFrame
 pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
-    -takefocus 1
+   -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
 text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
+#   -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -226,46 +226,46 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 
 if {[winfo depth .second] == 1} {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-underline 1
-    .second.t tag configure hot -background black -foreground white
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure hot -background black -foreground white
 } else {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-foreground blue -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-foreground #303080 -underline 1
-    .second.t tag configure hot -foreground red -underline 1
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .second.t tag configure hot -foreground red -underline 1
 }
 .second.t tag bind demo <ButtonRelease-1> {
-    invoke [.second.t index {@%x,%y}] .second
+   invoke [.second.t index {@%x,%y}] .second
 }
 set lastLine ""
 .second.t tag bind demo <Enter> {
-    set lastLine [.second.t index {@%x,%y linestart}]
-    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .second.t config -cursor hand2
-    #showStatus [.second.t index {@%x,%y}]
+   set lastLine [.second.t index {@%x,%y linestart}]
+   .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .second.t config -cursor hand2
+   #showStatus [.second.t index {@%x,%y}]
 }
 .second.t tag bind demo <Leave> {
-    .second.t tag remove hot 1.0 end
-    .second.t config -cursor xterm
-    .second.statusBar.lab config -text ""
+   .second.t tag remove hot 1.0 end
+   .second.t config -cursor xterm
+   .second.statusBar.lab config -text ""
 }
 .second.t tag bind demo <Motion> {
-    set newLine [.second.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-	.second.t tag remove hot 1.0 end
-	set lastLine $newLine
+   set newLine [.second.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .second.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-	set tags [.second.t tag names {@%x,%y}]
-	set i [lsearch -glob $tags demo-*]
-	if {$i >= 0} {
-	    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-	}
-    }
-    #showStatus [.second.t index {@%x,%y}]
+      set tags [.second.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+         .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.second.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.
@@ -308,7 +308,7 @@ proc acquisition_firstlight {exposure} {
    if {[info exists audace]==1} {
       set num(cam1) $audace(camNo)
    } else {
-	   set num(cam1) 1
+      set num(cam1) 1
    }
 
    set errnum [catch {cam1 drivername} msg]
@@ -317,7 +317,7 @@ proc acquisition_firstlight {exposure} {
       return
    }
    if {[lindex $msg 0]!="libethernaude"} {
-      tk_messageBox -message "Camera is [lindex $msg 0], not Ethernaude" -icon info
+      tk_messageBox -message "Camera is [lindex $msg 0], not EthernAude" -icon info
       return
    }
    #--- Change the red button text

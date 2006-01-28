@@ -107,6 +107,7 @@ set caption(confcam,webcam_longueposestart)     "Control when exposure begins"
 set caption(confcam,webcam_longueposestop)      "Control when exposure ends"
 set caption(confcam,conf_webcam)                "WebCam Setup"
 set caption(confcam,format_webcam)              "Select Image Format"
+set caption(confcam,ccd_N_B)                    "# WebCam modifiée avec CCD N&B"
 
 set caption(confcam,coef_th7852a)               "Coefficient"
 
@@ -265,6 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposestop)   "Commande à la fin de la pose"
    set caption(confcam,conf_webcam)             "Configuration de la WebCam"
    set caption(confcam,format_webcam)           "Choix du format de l'image"
+   set caption(confcam,ccd_N_B)                 "WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
@@ -423,6 +425,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposestop)   "Comando alla fine della posa"
    set caption(confcam,conf_webcam)             "Settagio WebCam"
    set caption(confcam,format_webcam)           "Scelta del formato dell'immagine"
+   set caption(confcam,ccd_N_B)                 "# WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Coefficiente"
 
@@ -581,6 +584,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposestop)   "Control cuando acaba la exposición"
    set caption(confcam,conf_webcam)             "Configuración WebCam"
    set caption(confcam,format_webcam)           "Seleccionar formato de imagen"
+   set caption(confcam,ccd_N_B)                 "# WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Coeficiente"
 
@@ -739,6 +743,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposestop)   "Ende der Belichtung Antrieb"
    set caption(confcam,conf_webcam)             "WebCam Konfiguration"
    set caption(confcam,format_webcam)           "Bildgröße Wahl"
+   set caption(confcam,ccd_N_B)                 "# WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Faktor"
 
@@ -897,6 +902,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposestop)   "Control when exposure ends"
    set caption(confcam,conf_webcam)             "WebCam Setup"
    set caption(confcam,format_webcam)           "Select Image Format"
+   set caption(confcam,ccd_N_B)                 "# WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
