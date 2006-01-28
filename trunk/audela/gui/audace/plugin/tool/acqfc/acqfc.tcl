@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 17 janvier 2006
+# Date de mise a jour : 27 janvier 2006
 #
 
 package provide acqfc 2.1
@@ -492,7 +492,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure de changement de l'obturateur *****************
    proc ChangeObt { visuNo } {
-      global panneau conf audace caption frmm
+      global panneau conf confCam audace caption frmm
 
       #---
       set camNo   [ ::confVisu::getCamNo $visuNo ]
@@ -548,25 +548,29 @@ namespace eval ::AcqFC {
                catch { set frm $frmm(Camera3) }
             } elseif { "$camName" == "audinet" } {
                set conf(audinet,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera8) }
+               catch { set frm $frmm(Camera1) }
             } elseif { "$camName" == "ethernaude" } {
                set conf(ethernaude,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera9) }
+               catch { set frm $frmm(Camera1) }
             } elseif { "$camName" == "andor" } {
                set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera13) }
+               catch { set frm $frmm(Camera11) }
             }
+
             switch -exact -- $panneau(AcqFC,$visuNo,obt) {
                0  {
-                  catch { $frm.foncobtu configure -value $caption(acqfc,obtu_ouvert) }
+                  set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_ouvert)
+                  catch { $frm.foncobtu configure -values $confCam(conf_audine,foncobtu) }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "opened"
                }
                1  {
-                  catch { $frm.foncobtu configure -value $caption(acqfc,obtu_ferme) }
+                  set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_ferme)
+                  catch { $frm.foncobtu configure -values $confCam(conf_audine,foncobtu) }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "closed"
                }
                2  {
-                  catch { $frm.foncobtu configure -value $caption(acqfc,obtu_synchro) }
+                  set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_synchro)
+                  catch { $frm.foncobtu configure -values $confCam(conf_audine,foncobtu) }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "synchro"
                }
             }
