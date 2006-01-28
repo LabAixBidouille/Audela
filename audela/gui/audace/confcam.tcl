@@ -105,6 +105,8 @@ namespace eval ::confCam {
       if { ! [ info exists conf(webcam,mirh) ] }                 { set conf(webcam,mirh)                 "0" }
       if { ! [ info exists conf(webcam,mirv) ] }                 { set conf(webcam,mirv)                 "0" }
       if { ! [ info exists conf(webcam,port) ] }                 { set conf(webcam,port)                 "0" }
+      if { ! [ info exists conf(webcam,ccd_N_B) ] }              { set conf(webcam,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,dim_ccd_N_B) ] }          { set conf(webcam,dim_ccd_N_B)          "1/4''" }
 
       #--- initConf 8
       if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
@@ -334,6 +336,11 @@ namespace eval ::confCam {
          #--- Boutons de configuration de la WebCam inactif
          $frm.conf_webcam configure -state disabled
          $frm.format_webcam configure -state disabled
+      }
+      if { $confCam(conf_webcam,ccd_N_B) == "1" } {
+         pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
+      } else {
+         pack forget $frm.frame14
       }
    }
 
@@ -731,6 +738,7 @@ namespace eval ::confCam {
 
       set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
          $caption(confcam,obtu_synchro) ]
+      set confCam(conf_audine,list_foncobtu) $list_combobox
       ComboBox $frm.foncobtu \
          -width 11         \
          -height [ llength $list_combobox ]  \
@@ -1952,6 +1960,8 @@ namespace eval ::confCam {
       set confCam(conf_webcam,mirh)                 $conf(webcam,mirh)
       set confCam(conf_webcam,mirv)                 $conf(webcam,mirv)
       set confCam(conf_webcam,port)                 $conf(webcam,port)
+      set confCam(conf_webcam,ccd_N_B)              $conf(webcam,ccd_N_B)
+      set confCam(conf_webcam,dim_ccd_N_B)          $conf(webcam,dim_ccd_N_B)
 
       #--- Initialisation
       set frmm(Camera7) [ Rnotebook:frame $nn 7 ]
@@ -1993,6 +2003,12 @@ namespace eval ::confCam {
 
       frame $frm.frame12 -borderwidth 0 -relief raised
       pack $frm.frame12 -in $frm.frame4 -side top -fill x -pady 5
+
+      frame $frm.frame13 -borderwidth 0 -relief raised
+      pack $frm.frame13 -in $frm.frame4 -side top -fill x -pady 5
+
+      frame $frm.frame14 -borderwidth 0 -relief raised
+      pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
 
       #--- Definition du canal USB
       label $frm.lab1 -text "$caption(confcam,webcam_canal_usb)"
@@ -2061,6 +2077,24 @@ namespace eval ::confCam {
 
       entry $frm.longueposestopvalue -width 4 -textvariable confCam(conf_webcam,longueposestopvalue) -justify center
       pack $frm.longueposestopvalue -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
+
+      #--- WebCam modifiee avec un capteur Noir et Blanc
+      checkbutton $frm.ccd_N_B -text "$caption(confcam,ccd_N_B)" -highlightthickness 0 \
+         -variable confCam(conf_webcam,ccd_N_B) -command { ::confCam::ConfWebCam }
+      pack $frm.ccd_N_B -in $frm.frame13 -anchor center -side left -pady 3 -pady 8
+
+      set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
+      ComboBox $frm.dim_ccd_N_B \
+         -width 6         \
+         -height [ llength $list_combobox ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable confCam(conf_webcam,dim_ccd_N_B) \
+         -values $list_combobox
+      pack $frm.dim_ccd_N_B -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
+
+      ::confCam::ConfWebCam
 
       #--- Site web officiel des WebCam
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
@@ -2765,7 +2799,7 @@ namespace eval ::confCam {
       set cam_item $confCam(cam_item)
       
       #--- je selectionne l'onglet correspondant a la camera de cet item
-      confCam::select $conf(camera,$cam_item,camName) 
+      ::confCam::select $conf(camera,$cam_item,camName) 
    }
 
    #----------------------------------------------------------------------------
@@ -3896,6 +3930,8 @@ namespace eval ::confCam {
       set conf(webcam,mirh)                 $confCam(conf_webcam,mirh)
       set conf(webcam,mirv)                 $confCam(conf_webcam,mirv)
       set conf(webcam,port)                 $confCam(conf_webcam,port)
+      set conf(webcam,ccd_N_B)              $confCam(conf_webcam,ccd_N_B)
+      set conf(webcam,dim_ccd_N_B)          $confCam(conf_webcam,dim_ccd_N_B)
       #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
       set frm [ Rnotebook:frame $nn 8 ]
       set conf(th7852a,coef)                $confCam(conf_th7852a,coef)

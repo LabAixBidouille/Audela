@@ -334,15 +334,16 @@ namespace eval ethernaude {
    #------------------------------------------------------------
    proc coord_GPS { } {
       global confCam
+      global caption
 
       catch {
          set coord_GPS_Observateur [ cam$confCam(camera,$confCam(cam_item),camNo) gps ]
          ::console::disp "$coord_GPS_Observateur \n\n"
          set long_GPS_Observateur [ mc_angle2dms [ lindex $coord_GPS_Observateur 1 ] 180 ]
-         ::console::disp "Longitude : [ lindex $coord_GPS_Observateur 2 ] [ format "%2d° %2d' %4.2f''" [ lindex $long_GPS_Observateur 0 ] [ lindex $long_GPS_Observateur 1 ] [ lindex $long_GPS_Observateur 2 ] ] \n"
+         ::console::disp "$caption(ethernaude,longitude) [ lindex $coord_GPS_Observateur 2 ] [ format "%2d° %2d' %4.2f''" [ lindex $long_GPS_Observateur 0 ] [ lindex $long_GPS_Observateur 1 ] [ lindex $long_GPS_Observateur 2 ] ] \n"
          set lat_GPS_Observateur [ mc_angle2dms [ lindex $coord_GPS_Observateur 3 ] 90 ]
-         ::console::disp "Latitude : [ format "%2d° %2d' %4.2f''" [ lindex $lat_GPS_Observateur 0 ] [ lindex $lat_GPS_Observateur 1 ] [ lindex $lat_GPS_Observateur 2 ] ] \n"
-         ::console::disp "Altitude : [ format "%5.0f m" [ lindex $coord_GPS_Observateur 4 ] ] \n\n"
+         ::console::disp "$caption(ethernaude,latitude) [ format "%2d° %2d' %4.2f''" [ lindex $lat_GPS_Observateur 0 ] [ lindex $lat_GPS_Observateur 1 ] [ lindex $lat_GPS_Observateur 2 ] ] \n"
+         ::console::disp "$caption(ethernaude,altitude) [ format "%5.0f m" [ lindex $coord_GPS_Observateur 4 ] ] \n\n"
       }
    }
 
