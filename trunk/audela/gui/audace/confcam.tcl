@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 29 janvier 2006
 #
 
 global confCam
@@ -217,9 +217,9 @@ namespace eval ::confCam {
       $This.cmd.appliquer configure -relief groove -state disabled
       $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled 
-      #--- J'arrete la camera 
-      stopDriver $confCam(cam_item)   
-      #--- je copie les parametres de la nouvelle camera dans conf()  
+      #--- J'arrete la camera
+      stopDriver $confCam(cam_item)
+      #--- je copie les parametres de la nouvelle camera dans conf()
       widgetToConf     $confCam(cam_item)
       configureCamera  $confCam(cam_item)
       $This.cmd.ok configure -state normal
@@ -277,7 +277,10 @@ namespace eval ::confCam {
       set cam_item $confCam(cam_item)
 
       set frm $frmm(Camera1)
-      if { ( [::confCam::getName $confCam(camera,$cam_item,camNo)] == "audine" ) && ( $confCam(conf_audine,port) != "$caption(confcam,audinet)" ) } {
+      if { ( [::confCam::getName $confCam(camera,$cam_item,camNo)] == "audine" ) && \
+         ( $confCam(conf_audine,port) != "$caption(confcam,quicka)" ) && \
+         ( $confCam(conf_audine,port) != "$caption(confcam,audinet)" ) && \
+         ( $confCam(conf_audine,port) != "$caption(confcam,ethernaude)" ) } {
          #--- Bouton Tests pour la fabrication de la camera actif
          $frm.test configure -state normal
       } else {
@@ -2867,10 +2870,9 @@ namespace eval ::confCam {
    proc getName { camNo } {
       #--- Je verifie si la camera est capable fournir son nom
       set result [ catch { cam$camNo name } camName ]
-      #--- Cas particulier de l'EthernAude qui repond "Camera+Ethernaude" que je remplace par "ethernaude"
-      if { [ string range $camName [ expr [ string length $camName ] - 10 ] [ string length $camName ] ] == "Ethernaude" } {
-         set lg_camName [ string length $camName ]
-         set camName [ string tolower [ string range $camName [ expr $lg_camName - 10 ] $lg_camName ] ]
+      #--- Cas particulier de l'EthernAude qui repond "Audine+Ethernaude" que je remplace par "audine"
+      if { $camName == "Audine+Ethernaude" } {
+         set camName "audine"
       }
       #---
       if { $result == 1 } {
@@ -2913,10 +2915,9 @@ namespace eval ::confCam {
       
       #--- Je recupere le nom de la camera
       set result [ catch { cam$camNo name } camName ]
-      #--- Cas particulier de l'EthernAude qui repond "Camera+Ethernaude" que je remplace par "ethernaude"
-      if { [ string range $camName [ expr [ string length $camName ] - 10 ] [ string length $camName ] ] == "Ethernaude" } {
-         set lg_camName [ string length $camName ]
-         set camName [ string tolower [ string range $camName [ expr $lg_camName - 10 ] $lg_camName ] ]
+      #--- Cas particulier de l'EthernAude qui repond "Audine+Ethernaude" que je remplace par "audine"
+      if { $camName == "Audine+Ethernaude" } {
+         set camName "audine"
       }
       #---
       if { $result == 0 } {
@@ -2987,7 +2988,7 @@ namespace eval ::confCam {
 
       #--- Je recupere le numero de visu associe a la camera
       if { "$conf(camera,$cam_item,camName)" != "" } {
-         if { $confCam(camera,$cam_item,visuName) == $caption(confcam,nouvelle_visu) } {         
+         if { $confCam(camera,$cam_item,visuName) == $caption(confcam,nouvelle_visu) } {
             set visuNo [::confVisu::create]
             set confCam(camera,$cam_item,visuName) visu$visuNo
          } else {
@@ -3745,60 +3746,59 @@ namespace eval ::confCam {
                } else {
                   set erreur [ catch { cam::create audine $conf(audine,port) -ccd $ccd } camNo ]
                }
-   if { ( $conf(audine,port) != "$caption(confcam,ethernaude)" ) && ( $conf(audine,port) != "$caption(confcam,audinet)" ) } {
-               if { $erreur == "1" } {
-                  tk_messageBox -message "$camNo" -icon error
-               } else {
-                  console::affiche_saut "\n"
-                  console::affiche_erreur "$caption(confcam,port_audine) ($conf(audine,ccd))\
-                     $caption(confcam,2points) $conf(audine,port)\n"
-                  set confCam(camera,$cam_item,camNo) $camNo
-                  set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
-                  catch { cam$confCam(camera,$cam_item,camNo) cantype $conf(audine,can) }
-                  set ampli_ccd $conf(audine,ampli_ccd)
-                  switch -exact -- $ampli_ccd {
-                     0 {
-                        cam$confCam(camera,$cam_item,camNo) ampli "synchro"
-                     }
-                     1 {
-                        cam$confCam(camera,$cam_item,camNo) ampli "on"
-                     }
-                     2 {
-                        cam$confCam(camera,$cam_item,camNo) ampli "off"
-                     }
-                  }
-                  set foncobtu $conf(audine,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$confCam(camera,$cam_item,camNo) shutter "opened"
-                     }
-                     1 {
-                        cam$confCam(camera,$cam_item,camNo) shutter "closed"
-                     }
-                     2 {
-                        cam$confCam(camera,$cam_item,camNo) shutter "synchro"
-                     }
-                  }
-                  if { [ string range $conf(audine,typeobtu) 0 5 ] == "audine" } {
-                     if { [ string index $conf(audine,typeobtu) 7 ] == "-" } {
-                        catch { cam$confCam(camera,$cam_item,camNo) shuttertype audine reverse }
-                     } else {
-                        catch { cam$confCam(camera,$cam_item,camNo) shuttertype audine }
-                     }
+               if { ( $conf(audine,port) != "$caption(confcam,ethernaude)" ) && ( $conf(audine,port) != "$caption(confcam,audinet)" ) } {
+                  if { $erreur == "1" } {
+                     tk_messageBox -message "$camNo" -icon error
                   } else {
-                     catch { cam$confCam(camera,$cam_item,camNo) shuttertype thierry }
-                     set confcolor(obtu_pierre) "1"
-                     ::Obtu_Pierre::run
+                     console::affiche_saut "\n"
+                     console::affiche_erreur "$caption(confcam,port_audine) ($conf(audine,ccd))\
+                        $caption(confcam,2points) $conf(audine,port)\n"
+                     set confCam(camera,$cam_item,camNo) $camNo
+                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
+                     catch { cam$confCam(camera,$cam_item,camNo) cantype $conf(audine,can) }
+                     set ampli_ccd $conf(audine,ampli_ccd)
+                     switch -exact -- $ampli_ccd {
+                        0 {
+                           cam$confCam(camera,$cam_item,camNo) ampli "synchro"
+                        }
+                        1 {
+                           cam$confCam(camera,$cam_item,camNo) ampli "on"
+                        }
+                        2 {
+                           cam$confCam(camera,$cam_item,camNo) ampli "off"
+                        }
+                     }
+                     set foncobtu $conf(audine,foncobtu)
+                     switch -exact -- $foncobtu {
+                        0 {
+                           cam$confCam(camera,$cam_item,camNo) shutter "opened"
+                        }
+                        1 {
+                           cam$confCam(camera,$cam_item,camNo) shutter "closed"
+                        }
+                        2 {
+                           cam$confCam(camera,$cam_item,camNo) shutter "synchro"
+                        }
+                     }
+                     if { [ string range $conf(audine,typeobtu) 0 5 ] == "audine" } {
+                        if { [ string index $conf(audine,typeobtu) 7 ] == "-" } {
+                           catch { cam$confCam(camera,$cam_item,camNo) shuttertype audine reverse }
+                        } else {
+                           catch { cam$confCam(camera,$cam_item,camNo) shuttertype audine }
+                        }
+                     } else {
+                        catch { cam$confCam(camera,$cam_item,camNo) shuttertype thierry }
+                        set confcolor(obtu_pierre) "1"
+                        ::Obtu_Pierre::run
+                     }
+                     cam$confCam(camera,$cam_item,camNo) buf [visu$visuNo buf]
+                     cam$confCam(camera,$cam_item,camNo) mirrorh $conf(audine,mirh)
+                     cam$confCam(camera,$cam_item,camNo) mirrorv $conf(audine,mirv)
+                     ::confVisu::visuDynamix $visuNo 32767 -32768
                   }
-                  cam$confCam(camera,$cam_item,camNo) buf [visu$visuNo buf]
-                  cam$confCam(camera,$cam_item,camNo) mirrorh $conf(audine,mirh)
-                  cam$confCam(camera,$cam_item,camNo) mirrorv $conf(audine,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
                }
-   }
             }
       }
-
       #--- Gestion du modele de camera connecte
       if { $erreur == "1" } {
          #--- En cas de probleme, je desactive le demarrage automatique
@@ -3836,7 +3836,6 @@ namespace eval ::confCam {
       if { [ winfo exists "$audace(base).conflink" ] } {
          ::ethernaude::ConfEthernAude
       }
-
 
       #--- Cas ou la video est visible dans le canvas
       #set panneau(AcqFC,$confCam(camera,A,visuNo),showvideo) "0"
