@@ -1,0 +1,106 @@
+#
+# Fichier : conflink.cap
+# Date de mise a jour : 24 janvier 2006
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(conflink,liaison)                "# Liaison :"
+set caption(conflink,config)                 "# Configuration de la liaison"
+set caption(conflink,creer_au_demarrage)     "# Connexion automatique de cette liaison au prochain démarrage"
+set caption(conflink,ok)                     "OK"
+set caption(conflink,appliquer)              "Apply"
+set caption(conflink,fermer)                 "Close"
+set caption(conflink,aide)                   "Help"
+
+set caption(conflink,attention)              "Warning"
+set caption(conflink,connexion_texte1)       "# Veuillez patienter quelques secondes"
+set caption(conflink,connexion_texte2)       "# pendant la connexion de votre liaison."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(conflink,liaison)             "Liaison :"
+   set caption(conflink,config)              "Configuration de la liaison"
+   set caption(conflink,creer_au_demarrage)  "Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Appliquer"
+   set caption(conflink,fermer)              "Fermer"
+   set caption(conflink,aide)                "Aide"
+
+   set caption(conflink,attention)           "Attention"
+   set caption(conflink,connexion_texte1)    "Veuillez patienter quelques secondes"
+   set caption(conflink,connexion_texte2)    "pendant la connexion de votre liaison."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(conflink,liaison)             "# Liaison :"
+   set caption(conflink,config)              "# Configuration de la liaison"
+   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Applica"
+   set caption(conflink,fermer)              "Chiudi"
+   set caption(conflink,aide)                "Aiuto"
+
+   set caption(conflink,attention)           "Attenzione"
+   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
+   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(conflink,liaison)             "# Liaison :"
+   set caption(conflink,config)              "# Configuration de la liaison"
+   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Aplicar"
+   set caption(conflink,fermer)              "Cerrar"
+   set caption(conflink,aide)                "Ayuda"
+
+   set caption(conflink,attention)           "!Cuidado¡"
+   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
+   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(conflink,liaison)             "# Liaison :"
+   set caption(conflink,config)              "# Configuration de la liaison"
+   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Anwenden"
+   set caption(conflink,fermer)              "Schließen"
+   set caption(conflink,aide)                "Hilfe"
+
+   set caption(conflink,attention)           "Achtung"
+   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
+   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(conflink,liaison)             "# Liaison :"
+   set caption(conflink,config)              "# Configuration de la liaison"
+   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Apply"
+   set caption(conflink,fermer)              "Close"
+   set caption(conflink,aide)                "Help"
+
+   set caption(conflink,attention)           "Warning"
+   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
+   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
