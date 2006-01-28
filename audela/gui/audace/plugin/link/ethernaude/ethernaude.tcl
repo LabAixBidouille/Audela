@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 29 janvier 2006
 #
 
 package provide ethernaude 1.0
@@ -309,22 +309,22 @@ namespace eval ethernaude {
    #------------------------------------------------------------
    proc ConfEthernAude { } {
       variable widget
-      global audace
+      global caption
+      global conf
       global confCam
 
       set frm $widget(frm)
       set cam_item $confCam(cam_item)
 
-      catch {
-         if { [ ::confCam::getName $confCam(camera,$cam_item,camNo) ] == "ethernaude" } {
-            #--- Boutons actifs
-            $frm.coord_gps configure -state normal
-            $frm.alaudine_nt configure -state normal
-         } else {
-            #--- Boutons inactifs
-            $frm.coord_gps configure -state disabled
-            $frm.alaudine_nt configure -state disabled
-         }
+      if { ( [ ::confCam::getName $confCam(camera,$cam_item,camNo) ] == "audine" ) && \
+         ( $conf(audine,port) == "$caption(confcam,ethernaude)" ) } {
+         #--- Boutons actifs
+         $frm.coord_gps configure -state normal
+         $frm.alaudine_nt configure -state normal
+      } else {
+         #--- Boutons inactifs
+         $frm.coord_gps configure -state disabled
+         $frm.alaudine_nt configure -state disabled
       }
    }
 

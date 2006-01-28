@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 29 janvier 2006
 #
 
 package provide acqfc 2.1
@@ -497,10 +497,9 @@ namespace eval ::AcqFC {
       #---
       set camNo   [ ::confVisu::getCamNo $visuNo ]
       set camName [ ::confVisu::getCamera $visuNo ]
-      #--- Cas particulier de l'EthernAude qui repond "Camera+Ethernaude" que je remplace par "ethernaude"
-      if { [ string range $camName [ expr [ string length $camName ] - 10 ] [ string length $camName ] ] == "Ethernaude" } {
-         set lg_camName [ string length $camName ]
-         set camName [ string tolower [ string range $camName [ expr $lg_camName - 10 ] $lg_camName ] ]
+      #--- Cas particulier de l'EthernAude qui repond "Audine+Ethernaude" que je remplace par "audine"
+      if { $camName == "Audine+Ethernaude" } {
+         set camName "audine"
       }
       #---
       if { "$camName" != "" } {
@@ -547,38 +546,38 @@ namespace eval ::AcqFC {
                set conf(sbig,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera3) }
             } elseif { "$camName" == "audinet" } {
-               set conf(audinet,foncobtu) $panneau(AcqFC,$visuNo,obt)
+               set conf(audine,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera1) }
             } elseif { "$camName" == "ethernaude" } {
-               set conf(ethernaude,foncobtu) $panneau(AcqFC,$visuNo,obt)
+               set conf(audine,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera1) }
             } elseif { "$camName" == "andor" } {
                set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera11) }
             }
-
+            #---
             switch -exact -- $panneau(AcqFC,$visuNo,obt) {
                0  {
-                  set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_ouvert)
+                  set confCam(conf_$camName,foncobtu) $caption(acqfc,obtu_ouvert)
                   catch {
-                     $frm.foncobtu configure -height [ llength $confCam(conf_audine,list_foncobtu) ]
-                     $frm.foncobtu configure -values $confCam(conf_audine,list_foncobtu)
+                     $frm.foncobtu configure -height [ llength $confCam(conf_$camName,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_$camName,list_foncobtu)
                   }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "opened"
                }
                1  {
-                  set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_ferme)
+                  set confCam(conf_$camName,foncobtu) $caption(acqfc,obtu_ferme)
                   catch {
-                     $frm.foncobtu configure -height [ llength $confCam(conf_audine,list_foncobtu) ]
-                     $frm.foncobtu configure -values $confCam(conf_audine,list_foncobtu)
+                     $frm.foncobtu configure -height [ llength $confCam(conf_$camName,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_$camName,list_foncobtu)
                   }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "closed"
                }
                2  {
-                  set confCam(conf_audine,foncobtu) $caption(acqfc,obtu_synchro)
+                  set confCam(conf_$camName,foncobtu) $caption(acqfc,obtu_synchro)
                   catch {
-                     $frm.foncobtu configure -height [ llength $confCam(conf_audine,list_foncobtu) ]
-                     $frm.foncobtu configure -values $confCam(conf_audine,list_foncobtu)
+                     $frm.foncobtu configure -height [ llength $confCam(conf_$camName,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_$camName,list_foncobtu)
                   }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "synchro"
                }
