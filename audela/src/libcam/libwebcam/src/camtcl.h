@@ -16,7 +16,8 @@
    {"snap",                 (Tcl_CmdProc *)cmdCamSnap}, \
    {"snaprgb",              (Tcl_CmdProc *)cmdCamSnapRgb}, \
    {"longuepose",           (Tcl_CmdProc *)cmdCamLonguePose}, \
-   {"longueposeport",       (Tcl_CmdProc *)cmdCamLonguePosePortAdress}, \
+   {"longueposelinkno",     (Tcl_CmdProc *)cmdCamLonguePoseLinkno}, \
+   {"longueposelinkbit",    (Tcl_CmdProc *)cmdCamLonguePoseLinkbit}, \
    {"longueposestartvalue", (Tcl_CmdProc *)cmdCamLonguePoseStartValue}, \
    {"longueposestopvalue",  (Tcl_CmdProc *)cmdCamLonguePoseStopValue},
 
@@ -64,7 +65,8 @@ extern "C" {			/* Assume C declarations for C++ */
     int cmdCamSnap(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamSnapRgb(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamLonguePosePortAdress(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+    int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+    int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 /* Some new for Linux */
