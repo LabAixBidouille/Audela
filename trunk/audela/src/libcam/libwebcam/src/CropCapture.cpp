@@ -34,12 +34,21 @@ CCropCapture::~CCropCapture()
 
 /**
  * startCropCapture
+ *   each frame is cropped by cropCallbackOnSequenceProc() 
+ *   and save into the AVI file
  *
  * Results:
  *    TRUE or FALSE ( see GetLastError() )
  *
  * Side effects:
- *    declare  a callback  and launch startCaptureNoFile
+ *    prepare the input BITMAPINFOHEADER structure
+ *    prepare the output AVISTREAMINFO struture
+ *    open ICDecompress  and AVI file
+ *    enable  cropCallbackOnSequenceProc()  callback
+ *    launch startCaptureNoFile()
+ *    disable  cropCallbackOnSequenceProc()  callback
+ *    close ICDecompress and  AVI file
+ *    display statistics in the status bar
  *
  */
 int CCropCapture::startCropCapture(void ) {
@@ -66,8 +75,6 @@ int CCropCapture::startCropCapture(void ) {
     if (!capture->getVideoFormat(&inputbi, inputFormatSize)){
         return FALSE;
     }
-
-
 
     // open output file
     capture->getCaptureFileName(fileName, sizeof(fileName));
@@ -262,9 +269,18 @@ LRESULT CALLBACK  CCropCapture::cropCallbackOnSequenceProc(HWND hWnd, VIDEOHDR *
 /**
  *  cropFrame
  *  crop a frame and save in AVI file
+ *  
+ * parameters :
+ *   vhdr:            video header
+ *   hWnd:            Application main window handle
+ * Results:
+ *   TRUE if 
  *
- *  hWnd:            Application main window handle
- *  vhdr:            video header
+ * Side effects:
+ *    converts I420 frame to DIB frame with ICDecompress standard function
+ *    crops DIB frame 
+ *    save the cropped frame into AVI file
+ *    display frame count in the status bar with capture->setStatusMessage()
  */
 BOOL CCropCapture::cropFrame(VIDEOHDR *vhdr,HWND hWnd ) {
     int         result;
@@ -277,11 +293,7 @@ BOOL CCropCapture::cropFrame(VIDEOHDR *vhdr,HWND hWnd ) {
     BITMAP      bm;     
 
 
-    // alloc buffers
-    //tempBuffer    = (unsigned char *) GlobalAlloc(GMEM_FIXED, tempbi.bmiHeader.biSizeImage ); 
-    //outputBuffer  = (unsigned char *) GlobalAlloc(GMEM_FIXED, outputbi.bmiHeader.biSizeImage); 
-
-    // conversion format I420 to DIB
+    // format conversion I420 to DIB
     result = ICDecompress(hic, 0, &inputbi.bmiHeader, vhdr->lpData, &tempbi.bmiHeader, tempBuffer);
     if (result != ICERR_OK) {
         MessageBeep(0);
@@ -291,9 +303,6 @@ BOOL CCropCapture::cropFrame(VIDEOHDR *vhdr,HWND hWnd ) {
 
     hdc = GetDC (NULL);     
 
-    //htempBitmap = CreateDIBitmap(hdc, &tempbi.bmiHeader, CBM_INIT, tempBuffer, &tempbi, DIB_RGB_COLORS);
-    //htempBitmap = CreateBitmap(tempbi.bmiHeader.biWidth, tempbi.bmiHeader.biHeight, tempbi.bmiHeader.biPlanes, tempbi.bmiHeader.biBitCount, tempBuffer);  
-    //htempBitmap = CreateCompatibleBitmap(hMemDCsrc,tempbi.bmiHeader.biWidth, tempbi.bmiHeader.biHeight);
     if (htempBitmap == NULL) {
         MessageBeep(0);
         result = GetLastError();
@@ -320,10 +329,7 @@ BOOL CCropCapture::cropFrame(VIDEOHDR *vhdr,HWND hWnd ) {
     result = GetDeviceCaps(hMemDCdst , BITSPIXEL);
     
     
-    //houtputBitmap = CreateDIBitmap( hMemDCdst, &outputbi.bmiHeader, CBM_INIT, outputBuffer, &outputbi, DIB_RGB_COLORS );
-    //houtputBitmap = CreateBitmap(outputbi.bmiHeader.biWidth, outputbi.bmiHeader.biHeight, outputbi.bmiHeader.biPlanes, outputbi.bmiHeader.biBitCount, NULL);  
     houtputBitmap = CreateBitmap(outputbi.bmiHeader.biWidth, outputbi.bmiHeader.biHeight,bm.bmPlanes, bm.bmBitsPixel, NULL);  
-    //houtputBitmap = CreateCompatibleBitmap(hMemDCdst,outputbi.bmiHeader.biWidth, outputbi.bmiHeader.biHeight);
     if (houtputBitmap == NULL) {
         MessageBeep(0);
         result = GetLastError();
@@ -335,11 +341,9 @@ BOOL CCropCapture::cropFrame(VIDEOHDR *vhdr,HWND hWnd ) {
     // crops bitmap (If the function succeeds, the return value is nonzero)
     result = BitBlt (hMemDCdst, 0, 0, outputbi.bmiHeader.biWidth, outputbi.bmiHeader.biHeight, hMemDCsrc, getLeft(), getTop(), SRCCOPY);
     
-    // get bits of output bitmap  (return value is the number of scan lines )
-    
-    
+    // get bits of output bitmap  (returned value is the number of scan lines )
     result = GetDIBits(
-        hdc,                          // handle to device context
+        hdc,                                // handle to device context
         houtputBitmap,                      // handle to bitmap
         0,                                  // first scan line to set in destination bitmap
         outputbi.bmiHeader.biHeight,        // number of scan lines to copy
@@ -456,6 +460,7 @@ void CCropCapture::stopCropPreview()
  * cropPreviewProc --
  *
  *    this callback draws a cropping rectangle on the preview window
+ *    (see startCropPreview)
  *
  * Results:
  *    Standard WindowProc return value.
@@ -465,7 +470,6 @@ void CCropCapture::stopCropPreview()
  *
  *----------------------------------------------------------------------
  */
-//LRESULT FAR PASCAL CCropCapture::PreviewCropCallbackProc(HWND hWnd, int nErrID, LPSTR lpErrorText)
 
 LRESULT CALLBACK CCropCapture::previewCropCallbackProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -475,7 +479,6 @@ LRESULT CALLBACK CCropCapture::previewCropCallbackProc(HWND hwnd, UINT message, 
 
     // get context object
     CCropCapture * thisPtr = (CCropCapture *) GetWindowLong(hwnd, GWL_USERDATA);
-    //CCropCapture  * thisPtr = (CCropCapture *)capGetUserData(hwnd);
 
     switch(message) {
      case WM_PAINT:

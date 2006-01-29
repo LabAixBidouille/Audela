@@ -296,9 +296,6 @@ int CGuidingCapture::findBrightestPoint( HDC hdc) {
     
 }
 
-
-
-
 void CGuidingCapture::resetOrigin(void) {
     x0 = targetXc;
     y0 = targetYc;
