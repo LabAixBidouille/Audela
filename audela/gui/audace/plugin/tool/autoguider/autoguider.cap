@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Date de mise a jour : 16 janvier 2006
+# Date de mise a jour : 29 janvier 2006
 #
 
 #=========================================================================
@@ -115,8 +115,8 @@ if { [ string compare $langage "french" ] == 0 } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
 
-   set caption(autoguider,menu)                  "# Autoguidage"
-   set caption(autoguider,titre)                 "# Autoguidage"
+   set caption(autoguider,menu)                  "Automatische Steuerung"
+   set caption(autoguider,titre)                 "Automatische Steuerung"
    set caption(autoguider,help_titre)            "Hilfe für dieses Gerät"
    set caption(autoguider,pb)                    "Problem"
    set caption(autoguider,selcam)                "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
