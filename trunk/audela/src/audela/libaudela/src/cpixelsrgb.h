@@ -34,7 +34,7 @@ typedef  short TYPE_PIXELS_RGB;
 class CPixelsRgb : public CPixels
 {
 public:
-   CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseY);
+   CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY);
    CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pixelsR, void *pixelsG, void *pixelsB);
    CPixelsRgb(int naxis1, int naxis2, int pixelSize, int offset[4], int pitch, unsigned char * pixels);
 	virtual ~CPixelsRgb();

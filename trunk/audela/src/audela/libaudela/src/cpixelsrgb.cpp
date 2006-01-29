@@ -43,7 +43,7 @@ CPixelsRgb::~CPixelsRgb()
 
 }
 
-CPixelsRgb::CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseY) 
+CPixelsRgb::CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY) 
 {
    long size;
    long t, x, y;
@@ -234,6 +234,12 @@ CPixelsRgb::CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pi
          break;
    }
 }
+   // j'inverse les pixels si reverseX=1
+   if( reverseX == 1 ) {
+      MirX();
+   }
+
+
 }
    
 
@@ -366,6 +372,9 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pi
                }
                break;
           }
+       case FORMAT_UNKNOWN:
+         throw CError("undefined pixel format");
+         break;
    }
 }
 
@@ -643,7 +652,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (unsigned char)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
                }

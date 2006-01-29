@@ -61,7 +61,7 @@ CPixelsGray::CPixelsGray(int width, int height, TYPE_PIXELS *ppix)
             
 }
 
-CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseY)
+CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY)
 {
    int t, u, x, y;         
    
@@ -133,6 +133,11 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void *
       }
    } else {
       while(--t>=0) *(pix+t) = 0;
+   }
+
+   // j'inverse les pixels si reverseX=1
+   if( reverseX == 1 ) {
+      MirX();
    }
 }
 
