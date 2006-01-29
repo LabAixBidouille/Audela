@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+/*
+ * $Id: util.c,v 1.2 2006-01-29 18:30:25 michelpujol Exp $
+ */
+
+
 #include "sysexp.h"
 
 #include <math.h>
