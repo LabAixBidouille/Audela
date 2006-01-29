@@ -116,6 +116,8 @@ class CCapture {
     BOOL grabFrame();
     BOOL saveDIBFile(char *fileName);
 
+    BOOL readFrame(unsigned char * rgbBuffer);
+
     // AVI capture command
     BOOL startCapture(void);
     BOOL startCaptureNoFile(FARPROC callback, long userData);
@@ -152,16 +154,16 @@ class CCapture {
     void editCopy(void);
     void palettePaste(void);
 
-    //callbacks
+    // callbacks setters
     WNDPROC setPreviewWindowCallbackProc(WNDPROC callbackProc, long userData);
-    //void            setErrorCallbackProc(LPVOID newCallbackProc);
-    //void            setStatusCallbackProc(LPVOID newCallbackProc, long userData);
+    
     int setStatusMessage(int statusType, char *message);
 
 
     static long getCallbackUserData(HWND hwnd, int position);
 
-     protected:HWND hwndCap;
+protected:
+    HWND hwndCap;
     char *appTitle;
     ICaptureListener *captureListener;
 
@@ -171,7 +173,10 @@ class CCapture {
     LPWAVEFORMATEX lpwfex;
     BOOL bHaveHardware;
     unsigned int wDeviceIndex;
+    unsigned char *grabBuffer;
 
+
+    static LRESULT CALLBACK grabFrameCallbackProc(HWND hWnd, VIDEOHDR *vhdr);
     static LRESULT FAR PASCAL errorCallbackProc(HWND hWnd, int nErrID, LPSTR lpErrorText);
     static LRESULT FAR PASCAL statusCallbackProc(HWND hWnd, int nID, LPSTR lpStatusText);
     long userDataTablePtr[4];

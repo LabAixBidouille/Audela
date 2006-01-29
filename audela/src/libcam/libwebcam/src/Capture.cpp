@@ -5,6 +5,9 @@
 #include "Capture.h"
 
 
+// macros
+#define WIDTHBYTES(bits)        (((bits) + 31) / 32 * 4)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -104,6 +107,14 @@ void CCapture::getCurrentStatus(unsigned long * pcurrentVideoFrame, unsigned lon
    *pcurrentTimeElapsedMS =  capStatus.dwCurrentTimeElapsedMS;
 }
 
+
+/**
+*----------------------------------------------------------------------
+*
+* Windows Video capture core fonctions
+*
+*----------------------------------------------------------------------
+*/
 
 BOOL    CCapture::hasAudioHardware( ){ return capStatus.fAudioHardware  ; }
 
@@ -426,7 +437,7 @@ BOOL CCapture::initHardware(UINT uIndex)
 {
    UINT    uError ;
    
-   // Try connecting to the capture driver
+   // Try connecting to the capture drive r
    if (uError = capDriverConnect(hwndCap, uIndex)) {
       bHaveHardware = TRUE;
       wDeviceIndex = uIndex;
@@ -446,10 +457,10 @@ BOOL CCapture::initHardware(UINT uIndex)
 
 
 /**
-* startCapture
-*
-*
-*/
+ * allocFileSpace
+ *
+ *
+ */
 BOOL CCapture::allocFileSpace() {
    BOOL                result ;
    long                fileSize;
@@ -537,7 +548,7 @@ BOOL CCapture::startCapture() {
    capSetCallbackOnYield(hwndCap, TRUE);   
    // register capture params
    capCaptureSetSetup(hwndCap, &capParms, sizeof(capParms)) ;
-   // start capture
+   // start capture with saving file 
    result = capCaptureSequence(hwndCap);
     
    return result;
@@ -643,6 +654,169 @@ int CCapture::isCapturingNow()
    capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS));
    return capStatus.fCapturingNow;
 }
+
+
+/**
+ *----------------------------------------------------------------------
+ * readFrame
+ *    
+ *
+ * Parameters: 
+ *    rgbBuffer : must be allocated 
+ * Results:
+ *    TRUE or FALSE.
+ * Side effects:
+ *    
+ *
+ *----------------------------------------------------------------------
+ */
+int CCapture::readFrame( unsigned char * rgbBuffer)
+{
+   int result = FALSE;
+
+   if( rgbBuffer != NULL ) {
+      grabBuffer = rgbBuffer;
+      // enable grab callback
+      result = capSetCallbackOnFrame(hwndCap, grabFrameCallbackProc);
+      if (result == TRUE)  {
+         // execute grab callback
+         //result = grabFrameNoStop(); 
+         //result = grabFrameNoStop(); 
+         result = grabFrame();
+         // disable grab callback
+         capSetCallbackOnFrame(hwndCap, NULL);
+      }
+   }
+   return result;
+}
+
+/**
+ *  grabFrameCallbackProc
+ *  this callback is called after capturing each frame 
+ *
+ *  hWnd:            Application main window handle
+ *  vhdr:            video header
+ * Side effects:
+ *    converts I420 frame to DIB frame with ICDecompress standard function
+ *    crops DIB frame 
+ *    save the cropped frame into AVI file
+ *    display frame count in the status bar with capture->setStatusMessage()
+ */
+LRESULT CALLBACK  CCapture::grabFrameCallbackProc(HWND hWnd, VIDEOHDR *vhdr) {
+    int        result;
+    BITMAPINFO inputbi;
+    BITMAPINFO tempbi;
+    int        inputFormatSize = NULL;
+    HIC        hic;
+    HDC        hdc;
+    HBITMAP    htempBitmap;
+
+    
+    CCapture  * capture = (CCapture *) CCapture::getCallbackUserData(hWnd, 0);
+
+    if(capture->grabBuffer == NULL ) {
+       // grabBuffer must be allocated yet
+       return FALSE;
+    }
+
+    if ((inputFormatSize = capture->getVideoFormatSize())<=0) {
+        return FALSE;
+    }
+
+    if (inputFormatSize > sizeof(inputbi)) // Format too large? 
+        return FALSE; 
+
+
+    if (!capture->getVideoFormat(&inputbi, inputFormatSize)){
+        return FALSE;
+    }
+
+    // prepare temporary BITMAPINFO
+    tempbi.bmiHeader.biSize =           sizeof(BITMAPINFOHEADER);
+    tempbi.bmiHeader.biWidth =          inputbi.bmiHeader.biWidth;
+    tempbi.bmiHeader.biHeight =         inputbi.bmiHeader.biHeight;
+    tempbi.bmiHeader.biPlanes =         1;
+    tempbi.bmiHeader.biBitCount =       24;
+    tempbi.bmiHeader.biCompression =    BI_RGB;        // BI_RGB=0;
+    tempbi.bmiHeader.biSizeImage =      WIDTHBYTES((DWORD)tempbi.bmiHeader.biWidth * tempbi.bmiHeader.biBitCount) * tempbi.bmiHeader.biHeight;
+    tempbi.bmiHeader.biXPelsPerMeter =  0;
+    tempbi.bmiHeader.biYPelsPerMeter =  0;
+    tempbi.bmiHeader.biClrImportant =   0;
+    tempbi.bmiHeader.biClrUsed =        0;    // no palette
+    // alloc buffers
+    //grabBuffer = (unsigned char *) GlobalAlloc(GMEM_FIXED, tempbi.bmiHeader.biSizeImage ); 
+
+  /*
+  // prepare tempoprary bitmap 
+    hdc = GetDC (NULL);     
+    htempBitmap = CreateDIBitmap(hdc, &tempbi.bmiHeader, CBM_INIT, capture->grabBuffer, &tempbi, DIB_RGB_COLORS);
+    if (htempBitmap == NULL) {
+        result = FALSE;
+    }
+*/
+    // open decompression I420(YUY2) to DIB
+    hic = ICDecompressOpen(ICTYPE_VIDEO, 0, &inputbi.bmiHeader, &tempbi.bmiHeader);
+    if (!hic) {   // Image dimensions outside of maximum limit
+        return FALSE ;
+    }
+
+    result = ICDecompressBegin(hic, &inputbi, &tempbi);
+    if (result != ICERR_OK) {
+        return FALSE;
+    }
+
+    // conversion I420 to DIB
+    result = ICDecompress(hic, 0, &inputbi.bmiHeader, vhdr->lpData, &tempbi.bmiHeader, capture->grabBuffer);
+    if (result != ICERR_OK) {
+        MessageBeep(0);
+        return FALSE;
+    }
+
+    /*
+
+    hdc = GetDC (NULL);     
+    htempBitmap = CreateDIBitmap(hdc, &tempbi.bmiHeader, CBM_INIT, capture->grabBuffer, &tempbi, DIB_RGB_COLORS);
+    if (htempBitmap == NULL) {
+        result = FALSE;
+    }
+
+    // get bits of output bitmap  (returned value is the number of scan lines )
+    result = GetDIBits(
+        hdc,                                // handle to device context
+        htempBitmap,                      // handle to bitmap
+        0,                                  // first scan line to set in destination bitmap
+        tempbi.bmiHeader.biHeight,        // number of scan lines to copy
+        capture->grabBuffer,                // address of array for bitmap bits
+        &tempbi,                          // address of structure with bitmap data
+        DIB_RGB_COLORS                      // RGB or palette index
+        );
+    
+
+    ReleaseDC(NULL, hdc);
+*/
+/*
+    // set bitmap bits (return value is the number of scan lines copied)    
+    result = SetDIBits(
+        hdc,                                // handle to device context
+        htempBitmap,                        // handle to bitmap
+        0,                                  // starting scan line
+        tempbi.bmiHeader.biHeight,          // number of scan lines
+        capture->grabBuffer,                // array of bitmap bits
+        &tempbi,                            // address of structure with bitmap data
+        DIB_RGB_COLORS                      // type of color indexes to use
+        );
+
+    ReleaseDC(NULL, hdc);
+*/
+    if ( hic) {
+        ICDecompressEnd(hic); 
+        ICClose(hic);
+        hic = NULL;
+    }
+    
+    return TRUE;
+}
+
 
 
 /**
@@ -754,6 +928,9 @@ LRESULT FAR PASCAL CCapture::statusCallbackProc(HWND hWnd, int nID, LPSTR lpStat
    
    return result;
 }
+
+
+
 
 /**
  * setStatusMessage
