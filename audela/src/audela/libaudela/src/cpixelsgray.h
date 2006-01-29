@@ -33,7 +33,7 @@ class CPixelsGray : public CPixels
 {
 public:
 	virtual ~CPixelsGray();
-   CPixelsGray(int naxis1, int naxis2, TPixelFormat pixelFormat, void * pixels, int reverseY);
+   CPixelsGray(int naxis1, int naxis2, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY);
 
    void Add(char *filename, float offset);
    void Autocut(double *phicut,double *plocut,double *pmode);
