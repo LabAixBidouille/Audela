@@ -95,6 +95,7 @@ static unsigned int ng_clip[256 + 2 * CLIP];
 extern "C"
 struct camini CAM_INI[] = {
    {"webcam",        /* camera name */
+    "WEBCAM",        /* camera model */
     "webcam",        /* ccd name */
     640, 480,        /* maxx maxy */
     0, 0,            /* overscans x */
@@ -266,6 +267,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->shutterSpeed = -1;
 #endif
 
+/*
 #if defined(OS_WIN)
    strcpy(cam->longExposureDevice, "lpt1");
    cam->driver = 0;
@@ -273,7 +275,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->longueposeportindex = 0;
    cam->longueposeport = 0x378;
 #endif
-
+*/
 
 
 /* Decode les options de cam::create */
@@ -285,6 +287,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          if (strcmp(argv[kk], "-format") == 0) {
             strcpy(formatname, argv[kk + 1]);
          }
+/*
          if (strcmp(argv[kk], "-lpport") == 0) {
             strcpy(cam->longExposureDevice, argv[kk + 1]);
 #if defined(OS_WIN)
@@ -294,6 +297,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             }
 #endif
          }
+*/
          if (strcmp(argv[kk], "-webcamdevice") == 0) {
             strcpy(cam->webcamDevice, argv[kk + 1]);
          }
@@ -366,6 +370,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    }
 
+   /*
    if (cam->longuepose == 1) {
       if (webcam_initLongExposureDevice(cam)) {
          delete cam->capture;
@@ -375,6 +380,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       }
    } else
       cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
+   */
 
    // pour le mode video
    cam->capture->setPreview(FALSE);
@@ -534,15 +540,6 @@ int cam_close(struct camprop *cam)
    }
 #endif
 
-   // pour le mode video
-   //if(cam->videoStatusVarNamePtr != NULL) {
-   //   free(cam->videoStatusVarNamePtr);
-   //   cam->videoStatusVarNamePtr = NULL;
-   //}
-   //if(videoEndCaptureCommandPtr != NULL) {
-   //   free(videoEndCaptureCommandPtr);
-   //   videoEndCaptureCommandPtr = NULL;
-   //}
 
 #endif
 
@@ -570,8 +567,6 @@ int cam_close(struct camprop *cam)
    }
    cam->yuvBufferSize = 0;
 
-//   printf("camera close\n");
-
 #endif
 
    return TCL_OK;
@@ -598,7 +593,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
    int naxis1, naxis2, bin1, bin2;
    Tcl_Interp *interp;
 #if defined(OS_WIN)
-   char nom[1024];
+//   char nom[1024];
 #endif
 
 #if defined(OS_LIN)
@@ -612,42 +607,13 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
    bin1 = cam->binx;
    bin2 = cam->biny;
 
-#if defined(OS_WIN)
-   if (cam->capture == NULL)
-      return;
-#endif
-
    if (cam->longuepose == 0) {
-#if defined(OS_WIN)
-      /* acquisition normale */
-
-      /* Acquisition d'une frame */
-      if (cam->capture->grabFrameNoStop() == FALSE) {
-         strcpy(cam->msg, "Acquisition impossible (capGrabFrameNoStop)");
-         return;
-      }
-
-      cam->capture->getTimeLimit();
-      cam->exptime = (float) (cam->capture->getTimeLimit() * 1.e-6);
-
-
-      /* Sauvegarge du frame sur le disque */
-      strcpy(nom, "@0.bmp");
-      if (cam->capture->saveDIBFile(nom) == FALSE) {
-         strcpy(cam->msg, "image not saved (capFileSaveDIB)");
-         return;
-      }
-#endif                          //OS_WIN
-
-
-#if defined(OS_LIN)
+      //cam->exptime = (float) (cam->capture->getTimeLimit() * 1.e-6);
       if (readFrame(cam, cam->rgbBuffer)) {
          //error description in cam->msg
          return;
       }
-#endif
-
-   } else if (cam->longuepose == 1) {
+   } else {
       /* long exposure */
       if (webcam_setLongExposureDevice(cam, cam->longueposestart)) {
          //error description in cam->msg
@@ -670,44 +636,17 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 int cam_stop_longexposure(struct camprop *cam)
 {
    Tcl_Interp *interp;
-#if defined(OS_WIN)
-   char nom[1024];
-#endif
 
    interp = cam->interp;
 
-#if defined(OS_WIN)
-   if (cam->capture == NULL) {
-      sprintf(cam->msg, "capture is a null pointer");
-      return 1;
-   }
-#endif
-
    if (cam->longuepose == 1) {
 
-#if defined(OS_WIN)
-      /* une première lecture pour se synchroniser */
-      cam->capture->grabFrameNoStop();
-      /* fin de la pose */
-      if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
-         //error description in cam->msg
-         return 1;
-      }
-      /* on prie pour que ca soit la bonne image, sinon régler framerate à moins de 5 img/sec */
-      if (cam->capture->grabFrame() == FALSE) {
-         strcpy(cam->msg, "Acquisition impossible (capGrabFrame)");
-         return 1;
-      }
+//#if defined(OS_WIN)
+   // une première lecture pour se synchroniser 
+   //cam->capture->grabFrameNoStop();
+//#endif                          //OS_WIN
 
-      /* Sauvegarge du frame sur le disque */
-      strcpy(nom, "@0.bmp");
-      if (cam->capture->saveDIBFile(nom) == FALSE) {
-         strcpy(cam->msg, "image not saved (capFileSaveDIB)");
-         return 1;
-      }
-#endif                          //OS_WIN
-
-#if defined(OS_LIN)
+      // fin de la pose 
       if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
          //error description in cam->msg
          return 1;
@@ -716,8 +655,6 @@ int cam_stop_longexposure(struct camprop *cam)
          //error description in cam->msg
          return 1;
       }
-#endif
-
    }
    return 0;
 }
@@ -748,12 +685,9 @@ void cam_stop_exp(struct camprop *cam)
 */
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
-#if defined(OS_WIN)
-   char nom[1024];              //ligne[128];
-#endif
+   unsigned char *tempRgbBuffer;
 
 #if defined(OS_LIN)
-   unsigned char *tempRgbBuffer;
    unsigned short *shortBwBuffer;
    int t;
 #endif
@@ -761,24 +695,44 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    Tcl_Interp *interp;
 
    interp = cam->interp;
-   if (cam->longuepose == 1)
+   if (cam->longuepose == 1) {
       if (cam_stop_longexposure(cam)) {
          //error description in cam->msg
          return;
       }
+   }
+
+   strcpy(cam->pixels_classe, "CLASS_RGB");
+   strcpy(cam->pixels_format, "FORMAT_BYTE");
+   strcpy(cam->pixels_compression, "COMPRESS_NONE");
+   cam->pixels_reverse_y = 1;
+   cam->pixel_data = NULL;
+   
    /* Charge l'image 24 bits */
 #if defined(OS_WIN)
-//   Tcl_Eval(interp, ligne); //???
-
-   strcpy(nom, "@0.bmp");
-   if (loadbmp24bw(nom, p, cam) == TCL_ERROR)
-      return;
-   remove(nom);
+   // copy rgbBuffer into p
+   if( cam->rgbBuffer != NULL ) {
+      tempRgbBuffer = (unsigned char *) p ;
+      unsigned char *ptr = cam->rgbBuffer ;
+      for(int y = cam->jmax -1; y >= 0; y-- ) {
+         ptr = cam->rgbBuffer + y * cam->imax *3 ;
+         for(int x=0; x <cam->imax; x++) {
+            *(tempRgbBuffer++)= *(ptr + x*3 +2);               
+            *(tempRgbBuffer++)= *(ptr + x*3 +1);               
+            *(tempRgbBuffer++)= *(ptr + x*3 +0);               
+         }
+         
+      }
+      free(cam->rgbBuffer);
+      cam->rgbBuffer = NULL;
+      cam->rgbBufferSize = 0;
+   }
+   
 #endif
-
+   
 #if defined(OS_LIN)
    shortBwBuffer = p;
-   /* conversion from rgb to bw */
+   // conversion from rgb to bw 
    for (t = cam->rgbBufferSize / 3, tempRgbBuffer = cam->rgbBuffer;
         t > 0; t--, shortBwBuffer++) {
       *shortBwBuffer = (unsigned short) (*(tempRgbBuffer++))
@@ -961,6 +915,7 @@ short loadbmp24bw(char *nom, unsigned short *buf, struct camprop *cam)
          free(p);
          return TCL_ERROR;
       }
+
       for (i = 0; i < imax; i++, adr++) {
          val_pel1 = (unsigned short) *(p + (3 * i));
          if (val_pel1 < 0)
@@ -978,7 +933,8 @@ short loadbmp24bw(char *nom, unsigned short *buf, struct camprop *cam)
       }
    }
 
-   fclose(source);
+
+fclose(source);
    free(p);
    return TCL_OK;
 }
@@ -1071,7 +1027,8 @@ short loadbmp24rgb(char *nom, unsigned short *bufrgb, struct camprop *cam)
          free(p);
          return TCL_ERROR;
       }
-      for (i = 0; i < imax; i++, adr += 3) {
+      adr = (jmax - j -1 )*imax*3;
+      for (i = 0; i < imax; i++) {
          val_pel1 = (unsigned short) *(p + (3 * i));
          if (val_pel1 < 0)
             val_pel1 = 256 + val_pel1;
@@ -1084,9 +1041,9 @@ short loadbmp24rgb(char *nom, unsigned short *bufrgb, struct camprop *cam)
          val_pel = (val_pel1 + val_pel2 + val_pel3) / 3;
          if (val_pel > 255)
             val_pel = 255;
-         *(ptr + adr) = val_pel1;
-         *(ptr + adr + 1) = val_pel2;
-         *(ptr + adr + 2) = val_pel3;
+         *(ptr + adr++) = val_pel3;
+         *(ptr + adr++) = val_pel2;
+         *(ptr + adr++) = val_pel1;
       }
    }
 
@@ -1149,14 +1106,6 @@ int webcam_snap(struct camprop *cam, int rgb)
    }
 
 
-   //sprintf(s, "buf%d format %d %d", cam->bufno, naxis1, naxis2);
-   //Tcl_Eval(interp, s);
-   /* Get libaudela buffer pointer */
-   //sprintf(s, "buf%d pointer", cam->bufno);
-   //Tcl_Eval(interp, s);
-   //libaudelaBuffer = (TYPE_PIXELS *) atoi(interp->result);
-   //libaudelaBuffer = (TYPE_PIXELS *) calloc(naxis1 * naxis2 * naxis, sizeof(TYPE_PIXELS));	
-
 #if defined(OS_WIN)
 
    if (cam->capture == NULL) {
@@ -1167,6 +1116,7 @@ int webcam_snap(struct camprop *cam, int rgb)
 
    if (cam->longuepose == 0) {
       /* acquisition normale */
+
 
       /* Acquisition d'une frame */
       if (cam->capture->grabFrameNoStop() == FALSE) {
@@ -1210,7 +1160,7 @@ int webcam_snap(struct camprop *cam, int rgb)
       }
 
       /* Charge l'image 24 bits */
-      if (loadbmp24bw("@0.bmp", p, cam) == TCL_ERROR)
+      if (loadbmp24rgb("@0.bmp", p, cam) == TCL_ERROR)
          return TCL_ERROR;
    } else {
       p = (unsigned short *) calloc(naxis * naxis1 * naxis2,
@@ -1356,12 +1306,6 @@ int webcam_snap(struct camprop *cam, int rgb)
    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
    cam->clockbegin = 0;
 
-/*
-sprintf(s,"visu1 cut {255 0}");
-Tcl_Eval(interp,s);
-sprintf(s,"visu1 disp");
-Tcl_Eval(interp,s);
-*/
 
    return TCL_OK;
 }
@@ -1616,15 +1560,18 @@ void yuv420p_to_rgb24(unsigned char *yuv, unsigned char *rgb,
  * - 0 when success.
  * - no 0 when error occurred, error description in cam->msg.
 */
+
+
 int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
 {
 
+/*
 #if defined(OS_LIN)
    if (cam->long_fd < 0)
       if (webcam_initLongExposureDevice(cam))
          return 1;
 
-   /* Write a byte */
+   // Write a byte 
    if (ioctl(cam->long_fd, PPWDATA, &value)) {
       ioctl(cam->long_fd, PPRELEASE);
       close(cam->long_fd);
@@ -1636,32 +1583,23 @@ int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
 
 #if defined(OS_WIN)
 
-/* Old implementation of this function */
+// Old implementation of this function 
 #if defined(OS_WIN_USE_LPT_OLD_STYLE)
    unsigned short port;
 
    port=cam->longueposeport;
    libcam_out(port, value);
+   quickremote_setChar(value);
 #else
 
    DWORD nNumberOfBytesWritten = 0;
-
-/*
-BOOL WriteFile(
-  HANDLE hFile,                    // handle to file to write to
-  LPCVOID lpBuffer,                // pointer to data to write to file
-  DWORD nNumberOfBytesToWrite,     // number of bytes to write
-  LPDWORD lpNumberOfBytesWritten,  // pointer to number of bytes written
-  LPOVERLAPPED lpOverlapped        // pointer to structure for overlapped I/O
-);
-*/
 
    if (cam->hLongExposureDevice == INVALID_HANDLE_VALUE)
       if (webcam_initLongExposureDevice(cam))
          return 1;
 
 
-   /* Write a byte */
+   // Write a byte
    if (!WriteFile
        (cam->hLongExposureDevice, &value, 1, &nNumberOfBytesWritten, NULL)
        || nNumberOfBytesWritten != 1) {
@@ -1672,9 +1610,22 @@ BOOL WriteFile(
    }
 #endif
 #endif
+*/
+   char ligne[256];
+   int result;
 
-   return 0;
+   // exemple "link1 bit 0 1"
+
+   sprintf(ligne, "link%d bit %d %d", cam->longueposelinkno, cam->longueposelinkbit, value);
+   if( Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+      result = 1;
+   } else {
+      result = 0;
+   }
+
+   return result;
 }
+
 
 /**
  * webcam_initLongExposureDevice - initiates a long exposure device
@@ -1691,11 +1642,13 @@ BOOL WriteFile(
  * - 0 when success.
  * - no 0 when error occurred, error description in cam->msg.
 */
+
+
 int webcam_initLongExposureDevice(struct camprop *cam)
 {
 
 #if defined(OS_LIN)
-   int buffer; /**< buffer mode of parallel port */
+   int buffer;   // buffer mode of parallel port 
 
    if (-1 == (cam->long_fd = open(cam->longExposureDevice, O_RDWR))) {
       sprintf(cam->msg, "Can't open: %s", cam->longExposureDevice);
@@ -1728,6 +1681,7 @@ int webcam_initLongExposureDevice(struct camprop *cam)
    }
 #endif
 
+/*
 #if defined(OS_WIN)
 #if defined(OS_WIN_USE_LPT_OLD_STYLE)
 
@@ -1735,6 +1689,8 @@ int webcam_initLongExposureDevice(struct camprop *cam)
 
    port=cam->longueposeport;
    libcam_out(port, cam->longueposestop);
+   quickremote_setChar(cam->longueposestop);
+
 #else
 
    DWORD nNumberOfBytesWritten = 0;
@@ -1760,7 +1716,7 @@ int webcam_initLongExposureDevice(struct camprop *cam)
    }
 #endif
 #endif
-
+*/
    return 0;
 }
 
@@ -1777,6 +1733,16 @@ int webcam_initLongExposureDevice(struct camprop *cam)
 */
 int readFrame(struct camprop *cam, unsigned char *rgbBuffer)
 {
+#if defined(OS_WIN)
+
+   cam->rgbBufferSize = cam->imax * cam->jmax *3;
+   cam->rgbBuffer = (unsigned char*)malloc(cam->rgbBufferSize);
+   // on prie pour que ca soit la bonne image, sinon régler framerate à moins de 5 img/sec 
+   cam->capture->readFrame(cam->rgbBuffer);
+
+
+#endif
+
 
 #if defined(OS_LIN)
    int i = 0, n = 0;
@@ -2192,10 +2158,19 @@ int webcam_setWhiteBalance(struct camprop *cam, char *mode, int red, int blue)
 /******************************************************************/
 #if defined(OS_WIN)
 
-// declaration local des callback
-//LRESULT FAR PASCAL ErrorCallbackProc(HWND hWnd, int nErrID, LPSTR lpErrorText);
-//LRESULT FAR PASCAL StatusCallbackProc(HWND hWnd, int nErrID, LPSTR lpErrorText);
 
+/**
+ * startVideoPreview
+ *    starts video preview
+ *    
+ * Parameters:
+ *    cam : camera struct
+ *    previewRate : expoure time (frame/seconds)
+ * Results:
+ *    TRUE or FALSE ( see GetLastError() )
+ * Side effects:
+ *    show the preview window
+ */
 int startVideoPreview(struct camprop *cam, int previewRate) {
    int result;
 
@@ -2210,6 +2185,17 @@ int startVideoPreview(struct camprop *cam, int previewRate) {
    return result;
 }
 
+/**
+ * stopVideoPreview
+ *    stops video preview
+ *    
+ * Parameters:
+ *    cam : camera struct
+ * Results:
+ *    TRUE or FALSE ( see GetLastError() )
+ * Side effects:
+ *    hide the preview window
+ */
 int stopVideoPreview(struct camprop *cam) {
    int result;
 
@@ -2226,7 +2212,7 @@ int stopVideoPreview(struct camprop *cam) {
  *    
  * Parameters:
  *    cam : camera struct
- *    extime : expoure time (seconds)
+ *    extime : exposure time (seconds)
  *    microSecPerFrame : rate (milliseconds per frame)
  *    fileName  : output film name (AVI)
  * Results:
@@ -2275,8 +2261,7 @@ int startVideoCapture(struct camprop *cam, unsigned short exptime, unsigned long
  * Results:
  *    TRUE or FALSE ( see GetLastError() )
  * Side effects:
- *    declare  a callback  and launch startCaptureNoFile
- *    The end will be notify by StatusCallbackProc
+ *    disable the callback  and stop capture 
  */
 int stopVideoCapture(struct camprop *cam) {
    return cam->capture->abortCapture();
@@ -2285,7 +2270,9 @@ int stopVideoCapture(struct camprop *cam) {
 
 /**
  * startVideoCrop
- *    start cropped mode
+ *    start cropped mode  
+ *    the crop rectangle is specified with setVideoCropRect()
+ *    before starting or when video is running
  * Parameters:
  *    cam : camera struct
  * Results:
@@ -2303,6 +2290,16 @@ int startVideoCrop(struct camprop *cam) {
 
 }
 
+/**
+ * stopVideoCrop
+ *    stop cropped mode
+ * Parameters:
+ *    cam : camera struct
+ * Results:
+ *    TRUE or FALSE ( see GetLastError() )
+ * Side effects:
+ *    disable the callback  and stop video
+ */
 int stopVideoCrop(struct camprop *cam) {
 
    cam->cropCapture->stopCropPreview();
@@ -2312,6 +2309,17 @@ int stopVideoCrop(struct camprop *cam) {
    return TRUE; 
 }
 
+/**
+ * setVideoCropRect
+ *    modifies the size of the crop rectangle  
+ * Parameters:
+ *    cam : camera struct
+ * Results:
+ *    TRUE or FALSE ( see GetLastError() )
+ * Side effects:
+ *    declare  a callback  and launch startCaptureNoFile
+ *    The end will be notify by StatusCallbackProc
+ */
 int setVideoCropRect(struct camprop *cam, long x1, long y1, long x2, long y2) {
    int result = TRUE;
 
@@ -2324,26 +2332,6 @@ int setVideoCropRect(struct camprop *cam, long x1, long y1, long x2, long y2) {
 
 }
 
-
-/**
- *  ErrorCallbackProc
- *  fonction callback appelee quand une erreur est remontee par le driver
- *
- *  hWnd:           Application main window handle
- *  nErrID:        Error code for the encountered error
- *  lpErrorText:   Error text string for the encountered error
- */
-/*
-LRESULT FAR PASCAL ErrorCallbackProc(HWND hWnd, int nErrID, LPSTR lpErrorText)
-{
-    if (nErrID == 0)            // Starting a new major function
-        return TRUE;            // Clear out old errors...
-
-    // Show the error ID and text
-
-    return (LRESULT) TRUE ;
-}
-*/
 
 //==================================================================
 //
