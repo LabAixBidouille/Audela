@@ -21,6 +21,8 @@
  */
 
 #include "libmc.h"
+#include <errno.h>
+
 
 struct obsreq {
    double quota_user;
