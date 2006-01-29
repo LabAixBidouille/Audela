@@ -63,16 +63,6 @@ int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc,
    }
 #endif
 
-   // pour le mode video
-   //if(cam->videoStatusVarNamePtr != NULL) {
-   //   free(cam->videoStatusVarNamePtr);
-   //   cam->videoStatusVarNamePtr = NULL;
-   //}
-   //if(videoEndCaptureCommandPtr != NULL) {
-   //   free(videoEndCaptureCommandPtr);
-   //   videoEndCaptureCommandPtr = NULL;
-   //}
-
 #endif
 
 #if defined(OS_LIN)
@@ -138,16 +128,11 @@ int cmdCamVideoSource(ClientData clientData, Tcl_Interp * interp, int argc,
 
 #if defined(OS_WIN)
 
-   if (cam->capture == NULL)
+   if (cam->capture == NULL) {
       return TCL_ERROR;
-
-
-   //BringWindowToTop(cam->g_hWndC);
-   //SetForegroundWindow(cam->g_hWndC);
-
-   cam->capture->openDlgVideoSource();
-   //PostMessage(cam->g_hWndC, WM_CAP_DLG_VIDEOSOURCE, 0, 0L);
-   //BringWindowToTop(cam->g_hWndC);
+   } else {
+      cam->capture->openDlgVideoSource();
+   }
 #endif
    return TCL_OK;
 }
@@ -701,70 +686,64 @@ int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc,
 }
 
 /**
- * cmdCamLonguePosePortAdress.
+ * cmdCamLonguePoseLinkno
  * Change or returns the long exposure port name (long exposure device).
 */
-int cmdCamLonguePosePortAdress(ClientData clientData, Tcl_Interp * interp,
+int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
-   char ligne[256], oldLongExposureDevice[256];
+   char ligne[256];
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   if ((argc != 2) && (argc != 3)) {
-      pb = 1;
-   } else if (argc == 2) {
-      pb = 0;
-   } else {
-      strcpy(oldLongExposureDevice, cam->longExposureDevice);
-      strcpy(cam->longExposureDevice, argv[2]);
 
-#if defined(OS_WIN)
-      if (strcmp(argv[2], cam_ports[1]) == 0) {
-         cam->longueposeportindex = 1;
-         cam->longueposeport = 0x278;
-      }
-#endif
-
-#if defined(OS_LIN)
-      if (cam->long_fd >= 0) {
-         webcam_setLongExposureDevice(cam, cam->longueposestop);
-         ioctl(cam->long_fd, PPRELEASE);
-         close(cam->long_fd);
-      }
-#endif
-
-#if defined(OS_WIN)
-#if !defined(OS_WIN_USE_LPT_OLD_STYLE)
-      if (cam->hLongExposureDevice != INVALID_HANDLE_VALUE) {
-         webcam_setLongExposureDevice(cam, cam->longueposestop);
-         CloseHandle(cam->hLongExposureDevice);
-      }
-#endif
-#endif
-
-      if (webcam_initLongExposureDevice(cam)) {
-         strcpy(ligne, cam->msg);
-         strcpy(cam->longExposureDevice, oldLongExposureDevice);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-      pb = 0;
-   }
-   if (pb == 1) {
-      sprintf(ligne, "Usage: %s %s ?long_exposure_port_name?", argv[0],
-              argv[1]);
+   if (argc != 3) {
+      sprintf(ligne, "Usage: %s %s ?linkno?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
-      sprintf(ligne, "%s", cam->longExposureDevice);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      // je memorise le numero du link
+      if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkno)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s linkno\n linkno = must be an integer > 0",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } 
    }
    return result;
 }
 
+
 /**
- * cmdCamLonguePoseStartValue - définition du caracter de debut de pose.
+ * cmdCamLonguePoseLinkbit
+ * Change the bit number 
+*/
+int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
+                               int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+
+   if (argc != 3) {
+      sprintf(ligne, "Usage: %s %s ?numbit", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      // je memorise le numero du bit
+      if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkbit)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s  numbit\n numbit = must be an integer > 0",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } 
+   }
+   return result;
+}
+
+
+
+/**
+ * cmdCamLonguePoseStartValue - définition du caractere de debut de pose.
 */
 int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
@@ -868,7 +847,6 @@ int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc,
 
    return result;
 }
-
 
 
 
