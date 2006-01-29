@@ -187,18 +187,17 @@ extern "C" {			/* Assume C declarations for C++ */
 	CGuidingListener *guidingListener;
 
 
-/**
- * HANDLE for long exposure device (parallel port)
-*/
-	HANDLE hLongExposureDevice;
-	int longueposeportindex;
-	int longueposeport;
+   // HANDLE for long exposure device (parallel port)
+	//HANDLE hLongExposureDevice;
+	//int longueposeportindex;
 #endif
 
 	int imax;
 	int jmax;
 	int driver;
 	int longuepose;
+   int longueposelinkno;
+   int longueposelinkbit;
 	char longueposestart;
 	char longueposestop;
 
