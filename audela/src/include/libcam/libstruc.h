@@ -106,6 +106,7 @@ extern char *cam_overscans[];
 struct camini {
     /* --- variables communes privees constantes --- */
     char name[256];
+    char model[256];
     char ccd[256];
     int maxx;
     int maxy;
@@ -136,6 +137,7 @@ struct camini {
 
 #define CAM_INI_NULL \
    {"",          /* camera name */ \
+    "",          /* camera model */ \
     "",          /* ccd name */ \
     1536,1024,   /* maxx maxy */ \
     14,14,       /* overscans x */ \
