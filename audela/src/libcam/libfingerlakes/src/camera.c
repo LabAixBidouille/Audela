@@ -45,7 +45,8 @@
 
 struct camini CAM_INI[] = {
     {
-     "xxxx",			/* camera name */
+     "fingerlakes",			/* camera name */
+     "IMG47-10",			/* camera model */
      "CCD47-10",		/* ccd name */
      1056, 1027,		/* maxx maxy */// 1056 x 1027 !! l'overscan est integre ici
      8, 0,			/* overscans x */
