@@ -21,12 +21,9 @@
  */
 
 #include <math.h>
+
 #include <iostream.h>
 #include <fstream.h>
-
-#if defined(OS_LIN)
-   #include <stream.h>
-#endif
 
 #include "cbuffer.h"
 #include "cpixelsgray.h"
@@ -55,7 +52,7 @@ CBuffer::CBuffer() : CDevice()
    FreeBuffer(DONT_KEEP_KEYWORDS);
 
    // je cree un tableau de pixels par defaut
-   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE, NULL, NULL, 0, 0);
+   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE, NULL, 0, 0, 0);
 
    initialMipsLo = 0;
    initialMipsHi = 0;
@@ -176,7 +173,7 @@ void CBuffer::FreeBuffer(int keep_keywords)
 	}
 
    // je cree un tableau de dimension nulle
-   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE,  NULL, NULL, 0, 0);
+   SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE,  NULL, 0, 0, 0);
 }
 
 
@@ -402,8 +399,7 @@ void CBuffer::LoadRawFile(char * filename)
    FreeBuffer(DONT_KEEP_KEYWORDS);
    result = libdcraw_decodeFile (filename, &width, &height, &pixels);
    if( result == 0 ) {
-
-      SetPixels(PLANE_RGB, width, height, FORMAT_SHORT, COMPRESS_NONE, pixels, 0, 0, 0);
+      SetPixels(PLANE_RGB, width, height, FORMAT_SHORT, COMPRESS_NONE, pixels, 0, 0, 1);
       libdcraw_freeBuffer(pixels);
    } else {
       throw CError("LoadRawFile: libjpeg_decodeBuffer error=%d", result);
@@ -535,13 +531,12 @@ void CBuffer::SaveFits(char *filename)
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
 
    switch( pix->getPixelClass() ) {
-      case CLASS_GRAY : 
-         pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
-         break;
       case CLASS_RGB :  
-         //pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
          SaveFitsRGB(filename);
          return;
+      default :
+         pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+         break;
    }
 
    
@@ -598,7 +593,7 @@ void CBuffer::SaveFits(char *filename)
 /**
  *----------------------------------------------------------------------
  * SaveNoFits
- *    sauvegarde le buffer dans fichier au format fits
+ *    sauvegarde le buffer dans fichier au format jpg, tiff, gif, ...
  *
  * Parameters: 
  *    *pixelSize  : taille du pixel (en octets) 1 2 ou 3
@@ -648,7 +643,7 @@ void CBuffer::SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, i
       {  
          ptr = (unsigned char*)malloc(ww*hh * 3);
          if(pixelPtr==NULL) throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS);                                          
-         //  je ptr les pixels ( zoom =1, palettte normale  ) 
+         //  je recupere les pixels ( zoom =1, palette normale  ) 
          pix->GetPixelsReverse(0,0,ww-1,hh-1, FORMAT_BYTE, PLANE_RGB, (int) ptr);                     
          // je prepare parametres de sortie
          *pixelPtr  = ptr;
@@ -1370,13 +1365,13 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    if( plane == PLANE_GREY) {
       // cas d'une image grise
-      pixTemp = new CPixelsGray(width, height, pixelFormat, pixels, reverseY);
+      pixTemp = new CPixelsGray(width, height, pixelFormat, pixels, reverseX, reverseY);
    } else {
       // cas d'un image couleur
       switch (compression) {
       case COMPRESS_NONE:
          {
-            pixTemp = new CPixelsRgb(plane, width, height, pixelFormat, pixels, reverseY);
+            pixTemp = new CPixelsRgb(plane, width, height, pixelFormat, pixels, reverseX, reverseY);
             break;
          }         
       case COMPRESS_JPEG :
@@ -1388,7 +1383,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
             result  = libdcjpeg_decodeBuffer((char*) pixels, pixelSize, &decodedData, &decodedSize, &width, &height);            
             if (result == 0 )  {
-               pixTemp = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, reverseY);
+               pixTemp = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, reverseX, reverseY);
                // l'espace memoire cree par la librairie doit etre desalloué par cette meme librairie.
                libdcjpeg_freeBuffer(decodedData);
             } else {
@@ -1406,7 +1401,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             //  Exemple: dans le cas de certains fichiers .CRW  width et height ont deux pixels de moins.
             result = libdcraw_decodeBuffer ((char*) pixels, pixelSize, &width, &height, &decodedData);
             if (result == 0 )  {
-                pixTemp = new CPixelsRgb(plane, width, height, FORMAT_SHORT, decodedData, reverseY);
+                pixTemp = new CPixelsRgb(plane, width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
                 libdcraw_freeBuffer(decodedData);
             } else {
                throw CError("libdcraw_decodeBuffer error=%d", result);
@@ -1422,10 +1417,6 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
                
    }
 
-   if( reverseX == 1 ) {
-      pixTemp->MirX();
-   }
-
    // s'il n'y a pas eu d'exception pendant la creation de pixTemp, je detruis l'ancienne image 
 	if (pix != NULL) {
 	   delete pix ;
@@ -1434,6 +1425,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    // j'affecte la nouvelle image
    pix = pixTemp;
+
 }
 
 
@@ -2277,7 +2269,7 @@ int CBuffer::A_StarList(double threshin,char *filename,double fwhm,int radius,
    if(after_gauss!=0 && retour>=0)
    {
       CPixelsGray * newpix;
-      newpix = new CPixelsGray(naxis1, naxis2, FORMAT_SHORT, temp_pic, 0);
+      newpix = new CPixelsGray(naxis1, naxis2, FORMAT_SHORT, temp_pic, 0, 0);
 
       delete pix;
       pix = newpix;
