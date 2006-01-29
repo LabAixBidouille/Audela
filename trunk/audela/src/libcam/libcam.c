@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+/*
+ * $Id: libcam.c,v 1.3 2006-01-29 18:32:02 michelpujol Exp $
+ */
+
 #include "sysexp.h"
 
 #if defined(OS_WIN)
@@ -119,6 +123,7 @@ static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, c
 
 /* --- Action commands ---*/
 static int cmdCamName(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamModel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamCcd(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamBin(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamExptime(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -761,8 +766,18 @@ static void AcqRead(ClientData clientData)
       if (Tcl_Eval(interp, s) == TCL_OK) {
          Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
       }   
+
       
       //--- Add FITS keywords 
+      if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
+         sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+         Tcl_Eval(interp, s);
+      } else if ( strcmp(cam->pixels_classe, "CLASS_RGB")==0 ) {
+         sprintf(s, "buf%d setkwd {NAXIS 3 int \"\" \"\"}", cam->bufno);
+         Tcl_Eval(interp, s);
+         sprintf(s, "buf%d setkwd {NAXIS3 3 int \"\" \"\"}", cam->bufno);
+         Tcl_Eval(interp, s);
+      }
       sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
       Tcl_Eval(interp, s);
       sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
@@ -917,6 +932,17 @@ static int cmdCamName(ClientData clientData, Tcl_Interp * interp, int argc, char
     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
     return TCL_OK;
 }
+
+static int cmdCamModel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+    char ligne[256];
+    struct camprop *cam;
+    cam = (struct camprop *) clientData;
+    sprintf(ligne, "%s", CAM_INI[cam->index_cam].model);
+    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+    return TCL_OK;
+}
+
 
 static int cmdCamCcd(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
