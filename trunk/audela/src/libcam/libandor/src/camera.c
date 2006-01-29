@@ -44,7 +44,8 @@
  */
 
 struct camini CAM_INI[] = {
-   {"Unknown", /* camera name */
+   {"andor", /* camera name */
+   "ANDOR",  /* camera model */
    "kaf400",      /* ccd name */
    768,512,       /* maxx maxy */
    0,0,         /* overscans x */

@@ -56,7 +56,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"SCR1300XTC",		/* camera name */
+    {"src1300XTC",		/* camera name */
+     "SCR1300XTC",		/* camera model */
      "kac1310",			/* ccd name */
      1280, 1024,		/* maxx maxy */
      8, 8,			/* overscans x */

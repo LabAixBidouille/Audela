@@ -49,6 +49,7 @@
 
 struct camini CAM_INI[] = {
     {"audine",			/* camera name */
+     "AUDINE",        /* camera model */
      "kaf401",			/* ccd name */
      768, 512,			/* maxx maxy */
      14, 14,			/* overscans x */
@@ -70,18 +71,19 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"audine",			/* camera name */
-     "kaf1602",			/* ccd name */
-     1536, 1024,		/* maxx maxy */
-     14, 14,			/* overscans x */
+    {"audine",		/* camera name */
+     "AUDINE",    /* camera model */
+     "kaf1602",   /* ccd name */
+     1536, 1024,	/* maxx maxy */
+     14, 14,		/* overscans x */
      4, 4,			/* overscans y */
-     9e-6, 9e-6,		/* photosite dim (m) */
-     32767.,			/* observed saturation */
-     1.,			/* filling factor */
+     9e-6, 9e-6,	/* photosite dim (m) */
+     32767.,		/* observed saturation */
+     1.,			   /* filling factor */
      11.,			/* gain (e/adu) */
      11.,			/* readnoise (e) */
      1, 1,			/* default bin x,y */
-     1.,			/* default exptime */
+     1.,			   /* default exptime */
      1,				/* default state of shutter (1=synchro) */
      1,				/* default num buf for the image */
      1,				/* default num tel for the coordinates taken */
@@ -93,6 +95,7 @@ struct camini CAM_INI[] = {
      1.				/* default focal lenght of front optic system */
      },
     {"audine",			/* camera name */
+     "AUDINE",       /* camera model */
      "kaf3200",			/* ccd name */
      2184, 1472,		/* maxx maxy */
      46, 37,			/* overscans x */

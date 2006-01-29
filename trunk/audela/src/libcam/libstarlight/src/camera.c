@@ -58,7 +58,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"MX5",			/* camera name */
+    {"starlight",			/* camera name */
+     "MX516",			/* camera model */
      "ICX055AL",		/* ccd name */
      500, 290,			/* maxx maxy */
      23, 14,			/* overscans x */
@@ -80,7 +81,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"HX5",			/* camera name */
+    {"starlight",		/* camera name */
+     "HX516",			/* camera model */
      "ICX084AL",		/* ccd name */
      659, 499,			/* maxx maxy */
      21, 21,			/* overscans x */
@@ -102,7 +104,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"MX9",			/* camera name */
+    {"starlight",		/* camera name */
+     "MX916",			/* camera model */
      "ICX083AL",		/* ccd name */
      752, 290,			/* maxx maxy */
      25, 0,			/* overscans x */
@@ -124,7 +127,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"MX7",			/* camera name */
+    {"starlight",			/* camera name */
+     "MX716",			/* camera model */
      "ICX249AK",		/* ccd name */
      752, 582,			/* maxx maxy */
      25, 0,			/* overscans x */

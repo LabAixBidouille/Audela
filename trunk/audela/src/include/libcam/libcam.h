@@ -42,6 +42,7 @@ struct cmditem {
 #define COMMON_CMDLIST \
    {"drivername", (Tcl_CmdProc *)cmdCamDrivername},\
    {"name", (Tcl_CmdProc *)cmdCamName},\
+   {"model", (Tcl_CmdProc *)cmdCamModel},\
    {"ccd", (Tcl_CmdProc *)cmdCamCcd},\
    {"nbcells", (Tcl_CmdProc *)cmdCamNbcells},\
    {"nbpix", (Tcl_CmdProc *)cmdCamNbpix},\

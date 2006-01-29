@@ -45,7 +45,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"hisis22-14",		/* camera name */
+    {"hisis",		 /* camera name */
+     "HISIS22-14b",		/* camera model */
      "kaf400",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -67,7 +68,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis22-12",		/* camera name */
+    {"hisis",		/* camera name */
+     "HISIS22-12b",		/* camera model */
      "kaf400",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -89,7 +91,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis11",			/* camera name */
+    {"hisis",		/* camera name */
+     "HISIS11",		   /* camera model */
      "TH7852A",			/* ccd name */
      208, 144,			/* maxx maxy */
      8, 2,			/* overscans x */
@@ -111,7 +114,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis23",			/* camera name */
+    {"hisis",		/* camera name */
+     "HISIS23",		   /* camera model */
      "kaf401e",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -133,7 +137,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis24",			/* camera name */
+    {"hisis",		/* camera name */
+     "HISIS24",  		/* camera model */
      "kaf400",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -155,7 +160,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis33",			/* camera name */
+    {"hisis",			/* camera name */
+     "HISIS33",  		/* camera model */
      "TH7895M",			/* ccd name */
      512, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -177,7 +183,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis36",			/* camera name */
+    {"hisis",			/* camera name */
+     "HISIS36",  		/* camera model */
      "Kaf0261e",		/* ccd name */
      512, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -199,7 +206,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis39",			/* camera name */
+    {"hisis",			/* camera name */
+     "HISIS39",  		/* camera model */
      "kaf1001e",		/* ccd name */
      1024, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -221,7 +229,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis43",			/* camera name */
+    {"hisis",			/* camera name */
+     "HISIS43",  		/* camera model */
      "kaf1602e",		/* ccd name */
      1536, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -243,7 +252,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis44",			/* camera name */
+    {"hisis",			/* camera name */
+     "HISIS44",  		/* camera model */
      "kaf1600",			/* ccd name */
      1536, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -265,7 +275,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis48",			/* camera name */
+    {"hisis",			/* camera name */
+     "HISIS48",  		/* camera model */
      "Loral442a",		/* ccd name */
      2048, 2048,		/* maxx maxy */
      0, 0,			/* overscans x */

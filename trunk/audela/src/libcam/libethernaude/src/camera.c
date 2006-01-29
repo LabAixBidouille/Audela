@@ -30,7 +30,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"ethernaude",		/* camera name */
+    {"audine",		/* camera name */
+     "AUDINE",		/* camera name */
      "kaf401",			/* ccd name */
      768, 512,			/* maxx maxy */
      14, 14,			/* overscans x */
@@ -233,7 +234,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     }
 
     /* === conversion des parametres Ethernaude -> AudeLA CAM_INI === */
-    if (strcmp(cam->ethvar.SystemName,"Ethernaude")==0) strcpy(cam->ethvar.SystemName,"Audine+Ethernaude");
+    if (strcmp(cam->ethvar.SystemName,"Ethernaude")==0) strcpy(cam->ethvar.SystemName,"audine");
     strcpy(CAM_INI[cam->index_cam].name, cam->ethvar.SystemName);
     strcpy(CAM_INI[cam->index_cam].ccd, cam->ethvar.InfoCCD_NAME);
     CAM_INI[cam->index_cam].maxx = cam->ethvar.WidthPixels;

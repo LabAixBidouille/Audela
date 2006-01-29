@@ -50,9 +50,10 @@
  */
 
 struct camini CAM_INI[] = {
-    {"Kitty255",		/* camera name */
-     "tc255",			/* ccd name */
-     320, 240,			/* maxx maxy */
+    {"kitty",		/* camera name */
+     "KITTY255",	      /* camera model */
+     "tc255",		/* ccd name */
+     320, 240,		/* maxx maxy */
      13, 0,			/* overscans x */
      2, 0,			/* overscans y */
      10e-6, 10e-6,		/* photosite dim (m) */
@@ -72,7 +73,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"Kitty237",		/* camera name */
+    {"kitty",		/* camera name */
+     "KITTY237",	         /* camera model */
      "tc237",			/* ccd name */
      650, 490,			/* maxx maxy */
      29, 0,			/* overscans x */

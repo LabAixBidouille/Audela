@@ -58,7 +58,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"CB245",			/* camera name */
+    {"cookbook",	   /* camera name */
+     "CB245",			/* camera model */
      "tc245",			/* ccd name */
      252, 242,			/* maxx maxy */
      11, 29,			/* overscans x */
