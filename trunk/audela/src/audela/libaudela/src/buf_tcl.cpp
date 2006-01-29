@@ -1697,9 +1697,6 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             } else {
                buffer->SetPixels(PLANE_RGB, width, height, pixelFormat, compression, (void *) pixelData, pixelSize, reverse_x, reverse_y);
             } 
-            if( reverse_x == 1 ) {
-               buffer->MirX();
-            }
             retour = TCL_OK;
          } catch(const CError& e) {
             sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
