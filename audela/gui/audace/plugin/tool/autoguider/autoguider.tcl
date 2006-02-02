@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel Pujol
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 01 fevrier 2006
 #
 
 package provide autoguider 1.0
@@ -337,7 +337,7 @@ proc ::Autoguider::acq { visuNo } {
    #--- Petits raccourcis
    set camNo [::confVisu::getCamNo $visuNo ]
    set bufNo [::confVisu::getBufNo $visuNo ]
-   set camName [::confVisu::getCamera $visuNo ]      
+   set camName [::confVisu::getCamera $visuNo ]
 
    #--- J'autorise le bouton "STOP"
    $private($visuNo,This).go_stop.but configure -state normal -text $caption(autoguider,STOP)

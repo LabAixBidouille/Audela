@@ -1,6 +1,6 @@
 #
 # Fichier : audinet.cap
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 31 janvier 2006
 #
 
 #=========================================================================
@@ -81,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,appareil_connecte)       "Vi e' un apparecchio all'indirizzo IP:"
    set caption(audinet,pas_appareil_connecte)   "Non ci sono apparecchi all' indirizzo IP:"
    set caption(audinet,message_ping)            "Messaggio di ritorno della funzione ping:"
-   set caption(audinet,erreur_setip)            "# Réseau non trouvé."
+   set caption(audinet,erreur_setip)            "Rete non trovata."
 
    set caption(audinet,site_web_ref)            "Sito Web di riferimento:"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
@@ -107,7 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,appareil_connecte)       "Ya existe un dispositivo en la dirección IP:"
    set caption(audinet,pas_appareil_connecte)   "No existe dispositivo en la dirección IP:"
    set caption(audinet,message_ping)            "Mensaje devuelto por la utilidad ping:"
-   set caption(audinet,erreur_setip)            "# Réseau non trouvé."
+   set caption(audinet,erreur_setip)            "No se encuentra la red."
 
    set caption(audinet,site_web_ref)            "Sitio Web de referencia:"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"

@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 29 janvier 2006
+# Date de mise a jour : 31 janvier 2006
 #
 
 #=========================================================================
@@ -727,7 +727,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Equipaggiamento"
    set caption(audace,menu,carte)                     "Mappa"
    set caption(audace,menu,optique)                   "Ottica"
-   set caption(audace,menu,liaison)                   "# Liaison"
+   set caption(audace,menu,liaison)                   "Collegamento"
 
    set caption(audace,menu,aide)                      "Aiuto"
    set caption(audace,menu,sommaire)                  "Sommario"
@@ -1035,7 +1035,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Equipo"
    set caption(audace,menu,carte)                     "Mapa"
    set caption(audace,menu,optique)                   "Óptico"
-   set caption(audace,menu,liaison)                   "# Liaison"
+   set caption(audace,menu,liaison)                   "Enlace"
 
    set caption(audace,menu,aide)                      "Ayuda"
    set caption(audace,menu,sommaire)                  "Tabla de Contenidos"
@@ -1700,19 +1700,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,cte_invalide)                   "# Constante invalide."
    set caption(audace,coef_invalide)                  "# Coefficient invalide."
    set caption(audace,coef_invalides)                 "# Coefficients invalides."
-   set caption(audace,definir,constante)              "# Définissez une constante."
-   set caption(audace,definir,fond_ciel)              "# Définissez le niveau du fond de ciel."
-   set caption(audace,definir,image_B)                "# Choisissez une image B."
-   set caption(audace,header,noimage_dd)              "# Choisissez une image stockée sur le disque dur."
+   set caption(audace,definir,constante)              "Definer en konstant."
+   set caption(audace,definir,fond_ciel)              "Definer niveau på himmelbaggrunden."
+   set caption(audace,definir,image_B)                "Vælg et B billede."
+   set caption(audace,header,noimage_dd)              "Vælg et billede på harddisken."
    set caption(audace,coef_manquant)                  "# Définissez le coefficient manquant."
-   set caption(audace,choix_coefficient)              "# Définissez le coefficient."
-   set caption(audace,choix_coefficients)             "# Définissez les coefficients."
-   set caption(audace,choix_image_entree)             "# Choisissez les images d'entrée."
-   set caption(audace,choix_nbre_images)              "# Définissez le nombre d'images."
-   set caption(audace,choix_image_sortie)             "# Choisissez les images de sortie."
-   set caption(audace,definir,operande)               "# Choisissez une image opérande C."
-   set caption(audace,definir,noir)                   "# Choisissez l'image de noir."
-   set caption(audace,definir,offset)                 "# Choisissez l'image d'offset."
+   set caption(audace,choix_coefficient)              "Definer koefficienten."
+   set caption(audace,choix_coefficients)             "Definer koefficienterne."
+   set caption(audace,choix_image_entree)             "Vælg input-billeder."
+   set caption(audace,choix_nbre_images)              "Definer antallet af billeder."
+   set caption(audace,choix_image_sortie)             "Vælg output-billeder."
+   set caption(audace,definir,operande)               "Vælg et C billede brugt som operand."
+   set caption(audace,definir,noir)                   "Vælg dark-frame."
+   set caption(audace,definir,offset)                 "Vælg bias-frame."
    set caption(nom,image,ajouter)                     "Navn på billede, som adderes ( B ):"
    set caption(nom,image,soustraire)                  "Navn på billede, som subtraheres ( B ):"
    set caption(image,constante,ajouter)               "Tilføj en konstant (Cte):"

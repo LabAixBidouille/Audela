@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 02 fevrier 2006
 #
 
 package provide scanfast 1.0
@@ -56,7 +56,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
       cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
-      ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ( [ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
+      ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
       set speed [ expr $dt/$dteff/1000.*$speed ];
       ::console::affiche_resultat "      $caption(scanfast,comment9) = $speed\n"
       ::console::affiche_resultat "\n"
@@ -64,7 +64,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
       cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
-      ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ( [ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
+      ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
       set speed [ expr $dt/$dteff/1000.*$speed ];
       ::console::affiche_resultat "      $caption(scanfast,comment9) = $speed\n"
       ::console::affiche_resultat "\n"
