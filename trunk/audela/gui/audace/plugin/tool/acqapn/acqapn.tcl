@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond Zachantke
-# Date de mise a jour : 14 decembre 2005
+# Date de mise a jour : 03 fevrier 2006
 #
 
 	package provide acqapn 1.0
@@ -50,7 +50,6 @@
       	if {![info exists conf(apn,metering)]}          {set conf(apn,metering) "Center"}
       	if {![info exists conf(apn,mode)]}             	{set conf(apn,mode) "Off"}
       	if {![info exists conf(apn,model)]}             {set conf(apn,model) "Coolpix-5700"}
-      	if {![info exists conf(apn,video_port)]}        {set conf(apn,video_port) "0"}
       	if {![info exists conf(apn,video_scale)]}       {set conf(apn,video_scale) "2.0"}
       	if {![info exists conf(apn,whitebalance)]}      {set conf(apn,whitebalance) "Auto"}
       	    
@@ -118,7 +117,9 @@
    	proc SetOptions { } {
       	global conf confCam 
       	
-		foreach var { baud video_port } { set confCam(conf_apn,$var) $conf(apn,$var) }
+		foreach var { baud } { set confCam(conf_apn,$var) $conf(apn,$var) }
+		### foreach var { baud video_port } { set confCam(conf_apn,$var) $conf(apn,$var) }
+		set confCam(conf_webcam,port) $conf(webcam,port)
 		foreach var { video_scale model adjust compression flash focus format lens\
 						metering whitebalance exposure mode dzoom } { 
 			set confCam(apn,$var) $conf(apn,$var) 
@@ -140,7 +141,9 @@
       	#--- Sauvegarde si résolution valide
       	if { $confCam(apn,resolution) > "0" } {
       		#---Les seules variables de configuration sauvegardées
-      		foreach var { baud video_port } { set conf(apn,$var) $confCam(conf_apn,$var) }
+      		foreach var { baud } { set conf(apn,$var) $confCam(conf_apn,$var) }
+      		### foreach var { baud video_port } { set conf(apn,$var) $confCam(conf_apn,$var) }
+      		set conf(webcam,port) $confCam(conf_webcam,port)
       		foreach var { video_scale model adjust format compression flash focus format lens\
       			metering whitebalance exposure mode dzoom} { 
       			set conf(apn,$var) $confCam(apn,$var)	
