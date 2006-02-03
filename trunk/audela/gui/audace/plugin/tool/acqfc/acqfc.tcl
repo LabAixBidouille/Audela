@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 29 janvier 2006
+# Date de mise a jour : 01 fevrier 2006
 #
 
 package provide acqfc 2.1
@@ -109,7 +109,7 @@ namespace eval ::AcqFC {
       #--- Recuperation de la derniere configuration de prise de vue
       ::AcqFC::Chargement_Var $visuNo
 
-      #--- Chargement du package tkimgvideo (video pour les webcams sous Windows uniquement)
+      #--- Chargement du package tkimgvideo (video pour les WebCams sous Windows uniquement)
       if { $::tcl_platform(os) != "Linux" } {
         set result [ catch { package require tkimgvideo } msg ]
         if { $result == "1" } {
@@ -196,18 +196,18 @@ namespace eval ::AcqFC {
         set panneau(AcqFC,$visuNo,lg_film) "$parametres(acqFC,$visuNo,lg_film)"
       }
 
-      #--- Mode de telechargement des images des APN
+      #--- Mode de telechargement des images des cameras DSC (APN)
       if { ! [ info exists panneau(AcqFC,$visuNo,telecharge_mode) ] } {
         set panneau(AcqFC,$visuNo,telecharge_mode) "$parametres(acqFC,$visuNo,telecharge_mode)"
       }
 
       AcqFCBuildIF $visuNo 
 
-      #--- Traitement du bouton Configuration pour la camera DigiCam
+      #--- Traitement du bouton Configuration pour la camera DSC (APN)
       if { ( $panneau(AcqFC,$visuNo,mode) == "6" ) || ( $panneau(AcqFC,$visuNo,mode) == "7" ) } {
-        $panneau(AcqFC,$visuNo,This).obt.digicam configure -state disabled
+        $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
       } else {
-        $panneau(AcqFC,$visuNo,This).obt.digicam configure -state normal
+        $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
       }
 
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
@@ -248,16 +248,16 @@ namespace eval ::AcqFC {
       set camNo [ ::confVisu::getCamNo $visuNo ] 
       if { $camNo == "0" } {
          #--- La camera n'a pas ete encore selectionnee 
-         set camName ""
+         set camProduct ""
       } else { 
-         set camName [ cam$camNo name ]
+         set camProduct [ cam$camNo product ]
       }
       #---
-      if { "$camName" == "digicam" } {
+      if { "$camProduct" == "dsc" } {
          set panneau(AcqFC,$visuNo,telecharge_mode) "1"
       }
       #---
-      if { "$camName" == "webcam" } {
+      if { "$camProduct" == "webcam" } {
          #--- C'est une WebCam
          if { $conf(webcam,longuepose) == "0" } {
             #--- Cas d'une WebCam standard
@@ -271,7 +271,7 @@ namespace eval ::AcqFC {
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
             pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
-            pack forget $panneau(AcqFC,$visuNo,This).obt.digicam
+            pack forget $panneau(AcqFC,$visuNo,This).obt.dsc
          } else {
             #--- Cas d'une WebCam Longue Pose
             pack $panneau(AcqFC,$visuNo,This).pose.but -side left
@@ -284,10 +284,10 @@ namespace eval ::AcqFC {
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
             pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
-            pack forget $panneau(AcqFC,$visuNo,This).obt.digicam
+            pack forget $panneau(AcqFC,$visuNo,This).obt.dsc
          }
-      } elseif { "$camName" == "digicam" } {
-         #--- C'est une DigiCam (APN)
+      } elseif { "$camProduct" == "dsc" } {
+         #--- C'est une DSC (APN)
          pack $panneau(AcqFC,$visuNo,This).pose.but -side left
          pack $panneau(AcqFC,$visuNo,This).pose.lab -side right
          pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
@@ -298,9 +298,9 @@ namespace eval ::AcqFC {
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
          pack forget $panneau(AcqFC,$visuNo,This).obt.format
-         pack $panneau(AcqFC,$visuNo,This).obt.digicam -fill x -expand true -ipady 3
+         pack $panneau(AcqFC,$visuNo,This).obt.dsc -fill x -expand true -ipady 3
       } else {
-         #--- Ce n'est pas une WebCam, ni une DigiCam (APN)
+         #--- Ce n'est pas une WebCam, ni une DSC (APN)
          pack $panneau(AcqFC,$visuNo,This).pose.but -side left
          pack $panneau(AcqFC,$visuNo,This).pose.lab -side right
          pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
@@ -311,19 +311,19 @@ namespace eval ::AcqFC {
          pack $panneau(AcqFC,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
          pack forget $panneau(AcqFC,$visuNo,This).obt.format
-         pack forget $panneau(AcqFC,$visuNo,This).obt.digicam
+         pack forget $panneau(AcqFC,$visuNo,This).obt.dsc
       }
 
       if { [ ::confCam::hasShutter $camNo ] } {
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
-         if { ! [ info exists conf($camName,foncobtu) ] } {
-            set conf($camName,foncobtu) "2"
+         if { ! [ info exists conf($camProduct,foncobtu) ] } {
+            set conf($camProduct,foncobtu) "2"
          } else {
-            if { $conf($camName,foncobtu) == "0" } {
+            if { $conf($camProduct,foncobtu) == "0" } {
                set panneau(AcqFC,$visuNo,obt) "0"
-            } elseif { $conf($camName,foncobtu) == "1" } {
+            } elseif { $conf($camProduct,foncobtu) == "1" } {
                set panneau(AcqFC,$visuNo,obt) "1"
-            } elseif { $conf($camName,foncobtu) == "2" } {
+            } elseif { $conf($camProduct,foncobtu) == "2" } {
                set panneau(AcqFC,$visuNo,obt) "2"
             }
          }
@@ -332,7 +332,7 @@ namespace eval ::AcqFC {
       } else {
          pack forget $panneau(AcqFC,$visuNo,This).obt.but
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
-         if { ( "$camName" != "webcam" ) && ( "$camName" != "digicam" ) } {
+         if { ( "$camProduct" != "webcam" ) && ( "$camProduct" != "dsc" ) } {
             pack $panneau(AcqFC,$visuNo,This).obt.lab1 -side top -ipady 3
          }
       }
@@ -462,29 +462,29 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,mode) [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
       if { $panneau(AcqFC,$visuNo,mode) == "1" } {
          ::AcqFC::recup_position $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "2" } {
          ::AcqFC::recup_position $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "3" } {
          ::AcqFC::recup_position $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "4" } {
          ::AcqFC::Intervalle_continu_1 $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
          ::AcqFC::Intervalle_continu_2 $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "6" } {
          set panneau(AcqFC,$visuNo,fenetre) "0"
          ::AcqFC::selectVideoMode $visuNo
          ::AcqFC::recup_position_telecharge $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state disabled
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
       } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
          set panneau(AcqFC,$visuNo,fenetre) "0"
          ::AcqFC::selectVideoMode $visuNo
          ::AcqFC::recup_position_telecharge $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.digicam configure -state disabled
+         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
       }
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
    }
@@ -495,89 +495,52 @@ namespace eval ::AcqFC {
       global panneau conf confCam audace caption frmm
 
       #---
-      set camNo   [ ::confVisu::getCamNo $visuNo ]
-      set camName [ ::confVisu::getCamera $visuNo ]
-      #--- Cas particulier de l'EthernAude qui repond "Audine+Ethernaude" que je remplace par "audine"
-      if { $camName == "Audine+Ethernaude" } {
-         set camName "audine"
-      }
+      set camNo      [ ::confVisu::getCamNo $visuNo ]
+      set camProduct [ cam$camNo product ]
       #---
-      if { "$camName" != "" } {
+      if { "$camProduct" != "" } {
          if { [ ::confCam::hasShutter $camNo ] } {
             incr panneau(AcqFC,$visuNo,obt)
             if { $panneau(AcqFC,$visuNo,obt) == "3" } {
                set panneau(AcqFC,$visuNo,obt) "0"
             }
             $panneau(AcqFC,$visuNo,This).obt.lab config -text $panneau(AcqFC,$visuNo,obt,$panneau(AcqFC,$visuNo,obt))
-            if { "$camName" == "audine" } {
+            if { "$camProduct" == "audine" } {
                set conf(audine,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera1) }
-            } elseif { "$camName" == "hisis22-12" } {
+            } elseif { "$camProduct" == "hisis" } {
                set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis22-14" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis23" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis24" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis33" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis36" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis39" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis43" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis44" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "hisis48" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camName" == "sbig" } {
+            } elseif { "$camProduct" == "sbig" } {
                set conf(sbig,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera3) }
-            } elseif { "$camName" == "audinet" } {
-               set conf(audine,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera1) }
-            } elseif { "$camName" == "ethernaude" } {
-               set conf(audine,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera1) }
-            } elseif { "$camName" == "andor" } {
+            } elseif { "$camProduct" == "andor" } {
                set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera11) }
             }
             #---
             switch -exact -- $panneau(AcqFC,$visuNo,obt) {
                0  {
-                  set confCam(conf_$camName,foncobtu) $caption(acqfc,obtu_ouvert)
+                  set confCam(conf_$camProduct,foncobtu) $caption(acqfc,obtu_ouvert)
                   catch {
-                     $frm.foncobtu configure -height [ llength $confCam(conf_$camName,list_foncobtu) ]
-                     $frm.foncobtu configure -values $confCam(conf_$camName,list_foncobtu)
+                     $frm.foncobtu configure -height [ llength $confCam(conf_$camProduct,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_$camProduct,list_foncobtu)
                   }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "opened"
                }
                1  {
-                  set confCam(conf_$camName,foncobtu) $caption(acqfc,obtu_ferme)
+                  set confCam(conf_$camProduct,foncobtu) $caption(acqfc,obtu_ferme)
                   catch {
-                     $frm.foncobtu configure -height [ llength $confCam(conf_$camName,list_foncobtu) ]
-                     $frm.foncobtu configure -values $confCam(conf_$camName,list_foncobtu)
+                     $frm.foncobtu configure -height [ llength $confCam(conf_$camProduct,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_$camProduct,list_foncobtu)
                   }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "closed"
                }
                2  {
-                  set confCam(conf_$camName,foncobtu) $caption(acqfc,obtu_synchro)
+                  set confCam(conf_$camProduct,foncobtu) $caption(acqfc,obtu_synchro)
                   catch {
-                     $frm.foncobtu configure -height [ llength $confCam(conf_$camName,list_foncobtu) ]
-                     $frm.foncobtu configure -values $confCam(conf_$camName,list_foncobtu)
+                     $frm.foncobtu configure -height [ llength $confCam(conf_$camProduct,list_foncobtu) ]
+                     $frm.foncobtu configure -values $confCam(conf_$camProduct,list_foncobtu)
                   }
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "synchro"
                }
@@ -1056,11 +1019,11 @@ namespace eval ::AcqFC {
                  }
                  6  {
                     #--- Mode video
-                    #--- Verifier qu'il s'agit bien d'une webcam
-                    if { [ ::confVisu::getCamera $visuNo ] != "webcam" } {
+                    #--- Verifier qu'il s'agit bien d'une WebCam
+                    if { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getCamera $visuNo ] $caption(acqfc,pb_camera2)" 
-                       set integre non   
+                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)" 
+                       set integre non
                     }
                     #--- Verifier qu'il y a bien un nom de fichier
                     if { $panneau(AcqFC,$visuNo,nom_image) == "" } {
@@ -1118,10 +1081,10 @@ namespace eval ::AcqFC {
                  }
                  7  {
                     #--- Mode video avec intervalle entre chaque video
-                    #--- Verifier qu'il s'agit bien d'une webcam
-                    if { [ ::confVisu::getCamera $visuNo ] != "webcam" } {
+                    #--- Verifier qu'il s'agit bien d'une WebCam
+                    if { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getCamera $visuNo ] $caption(acqfc,pb_camera2)" 
+                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)" 
                        set integre non   
                     }
                     #--- Verifier qu'il y a bien un nom de fichier
@@ -1209,7 +1172,7 @@ namespace eval ::AcqFC {
               #--- Pose en cours
               set panneau(AcqFC,$visuNo,pose_en_cours) "1"
               #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
-              if { ( [ ::confVisu::getCamera $visuNo ] == "webcam" ) && ( $conf(webcam,longuepose) == "0" ) } {
+              if { ( [ ::confVisu::getProduct $visuNo ] == "webcam" ) && ( $conf(webcam,longuepose) == "0" ) } {
                  set panneau(AcqFC,$visuNo,pose) "0"
               }
               #--- Branchement selon le mode de prise de vue
@@ -1296,7 +1259,7 @@ namespace eval ::AcqFC {
                        set panneau(AcqFC,$visuNo,intervalle) [ expr $panneau(AcqFC,$visuNo,fin) - $panneau(AcqFC,$visuNo,debut) ]
                        Message $visuNo consolog $caption(acqfc,fin_simu)
                     } 
-                    #--- Cas particulier des cameras DigiCam
+                    #--- Cas particulier des cameras DSC (APN)
                     if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
@@ -1366,7 +1329,7 @@ namespace eval ::AcqFC {
                        #--- Deplacement du telescope
                        ::DlgShift::Decalage_Telescope
                     }
-                    #--- Cas particulier des cameras DigiCam
+                    #--- Cas particulier des cameras DSC (APN)
                     if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
@@ -1439,7 +1402,7 @@ namespace eval ::AcqFC {
                        }
                        set panneau(AcqFC,$visuNo,attente_pose) "0"
                     }
-                    #--- Cas particulier des cameras DigiCam
+                    #--- Cas particulier des cameras DSC (APN)
                     if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
@@ -1529,7 +1492,7 @@ namespace eval ::AcqFC {
                        Message $visuNo consolog $caption(acqfc,dersauve) [append nom $panneau(AcqFC,$visuNo,index)]
                        set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) + 1 ]
                     }
-                    #--- Cas particulier des cameras DigiCam
+                    #--- Cas particulier des cameras DSC (APN)
                     if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
@@ -1957,7 +1920,7 @@ namespace eval ::AcqFC {
         }
         #---
         return 1
-      } elseif { ( [ ::confVisu::getCamera $visuNo ] != "webcam" ) && ( [ ::confVisu::getCamera $visuNo ] != "apn" ) } {
+      } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
         tk_messageBox -title $caption(acqfc,pb) -type ok \
            -message $caption(acqfc,no_video_mode)
         #--- Je decoche la checkbox
@@ -2764,22 +2727,20 @@ namespace eval ::AcqFC {
       }
       #---
       if { $result == "0" } {
-         if { ( "[ ::confVisu::getCamera $visuNo ]" == "webcam" ) || ( "[ ::confVisu::getCamera $visuNo ]" == "apn" ) } {
-
-        } elseif { "[ ::confVisu::getCamera $visuNo ]" == "webcam" && "[ ::confVisu::getCamera $visuNo ]" == "apn" } {
-           tk_messageBox -title $caption(acqfc,pb) -type ok \
-              -message $caption(acqfc,no_video_mode)
-           #--- Je decoche la checkbox
-           set panneau(AcqFC,$visuNo,showvideopreview) "0"
-           #--- Je decoche le fenetrage
-           if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
-              set panneau(AcqFC,$visuNo,fenetre) "0"
-              ::AcqFC::optionWindowedFenster $visuNo
-           }
-        } else {
-           ::confCam::run 
-           tkwait window $audace(base).confCam         
-        }
+         if { "[ ::confVisu::getProduct $visuNo ]" == "webcam" } {
+            tk_messageBox -title $caption(acqfc,pb) -type ok \
+               -message $caption(acqfc,no_video_mode)
+            #--- Je decoche la checkbox
+            set panneau(AcqFC,$visuNo,showvideopreview) "0"
+            #--- Je decoche le fenetrage
+            if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+               set panneau(AcqFC,$visuNo,fenetre) "0"
+               ::AcqFC::optionWindowedFenster $visuNo
+            }
+         } else {
+            ::confCam::run 
+            tkwait window $audace(base).confCam         
+         }
       } else {
         set panneau(AcqFC,$visuNo,fenetre) "0"
       }
@@ -2791,7 +2752,7 @@ namespace eval ::AcqFC {
       global audace
       global conf
 
-      if { ( "[ ::confVisu::getCamera $visuNo ]" == "webcam" ) || ( "[ ::confVisu::getCamera $visuNo ]" == "apn" ) } {
+      if { "[ ::confVisu::getProduct $visuNo ]" == "webcam" } {
 
       }
    }
@@ -2842,7 +2803,7 @@ namespace eval ::AcqFC {
       global conf
       global panneau
 
-      #--- Cas de la fenetre Configuration DigiCam
+      #--- Cas de la fenetre Configuration DSC (APN)
       if [ winfo exists $panneau(AcqFC,$visuNo,base).telecharge_image ] {
         #--- Determination de la position de la fenetre
         set geometry [ wm geometry $panneau(AcqFC,$visuNo,base).telecharge_image ]
@@ -2870,7 +2831,7 @@ namespace eval ::AcqFC {
    }
 #***** Fin enregistrement de la position de la fenetre Avancement ****
 
-#***** Aquisition fenetree avec une webcam ***************************
+#***** Aquisition fenetree avec une WebCam ***************************
    proc cmdAcqFenetree { visuNo } {
       global panneau
 
@@ -2882,7 +2843,7 @@ namespace eval ::AcqFC {
          ::AcqFC::stopWindowedFenster $visuNo
       }
    }
-#***** Fin de l'aquisition fenetree avec une webcam ******************
+#***** Fin de l'aquisition fenetree avec une WebCam ******************
 
 #***** Choix du telechargement de l'image de l'APN *******************
    proc choixTelechargement { visuNo } {
@@ -2896,7 +2857,7 @@ namespace eval ::AcqFC {
    }
 #***** Fin du choix du telechargement de l'image de l'APN ************
 
-#***** Affichage de la fenetre de configuration de webcam ************
+#***** Affichage de la fenetre de configuration de WebCam ************
    proc webcamConfigure { visuNo } {
       global caption
 
@@ -2916,9 +2877,9 @@ namespace eval ::AcqFC {
          }
       }
    } 
-#***** Fin de la fenetre de configuration de webcam ******************
+#***** Fin de la fenetre de configuration de WebCam ******************
 
-#***** Affichage de la fenetre de selection de format de la webcam ***
+#***** Affichage de la fenetre de selection de format de la WebCam ***
    proc webcamSelectFormat { visuNo } {
       global caption panneau
 
@@ -2944,7 +2905,7 @@ namespace eval ::AcqFC {
            ::confVisu::setVideo $visuNo "1"
        }
    }
-#***** Fin de la fenetre de selection de format de la webcam *********
+#***** Fin de la fenetre de selection de format de la WebCam *********
 
 }
 #==============================================================
@@ -3030,9 +2991,9 @@ proc AcqFCBuildIF { visuNo } {
    pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
 
    #--- Bouton du choix du telechargement de l'image de l'APN en lieu et place du widget obturateur
-   button $panneau(AcqFC,$visuNo,This).obt.digicam -text $caption(acqfc,config) -state normal \
+   button $panneau(AcqFC,$visuNo,This).obt.dsc -text $caption(acqfc,config) -state normal \
       -command "::AcqFC::choixTelechargement $visuNo"
-   pack $panneau(AcqFC,$visuNo,This).obt.digicam -fill x -expand true
+   pack $panneau(AcqFC,$visuNo,This).obt.dsc -fill x -expand true
 
    #--- Trame du Status
    frame $panneau(AcqFC,$visuNo,This).status -borderwidth 2 -relief ridge

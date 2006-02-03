@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Date de mise a jour : 31 janvier 2006
+# Date de mise a jour : 03 fevrier 2006
 #
 
 #=========================================================================
@@ -105,19 +105,17 @@ set caption(confcam,webcam_longuepose)          "S. Chambers Long Exposure Optio
 set caption(confcam,webcam_longueposeport)      "Control Port for the Option"
 set caption(confcam,webcam_longueposestart)     "Control when exposure begins"
 set caption(confcam,webcam_longueposestop)      "Control when exposure ends"
-set caption(confcam,conf_webcam)                "WebCam Setup"
-set caption(confcam,format_webcam)              "Select Image Format"
+set caption(confcam,conf_webcam)                "Video Source Selection"
+set caption(confcam,format_webcam)              "Video Format Selection"
 set caption(confcam,ccd_N_B)                    "B&W CCD Modified Webcam"
 
 set caption(confcam,coef_th7852a)               "Coefficient"
 
 set caption(confcam,apn)                        "Digital Camera"
-set caption(confcam,apn_video)                  "Video Connection Only"
-set caption(confcam,apn_serie)                  "Serial Connection Only"
+set caption(confcam,liaison)                    "Link"
+set caption(confcam,apn_photopc)                "PhotoPC"
+set caption(confcam,apn_gphoto2)                "GPhoto2"
 set caption(confcam,apn_baud)                   "Serial Port Speed (bauds)"
-set caption(confcam,apn_canal_usb)              "USB Video Channel"
-set caption(confcam,apn_video_source)           "Video Source Selection"
-set caption(confcam,apn_video_format)           "Video Format Selection"
 
 set caption(confcam,andor_config)               "Folder Containing Setup Files"
 set caption(confcam,andor_parcourir)            "..."
@@ -264,19 +262,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposeport)   "Port de contrôle de l'option"
    set caption(confcam,webcam_longueposestart)  "Commande au début de la pose"
    set caption(confcam,webcam_longueposestop)   "Commande à la fin de la pose"
-   set caption(confcam,conf_webcam)             "Configuration de la WebCam"
-   set caption(confcam,format_webcam)           "Choix du format de l'image"
+   set caption(confcam,conf_webcam)             "Sélection de la source video"
+   set caption(confcam,format_webcam)           "Sélection du format video"
    set caption(confcam,ccd_N_B)                 "WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
    set caption(confcam,apn)                     "APN"
-   set caption(confcam,apn_video)               "Connexion vidéo seulement"
-   set caption(confcam,apn_serie)               "Connexion série seulement"
+   set caption(confcam,liaison)                 "Liaison"
+   set caption(confcam,apn_photopc)             "PhotoPC"
+   set caption(confcam,apn_gphoto2)             "GPhoto2"
    set caption(confcam,apn_baud)                "Vitesse du port série (bauds)"
-   set caption(confcam,apn_canal_usb)           "Canal vidéo USB"
-   set caption(confcam,apn_video_source)        "Sélection de la source video"
-   set caption(confcam,apn_video_format)        "Sélection du format video"
 
    set caption(confcam,andor_config)            "Répertoire contenant les fichiers de configuration"
    set caption(confcam,andor_parcourir)         "..."
@@ -423,19 +419,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposeport)   "Porta di controllo dell'opzione"
    set caption(confcam,webcam_longueposestart)  "Comando all'inizio della posa"
    set caption(confcam,webcam_longueposestop)   "Comando alla fine della posa"
-   set caption(confcam,conf_webcam)             "Settagio WebCam"
-   set caption(confcam,format_webcam)           "Scelta del formato dell'immagine"
+   set caption(confcam,conf_webcam)             "Selezione sorgente video"
+   set caption(confcam,format_webcam)           "Selezione del formato video"
    set caption(confcam,ccd_N_B)                 "Webcam modificata con CCD B&N"
 
    set caption(confcam,coef_th7852a)            "Coefficiente"
 
    set caption(confcam,apn)                     "Fotocamera digitale"
-   set caption(confcam,apn_video)               "Solo connessione video"
-   set caption(confcam,apn_serie)               "Solo connessione seriale"
+   set caption(confcam,liaison)                 "Collegamento"
+   set caption(confcam,apn_photopc)             "PhotoPC"
+   set caption(confcam,apn_gphoto2)             "GPhoto2"
    set caption(confcam,apn_baud)                "Velocita' porta seriale (bauds)"
-   set caption(confcam,apn_canal_usb)           "Canale video USB"
-   set caption(confcam,apn_video_source)        "Selezione sorgente video"
-   set caption(confcam,apn_video_format)        "Selezione del formato video"
 
    set caption(confcam,andor_config)            "Cartella contenente i file di configurazione"
    set caption(confcam,andor_parcourir)         "..."
@@ -582,19 +576,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposeport)   "Puerto de control para la opcion"
    set caption(confcam,webcam_longueposestart)  "Control cuando empieza la exposición"
    set caption(confcam,webcam_longueposestop)   "Control cuando acaba la exposición"
-   set caption(confcam,conf_webcam)             "Configuración WebCam"
-   set caption(confcam,format_webcam)           "Seleccionar formato de imagen"
+   set caption(confcam,conf_webcam)             "Selección de la entrada de vídeo"
+   set caption(confcam,format_webcam)           "Selección de formato de vídeo"
    set caption(confcam,ccd_N_B)                 "CCD Webcam Blanco y Negro modificada"
 
    set caption(confcam,coef_th7852a)            "Coeficiente"
 
    set caption(confcam,apn)                     "Cámara digital"
-   set caption(confcam,apn_video)               "Sólo conexión de vídeo"
-   set caption(confcam,apn_serie)               "Sólo conexión de audio"
+   set caption(confcam,liaison)                 "Enlace"
+   set caption(confcam,apn_photopc)             "PhotoPC"
+   set caption(confcam,apn_gphoto2)             "GPhoto2"
    set caption(confcam,apn_baud)                "Velocidad del Puerto Serie (baudios)"
-   set caption(confcam,apn_canal_usb)           "Canal vídeo USB"
-   set caption(confcam,apn_video_source)        "Selección de la entrada de vídeo"
-   set caption(confcam,apn_video_format)        "Selección de formato de vídeo"
 
    set caption(confcam,andor_config)            "Doirectorio que contiene los ficheros de configuracion"
    set caption(confcam,andor_parcourir)         "..."
@@ -741,19 +733,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposeport)   "Kontroll Port der Option"
    set caption(confcam,webcam_longueposestart)  "Anfang der Belichtung Antrieb"
    set caption(confcam,webcam_longueposestop)   "Ende der Belichtung Antrieb"
-   set caption(confcam,conf_webcam)             "WebCam Konfiguration"
-   set caption(confcam,format_webcam)           "Bildgröße Wahl"
+   set caption(confcam,conf_webcam)             "Wahl der Videoquelle"
+   set caption(confcam,format_webcam)           "Wahl des Videoformats"
    set caption(confcam,ccd_N_B)                 "# WebCam modifiée avec CCD N&B"
 
    set caption(confcam,coef_th7852a)            "Faktor"
 
    set caption(confcam,apn)                     "Digital Fotoapparat"
-   set caption(confcam,apn_video)               "Nur Video Anschluss"
-   set caption(confcam,apn_serie)               "Nur Seriell Anschluss"
+   set caption(confcam,liaison)                 "# Liaison"
+   set caption(confcam,apn_photopc)             "PhotoPC"
+   set caption(confcam,apn_gphoto2)             "GPhoto2"
    set caption(confcam,apn_baud)                "Seriell Port Geschwindigkeit (Bauds)"
-   set caption(confcam,apn_canal_usb)           "USB Video Kanal"
-   set caption(confcam,apn_video_source)        "Wahl der Videoquelle"
-   set caption(confcam,apn_video_format)        "Wahl des Videoformats"
 
    set caption(confcam,andor_config)            "Register der die setup Dateien enthaltet"
    set caption(confcam,andor_parcourir)         "..."
@@ -900,19 +890,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposeport)   "Control Port for the Option"
    set caption(confcam,webcam_longueposestart)  "Control when exposure begins"
    set caption(confcam,webcam_longueposestop)   "Control when exposure ends"
-   set caption(confcam,conf_webcam)             "WebCam Setup"
-   set caption(confcam,format_webcam)           "Select Image Format"
+   set caption(confcam,conf_webcam)             "Video Source Selection"
+   set caption(confcam,format_webcam)           "Video Format Selection"
    set caption(confcam,ccd_N_B)                 "B&W CCD Modified Webcam"
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
    set caption(confcam,apn)                     "Digital Camera"
-   set caption(confcam,apn_video)               "Video Connection Only"
-   set caption(confcam,apn_serie)               "Serial Connection Only"
+   set caption(confcam,liaison)                 "Link"
+   set caption(confcam,apn_photopc)             "PhotoPC"
+   set caption(confcam,apn_gphoto2)             "GPhoto2"
    set caption(confcam,apn_baud)                "Serial Port Speed (bauds)"
-   set caption(confcam,apn_canal_usb)           "USB Video Channel"
-   set caption(confcam,apn_video_source)        "Video Source Selection"
-   set caption(confcam,apn_video_format)        "Video Format Selection"
 
    set caption(confcam,andor_config)            "Folder Containing Setup Files"
    set caption(confcam,andor_parcourir)         "..."

@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Date de mise a jour : 18 janvier 2006
+# Date de mise a jour : 31 janvier 2006
 #
 
 namespace eval ::confVisu {
@@ -450,6 +450,7 @@ namespace eval ::confVisu {
          }
       } else {
          set private($visuNo,camName) [cam$camNo name]
+         set private($visuNo,camProductName) [cam$camNo product]
          $private($visuNo,This).fra1.labCam_name configure -text "$private($visuNo,camName) $model"
       }
       
@@ -478,7 +479,19 @@ namespace eval ::confVisu {
       
       return $private($visuNo,camName)
    }
-        
+
+   #------------------------------------------------------------
+   #  getProduct
+   #     retourne le nom de famille de la camera associee à la visu
+   #  parametres :
+   #  
+   #------------------------------------------------------------
+   proc getProduct { visuNo } {
+      variable private
+      
+      return $private($visuNo,camProductName)
+   }
+
    #------------------------------------------------------------
    #  getBufNo
    #     retourne le nom de camera associee à la visu
@@ -490,7 +503,7 @@ namespace eval ::confVisu {
       
       return [visu$visuNo buf]
    }
-        
+
    #------------------------------------------------------------
    #  setWindow
    #     affiche une partie de l'image
