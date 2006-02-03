@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 31 janvier 2006
 #
 
 #=========================================================================
@@ -19,7 +19,7 @@ set caption(ethernaude,envoyer_adresse_eth)        "Send this IP number to Ether
 set caption(ethernaude,lecture_pixel)              "Reading of One Pixel:"
 set caption(ethernaude,micro_sec_bornes)           "microseconds (choose a value between 5.0 and 15.0 µs)"
 set caption(ethernaude,tutorial_ethernaude)        "Overview and Tutorial"
-set caption(ethernaude,coord_gps)                  "# Coordonnées GPS de l'observateur"
+set caption(ethernaude,coord_gps)                  "GPS Coordinates of the Observer"
 set caption(ethernaude,longitude)                  "Longitude:"
 set caption(ethernaude,latitude)                   "Latitude:"
 set caption(ethernaude,altitude)                   "Altitude:"
@@ -67,7 +67,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,lecture_pixel)           "Lettura di un pixel:"
    set caption(ethernaude,micro_sec_bornes)        "microsecondi (scegliere un valore compreso tra 5.0 e 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Presentazione e tutorial"
-   set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,coord_gps)               "Coordinate GPS dell'osservatore"
    set caption(ethernaude,longitude)               "Longitudine:"
    set caption(ethernaude,latitude)                "Latitudine:"
    set caption(ethernaude,altitude)                "Altitudine:"
@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,lecture_pixel)           "Lectura de un píxel:"
    set caption(ethernaude,micro_sec_bornes)        "microsegundos (escoger un valor comprendido entre 5.0 y 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Introducción y Tutorial"
-   set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,coord_gps)               "Coordenadas GPS del observador"
    set caption(ethernaude,longitude)               "Longitud:"
    set caption(ethernaude,latitude)                "Latitud:"
    set caption(ethernaude,altitude)                "Altitud:"
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,lecture_pixel)           "Reading of One Pixel:"
    set caption(ethernaude,micro_sec_bornes)        "microseconds (choose a value between 5.0 and 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Overview and Tutorial"
-   set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,coord_gps)               "GPS Coordinates of the Observer"
    set caption(ethernaude,longitude)               "Longitude:"
    set caption(ethernaude,latitude)                "Latitude:"
    set caption(ethernaude,altitude)                "Altitude:"
