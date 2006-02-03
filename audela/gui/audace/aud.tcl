@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 25 janvier 2006
+# Date de mise a jour : 02 fevrier 2006
 #
 
 #--- Passage de TCL/TK 8.3 a 8.4
@@ -881,6 +881,9 @@ namespace eval ::audace {
       }
       if { $conf(camera,B,start) == "1" } {
          ::confCam::configureCamera "B"
+      }
+      if { $conf(camera,C,start) == "1" } {
+         ::confCam::configureCamera "C"
       }
 
       #--- Connexion au demarrage du telescope
