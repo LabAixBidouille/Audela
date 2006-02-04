@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 04 fevrier 2006
 #
 
 #!/bin/sh
@@ -84,10 +84,10 @@ set color(back_image) #000000
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-catch {image1 blank}
+catch {$num(imageNo) blank}
 
 toplevel .second -class Toplevel
-wm title .second $texte(tuto_1)
+wm title .second "$texte(tuto_1) (visu$num(visu1))"
 set screenwidth [int [expr [winfo screenwidth .second]*.85]]
 set screenheight [int [expr [winfo screenheight .second]*.85]]
 wm geometry .second ${screenwidth}x${screenheight}+0+0
@@ -169,12 +169,12 @@ tk_optionMenu .second.snap.optionmenu1 \
 pack .second.snap.optionmenu1 -side top -in .second.snap
 
 #--- create the widget for the image
-canvas .second.snap.image1 \
+canvas .second.snap.image_a \
    -bg $color(back_image) \
    -height 256 -width 384
-pack .second.snap.image1 \
+pack .second.snap.image_a \
    -in .second.snap -expand 1 -side top -anchor center -pady 10 -padx 10
-set zone(image1) .second.snap.image1
+set zone(image_a) .second.snap.image_a
 
 #--- create a frame for statistics
 frame .second.snap.frame1 -bg $color(back)
@@ -198,8 +198,7 @@ pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor ce
 # === Setting the astronomical devices ===
 # ========================================
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 1 1 -image image1 -anchor nw -tag img1
-
+$zone(image_a) create image 1 1 -image image1 -anchor nw -tag img1
 #
 
 frame .second.textFrame
@@ -290,6 +289,7 @@ set lastLine ""
 
 .second.t configure -state disabled
 focus .second.s
+wm withdraw .main
 
 bind .second <Destroy> {
    wm deiconify .main
@@ -326,6 +326,10 @@ proc acquisition_firstlight {exposure} {
 
    #--- The image from this cam will be transfered to that buffer
    cam$num(cam1) buf $num(buf1)
+
+   if { [lindex $exposure 0] > "0" } {
+      catch { cam$num(cam1) shutter synchro }
+   }
 
    #--- configure the acquisition
    cam$num(cam1) exptime [lindex $exposure 0]

@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 04 fevrier 2006
 #
 
 #!/bin/sh
@@ -88,7 +88,7 @@ set color(back_image) #000000
 #----------------------------------------------------------------
 
 toplevel .second -class Toplevel
-wm title .second $texte(tuto_1)
+wm title .second "$texte(tuto_1) (visu$num(visu1))"
 set screenwidth [int [expr [winfo screenwidth .second]*.85]]
 set screenheight [int [expr [winfo screenheight .second]*.85]]
 wm geometry .second ${screenwidth}x${screenheight}+0+0
@@ -133,27 +133,27 @@ pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
 
-catch {image delete image1}
-image create photo image1
+catch {image delete $num(imageNo)}
+image create photo $num(imageNo)
 if {[info exists audace]==1} {
    set rep [ file join $audace(rep_plugin) link ethernaude tutorial ]
 } else {
    set rep "."
 }
-image1 configure -file [ file join $rep db9.gif ]
-image create photo image11
-set width [image width image1]
-set height [image height image1]
+$num(imageNo) configure -file [ file join $rep db9.gif ]
+image create photo image21
+set width [image width $num(imageNo)]
+set height [image height $num(imageNo)]
 set winwidth [int [expr [winfo screenwidth .second]*.85/1.7]]
 set winheight [int [expr [winfo screenheight .second]*.85]]
 if {$width > $winwidth} {
-   image11 copy image1 -subsample 2 2
+   image21 copy $num(imageNo) -subsample 2 2
 } elseif {$height > $winheight} {
-   image11 copy image1 -subsample 2 2
+   image21 copy $num(imageNo) -subsample 2 2
 } else {
-   image11 copy image1
+   image21 copy $num(imageNo)
 }
-label .second.photo1 -image image11
+label .second.photo1 -image image21
 pack .second.photo1 -side right
 
 frame .second.textFrame
