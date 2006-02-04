@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 04 fevrier 2006
 #
 
 #!/bin/sh
@@ -105,18 +105,17 @@ set lpt "lpt1"
 #--- declare a new buffer in memory to place images
 set num(buf1) [buf::create]
 
-#--- declare a new camera
-#set num(cam1) [cam::create ethernaude udp]
-
 #--- declare a new visu space to display the buffer
 set num(visu1) [visu::create $num(buf1) 1 ]
 
+#--- declare a new image
+set num(imageNo) image$num(visu1)
 
 wm withdraw .
 if {[info command .main] == "" } {
    toplevel .main -class Toplevel
 }
-wm title .main $texte(tuto_1)
+wm title .main "$texte(tuto_1) (visu$num(visu1))"
 set screenwidth [int [expr [winfo screenwidth .main]*.85]]
 set screenheight [int [expr [winfo screenheight .main]*.85]]
 wm geometry .main ${screenwidth}x${screenheight}+0+0
@@ -380,6 +379,8 @@ bind .main <Destroy> {
 
 proc tuto_exit { } {
    global audace
+   global num
+   ::visu::delete $num(visu1)
    catch {unset texte}
    if {[info exists audace]==1} {
       catch {destroy .main}
