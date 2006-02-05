@@ -20,6 +20,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+// $Id: libtel.c,v 1.2 2006-02-05 10:20:24 michelpujol Exp $
+
 #include "sysexp.h"
 
 #if defined(OS_WIN)
