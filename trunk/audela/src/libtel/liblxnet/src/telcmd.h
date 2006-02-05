@@ -21,24 +21,7 @@
  */
 
 /*
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:53  Administrateur
- * *** empty log message ***
- *
- * Revision 1.2  2003-12-27 16:30:00+01  michel
- * ajoute cmdHost et cmdSetIP
- * ajout cast des fonctions
- *
- * Revision 1.1  2003-04-25 13:39:26+02  michel
- * ajout cmdTelAutoFlush
- *
- * Revision 1.0  2002-06-28 23:25:42+02  michel
- * initial revision
- *
- * Revision 1.1  2002-06-28 23:16:47+02  michel
- * initial revision
- *
- *
+ * $Id: telcmd.h,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
  */
 
 static struct cmditem cmdlist[] = {

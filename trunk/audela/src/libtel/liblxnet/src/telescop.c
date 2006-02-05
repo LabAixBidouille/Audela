@@ -28,50 +28,7 @@
  * La structure "telprop" peut etre adaptee
  * dans le fichier telescop.h
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:53  Administrateur
- * *** empty log message ***
- *
- * Revision 1.11  2003-07-02 22:34:11+02  michel
- * <>
- *
- * Revision 1.10  2003-06-20 09:28:11+02  michel
- * remplace :GR# par :GD# dans la simulation de mytel_sendLX()
- *
- * Revision 1.9  2003-06-07 10:38:13+02  michel
- * ajoute setip
- *
- * Revision 1.8  2003-05-21 21:54:10+02  michel
- * ajout SIMUL_AUDINET
- * ajout test tel->radec_goto_blocking dans mytel_radec_goto()
- *
- * Revision 1.7  2003-04-25 13:44:07+02  michel
- * ajouter AutoFlush
- * ajouter appeler socktcp_close() dans sendLX
- *
- * Revision 1.6  2003-03-04 14:03:41+01  michel
- * <>
- *
- * Revision 1.4  2002-09-30 19:33:53+02  michel
- * supprime # au début des commandes LX200
- * ajoute mytel_flush()
- *
- * Revision 1.3  2002-09-27 19:19:06+02  michel
- * ajout dans tel_init() : lecture paramete host , test ping , appel  my_tel_flush()
- * ajout tel_radec_state() et mytel_radec_state()
- * ajout appel mytel_flush()  dans mytel_radec_goto(), mytel_date_get(), mytel_date_set(), mytel_home_get(), mytel_home_set()
- * ajout mytel_flush(struct telprop *tel)
- * modif mytel_sendLX : appel de socktcp_send()
- *
- * Revision 1.2  2002-08-22 22:23:21+02  michel
- * ajout cgi-bin
- * ajout retour HTTP standard
- *
- * Revision 1.1  2002-07-28 16:01:18+02  michel
- * supprime l'adresse ip en dur dans tel_init()
- *
- * Revision 1.0  2002-06-28 23:24:57+02  michel
- * initial revision
+ * $Id: telescop.c,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
  *
  */
 

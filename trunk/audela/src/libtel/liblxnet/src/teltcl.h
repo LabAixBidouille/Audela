@@ -23,19 +23,7 @@
 /*
  * Fonctions C-Tcl specifiques a ce telescope. A programmer.
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:53  Administrateur
- * *** empty log message ***
- *
- * Revision 1.2  2003-12-27 16:30:22+01  michel
- * ajout cmdHost et cmdSetIP
- *
- * Revision 1.1  2003-04-25 13:40:02+02  michel
- * ajouter cmdTelAutoFlush
- *
- * Revision 1.0  2002-06-28 23:25:42+02  michel
- * initial revision
- *
+ * $Id: teltcl.h,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
  */
 
 #ifndef __TELTCL_H__
