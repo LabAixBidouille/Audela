@@ -45,10 +45,10 @@
  */
 
 struct camini CAM_INI[] = {
-    {"sbig",			/* camera name */
-     "ST7",			/* camera model */
-     "kaf400",			/* ccd name */
-     768, 512,			/* maxx maxy */
+    {"ST7",			/* camera name */
+     "sbig",		/* camera product */
+     "kaf400",		/* ccd name */
+     768, 512,		/* maxx maxy */
      0, 0,			/* overscans x */
      0, 0,			/* overscans y */
      9e-6, 9e-6,		/* photosite dim (m) */
@@ -68,8 +68,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"sbig",			/* camera name */
-     "ST8",			/* camera model */
+    {"ST8",			/* camera name */
+     "sbig",		/* camera product */
      "kaf1600",			/* ccd name */
      1536, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -91,8 +91,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"sbig",	   /* camera name */
-     "OTHER",		/* camera model */
+    {"OTHER",	   /* camera name */
+     "sbig",		/* camera product */
      "",			   /* ccd name */
      1536, 1024,		/* maxx maxy */
      14, 14,			/* overscans x */

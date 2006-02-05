@@ -56,8 +56,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"src1300XTC",		/* camera name */
-     "SCR1300XTC",		/* camera model */
+    {"SCR1300XTC",		/* camera name */
+     "scr1300xtc",		/* camera product */
      "kac1310",			/* ccd name */
      1280, 1024,		/* maxx maxy */
      8, 8,			/* overscans x */
@@ -377,7 +377,7 @@ void InitPort(unsigned short port)
     ecr = (unsigned short) (Port + 0x402);
 // port para en lecture
 // mode ibm
-    libcam_out(ecr, 0x20);	//ecp = ps2
+    libcam_out(ecr, 0x20);	   //ecp = ps2
     reg = libcam_in(Portc);	// reg commande
     libcam_out(Portc, 0x24);	//CAM ==> PC ps2
     //port en lecture n

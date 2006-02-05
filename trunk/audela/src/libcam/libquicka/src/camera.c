@@ -47,8 +47,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"audine",			/* camera name */
-     "AUDINE",			/* camera name */
+    {"Audine",			/* camera name */
+     "audine",			/* camera product */
      "kaf401",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -70,8 +70,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"audine",			/* camera name */
-     "AUDINE",			/* camera name */
+    {"Audine",			/* camera name */
+     "audine",			/* camera product */
      "kaf1602",			/* ccd name */
      1536, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -93,8 +93,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"audine",			/* camera name */
-     "AUDINE",			/* camera name */
+    {"Audine",			/* camera name */
+     "audine",			/* camera product */
      "kaf3200",			/* ccd name */
      2184, 1472,		/* maxx maxy 2175, 1442 */
      0, 0,			/* overscans x */
@@ -239,7 +239,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	/* shutter always off for synchro and closed mode */
 	if (cam->shutterindex <= 1) {
 	    r = usb_write(255);	/*' Close the shutter */
-	}
+   } else {
+	    r = usb_write(255);	 // obligé d'envoyer 255, car ça plante si on envoie une autre valeur ou si on n'envoie rien
+   }
 	quicka_read(cam, p);
     }
 }

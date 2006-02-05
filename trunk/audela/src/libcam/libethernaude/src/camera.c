@@ -30,8 +30,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"audine",		/* camera name */
-     "AUDINE",		/* camera name */
+    {"Audine",		/* camera name */
+     "audine",		/* camera name */
      "kaf401",			/* ccd name */
      768, 512,			/* maxx maxy */
      14, 14,			/* overscans x */
@@ -234,7 +234,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     }
 
     /* === conversion des parametres Ethernaude -> AudeLA CAM_INI === */
-    if (strcmp(cam->ethvar.SystemName,"Ethernaude")==0) strcpy(cam->ethvar.SystemName,"audine");
+    if (strcmp(cam->ethvar.SystemName,"Ethernaude")==0) strcpy(cam->ethvar.SystemName,"Audine");
     strcpy(CAM_INI[cam->index_cam].name, cam->ethvar.SystemName);
     strcpy(CAM_INI[cam->index_cam].ccd, cam->ethvar.InfoCCD_NAME);
     CAM_INI[cam->index_cam].maxx = cam->ethvar.WidthPixels;
@@ -351,9 +351,9 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	    sprintf(ligne, "BinningY=%d", biny);
 	    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
 	    if (cam->shutterindex == 0) {
-		strcpy(ligne, "ShutterOpen=0");
+		   strcpy(ligne, "ShutterOpen=0");
 	    } else {
-		strcpy(ligne, "ShutterOpen=1");
+		   strcpy(ligne, "ShutterOpen=1");
 	    }
 	    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
 	    /*
@@ -430,45 +430,45 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-    char keyword[MAXLENGTH + 1];
-    char value[MAXLENGTH + 1];
-    char result[MAXLENGTH];
-    int paramtype;
-    int k;
-    /* - AbortExposure sur le CCD numero 1 clock mode 1- */
-    paramCCD_clearall(&ParamCCDIn, 1);
-    paramCCD_put(-1, "AbortExposure", &ParamCCDIn, 1);
-    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-    util_log("", 1);
-    for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDIn);
-	util_log(result, 0);
-    }
-    AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-    util_log("", 2);
-    for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	paramCCD_get(k, result, &ParamCCDOut);
-	util_log(result, 0);
-    }
-    util_log("\n", 0);
-    if (ParamCCDOut.NbreParam >= 1) {
-	paramCCD_get(0, result, &ParamCCDOut);
-	strcpy(cam->msg, "");
-	if (strcmp(result, "FAILED") == 0) {
-	    if (ParamCCDOut.NbreParam >= 2) {
-		paramCCD_get(1, result, &ParamCCDOut);
-		sprintf(cam->msg, "AbortExposure Failed : %s", result);
-	    } else {
-		strcpy(cam->msg, "AbortExposure Failed");
-	    }
-	}
-
-    }
-    strcpy(keyword, "TimeDone");
-    if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-	cam->exptime = (float) (atof(value) / 1000.0);
-    }
-    cam->CCDStatus = 0;
+   char keyword[MAXLENGTH + 1];
+   char value[MAXLENGTH + 1];
+   char result[MAXLENGTH];
+   int paramtype;
+   int k;
+   /* - AbortExposure sur le CCD numero 1 clock mode 1- */
+   paramCCD_clearall(&ParamCCDIn, 1);
+   paramCCD_put(-1, "AbortExposure", &ParamCCDIn, 1);
+   paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+   util_log("", 1);
+   for (k = 0; k < ParamCCDIn.NbreParam; k++) {
+      paramCCD_get(k, result, &ParamCCDIn);
+      util_log(result, 0);
+   }
+   AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+   util_log("", 2);
+   for (k = 0; k < ParamCCDOut.NbreParam; k++) {
+      paramCCD_get(k, result, &ParamCCDOut);
+      util_log(result, 0);
+   }
+   util_log("\n", 0);
+   if (ParamCCDOut.NbreParam >= 1) {
+      paramCCD_get(0, result, &ParamCCDOut);
+      strcpy(cam->msg, "");
+      if (strcmp(result, "FAILED") == 0) {
+         if (ParamCCDOut.NbreParam >= 2) {
+            paramCCD_get(1, result, &ParamCCDOut);
+            sprintf(cam->msg, "AbortExposure Failed : %s", result);
+         } else {
+            strcpy(cam->msg, "AbortExposure Failed");
+         }
+      }
+      
+   }
+   strcpy(keyword, "TimeDone");
+   if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+      cam->exptime = (float) (atof(value) / 1000.0);
+   }
+   cam->CCDStatus = 0;
 }
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)

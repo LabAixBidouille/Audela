@@ -94,8 +94,8 @@ static unsigned int ng_clip[256 + 2 * CLIP];
 
 extern "C"
 struct camini CAM_INI[] = {
-   {"webcam",        /* camera name */
-    "WEBCAM",        /* camera model */
+   {"WEBCAM",        /* camera name */
+    "webcam",        /* camera product */
     "webcam",        /* ccd name */
     640, 480,        /* maxx maxy */
     0, 0,            /* overscans x */
