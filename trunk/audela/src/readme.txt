@@ -165,9 +165,10 @@ apres leur installation afin de ne pas teinter leur machine.
 
 
 5. Installation et demarrage
-----------------------------
+============================
 
 5.1 Windows
+-----------
 
 Vous aurez probablement telecharge un executable d'installation.
 
@@ -185,9 +186,11 @@ Note aux utilisateurs de cameras SBIG :
   c:\WINDOWS\system32\drivers. Puis executer le logiciel SBIGDriverChecker.exe
   disponible sur le site www.sbig.com. 
 
-Pour compiler sous Windows :
-1/ Effectuez les operations
-suivantes dans une console "Invite de commande",
+
+5.1.1 Compilation des modules externes pour Windows
+---------------------------------------------------
+
+Effectuez les operations suivantes dans une console "Invite de commande",
 
   - Repertoire src\external\andor,
     lancer make.bat puis install.bat
@@ -205,6 +208,22 @@ suivantes dans une console "Invite de commande",
   - Repertoire src\external\jpeg6b,
     lancer vars.bat (regler les chemins si besoin), make.bat puis install.bat
 
+  - Repertoire src\external\libdcjpeg
+    ouvrir visual c++  vc60\libdcjpeg.dsw et compiler en mode Release
+
+  - Repertoire src\external\libdcraw
+    ouvrir visual c++  vc60\libdcraw.dsw et compiler en mode Release
+
+  - Repertoire src\external\libftd2xx
+    lancer make.bat puis install.bat
+
+  - Repertoire src\external\libgphoto2
+    lancer make.bat puis install.bat
+
+  - Repertoire src\external\libusb
+    lancer make.bat puis install.bat
+    puis lancer libusb-win32-filter-bin-0.1.10.1.exe
+
   - Repertoire src\external\porttalk,
     lancer make.bat puis install.bat
 
@@ -221,13 +240,76 @@ suivantes dans une console "Invite de commande",
   - Repertoire src\external\utils,
     lancer make.bat puis uinstall.bat
 
-2/ Ouvrir avec Visual C++ le fichier src/audela.dsw : Allez
+
+5.1.2 Compilation de AudeLA pour Windows
+----------------------------------------
+
+Ouvrir avec Visual C++ le fichier src/audela.dsw : Allez
 dans le menu Build, puis Batch Build ; Selectionnez les differentes
-cibles que vous voulez compiler, et effectuez la compilation. A noter
-que libtt peut conduire a un crash du compilateur en mode Release, alors
-compilez cette librairie en mode Debug.
+cibles que vous voulez compiler, et effectuez la compilation.
+
+
+5.1.3 Installation des drivers optionels
+----------------------------------------
+
+5.1.3.1 Installation ftd2xx 
+---------------------------
+
+   Ce driver est nécessaire seulement pour les liaisons avec quickremote
+
+   télécharger D10620.zip  pour quickremote
+   URL:   http://www.ftdichip.com/Drivers/FT232-FT245/D2XX/Win/D10620.zip
+   dezipper le fichier dans un repertoire temporaire 
+   brancher un quickremote, lorsque Windows demande où est le repertoire du driver, 
+   pointer le repertoire temporaire où vient d'etre dézippe le fichier .
+ 
+   Remarque : 
+   Les drivers pour les autres version d'OS sont aussi sur le site http://www.ftdichip.com.
+
+5.1.3.2 Arreter le service ftdi_sio 
+---------------------------------
+  Cette action est nécessaire seulement pour les liaisons avec quickremote.
+   
+  arreter les services hotplug qui surveillent le branchement des equipements 
+  qui ont le même identifiant USB que quickremote comme par exemple : ftdi_sio
+  Pour cela, lister les services ftdi avec la commande lsmod.
+  Si un  service existe, il l'arreter avec la commande rmmod.   
+
+  Exemple : 
+   $ su root
+   # lsmod |grep ftdi_sio
+   ftdi_sio               31940  0
+   usbserial              26920  1 ftdi_sio
+   usbcore               106008  5 ftdi_sio,usbserial,ehci-hcd,uhci-hcd
+   # rmmod ftdi_sio
+   # lsmod |grep ftdi_sio
+   #
+
+   Remarque : le service est relance automatiquement chaque fois que quickremote est 
+   rebranche. Je n'ai pas trouve la commande qui desactive definitivement le hotplug pour 
+   cet equipement.
+   Pour relancer le service hotplug manuellement, taper la commande "modprobe ftdi_sio" 
+   sous root
+   
+   
+5.1.3.3 Installation libusb-win32 
+---------------------------------
+
+   Ce driver est nécessaire seulement pour la liaison de la camera DSC (appareil
+   photo numerique) avec libgphoto2.
+   
+   télécharger libusb-win32-filter-bin-0.1.10.1.exe disponible sur site
+   http://libusb-win32.sourceforge.net , 
+   puis installer libusb-win32 en executant ce fichier.
+
+
+
 
 5.2 Linux
+---------
+
+5.2.2 Compilation et installation de AudeLA
+------------------------------------------
 
 -> Pour linux, il vous faut telecharger et extraire les sources de audela.
 	$ wget http://software.audela.free.fr/13/audela-1.3.0-src.tar.gz
@@ -289,8 +371,64 @@ Vous pouvez tout compiler d'un coup :
 	la librairie FLI, et libfli. Cela est lie a l'USB, et n'a pas ete encore elucide.
 	Vous pouvez neanmoins supprimer ces modules dans le fichier Makefile.defs pour 
 	reprendre le cours normal de la compilation.
+
+
+5.2.2 Installation des drivers optionels
+----------------------------------------
+
+5.2.2.1 Installation ftd2xx 
+---------------------------
+   Ce driver est nécessaire seulement pour les liaisons avec quickremote
+
+   telecharger la librairie libftd2xx
+   http://www.ftdichip.com/Drivers/D2XX/Linux/libftd2xx0.4.8.tar.gz
+   Pour installer, suivre les indications du fichier readme.dat .
+ 
+   $ su root
+   # cp libftd2xx.so.0.4.8 /usr/local/lib
+   # cd /usr/local/lib
+   # ln -s libftd2xx.so.0.4.8 libftd2xx.so
+   # cd /usr/lib
+   # ln -s /usr/local/lib/libftd2xx.so.0.4.8 libftd2xx.so
+   
+   Add the following line to /etc/fstab:
+      none /proc/bus/usb usbdevfs defaults,devmode=0666 0 0
+      or
+      none /proc/bus/usb usbdevfs defaults,mode=0666 0 0 (use usbfs in 2.6 kernels)
+
+   Unload ftdi_sio and usbserial if it is attached to your device 
+   # rmmod ftdi_sio" 
+   # rmmod usbserial 
+
+   
+
+
+5.2.2.2 Installation libgphoto2 2.1.6
+-------------------------------------
+   Ce driver est nécessaire seulement pour la camera DSC (appareil photo numérique).
+   
+   AudeLA founit un patch pour supporter les longues poses supérieures à 30 secondes
+   pour les appareils Canon et Nikon.
+
+   Télécharger libgphoto2-2.1.6.tar.gz depuis le site http://www.gphoto.org/ , 
+   puis dezipper les modifications libgphoto2-2.1.6-patch-b.tar.gz ,
+   puis installer :
+
+   $ tar xzvf libgphoto2-2.1.6.tar.gz 
+   $ cd libgphoto2-2.1.6
+   $ tar xzvf libgphoto2-2.1.6-patch-b.tar.gz 
+   $ ./configure --with-drivers=canon,ptp2 --prefix=/usr 
+   $ make
+   $ su root
+   # make install
+
+   Remarque : 
+   il n'est pas necessaire d'installer gtkam ou gphoto2.
+   Ne pas confondre gphoto2 avec libgphoto2 !!
+
 	
 5.3 MAC OS-X
+------------
 
 La procedure a suivre est identique a celle de Linux, et a ete testee sur un MacOS
 X.3 (Darwin kernel 7.8.0, avec fink). TclTkAquaBi etait installe (voir www.tcl.tk),
@@ -332,7 +470,7 @@ par les retours d'experience sur le sujet MacOS-X...
 
 
 6. Auteurs
-----------
+==========
 
 Les auteurs initiaux de AudeLA sont :
  - Alain KLOTZ <alain.klotz@free.fr> et
@@ -383,7 +521,7 @@ pour rectifier l'injustice qu'ils subissent.
 
 
 7. Sources
-----------
+==========
 
 Voici la liste des sous-repertoires de AudeLA, avec l'explication
 de ce que l'on peut y trouver :
@@ -411,7 +549,7 @@ de ce que l'on peut y trouver :
 
 
 8. Librairies additionnelles
---------------------------------
+============================
 TCL/TK:
  - BLT : Trace des courbes sous TK (histogramme, plotxy).
  - BWidget : Definition de nouveaux widgets TK.
