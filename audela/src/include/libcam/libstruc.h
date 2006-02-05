@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+/*
+ * $Id: libstruc.h,v 1.4 2006-02-05 10:22:33 michelpujol Exp $
+ */
+
 #ifndef __LIBSTRUC_H__
 #define __LIBSTRUC_H__
 
@@ -106,7 +110,7 @@ extern char *cam_overscans[];
 struct camini {
     /* --- variables communes privees constantes --- */
     char name[256];
-    char model[256];
+    char product[256];
     char ccd[256];
     int maxx;
     int maxy;
