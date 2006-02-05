@@ -26,23 +26,8 @@
  * Adapter le contenu de ce fichier a votre telescope prefere
  * notamment la structure "telprop"
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/02/12 22:04:53  Administrateur
- * *** empty log message ***
- *
- * Revision 1.4  2003-06-20 09:29:22+02  michel
- * ajoute definition de TRUE et FALSE
- *
- * Revision 1.3  2003-04-25 13:39:47+02  michel
- * ajouter autoflush
- *
- * Revision 1.2  2003-03-04 14:02:10+01  michel
- * <>
- *
- * Revision 1.1  2002-09-27 19:21:10+02  michel
- * ajout de tel_radec_state()
- *
- * Revision 1.0  2002-06-28 23:25:42+02  michel
+ * $Id: telescop.h,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
+  * Revision 1.0  2002-06-28 23:25:42+02  michel
  * initial revision
  *
  */
