@@ -49,8 +49,8 @@
  */
 
 struct camini CAM_INI[] = {
-  {"th7852A",     /* camera name */
-   "TH7852A",      /* ccamera model */
+  {"TH7852A",     /* camera name */
+   "th7852a",      /* camera product */
    "TH7852A",      /* ccd name */
    208,144,        /* maxx maxy */
    8,2,            /* overscans x */

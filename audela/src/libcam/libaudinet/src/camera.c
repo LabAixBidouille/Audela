@@ -26,7 +26,7 @@
  * La structure "camprop" peut etre adaptee
  * dans le fichier camera.h
  *
- * $Id: camera.c,v 1.3 2006-01-29 18:33:36 michelpujol Exp $
+ * $Id: camera.c,v 1.4 2006-02-05 10:07:25 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -87,8 +87,8 @@ static int pixval;		// juste pour changer de couleur entre 2 images
  */
 
 struct camini CAM_INI[] = {
-    {"audine",			/* camera name */
-     "AUDINE",    /* camera model */
+    {"Audine",			/* camera name */
+     "audine",    /* camera product */
      "kaf401",			/* ccd name */
      768, 512,			/* maxx maxy */
      14, 14,			/* overscans x */
@@ -111,7 +111,7 @@ struct camini CAM_INI[] = {
      1.				/* default focal lenght of front optic system */
      },
     {"audine",			/* camera name */
-     "AUDINE",    /* camera model */
+     "Audine",    /* camera model */
      "kaf1602",			/* ccd name */
      1536, 1024,		/* maxx maxy */
      14, 14,			/* overscans x */
@@ -134,7 +134,7 @@ struct camini CAM_INI[] = {
      1.				/* default focal lenght of front optic system */
      },
     {"audine",			/* camera name */
-     "AUDINE",    /* camera model */
+     "Audine",    /* camera model */
      "kaf3200",			/* ccd name */
      2184, 1472,		/* maxx maxy */
      46, 37,			/* overscans x */

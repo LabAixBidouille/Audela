@@ -45,8 +45,8 @@
  */
 
 struct camini CAM_INI[] = {
-    {"hisis",		 /* camera name */
-     "HISIS22-14b",		/* camera model */
+    {"Hi-SIS22-14",/* camera name */
+     "hisis",	   /* camera product */
      "kaf400",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -68,8 +68,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",		/* camera name */
-     "HISIS22-12b",		/* camera model */
+    {"Hi-SIS22-12",		/* camera name */
+     "hisis",		/* camera product */
      "kaf400",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -91,8 +91,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",		/* camera name */
-     "HISIS11",		   /* camera model */
+    {"Hi-SIS11",		/* camera name */
+     "hisis",		   /* camera product */
      "TH7852A",			/* ccd name */
      208, 144,			/* maxx maxy */
      8, 2,			/* overscans x */
@@ -114,8 +114,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",		/* camera name */
-     "HISIS23",		   /* camera model */
+    {"Hi-SIS23",		/* camera name */
+     "hisis",		   /* camera product */
      "kaf401e",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -137,8 +137,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",		/* camera name */
-     "HISIS24",  		/* camera model */
+    {"Hi-SIS24",		/* camera name */
+     "hisis",  		/* camera product */
      "kaf400",			/* ccd name */
      768, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -160,8 +160,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",			/* camera name */
-     "HISIS33",  		/* camera model */
+    {"Hi-SIS33",			/* camera name */
+     "hisis",  		/* camera product */
      "TH7895M",			/* ccd name */
      512, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -183,8 +183,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",			/* camera name */
-     "HISIS36",  		/* camera model */
+    {"Hi-SIS36",			/* camera name */
+     "hisis",  		/* camera product */
      "Kaf0261e",		/* ccd name */
      512, 512,			/* maxx maxy */
      0, 0,			/* overscans x */
@@ -206,8 +206,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",			/* camera name */
-     "HISIS39",  		/* camera model */
+    {"Hi-SIS39",			/* camera name */
+     "hisis",  		/* camera product */
      "kaf1001e",		/* ccd name */
      1024, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -229,8 +229,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",			/* camera name */
-     "HISIS43",  		/* camera model */
+    {"Hi-SIS43",			/* camera name */
+     "hisis",  		/* camera product */
      "kaf1602e",		/* ccd name */
      1536, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -252,8 +252,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",			/* camera name */
-     "HISIS44",  		/* camera model */
+    {"Hi-SIS44",			/* camera name */
+     "hisis",  		/* camera product */
      "kaf1600",			/* ccd name */
      1536, 1024,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -275,8 +275,8 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    {"hisis",			/* camera name */
-     "HISIS48",  		/* camera model */
+    {"Hi-SIS48",			/* camera name */
+     "hisis",  		/* camera product */
      "Loral442a",		/* ccd name */
      2048, 2048,		/* maxx maxy */
      0, 0,			/* overscans x */
@@ -421,100 +421,100 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 /* --------------------------------------------------------- */
 {
-    char ligne[1024], ligne2[1024];
-    unsigned short Port0 = cam->port;
-    /*unsigned short Port1 = cam->port+1; */
-    unsigned short Port2 = cam->port + 2;
-
+   char ligne[1024], ligne2[1024];
+   unsigned short Port0 = cam->port;
+   /*unsigned short Port1 = cam->port+1; */
+   unsigned short Port2 = cam->port + 2;
+   
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+   // Astuce pour autoriser l'acces au port parallele
+   libcam_bloquer();
+   libcam_debloquer();
 #endif
-
-    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
-
-    /* specifique HISIS22 */
-    cam->hisis22_paramloops = 6;
-    cam->hisis22_14_synchroloops = 2;
-    cam->hisis22_14_readloops = 7;
-    cam->hisis22_12_readloops = cam->hisis22_14_readloops;
-
-    /* specifique HISI24 */
-    cam->hisis24_shutter.raw = 0x94;
-    cam->hisis24_bell0.raw = 0xCF;
-    cam->hisis24_bell1.raw = 0x6C;
-    cam->hisis24_bell2.raw = 0x6F;
-    cam->hisis24_bell3.raw = 0xAC;
-    cam->hisis24_filterwheel.raw = 0x17;
-    cam->hisis24_fan.raw = 0xFF;
-    cam->hisis24_gain.raw = 0x00;
-
-    libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-    /* initialisation des microcontroleurs */
-    if (strcmp(ligne, "hisis22-12") == 0) {
-	if (cam->interrupt == 1) {
-	    libcam_bloquer();
-	}
-	if (cam->authorized == 1) {
-	    libcam_out(Port0, 0xFF);
-	}
-	if (cam->interrupt == 1) {
-	    libcam_debloquer();
-	}
-    }
-    if ((strcmp(ligne, "hisis22-14") == 0)
-	|| (strcmp(ligne, "hisis23") == 0)) {
-	if (cam->interrupt == 1) {
-	    libcam_bloquer();
-	}
-	if (cam->authorized == 1) {
-	    libcam_out(Port0, 0xFF);
-	}
-	if (cam->interrupt == 1) {
-	    libcam_debloquer();
-	}
-    }
-    if ((strcmp(ligne, "hisis24") == 0) || (strcmp(ligne, "hisis33") == 0)
-	|| (strcmp(ligne, "hisis36") == 0)
-	|| (strcmp(ligne, "hisis43") == 0)
-	|| (strcmp(ligne, "hisis44") == 0)
-	|| (strcmp(ligne, "hisis39") == 0)
-	|| (strcmp(ligne, "hisis48") == 0)) {
-	/* Pilote par defaut le port parallele 1 (LPT1) */
-	cam->typeport = LPT;
-	cam->portnum = PORT_1;
-	if (argc >= 2) {
-	    libcam_strlwr(argv[2], ligne2);
-	    if (strcmp(ligne, "lpt1") == 0) {
-		cam->typeport = LPT;
-		cam->portnum = PORT_1;
-	    } else if (strcmp(ligne, "lpt2") == 0) {
-		cam->typeport = LPT;
-		cam->portnum = PORT_2;
-	    } else if (strcmp(ligne, "lpt3") == 0) {
-		cam->typeport = LPT;
-		cam->portnum = PORT_3;
-	    } else if (strcmp(ligne, "isa") == 0) {
-		cam->typeport = ISA;
-		cam->portnum = PORT_0;
-	    }
-	}
-	if (cam->typeport == LPT) {
-	    if (cam->interrupt == 1) {
-		libcam_bloquer();
-	    }
-	    if (cam->authorized == 1) {
-		libcam_out(Port0, 0xFF);
-		libcam_out(Port2, 0x0C);
-	    }
-	    if (cam->interrupt == 1) {
-		libcam_debloquer();
-	    }
-	}
-    }
-    cam->hisis24_shutter.shuttermode.delay = 6;
-    return 0;
+   
+   cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+   
+   /* specifique HISIS22 */
+   cam->hisis22_paramloops = 6;
+   cam->hisis22_14_synchroloops = 2;
+   cam->hisis22_14_readloops = 7;
+   cam->hisis22_12_readloops = cam->hisis22_14_readloops;
+   
+   /* specifique HISI24 */
+   cam->hisis24_shutter.raw = 0x94;
+   cam->hisis24_bell0.raw = 0xCF;
+   cam->hisis24_bell1.raw = 0x6C;
+   cam->hisis24_bell2.raw = 0x6F;
+   cam->hisis24_bell3.raw = 0xAC;
+   cam->hisis24_filterwheel.raw = 0x17;
+   cam->hisis24_fan.raw = 0xFF;
+   cam->hisis24_gain.raw = 0x00;
+   
+   libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
+   /* initialisation des microcontroleurs */
+   if (strcmp(ligne, "Hi-SIS22-12") == 0) {
+      if (cam->interrupt == 1) {
+         libcam_bloquer();
+      }
+      if (cam->authorized == 1) {
+         libcam_out(Port0, 0xFF);
+      }
+      if (cam->interrupt == 1) {
+         libcam_debloquer();
+      }
+   }
+   if ((strcmp(ligne, "Hi-SIS22-14") == 0)
+      || (strcmp(ligne, "Hi-SIS23") == 0)) {
+      if (cam->interrupt == 1) {
+         libcam_bloquer();
+      }
+      if (cam->authorized == 1) {
+         libcam_out(Port0, 0xFF);
+      }
+      if (cam->interrupt == 1) {
+         libcam_debloquer();
+      }
+   }
+   if ((strcmp(ligne, "Hi-SIS24") == 0) || (strcmp(ligne, "Hi-SIS33") == 0)
+      || (strcmp(ligne, "Hi-SIS36") == 0)
+      || (strcmp(ligne, "Hi-SIS43") == 0)
+      || (strcmp(ligne, "Hi-SIS44") == 0)
+      || (strcmp(ligne, "Hi-SIS39") == 0)
+      || (strcmp(ligne, "Hi-SIS48") == 0)) {
+      /* Pilote par defaut le port parallele 1 (LPT1) */
+      cam->typeport = LPT;
+      cam->portnum = PORT_1;
+      if (argc >= 2) {
+         libcam_strlwr(argv[2], ligne2);
+         if (strcmp(ligne, "lpt1") == 0) {
+            cam->typeport = LPT;
+            cam->portnum = PORT_1;
+         } else if (strcmp(ligne, "lpt2") == 0) {
+            cam->typeport = LPT;
+            cam->portnum = PORT_2;
+         } else if (strcmp(ligne, "lpt3") == 0) {
+            cam->typeport = LPT;
+            cam->portnum = PORT_3;
+         } else if (strcmp(ligne, "isa") == 0) {
+            cam->typeport = ISA;
+            cam->portnum = PORT_0;
+         }
+      }
+      if (cam->typeport == LPT) {
+         if (cam->interrupt == 1) {
+            libcam_bloquer();
+         }
+         if (cam->authorized == 1) {
+            libcam_out(Port0, 0xFF);
+            libcam_out(Port2, 0x0C);
+         }
+         if (cam->interrupt == 1) {
+            libcam_debloquer();
+         }
+      }
+   }
+   cam->hisis24_shutter.shuttermode.delay = 6;
+   return 0;
 }
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
@@ -531,26 +531,26 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	    libcam_bloquer();
 	}
 	/* rincage */
-	if (strcmp(ligne, "hisis11") == 0) {
+	if (strcmp(ligne, "Hi-SIS11") == 0) {
 	    nb_vidages = 4;
 	    for (i = 0; i < nb_vidages; i++) {
 		hisis11_fast_vidage(cam);
 	    }
 	}
-	if (strcmp(ligne, "hisis22-12") == 0) {
+	if (strcmp(ligne, "Hi-SIS22-12") == 0) {
 	    result = hisis22_wricap(cam);
 	}
-	if ((strcmp(ligne, "hisis22-14") == 0)
-	    || (strcmp(ligne, "hisis23") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS22-14") == 0)
+	    || (strcmp(ligne, "Hi-SIS23") == 0)) {
 	    result = hisis22_wricap(cam);
 	}
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_start_exp(cam);
 	}
 	/* Debloquage des interruptions */
@@ -569,13 +569,13 @@ void cam_stop_exp(struct camprop *cam)
     char ligne[256];
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_stop_exp(cam);
 	}
     }
@@ -594,23 +594,23 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	    libcam_bloquer();
 	}
 	/* lecture et numerisation */
-	if (strcmp(ligne, "hisis11") == 0) {
+	if (strcmp(ligne, "Hi-SIS11") == 0) {
 	    hisis11_read_image(cam, p);
 	}
-	if (strcmp(ligne, "hisis22-12") == 0) {
+	if (strcmp(ligne, "Hi-SIS22-12") == 0) {
 	    result = hisis22_read_image12(cam, p);
 	}
-	if ((strcmp(ligne, "hisis22-14") == 0)
-	    || (strcmp(ligne, "hisis23") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS22-14") == 0)
+	    || (strcmp(ligne, "Hi-SIS23") == 0)) {
 	    result = hisis22_read_image14(cam, p);
 	}
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_read_ccd(cam, p);
 	}
 	/* Debloquage des interruptions */
@@ -630,13 +630,13 @@ void cam_shutter_on(struct camprop *cam)
 
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    switch (cam->shutterindex) {
 	    case 0:
 		hisis24_shutter(cam, -1, 0, -1);
@@ -658,13 +658,13 @@ void cam_shutter_off(struct camprop *cam)
 
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    switch (cam->shutterindex) {
 	    case 0:
 		hisis24_shutter(cam, -1, 0, -1);
@@ -696,13 +696,13 @@ void cam_measure_temperature(struct camprop *cam)
     cam->temperature = 0.;
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_gettemp(cam, &temp);
 	    cam->temperature = temp;
 	}
@@ -715,13 +715,13 @@ void cam_cooler_on(struct camprop *cam)
 
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_coolermax(cam);
 	}
     }
@@ -733,13 +733,13 @@ void cam_cooler_off(struct camprop *cam)
 
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_cooleroff(cam);
 	}
     }
@@ -751,13 +751,13 @@ void cam_cooler_check(struct camprop *cam)
 
     if (cam->authorized == 1) {
 	libcam_strlwr(CAM_INI[cam->index_cam].name, ligne);
-	if ((strcmp(ligne, "hisis24") == 0)
-	    || (strcmp(ligne, "hisis33") == 0)
-	    || (strcmp(ligne, "hisis36") == 0)
-	    || (strcmp(ligne, "hisis43") == 0)
-	    || (strcmp(ligne, "hisis44") == 0)
-	    || (strcmp(ligne, "hisis39") == 0)
-	    || (strcmp(ligne, "hisis48") == 0)) {
+	if ((strcmp(ligne, "Hi-SIS24") == 0)
+	    || (strcmp(ligne, "Hi-SIS33") == 0)
+	    || (strcmp(ligne, "Hi-SIS36") == 0)
+	    || (strcmp(ligne, "Hi-SIS43") == 0)
+	    || (strcmp(ligne, "Hi-SIS44") == 0)
+	    || (strcmp(ligne, "Hi-SIS39") == 0)
+	    || (strcmp(ligne, "Hi-SIS48") == 0)) {
 	    hisis24_coolercheck(cam, (float) cam->check_temperature);
 	}
     }
