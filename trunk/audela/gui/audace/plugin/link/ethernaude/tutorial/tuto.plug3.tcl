@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 04 fevrier 2006
+# Date de mise a jour : 05 fevrier 2006
 #
 
 #!/bin/sh
@@ -128,25 +128,25 @@ pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
 
-catch {image delete $num(imageNo)}
-image create photo $num(imageNo)
+catch {image delete image$num(imageNo)}
+image create photo image$num(imageNo)
 if {[info exists audace]==1} {
    set rep [ file join $audace(rep_plugin) link ethernaude tutorial ]
 } else {
    set rep "."
 }
-$num(imageNo) configure -file [ file join $rep ethernaude4.gif ]
+image$num(imageNo) configure -file [ file join $rep ethernaude4.gif ]
 image create photo image21
-set width [image width $num(imageNo)]
-set height [image height $num(imageNo)]
+set width [image width image$num(imageNo)]
+set height [image height image$num(imageNo)]
 set winwidth [int [expr [winfo screenwidth .second]*.85/1.7]]
 set winheight [int [expr [winfo screenheight .second]*.85]]
 if {$width > $winwidth} {
-   image21 copy $num(imageNo) -subsample 2 2
+   image21 copy image$num(imageNo) -subsample 2 2
 } elseif {$height > $winheight} {
-   image21 copy $num(imageNo) -subsample 2 2
+   image21 copy image$num(imageNo) -subsample 2 2
 } else {
-   image21 copy $num(imageNo)
+   image21 copy image$num(imageNo)
 }
 label .second.photo1 -image image21
 pack .second.photo1 -side right

@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 04 fevrier 2006
+# Date de mise a jour : 05 fevrier 2006
 #
 
 #!/bin/sh
@@ -84,7 +84,7 @@ set color(back_image) #000000
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-catch {$num(imageNo) blank}
+catch {image$num(imageNo) blank}
 
 toplevel .second -class Toplevel
 wm title .second "$texte(tuto_1) (visu$num(visu1))"

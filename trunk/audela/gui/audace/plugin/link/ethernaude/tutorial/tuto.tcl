@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 04 fevrier 2006
+# Date de mise a jour : 05 fevrier 2006
 #
 
 #!/bin/sh
@@ -109,7 +109,7 @@ set num(buf1) [buf::create]
 set num(visu1) [visu::create $num(buf1) 1 ]
 
 #--- declare a new image
-set num(imageNo) image$num(visu1)
+set num(imageNo) $num(visu1)
 
 wm withdraw .
 if {[info command .main] == "" } {
