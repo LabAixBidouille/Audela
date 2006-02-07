@@ -119,7 +119,7 @@ int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, ch
          result = TCL_OK;
       }
    } else {
-      sprintf(ligne,"Usage: %s available",argv[0]);
+      sprintf(ligne,"Usage: %s liblink_driver ?options?",argv[0]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    }
