@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Date de mise a jour : 20 novembre 2004
+# Date de mise a jour : 08 fevrier 2006
 #
 
 #
@@ -139,9 +139,9 @@ namespace eval confTemmaMobile {
       wm resizable $This 0 0
 
       #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confTemmaMobile(temma,suivi_ad)  $confTel(temma,suivi_ad)
-      set confTemmaMobile(temma,suivi_dec) $confTel(temma,suivi_dec)
-      set confTemmaMobile(temma,type)      $confTel(temma,type)
+      set confTemmaMobile(temma,suivi_ad)  $confTel(conf_temma,suivi_ad)
+      set confTemmaMobile(temma,suivi_dec) $confTel(conf_temma,suivi_dec)
+      set confTemmaMobile(temma,type)      $confTel(conf_temma,type)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -262,9 +262,9 @@ namespace eval confTemmaMobile {
       }
 
       #--- Transposition de variables
-      set confTel(temma,suivi_ad)  $confTemmaMobile(temma,suivi_ad)
-      set confTel(temma,suivi_dec) $confTemmaMobile(temma,suivi_dec)
-      set confTel(temma,type)      $confTemmaMobile(temma,type)
+      set confTel(conf_temma,suivi_ad)  $confTemmaMobile(temma,suivi_ad)
+      set confTel(conf_temma,suivi_dec) $confTemmaMobile(temma,suivi_dec)
+      set confTel(conf_temma,type)      $confTemmaMobile(temma,type)
    }
 }
 

@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 08 fevrier 2006
 #
 
 package provide tel 1.0
@@ -103,10 +103,10 @@ namespace eval ::Tlscp {
       variable This
 
       trace add variable ::conf(telescope) write ::Tlscp::Adapt_Panneau_Tel
-      trace add variable ::confTel(temma,modele) write ::Tlscp::Adapt_Panneau_Tel
+      trace add variable ::confTel(conf_temma,modele) write ::Tlscp::Adapt_Panneau_Tel
       pack $This -side left -fill y
       ::Tlscp::Adapt_Panneau_Tel
-      #--- Je refraichis l'affichage des coordonnees      
+      #--- Je refraichis l'affichage des coordonnees
       ::telescope::afficheCoord
 
    }
@@ -115,7 +115,7 @@ namespace eval ::Tlscp {
       variable This
 
       trace remove variable ::conf(telescope) write ::Tlscp::Adapt_Panneau_Tel
-      trace remove variable ::confTel(temma,modele) write ::Tlscp::Adapt_Panneau_Tel
+      trace remove variable ::confTel(conf_temma,modele) write ::Tlscp::Adapt_Panneau_Tel
       pack forget $This
    }
 
