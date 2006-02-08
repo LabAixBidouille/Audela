@@ -1,8 +1,8 @@
-AudeLA-1.3.0 (20050714)
+AudeLA-1.4.0 (2006mmjj)
 
 
 1. Introduction
----------------
+===============
 
 AudeLA est un logiciel de pilotage d'instruments astronomiques amateurs, et
 de traitement d'images. Sa particularite est de proposer une modularite unique
@@ -17,7 +17,7 @@ Ce logiciel est libre, reportez vous au paragraphe 4 pour plus de details.
 
 
 2. Materiel supporte
---------------------
+====================
 
 AudeLA est capable de piloter les cameras CCD suivantes :
 - Audine (Kaf series 400, 401, 401E, 1600, 1602, 1602E et 3200E),
@@ -38,21 +38,25 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - HX516,
 - Kitty 237,
 - Kitty 255,
-- Kitty K2,
+- Kitty 2,
 - WebCam,
-- AudiNet (Audine pilotee par une interface Ethernet : PicoWeb),
-- EthernAude (interface Ethernet pour cameras CCD),
 - TH7852A,
-- QuickAudine,
-- Finger Lakes Instruments,
+- SCR1300XTC,
+- APN (Appareil Photo Numérique),
 - AndorTech,
-- SRC1300XTC.
+- Finger Lakes Instruments.
+
+AudeLA est capable de piloter les interfaces de communication suivantes :
+- AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
+- EthernAude (interface Ethernet pour cameras CCD),
+- QuickAudine (interface USB pour cameras Audine),
+- QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
+  mise au point, etc.).
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
 - Ouranos (codeurs absolus),
 - AudeCom (ex-carte Kauffmann),
-- LXnet (LX200 pilote par une interface Ethernet : PicoWeb),
 - Temma (monture Takahashi avec module Temma),
 - MCMT,
 - N'importe quel telescope repondant au protocole LX200.
@@ -89,7 +93,7 @@ superviseur pour pouvoir realiser des acquisitions.
 
 
 3. Quelle est la difference entre AudeLA et Aud'ACE ?
------------------------------------------------------
+=====================================================
 
 "AudeLA" est une executable qui ne fait que charger un ensemble de librairies
 (traitement d'images, mecanique celeste, acquisition, pilotage, autres), et 
@@ -108,7 +112,7 @@ nombre de librairies externes (affichage, widgets, formats d'image, etc).
 
 
 4. License
-----------
+==========
 
 Les modules propres a AudeLA et Aud'ACE sont distribues sous la license 
 GPL (GNU Public Licence). En quelques mots, cela veut dire que c'est un
@@ -186,7 +190,6 @@ Note aux utilisateurs de cameras SBIG :
   c:\WINDOWS\system32\drivers. Puis executer le logiciel SBIGDriverChecker.exe
   disponible sur le site www.sbig.com. 
 
-
 5.1.1 Compilation des modules externes pour Windows
 ---------------------------------------------------
 
@@ -200,7 +203,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
 
   - Ouvrir et compiler avec visual c++, en mode release :
        src\external\fli\libfli\lib\windows\libfli.dsw
-     Repertoire src\external\fli, lancer install.bat.
+    Repertoire src\external\fli, lancer install.bat.
 
   - Repertoire src\external\gsl,
     lancer make.bat puis install.bat
@@ -240,14 +243,12 @@ Effectuez les operations suivantes dans une console "Invite de commande",
   - Repertoire src\external\utils,
     lancer make.bat puis uinstall.bat
 
-
 5.1.2 Compilation de AudeLA pour Windows
 ----------------------------------------
 
 Ouvrir avec Visual C++ le fichier src/audela.dsw : Allez
 dans le menu Build, puis Batch Build ; Selectionnez les differentes
 cibles que vous voulez compiler, et effectuez la compilation.
-
 
 5.1.3 Installation des drivers optionels
 ----------------------------------------
@@ -267,7 +268,8 @@ cibles que vous voulez compiler, et effectuez la compilation.
    Les drivers pour les autres version d'OS sont aussi sur le site http://www.ftdichip.com.
 
 5.1.3.2 Arreter le service ftdi_sio 
----------------------------------
+-----------------------------------
+
   Cette action est nécessaire seulement pour les liaisons avec quickremote.
    
   arreter les services hotplug qui surveillent le branchement des equipements 
@@ -289,9 +291,8 @@ cibles que vous voulez compiler, et effectuez la compilation.
    rebranche. Je n'ai pas trouve la commande qui desactive definitivement le hotplug pour 
    cet equipement.
    Pour relancer le service hotplug manuellement, taper la commande "modprobe ftdi_sio" 
-   sous root
-   
-   
+   sous root.
+
 5.1.3.3 Installation libusb-win32 
 ---------------------------------
 
@@ -301,9 +302,6 @@ cibles que vous voulez compiler, et effectuez la compilation.
    télécharger libusb-win32-filter-bin-0.1.10.1.exe disponible sur site
    http://libusb-win32.sourceforge.net , 
    puis installer libusb-win32 en executant ce fichier.
-
-
-
 
 5.2 Linux
 ---------
@@ -372,12 +370,12 @@ Vous pouvez tout compiler d'un coup :
 	Vous pouvez neanmoins supprimer ces modules dans le fichier Makefile.defs pour 
 	reprendre le cours normal de la compilation.
 
-
 5.2.2 Installation des drivers optionels
 ----------------------------------------
 
-5.2.2.1 Installation ftd2xx 
+5.2.2.1 Installation ftd2xx
 ---------------------------
+
    Ce driver est nécessaire seulement pour les liaisons avec quickremote
 
    telecharger la librairie libftd2xx
@@ -400,11 +398,9 @@ Vous pouvez tout compiler d'un coup :
    # rmmod ftdi_sio" 
    # rmmod usbserial 
 
-   
-
-
 5.2.2.2 Installation libgphoto2 2.1.6
 -------------------------------------
+
    Ce driver est nécessaire seulement pour la camera DSC (appareil photo numérique).
    
    AudeLA founit un patch pour supporter les longues poses supérieures à 30 secondes
@@ -426,7 +422,6 @@ Vous pouvez tout compiler d'un coup :
    il n'est pas necessaire d'installer gtkam ou gphoto2.
    Ne pas confondre gphoto2 avec libgphoto2 !!
 
-	
 5.3 MAC OS-X
 ------------
 
@@ -478,7 +473,7 @@ Les auteurs initiaux de AudeLA sont :
 
 Par la suite, ils ont ete rejoints par :
  - Robert DELMAS <delmas.robert@wanadoo.fr>,
- - Christian JASINSKI <christian@jasinski.name>,
+ - Christian JASINSKI <chris.jasinski@free.fr>,
  - Michel PUJOL <michel-pujol@wanadoo.fr>.
 
 Ils forment "The AudeLA Core Team" (TACT), nom employe pour le copyright dans 
@@ -496,20 +491,22 @@ desordre :
  - Benoit MAUGIS : libbm, traitement de series d'images, gestion d'images
    FITS polychromes (poly), traitement d'images stellaires, utilisation
    conjointe d'AudeLA et d'Iris, outils Visionneuse et Acquisition fenetree.
- - Michel MEUNIER <michel.meunier10@tiscali.fr> est l'auteur du driver 
-   Ethernaude et du driver MCMT.
- - Sylvain GIRARD <sly.girarg@wanadoo.fr> est l'auteur du driver libk2 de la
-   camera Kitty2.
- - Jim CADIEN : support pour la camera Cookbook.
  - Pierre THIERRY : Imagerie couleur et obturateur "thierry".
  - Patrick CHEVALLEY : Driver WebCam longue pose.
  - Arkadius KALICKI : Driver WebCam.
+ - Michel MEUNIER <michel.meunier10@tiscali.fr> est l'auteur du driver 
+   Ethernaude et du driver MCMT.
+ - Vincent COTREZ : Script de detection (detection).
  - Benjamin MAUCLAIRE : Filtres des traitements d'images.
- - Darth VADOR <vador@darkstar.com> : Inspiration permanente.
+ - Harald RISCHBIETER : Traitement d'images matriciel.
  - Xavier REY-ROBERT : Utilitaire scriptis pour executer des scripts de
    commande Iris.
- - Vincent COTREZ : Script de detection (detection).
- - Harald RISCHBIETER : Traitement d'images matriciel.
+ - Raoul BEHREND : Utilitaires pour la conversion d'images au format FITS.
+ - Jerome BERTHIER : Outil pour l'observatoire virtuel.
+ - Sylvain GIRARD <sly.girarg@wanadoo.fr> est l'auteur du driver libk2 de la
+   camera Kitty2.
+ - Jim CADIEN : Support pour la camera Cookbook.
+ - Darth VADOR <vador@darkstar.com> : Inspiration permanente.
  - Christian JASINSKI, Dez FUTAK, Dan HOLLER : Traduction anglaise.
  - Fausto MANENTI : Traduction italienne.
  - Rafael GONZALEZ FUENTETAJA, Cristobal GARCIA : Traduction espagnole.
@@ -537,7 +534,7 @@ de ce que l'on peut y trouver :
 - lib : Sous repertoires contenant les modules externes requis par TCL
   pour faire fonctionner Aud'ACE.
 - libak : Librairie maintenue par Alain KLOTZ.
-- libaudela : 
+- libaudela : Librairie principale d'AudeLA.
 - libcam : Contient tous les drivers de camera.
 - libgsltcl : Interface TCL <-> GSL.
 - libgzip : Module de compression.
@@ -550,25 +547,27 @@ de ce que l'on peut y trouver :
 
 8. Librairies additionnelles
 ============================
+
 TCL/TK:
  - BLT : Trace des courbes sous TK (histogramme, plotxy).
  - BWidget : Definition de nouveaux widgets TK.
- - dde : Protocole Dynamic Data Exchange pour Windows (Carte du Ciel V2.xx).
+ - Dde : Protocole Dynamic Data Exchange pour Windows (Carte du Ciel V2.xx).
  - DialogWin : tk_messageBox evolue.
+ - Dp : Communication sur protocole IP de bas niveau (TCP, RCP, UDP, SMTP, etc.).
  - HelpViewer : Affichage d'une aide.
  - Img : Librairie de chargement de formats d'images standards (jpg, bmp, etc.).
  - Reg : Fonctions d'acces a la base de registres Windows.
  - SuperGrid : Positionne automatiquement les widgets dans une grille.
  - TableList : Affichage d'une liste avec parametrage des colonnes (outil Visionneuse bis).
+ - TclDOM : Extension DOM pour skybot/virtual observatory. http://tclxml.sourceforge.net
  - Tcllib : Outils divers (ftp, http, irc, ntp, etc.).
+ - TclSoap : Extension SOAP pour skybot/virtual observatory. http://tclsoap.sourceforge.net
+ - TclXML : Extension XML pour skybot/virtual observatory. http://tclxml.sourceforge.net
  - TCom : Protocole Microsoft COM (pour interfaces ASCOM).
  - TkHtml : Widget permettant d'afficher une page HTML.
  - TkImgVideo : Widget d'affichage des videos webcam.
  - TMCI : Gestion du format video avi.
- - TclSoap-1.6.7 : extension SOAP pour skybot/virtual observatory. http://tclsoap.sourceforge.net
- - TclDOM-2.6 : extension DOM pour skybot/virtual observatory. http://tclxml.sourceforge.net
- - TclXML-2.6 : extension XML pour skybot/virtual observatory. http://tclxml.sourceforge.net
- 
+
 
 Divers:
  - CFITSIO (2.51).
