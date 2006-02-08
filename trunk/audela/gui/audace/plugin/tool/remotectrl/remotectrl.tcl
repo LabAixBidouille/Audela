@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 08 fevrier 2006
 #
 
 package provide remotectrl 1.0
@@ -342,8 +342,8 @@ namespace eval ::Rmctrl {
             } else {
                ::Rmctrl::setSpeed "1"
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
-            #--- Pour lx200 et lxnet, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
+         } elseif { $conf(telescope) == "lx200" } {
+            #--- Pour lx200, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
             if { $audace(telescope,speed) == "1" } {
                ::Rmctrl::setSpeed "2"
             } elseif { $audace(telescope,speed) == "2" } {
@@ -406,7 +406,7 @@ namespace eval ::Rmctrl {
             set audace(telescope,rate) "1"
             set statustel(speed) "0.66"
          }
-      } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+      } elseif { $conf(telescope) == "lx200" } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
@@ -506,7 +506,7 @@ namespace eval ::Rmctrl {
             } else {
                ::Rmctrl::Boucle
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+         } elseif { $conf(telescope) == "lx200" } {
             if { $conf(lx200,modele) == "AudeCom" } {
                if { ( $audace(telescope,speed) == "3" ) || ( $audace(telescope,speed) == "4" ) } {
                   after 3700

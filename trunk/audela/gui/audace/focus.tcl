@@ -8,7 +8,7 @@
 #       audace(focus,nbpas1) 
 #       audace(focus,nbpas2)
 #    
-# Date de mise a jour : 09 octobre 2004
+# Date de mise a jour : 08 fevrier 2006
 #
 
 namespace eval ::focus {
@@ -138,7 +138,7 @@ namespace eval ::focus {
             } else {
                ::focus::setSpeed "1"
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+         } elseif { $conf(telescope) == "lx200" } {
             if { $audace(focus,speed) == "0" } { 
                ::focus::setSpeed "1"
             } else { 
@@ -177,7 +177,7 @@ namespace eval ::focus {
                set audace(focus,labelspeed) "$caption(focus,x1)" 
                ::telescope::setSpeed "1"
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+         } elseif { $conf(telescope) == "lx200" } {
             if { $value == "1" } { 
                set audace(focus,speed) "1"
                set audace(focus,labelspeed) "2" 
