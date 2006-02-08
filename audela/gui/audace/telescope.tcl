@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 #    
-# Date de mise a jour : 10 avril 2005
+# Date de mise a jour : 08 fevrier 2006
 #
 
 namespace eval ::telescope {
@@ -98,9 +98,8 @@ global audace
       global caption
 
       if { [ ::tel::list ] != "" } {
-         if { $conf(telescope) == "lx200" && $conf(lx200,modele) == "$caption(telescope,modele_gemini)"
-           || $conf(telescope) == "lxnet" && $conf(lxnet,modele) == "$caption(telescope,modele_gemini)" } {
-            #--- cas du modele Losmandy Gemini                  
+         if { $conf(telescope) == "lx200" && $conf(lx200,modele) == "$caption(telescope,modele_gemini)" } {
+            #--- cas du modele Losmandy Gemini
             set choix [ tk_dialog \
                $audace(base).selectAlign \
                "$caption(telescope,match)" \
@@ -278,7 +277,7 @@ global audace
             } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,200)" } {
                setSpeed "3" 
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+         } elseif { $conf(telescope) == "lx200" } {
             if { $panneau(DlgShift,shiftSpeed) == "1" } { 
                setSpeed "1" 
             } elseif { $panneau(DlgShift,shiftSpeed) == "2" } { 
@@ -326,8 +325,8 @@ global audace
             } else {
                setSpeed "1" 
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
-            #--- Pour lx200 et lxnet, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
+         } elseif { $conf(telescope) == "lx200" } {
+            #--- Pour lx200, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
             if { $audace(telescope,speed) == "1" } { 
                setSpeed "2" 
             } elseif { $audace(telescope,speed) == "2" } { 
@@ -395,7 +394,7 @@ global audace
                set audace(telescope,rate) "1"
                set statustel(speed) "0.66"
             } 
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+         } elseif { $conf(telescope) == "lx200" } {
             if { $value == "1" } { 
                set audace(telescope,speed) "1" 
                set audace(telescope,labelspeed) "1"
@@ -581,7 +580,7 @@ global audace
             } else {
                ::telescope::Boucle
             }
-         } elseif { ( $conf(telescope) == "lx200" ) || ( $conf(telescope) == "lxnet" ) } {
+         } elseif { $conf(telescope) == "lx200" } {
             tel$audace(telNo) radec stop $direction
             if { $conf(lx200,modele) == "AudeCom" } {
                if { ( $audace(telescope,speed) == "3" ) || ( $audace(telescope,speed) == "4" ) } {
@@ -674,8 +673,7 @@ global audace
       global conf
       global caption
 
-      if { ( $conf(telescope) == "lx200" && $conf(lx200,modele) != "$caption(telescope,modele_audecom)" )
-         || ( $conf(telescope) == "lxnet" && $conf(lx200,modele) != "$caption(telescope,modele_audecom)" )  } {
+      if { $conf(telescope) == "lx200" && $conf(lx200,modele) != "$caption(telescope,modele_audecom)" } {
          set result "1"
       } else {
          set result "0"
@@ -692,11 +690,11 @@ global audace
    proc possedeGoto { } {
    
       # The telescope mounts have Goto function
-      # yes = 1 (onglet LX200, AudeCom, AvrCom, Lxnet, Temma, MCMT )
-      # no  = 0 (onglet Ouranos, ComPad, TelCom)
+      # yes = 1 (onglet LX200, AudeCom, Temma, MCMT )
+      # no  = 0 (onglet Ouranos)
       global conf
 
-      if { [ regexp (lx200|audecom|avrcom|lxnet|temma|mcmt) $conf(telescope) ] } {
+      if { [ regexp (lx200|audecom|temma|mcmt) $conf(telescope) ] } {
          set result "1"
       } else {
          set result "0"
@@ -713,11 +711,11 @@ global audace
    proc fourniCoord { } {
    
       # The telescope mounts send coordinates
-      # yes = 1 (onglet LX200, Ouranos, AudeCom, AvrCom, Lxnet, Temma, MCMT )
-      # no  = 0 (onglet ComPad, TelCom)
+      # yes = 1 (onglet LX200, Ouranos, AudeCom, Temma, MCMT )
+      # no  = 0 (onglet )
       global conf
 
-      if { [ regexp (lx200|ouranos|audecom|avrcom|lxnet|temma|mcmt) $conf(telescope) ] } {
+      if { [ regexp (lx200|ouranos|audecom|temma|mcmt) $conf(telescope) ] } {
          set result "1"
       } else {
          set result "0"
