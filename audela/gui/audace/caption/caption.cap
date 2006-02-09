@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 31 janvier 2006
+# Date de mise a jour : 09 fevrier 2006
 #
 
 #=========================================================================
@@ -1343,7 +1343,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Einrichtung"
    set caption(audace,menu,carte)                     "Karte"
    set caption(audace,menu,optique)                   "Optisch"
-   set caption(audace,menu,liaison)                   "# Liaison"
+   set caption(audace,menu,liaison)                   "Link"
 
    set caption(audace,menu,aide)                      "Hilfe"
    set caption(audace,menu,sommaire)                  "Inhalt"
