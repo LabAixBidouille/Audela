@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Date de mise a jour : 31 janvier 2006
+# Date de mise a jour : 09 fevrier 2006
 #
 
 #=========================================================================
@@ -71,17 +71,17 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(conflink,liaison)             "# Liaison :"
-   set caption(conflink,config)              "# Configuration de la liaison"
-   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain dÈmarrage"
+   set caption(conflink,liaison)             "Link :"
+   set caption(conflink,config)              "Link Konfiguration"
+   set caption(conflink,creer_au_demarrage)  "N‰chste Mal diesem Link automatisch anschlieﬂen"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Anwenden"
    set caption(conflink,fermer)              "Schlieﬂen"
    set caption(conflink,aide)                "Hilfe"
 
    set caption(conflink,attention)           "Achtung"
-   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
-   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+   set caption(conflink,connexion_texte1)    "Bitte, einige Sekunden warten"
+   set caption(conflink,connexion_texte2)    "w‰hrend die Verbindung zum Link."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

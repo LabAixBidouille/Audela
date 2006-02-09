@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Date de mise a jour : 31 janvier 2006
+# Date de mise a jour : 09 fevrier 2006
 #
 
 #=========================================================================
@@ -115,7 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,lecture_pixel)           "Ein Rasterpunkt abtasten:"
    set caption(ethernaude,micro_sec_bornes)        "Mikrosekunden (Ein Wert zwischen 5.0 und 15.0 µs wählen)"
    set caption(ethernaude,tutorial_ethernaude)     "Vorstellung und Tutorial"
-   set caption(ethernaude,coord_gps)               "# Coordonnées GPS de l'observateur"
+   set caption(ethernaude,coord_gps)               "Beobachter GPS Koordinaten"
    set caption(ethernaude,longitude)               "Länge:"
    set caption(ethernaude,latitude)                "Breite:"
    set caption(ethernaude,altitude)                "Höhe:"

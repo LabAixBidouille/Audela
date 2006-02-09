@@ -1,6 +1,6 @@
 #
 # Fichier : audinet.cap
-# Date de mise a jour : 31 janvier 2006
+# Date de mise a jour : 08 fevrier 2006
 #
 
 #=========================================================================
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,appareil_connecte)       "Ein Gerät mit diese IP Nummer existiert:"
    set caption(audinet,pas_appareil_connecte)   "Kein Gerät mit diese IP Nummer existiert:"
    set caption(audinet,message_ping)            "Ping Funktion Rückkehr Meldung:"
-   set caption(audinet,erreur_setip)            "# Réseau non trouvé."
+   set caption(audinet,erreur_setip)            "Netz nicht gefunden."
 
    set caption(audinet,site_web_ref)            "Referenz Webseite:"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
