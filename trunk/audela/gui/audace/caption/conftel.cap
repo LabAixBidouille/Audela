@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Date de mise a jour : 08 janvier 2006
+# Date de mise a jour : 12 fevrier 2006
 #
 
 #=========================================================================
@@ -22,6 +22,9 @@ set caption(conftel,raquette_tel)                     "Hand controller on screen
 set caption(conftel,config_raquette)                  "Hand Controller Setup"
 
 set caption(conftel,port)                             "Port"
+set caption(conftel,port_liaison)                     "Port / Link"
+set caption(conftel,audinet)                          "AudiNet"
+set caption(conftel,link_configure)                   "Set up"
 set caption(conftel,format)                           "Format"
 set caption(conftel,format_court_long)                "Short Long"
 set caption(conftel,modele)                           "Model"
@@ -63,10 +66,6 @@ set caption(conftel,audecom_prog_pec)                 "PEC Programming"
 set caption(conftel,audecom_ctl_king)                 "King Speed Control"
 set caption(conftel,audecom_ctl_mobile)               "Tracking Speed Control"
 set caption(conftel,audecom_ver_firmware)             "Microcontroller Software: V"
-
-set caption(conftel,avr_commande)                     "Command"
-set caption(conftel,avr_initialiser)                  "Reset"
-set caption(conftel,avr_transmettre)                  "Send"
 
 set caption(conftel,host_audinet)                     "Host AudiNet/LXnet"
 set caption(conftel,envoyer_adresse_lxnet)            "Send this IP number to LXnet before the connection"
@@ -114,9 +113,6 @@ set caption(conftel,tiret)                            "-"
 set caption(conftel,port_audecom)                     "AudeCom Port"
 set caption(conftel,port_ouranos)                     "Ouranos Port"
 set caption(conftel,port_lx200)                       "LX200 Port"
-set caption(conftel,port_compad)                      "ComPad Port"
-set caption(conftel,port_avrcom)                      "AvrCom Port"
-set caption(conftel,port_telcom)                      "TelCom Port"
 set caption(conftel,port_temma)                       "Temma Port"
 set caption(conftel,port_mcmt)                        "MCMT Port"
 
@@ -125,12 +121,9 @@ set caption(conftel,document_ref)                     "Reference Document:"
 set caption(conftel,site_lx200)                       "http://www.meade.com/support/CommandSet.html"
 set caption(conftel,site_ouranos)                     "http://www.microtec.net/~pdufour/ouranosa.htm"
 set caption(conftel,doc_audecom)                      "AudeCom-V41.pdf"
-set caption(conftel,site_compad)                      "http://www.astrosurf.com/audine/English/pisco/pilot.htm"
-set caption(conftel,site_avrcom)                      "http://perso.club-internet.fr/zachantk/audela/audela.html"
-set caption(conftel,doc_telcom)                       "To be created"
 set caption(conftel,site_lxnet)                       "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
 set caption(conftel,site_temma)                       "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-set caption(conftel,site_mcmt)                        "http://perso.wanadoo.fr/laurent.bernasconi/"
+set caption(conftel,site_mcmt)                        "http://astrosurf.com/mcmtii/"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -146,6 +139,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,config_raquette)               "Configuration de la raquette"
 
    set caption(conftel,port)                          "Port"
+   set caption(conftel,port_liaison)                  "Port / Liaison"
+   set caption(conftel,audinet)                       "AudiNet"
+   set caption(conftel,link_configure)                "Configurer"
    set caption(conftel,format)                        "Format"
    set caption(conftel,format_court_long)             "court long"
    set caption(conftel,modele)                        "Modèle"
@@ -187,10 +183,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,audecom_ctl_king)              "Contrôle de la vitesse de King"
    set caption(conftel,audecom_ctl_mobile)            "Contrôle de la vitesse de suivi"
    set caption(conftel,audecom_ver_firmware)          "Logiciel du microcontrôleur : V"
-
-   set caption(conftel,avr_commande)                  "Commande"
-   set caption(conftel,avr_initialiser)               "Initialiser"
-   set caption(conftel,avr_transmettre)               "Transmettre"
 
    set caption(conftel,host_audinet)                  "Host AudiNet/LXnet"
    set caption(conftel,envoyer_adresse_lxnet)         "Envoyer ce numéro IP au LXnet avant la connexion"
@@ -238,9 +230,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_audecom)                  "Port AudeCom"
    set caption(conftel,port_ouranos)                  "Port Ouranos"
    set caption(conftel,port_lx200)                    "Port LX200"
-   set caption(conftel,port_compad)                   "Port ComPad"
-   set caption(conftel,port_avrcom)                   "Port AvrCom"
-   set caption(conftel,port_telcom)                   "Port TelCom"
    set caption(conftel,port_temma)                    "Port Temma"
    set caption(conftel,port_mcmt)                     "Port MCMT"
 
@@ -249,12 +238,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,site_lx200)                    "http://www.meade.com/support/CommandSet.html"
    set caption(conftel,site_ouranos)                  "http://www.microtec.net/~pdufour/ouranos.htm"
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
-   set caption(conftel,site_compad)                   "http://www.astrosurf.com/audine/pisco/pilot.htm"
-   set caption(conftel,site_avrcom)                   "http://perso.club-internet.fr/zachantk/audela/audela.html"
-   set caption(conftel,doc_telcom)                    "A créer"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://perso.wanadoo.fr/laurent.bernasconi/"
+   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -270,6 +256,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,config_raquette)               "Configurazione pulsantiera"
 
    set caption(conftel,port)                          "Porte"
+   set caption(conftel,port_liaison)                  "Porte / Collegamento"
+   set caption(conftel,audinet)                       "AudiNet"
+   set caption(conftel,link_configure)                "Configurare"
    set caption(conftel,format)                        "Formato"
    set caption(conftel,format_court_long)             "corto lungo"
    set caption(conftel,modele)                        "Modello"
@@ -311,10 +300,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,audecom_ctl_king)              "Controllo velocita` King"
    set caption(conftel,audecom_ctl_mobile)            "Controllo velocita` di inseguimento"
    set caption(conftel,audecom_ver_firmware)          "Software del microcontrollore: V"
-
-   set caption(conftel,avr_commande)                  "Comando"
-   set caption(conftel,avr_initialiser)               "Inizializzare"
-   set caption(conftel,avr_transmettre)               "Trasmettere"
 
    set caption(conftel,host_audinet)                  "Host AudiNet/LXnet"
    set caption(conftel,envoyer_adresse_lxnet)         "Inviare questo numero IP all' LXnet prima della connessione"
@@ -362,9 +347,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_audecom)                  "Porta AudeCom"
    set caption(conftel,port_ouranos)                  "Porta Ouranos"
    set caption(conftel,port_lx200)                    "Porta LX200"
-   set caption(conftel,port_compad)                   "Porta ComPad"
-   set caption(conftel,port_avrcom)                   "Porta AvrCom"
-   set caption(conftel,port_telcom)                   "Porta TelCom"
    set caption(conftel,port_temma)                    "Porta Temma"
    set caption(conftel,port_mcmt)                     "Porta MCMT"
 
@@ -373,12 +355,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,site_lx200)                    "http://www.meade.com/support/CommandSet.html"
    set caption(conftel,site_ouranos)                  "http://www.microtec.net/~pdufour/ouranosa.htm"
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
-   set caption(conftel,site_compad)                   "http://www.astrosurf.com/audine/English/pisco/pilot.htm"
-   set caption(conftel,site_avrcom)                   "http://perso.club-internet.fr/zachantk/audela/audela.html"
-   set caption(conftel,doc_telcom)                    "Crea"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://perso.wanadoo.fr/laurent.bernasconi/"
+   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -394,6 +373,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,config_raquette)               "Configuración del controlador de mano"
 
    set caption(conftel,port)                          "Puerto"
+   set caption(conftel,port_liaison)                  "Puerto / Enlace"
+   set caption(conftel,audinet)                       "AudiNet"
+   set caption(conftel,link_configure)                "Configurar"
    set caption(conftel,format)                        "Formato"
    set caption(conftel,format_court_long)             "corto largo"
    set caption(conftel,modele)                        "Modelo"
@@ -435,10 +417,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,audecom_ctl_king)              "Control de la velocidad King"
    set caption(conftel,audecom_ctl_mobile)            "Ctrl. de la velocidad de seguimiento"
    set caption(conftel,audecom_ver_firmware)          "Software de microcontrolador: V"
-
-   set caption(conftel,avr_commande)                  "Comando"
-   set caption(conftel,avr_initialiser)               "Inicializar"
-   set caption(conftel,avr_transmettre)               "Enviar"
 
    set caption(conftel,host_audinet)                  "Host AudiNet/LXnet"
    set caption(conftel,envoyer_adresse_lxnet)         "Envia esta dirección IP a LXnet antes de la conexión"
@@ -486,9 +464,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_audecom)                  "Puerto AudeCom"
    set caption(conftel,port_ouranos)                  "Puerto Ouranos"
    set caption(conftel,port_lx200)                    "Puerto LX200"
-   set caption(conftel,port_compad)                   "Puerto ComPad"
-   set caption(conftel,port_avrcom)                   "Puerto AvrCom"
-   set caption(conftel,port_telcom)                   "Puerto TelCom"
    set caption(conftel,port_temma)                    "Puerto Temma"
    set caption(conftel,port_mcmt)                     "Puerto MCMT"
 
@@ -497,12 +472,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,site_lx200)                    "http://www.meade.com/support/CommandSet.html"
    set caption(conftel,site_ouranos)                  "http://www.microtec.net/~pdufour/ouranosa.htm"
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
-   set caption(conftel,site_compad)                   "http://www.astrosurf.com/audine/English/pisco/pilot.htm"
-   set caption(conftel,site_avrcom)                   "http://perso.club-internet.fr/zachantk/audela/audela.html"
-   set caption(conftel,doc_telcom)                    "A crear"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://perso.wanadoo.fr/laurent.bernasconi/"
+   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -518,6 +490,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,config_raquette)               "Handsteuerung Konfiguration"
 
    set caption(conftel,port)                          "Port"
+   set caption(conftel,port_liaison)                  "Port / Link"
+   set caption(conftel,audinet)                       "AudiNet"
+   set caption(conftel,link_configure)                "Konfigurieren"
    set caption(conftel,format)                        "Format"
    set caption(conftel,format_court_long)             "kurz lang"
    set caption(conftel,modele)                        "Modell"
@@ -559,10 +534,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,audecom_ctl_king)              "King Tempo Kontrolle"
    set caption(conftel,audecom_ctl_mobile)            "Folgung Tempo Kontrolle"
    set caption(conftel,audecom_ver_firmware)          "Mikrokontroller Software: V"
-
-   set caption(conftel,avr_commande)                  "Befehl"
-   set caption(conftel,avr_initialiser)               "Initialisieren"
-   set caption(conftel,avr_transmettre)               "Senden"
 
    set caption(conftel,host_audinet)                  "Host AudiNet/LXnet"
    set caption(conftel,envoyer_adresse_lxnet)         "Diese IP Nummer zu LXnet vor den Zusammenhang schicken"
@@ -610,9 +581,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_audecom)                  "AudeCom Port"
    set caption(conftel,port_ouranos)                  "Ouranos Port"
    set caption(conftel,port_lx200)                    "LX200 Port"
-   set caption(conftel,port_compad)                   "ComPad Port"
-   set caption(conftel,port_avrcom)                   "AvrCom Port"
-   set caption(conftel,port_telcom)                   "TelCom Port"
    set caption(conftel,port_temma)                    "Temma Port"
    set caption(conftel,port_mcmt)                     "MCMT Port"
 
@@ -621,12 +589,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,site_lx200)                    "http://www.meade.com/support/CommandSet.html"
    set caption(conftel,site_ouranos)                  "http://www.microtec.net/~pdufour/ouranosa.htm"
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
-   set caption(conftel,site_compad)                   "http://www.astrosurf.com/audine/English/pisco/pilot.htm"
-   set caption(conftel,site_avrcom)                   "http://perso.club-internet.fr/zachantk/audela/audela.html"
-   set caption(conftel,doc_telcom)                    "Zu schaffen"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://perso.wanadoo.fr/laurent.bernasconi/"
+   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -642,6 +607,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,config_raquette)               "Hand Controller Setup"
 
    set caption(conftel,port)                          "Port"
+   set caption(conftel,port_liaison)                  "Port / Link"
+   set caption(conftel,audinet)                       "AudiNet"
+   set caption(conftel,link_configure)                "Set up"
    set caption(conftel,format)                        "Format"
    set caption(conftel,format_court_long)             "Short Long"
    set caption(conftel,modele)                        "Model"
@@ -683,10 +651,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,audecom_ctl_king)              "King Speed Control"
    set caption(conftel,audecom_ctl_mobile)            "Tracking Speed Control"
    set caption(conftel,audecom_ver_firmware)          "Microcontroller Software: V"
-
-   set caption(conftel,avr_commande)                  "Command"
-   set caption(conftel,avr_initialiser)               "Reset"
-   set caption(conftel,avr_transmettre)               "Send"
 
    set caption(conftel,host_audinet)                  "Host AudiNet/LXnet"
    set caption(conftel,envoyer_adresse_lxnet)         "Send this IP number to LXnet before the connection"
@@ -734,9 +698,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_audecom)                  "AudeCom Port"
    set caption(conftel,port_ouranos)                  "Ouranos Port"
    set caption(conftel,port_lx200)                    "LX200 Port"
-   set caption(conftel,port_compad)                   "ComPad Port"
-   set caption(conftel,port_avrcom)                   "AvrCom Port"
-   set caption(conftel,port_telcom)                   "TelCom Port"
    set caption(conftel,port_temma)                    "Temma Port"
    set caption(conftel,port_mcmt)                     "MCMT Port"
 
@@ -745,12 +706,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,site_lx200)                    "http://www.meade.com/support/CommandSet.html"
    set caption(conftel,site_ouranos)                  "http://www.microtec.net/~pdufour/ouranosa.htm"
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
-   set caption(conftel,site_compad)                   "http://www.astrosurf.com/audine/English/pisco/pilot.htm"
-   set caption(conftel,site_avrcom)                   "http://perso.club-internet.fr/zachantk/audela/audela.html"
-   set caption(conftel,doc_telcom)                    "To be created"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://perso.wanadoo.fr/laurent.bernasconi/"
+   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 }
 

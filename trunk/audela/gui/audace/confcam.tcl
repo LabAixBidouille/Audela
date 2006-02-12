@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 04 fevrier 2006
+# Date de mise a jour : 08 fevrier 2006
 #
 
 global confCam
@@ -120,7 +120,11 @@ namespace eval ::confCam {
       if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
 
       #--- initConf 10
-      if { ! [ info exists conf(apn,link) ] }           { set conf(apn,link)           "$caption(confcam,apn_gphoto2)" }
+      if { ! [ info exists conf(dsc,link) ] }           { set conf(dsc,link)           "$caption(confcam,dsc_gphoto2)" }
+      if { ! [ info exists conf(dsc,quickremote) ] }    { set conf(dsc,quickremote)    "0" }
+      if { ! [ info exists conf(dsc,statut_service) ] } { set conf(dsc,statut_service) "1" }
+      if { ! [ info exists conf(dsc,mirh) ] }           { set conf(dsc,mirh)           "0" }
+      if { ! [ info exists conf(dsc,mirv) ] }           { set conf(dsc,mirv)           "0" }
       if { ! [ info exists conf(apn,baud) ] }           { set conf(apn,baud)           "115200" }
      ### if { ! [ info exists conf(apn,serial_port) ] }    { set conf(apn,serial_port)    [ lindex "$audace(list_com)" 0 ] }
 
@@ -133,11 +137,6 @@ namespace eval ::confCam {
       if { ! [ info exists conf(andor,temp) ] }        { set conf(andor,temp)        "-50" }
       if { ! [ info exists conf(andor,ouvert_obtu) ] } { set conf(andor,ouvert_obtu) "0" }
       if { ! [ info exists conf(andor,ferm_obtu) ] }   { set conf(andor,ferm_obtu)   "30" }
-
-      #--- initConf 12
-      if { ! [ info exists conf(dsc,mirh) ] }        { set conf(dsc,mirh)        "0" }
-      if { ! [ info exists conf(dsc,mirv) ] }        { set conf(dsc,mirv)        "0" }
-      if { ! [ info exists conf(dsc,quickremote) ] } { set conf(dsc,quickremote) "0" }
 
       #--- item par defaut
       set confCam(cam_item)          "A"
@@ -161,7 +160,7 @@ namespace eval ::confCam {
    # Cree la fenetre de choix et de configuration des cameras
    # This = chemin de la fenetre
    # conf(camera,A,camName) = nom de la camera (audine hisis sbig cookbook starlight kitty webcam \
-   # th7852a scr1300xtc apn andor dsc)
+   # th7852a scr1300xtc dsc andor)
    #
    proc run { } {
       variable This
@@ -233,15 +232,13 @@ namespace eval ::confCam {
    #
    proc afficherAide { } {
       variable This
-      global audace
       global confCam
-      global help
 
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -relief groove -state disabled
       $This.cmd.fermer configure -state disabled
-      ::audace::showHelpPlugin camera $conf(camera,$confCam(cam_item),camName) "$confCam(camName).htm"
+      ::audace::showHelpPlugin camera $confCam(camName) "$confCam(camName).htm"
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -state normal
       $This.cmd.aide configure -relief raised -state normal
@@ -305,7 +302,7 @@ namespace eval ::confCam {
       if { [ info exists This ] } {
          set frm $frmm(Camera6)
          if { [ winfo exists $frm.radio_on ] } {
-            if { ( [::confCam::getName $confCam(camera,$cam_item,camNo)] == "KITTYK2" ) && ( $conf(kitty,modele) == "KITTYK2" ) } {
+            if { [::confCam::getName $confCam(camera,$cam_item,camNo)] == "KITTYK2" } {
                #--- Boutons de configuration de la Kitty K2 actif
                $frm.radio_on configure -state normal
                $frm.radio_off configure -state normal
@@ -408,7 +405,7 @@ namespace eval ::confCam {
          #--- Creation de la fenetre a onglets
          set nn $This.usr.book
          Rnotebook:create $nn -tabs "[ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-            TH7852A SCR1300XTC $caption(confcam,apn) Andor DSC ]" -borderwidth 1
+            TH7852A SCR1300XTC $caption(confcam,dsc) Andor ]" -borderwidth 1
          fillPage1  $nn
          fillPage2  $nn
          fillPage3  $nn
@@ -420,7 +417,6 @@ namespace eval ::confCam {
          fillPage9 $nn
          fillPage10 $nn
          fillPage11 $nn
-         fillPage12 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
 
@@ -439,11 +435,11 @@ namespace eval ::confCam {
             -command "::confCam::selectCamItem"
          pack $This.startA.item -side left -padx 3 -pady 3 -fill x
          label $This.startA.name -textvariable conf(camera,A,camName)
-         pack $This.startA.name -side left -padx 3 -pady 3 -fill x        
+         pack $This.startA.name -side left -padx 3 -pady 3 -fill x
          
          ComboBox $This.startA.visu \
             -width 8          \
-            -height [ llength $confCam(camera,list_visu) ]  \
+            -height [ llength $confCam(camera,list_visu) ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
@@ -468,7 +464,7 @@ namespace eval ::confCam {
          
          ComboBox $This.startB.visu \
             -width 8          \
-            -height [ llength $confCam(camera,list_visu) ]  \
+            -height [ llength $confCam(camera,list_visu) ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
@@ -493,7 +489,7 @@ namespace eval ::confCam {
          
          ComboBox $This.startC.visu \
             -width 8          \
-            -height [ llength $confCam(camera,list_visu) ]  \
+            -height [ llength $confCam(camera,list_visu) ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
@@ -2056,12 +2052,18 @@ namespace eval ::confCam {
          -modifycmd {
             #--- Ouvre la configuration des liaisons sur le bon onglet
             if { $confCam(conf_webcam,longueposeport) == "$caption(confcam,lpt1)" } {
+               set confCam(conf_webcam,longueposestartvalue) "0"
+               set confCam(conf_webcam,longueposestopvalue)  "1"
                set conf(confLink) "parallelport"
                ::confLink::run
             } elseif { $confCam(conf_webcam,longueposeport) == "$caption(confcam,lpt2)" } {
+               set confCam(conf_webcam,longueposestartvalue) "0"
+               set confCam(conf_webcam,longueposestopvalue)  "1"
                set conf(confLink) "parallelport"
                ::confLink::run
             } elseif { $confCam(conf_webcam,longueposeport) == "$caption(confcam,quickremote)" } {
+               set confCam(conf_webcam,longueposestartvalue) "1"
+               set confCam(conf_webcam,longueposestopvalue)  "0"
                set conf(confLink) "quickremote"
                ::confLink::run
             }
@@ -2334,7 +2336,7 @@ namespace eval ::confCam {
    }
 
    #
-   # Fenetre de configuration des APN
+   # Fenetre de configuration des APN (DSC)
    #
    proc fillPage10 { nn } {
       global audace
@@ -2345,7 +2347,11 @@ namespace eval ::confCam {
       global frmm
 
       #--- confToWidget
-      set confCam(conf_apn,link)           $conf(apn,link)
+      set confCam(conf_dsc,link)           $conf(dsc,link)
+      set confCam(conf_dsc,quickremote)    $conf(dsc,quickremote)
+      set confCam(conf_dsc,statut_service) $conf(dsc,statut_service)
+      set confCam(conf_dsc,mirh)           $conf(dsc,mirh)
+      set confCam(conf_dsc,mirv)           $conf(dsc,mirv)
       set confCam(conf_apn,baud)           $conf(apn,baud)
      ### set confCam(conf_apn,serial_port)    $conf(apn,serial_port)
 
@@ -2355,19 +2361,31 @@ namespace eval ::confCam {
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill x -pady 4
+      pack $frm.frame1 -side top -fill x
 
       frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill x -pady 4
+     # pack $frm.frame2 -side top -fill x
 
       frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side top -fill x -pady 4
+     # pack $frm.frame3 -side top -fill x
 
       frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x -pady 2
+     # pack $frm.frame4 -side top -fill x
+
+      frame $frm.frame5 -borderwidth 0 -relief raised
+     # pack $frm.frame5 -in $frm.frame4 -anchor n -side left -fill x
+
+      frame $frm.frame6 -borderwidth 0 -relief raised
+     # pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
+
+      frame $frm.frame7 -borderwidth 0 -relief raised
+      pack $frm.frame7 -side bottom -fill x -pady 2
+
+      frame $frm.frame8 -borderwidth 0 -relief raised
+      pack $frm.frame8 -side bottom -fill x -pady 2
 
       #--- Label de la liaison
-      label $frm.lab1 -text "$caption(confcam,liaison)"
+      label $frm.lab1 -text "$caption(confcam,dsc_liaison)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton de configuration des liaisons
@@ -2375,40 +2393,57 @@ namespace eval ::confCam {
       pack $frm.configure -in $frm.frame1 -side left -pady 10 -ipadx 10 -ipady 1
 
       #--- Selection de la liaison
-      set list_combobox [ list $caption(confcam,apn_photopc) $caption(confcam,apn_gphoto2) ]
+      set list_combobox [ list $caption(confcam,dsc_photopc) $caption(confcam,dsc_gphoto2) ]
       ComboBox $frm.port \
          -width 11         \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable confCam(conf_apn,link) \
+         -textvariable confCam(conf_dsc,link) \
          -values $list_combobox \
          -modifycmd {
+            global frmm
+            set frm $frmm(Camera10)
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            if { $confCam(conf_apn,link) == "$caption(confcam,apn_photopc)" } {
+            if { $confCam(conf_dsc,link) == "$caption(confcam,dsc_photopc)" } {
                set conf(confLink) "photopc"
                ::confLink::run
-            } elseif { $confCam(conf_apn,link) == "$caption(confcam,apn_gphoto2)" } {
+               pack $frm.frame2 -side top -fill x
+               pack $frm.frame3 -side top -fill x
+               pack forget $frm.frame4
+               pack forget $frm.frame5
+               pack forget $frm.frame6
+               pack $frm.frame7 -side bottom -fill x -pady 2
+               pack forget $frm.frame8
+            } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
                set conf(confLink) "gphoto2"
                ::confLink::run
+               pack forget $frm.frame2
+               pack forget $frm.frame3
+               pack $frm.frame4 -side top -fill x
+               pack $frm.frame5 -in $frm.frame4 -anchor n -side left -fill x
+               pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
+               pack forget $frm.frame7
+               pack $frm.frame8 -side bottom -fill x -pady 2
+
             }
          }
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 20
 
       #--- Definition du port serie
-     # label $frm.lab2 -text $caption(confcam,port_apn_cmd)
-     # pack $frm.lab2 -in $frm.frame2 -anchor e -side left -padx 10 -pady 10
+     ### label $frm.lab2 -text $caption(confcam,apn_port)
+     ### pack $frm.lab2 -in $frm.frame2 -anchor e -side left -padx 10 -pady 10
 
-     # ComboBox $frm.s_port \
-     #    -width 14         \
-     #    -height [ llength $audace(list_com) ]  \
-     #    -relief sunken    \
-     #    -borderwidth 1    \
-     #    -textvariable confCam(conf_apn,serial_port) \
-     #    -editable 0       \
-     #    -values $audace(list_com)
-     # pack $frm.s_port -in $frm.frame2 -anchor e -side left -padx 5 -pady 10
+     ### ComboBox $frm.s_port \
+     ###    -width 14         \
+     ###    -height [ llength $audace(list_com) ]  \
+     ###    -relief sunken    \
+     ###    -borderwidth 1    \
+     ###    -textvariable confCam(conf_apn,serial_port) \
+     ###    -editable 0       \
+     ###    -values $audace(list_com)
+     ### pack $frm.s_port -in $frm.frame2 -anchor e -side left -padx 5 -pady 10
 
       #--- Definition de la vitesse du port série
       label $frm.lab3 -text $caption(confcam,apn_baud)
@@ -2425,13 +2460,59 @@ namespace eval ::confCam {
          -values $list_combobox
       pack $frm.liste1 -in $frm.frame3 -anchor e -side left -padx 5 -pady 10
 
-      #--- Site web officiel de la commande d'APN
+      #--- Utilisation du QuickRemote
+      checkbutton $frm.quickremote -text "$caption(confcam,dsc_quickremote)" -highlightthickness 0 \
+         -variable confCam(conf_dsc,quickremote)
+      pack $frm.quickremote -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+
+      #--- Gestion du Service Windows de detection automatique des APN (DSC)
+      if { $::tcl_platform(platform) == "windows" } {
+         checkbutton $frm.detect_service -text "$caption(confcam,dsc_detect_service)" -highlightthickness 0 \
+            -variable confCam(conf_dsc,statut_service)
+         pack $frm.detect_service -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+      }
+
+      #--- Gestion des 2 types de liaisons suivant les APN (DSC) utilisés
+      if { $confCam(conf_dsc,link) == "$caption(confcam,dsc_photopc)" } {
+         pack $frm.frame2 -side top -fill x
+         pack $frm.frame3 -side top -fill x
+         pack forget $frm.frame4
+         pack forget $frm.frame5
+         pack forget $frm.frame6
+         pack $frm.frame7 -side bottom -fill x -pady 2
+         pack forget $frm.frame8
+      } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
+         pack forget $frm.frame2
+         pack forget $frm.frame3
+         pack $frm.frame4 -side top -fill x
+         pack $frm.frame5 -in $frm.frame4 -anchor n -side left -fill x
+         pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
+         pack forget $frm.frame7
+         pack $frm.frame8 -side bottom -fill x -pady 2
+      }
+
+      #--- Miroir en x et en y
+      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
+         -variable confCam(conf_dsc,mirh)
+      pack $frm.mirx -in $frm.frame6 -anchor w -side top -padx 20 -pady 10
+
+      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
+         -variable confCam(conf_dsc,mirv)
+      pack $frm.miry -in $frm.frame6 -anchor w -side top -padx 20 -pady 10
+
+      #--- Site web officiel de PhotoPC GPhoto2
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
+      pack $frm.lab103 -in $frm.frame7 -side top -fill x -pady 2
 
       label $frm.labURL -text "$caption(confcam,site_apn)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
-      
+      pack $frm.labURL -in $frm.frame7 -side top -fill x -pady 2
+
+      label $frm.lab104 -text "$caption(confcam,site_web_ref)"
+      pack $frm.lab104 -in $frm.frame8 -side top -fill x -pady 2
+
+      label $frm.labURLa -text "$caption(confcam,site_dsc)" -font $audace(font,url) -fg $color(blue)
+      pack $frm.labURLa -in $frm.frame8 -side top -fill x -pady 2
+
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $frm.labURL <ButtonPress-1> {
          set filename "$caption(confcam,site_apn)"
@@ -2448,7 +2529,22 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 10 ] <Button-1> { global confCam ; set confCam(camName) "apn" }
+      bind $frm.labURLa <ButtonPress-1> {
+         set filename "$caption(confcam,site_dsc)"
+         ::audace::Lance_Site_htm $filename
+      }
+      bind $frm.labURLa <Enter> {
+         global frmm
+         set frm $frmm(Camera10)
+         $frm.labURLa configure -fg $color(purple)
+      }
+      bind $frm.labURLa <Leave> {
+         global frmm
+         set frm $frmm(Camera10)
+         $frm.labURLa configure -fg $color(blue)
+      }
+
+      bind [ Rnotebook:button $nn 10 ] <Button-1> { global confCam ; set confCam(camName) "dsc" }
    }
 
    #
@@ -2461,7 +2557,6 @@ namespace eval ::confCam {
       global caption
       global color
       global frmm
-
 
       #--- confToWidget
       set confCam(conf_andor,cool)        $conf(andor,cool)
@@ -2612,93 +2707,6 @@ namespace eval ::confCam {
    }
 
    #
-   # Fenetre de configuration des DSC (APN)
-   #
-   proc fillPage12 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
-
-      #--- confToWidget
-      set confCam(conf_dsc,mirh)           $conf(dsc,mirh)
-      set confCam(conf_dsc,mirv)           $conf(dsc,mirv)
-      set confCam(conf_dsc,quickremote)    $conf(dsc,quickremote)
-      set confCam(conf_dsc,statut_service) "1"
-
-      #--- Initialisation
-      set frmm(Camera12) [ Rnotebook:frame $nn 12 ]
-      set frm $frmm(Camera12)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill both -expand 1
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side bottom -fill x -pady 2
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -in $frm.frame1 -side left -fill both -expand 1
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -in $frm.frame1 -side left -fill both -expand 1 -padx 80
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -pady 18
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame3 -anchor n -side left -fill x -pady 15
-
-      #--- Utilisation du QuickRemote
-      checkbutton $frm.quickremote -text "$caption(confcam,dsc_quickremote)" -highlightthickness 0 \
-         -variable confCam(conf_dsc,quickremote)
-      pack $frm.quickremote -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
-
-      #--- Gestion du Service Windows de detection automatique des APN
-      if { $::tcl_platform(platform) == "windows" } {
-         checkbutton $frm.detect_service -text "$caption(confcam,dsc_detect_service)" -highlightthickness 0 \
-            -variable confCam(conf_dsc,detect_service)
-         pack $frm.detect_service -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
-      }
-
-      #--- Miroir en x et en y
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(conf_dsc,mirh)
-      pack $frm.mirx -in $frm.frame6 -anchor w -side top -padx 20 -pady 10
-
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(conf_dsc,mirv)
-      pack $frm.miry -in $frm.frame6 -anchor w -side top -padx 20 -pady 10
-
-      #--- Site web officiel des DSC (APN)
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
-
-      label $frm.labURL -text "$caption(confcam,site_dsc)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_dsc)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera12)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera12)
-         $frm.labURL configure -fg $color(blue)
-      }
-
-      bind [ Rnotebook:button $nn 12 ] <Button-1> { global confCam ; set confCam(camName) "dsc" }
-   }
-
-   #
    # confCam::Connect_Camera
    # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
    #
@@ -2760,9 +2768,8 @@ namespace eval ::confCam {
          webcam     { Rnotebook:raise $nn 7 }
          th7852a    { Rnotebook:raise $nn 8 }
          scr1300xtc { Rnotebook:raise $nn 9 }
-         apn        { Rnotebook:raise $nn 10 }
+         dsc        { Rnotebook:raise $nn 10 }
          andor      { Rnotebook:raise $nn 11 }
-         dsc        { Rnotebook:raise $nn 12 }
       }
    }
 
@@ -2797,8 +2804,8 @@ namespace eval ::confCam {
       if { $camNo != 0 } {
          #--- Restitue si necessaire l'etat du service WIA sous Windows
          if { ( $::tcl_platform(platform) == "windows" ) && ( $conf(camera,$cam_item,camName) == "dsc" ) } {
-            if { [ cam$camNo systemservice ] != "$confCam(conf_dsc,statut_service)" } {
-               cam$camNo systemservice $confCam(conf_dsc,statut_service)
+            if { [ cam$camNo systemservice ] != "$conf(dsc,statut_service)" } {
+               cam$camNo systemservice $conf(dsc,statut_service)
             }
          }
          #--- Je desassocie la camera de la visu
@@ -3525,15 +3532,54 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 4096 -4096
                }
             }
-         apn {
-               set camNo ""
-               set erreur [ catch { ::AcqAPN::Off ; ::AcqAPN::Query } camNo ]
-               if { $camNo=="" } {
-                  set camNo "1" 
-                  if { ! [ info exists camNo ] } { set camNo "1" } else { incr camNo "1" }
-                  set confCam(camera,$cam_item,camNo) $camNo
-               } else {
-                  set erreur "1"
+         dsc {
+               if { $conf(dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
+                  set erreur [ catch { cam::create digicam -name DSC } camNo ]
+                  if { $erreur == "1" } {
+                     tk_messageBox -message "$camNo" -icon error
+                  } else {
+                     set confCam(camera,$cam_item,camNo) $camNo
+                     console::affiche_saut "\n"
+                     console::affiche_erreur "$caption(confcam,dsc_name) $caption(confcam,2points)\
+                        [ cam$confCam(camera,$cam_item,camNo) name ]\n"
+                     cam$confCam(camera,$cam_item,camNo) buf $bufNo
+                     cam$confCam(camera,$cam_item,camNo) mirrorh $conf(dsc,mirh)
+                     cam$confCam(camera,$cam_item,camNo) mirrorv $conf(dsc,mirv)
+                     set audace(list_binning) { 1x1 }
+                     #--- J'arrete le service WIA de Windows
+                     cam$confCam(camera,$cam_item,camNo) systemservice 0
+                     #--- Parametrage des longues poses 
+                     cam$confCam(camera,$cam_item,camNo) longuepose $conf(dsc,quickremote)
+                     if { $conf(dsc,quickremote) == "1" } {
+                        ### #--- Liaison par LPT
+                        ### set conf(dsc,longueposelinktype)  "parallelport"
+                        ### set conf(dsc,longueposelinkindex) "1"
+                        #--- Liaison par Quickremote index=0 (je fixe les valeurs en dur en attendant que ce soit saisi dans le panneau de configuration)
+                        set conf(dsc,longueposelinktype)      "quickremote"
+                        set conf(dsc,longueposelinkindex)     "0"
+                        set conf(dsc,longueposelinkbit)       "0"
+                        set conf(dsc,longueposestartvalue)    "1"
+                        set conf(dsc,longueposestopvalue)     "0"
+                        #--- Je cree la liaison
+                        set linkno [::link::create $conf(dsc,longueposelinktype) $conf(dsc,longueposelinkindex)]
+                        #---
+                        cam$confCam(camera,$cam_item,camNo) longueposelinkno $linkno
+                        cam$confCam(camera,$cam_item,camNo) longueposelinkbit $conf(dsc,longueposelinkbit)
+                        cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dsc,longueposestartvalue)
+                        cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dsc,longueposestopvalue)
+                     }
+                     ::confVisu::visuDynamix $visuNo 512 -255
+                  }
+               } elseif { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
+                  set camNo ""
+                  set erreur [ catch { ::AcqAPN::Off ; ::AcqAPN::Query } camNo ]
+                  if { $camNo=="" } {
+                     set camNo "1" 
+                     if { ! [ info exists camNo ] } { set camNo "1" } else { incr camNo "1" }
+                     set confCam(camera,$cam_item,camNo) $camNo
+                  } else {
+                     set erreur "1"
+                  }
                }
             }
          andor {
@@ -3575,43 +3621,6 @@ namespace eval ::confCam {
                   if { [ info exists confCam(conf_andor,aftertemp) ] == "0" } {
                      ::confCam::AndorDispTemp
                   }
-               }
-            }
-         dsc {
-               set erreur [ catch { cam::create digicam -name DSC } camNo ]
-               if { $erreur == "1" } {
-                  tk_messageBox -message "$camNo" -icon error
-               } else {
-                  set confCam(camera,$cam_item,camNo) $camNo
-                  console::affiche_saut "\n"
-                  console::affiche_erreur "[ cam$confCam(camera,$cam_item,camNo) name ]\n"
-                  cam$confCam(camera,$cam_item,camNo) buf $bufNo
-                  cam$confCam(camera,$cam_item,camNo) mirrorh $conf(dsc,mirh)
-                  cam$confCam(camera,$cam_item,camNo) mirrorv $conf(dsc,mirv)
-                  set audace(list_binning) { 1x1 }
-                  #--- J'arrete le service WIA de Windows (je fixe une valeur en dur en attendant que ce soit saisi dans le panneau de configuration)
-                  cam$confCam(camera,$cam_item,camNo) systemservice 0
-                  #--- Parametrage des longues poses 
-                  cam$confCam(camera,$cam_item,camNo) longuepose $conf(dsc,quickremote)
-                  if { $conf(dsc,quickremote) == "1" } {
-                     ### #--- Liaison par LPT
-                     ### set conf(dsc,longueposelinktype)  "parallelport"
-                     ### set conf(dsc,longueposelinkindex) "1"
-                     #--- Liaison par Quickremote index=0 (je fixe les valeurs en dur en attendant que ce soit saisi dans le panneau de configuration)
-                     set conf(dsc,longueposelinktype)      "quickremote"
-                     set conf(dsc,longueposelinkindex)     "0"
-                     set conf(dsc,longueposelinkbit)       "0"
-                     set conf(dsc,longueposestartvalue)    "1"
-                     set conf(dsc,longueposestopvalue)     "0"
-                     #--- Je cree la liaison
-                     set linkno [::link::create $conf(dsc,longueposelinktype) $conf(dsc,longueposelinkindex)]
-                     #---
-                     cam$confCam(camera,$cam_item,camNo) longueposelinkno $linkno
-                     cam$confCam(camera,$cam_item,camNo) longueposelinkbit $conf(dsc,longueposelinkbit)
-                     cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dsc,longueposestartvalue)
-                     cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dsc,longueposestopvalue)
-                  }
-                  ::confVisu::visuDynamix $visuNo 512 -255
                }
             }
          audine {
@@ -3780,12 +3789,12 @@ namespace eval ::confCam {
          set confCam(camera,$cam_item,camNo) "0"
         #### set conf(audine,port)   "lpt1"
       } else {      
-         #--- Affectation de la visu         
+         #--- Affectation de la visu
          set confCam(camera,$cam_item,visuNo) $visuNo
-         if { $conf(camera,$cam_item,camName) == "apn" } {
-            if { [ info exists conf(apn,model) ] } {
+         if { $conf(camera,$cam_item,camName) == "dsc" } {
+            if { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
                ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) $confCam(camera,$cam_item,camNo) $conf(apn,model)
-            } else {
+            } elseif { $conf(dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
                ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) $confCam(camera,$cam_item,camNo)
             }
          } else {
@@ -3910,9 +3919,13 @@ namespace eval ::confCam {
       set conf(scr1300xtc,mirh)             $confCam(conf_scr1300xtc,mirh)
       set conf(scr1300xtc,mirv)             $confCam(conf_scr1300xtc,mirv)
       set conf(scr1300xtc,port)             $confCam(conf_scr1300xtc,port)
-      #--- Memorise la configuration de l'APN dans le tableau conf(apn,...)
+      #--- Memorise la configuration de l'APN (DSC) dans le tableau conf(dsc,...) et conf(apn,...)
       set frm [ Rnotebook:frame $nn 10 ]
-      set conf(apn,link)                    $confCam(conf_apn,link)
+      set conf(dsc,link)                    $confCam(conf_dsc,link)
+      set conf(dsc,quickremote)             $confCam(conf_dsc,quickremote)
+      set conf(dsc,statut_service)          $confCam(conf_dsc,statut_service)
+      set conf(dsc,mirh)                    $confCam(conf_dsc,mirh)
+      set conf(dsc,mirv)                    $confCam(conf_dsc,mirv)
       set conf(apn,baud)                    $confCam(conf_apn,baud)
      ### set conf(apn,serial_port)             $confCam(conf_apn,serial_port)
       if { [ info exists confCam(apn,model) ] } {
@@ -3930,11 +3943,6 @@ namespace eval ::confCam {
       set conf(andor,temp)                  $confCam(conf_andor,temp)
       set conf(andor,ouvert_obtu)           $confCam(conf_andor,ouvert_obtu)
       set conf(andor,ferm_obtu)             $confCam(conf_andor,ferm_obtu)
-      #--- Memorise la configuration des DSC (APN) dans le tableau conf(dsc,...)
-      set frm [ Rnotebook:frame $nn 12 ]
-      set conf(dsc,mirh)                    $confCam(conf_dsc,mirh)
-      set conf(dsc,mirv)                    $confCam(conf_dsc,mirv)
-      set conf(dsc,quickremote)             $confCam(conf_dsc,quickremote)
    }
 
    proc SbigDispTemp { } {
@@ -3945,6 +3953,7 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera3)
+         set cam_item $confCam(cam_item)
          if { [ info exists This ] == "1" && [ catch { set tempstatus [ cam$confCam(camera,$cam_item,camNo) infotemp ] } ] == "0" } {
             set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
             set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
@@ -3970,6 +3979,7 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera6)
+         set cam_item $confCam(cam_item)
          if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam(camera,$cam_item,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
             $frm.temp_ccd configure \
@@ -3989,6 +3999,7 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera11)
+         set cam_item $confCam(cam_item)
          if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam(camera,$cam_item,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
             $frm.temp_ccd configure \

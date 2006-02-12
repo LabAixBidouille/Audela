@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 01 fevrier 2006
+# Date de mise a jour : 12 fevrier 2006
 #
 
 package provide acqfc 2.1
@@ -1843,7 +1843,7 @@ namespace eval ::AcqFC {
         }
       }
 
-      #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)         
+      #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
       if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
         after 10 {
            set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
@@ -2340,7 +2340,7 @@ namespace eval ::AcqFC {
 #***** Fin fenetre de configuration du telechargement d'images APN *******************
 
 #***** Gestion du telechargement d'images APN ****************************************
-   proc ChangerSelectionTelechargementAPN { visuNo }  {
+   proc ChangerSelectionTelechargementAPN { visuNo } {
       global audace
       global panneau
 

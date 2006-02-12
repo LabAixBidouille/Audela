@@ -2,29 +2,29 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images
 # Auteur : Michel PUJOL
-# Date de mise a jour : 06 janvier 2006
+# Date de mise a jour : 12 fevrier 2006
 #
 
 ##############################################################################
 # namespace FullScreen
 #
-#   ::FullScreen::showBuffer bufferName   
+#   ::FullScreen::showBuffer bufferName
 #       ouvre la fenetre plein ecran et affiche l'image contenu dans un buffer
 #
-#   ::FullScreen::showFiles directory files  
+#   ::FullScreen::showFiles directory files
 #       ouvre la fenetre plein ecran et affiche les images ou les films
 #       contenus dans des fichiers
 #
-#   ::FullScreen::close                   
-#       ferme la fenetre plein ecran 
+#   ::FullScreen::close
+#       ferme la fenetre plein ecran
 #       (la fenetre peut etre aussi fermee en appyuant sur ESCAPE)
 #
 #############################################################################
 
 namespace eval ::FullScreen {
    global caption
-   
-   array set private { 
+
+   array set private {
       image             ""
       visuNo            ""
       bufNo             ""
@@ -39,8 +39,8 @@ namespace eval ::FullScreen {
       fileImage         "Image"
       fileMovie         "Film"
       animation         0
-   }     
-      
+   }
+
    #--- Chargement des captions
    source [ file join $audace(rep_caption) fullscreen.cap ]
    set audace(fullscreen) 0
@@ -50,31 +50,29 @@ namespace eval ::FullScreen {
    #   ouvre la fenetre plein ecran
    #   affiche l'image contenu dans le buffer
    #------------------------------------------------------------------------------
-   proc showBuffer { visuNo hCanvas} {
-      variable private  
+   proc showBuffer { visuNo hCanvas } {
+      variable private
 
-      set private(files)       ""
-      #### set private(inputBuffer) "buf[visu$visuNo buf]"
+      set private(files)            ""
+      set private(currentItemIndex) "0"
+      set private(visuNo)           "$visuNo"
       #--- je cree la fenetre plein ecran
       createFullscreen $visuNo $hCanvas
-      #--- je charge l'image contenue dans le buffer
-      ####loadItem            
-      #::autovisu
    }
 
    #------------------------------------------------------------------------------
    #  showFiles
    #   ouvre la fenetre plein ecran
-   #   et affiche les images ou les films contenus dans les fichiers 
+   #   et affiche les images ou les films contenus dans les fichiers
    #------------------------------------------------------------------------------
    proc showFiles { directory files } {
-      variable private  
+      variable private
 
       set private(directory)   $directory
       set private(files)       $files
       set private(inputBuffer) ""
       #--- je cree la fenetre plein ecran
-      createFullscreen      
+      createFullscreen
       #--- j'affiche l'image contenue dans le premier fichier
       loadItem
    }
@@ -84,7 +82,7 @@ namespace eval ::FullScreen {
    #   ouvre la fenetre plein ecran
    #------------------------------------------------------------------------------
    proc createFullscreen { visuNo hCanvas } {
-      variable private  
+      variable private
       global audace
       global conf
 
@@ -92,23 +90,22 @@ namespace eval ::FullScreen {
       initConf
 
       #--- je recupere le nom de la toplevel
-      set private(toplevel) [winfo toplevel $hCanvas] 
-      set private(hCanvas)  $hCanvas
-         
-      #--- je recupere la liste des frames qui sont dans la top level
-      set private(slaves)  [pack slaves $private(toplevel)]
+      set private(toplevel) [winfo toplevel $hCanvas]
+      set private(hCanvas) $hCanvas
 
-      #--- je masque les frames , sauf le canvas      
+      #--- je recupere la liste des frames qui sont dans la top level
+      set private(slaves) [pack slaves $private(toplevel)]
+
+      #--- je masque les frames , sauf le canvas
       foreach slave $private(slaves) {
          # je sauvegarde les parametre de chaque frame
-         set private($slave,pack_config) "[pack info $slave]"         
+         set private($slave,pack_config) "[pack info $slave]"
          # je cache la frame sauf celle du canvas
          if { [string compare -length [string length $slave] "$slave" "$private(hCanvas)" ] != 0 } {
             pack forget $slave
          }
       }
 
-      
       #--- je sauvegarde la taille de la fenetre
       set private(geometry) [wm geometry $private(toplevel)]
 
@@ -117,10 +114,10 @@ namespace eval ::FullScreen {
 
       #--- je desactive le menu principal
       $private(toplevel) configure -menu ""
-      
+
       #--- je cree le popup menu
       createPopupMenu $visuNo
-            
+
       #--- j'affiche la fenetre en plein ecran
       set maxsize [wm maxsize $private(toplevel)]
       wm geometry $private(toplevel) [lindex $maxsize 0]x[lindex $maxsize 1]+0+0
@@ -130,12 +127,65 @@ namespace eval ::FullScreen {
 
       #--- je deplace l'image au centre du canvas 
       $private(hCanvas) itemconfigure display -anchor center
-      $private(hCanvas) move display [expr [lindex $maxsize 0]/2]  [expr [lindex $maxsize 1]/2]
+      $private(hCanvas) move display [expr [lindex $maxsize 0]/2] [expr [lindex $maxsize 1]/2]
+      set private(bgcolor) [ $private(hCanvas) cget -bg ]
 
-      #--- je donne le focus à la fenetre plein ecran
+      #--- je donne le focus a la fenetre plein ecran
       focus $private(toplevel)
-      
-      set private(currentItemIndex) 0
+
+      set private(currentItemIndex) "0"
+   }
+
+   #------------------------------------------------------------------------------
+   # loadItem 
+   #
+   #  charge le fichier ou le buffer
+   #------------------------------------------------------------------------------
+   proc loadItem { } {
+      variable private
+      global audace
+      global caption
+      global conf
+
+      if { "$private(files)" != "" } {
+         #--- j'affiche l'image ou le film contenu dans le fichier
+
+         #--- si une animation est en cours, j'arrete l'animation
+         if { $private(animation) == 1 } {
+            #--- j'arrete l'animation
+            stopAnimation
+         }
+
+         #--- si un film est en cours, j'arrete le film
+         ::Movie::close $private(visuNo,hCanvas)
+
+         #--- je recupere le nom du fichier selectionne
+         set index $private(currentItemIndex)
+         set name [lindex [lindex $private(files) $index] 0 ]
+         set type [lindex [lindex $private(files) $index] 1 ] 
+         set filename [file join "$private(directory)" "$name"]
+
+         if { [string first "$private(fileImage)" "$type" ] != -1 } {
+            #--- j'affiche l'image
+            loadimage $filename $private(zoom)
+            if { [::Image::isAnimatedGIF "$filename"] == 1 } {
+               setAnimationState "1"
+            } else {
+               setAnimationState "0"
+            }
+         } elseif { "$type" == "$private(fileMovie)" } {
+            #--- j'affiche la premiere image du film
+            loadmovie $filename
+            setAnimationState "1"
+         }
+
+         #--- si une animation etait en cours, je relance l'animation
+         if { $conf(FullScreen,autoStartAnim) == 1 } {
+            startAnimation
+         }
+      } else {
+         ::confVisu::autovisu $private(visuNo)
+      }
    }
 
    #------------------------------------------------------------------------------
@@ -145,17 +195,18 @@ namespace eval ::FullScreen {
    proc close { visuNo } {
       variable private
       global audace
-      
+
       stopAnimation
-      
+
       catch {
          ::Movie::close $private($visuNo,hCanvas)
       }
 
-      #--- je place l'image dans le coin en haut à gauche
+      #--- je place l'image dans le coin en haut a gauche
       $private(hCanvas) itemconfigure display -anchor nw
+      $private(hCanvas) configure -bg $private(bgcolor)
       set coords [$private(hCanvas) coord display]
-      $private(hCanvas) move display -[lindex $coords 0]  -[lindex $coords 1]
+      $private(hCanvas) move display -[lindex $coords 0] -[lindex $coords 1]
 
       #--- je restaure la taille
       wm geometry $private(toplevel) $private(geometry)
@@ -173,90 +224,30 @@ namespace eval ::FullScreen {
       }
 
       #--- je desactive les bind
-      bind $private(hCanvas) <ButtonPress-3> 
-      bind $private(hCanvas) <Key-S>      
-      bind $private(hCanvas) <Key-s>      
-      bind $private(hCanvas) <Key-Down>   
-       
-      bind $private(hCanvas) <Key-P>      
-      bind $private(hCanvas) <Key-p>      
-      bind $private(hCanvas) <Key-Up>     
-      
-      bind $private(hCanvas) <MouseWheel> 
-      bind $private(hCanvas) <Key-Escape> 
-      bind $private(hCanvas) <Key-space>  
+      bind $private(hCanvas) <ButtonPress-3>
+      bind $private(hCanvas) <Key-S>
+      bind $private(hCanvas) <Key-s>
+      bind $private(hCanvas) <Key-Down>
+
+      bind $private(hCanvas) <Key-P>
+      bind $private(hCanvas) <Key-p>
+      bind $private(hCanvas) <Key-Up>
+
+      bind $private(hCanvas) <MouseWheel>
+      bind $private(hCanvas) <Key-Escape>
+      bind $private(hCanvas) <Key-space>
 
       destroy  $private(popupmenu)
       set ::confVisu::private($visuNo,fullscreen) "0"
 
       #--- je restaure les bind par defaut 
-     ### ::confVisu::createDialogBind $visuNo $private(toplevel)
-      ::confVisu::createBindDialog $visuNo $private(toplevel)
-      set private(image)   ""
-      set private(visuNo)  ""
-      set private(bufNo)   ""
-      set private(hWindow) ""
+      ::confVisu::createBindDialog $visuNo
+      set private(image)          ""
+      set private(visuNo)         ""
+      set private(bufNo)          ""
+      set private(hWindow)        ""
       set private(visuNo,hCanvas) ""
-      
-   }
 
-   #------------------------------------------------------------------------------
-   # loadItem 
-   #
-   #  charge le fichier ou le buffer
-   #------------------------------------------------------------------------------
-   proc loadItem  { } {
-      variable private
-      global audace
-      global caption
-      global conf
-
-      if { "$private(files)" != "" } {
-         #--- j'affiche l'image ou le film contenu dans le fichier
-      
-         #--- si une animation est en cours, j'arrete l'animation 
-         if { $private(animation) == 1 } {
-            #--- j'arrete l'animation 
-            stopAnimation        
-         }
-      
-         #--- si un film est en cours, j'arrete le film
-         ::Movie::close $private(visuNo,hCanvas)
-      
-         set index $private(currentItemIndex)
-         set name [lindex [lindex $private(files) $index] 0 ]
-         set type [lindex [lindex $private(files) $index] 1 ] 
-         set filename [file join "$private(directory)" "$name"]
-             
-         if { [string first "$private(fileImage)" "$type" ] != -1 } {
-            #--- j'affiche l'image
-            loadimage $filename $private(zoom)
-            if  { [::Image::isAnimatedGIF "$filename"] == 1 } {
-               setAnimationState "1"   
-            } else {
-               setAnimationState "0"      
-            }
-         } elseif { "$type" == "$private(fileMovie)" } {
-            #--- j'affiche la premiere image du film
-            loadmovie $filename 
-            setAnimationState "1"      
-         }
-         
-         #--- si une animation etait en cours, je relance l'animation 
-         if { $conf(FullScreen,autoStartAnim) == 1 } {
-            startAnimation
-         }
-      } else {      
-         #--- j'affiche l'image contenue dans le buffer
-         set result [$private(inputBuffer) copyto $private(bufNo) ]
-         if {$result == ""} {
-            image delete $private(image) 
-            image create photo $private(image)
-            #--- j'affiche l'image avec les seuils enregistres dans l'image
-            visu$private(visuNo) zoom $private(zoom)
-            ::confVisu::autovisu $private(visuNo)
-         }
-      }
    }
 
    #------------------------------------------------------------------------------
@@ -264,33 +255,33 @@ namespace eval ::FullScreen {
    #
    #------------------------------------------------------------------------------
    proc loadNextItem { } {
-      variable private 
-                
+      variable private
+
       if { $private(currentItemIndex) < [expr [llength $private(files) ]-1] } {
-         incr private(currentItemIndex) 
+         incr private(currentItemIndex)
       } else {
-         set private(currentItemIndex) 0
+         set private(currentItemIndex) "0"
          bell
-      }    
+      }
       loadItem
    }
-          
+
    #------------------------------------------------------------------------------
    # loadPreviousItem
    #
    #------------------------------------------------------------------------------
    proc loadPreviousItem { } {
-      variable private 
-                
-      if { $private(currentItemIndex) > 0  } {
-         set private(currentItemIndex)  [expr $private(currentItemIndex) -1]
+      variable private
+
+      if { $private(currentItemIndex) > "0" } {
+         set private(currentItemIndex) [expr $private(currentItemIndex) -1]
       } else {
          set private(currentItemIndex) [expr [llength $private(files) ] -1]
          bell
       }
       loadItem
    }
-   
+
    #------------------------------------------------------------------------------
    # changeZoom
    #
@@ -301,15 +292,15 @@ namespace eval ::FullScreen {
       variable private
       global audace
       global conf
-      
-      if { $zoom == "auto" } { 
-         set private(zoom) "2.5"        
+
+      if { $zoom == "auto" } {
+         set private(zoom) "2.5"
       } else {
          set private(zoom) "$zoom"
       }
-      
+
       visu$private(visuNo) zoom $private(zoom)
-      
+
       #--- je rafraichis l'affichage du canvas
       loadItem
    }
@@ -320,10 +311,10 @@ namespace eval ::FullScreen {
    #------------------------------------------------------------------------------
    proc loadimage { filename zoom } {
       variable private
-      
+
       #--- je masque la fenetre des films
       ::Movie::close $private(visuNo,hCanvas)
-      
+
       set image   $private(image)
       set buf     "buf$private(bufNo)"
       set hCanvas $private(visuNo,hCanvas)
@@ -331,7 +322,7 @@ namespace eval ::FullScreen {
       #--- je charge le fichier dans le buffer
       set result [$buf load $filename]
       if {$result == ""} {
-         image delete $image 
+         image delete $image
          image create photo $image
          set seuil_haut [lindex [$buf getkwd MIPS-HI] 1]
          set seuil_bas  [lindex [$buf getkwd MIPS-LO] 1]
@@ -349,17 +340,16 @@ namespace eval ::FullScreen {
    proc loadmovie { filename } {
       variable private
       global audace
-      
-      #--- je masque la fenetre des images 
+
+      #--- je masque la fenetre des images
       $private(visuNo,hCanvas) itemconfigure display -state hidden
 
       #--- je place la fenetre des film dans le canvas
       set maxsize [wm maxsize $audace(base)]
-      set xc [expr [lindex $maxsize 0] /2  ]
-      set yc [expr [lindex $maxsize 1] /2  ]
+      set xc [expr [lindex $maxsize 0] /2 ]
+      set yc [expr [lindex $maxsize 1] /2 ]
 
       #--- j'affiche le film
-      #createMovieWindow
       ::Movie::open $filename $private(visuNo,hCanvas) $private(zoom) $xc $yc "center" 
    }
 
@@ -371,17 +361,17 @@ namespace eval ::FullScreen {
    proc setAnimationState { state } {
       variable private
       global caption
-            
+
       set menu $private(popupmenu)
-               
+
       #--- je configure le popup menu
-      if { $state == 1 }  {
+      if { $state == 1 } {
          #--- j'active les commandes d'animation
          $menu entryconfigure $caption(fullscreen,animation) -state normal
       }  else {
          #--- je desactive les commandes d'animation
          $menu entryconfigure $caption(fullscreen,animation) -state disabled
-      }      
+      }
    }
 
    #------------------------------------------------------------------------------
@@ -390,7 +380,7 @@ namespace eval ::FullScreen {
    #------------------------------------------------------------------------------
    proc toggleAnimation { } {
       variable private
-      
+
       if { $private(animation) == 1 } {
          startAnimation
       } else {
@@ -404,36 +394,37 @@ namespace eval ::FullScreen {
    #------------------------------------------------------------------------------
    proc startAnimation { } {
       variable private
-      
+
       #--- je recupere le nom du fichier selectionne
       set index $private(currentItemIndex)
       set name [lindex [lindex $private(files) $index] 0 ]
-      set type [lindex [lindex $private(files) $index] 1 ] 
+      set type [lindex [lindex $private(files) $index] 1 ]
       set filename [file join "$private(directory)" "$name"]
 
       if { "$type" == "$private(fileImage)" } {
          ::Image::startGifAnimation $private(image) $private(zoom) "$filename"
       } elseif { "$type" == "$private(fileMovie)" } {
          ::Movie::start
-      }   
+      }
       set private(animation) 1
       update
    }
 
    #------------------------------------------------------------------------------
    # stopAnimation
-   # arrete une animation (film ou GIF anime)
+   # Arrete une animation (film ou GIF anime)
    #------------------------------------------------------------------------------
    proc stopAnimation { } {
-      variable private 
-      
+      variable private
+
+      #--- je recupere le nom du fichier selectionne
       set index $private(currentItemIndex)
       set name [lindex [lindex $private(files) $index] 0 ]
-      set type [lindex [lindex $private(files) $index] 1 ] 
+      set type [lindex [lindex $private(files) $index] 1 ]
       set filename [file join "$private(directory)" "$name"]
 
       if { "$type" == "$private(fileImage)" } {
-         ::Image::stopGifAnimation 
+         ::Image::stopGifAnimation
       } elseif { "$type" == "$private(fileMovie)" } {
          ::Movie::stop
       }
@@ -445,69 +436,73 @@ namespace eval ::FullScreen {
    #  createPopupMenu
    #------------------------------------------------------------------------------
    proc createPopupMenu { visuNo } {
+      variable private
       global caption
       global conf
       global audace
       global help
-      variable private
-
 
       set menu $private(toplevel).menufullscreen
       set private(popupmenu) "$menu"
 
-      menu $menu -tearoff no      
-      $menu add command -label $caption(fullscreen,next_image)  \
+      menu $menu -tearoff no
+      $menu add command -label $caption(fullscreen,next_image) \
          -command { ::FullScreen::loadNextItem  }
-      $menu add command -label $caption(fullscreen,previous_image)  \
-         -command { ::FullScreen::loadPreviousItem  }
-      $menu add checkbutton -label $caption(fullscreen,slide_show)  \
-         -variable private(slideShow)      \
-         -command { ::FullScreen::loadNextItem   }
+      $menu add command -label $caption(fullscreen,previous_image) \
+         -command { ::FullScreen::loadPreviousItem }
+      $menu add checkbutton -label $caption(fullscreen,slide_show) \
+         -variable private(slideShow) \
+         -command { ::FullScreen::loadNextItem }
 
-      $menu add separator        
-      $menu add cascade -label $caption(fullscreen,zoom) -menu $menu.zoom       
+      $menu add separator
+      $menu add cascade -label $caption(fullscreen,zoom) -menu $menu.zoom
       menu $menu.zoom -tearoff no
+      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_0.125)" \
+         -indicatoron "1" \
+         -value "0.125" \
+         -variable ::FullScreen::private(zoom) \
+         -command { ::FullScreen::changeZoom "0.125" }
       $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_0.25)" \
          -indicatoron "1" \
          -value "0.25" \
          -variable ::FullScreen::private(zoom) \
-         -command { ::FullScreen::changeZoom "0.25"  }
+         -command { ::FullScreen::changeZoom "0.25" }
       $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_0.5)" \
          -indicatoron "1" \
          -value "0.5" \
          -variable ::FullScreen::private(zoom) \
-         -command { ::FullScreen::changeZoom "0.5"  }
+         -command { ::FullScreen::changeZoom "0.5" }
       $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_1)" \
          -indicatoron "1" \
          -value "1" \
          -variable ::FullScreen::private(zoom) \
-         -command { ::FullScreen::changeZoom "1"  }
+         -command { ::FullScreen::changeZoom "1" }
       $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_2)" \
          -indicatoron "1" \
          -value "2" \
          -variable ::FullScreen::private(zoom) \
-         -command { ::FullScreen::changeZoom "2"  }
+         -command { ::FullScreen::changeZoom "2" }
       #$menu.zoom add radiobutton -label "$caption(fullscreen,zoom_auto)" \
       #   -indicatoron "1" \
       #   -value "auto" \
       #   -variable ::FullScreen::private(zoom) \
       #   -command { ::FullScreen::changeZoom "auto" }
 
-      $menu add separator        
-      $menu add checkbutton -label $caption(fullscreen,animation)    \
-         -variable  ::FullScreen::private(animation)       \
-         -command { ::FullScreen::toggleAnimation  }
+      $menu add separator
+      $menu add checkbutton -label $caption(fullscreen,animation) \
+         -variable ::FullScreen::private(animation) \
+         -command { ::FullScreen::toggleAnimation }
 
-      $menu add command -label $caption(fullscreen,configure)  \
-         -command { ::FullScreen::configure  }
+      $menu add command -label $caption(fullscreen,configure) \
+         -command { ::FullScreen::configure }
          
-      $menu add command -label $caption(fullscreen,help)  \
-         -command { 
+      $menu add command -label $caption(fullscreen,help) \
+         -command {
             ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "fullscreen"
          }
 
-      $menu add separator        
-      $menu add command -label $caption(fullscreen,close)  \
+      $menu add separator
+      $menu add command -label $caption(fullscreen,close) \
          -command "::FullScreen::close $visuNo"
 
       bind $private(hCanvas) <ButtonPress-1> ""
@@ -520,9 +515,9 @@ namespace eval ::FullScreen {
       bind $private(hCanvas) <Key-p>      { ::FullScreen::loadPreviousItem }
       bind $private(hCanvas) <Key-Up>     { ::FullScreen::loadPreviousItem }
       
-      bind $private(hCanvas) <MouseWheel> { 
+      bind $private(hCanvas) <MouseWheel> {
          if { %D > 0 } {
-            ::FullScreen::loadNextItem     
+            ::FullScreen::loadNextItem
          } else {
             ::FullScreen::loadPreviousItem
          }
@@ -540,19 +535,19 @@ namespace eval ::FullScreen {
 
       if {![info exists conf(FullScreen,color)]}         { set conf(FullScreen,color)         "#000000" }
       if {![info exists conf(FullScreen,autoStartAnim)]} { set conf(FullScreen,autoStartAnim) "0" }
-   }     
+   }
 
    #------------------------------------------------------------------------------
    #  configure
    #   ouvre la fenetre de configuration
    #------------------------------------------------------------------------------
    proc configure { } {
-      variable private  
+      variable private
       global audace
       global conf
 
-      #--- j'affiche la fenetre de configuration 
-      set confResult [::confGenerique::run "$audace(base).configfullscreen" "::FullScreen::config"]
+      #--- j'affiche la fenetre de configuration
+      set confResult [::confGenerique::run "$audace(base).configfullscreen" "::FullScreen::config" $private(visuNo)]
       #if { $confResult == 1 } {
       #   $private(visuNo,hCanvas) configure -bg $conf(FullScreen,color)
       #}
@@ -586,7 +581,7 @@ namespace eval ::FullScreen::config {
       global caption
 
       return "$caption(fullscreen,title)"
-   }   
+   }
 
    #------------------------------------------------------------
    #  ::FullScreen::config::showHelp
@@ -596,37 +591,37 @@ namespace eval ::FullScreen::config {
       global help
 
       ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "fullscreen_config"
-   }   
-   
+   }
+
    #------------------------------------------------------------
    #  ::FullScreen::config::confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
-   proc confToWidget { } {   
-      variable private  
-      variable widget  
+   proc confToWidget { visuNo } {
+      variable private
+      variable widget
       global conf
 
-      set widget(color)         "$conf(FullScreen,color)" 
-      set widget(autoStartAnim) "$conf(FullScreen,autoStartAnim)" 
+      set widget(color)         "$conf(FullScreen,color)"
+      set widget(autoStartAnim) "$conf(FullScreen,autoStartAnim)"
    }
 
    #------------------------------------------------------------
    #  ::FullScreen::config::widgetToConf
    #     copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
-   proc widgetToConf { } {   
+   proc widgetToConf { visuNo } {
       variable private
-      variable widget 
+      variable widget
       global conf
-        
+
       #--- j'enregistre la nouvelle configuration dans conf(...)
       set conf(FullScreen,color)         $widget(color)
       set conf(FullScreen,autoStartAnim) $widget(autoStartAnim)
-      
+
       #--- j'applique la nouvelle configuration
-      $::FullScreen::private(visuNo,hCanvas) configure -bg $conf(FullScreen,color)
-   }   
+      $::FullScreen::private(hCanvas) configure -bg $conf(FullScreen,color)
+   }
 
    #------------------------------------------------------------
    #  ::FullScreen::config::fillConfigPage
@@ -635,41 +630,41 @@ namespace eval ::FullScreen::config {
    #  return rien
    #
    #------------------------------------------------------------
-   proc fillConfigPage { frm } {
-      variable widget 
+   proc fillConfigPage { frm visuNo } {
+      variable widget
       variable widgetEnableExtension
       global caption
       global conf
 
-      #--- je memorise la reference de la frame 
+      #--- je memorise la reference de la frame
       set widget(frm) $frm
 
       #--- j'initialise les variables des widgets
-      confToWidget
+      confToWidget $visuNo
 
       frame $frm.frameAnim -borderwidth 1 -relief raised
-      pack $frm.frameAnim -side top -fill both -expand 1 
-      
+      pack $frm.frameAnim -side top -fill both -expand 1
+
       #--- demarrage automatique des animations
       checkbutton $frm.frameAnim.animation -text "$caption(fullscreen,auto_start_anim)" \
          -highlightthickness 0 -variable FullScreen::config::widget(autoStartAnim)
             pack $frm.frameAnim.animation -anchor center -side left -padx 10 -pady 5
-   
+
       #--- frame choix couleur de fond
       frame $frm.frameColor -borderwidth 1 -relief raised
-      pack $frm.frameColor -side top -fill both -expand 1 
+      pack $frm.frameColor -side top -fill both -expand 1
 
-      label $frm.frameColor.labColor -text "$caption(fullscreen,color_label)" 
+      label $frm.frameColor.labColor -text "$caption(fullscreen,color_label)"
            pack $frm.frameColor.labColor -in $frm.frameColor -anchor center -side left -padx 10 -pady 10
-        
+
       button $frm.frameColor.butColor_color_invariant -relief raised -width 6 -bg $widget(color)\
-         -command { 
+         -command {
             set temp [ tk_chooseColor -initialcolor ${FullScreen::config::widget(color)} \
                -parent ${FullScreen::config::widget(frm)} -title ${caption(fullscreen,title)} ] 
-            if  { "$temp" != "" } {  
-               set FullScreen::config::widget(color) "$temp" 
+            if  { "$temp" != "" } {
+               set FullScreen::config::widget(color) "$temp"
                ${FullScreen::config::widget(frm)}.frameColor.butColor_color_invariant configure \
-                  -bg ${FullScreen::config::widget(color)}  
+                  -bg ${FullScreen::config::widget(color)}
             }
          }
       pack $frm.frameColor.butColor_color_invariant -in $frm.frameColor -anchor center -side left -padx 10 -pady 5 -ipady 5
