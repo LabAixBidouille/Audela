@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 12 fevrier 2006
 #
 
 ##############################################################################
@@ -17,22 +17,21 @@
 namespace eval ::ftpclient {
    global audace
    global caption
-      
+
    #--- Chargement des captions
    source [ file join $audace(rep_caption) ftpclient.cap ]
 
-   
    #--------------------------------------------------------------------------
    # ftpclient::init
    #
    # initialise l'environnement
    #--------------------------------------------------------------------------
    proc init { } {
-      variable private 
-      
+      variable private
+
       #--- je cree les variables par defaut
       set private(connection) ""
-      #--- je charge les parametres par defaut      
+      #--- je charge les parametres par defaut
       initConf
    }
 
@@ -49,66 +48,66 @@ namespace eval ::ftpclient {
    proc selectConnection { } {
       variable private
       global audace
-      
+
       #--- je verifie que le package ftp est present
       set result [catch { package require ftp } msg]
       if { $result == 1} {
-         set message "error : package \"ftp\" not found "
+         set message "error : package \"ftp\" not found"
          console::affiche_erreur "$message \n"
          tk_messageBox -title "ftpclient" -type ok -message "$message" -icon error
          return 0
       }
 
       set private(connection)  ""
-      set private(password)    "" 
+      set private(password)    ""
       set private(targetsize)  0
       set private(hostname)    ""
       set private(port)        ""
       set private(user)        ""
       set private(directory)   ""
       set private(password)    ""
-      
-      #--- affiche la fenetre de connexion 
+
+      #--- affiche la fenetre de connexion
       set confResult [::confGenerique::run "$audace(base).ftpclient" "::ftpclient"]
 
-      if { $confResult == 1 }  {
+      if { $confResult == 1 } {
          if { $private(connection) != "" } {
             #--- la connexion est etablie
             return 1
          } else {
             #--- erreur de connexion
-            return 0 
+            return 0
          }
-      } else  {
+      } else {
          #--- connexion volontairement abondonnee
          return -1
       }
    }
-   
+
    #------------------------------------------------------------------------------
    # ftpclient::open
    # ouvre la connexion ftp
    #------------------------------------------------------------------------------
    proc open { } {
-      variable private 
+      variable private
       global conf
       global caption
 
       #--- server ftpd pour tester le client ftp
       package require ftp
-      
-      if {  "$private(connection)" !=  "" } {
+
+      if {  "$private(connection)" != "" } {
          #--- je ferme la connexion en cours si elle existe
          close
       }
-      
+
       set private(connection) [ftp::Open \
          $private(hostname)  $private(user)  $private(password) \
          -port $private(port) -blocksize 4096 -timeout $conf(ftpclient,timeout) -progress ::ftpclient::progress]
-         
+
       if {$private(connection) == -1} {
          set private(connection) ""
-         console::affiche_erreur  "$caption(ftpclient,connection_error) [getUrl] \n"
+         console::affiche_erreur "$caption(ftpclient,connection_error) [getUrl] \n"
          return 0
       }
       ftp::Type $private(connection) binary
@@ -122,15 +121,15 @@ namespace eval ::ftpclient {
    # ferme la connexion ftp
    #------------------------------------------------------------------------------
    proc close { } {
-      variable private 
+      variable private
       global caption
-      
-      if { "$private(connection)" != ""  } {
+
+      if { "$private(connection)" != "" } {
          console::affiche_resultat  "$caption(ftpclient,connection_close) [getUrl] \n"
          ftp::Close $private(connection)
          set private(connection) ""
       }
-   }   
+   }
 
    #------------------------------------------------------------------------------
    # ftpclient::getDirectory
@@ -140,34 +139,34 @@ namespace eval ::ftpclient {
    proc getDirectory { } {
       variable private 
       global conf
-      
+
       return "$private(directory)"
-   }   
+   }
 
    #------------------------------------------------------------------------------
    # ftpclient::getUrl
    # retourne l'URL du serveur FTP
    #------------------------------------------------------------------------------
    proc getUrl { } {
-      variable private 
+      variable private
       global conf
-      
+
       return "ftp://$private(hostname):$private(port)"
-   }   
+   }
 
    #------------------------------------------------------------------------------
    # ftpclient::isOpened
-   # retourne 1 si la connexion est deja ouverte 
+   # retourne 1 si la connexion est deja ouverte
    #------------------------------------------------------------------------------
    proc isOpened { } {
-      variable private 
-      
-      if  { "$private(connection)" != "" } {
+      variable private
+
+      if { "$private(connection)" != "" } {
          return 1
       } else {
-         return 0 
+         return 0
       }
-   }   
+   }
 
    #------------------------------------------------------------------------------
    # ftpclient::getFileList
@@ -175,12 +174,12 @@ namespace eval ::ftpclient {
    # retourne  "" si erreur
    #------------------------------------------------------------------------------
    proc getFileList { fullPath { cnx $private(connection) } } {
-      variable private 
+      variable private
       global conf
-      
-      #--- je recupere la liste des des fichiers 
+
+      #--- je recupere la liste des des fichiers
       set var [ftp::List $private(connection) "$fullPath"]
-            
+
       set filenames ""
       foreach ligne $var {
          set n [string length $ligne]
@@ -188,11 +187,11 @@ namespace eval ::ftpclient {
          if {$n>10} {
             set id [string range $ligne 0 1]
             #::console::disp "n=$n id=$id ligne $ligne \n"
-            if {$id=="dr" } {               
+            if {$id=="dr" } {
                set isdir 1
                set date " "
                set size " "
-               set name [lrange $ligne $private(namePositionBegin)  end]
+               set name [lrange $ligne $private(namePositionBegin) end]
                if { $name != ".." && $name != "."} {
                   ##::console::disp "   append name=$name \n"
                   lappend filenames [list "$isdir" "$name" "$date" "$size" ]
@@ -205,9 +204,9 @@ namespace eval ::ftpclient {
                lappend filenames [list "$isdir" "$name" "$date" "$size" ]
             }
          }
-      }   
+      }
       return $filenames
-   }   
+   }
 
    #------------------------------------------------------------------------------
    # ftpclient::get
@@ -215,16 +214,16 @@ namespace eval ::ftpclient {
    # copie le fichier du server distant sur le poste local
    #------------------------------------------------------------------------------
    proc get { sourceFile targetDir { size } } {
-      variable private 
+      variable private
       global conf
-      
-      #--- j'affiche une barre de progression   
+
+      #--- j'affiche une barre de progression
       showProgressWindow $size $sourceFile
 
       #--- je verifie que le fichier est bien sur le server distant
       #--- (risque de blocage du "get" si le fichier n'existe plus)
       # ne pas utiliser NList  car non implemente sur tous les serveurs
-      #set result [ftp::NList $private(connection) "$sourceFile" ] 
+      #set result [ftp::NList $private(connection) "$sourceFile" ]
       #set test [string equal "$result" "$sourceFile"]
       #if { $test == 0 } {
       #   console::affiche_erreur "ftpclient::get [getUrl]$sourceFile not found !\n"
@@ -233,20 +232,20 @@ namespace eval ::ftpclient {
 
       #--- je copie le fichier dans le repertoire local
       set temp "[pwd]"
-      cd "$targetDir"           
+      cd "$targetDir"
       catch { 
-         set result [ftp::Get $private(connection) "$sourceFile" "."] 
+         set result [ftp::Get $private(connection) "$sourceFile" "."]
       }
-      
-      #---  il faut absolument revenir dans le repertoire de base 
+
+      #--- il faut absolument revenir dans le repertoire de base
       cd "$temp"
 
-      return 
-   }   
+      return
+   }
 
    #------------------------------------------------------------------------------
    # ftpclient::showProgressWindow
-   # affiche une barre de progression dans une fenetre independante 
+   # affiche une barre de progression dans une fenetre independante
    #------------------------------------------------------------------------------
    proc showProgressWindow { { targetsize "0" } sourceFile } {
       variable private
@@ -272,14 +271,14 @@ namespace eval ::ftpclient {
       wm geometry $audace(base).ftpprogress +140+315
 
       #--- Cree le widget et le label du temps ecoule
-      label $audace(base).ftpprogress.lab_status -text " 0  / $targetsize" -font $audace(font,arial_12_b) -justify center
+      label $audace(base).ftpprogress.lab_status -text " 0 / $targetsize" -font $audace(font,arial_12_b) -justify center
       pack $audace(base).ftpprogress.lab_status -side top -fill x -expand true -pady 5
-      
+
       set cpt "0"
       #--- Cree le widget pour la barre de progression
       frame $audace(base).ftpprogress.cadre -width 300 -height 30 -borderwidth 2 -relief groove -bg $color(white)
       pack $audace(base).ftpprogress.cadre -in $audace(base).ftpprogress -side top -anchor center -fill x \
-         -expand true -padx 8 -pady 8 
+         -expand true -padx 8 -pady 8
 
       #--- Affiche de la barre de progression
       frame $audace(base).ftpprogress.cadre.barre_color_invariant -height 26 -bg $color(blue)
@@ -300,32 +299,32 @@ namespace eval ::ftpclient {
 
    #------------------------------------------------------------------------------
    # ftpclient::progress
-   # met a jour la barre de progression 
+   # met a jour la barre de progression
    # cette procedure est appellee automatiquement pendant le transfert d'un fichier (voir ::ftp::Open)
    #------------------------------------------------------------------------------
    proc progress { total } {
       variable private
       global audace
-      
+
       #--- calcule le pourcentage de donnees copiees
-      if { $private(targetsize) != 0  } {
-         set cpt [expr  ($total*100 / $private(targetsize)) ]
+      if { $private(targetsize) != 0 } {
+         set cpt [expr ($total*100 / $private(targetsize)) ]
       } else {
          set cpt 100
-      }      
+      }
       
       if { ![ winfo exists $audace(base).ftpprogress ] } {
          #--- si la fenetre de la barre de progression n'existe pas
          return
       }
 
-      #--- j'affiche la nouvelle valeur 
+      #--- j'affiche la nouvelle valeur
       $audace(base).ftpprogress.lab_status configure -text "$total / $private(targetsize)"
 
-      #--- je fais avancer la barre de progresssion 
+      #--- je fais avancer la barre de progresssion
       place $audace(base).ftpprogress.cadre.barre_color_invariant -in $audace(base).ftpprogress.cadre -x 0 -y 0 \
          -relwidth [ expr $cpt/100.0 ]
-      
+
       #--- j'active le bouton OK quand la copie est terminee
       if { "$cpt" == "100" } {
          $audace(base).ftpprogress.but_ok configure -state normal
@@ -335,14 +334,14 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    # ftpclient::stopProgress
    # ferme la fenetre de progression et arrete le transfert
-   #  pas encore trouve solution satisfaisante  
+   #  pas encore trouve solution satisfaisante
    #------------------------------------------------------------------------------
    proc stopProgress { } {
       variable private
       global audace
-      
+
       destroy $audace(base).ftpprogress
-      
+
       #::ftp::stopCopy $private(connection) $private(targetsize)
       #set ::ftp::ftp(Total) $::ftpclient::private(targetsize)
       #close $::ftp::ftp$private(connection)(SourceCI)
@@ -359,54 +358,54 @@ namespace eval ::ftpclient {
    proc initConf { } {
       global conf
 
-      if {![info exists conf(ftpclient,connection,0)]}   { 
+      if {![info exists conf(ftpclient,connection,0)]} {
       #--- je prepare un exemple de connexion par defaut
-         array set connection  {}
+         array set connection {}
          set connection(hostname)          "localhost"
          set connection(port)              "21"
          set connection(user)              "anonymous"
          set connection(directory)         "/mesdoc~1"
          set connection(sizePosition)      "4"
          set connection(namePositionBegin) "8"
-        
-         set conf(ftpclient,connection,0) [array get connection] 
+
+         set conf(ftpclient,connection,0) [array get connection]
       }
-      
-      if {![info exists conf(ftpclient,connection,1)]}   { 
+
+      if {![info exists conf(ftpclient,connection,1)]} {
          #--- je prepare un exemple de connexion par defaut
-         array set connection  {}
+         array set connection {}
          set connection(hostname)          "ftp.globetrotter.net"
          set connection(port)              "21"
          set connection(user)              "anonymous"
          set connection(directory)         "/astroccd"
          set connection(sizePosition)      "4"
          set connection(namePositionBegin) "8"
-         
-         set conf(ftpclient,connection,1) [array get connection] 
+
+         set conf(ftpclient,connection,1) [array get connection]
       }
 
-      if {![info exists conf(ftpclient,connection,2)]}   { 
+      if {![info exists conf(ftpclient,connection,2)]} {
          #--- je prepare un exemple de connexion par defaut
-         array set connection  {}
+         array set connection {}
          set connection(hostname)          "ftp.sunet.se"
          set connection(port)              "21"
          set connection(user)              "anonymous"
          set connection(directory)         "/pub/pictures/astro-images"
          set connection(sizePosition)      "4"
          set connection(namePositionBegin) "8"
-         
-         set conf(ftpclient,connection,2) [array get connection] 
+
+         set conf(ftpclient,connection,2) [array get connection]
       }
-      
-      if {![info exists conf(ftpclient,connection,3)]}   { set conf(ftpclient,connection,3) "" }
-      if {![info exists conf(ftpclient,connection,4)]}   { set conf(ftpclient,connection,4) "" }
-      if {![info exists conf(ftpclient,connection,5)]}   { set conf(ftpclient,connection,5) "" }
-      if {![info exists conf(ftpclient,connection,6)]}   { set conf(ftpclient,connection,6) "" }
-      if {![info exists conf(ftpclient,connection,7)]}   { set conf(ftpclient,connection,7) "" }
-      if {![info exists conf(ftpclient,connection,8)]}   { set conf(ftpclient,connection,8) "" }
-      if {![info exists conf(ftpclient,connection,9)]}   { set conf(ftpclient,connection,9) "" }
-      if {![info exists conf(ftpclient,timeout)]}        { set conf(ftpclient,timeout) 10 }
-   }     
+
+      if {![info exists conf(ftpclient,connection,3)]} { set conf(ftpclient,connection,3) "" }
+      if {![info exists conf(ftpclient,connection,4)]} { set conf(ftpclient,connection,4) "" }
+      if {![info exists conf(ftpclient,connection,5)]} { set conf(ftpclient,connection,5) "" }
+      if {![info exists conf(ftpclient,connection,6)]} { set conf(ftpclient,connection,6) "" }
+      if {![info exists conf(ftpclient,connection,7)]} { set conf(ftpclient,connection,7) "" }
+      if {![info exists conf(ftpclient,connection,8)]} { set conf(ftpclient,connection,8) "" }
+      if {![info exists conf(ftpclient,connection,9)]} { set conf(ftpclient,connection,9) "" }
+      if {![info exists conf(ftpclient,timeout)]}      { set conf(ftpclient,timeout) 10 }
+   }
 
    #==============================================================
    # Fonctions de configuration generiques
@@ -416,7 +415,7 @@ namespace eval ::ftpclient {
    # widgetToConf    copie les variables des widgets dans le tableau conf()
    # fillConfigPage  affiche la fenetre de config
    #==============================================================
-   
+
    #------------------------------------------------------------
    #  ftpclient::getLabel (utilise par ::confGenerique)
    #  retourne le label de la fenetre de configuration
@@ -431,12 +430,12 @@ namespace eval ::ftpclient {
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
    proc confToWidget { } {
-      variable private  
-      variable widget 
+      variable private
+      variable widget
       global conf
 
-      #--- je prepare les valeurs de la combobox     
-      set widget(cbprev)   ""                
+      #--- je prepare les valeurs de la combobox
+      set widget(cbprev)   ""
       foreach {key value} [array get conf ftpclient,connection,*] {
          if { "$value" == "" } continue
          #--- je mets les valeurs dans un array (de-serialisation)
@@ -445,13 +444,13 @@ namespace eval ::ftpclient {
          set line [format "ftp://%s:%s%s " $connection(hostname) $connection(port) $connection(directory) ]
          #--- j'ajoute la ligne
          lappend widget(cbprev) "$line"
-      }      
-      
+      }
+
       #--- autre widget sauvegarde dans conf()
-      set widget(timeout)  $conf(ftpclient,timeout)  
-      
+      set widget(timeout)  $conf(ftpclient,timeout)
+
       #--- valeur non sauvegardée dans conf()
-      set widget(password) $private(password)  
+      set widget(password) $private(password)
    }
 
    #------------------------------------------------------------
@@ -462,29 +461,29 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------
    proc widgetToConf { $visuNo } {
       variable private
-      variable widget  
+      variable widget
       global conf
       global caption
 
       #--- je copie les valeurs des widgets
-      set private(hostname)          $widget(hostname)       
-      set private(port)              $widget(port)          
-      set private(user)              $widget(user)           
-      set private(directory)         $widget(directory)        
-      set private(sizePosition)      $widget(sizePosition)    
-      set private(namePositionBegin) $widget(namePositionBegin)    
-      set conf(ftpclient,timeout)    $widget(timeout)    
-      set private(password)          $widget(password)    
-      
+      set private(hostname)          $widget(hostname)
+      set private(port)              $widget(port)
+      set private(user)              $widget(user)
+      set private(directory)         $widget(directory)
+      set private(sizePosition)      $widget(sizePosition)
+      set private(namePositionBegin) $widget(namePositionBegin)
+      set conf(ftpclient,timeout)    $widget(timeout)
+      set private(password)          $widget(password)
+
       if { $private(namePositionBegin) == "" } { set private(namePositionBegin) "0" }
 
       #--- j'ouvre la connexion ftp
       set result [open]
-      
+
       #--- si la connexion est OK
-      if { $result == 1 } {         
-         #--- j'ajoute la nouvelle connexion en tete dans le tableau des connexions precedentes si elle n'y est pas deja 
-         array set connection  {}
+      if { $result == 1 } {
+         #--- j'ajoute la nouvelle connexion en tete dans le tableau des connexions precedentes si elle n'y est pas deja
+         array set connection {}
          set connection(hostname)          "$private(hostname)"
          set connection(port)              "$private(port)"
          set connection(user)              "$private(user)"
@@ -502,19 +501,19 @@ namespace eval ::ftpclient {
                incr j
             } else {
                array set temp1 $value
-               if { "$temp1(hostname)"!= "$connection(hostname)" 
+               if { "$temp1(hostname)"!= "$connection(hostname)"
                   || "$temp1(port)" != "$connection(port)" } {
                   set templist($j) [array get temp1]
                   incr j
                }
-            }          
-         }      
+            }
+         }
          
          #-- je copie templist dans conf
          for {set i 0} {$i < 10 } {incr i } {
             set conf(ftpclient,connection,$i) $templist($i)
          }
-         
+
       } else {
          #--- erreur de connexion
          set message "$caption(ftpclient,connection_error) ftp://$widget(user)@$widget(hostname):$widget(port)"
@@ -523,39 +522,39 @@ namespace eval ::ftpclient {
    }
 
    #------------------------------------------------------------
-   #  ftpclient::fillConfigPage { }  
+   #  ftpclient::fillConfigPage { }
    #  (appelee par ::confGenerique a l'ouverture de la fenetre de configuration)
    #  affiche les widgets dans la fenetre de configuration
    #  
    #  return rien
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
-      variable widget 
+      variable widget
       variable private
       global caption
       global audace
-      
-      #--- je memorise la reference de la frame 
+
+      #--- je memorise la reference de la frame
       set widget(frm) $frm
       #--- quelques raccourcis utiles
       set private(cbprev) $widget(frm).frameprev.cbprev
 
-      #--- j'initialise les valeurs des widgets 
+      #--- j'initialise les valeurs des widgets
       confToWidget
-      
+
       #--- frame previous connections
       frame $widget(frm).frameprev -borderwidth 1 -relief raised
       pack $widget(frm).frameprev -side top -fill both -expand 1
 
       #--- combobox
-      ComboBox $widget(frm).frameprev.cbprev 
+      ComboBox $widget(frm).frameprev.cbprev
       $widget(frm).frameprev.cbprev configure -relief sunken
       $widget(frm).frameprev.cbprev configure -borderwidth 1
       $widget(frm).frameprev.cbprev configure -editable 0
       $widget(frm).frameprev.cbprev configure -takefocus 0
       $widget(frm).frameprev.cbprev configure -modifycmd "::ftpclient::cbCommand $widget(frm).frameprev.cbprev"
       $widget(frm).frameprev.cbprev configure -values $widget(cbprev)
-      
+
       pack $widget(frm).frameprev.cbprev -in $widget(frm).frameprev -anchor center -expand 0 -fill x -side top -padx 10 -pady 5
 
       #--- frame connection
@@ -567,13 +566,13 @@ namespace eval ::ftpclient {
       pack $widget(frm).framecnx.framehost -side top -fill both -expand 1
 
       #--- hostname
-      label $widget(frm).framecnx.framehost.labelHost -text "$caption(ftpclient,hostname)" 
+      label $widget(frm).framecnx.framehost.labelHost -text "$caption(ftpclient,hostname)"
       pack $widget(frm).framecnx.framehost.labelHost -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framehost.entHost -textvariable ftpclient::widget(hostname) -width 30
       pack $widget(frm).framecnx.framehost.entHost -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 5
 
       #--- port
-      label $widget(frm).framecnx.framehost.labelPort -text "$caption(ftpclient,port)" 
+      label $widget(frm).framecnx.framehost.labelPort -text "$caption(ftpclient,port)"
       pack $widget(frm).framecnx.framehost.labelPort -in $widget(frm).framecnx.framehost -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framehost.entPort -textvariable ftpclient::widget(port) -width 4 -justify right \
          -validatecommand {string is integer %P} -validate key -invcmd bell
@@ -584,31 +583,31 @@ namespace eval ::ftpclient {
       pack $widget(frm).framecnx.framelogin -side top -fill both -expand 1
 
       #--- user
-      label $widget(frm).framecnx.framelogin.labelUser -text "$caption(ftpclient,user)" 
+      label $widget(frm).framecnx.framelogin.labelUser -text "$caption(ftpclient,user)"
       pack $widget(frm).framecnx.framelogin.labelUser -in $widget(frm).framecnx.framelogin -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framelogin.entUser -textvariable ftpclient::widget(user) -width 20
       pack $widget(frm).framecnx.framelogin.entUser -in $widget(frm).framecnx.framelogin -anchor center -side left -padx 10 -pady 5
 
       #--- password
-      label $widget(frm).framecnx.framelogin.labelPassword -text "$caption(ftpclient,password)" 
+      label $widget(frm).framecnx.framelogin.labelPassword -text "$caption(ftpclient,password)"
       pack $widget(frm).framecnx.framelogin.labelPassword -in $widget(frm).framecnx.framelogin -anchor center -side left \
-            -padx 10 -pady 10        
+            -padx 10 -pady 10
       entry $widget(frm).framecnx.framelogin.entPassword -textvariable ftpclient::widget(password) -width 20 -show "*"
       pack $widget(frm).framecnx.framelogin.entPassword -in $widget(frm).framecnx.framelogin -anchor center -side left \
-            -padx 10 -pady 5   
+            -padx 10 -pady 5
 
       #--- frame dir
       frame $widget(frm).framecnx.framedir -borderwidth 0 -relief raised
       pack $widget(frm).framecnx.framedir -side top -fill both -expand 1
 
       #--- directory
-      label $widget(frm).framecnx.framedir.labelDir -text "$caption(ftpclient,directory)" 
+      label $widget(frm).framecnx.framedir.labelDir -text "$caption(ftpclient,directory)"
       pack $widget(frm).framecnx.framedir.labelDir -in $widget(frm).framecnx.framedir -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framedir.entDir -textvariable ftpclient::widget(directory) -width 40
       pack $widget(frm).framecnx.framedir.entDir -in $widget(frm).framecnx.framedir -anchor center -side left -padx 10 -pady 5
 
       #--- timeout
-      label $widget(frm).framecnx.framedir.labelTimeout -text "$caption(ftpclient,timeout)" 
+      label $widget(frm).framecnx.framedir.labelTimeout -text "$caption(ftpclient,timeout)"
       pack $widget(frm).framecnx.framedir.labelTimeout -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framedir.entTimeout -textvariable ftpclient::widget(timeout) -width 4 -justify right \
          -validatecommand {string is integer %P} -validate key -invcmd bell
@@ -619,47 +618,47 @@ namespace eval ::ftpclient {
       pack $widget(frm).framecnx.framePosition -side top -fill both -expand 1
 
       #--- sizePosition
-      label $widget(frm).framecnx.framePosition.labelSize -text "$caption(ftpclient,sizePosition)" 
+      label $widget(frm).framecnx.framePosition.labelSize -text "$caption(ftpclient,sizePosition)"
       pack $widget(frm).framecnx.framePosition.labelSize -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framePosition.entSize -textvariable ftpclient::widget(sizePosition) -width 4 -justify right \
          -validatecommand {string is integer %P} -validate key -invcmd bell
-      pack $widget(frm).framecnx.framePosition.entSize  -anchor center -side left -padx 10 -pady 5
+      pack $widget(frm).framecnx.framePosition.entSize -anchor center -side left -padx 10 -pady 5
 
       #--- namePositionBegin
-      label $widget(frm).framecnx.framePosition.labelNameBegin -text "$caption(ftpclient,namePositionBegin)" 
+      label $widget(frm).framecnx.framePosition.labelNameBegin -text "$caption(ftpclient,namePositionBegin)"
       pack  $widget(frm).framecnx.framePosition.labelNameBegin -anchor center -side left -padx 10 -pady 10
       entry $widget(frm).framecnx.framePosition.entNameBegin -textvariable ftpclient::widget(namePositionBegin) -width 4 \
          -justify right -validatecommand {string is integer %P} -validate key -invcmd bell
-      pack  $widget(frm).framecnx.framePosition.entNameBegin  -anchor center -side left -padx 2 -pady 2
+      pack $widget(frm).framecnx.framePosition.entNameBegin -anchor center -side left -padx 2 -pady 2
 
-      #--- preview button 
+      #--- preview button
       button $widget(frm).framecnx.framePosition.butPreview -text "$caption(ftpclient,preview)" \
          -command "ftpclient::preview $widget(frm).framepreview.listpreview $widget(frm).framepreview.detail.name $widget(frm).framepreview.detail.size"
-      pack  $widget(frm).framecnx.framePosition.butPreview  -anchor center -side left -padx 10 -pady 10 -ipady 5
+      pack $widget(frm).framecnx.framePosition.butPreview -anchor center -side left -padx 10 -pady 10 -ipady 5
 
       #--- frame preview (cette frame est affcihee quand on clique sur le bouton preview)
       frame $widget(frm).framepreview -borderwidth 1 -relief raised
-      #pack  $widget(frm).framepreview -side top -fill both -expand 1
+      #pack $widget(frm).framepreview -side top -fill both -expand 1
 
       #--- listpreview 
-      label $widget(frm).framepreview.listpreview  -font $audace(font,listbox) -justify left
-      pack $widget(frm).framepreview.listpreview -anchor center -side top  -padx 2 -pady 2 -fill both -expand 1
+      label $widget(frm).framepreview.listpreview -font $audace(font,listbox) -justify left
+      pack $widget(frm).framepreview.listpreview -anchor center -side top -padx 2 -pady 2 -fill both -expand 1
 
       #--- frame preview detail
       frame $widget(frm).framepreview.detail -borderwidth 1 -relief raised
-      pack  $widget(frm).framepreview.detail -side top -fill both -expand 1
+      pack $widget(frm).framepreview.detail -side top -fill both -expand 1
 
-      #--- name preview 
-      label $widget(frm).framepreview.detail.name  -font $audace(font,listbox) -justify left
-      pack $widget(frm).framepreview.detail.name -anchor center -side left  -padx 2 -pady 2 -fill both -expand 1
+      #--- name preview
+      label $widget(frm).framepreview.detail.name -font $audace(font,listbox) -justify left
+      pack $widget(frm).framepreview.detail.name -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
       
-      #--- size preview 
-      label $widget(frm).framepreview.detail.size  -font $audace(font,listbox) -justify left
+      #--- size preview
+      label $widget(frm).framepreview.detail.size -font $audace(font,listbox) -justify left
       pack $widget(frm).framepreview.detail.size -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
 
       #--- je selectionne le premier element de la combobox
       $widget(frm).frameprev.cbprev setvalue first
-      cbCommand $widget(frm).frameprev.cbprev 
+      cbCommand $widget(frm).frameprev.cbprev
    }
 
    #------------------------------------------------------------
@@ -672,22 +671,22 @@ namespace eval ::ftpclient {
    proc cbCommand { cb } {
       variable widget
       global conf
-      
+
       #--- je recupere l'index de l'element selectionne
       set index [$cb getvalue ]
       if { "$index" == "" } {
          set index 0
       }
 
-      #--- je recupere les attributs de la connexion de conf()     
+      #--- je recupere les attributs de la connexion de conf()
       array set connection $conf(ftpclient,connection,$index)
 
       #--- je copie les valeurs dans les widgets
-      set widget(hostname)          $connection(hostname) 
-      set widget(port)              $connection(port) 
-      set widget(user)              $connection(user)   
-      set widget(directory)         $connection(directory)  
-      set widget(sizePosition)      $connection(sizePosition)  
+      set widget(hostname)          $connection(hostname)
+      set widget(port)              $connection(port)
+      set widget(user)              $connection(user)
+      set widget(directory)         $connection(directory)
+      set widget(sizePosition)      $connection(sizePosition)
       set widget(namePositionBegin) $connection(namePositionBegin)
    }
 
@@ -702,17 +701,17 @@ namespace eval ::ftpclient {
       variable widget
       global conf
       global caption
-      
-      #--- j'ouvre la connexion ftp avc les parametres temporaires 
+
+      #--- j'ouvre la connexion ftp avc les parametres temporaires
       set cnx [ftp::Open $widget(hostname) $widget(user) $widget(password) -port $widget(port) -timeout $widget(timeout) ]
-         
+
       if {$cnx == -1} {
          set message "$caption(ftpclient,connection_error) ftp://$widget(hostname):$widget(port)"
          tk_messageBox -title "ftpclient" -type ok -message "$message" -icon error
          return 0
       }
-      
-      #--- je lis le contenu du repertoire 
+
+      #--- je lis le contenu du repertoire
       set listResult [ftp::List $cnx "$widget(directory)" ]
       
       if { $listResult == "" } {
@@ -724,28 +723,28 @@ namespace eval ::ftpclient {
       #--- je compte le nombre de colonnes dans la premiere ligne
       set nbcol [string length "[lindex $listResult 0]"]
       set nbline [llength  $listResult ]
-      
+
       set lines ""
       set names "name\n"
       set sizes  "size\n"
-      
+
       #--- j'affiche les 4 premieres lignes
       for {set i 0} {$i < 10 && $i < $nbline } {incr i } {
         set line     [lindex $listResult $i]
         append lines "$line\n"
         append names "[lrange $line $widget(namePositionBegin)  end]\n"
         append sizes "[lindex $line $widget(sizePosition) ]\n"
-       # console::disp "nbcol=$nbcol $i line=$line \n"         
+       # console::disp "nbcol=$nbcol $i line=$line \n"
       }
       if { $nbline > $i } {
          append lines "..."
       }
-      
+
       #--- je copie les donnes dans les widgets
       $listpreview configure -text "$lines"
       $namepreview configure -text "$names"
       $sizepreview configure -text "$sizes"
-      
+
       #--- j'affiche le resultat
       pack  [winfo parent $listpreview] -side top -fill both -expand 1
       ftp::Close $cnx
@@ -765,7 +764,7 @@ namespace eval ::ftpserver {
       
       ::ftpd::config -authUsrCmd ::ftpserver::noauth -logCmd ::ftpserver::log
 
-      ::ftpd::server 
+      ::ftpd::server
    }
 
    proc noauth { args } {

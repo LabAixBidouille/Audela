@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 02 fevrier 2006
+# Date de mise a jour : 03 fevrier 2006
 #
 
 #--- Passage de TCL/TK 8.3 a 8.4
@@ -875,8 +875,11 @@ namespace eval ::audace {
          }
       }
 
-      #--- Connexion au demarrage de la camera
+      #--- Connexion au demarrage des cameras
       if { $conf(camera,A,start) == "1" } {
+         if { $conf(confLink,start) == "1" } {
+            ::confLink::configureDriver
+         }
          ::confCam::configureCamera "A"
       }
       if { $conf(camera,B,start) == "1" } {
@@ -888,11 +891,14 @@ namespace eval ::audace {
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {
+         if { $conf(confLink,start) == "1" } {
+            ::confLink::configureDriver
+         }
          ::confTel::configureTelescope
       }
 
       #--- Connexion au demarrage du driver de la raquette
-      if { $conf(confPad,start) == "1" } {  
+      if { $conf(confPad,start) == "1" } {
          ::confPad::configureDriver
       }
 
@@ -1942,6 +1948,13 @@ namespace eval ::audace {
       global caption
       global tmp
 
+      #--- Si le tutorial EthernAude est affiche, je le ferme en premier avant de quitter
+      if { [ winfo exist .main ] } {
+         if { [ winfo exist .second ] } {
+            destroy .second
+         }
+         destroy .main
+      }
       #---
       menustate disabled
       wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
@@ -1952,10 +1965,12 @@ namespace eval ::audace {
       if {[winfo exists $audace(base).tjrsvisible]==1} {
          set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
       }
-
-      #--- Arrete le plugin camera
+      #--- Arrete le plugin liaison
+      ::confLink::stopDriver
+      #--- Arrete les plugins camera
       ::confCam::stopDriver A
       ::confCam::stopDriver B
+      ::confCam::stopDriver C
       #--- Arrete le plugin monture
       ### ::confTel::stopDriver
       #--- Arrete le plugin equipement
