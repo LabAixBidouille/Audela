@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Date de mise a jour : 03 fevrier 2006
+# Date de mise a jour : 12 fevrier 2006
 #
 
 #=========================================================================
@@ -111,10 +111,14 @@ set caption(confcam,ccd_N_B)                    "B&W CCD Modified Webcam"
 
 set caption(confcam,coef_th7852a)               "Coefficient"
 
-set caption(confcam,apn)                        "Digital Camera"
-set caption(confcam,liaison)                    "Link"
-set caption(confcam,apn_photopc)                "PhotoPC"
-set caption(confcam,apn_gphoto2)                "GPhoto2"
+set caption(confcam,dsc)                        "Digital Camera"
+set caption(confcam,dsc_name)                   "Digital Camera"
+set caption(confcam,dsc_liaison)                "Link"
+set caption(confcam,dsc_photopc)                "PhotoPC"
+set caption(confcam,dsc_gphoto2)                "GPhoto2"
+set caption(confcam,dsc_quickremote)            "QuickRemote"
+set caption(confcam,dsc_detect_service)         "Stop Automatic Detection of Digital Cameras"
+set caption(confcam,apn_port)                   "Digital Camera Control Port"
 set caption(confcam,apn_baud)                   "Serial Port Speed (bauds)"
 
 set caption(confcam,andor_config)               "Folder Containing Setup Files"
@@ -123,9 +127,6 @@ set caption(confcam,andor_dossier)              "From Folder:"
 set caption(confcam,andor_ouvert_obtu)          "Shutter Opening Delay"
 set caption(confcam,andor_ferm_obtu)            "Shutter Closing Delay"
 set caption(confcam,andor_ms)                   "ms"
-
-set caption(confcam,dsc_quickremote)            "QuickRemote"
-set caption(confcam,dsc_detect_service)         "Stop Automatic Detection of Digital Cameras"
 
 set caption(confcam,attention)                  "Warning"
 set caption(confcam,connexion_texte1)           "Camera Connection in Progress..."
@@ -145,25 +146,22 @@ set caption(confcam,audine)                     "with Audine"
 set caption(confcam,ethernaude)                 "EthernAude"
 set caption(confcam,port_th7852a)               "TH7852A Port"
 set caption(confcam,port_scr1300xtc)            "SCR1300XTC Port"
-set caption(confcam,port_apn_cmd)               "Digital Camera Control Port"
 set caption(confcam,port_andor)                 "Andor Port"
 
 set caption(confcam,site_web_ref)               "Reference Web Site:"
 set caption(confcam,site_audine)                "http://www.astrosurf.com/audine/English/index_en.htm"
-set caption(confcam,site_hisis)                 "http://www.europixel.it/europixelweb/inglese/welcomeframeinglese.htm"
+set caption(confcam,site_hisis)                 "http://www.europixel.it/europixelweb/welcomeframe.htm"
 set caption(confcam,site_sbig)                  "http://www.sbig.com/"
 set caption(confcam,site_cookbook)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 set caption(confcam,site_starlight)             "http://www.starlight-xpress.co.uk/index.htm"
 set caption(confcam,site_kitty)                 "http://perso.wanadoo.fr/bernard.dalstein/"
 set caption(confcam,site_webcam)                "http://www.astrocam.org/"
 set caption(confcam,site_webcam_chambers)       "http://www.pmdo.com/wintro.htm"
-set caption(confcam,site_audinet)               "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
-set caption(confcam,site_ethernaude)            "http://astrosurf.com/ethernaude/"
 set caption(confcam,site_th7852a)               "To be created"
 set caption(confcam,site_scr1300xtc)            "http://synonyme.nerim.net/imagerie/HomePage.html"
+set caption(confcam,site_dsc)                   "http://gphoto.sourceforge.net/"
 set caption(confcam,site_apn)                   "http://photopc.sourceforge.net/"
 set caption(confcam,site_andor)                 "http://www.andor-tech.com"
-set caption(confcam,site_dsc)                   "To be created"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -268,10 +266,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
-   set caption(confcam,apn)                     "APN"
-   set caption(confcam,liaison)                 "Liaison"
-   set caption(confcam,apn_photopc)             "PhotoPC"
-   set caption(confcam,apn_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc)                     "APN"
+   set caption(confcam,dsc_name)                "Appareil Photo Numérique"
+   set caption(confcam,dsc_liaison)             "Liaison"
+   set caption(confcam,dsc_photopc)             "PhotoPC"
+   set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_detect_service)      "Arrêt de la détection automatique des appareils photo numériques"
+   set caption(confcam,apn_port)                "Port de commande de l'APN"
    set caption(confcam,apn_baud)                "Vitesse du port série (bauds)"
 
    set caption(confcam,andor_config)            "Répertoire contenant les fichiers de configuration"
@@ -280,9 +282,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,andor_ouvert_obtu)       "Délai d'ouverture de l'obturateur"
    set caption(confcam,andor_ferm_obtu)         "Délai de fermeture de l'obturateur"
    set caption(confcam,andor_ms)                "ms"
-
-   set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_detect_service)      "Arrêt de la détection automatique des appareils photo numériques"
 
    set caption(confcam,attention)               "Attention"
    set caption(confcam,connexion_texte1)        "Veuillez patienter quelques secondes"
@@ -302,25 +301,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Port TH7852A"
    set caption(confcam,port_scr1300xtc)         "Port SCR1300XTC"
-   set caption(confcam,port_apn_cmd)            "Port de commande de l'APN"
    set caption(confcam,port_andor)              "Port Andor"
 
    set caption(confcam,site_web_ref)            "Site Web de référence :"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/index_fr.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/inglese/welcomeframeinglese.htm"
+   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_webcam)             "http://www.astrocam.org/"
    set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
-   set caption(confcam,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
-   set caption(confcam,site_ethernaude)         "http://astrosurf.com/ethernaude/"
    set caption(confcam,site_th7852a)            "A créer"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
+   set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_apn)                "http://photopc.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_dsc)                "A créer"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -425,10 +421,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coefficiente"
 
-   set caption(confcam,apn)                     "Fotocamera digitale"
-   set caption(confcam,liaison)                 "Collegamento"
-   set caption(confcam,apn_photopc)             "PhotoPC"
-   set caption(confcam,apn_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc)                     "Fotocamera digitale"
+   set caption(confcam,dsc_name)                "Fotocamera digitale"
+   set caption(confcam,dsc_liaison)             "Collegamento"
+   set caption(confcam,dsc_photopc)             "PhotoPC"
+   set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_detect_service)      "Arresto detezione automatica delle camere digitali"
+   set caption(confcam,apn_port)                "Porta della Fotocamera digitale"
    set caption(confcam,apn_baud)                "Velocita' porta seriale (bauds)"
 
    set caption(confcam,andor_config)            "Cartella contenente i file di configurazione"
@@ -437,9 +437,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,andor_ouvert_obtu)       "Ritardo apertura otturatore"
    set caption(confcam,andor_ferm_obtu)         "Ritardo di chiusura otturatore"
    set caption(confcam,andor_ms)                "ms"
-
-   set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_detect_service)      "Arresto detezione automatica delle camere digitali"
 
    set caption(confcam,attention)               "Attenzione"
    set caption(confcam,connexion_texte1)        "Attendere qualche secondo per"
@@ -459,7 +456,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Porta TH7852A"
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
-   set caption(confcam,port_apn_cmd)            "Porta della Fotocamera digitale"
    set caption(confcam,port_andor)              "Porta Andor"
 
    set caption(confcam,site_web_ref)            "Sito Web di riferimento:"
@@ -471,13 +467,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_webcam)             "http://www.astrocam.org/"
    set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
-   set caption(confcam,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
-   set caption(confcam,site_ethernaude)         "http://astrosurf.com/ethernaude/"
    set caption(confcam,site_th7852a)            "Crea"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
+   set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_apn)                "http://photopc.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_dsc)                "Crea"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -582,10 +576,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coeficiente"
 
-   set caption(confcam,apn)                     "Cámara digital"
-   set caption(confcam,liaison)                 "Enlace"
-   set caption(confcam,apn_photopc)             "PhotoPC"
-   set caption(confcam,apn_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc)                     "Cámara digital"
+   set caption(confcam,dsc_name)                "Cámara digital"
+   set caption(confcam,dsc_liaison)             "Enlace"
+   set caption(confcam,dsc_photopc)             "PhotoPC"
+   set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_detect_service)      "Parar la detección automática de cámaras digitales"
+   set caption(confcam,apn_port)                "Puerto de control de la cámara digital"
    set caption(confcam,apn_baud)                "Velocidad del Puerto Serie (baudios)"
 
    set caption(confcam,andor_config)            "Doirectorio que contiene los ficheros de configuracion"
@@ -594,9 +592,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,andor_ouvert_obtu)       "Retardo de apertura de obturador"
    set caption(confcam,andor_ferm_obtu)         "Retardo de cerrado de obturador"
    set caption(confcam,andor_ms)                "ms"
-
-   set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_detect_service)      "Parar la detección automática de cámaras digitales"
 
    set caption(confcam,attention)               "!Cuidado¡"
    set caption(confcam,connexion_texte1)        "Conectando con la cámara..."
@@ -616,25 +611,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Puerto TH7852A"
    set caption(confcam,port_scr1300xtc)         "Puerto SCR1300XTC"
-   set caption(confcam,port_apn_cmd)            "Puerto de control de la cámara digital"
    set caption(confcam,port_andor)              "Puerto Andor"
 
    set caption(confcam,site_web_ref)            "Sitio Web de referencia:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/inglese/welcomeframeinglese.htm"
+   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_webcam)             "http://www.astrocam.org/"
    set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
-   set caption(confcam,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
-   set caption(confcam,site_ethernaude)         "http://astrosurf.com/ethernaude/"
    set caption(confcam,site_th7852a)            "A crear"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
+   set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_apn)                "http://photopc.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_dsc)                "A crear"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -649,7 +641,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,arreter)                 "Halten"
 
    set caption(confcam,port)                    "Port"
-   set caption(confcam,port_liaison)            "# Port / Liaison"
+   set caption(confcam,port_liaison)            "Port / Link"
    set caption(confcam,lpt1)                    "lpt1"
    set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
@@ -735,14 +727,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_longueposestop)   "Ende der Belichtung Antrieb"
    set caption(confcam,conf_webcam)             "Wahl der Videoquelle"
    set caption(confcam,format_webcam)           "Wahl des Videoformats"
-   set caption(confcam,ccd_N_B)                 "# WebCam modifiée avec CCD N&B"
+   set caption(confcam,ccd_N_B)                 "Veränderte Schwartz/Weiss Webcam CCD"
 
    set caption(confcam,coef_th7852a)            "Faktor"
 
-   set caption(confcam,apn)                     "Digital Fotoapparat"
-   set caption(confcam,liaison)                 "# Liaison"
-   set caption(confcam,apn_photopc)             "PhotoPC"
-   set caption(confcam,apn_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc)                     "Digital Fotoapparat"
+   set caption(confcam,dsc_name)                "Digital Fotoapparat"
+   set caption(confcam,dsc_liaison)             "Link"
+   set caption(confcam,dsc_photopc)             "PhotoPC"
+   set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_detect_service)      "Ende der digitale Fotoapparate automatische Registrierung"
+   set caption(confcam,apn_port)                "Digital Fotoapparat Steuer Port"
    set caption(confcam,apn_baud)                "Seriell Port Geschwindigkeit (Bauds)"
 
    set caption(confcam,andor_config)            "Register der die setup Dateien enthaltet"
@@ -751,9 +747,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,andor_ouvert_obtu)       "Verschluss Öffnung Verspätung"
    set caption(confcam,andor_ferm_obtu)         "Verschluss Schließen Verspätung"
    set caption(confcam,andor_ms)                "ms"
-
-   set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_detect_service)      "Ende der digitale Fotoapparate automatische Registrierung"
 
    set caption(confcam,attention)               "Achtung"
    set caption(confcam,connexion_texte1)        "Bitte, einige Sekunden warten"
@@ -773,25 +766,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "TH7852A Port"
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
-   set caption(confcam,port_apn_cmd)            "Digital Fotoapparat Steuer Port"
    set caption(confcam,port_andor)              "Andor Port"
 
    set caption(confcam,site_web_ref)            "Referenz Webseite:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/inglese/welcomeframeinglese.htm"
+   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_webcam)             "http://www.astrocam.org/"
    set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
-   set caption(confcam,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
-   set caption(confcam,site_ethernaude)         "http://astrosurf.com/ethernaude/"
    set caption(confcam,site_th7852a)            "Zu schaffen"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
+   set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_apn)                "http://photopc.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_dsc)                "Zu schaffen"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -896,10 +886,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
-   set caption(confcam,apn)                     "Digital Camera"
-   set caption(confcam,liaison)                 "Link"
-   set caption(confcam,apn_photopc)             "PhotoPC"
-   set caption(confcam,apn_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc)                     "Digital Camera"
+   set caption(confcam,dsc_name)                "Digital Camera"
+   set caption(confcam,dsc_liaison)             "Link"
+   set caption(confcam,dsc_photopc)             "PhotoPC"
+   set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_detect_service)      "Stop Automatic Detection of Digital Cameras"
+   set caption(confcam,apn_port)                "Digital Camera Control Port"
    set caption(confcam,apn_baud)                "Serial Port Speed (bauds)"
 
    set caption(confcam,andor_config)            "Folder Containing Setup Files"
@@ -908,9 +902,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,andor_ouvert_obtu)       "Shutter Opening Delay"
    set caption(confcam,andor_ferm_obtu)         "Shutter Closing Delay"
    set caption(confcam,andor_ms)                "ms"
-
-   set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_detect_service)      "Stop Automatic Detection of Digital Cameras"
 
    set caption(confcam,attention)               "Warning"
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
@@ -930,25 +921,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "TH7852A Port"
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
-   set caption(confcam,port_apn_cmd)            "Digital Camera Control Port"
    set caption(confcam,port_andor)              "Andor Port"
 
    set caption(confcam,site_web_ref)            "Reference Web Site:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/inglese/welcomeframeinglese.htm"
+   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_webcam)             "http://www.astrocam.org/"
    set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
-   set caption(confcam,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
-   set caption(confcam,site_ethernaude)         "http://astrosurf.com/ethernaude/"
    set caption(confcam,site_th7852a)            "To be created"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
+   set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_apn)                "http://photopc.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_dsc)                "To be created"
 
 }
 

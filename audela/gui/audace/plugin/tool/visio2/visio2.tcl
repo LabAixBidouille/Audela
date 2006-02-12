@@ -1341,6 +1341,10 @@ namespace eval ::Visio2::localTable {
       set name [string trimleft  [$private(tbl) cellcget $index,0 -text]]
       set filename [file join "$private(directory)" "$name"]
 
+::console::disp "image?audace(imageNo) = image$audace(imageNo) \n"
+::console::disp "conf(visu_zoom) = $conf(visu_zoom) \n"
+::console::disp "filename = $filename \n"
+
       if { "$private(previousType)" == "$private(fileImage)" } {
          ::Image::startGifAnimation image$audace(imageNo) $conf(visu_zoom) $filename
       } elseif { "$private(previousType)" == "$private(fileMovie)" } {
