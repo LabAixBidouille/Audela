@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Date de mise a jour : 17 decembre 2005
+# Date de mise a jour : 12 fevrier 2006
 #
 
 namespace eval ::selectWindow {
@@ -92,8 +92,8 @@ namespace eval ::selectWindow {
       grid $This.fra2.i -row 2 -column 0 -columnspan 2 -padx 2 -pady 4 -sticky news; #-sticky ew 
       grid columnconfigure $This.fra2 0 -weight 1
       grid rowconfigure $This.fra2 2 -weight 1
-      
-      pack $This.fra2 -anchor center -expand true -fill y -side left
+
+      pack $This.fra2 -anchor center -expand 0 -fill y -side left
 
       #--- Je cree la visu de la fenetre principale
       set selectWindow(visuNo) [::confVisu::create $This]

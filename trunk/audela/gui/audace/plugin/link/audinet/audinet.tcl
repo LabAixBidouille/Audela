@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 12 fevrier 2006
 #
 
 package provide audinet 1.0
@@ -97,15 +97,15 @@ namespace eval audinet {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(audinet,host) ] }        { set conf(audinet,host)        "168.254.216.36" }
-      if { ! [ info exists conf(audinet,ipsetting) ] }   { set conf(audinet,ipsetting)   "0" }
-      if { ! [ info exists conf(audinet,mac_address) ] } { set conf(audinet,mac_address) "00:01:02:03:04:05" }
-      if { ! [ info exists conf(audinet,protocole) ] }   { set conf(audinet,protocole)   "$caption(audinet,protocole_udp)" }
-      if { ! [ info exists conf(audinet,udptempo) ] }    { set conf(audinet,udptempo)    "0" }
-      if { ! [ info exists conf(lxnet,autoflush) ] }     { set conf(lxnet,autoflush)     "1" }
-      if { ! [ info exists conf(lxnet,focuser_type) ] }  { set conf(lxnet,focuser_type)  "lx200" }
-      if { ! [ info exists conf(lxnet,focuser_addr) ] }  { set conf(lxnet,focuser_addr)  "112" }
-      if { ! [ info exists conf(lxnet,focuser_bit) ] }   { set conf(lxnet,focuser_bit)   "0" }
+      if { ! [ info exists conf(audinet,host) ] }         { set conf(audinet,host)         "168.254.216.36" }
+      if { ! [ info exists conf(audinet,ipsetting) ] }    { set conf(audinet,ipsetting)    "0" }
+      if { ! [ info exists conf(audinet,mac_address) ] }  { set conf(audinet,mac_address)  "00:01:02:03:04:05" }
+      if { ! [ info exists conf(audinet,protocole) ] }    { set conf(audinet,protocole)    "$caption(audinet,protocole_udp)" }
+      if { ! [ info exists conf(audinet,udptempo) ] }     { set conf(audinet,udptempo)     "0" }
+      if { ! [ info exists conf(audinet,autoflush) ] }    { set conf(audinet,autoflush)    "1" }
+      if { ! [ info exists conf(audinet,focuser_type) ] } { set conf(audinet,focuser_type) "lx200" }
+      if { ! [ info exists conf(audinet,focuser_addr) ] } { set conf(audinet,focuser_addr) "112" }
+      if { ! [ info exists conf(audinet,focuser_bit) ] }  { set conf(audinet,focuser_bit)  "0" }
 
       return
    }
@@ -125,10 +125,10 @@ namespace eval audinet {
       set widget(conf_audinet,mac_address)  $conf(audinet,mac_address)
       set widget(conf_audinet,protocole)    $conf(audinet,protocole)
       set widget(conf_audinet,udptempo)     $conf(audinet,udptempo)
-      set widget(conf_lxnet,autoflush)      $conf(lxnet,autoflush)
-      set widget(conf_lxnet,focuser_type)   $conf(lxnet,focuser_type)
-      set widget(conf_lxnet,focuser_addr)   $conf(lxnet,focuser_addr)
-      set widget(conf_lxnet,focuser_bit)    $conf(lxnet,focuser_bit)
+      set widget(conf_audinet,autoflush)    $conf(audinet,autoflush)
+      set widget(conf_audinet,focuser_type) $conf(audinet,focuser_type)
+      set widget(conf_audinet,focuser_addr) $conf(audinet,focuser_addr)
+      set widget(conf_audinet,focuser_bit)  $conf(audinet,focuser_bit)
    }
 
    #------------------------------------------------------------
@@ -146,10 +146,10 @@ namespace eval audinet {
       set conf(audinet,mac_address)        $widget(conf_audinet,mac_address)
       set conf(audinet,protocole)          $widget(conf_audinet,protocole)
       set conf(audinet,udptempo)           $widget(conf_audinet,udptempo)
-      set conf(lxnet,autoflush)            $widget(conf_lxnet,autoflush)
-      set conf(lxnet,focuser_type)         $widget(conf_lxnet,focuser_type)
-      set conf(lxnet,focuser_addr)         $widget(conf_lxnet,focuser_addr)
-      set conf(lxnet,focuser_bit)          $widget(conf_lxnet,focuser_bit)
+      set conf(audinet,autoflush)          $widget(conf_audinet,autoflush)
+      set conf(audinet,focuser_type)       $widget(conf_audinet,focuser_type)
+      set conf(audinet,focuser_addr)       $widget(conf_audinet,focuser_addr)
+      set conf(audinet,focuser_bit)        $widget(conf_audinet,focuser_bit)
    }
 
    #------------------------------------------------------------
@@ -248,7 +248,7 @@ namespace eval audinet {
 
       #--- Definition du mode de vidage de la communication avec le telescope
       checkbutton $frm.autoflush -text "$caption(audinet,autoflush)" -highlightthickness 0 \
-         -variable ::audinet::widget(conf_lxnet,autoflush)
+         -variable ::audinet::widget(conf_audinet,autoflush)
       pack $frm.autoflush -in $frm.frame4 -anchor center -side left -padx 10 -pady 2
 
       #--- Choix du systeme de mise au point (focuser)
@@ -262,11 +262,11 @@ namespace eval audinet {
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable ::audinet::widget(conf_lxnet,focuser_type) \
+         -textvariable ::audinet::widget(conf_audinet,focuser_type) \
          -values $list_combobox \
          -modifycmd {
             #--- Autoriser/masquer l'autre widget en fontion du type de focuser
-            if { $::audinet::widget(conf_lxnet,focuser_type) == "lx200" } {
+            if { $::audinet::widget(conf_audinet,focuser_type) == "lx200" } {
                $::audinet::widget(frm).ent_focuser_adr configure -state disabled
             } else {
                $::audinet::widget(frm).ent_focuser_adr configure -state normal
@@ -279,11 +279,11 @@ namespace eval audinet {
       pack $frm.lab_focuser_adr -in $frm.frame5 -anchor center -side left -padx 10
       
       #--- Saisie adresse I2C du focuser 
-      entry $frm.ent_focuser_adr -width 17 -textvariable ::audinet::widget(conf_lxnet,focuser_addr)
+      entry $frm.ent_focuser_adr -width 17 -textvariable ::audinet::widget(conf_audinet,focuser_addr)
       pack $frm.ent_focuser_adr -in $frm.frame5 -anchor center -side left -padx 10
 
       #--- Autoriser/masquer l'autre widget en fontion du type de focuser
-      if { $::audinet::widget(conf_lxnet,focuser_type) == "lx200" } {
+      if { $::audinet::widget(conf_audinet,focuser_type) == "lx200" } {
          $::audinet::widget(frm).ent_focuser_adr configure -state disabled
       } else {
          $::audinet::widget(frm).ent_focuser_adr configure -state normal
