@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Date de mise a jour : 18 juin 2005
+# Date de mise a jour : 13 fevrier 2006
 #
 
 namespace eval confFont {
@@ -22,6 +22,8 @@ global audace
          set audace(font,listbox)         "courier 13 bold"
 
          #--- Fontes des boites et des outils (fonte Linux = fonte Windows + 3)
+         set audace(font,arial_6_n)       "arial 9 normal"
+         set audace(font,arial_6_b)       "arial 9 bold"
          set audace(font,arial_7_n)       "arial 10 normal"
          set audace(font,arial_7_b)       "arial 10 bold"
          set audace(font,arial_8_n)       "arial 11 normal"
@@ -43,6 +45,8 @@ global audace
          set audace(font,listbox)         "courier 13 bold"
 
          #--- Fontes des boites et des outils (fonte Mac = fonte Windows + 3)
+         set audace(font,arial_6_n)       "arial 9 normal"
+         set audace(font,arial_6_b)       "arial 9 bold"
          set audace(font,arial_7_n)       "arial 10 normal"
          set audace(font,arial_7_b)       "arial 10 bold"
          set audace(font,arial_8_n)       "arial 11 normal"
@@ -64,6 +68,8 @@ global audace
          set audace(font,listbox)         "courier 10 bold"
 
          #--- Fontes des boites et des outils
+         set audace(font,arial_6_n)       "arial 7 normal"
+         set audace(font,arial_6_b)       "arial 7 bold"
          set audace(font,arial_7_n)       "arial 7 normal"
          set audace(font,arial_7_b)       "arial 7 bold"
          set audace(font,arial_8_n)       "arial 8 normal"

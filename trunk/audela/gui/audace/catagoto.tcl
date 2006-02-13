@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Date de mise a jour : 30 octobre 2005
+# Date de mise a jour : 13 fevrier 2006
 #
 
 namespace eval cataGoto {
@@ -638,7 +638,7 @@ namespace eval cataGoto {
          #--- Traitement du nom de l'asteroide
          set catalogue(asteroide_choisi) [ suppr_accents $catalogue(asteroide_choisi) ]
          #--- Demande et extraction des ephemerides
-         set erreur [ catch { vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) } liste ]
+         set erreur [ catch { vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) text basic 500 } liste ]
          if { $erreur == "0" } {
             set liste_titres [ lindex $liste 0 ]
             #--- Traitement d'une erreur particuliere, la requete repond 'item'
@@ -646,7 +646,8 @@ namespace eval cataGoto {
                set catalogue(asteroide_choisi) ""
                set catalogue(asteroide_mag)    ""
             } else {
-               regsub -all "\'" [ lindex $liste 1 ] "\"" liste_objet
+               set liste_objet [ split [ lindex $liste 1 ] "|" ]
+               set catalogue(asteroide_choisi) [ lindex $liste_objet 1 ]
                set catalogue(aster_ad) [ lindex $liste_objet 2 ]
                set catalogue(asteroide_ad_d) [ expr 15.0 * $catalogue(aster_ad) ]
                set catalogue(asteroide_ad) [ mc_angle2hms $catalogue(asteroide_ad_d) 360 zero 2 auto string ]
@@ -667,7 +668,7 @@ namespace eval cataGoto {
       set cataGoto(carte,zoom_objet) "8"
 
       #--- Preparation et affichage nom, magnitude, AD et Dec.
-      $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text "$catalogue(asteroide_choisi)"
+      $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text [concat "([ lindex $liste_objet 0 ]) $catalogue(asteroide_choisi)"]
       $audace(base).cataAsteroide.frame2.frame3.lab4a configure -text "$catalogue(asteroide_mag)"
       if { "$catalogue(asteroide_choisi)" == "" } {
          set catalogue(asteroide_ad) "0"

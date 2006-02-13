@@ -1,8 +1,8 @@
 #
 # Fichier : vo_tools_go.tcl
-# Description : Outil pour l'utilisation des fonctionnalites de l'observatoire virtuel
+# Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Date de mise a jour : 13 janvier 2006
+# Date de mise a jour : 13 fevrier 2006
 #
 
 package provide vo_tools 1.0
@@ -64,9 +64,7 @@ proc VO_ToolsBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(VO_Tools,titre) \
-            -command {
-               ::audace::showHelpPlugin tool vo_tools vo_tools.htm
-            }
+            -command "::audace::showHelpPlugin tool vo_tools vo_tools.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(VO_Tools,aide)
 
@@ -77,17 +75,17 @@ proc VO_ToolsBuildIF { This } {
 
          #--- Bouton d'ouverture de l'outil CDS Aladin Multiview
          button $This.fra2.but1 -borderwidth 2 -text $panneau(VO_Tools,titre1) -state disabled \
-            -command {  }
+            -command ""
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra2 -side top -fill x
 
-      #--- Frame du mode de recherche d'objets du Systeme Solaire dans le champ
+      #--- Frame des services SkyBoT 
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de recherche d'objets du Systeme Solaire dans le champ
          button $This.fra3.but1 -borderwidth 2 -text $panneau(VO_Tools,titre2) \
-            -command { ::skybot_Search::run "$audace(base).skybot_Search" }
+            -command "::skybot_Search::run $audace(base).skybot_Search"
          pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra3 -side top -fill x
@@ -97,7 +95,7 @@ proc VO_ToolsBuildIF { This } {
 
          #--- Bouton d'ouverture de l'outil de calcul des ephemerides d'objets du Systeme Solaire
          button $This.fra4.but1 -borderwidth 2 -text $panneau(VO_Tools,titre3) \
-            -command { ::skybot_Resolver::run "$audace(base).skybot_Resolver" }
+            -command "::skybot_Resolver::run $audace(base).skybot_Resolver"
          pack $This.fra4.but1 -in $This.fra4 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra4 -side top -fill x
@@ -112,7 +110,7 @@ proc VO_ToolsBuildIF { This } {
                $::VO_Tools::This.fra5.but1 configure -relief groove -state disabled
                #--- Lancement de la commande
                ::skybot_Statut::run "$audace(base).skybot_Statut"
-         }
+            }
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra5 -side top -fill x

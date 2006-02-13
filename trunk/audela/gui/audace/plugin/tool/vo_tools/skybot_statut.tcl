@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 27 octobre 2005
+# Date de mise a jour : 13 fevrier 2006
 #
 
 namespace eval skybot_Statut {
@@ -93,7 +93,8 @@ namespace eval skybot_Statut {
 
       #---
       toplevel $This -class Toplevel
-      wm geometry $This 350x310$voconf(position_statut)
+#      wm geometry $This 480x230$voconf(position_statut)
+      wm geometry $This $voconf(position_statut)
       wm resizable $This 1 1
       wm title $This $caption(statut,main_title)
       wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
@@ -102,196 +103,101 @@ namespace eval skybot_Statut {
       if { $erreur == "0" } {
 
          #--- Mise en forme du resultat
-         set statut [ lindex $statut 1 ]
-         regsub -all "\'" $statut "\"" statut
+         regsub -all "\'" [lindex $statut 1] "" statut
+         set statut [split $statut "|"]
+
+           #--- Date du debut
+           set date [ mc_date2ymdhms [lindex $statut 1] ]
+           set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date 0] [lindex $date 1] [lindex $date 2] \
+                                                                   [lindex $date 3] [lindex $date  4] [lindex $date  5] ]
+
+           #--- Date de fin
+           set date [ mc_date2ymdhms [lindex $statut 2] ]
+           set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date 0] [lindex $date 1] [lindex $date 2] \
+                                                                  [lindex $date 3] [lindex $date  4] [lindex $date  5] ]
 
          #--- Cree un frame pour afficher le statut de la base
-         frame $This.frame1 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame1 \
-            -in $This -anchor s -side top -expand 0 -fill x
+         frame $This.frame1 -borderwidth 0 -cursor arrow
+         pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x
 
-            #--- Cree un label
-            label $This.frame1.statut_base -font $audace(font,arial_8_b) \
-               -text "$caption(statut,titre1) [ lindex $statut 0 ]"
-            pack $This.frame1.statut_base \
-               -in $This.frame1 -side left \
-               -padx 3 -pady 3  
+           #--- Cree un label pour le titre
+           label $This.frame1.titre -font $audace(font,arial_10_b) \
+                 -text "$caption(statut,titre)"
+           pack $This.frame1.titre \
+                -in $This.frame1 -side top -padx 3 -pady 3
 
-         #--- Cree un frame pour afficher la periode de validite des donnees de la base
-         frame $This.frame2 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame2 \
-            -in $This -anchor s -side top -expand 0 -fill x
+           #--- Cree un frame pour afficher les resultats
+           frame $This.frame1.statut \
+                 -borderwidth 1 -relief raised -cursor arrow
+           pack $This.frame1.statut \
+                -in $This.frame1 -side top -expand 0 -fill x -padx 1 -pady 1
 
-            #--- Cree un label
-            label $This.frame2.periode -font $audace(font,arial_8_b) \
-               -text "$caption(statut,titre2)"
-            pack $This.frame2.periode \
-               -in $This.frame2 -side left \
-               -padx 3 -pady 3
+             #--- Cree un frame pour afficher les intitules
+             set intitle [frame $This.frame1.statut.l -borderwidth 0]
+             pack $intitle -in $This.frame1.statut -side left
 
-         #--- Cree un frame pour afficher la periode de validite des donnees de la base
-         frame $This.frame3 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame3 \
-            -in $This -anchor s -side top -expand 0 -fill x
+               #--- Cree un label pour le statut
+               label $intitle.ok -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_ok)"
+               pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
+               #--- Cree un label pour la periode
+               label $intitle.pe -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_periode)"
+               pack $intitle.pe -in $intitle -side top -padx 3 -pady 1 -anchor w
+               #--- Cree un label pour la date de MAJ
+               label $intitle.dm -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_maj)"
+               pack $intitle.dm -in $intitle -side top -padx 3 -pady 1 -anchor w
+               #--- Cree un label pour le nombre d'asteroides
+               label $intitle.na -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_aster)"
+               pack $intitle.na -in $intitle -side top -padx 3 -pady 1 -anchor w
+               #--- Cree un label pour le nombre de planetes
+               label $intitle.np -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_planet)"
+               pack $intitle.np -in $intitle -side top -padx 3 -pady 1 -anchor w
+               #--- Cree un label pour le nombre de satellites naturels
+               label $intitle.ns -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_satnat)"
+               pack $intitle.ns -in $intitle -side top -padx 3 -pady 1 -anchor w
+               #--- Cree un label pour le nombre de cometes
+               label $intitle.nc -font $audace(font,en_tete_2) \
+                     -text "$caption(statut,label_comet)"
+               pack $intitle.nc -in $intitle -side top -padx 3 -pady 1 -anchor w
 
-            #--- Date du debut
-            set date [ mc_date2ymdhms [ lindex $statut 1 ] ]
-            set date_debut [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date 2 ] \
-               [ lindex $date 1 ] [ lindex $date 0 ] [ lindex $date 3 ] [ lindex $date  4 ] [ lindex $date  5 ] ]
+             #--- Cree un frame pour afficher les valeurs
+             set inparam [frame $This.frame1.statut.v -borderwidth 0]
+             pack $inparam -in $This.frame1.statut -side right -expand 1 -fill x
 
-            #--- Date de fin
-            set date [ mc_date2ymdhms [ lindex $statut 2 ] ]
-            set date_fin [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date 2 ] \
-               [ lindex $date 1 ] [ lindex $date 0 ] [ lindex $date 3 ] [ lindex $date  4 ] [ lindex $date  5 ] ]
-
-            #--- Cree un label
-            label $This.frame3.periode_debut -font $audace(font,arial_8_b) \
-               -text "     $date_debut $caption(statut,titre3) $date_fin"
-            pack $This.frame3.periode_debut \
-               -in $This.frame3 -side left \
-               -padx 3 -pady 3
-
-         #--- Cree un frame pour afficher le contenu de la base
-         frame $This.frame4 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame4 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame4.contenu_base -font $audace(font,arial_8_b) \
-               -text "$caption(statut,titre4)"
-            pack $This.frame4.contenu_base \
-               -in $This.frame4 -side left \
-               -padx 3 -pady 3
-
-         #--- Cree un frame pour afficher le nombre d'asteroides
-         frame $This.frame5 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame5 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-         #--- Nombre d'asteroides
-         set nbr_asteroides [ lindex $statut 3 ]
-
-            #--- Cree un label
-            if { $nbr_asteroides > "1" } {
-               label $This.frame5.nb_asteroides -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_asteroides $caption(statut,asteroides)"
-               pack $This.frame5.nb_asteroides \
-                  -in $This.frame5 -side left \
-                  -padx 3 -pady 3
-            } else {
-               label $This.frame5.nb_asteroides -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_asteroides $caption(statut,asteroide)"
-               pack $This.frame5.nb_asteroides \
-                  -in $This.frame5 -side left \
-                  -padx 3 -pady 3
-            }
-
-         #--- Cree un frame pour afficher le nombre de planetes
-         frame $This.frame6 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame6 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-            #--- Nombre de planetes
-            set nbr_planetes [ lindex $statut 4 ]
-
-            #--- Cree un label
-            if { $nbr_planetes > "1" } {
-               label $This.frame6.nb_planetes -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_planetes $caption(statut,planetes)"
-               pack $This.frame6.nb_planetes \
-                  -in $This.frame6 -side left \
-                  -padx 3 -pady 3
-            } else {
-               label $This.frame6.nb_planetes -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_planetes $caption(statut,planete)"
-               pack $This.frame6.nb_planetes \
-                  -in $This.frame6 -side left \
-                  -padx 3 -pady 3
-            }
-
-         #--- Cree un frame pour afficher le nombre de satellites naturels
-         frame $This.frame7 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame7 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-            #--- Nombre de satellites naturels
-            set nbr_satellites [ lindex $statut 5 ]
-
-            #--- Cree un label
-            if { $nbr_satellites > "1" } {
-               label $This.frame7.nb_satellites_naturels -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_satellites $caption(statut,satellites)"
-               pack $This.frame7.nb_satellites_naturels \
-                  -in $This.frame7 -side left \
-                  -padx 3 -pady 3
-            } else {
-               label $This.frame7.nb_satellites_naturels -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_satellites $caption(statut,satellite)"
-               pack $This.frame7.nb_satellites_naturels \
-                  -in $This.frame7 -side left \
-                  -padx 3 -pady 3
-            }
-
-         #--- Cree un frame pour afficher le nombre de cometes
-         frame $This.frame8 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame8 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-            #--- Nombre de cometes
-            set nbr_cometes [ lindex $statut 6 ]
-
-            #--- Cree un label
-            if { $nbr_cometes > "1" } {
-               label $This.frame8.nb_cometes -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_cometes $caption(statut,cometes)"
-               pack $This.frame8.nb_cometes \
-                  -in $This.frame8 -side left \
-                  -padx 3 -pady 3
-            } else {
-               label $This.frame8.nb_cometes -font $audace(font,arial_8_b) \
-                  -text "     - $nbr_cometes $caption(statut,comete)"
-               pack $This.frame8.nb_cometes \
-                  -in $This.frame8 -side left \
-                  -padx 3 -pady 3
-            }
-
-         #--- Cree un frame pour afficher la date de la derniere mise a jour de la base
-         frame $This.frame9 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame9 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame9.mise_a_jour -font $audace(font,arial_8_b) \
-               -text "$caption(statut,titre5)"
-            pack $This.frame9.mise_a_jour \
-               -in $This.frame9 -side left \
-               -padx 3 -pady 3
-
-         #--- Cree un frame pour afficher la date de la derniere mise a jour de la base
-         frame $This.frame10 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame10 \
-            -in $This -anchor s -side top -expand 0 -fill x
-
-            #--- Date de mise a jour
-            set date [ mc_date2ymdhms [ lindex $statut 7 ] ]
-            set date_mise_a_jour [ format "%02d/%02d/%2s" [ lindex $date 2 ] [ lindex $date 1 ] [string range [ lindex $date 0 ] 2 3 ] ]
-
-            #--- Cree un label
-            label $This.frame10.date_mise_a_jour -font $audace(font,arial_8_b) \
-               -text "     $date_mise_a_jour $caption(statut,titre6) [ lindex $statut 8 ]"
-            pack $This.frame10.date_mise_a_jour \
-               -in $This.frame10 -side left \
-               -padx 3 -pady 3
+               #--- Cree un label pour le statut
+               label $inparam.ok -font $audace(font,arial_8_n)\
+                     -text [string trim [lindex $statut 0]] -fg $color(green)
+               pack $inparam.ok -in $inparam -side top -pady 1 -anchor w
+               if {[string trim [lindex $statut 0]] != "ok"} { $inparam.ok configure -fg $color(red) }
+               #--- Cree un label pour la periode
+               label $inparam.pe -font $audace(font,arial_8_n) \
+                     -text [string trim [concat $date_debut - $date_fin]] -fg $color(blue)
+               pack $inparam.pe -in $inparam -side top -pady 1 -anchor w
+               #--- Cree un label pour la date de MAJ
+               label $inparam.dm -font $audace(font,arial_8_n) \
+                     -text [string trim [lindex $statut 7]] -fg $color(blue)
+               pack $inparam.dm -in $inparam -side top -pady 1 -anchor w
+               #--- Cree un label pour le nombre d'asteroides
+               label $inparam.na -font $audace(font,arial_8_n) \
+                     -text [string trim [lindex $statut 3]] -fg $color(blue)
+               pack $inparam.na -in $inparam -side top -pady 1 -anchor w
+               #--- Cree un label pour le nombre de planetes
+               label $inparam.np -font $audace(font,arial_8_n) \
+                     -text [string trim [lindex $statut 4]] -fg $color(blue)
+               pack $inparam.np -in $inparam -side top -pady 1 -anchor w
+               #--- Cree un label pour le nombre de satellites naturels
+               label $inparam.ns -font $audace(font,arial_8_n) \
+                     -text [string trim [lindex $statut 5]] -fg $color(blue)
+               pack $inparam.ns -in $inparam -side top -pady 1 -anchor w
+               #--- Cree un label pour le nombre de cometes
+               label $inparam.nc -font $audace(font,arial_8_n) \
+                     -text [string trim [lindex $statut 6]] -fg $color(blue)
+               pack $inparam.nc -in $inparam -side top -pady 1 -anchor w
 
       } else {
 

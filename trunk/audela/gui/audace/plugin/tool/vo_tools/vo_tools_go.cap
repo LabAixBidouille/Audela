@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Date de mise a jour : 29 janvier 2006
+# Date de mise a jour : 13 fevrier 2006
 #
 
 #=========================================================================
@@ -14,10 +14,10 @@ global caption
 set caption(vo_tools_go,vo_tools)         "Virtual\nObservatory"
 set caption(vo_tools_go,titre)            "Virtual Observatory"
 set caption(vo_tools_go,help_titre)       "Help For This Tool"
-set caption(vo_tools_go,aladin)           "CDS - Aladin\nMultiview"
-set caption(vo_tools_go,cone-search)      "Search\nimage for\nSolar System\nobjects"
-set caption(vo_tools_go,resolver)         "Search for\nSolar System\nobjects around\nselected object"
-set caption(vo_tools_go,statut)           "Status\nof SkyBoT\nbase"
+set caption(vo_tools_go,aladin)           "Launch Aladin\n(VO portal)"
+set caption(vo_tools_go,cone-search)      "Search for solar\nsystem bodies\nin a field of view"
+set caption(vo_tools_go,resolver)         "Search for solar\nsystem bodies\naround a\ncelestial object"
+set caption(vo_tools_go,statut)           "Status of\nSkyBoT service"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -25,10 +25,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Observatoire\nvirtuel"
    set caption(vo_tools_go,titre)         "Observatoire virtuel"
    set caption(vo_tools_go,help_titre)    "Aide pour cet outil"
-   set caption(vo_tools_go,aladin)        "CDS - Aladin\nMultiview"
-   set caption(vo_tools_go,cone-search)   "Recherche\nd'objets du\nSystème Solaire\ndans l'image"
-   set caption(vo_tools_go,resolver)      "Recherche\ndes corps du\nSystème Solaire\nautour de l'objet\nsélectionné"
-   set caption(vo_tools_go,statut)        "Statut de\nla base\nSkyBoT"
+   set caption(vo_tools_go,aladin)        "Lancer Aladin\n(portail OV)"
+   set caption(vo_tools_go,cone-search)   "Recherche des\ncorps du système\nsolaire dans un\nchamp de vue"
+   set caption(vo_tools_go,resolver)      "Recherche des\ncorps du système\nsolaire autour\nd'un corps céleste"
+   set caption(vo_tools_go,statut)        "Statut du service\nSkyBoT"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -36,10 +36,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Osservatorio\nvirtuale"
    set caption(vo_tools_go,titre)         "Osservatorio virtuale"
    set caption(vo_tools_go,help_titre)    "Aiuto per questo tool"
-   set caption(vo_tools_go,aladin)        "CDS - Aladin\nMultiview"
-   set caption(vo_tools_go,cone-search)   "Ricerca di\noggetti del\nSistema Solare\nnell'immagine"
-   set caption(vo_tools_go,resolver)      "Ricerca di\noggetti del\nSistema Solare\nattorno all'oggetto\nselezionato"
-   set caption(vo_tools_go,statut)        "Stato della\nbase SkyBot"
+   set caption(vo_tools_go,aladin)        "# Lancer Aladin\n(portail OV)"
+   set caption(vo_tools_go,cone-search)   "# Recherche des\ncorps du système\nsolaire dans un\nchamp de vue"
+   set caption(vo_tools_go,resolver)      "# Recherche des\ncorps du système\nsolaire autour\nd'un corps céleste"
+   set caption(vo_tools_go,statut)        "# Statut du service\nSkyBoT"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -47,10 +47,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Observatorio\nVisual"
    set caption(vo_tools_go,titre)         "Observatorio Visual"
    set caption(vo_tools_go,help_titre)    "Ayuda para esta herramienta"
-   set caption(vo_tools_go,aladin)        "CDS - Aladin\nMultiview"
-   set caption(vo_tools_go,cone-search)   "Buscando\nobjetos del\nSistema Solar\nen la imagen"
-   set caption(vo_tools_go,resolver)      "Buscando\nobjetos del\nSistema Solar\nalrededor del\nobjeto selccionado"
-   set caption(vo_tools_go,statut)        "Estado de\nla base\nSkyBoT"
+   set caption(vo_tools_go,aladin)        "# Lancer Aladin\n(portail OV)"
+   set caption(vo_tools_go,cone-search)   "# Recherche des\ncorps du système\nsolaire dans un\nchamp de vue"
+   set caption(vo_tools_go,resolver)      "# Recherche des\ncorps du système\nsolaire autour\nd'un corps céleste"
+   set caption(vo_tools_go,statut)        "# Statut du service\nSkyBoT"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -58,10 +58,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Virtuelle\nSternwarte"
    set caption(vo_tools_go,titre)         "Virtuelle Sternwarte"
    set caption(vo_tools_go,help_titre)    "Hilfe für dieses Gerät"
-   set caption(vo_tools_go,aladin)        "CDS - Aladin\nMultiview"
-   set caption(vo_tools_go,cone-search)   "Objekten vom\nSonnensystem\nin das Bild\nDurchsuchung"
-   set caption(vo_tools_go,resolver)      "Objekten vom\nSonnensystem\num den gewählten\nObjekt\nDurchsuchung"
-   set caption(vo_tools_go,statut)        "Stand der\nSkyBoT\nDatenbasis"
+   set caption(vo_tools_go,aladin)        "# Lancer Aladin\n(portail OV)"
+   set caption(vo_tools_go,cone-search)   "# Recherche des\ncorps du système\nsolaire dans un\nchamp de vue"
+   set caption(vo_tools_go,resolver)      "# Recherche des\ncorps du système\nsolaire autour\nd'un corps céleste"
+   set caption(vo_tools_go,statut)        "# Statut du service\nSkyBoT"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -69,10 +69,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "# Observatoire\nvirtuel"
    set caption(vo_tools_go,titre)         "# Observatoire virtuel"
    set caption(vo_tools_go,help_titre)    "Hjælp til dette værktøj"
-   set caption(vo_tools_go,aladin)        "CDS - Aladin\nMultiview"
-   set caption(vo_tools_go,cone-search)   "# Recherche\nd'objets du\nSystème Solaire\ndans l'image"
-   set caption(vo_tools_go,resolver)      "# Recherche\ndes corps du\nSystème Solaire\nautour de l'objet\nsélectionné"
-   set caption(vo_tools_go,statut)        "# Statut de\nla base\nSkyBoT"
+   set caption(vo_tools_go,aladin)        "# Lancer Aladin\n(portail OV)"
+   set caption(vo_tools_go,cone-search)   "# Recherche des\ncorps du système\nsolaire dans un\nchamp de vue"
+   set caption(vo_tools_go,resolver)      "# Recherche des\ncorps du système\nsolaire autour\nd'un corps céleste"
+   set caption(vo_tools_go,statut)        "# Statut du service\nSkyBoT"
 
 }
 

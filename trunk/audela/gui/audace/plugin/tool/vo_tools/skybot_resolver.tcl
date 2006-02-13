@@ -1,13 +1,15 @@
 #
 # Fichier : skybot_resolver.tcl
-# Description : Recherche d'objets dans le champ d'une image
+# Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 03 decembre 2005
+# Date de mise a jour : 23 janvier 2006
 #
 
 namespace eval skybot_Resolver {
    global audace
    global voconf
+
+   package require xml
 
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_resolver.cap ]\""
@@ -36,6 +38,12 @@ namespace eval skybot_Resolver {
       set column_format(dDECarcsec/h) [ list 16 "$caption(resolver,ddecarcsec)" right ]
       set column_format(Dgua)         [ list 17 "$caption(resolver,dgua)"       right ]
       set column_format(Dhua)         [ list 17 "$caption(resolver,dhua)"       right ]
+      #---
+      global myurl
+      set myurl(iau_codes)   "http://cfa-www.harvard.edu/iau/lists/ObsCodes.html"
+      set myurl(astorb,CDS)  "http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&Name==="
+      set myurl(vizier,CDS)  "http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&Name==="
+      set myurl(simbad,CDS)  "http://simbad.u-strasbg.fr/sim-id.pl?Ident="
       #---
       set This $this
       createDialog 
@@ -72,6 +80,97 @@ namespace eval skybot_Resolver {
    }
 
    #
+   # skybot_Resolver::GetInfo
+   # Affichage d'un message sur le format d'une saisie
+   #
+   proc GetInfo { subject } {
+      global caption
+      global voconf
+      switch $subject {
+         target      { set msg $caption(resolver,format_target) }
+         epoch       { set msg $caption(resolver,format_epoch) }
+         loc         { set msg $caption(resolver,format_loc) }
+         dim_fov     { set msg $caption(resolver,format_dim_fov) }
+         filter      { set msg $caption(resolver,format_filter) }
+         default     { set msg $caption(resolver,param_none) }
+      }
+      tk_messageBox -title $caption(resolver,msg_format) -type ok -message $msg
+      return 1
+   }
+
+   #
+   # skybot_Resolver::xml2list
+   # Parser pour la sortie xml de Sesame
+   #
+   proc xml2list { xml } {
+
+     regsub -all {>\s*<} [string trim $xml " \n\t<>"] "\} \{" xml
+     set xml [string map {? ""  > "\} \{#text \{" < "\}\} \{"}  $xml]
+     regsub -all  {\{![\-]+(.*)[\-]+\}} $xml "" xml
+     regsub -all  {xml version="1.0" encoding="UTF-8"\} \{} $xml "" xml
+
+     set res ""   ;# string to collect the result
+     set stack {} ;# track open tags
+     set rest {}
+     foreach item "{$xml}" {
+         switch -regexp -- $item {
+            ^# {append res "{[lrange $item 0 end]} " ; #text item}
+            ^/ {
+                regexp {/(.+)} $item -> tagname ;# end tag
+                set expected [lindex $stack end]
+                if {$tagname != $expected} {error "$item != $expected"}
+                set stack [lrange $stack 0 end-1]
+                append res "\}\} "
+          }
+            /$ { # singleton - start and end in one <> group
+               regexp {([^ ]+)( (.+))?/$} $item -> tagname - rest
+               set rest [lrange [string map {= " "} $rest] 0 end]
+               append res "{$tagname [list $rest] {}} "
+            }
+            default {
+               set tagname [lindex $item 0] ;# start tag
+               set rest [lrange [string map {= " "} $item] 1 end]
+               lappend stack $tagname
+               append res "\{$tagname [list $rest] \{"
+            }
+         }
+         if {[llength $rest]%2} {error "att's not paired: $rest"}
+     }
+     if [llength $stack] {error "unresolved: $stack"}
+     string map {"\} \}" "\}\}"} [lindex $res 0]
+
+   }
+
+   #
+   # skybot_Resolver::Extract_Sesame_Data
+   # Extraction des donnees dans la reponse XML de Sesame
+   # 
+    proc Extract_Sesame_Data { xml } {
+
+      set ok(name) 0
+      set ok(ra) 0
+      set ok(de) 0
+      set data [ lindex [ lindex [ lindex [ xml2list $xml ] 2 ] 1 ] 2 ]
+      for { set i 0 } { $i <= [ expr [ llength $data ] - 1 ] } { incr i } {
+         set key   [ lindex [ lindex $data $i ] 0 ]
+         set value [ string map {\{\#text "" \{ "" \} ""} [ lindex [ lindex $data $i ] 2 ] ]
+         switch $key {
+            oname  { set sesame(name) $value;  set ok(name) 1 }
+            jradeg { set sesame(radeg) $value; set ok(ra)   1 }
+            jdedeg { set sesame(dedeg) $value; set ok(de)   1 }
+            otype  { set sesame(type) $value }
+         }
+      }
+      if { $ok(name) && $ok(ra) && $ok(de) } {
+         set response [ list {# Num, Name, RA(h), DE(deg), Class, Mv, Err(arcsec), dRA(arcsec/h), dDEC(arcsec/h), Dg(ua), Dh(ua)} \
+                             [concat "-|$sesame(name)|[expr $sesame(radeg)/15.0]|$sesame(dedeg)|$sesame(type)|||||| " ] ]
+      } else {
+         set response "1"
+      }
+      return $response
+   }
+
+   #
    # skybot_Resolver::createDialog
    # Creation de l'interface graphique
    #
@@ -81,22 +180,26 @@ namespace eval skybot_Resolver {
       global caption
       global conf
       global voconf
+      global myurl
 
       #--- Initialisation
-      set voconf(nom_objet)               ""
-      set voconf(date_ephemerides_calcul) ""
-      set voconf(ad_objet)                ""
-      set voconf(ad_objet_d)              ""
-      set voconf(ad_objet_h)              ""
-      set voconf(dec_objet)               ""
-      set voconf(dec_objet_d)             ""
-      set voconf(mag_v_objet)             ""
-      set voconf(taille_champ_min)        ""
+      set voconf(nom_objet)        ""
+      set voconf(date_ephemerides) ""
+      set voconf(ad_objet)         ""
+      set voconf(dec_objet)        ""
+      set voconf(taille_champ_x)   "600"
+      set voconf(taille_champ_y)   ""
+      set voconf(taille_champ)     ""
+      set voconf(filter)           "120"
+      set voconf(iau_code_obs)     "500"
+      set voconf(type)             "?"
+
+      set voconf(but_skybot)       1
+      set voconf(but_sesame)       1
+      set voconf(sesame_server)    "CDS"
 
       #--- initConf
       if { ! [ info exists conf(vo_tools,position_resolver) ] } { set conf(vo_tools,position_resolver) "+80+40" }
-      if { ! [ info exists voconf(choix_date) ] }               { set voconf(choix_date)               "1" }
-      if { ! [ info exists voconf(option_champ) ] }             { set voconf(option_champ)             "1" }
 
       #--- confToWidget
       set voconf(position_resolver) $conf(vo_tools,position_resolver)
@@ -105,7 +208,7 @@ namespace eval skybot_Resolver {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
-         focus $This.frame12.but_fermer
+         focus $This.frame6.but_fermer
          return
       }
 
@@ -118,319 +221,373 @@ namespace eval skybot_Resolver {
 
       #---
       toplevel $This -class Toplevel
-      wm geometry $This 530x450$voconf(position_resolver)
+#      wm geometry $This 530x500$voconf(position_resolver)
+      wm geometry $This $voconf(position_resolver)
       wm resizable $This 1 1
       wm title $This $caption(resolver,main_title)
       wm protocol $This WM_DELETE_WINDOW { ::skybot_Resolver::fermer }
 
-      #--- Cree un frame
+      #--- Cree un frame pour la saisie de l'objet cible
       frame $This.frame1 \
-         -borderwidth 1 -relief raised -cursor arrow
+         -borderwidth 1 -relief raised
       pack $This.frame1 \
-         -in $This -anchor s -side top -expand 0 -fill x
+         -in $This -anchor s -side top -expand 0 -fill x \
+         -padx 10 -pady 2
 
-         #--- Cree un frame pour selectionner l'objet
-         frame $This.frame2 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame2 \
-            -in $This.frame1 -anchor s -side top -expand 0 -fill x
+        #--- Cree un label
+        label $This.frame1.lab -text "$caption(resolver,nom_objet)"
+        pack $This.frame1.lab \
+           -in $This.frame1 -side left -anchor center \
+           -padx 3 -pady 3
+        #--- Cree une ligne d'entree
+        entry $This.frame1.ent -textvariable voconf(nom_objet) \
+           -borderwidth 1 -relief groove -width 25 -justify left
+        pack $This.frame1.ent \
+           -in $This.frame1 -side left -anchor center \
+           -padx 3 -pady 3
+        #--- Cree un bouton pour une info sur la saisie de l'epoque
+        button $This.frame1.help -state active \
+           -borderwidth 0 -relief flat -anchor c \
+           -text "$caption(resolver,info)" \
+           -command { ::skybot_Resolver::GetInfo "target" }
+        pack $This.frame1.help \
+           -in $This.frame1 -side left -anchor c \
+           -padx 3 -pady 3
 
-            #--- Cree un label
-            label $This.frame2.lab \
-               -text "$caption(resolver,nom_objet)"
-            pack $This.frame2.lab \
-               -in $This.frame2 -side left -anchor center \
-               -padx 3 -pady 3
+      #--- Cree un frame pour les parametres de calcul
+      frame $This.frame2 -borderwidth 0
+      pack $This.frame2 \
+         -in $This -anchor s -side top -expand 0 -fill x \
+         -pady 6
 
-            #--- Cree une ligne d'entree
-            entry $This.frame2.ent \
-               -textvariable voconf(nom_objet) -width 25 -justify center
-            pack $This.frame2.ent \
-               -in $This.frame2 -side left -anchor center \
-               -padx 3 -pady 3
+        #--- Cree un label pour le titre des parametres
+        label $This.frame2.titre -text "$caption(resolver,titre_param)" \
+          -borderwidth 0 -relief flat
+        pack $This.frame2.titre \
+          -in $This.frame2 -side top -anchor w \
+          -padx 3 -pady 3
 
-            #--- Cree un label
-            label $This.frame2.lab_exemples \
-               -text "$caption(resolver,exemples_noms)"
-            pack $This.frame2.lab_exemples \
-               -in $This.frame2 -side left -anchor center \
-               -padx 3 -pady 3
+        #--- Cree un frame pour les parametres de calcul
+        set param [frame $This.frame2.param -borderwidth 1 -relief solid]
+        pack $param \
+          -in $This.frame2 -anchor w -side top -expand 0 -fill x -padx 10
 
-         #--- Cree un frame pour selectionner une date pour le calcul des ephemerides
-         frame $This.frame3 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame3 \
-            -in $This.frame1 -anchor w -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame3.label_date_ephemeride \
-               -text "$caption(resolver,date_ephemeride)" \
+          #--- Cree un frame pour les labels
+          frame $param.lab -borderwidth 0
+          pack $param.lab \
+             -in $param -side left \
+             -padx 3 -pady 3
+            #--- Cree un label pour l'epoque des calculs
+            label $param.lab.epoch \
+               -text "$caption(resolver,epoch)" \
                -borderwidth 0 -relief flat
-            pack $This.frame3.label_date_ephemeride \
-               -in $This.frame3 -side left \
+            pack $param.lab.epoch \
+               -in $param.lab -side top -anchor w \
                -padx 3 -pady 3
-
-         #--- Cree un frame pour la selection de la date courante
-         frame $This.frame4 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame4 \
-            -in $This.frame3 -anchor w -side top -expand 0 -fill x
-
-            #--- Bouton radio Date courante
-            radiobutton $This.frame4.radiobutton_date_courante -highlightthickness 0 -state normal \
-               -text "$caption(resolver,date_courante)" -value 1 -variable voconf(choix_date) \
-               -command {
-                  $::skybot_Resolver::This.frame5.entry_date_ephemerides configure -state disabled
-                  set voconf(date_ephemerides_calcul) ""
-               }
-	      pack $This.frame4.radiobutton_date_courante \
-               -in $This.frame4 -side left -anchor center \
-               -padx 3 -pady 3
-
-            #--- Cree un label
-            label $This.frame4.label_date_ephemeride \
-               -text "$caption(resolver,format_date)" \
+            #--- Cree un label pour la localisation de l'observateur
+            label $param.lab.loc \
+               -text "$caption(resolver,loc)" \
                -borderwidth 0 -relief flat
-            pack $This.frame4.label_date_ephemeride \
-               -in $This.frame4 -side right -anchor center \
-               -padx 10 -pady 3
-
-          #--- Cree un frame pour la selection d'une date au choix
-         frame $This.frame5 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame5 \
-            -in $This.frame3 -anchor w -side top -expand 0 -fill x
-
-           #--- Bouton radio Choix de la date
-            radiobutton $This.frame5.radiobutton_choix_date -highlightthickness 0 -state normal \
-               -text "$caption(resolver,choix_date)" -value 2 -variable voconf(choix_date) \
-               -command {
-                  $::skybot_Resolver::This.frame5.entry_date_ephemerides configure -state normal
-               }
-	      pack $This.frame5.radiobutton_choix_date \
-               -in $This.frame5 -side left -anchor center \
+            pack $param.lab.loc \
+               -in $param.lab -side top -anchor w \
                -padx 3 -pady 3
 
-            #--- Cree une ligne d'entree
-            entry $This.frame5.entry_date_ephemerides \
-               -textvariable voconf(date_ephemerides_calcul) \
-               -borderwidth 1 -relief groove -width 25 -justify center -state disabled
-            pack $This.frame5.entry_date_ephemerides \
-               -in $This.frame5 -side right -anchor center \
-               -padx 15 -pady 3
+          #--- Cree un frame pour les saisies
+          frame $param.input -borderwidth 0
+          pack $param.input \
+             -in $param -side left -anchor w -expand 0 -fill x \
+             -padx 3 -pady 3
+            #--- Cree un frame pour la saisie de l'epoque
+            frame $param.input.epoch -borderwidth 0
+            pack $param.input.epoch \
+               -in $param.input -side top -anchor w \
+               -padx 3 -pady 1
+              #--- Cree une ligne d'entree pour la saisie de l'epoque
+              entry $param.input.epoch.ep \
+                 -textvariable voconf(date_ephemerides) \
+                 -borderwidth 1 -relief groove -width 25 -justify center
+              pack $param.input.epoch.ep \
+                 -in $param.input.epoch -side left
+              #--- Cree un bouton pour inserer la date courante
+              button $param.input.epoch.crt \
+                 -text "$caption(resolver,date_crte)" -borderwidth 1 \
+                 -command { set voconf(date_ephemerides) [ mc_date2iso8601 now ] }
+              pack $param.input.epoch.crt \
+                 -in $param.input.epoch -side left -padx 5
+            #--- Cree un frame pour la saisie de la localisation de l'observateur
+            frame $param.input.loc -borderwidth 0
+            pack $param.input.loc \
+               -in $param.input -side top -anchor w \
+               -padx 3 -pady 1
+              #--- Cree une ligne d'entree pour la loc de l'observateur
+              entry $param.input.loc.in \
+                 -textvariable voconf(iau_code_obs) \
+                 -borderwidth 1 -relief groove -width 5 -justify center
+              pack $param.input.loc.in \
+                 -in $param.input.loc -side left
+              #--- Cree un bouton pour afficher la liste des code UAI
+              button $param.input.loc.liste \
+                 -text "$caption(resolver,liste_code_uai)" -borderwidth 1 \
+                 -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
+              pack $param.input.loc.liste \
+                 -in $param.input.loc -side left -padx 5
 
-         #--- Cree un frame pour le bouton du calcul des ephemerides
-         frame $This.frame6 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame6 \
-            -in $This.frame1 -anchor w -side top -expand 0 -fill x
-
-            #--- Creation du bouton
-            button $This.frame6.but_ephemerides \
-               -text "$caption(resolver,calcul_ephemerides)" -borderwidth 2 \
-               -command { ::skybot_Resolver::cmdResolver }
-            pack $This.frame6.but_ephemerides \
-               -in $This.frame6 -side left -anchor w \
-               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-         #--- Cree un frame pour l'ascension droite de l'objet
-         frame $This.frame7 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame7 \
-            -in $This.frame6 -anchor w -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame7.label_ad_objet \
-               -text "$caption(resolver,ad_objet)" \
-               -borderwidth 0 -relief flat
-            pack $This.frame7.label_ad_objet \
-               -in $This.frame7 -side left \
+          #--- Cree un frame pour l'aide
+          frame $param.help -borderwidth 0
+          pack $param.help \
+               -in $param -side left \
                -padx 3 -pady 3
+            #--- Cree un bouton pour une info sur la saisie de l'epoque
+            button $param.help.epoch -state active \
+               -borderwidth 0 -relief flat -anchor c \
+               -text "$caption(resolver,info)" \
+               -command { ::skybot_Resolver::GetInfo "epoch" }
+            pack $param.help.epoch \
+              -in $param.help -side top -anchor c \
+              -padx 3 -pady 3
+            #--- Cree un bouton pour une info sur la saisie de l'epoque
+            button $param.help.loc -state active \
+               -borderwidth 0 -relief flat -anchor c \
+               -text "$caption(resolver,info)" \
+               -command { ::skybot_Resolver::GetInfo "loc" }
+            pack $param.help.loc \
+              -in $param.help -side top -anchor c \
+              -padx 3 -pady 3
 
-            #--- Cree un label pour une variable
-            label $This.frame7.data_ad_objet_hms \
-               -textvariable voconf(ad_objet_h) \
-               -borderwidth 0 -relief flat
-            pack $This.frame7.data_ad_objet_hms \
-               -in $This.frame7 -side left \
-               -padx 0 -pady 3
+      #--- Cree un frame pour le bouton calcul des ephemerides
+      frame $This.frame3 -borderwidth 0
+      pack $This.frame3 \
+         -in $This -anchor s -side top -expand 0 -fill x \
+         -padx 10 -pady 3
 
-         #--- Cree un frame pour la declinaison de l'objet
-         frame $This.frame8 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame8 \
-            -in $This.frame6 -anchor w -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame8.label_dec_objet \
-               -text "$caption(resolver,dec_objet)" \
-               -borderwidth 0 -relief flat
-            pack $This.frame8.label_dec_objet \
-               -in $This.frame8 -side left \
-               -padx 3 -pady 3
-
-            #--- Cree un label pour une variable
-            label $This.frame8.data_dec_objet_dms \
-               -textvariable voconf(dec_objet_d) \
-               -borderwidth 0 -relief flat
-            pack $This.frame8.data_dec_objet_dms \
-               -in $This.frame8 -side left \
-               -padx 0 -pady 3
-
-         #--- Cree un frame pour la magnitude visuelle
-         frame $This.frame8a \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame8a \
-            -in $This.frame6 -anchor w -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame8a.label_mag_v_objet \
-               -text "$caption(resolver,mag_v)" \
-               -borderwidth 0 -relief flat
-            pack $This.frame8a.label_mag_v_objet \
-               -in $This.frame8a -side left \
-               -padx 3 -pady 3
-
-            #--- Cree un label pour une variable
-            label $This.frame8a.data_mag_v_objet \
-               -textvariable voconf(mag_v_objet) \
-               -borderwidth 0 -relief flat
-            pack $This.frame8a.data_mag_v_objet \
-               -in $This.frame8a -side left \
-               -padx 0 -pady 3
-
-      #--- Cree un frame pour le champ
-      frame $This.frame9 \
-         -borderwidth 1 -relief raised -cursor arrow
-      pack $This.frame9 \
-         -in $This -anchor s -side top -expand 0 -fill x
-
-         #--- Cree un frame pour la taille du champ autour de l'objet
-         frame $This.frame10 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame10 \
-            -in $This.frame9 -anchor s -side top -expand 0 -fill x
-
-            #--- Cree un label
-            label $This.frame10.label_taille_champ \
-               -text "$caption(resolver,taille_champ)" \
-               -borderwidth 0 -relief flat
-            pack $This.frame10.label_taille_champ \
-               -in $This.frame10 -side left \
-               -padx 3 -pady 3
-
-            #--- Cree une ligne d'entree
-            entry $This.frame10.entry_taille_champ \
-               -textvariable voconf(taille_champ_min) \
-               -borderwidth 1 -relief groove -width 6 -justify center
-            pack $This.frame10.entry_taille_champ \
-               -in $This.frame10 -side left \
-               -padx 3 -pady 3
-
-            #--- Cree un label
-            label $This.frame10.label_sec_arc \
-               -text "$caption(resolver,minutes_arc)" \
-               -borderwidth 0 -relief flat
-            pack $This.frame10.label_sec_arc \
-               -in $This.frame10 -side left \
-               -padx 3 -pady 3
-
-            #--- Bouton radio Rayon du champ
-            radiobutton $This.frame10.radiobutton_rayon_champ -highlightthickness 0 -state normal \
-               -text "$caption(resolver,champ_rayon)" -value 1 -variable voconf(option_champ) \
-               -command { }
-	      pack $This.frame10.radiobutton_rayon_champ \
-               -in $This.frame10 -side left \
-               -padx 3 -pady 3
-
-           #--- Bouton radio Diametre du champ
-            radiobutton $This.frame10.radiobutton_diametre_champ -highlightthickness 0 -state normal \
-               -text "$caption(resolver,champ_diametre)" -value 2 -variable voconf(option_champ) \
-               -command { }
-	      pack $This.frame10.radiobutton_diametre_champ \
-               -in $This.frame10 -side left \
-               -padx 3 -pady 3
-
-         #--- Cree un frame pour la recherche des objets aux alentours
-         frame $This.frame11 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame11 \
-            -in $This.frame9 -anchor s -side top -expand 0 -fill x
-
-            #--- Creation du bouton
-            button $This.frame11.but_recherche \
-               -text "$caption(resolver,recherche)" -borderwidth 2 \
-               -command { ::skybot_Resolver::cmdsearchResolver }
-            pack $This.frame11.but_recherche \
-               -in $This.frame11 -side left -anchor w \
-               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-            #--- Cree un label
-            label $This.frame11.labURL_objet_trouve \
-               -text "" -borderwidth 0 -relief flat
-            pack $This.frame11.labURL_objet_trouve \
-               -in $This.frame11 -side left \
-               -padx 20 -pady 3
-
-      #--- Cree un frame pour y mettre les boutons
-      frame $This.frame12 \
-         -borderwidth 0 -cursor arrow
-      pack $This.frame12 \
-         -in $This -anchor s -side bottom -expand 0 -fill x
-
-         #--- Creation du bouton de recherche des caracteristiques de l'objet
-         button $This.frame12.but_caract -state disabled \
-            -text "$caption(resolver,caract_objet)" -borderwidth 2 \
-            -command {
-               set filename "http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&amp;Name===$voconf(name)"
-               ::audace::Lance_Site_htm $filename
-            }
-         pack $This.frame12.but_caract \
-            -in $This.frame12 -side left -anchor w \
-            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-         #--- Creation du bouton fermer
-         button $This.frame12.but_fermer \
-            -text "$caption(resolver,fermer)" -borderwidth 2 \
-            -command { ::skybot_Resolver::fermer }
-         pack $This.frame12.but_fermer \
-            -in $This.frame12 -side right -anchor e \
-            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-         #--- Creation du bouton aide
-         button $This.frame12.but_aide \
-            -text "$caption(resolver,aide)" -borderwidth 2 \
-            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
-         pack $This.frame12.but_aide \
-            -in $This.frame12 -side right -anchor e \
-            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+        #--- Cree un frame pour le bouton Calcul ephem.
+        frame $This.frame3.eph -borderwidth 0
+        pack $This.frame3.eph \
+           -in $This.frame3 -anchor c -side top
+          #--- Creation du bouton
+          button $This.frame3.eph.but_calcul -text "$caption(resolver,calcul_ephemerides)" \
+             -borderwidth 2 \
+             -command { ::skybot_Resolver::cmdResolver }
+          pack $This.frame3.eph.but_calcul \
+             -in $This.frame3.eph -side left -anchor c \
+             -ipadx 5 -ipady 5 -expand 0
+          #--- Cree un frame pour les 2 checkbuttons
+          frame $This.frame3.eph.cb -borderwidth 0
+          pack $This.frame3.eph.cb \
+             -in $This.frame3.eph -anchor c -side left
+            #--- Creation des checkbutton pour activer ou non la resolution par Skybot
+            checkbutton $This.frame3.eph.cb.but_skybot -text "$caption(resolver,but_skybot)" \
+               -variable voconf(but_skybot) -font $audace(font,arial_6_b) -bg "red"
+            pack $This.frame3.eph.cb.but_skybot  \
+               -in $This.frame3.eph.cb -side top -anchor w -padx 3
+            #--- Cree un frame pour mettre l'acitvation du resolver Sesame et pour le choix du serveur
+            frame $This.frame3.eph.cb.sesame -borderwidth 0
+            pack $This.frame3.eph.cb.sesame \
+               -in $This.frame3.eph.cb -side top -anchor w
+              #--- Creation du checkbutton pour activer ou non la resolution par Sesame
+              checkbutton $This.frame3.eph.cb.sesame.but_sesame -text "$caption(resolver,but_sesame)" \
+                 -variable voconf(but_sesame) -font $audace(font,arial_6_b)
+              pack $This.frame3.eph.cb.sesame.but_sesame  \
+                 -in $This.frame3.eph.cb.sesame -side left -anchor c -padx 3
+              #--- Creation du bouton menu pour choisir le serveur de Sesame
+              label $This.frame3.eph.cb.sesame.lab -text "@" -font $audace(font,arial_6_b) -borderwidth 0 -relief flat
+              pack $This.frame3.eph.cb.sesame.lab \
+                 -in $This.frame3.eph.cb.sesame -side left -anchor c
+              menubutton $This.frame3.eph.cb.sesame.but_server \
+                 -textvariable voconf(sesame_server) -menu $This.frame3.eph.cb.sesame.but_server.m \
+                 -borderwidth 1 -relief raised -font $audace(font,arial_6_n)
+              pack $This.frame3.eph.cb.sesame.but_server  \
+                 -in $This.frame3.eph.cb.sesame -side left -anchor c
+                #--- Menu server
+                menu $This.frame3.eph.cb.sesame.but_server.m
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CDS" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADS" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADAC" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CADC" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
 
       #--- Cree un frame pour l'affichage du resultat de la recherche
-      frame $This.frame13
-      pack $This.frame13 -expand yes -fill both
+      frame $This.frame5
+      pack $This.frame5 -expand yes -fill both -padx 3 -pady 6
 
          #--- Cree un acsenseur vertical
-         scrollbar $This.frame13.vsb -orient vertical \
-            -command { $::skybot_Resolver::This.frame13.lst1 yview } -takefocus 1 -borderwidth 1
-         pack $This.frame13.vsb \
-            -in $This.frame13 -side right -fill y
+         scrollbar $This.frame5.vsb -orient vertical \
+            -command { $::skybot_Resolver::This.frame5.lst1 yview } -takefocus 1 -borderwidth 1
+         pack $This.frame5.vsb \
+            -in $This.frame5 -side right -fill y
 
          #--- Cree un acsenseur horizontal
-         scrollbar $This.frame13.hsb -orient horizontal \
-            -command { $::skybot_Resolver::This.frame13.lst1 xview } -takefocus 1 -borderwidth 1
-         pack $This.frame13.hsb \
-            -in $This.frame13 -side bottom -fill x
+         scrollbar $This.frame5.hsb -orient horizontal \
+            -command { $::skybot_Resolver::This.frame5.lst1 xview } -takefocus 1 -borderwidth 1
+         pack $This.frame5.hsb \
+            -in $This.frame5 -side bottom -fill x
 
          #--- Creation de la table
-         ::skybot_Resolver::createTbl $This.frame13
-         pack $This.frame13.tbl \
-            -in $This.frame13 -expand yes -fill both
+         ::skybot_Resolver::createTbl $This.frame5
+         pack $This.frame5.tbl \
+            -in $This.frame5 -expand yes -fill both
+
+      #--- Cree un frame pour les parametres du FOV
+      frame $This.frame4 -borderwidth 0
+
+        #--- Cree un label pour le titre des param. du FOV
+        label $This.frame4.titre -text "$caption(resolver,titre_fov)" \
+          -borderwidth 0 -relief flat
+        pack $This.frame4.titre \
+          -in $This.frame4 -side top -anchor w \
+          -padx 3 -pady 3
+
+        #--- Cree un frame pour la saisie des parametres du FOV
+        set fov [frame $This.frame4.fov -borderwidth 1 -relief solid]
+        pack $fov \
+          -in $This.frame4 -anchor w -side top -expand 0 -fill x -padx 10
+
+          #--- Cree un frame pour les labels
+          frame $fov.lab -borderwidth 0
+          pack $fov.lab -in $fov -anchor w -side left
+            #--- Cree le label
+            label $fov.lab.dim -text "$caption(resolver,taille_champ)" \
+               -borderwidth 0 -relief flat
+            pack $fov.lab.dim \
+               -in $fov.lab -side top -anchor w -padx 3 -pady 3
+            #--- Cree le label
+            label $fov.lab.filter -text "$caption(resolver,filter)" \
+               -borderwidth 0 -relief flat
+            pack $fov.lab.filter \
+               -in $fov.lab -side top -anchor w -padx 3 -pady 3
+
+          #--- Cree un frame pour la saisie des param. du FOV
+          frame $fov.param -borderwidth 0
+          pack $fov.param \
+             -in $fov -anchor w -side left -expand 0 -fill x
+            #--- Cree un frame pour la saisie des dimension du FOV
+            frame $fov.param.dim -borderwidth 0
+            pack $fov.param.dim -in $fov.param -anchor w -side top -padx 3 -pady 3
+              #--- Cree une ligne d'entree
+              entry $fov.param.dim.x \
+                 -textvariable voconf(taille_champ_x) \
+                 -borderwidth 1 -relief groove -width 6 -justify center
+              pack $fov.param.dim.x \
+                 -in $fov.param.dim -side left
+              #--- Cree un label
+              label $fov.param.dim.f1 -text "x" \
+                 -borderwidth 0 -relief flat
+              pack $fov.param.dim.f1 \
+                 -in $fov.param.dim -side left
+              #--- Cree une ligne d'entree
+              entry $fov.param.dim.y \
+                 -textvariable voconf(taille_champ_y) \
+                 -borderwidth 1 -relief groove -width 6 -justify center
+              pack $fov.param.dim.y \
+                 -in $fov.param.dim -side left
+              #--- Cree un label
+              label $fov.param.dim.f2 -text "arcsec" \
+                 -borderwidth 0 -relief flat
+              pack $fov.param.dim.f2 \
+                 -in $fov.param.dim -side left
+            #--- Cree un frame pour la saisie de la valeur du filtre
+            frame $fov.param.filter -borderwidth 0
+            pack $fov.param.filter \
+               -in $fov.param -anchor w -side top -padx 3 -pady 3
+              #--- Cree une ligne d'entree pour la saisie du param. filter
+#              entry $fov.param.filter.in \
+#                 -textvariable voconf(filter) \
+#                 -borderwidth 1 -relief groove -width 6 -justify center
+              spinbox $fov.param.filter.in \
+                  -textvariable voconf(filter) \
+                  -from 0 -to 1000 -increment 10 -width 6 -borderwidth 1 -relief groove
+              pack $fov.param.filter.in \
+                 -in $fov.param.filter -anchor w -side left
+              #--- Cree un label
+              label $fov.param.filter.f -text "arcsec" \
+                 -borderwidth 0 -relief flat
+              pack $fov.param.filter.f \
+                 -in $fov.param.filter -side left
+
+          #--- Cree un frame pour une info sur les param. du FOV
+          frame $fov.help -borderwidth 0
+          pack $fov.help \
+             -in $fov -anchor w -side left
+            #--- Cree un bouton pour une info sur la dimension du FOV
+            button $fov.help.dim -state active -text "$caption(resolver,info)" \
+               -borderwidth 0 -relief flat -anchor c \
+               -command { ::skybot_Resolver::GetInfo "dim_fov" }
+            pack $fov.help.dim \
+              -in $fov.help -side top -anchor c \
+              -padx 3 -pady 3
+            #--- Cree un bouton pour une info sur la dimension du FOV
+            button $fov.help.filter -state active -text "$caption(resolver,info)" \
+               -borderwidth 0 -relief flat -anchor c \
+               -command { ::skybot_Resolver::GetInfo "filter" }
+            pack $fov.help.filter \
+              -in $fov.help -side top -anchor c \
+              -padx 3 -pady 3
+
+      #--- Cree un frame pour y mettre les boutons Recherche, Aide, Fermer
+      frame $This.frame6 -borderwidth 0
+      pack $This.frame6 -in $This -anchor s -side bottom -expand 0 -fill x
+
+        #--- Creation du bouton
+        button $This.frame6.but_recherche \
+           -text "$caption(resolver,recherche)" -borderwidth 2 \
+           -command { ::skybot_Resolver::cmdSearchResolver }
+        pack $This.frame6.but_recherche \
+           -in $This.frame6 -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton de recherche des caracteristiques de l'objet
+        button $This.frame6.but_caract -relief raised -state disabled \
+           -text "$caption(resolver,caract_objet)" -borderwidth 2 \
+           -command { if { $voconf(type) == "SIMBAD" } {
+                         set goto_url [ concat $myurl(simbad,CDS)[string trim $voconf(name)] ]
+                      } else {
+                         set goto_url [ concat $myurl(astorb,CDS)[string trim $voconf(name)] ]
+                      }
+                      ::audace::Lance_Site_htm $goto_url
+                    }
+        pack $This.frame6.but_caract \
+           -in $This.frame6 -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton visualisation dans Aladin
+        button $This.frame6.but_aladin -relief raised -state disabled \
+           -text "$caption(resolver,view_aladin)" -borderwidth 2 \
+           -command { set radius [ expr $voconf(taille_champ_x)/60.0 ]
+                      if { $voconf(taille_champ_y) != "" } {
+                         set radius [ expr sqrt($voconf(taille_champ_x)*$voconf(taille_champ_x)+$voconf(taille_champ_y)*$voconf(taille_champ_y))/60.0 ]
+                      }
+                      vo_launch_aladin [ concat "\"$voconf(ad_objet) $voconf(dec_objet)\"" ] $radius "DSS2" "USNO2"
+                    }
+        pack $This.frame6.but_aladin \
+           -in $This.frame6 -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton fermer
+        button $This.frame6.but_fermer \
+           -text "$caption(resolver,fermer)" -borderwidth 2 \
+           -command { ::skybot_Resolver::fermer }
+        pack $This.frame6.but_fermer \
+           -in $This.frame6 -side right -anchor e \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton aide
+        button $This.frame6.but_aide \
+           -text "$caption(resolver,aide)" -borderwidth 2 \
+           -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
+        pack $This.frame6.but_aide \
+           -in $This.frame6 -side right -anchor e \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+      #--- Desactivation du bouton de Recherche
+      $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state disabled
 
       #--- La fenetre est active
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
+
+      #--- Choix par defaut du curseur
+      $This configure -cursor arrow
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -452,8 +609,7 @@ namespace eval skybot_Resolver {
       set menu $frame.menu
 
       #--- Table des objets
-      set titre_colonnes { Num Name RA(h) DE(deg) Class Mv Err(arcsec) d(arcsec) dRA(arcsec/h) dDEC(arcsec/h) \
-         Dg(ua) Dh(ua) }
+      set titre_colonnes { Num Name RA(h) DE(deg) Class Mv Err(arcsec) d(arcsec) dRA(arcsec/h) dDEC(arcsec/h) Dg(ua) Dh(ua) }
       tablelist::tablelist $tbl \
          -labelcommand ::skybot_Resolver::cmdSortColumn \
          -xscrollcommand [ list $frame.hsb set ] -yscrollcommand [ list $frame.vsb set ] \
@@ -476,7 +632,7 @@ namespace eval skybot_Resolver {
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ] 
-      bind $tbl <<ListboxSelect>>          [ list ::skybot_Resolver::cmdButton1Click $This.frame13 ]
+      bind $tbl <<ListboxSelect>>          [ list ::skybot_Resolver::cmdButton1Click $This.frame5 ]
    }
 
    #
@@ -497,6 +653,7 @@ namespace eval skybot_Resolver {
       global catalogue
       global caption
       global voconf
+      global ok
 
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl      
@@ -506,9 +663,7 @@ namespace eval skybot_Resolver {
       set selection [ $tbl curselection ]
 
       #--- Retourne immediatemment si aucun item selectionne
-      if { "$selection" == "" } {
-         return
-      }
+      if { "$selection" == "" } { return }
 
       #--- Nom de l'objet selectionne
       set num_line [ lindex $selection 0 ]
@@ -516,23 +671,30 @@ namespace eval skybot_Resolver {
       if { $erreur == "1" } {
          set voconf(name) ""
          #--- Gestion des boutons
-         $::skybot_Resolver::This.frame12.but_caract configure -state disabled
-         #--- Je desactive l'acces au mode Goto
+         $::skybot_Resolver::This.frame6.but_caract configure -state disabled
+         $::skybot_Resolver::This.frame6.but_aladin configure -state disabled
+         #--- Desactivation de l'acces au mode Goto
          $popupTbl entryconfigure $caption(resolver,goto) -state disabled
       } else {
          #--- Gestion des boutons
-         $::skybot_Resolver::This.frame12.but_caract configure -state normal
-         #--- J'active l'acces au mode Goto
+         $::skybot_Resolver::This.frame6.but_caract configure -state normal
+         $::skybot_Resolver::This.frame6.but_aladin configure -state normal
+         #--- Affectation du type de l'objet
+         if { $ok(sesame) == "1" && $num_line == 0 } {
+            set voconf(type) "SIMBAD"
+         } else {
+            set voconf(type) [ lindex [ $tbl cellconfigure $num_line,4 -text ] 4 ]
+         }
+         #--- Activation de l'acces au mode Goto
          $popupTbl entryconfigure $caption(resolver,goto) -state normal \
-            -command {
-               if { [ ::tel::list ] == "" } {
-                  ::confTel::run 
-                  tkwait window $audace(base).confTel
-               }
-               ::skybot_Resolver::affiche_Outil_Tlscp
-               set catalogue(asteroide_choisi) $voconf(name)
-               ::Tlscp::Gestion_Cata $caption(resolver,asteroide)
-            }
+            -command { if { [ ::tel::list ] == "" } {
+                          ::confTel::run 
+                          tkwait window $audace(base).confTel
+                       }
+                       ::skybot_Resolver::affiche_Outil_Tlscp
+                       set catalogue(asteroide_choisi) $voconf(name)
+                       ::Tlscp::Gestion_Cata $caption(resolver,asteroide)
+                     }
       }
    }
 
@@ -541,7 +703,7 @@ namespace eval skybot_Resolver {
    # Affiche l'outil Telescope
    #
    proc affiche_Outil_Tlscp { } {
-      global audace
+      global conf
       global panneau
 
       #---
@@ -554,7 +716,7 @@ namespace eval skybot_Resolver {
          if { $m == "menu_name,Tlscp" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
                #--- Lancement automatique de l'outil Telescope
-               ::confVisu::selectTool $audace(visuNo) ::$ns
+               ::audace::selection_Outil ::$ns
             }
          }
       }
@@ -581,195 +743,286 @@ namespace eval skybot_Resolver {
    }
 
    #
-   # skybot_Resolver::cmdResolver
-   # Recherche les ephemerides d'un objet
+   # skybot_Resolver::valideDate
+   # Verifie que la date saisie appartient a la periode reconnue par SkyBoT
    #
-   proc cmdResolver { } {
+   proc valideDate { date_calcul btn_rech } {
       variable This
       global caption
-      global color
       global voconf
 
-      #--- Statut de la commande
-      $This.frame11.labURL_objet_trouve configure -text "$caption(resolver,msg_attente)" -fg $color(red)
-
-      #--- Gestion des boutons
-      $::skybot_Resolver::This.frame6.but_ephemerides configure -relief groove -state disabled
-      $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state disabled
-      $::skybot_Resolver::This.frame12.but_caract configure -relief raised -state disabled
-
-      #--- Traitement de la presence du nom de l'objet
-      if { $voconf(nom_objet) == "" } {
-         tk_messageBox -title $caption(resolver,msg_probleme) -type ok \
-            -message "$caption(resolver,msg_pas_de_nom)"
-         focus $This.frame2.ent
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
-         return
-      }
-
-      #--- Traitement de la date
-      if { $voconf(choix_date) == "1" } {
-         set voconf(date_ephemerides) [ mc_date2jd now ]
-      } elseif { $voconf(choix_date) == "2" } {
-         set voconf(date_ephemerides) [ mc_date2jd $voconf(date_ephemerides_calcul) ]
-      }
-
-      #--- Tests sur la date
-      if { ( $voconf(date_ephemerides_calcul) == "" ) && ( $voconf(choix_date) == "2" ) } {
-         tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_reel_date)
-         set voconf(date_ephemerides_calcul) ""
-         focus $This.frame5.entry_date_ephemerides
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
-         return
-      }
-      #---
-      set date [ mc_date2jd $voconf(date_ephemerides) ]
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus } statut ]
       #---
       if { $erreur == "0" } {
          #--- Mise en forme du resultat
-         set statut [ lindex $statut 1 ]
-         regsub -all "\'" $statut "\"" statut
+         regsub -all "\'" [lindex $statut 1] "" statut
+         set statut [split $statut "|"]
          #--- Date du debut
-         set date_debut [ lindex $statut 1 ]
-         set date_d [ mc_date2ymdhms $date_debut ]
-         set date_debut_ [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date_d 2 ] \
-            [ lindex $date_d 1 ] [ lindex $date_d 0 ] [ lindex $date_d 3 ] [ lindex $date_d  4 ] [ lindex $date_d  5 ] ]
+         set date_debut_jd [lindex $statut 1]
+         set date_d [ mc_date2ymdhms $date_debut_jd ]
+         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
          #--- Date de fin
-         set date_fin [ lindex $statut 2 ]
-         set date_f [ mc_date2ymdhms $date_fin ]
-         set date_fin_ [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date_f 2 ] \
-            [ lindex $date_f 1 ] [ lindex $date_f 0 ] [ lindex $date_f 3 ] [ lindex $date_f  4 ] [ lindex $date_f  5 ] ]
-         #---
-         if { $date <= $date_debut } {
-            tk_messageBox -title $caption(resolver,msg_probleme) -type ok \
-               -message "$caption(resolver,msg_reel_date>) $date_debut_"
-            set voconf(date_ephemerides_calcul) ""
+         set date_fin_jd [lindex $statut 2]
+         set date_d [ mc_date2ymdhms $date_fin_jd ]
+         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         #--- Tests sur la validite de la date saisie
+         if { $date_calcul < $date_debut_jd } {
+            tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_min) $date_debut"
+            set voconf(date_ephemerides) ""
             focus $This.frame5.entry_date_ephemerides
-            $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-            $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-            $This.frame11.labURL_objet_trouve configure -text ""
+            $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+            if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
+            $::skybot_Resolver::This configure -cursor arrow
             return
          }
          #---
-         if { $date >= $date_fin } {
-            tk_messageBox -title $caption(resolver,msg_probleme) -type ok \
-               -message "$caption(resolver,msg_reel_date<) $date_fin_"
-            set voconf(date_ephemerides_calcul) ""
+         if { $date_calcul > $date_fin_jd } {
+            tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_max) $date_fin"
+            set voconf(date_ephemerides) ""
             focus $This.frame5.entry_date_ephemerides
-            $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-            $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-            $This.frame11.labURL_objet_trouve configure -text ""
+            $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+            if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
+            $::skybot_Resolver::This configure -cursor arrow
             return
          }
       }
 
-      #--- RAZ de la liste
-      $::skybot_Resolver::This.frame13.tbl delete 0 end
-      if { [ $::skybot_Resolver::This.frame13.tbl columncount ] != "0" } {
-         $::skybot_Resolver::This.frame13.tbl deletecolumns 0 end
-      }
-
-      #--- Traitement du nom des objets
-      set voconf(nom_objet) [ suppr_accents $voconf(nom_objet) ]
-
-      #--- Demande et extraction des ephemerides
-      set erreur [ catch { vo_skybotresolver $voconf(date_ephemerides) $voconf(nom_objet) } liste ]
-      if { $erreur == "0" } {
-         set liste_titres [ lindex $liste 0 ]
-         #--- Traitement d'une erreur particuliere, la requete repond 'item'
-         if { $liste_titres == "item" } {
-            $::skybot_Resolver::This.frame13.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
-            $::skybot_Resolver::This.frame13.tbl insert end [ list $caption(resolver,msg_item) ]
-            $::skybot_Resolver::This.frame13.tbl cellconfigure 0,0 -fg $color(red)
-            set voconf(ad_objet)    ""
-            set voconf(ad_objet_d)  ""
-            set voconf(ad_objet_h)  ""
-            set voconf(dec_objet)   ""
-            set voconf(dec_objet_d) ""
-            set voconf(mag_v_objet) ""
-            #--- Statut de la commande
-            $This.frame11.labURL_objet_trouve configure -text ""
-         } else {
-            regsub -all "\'" [ lindex $liste 1 ] "\"" liste_objet
-            set voconf(ad_objet) [ lindex $liste_objet 2 ]
-            set voconf(ad_objet_d) [ expr 15.0 * $voconf(ad_objet) ]
-            set voconf(ad_objet_h) [ mc_angle2hms $voconf(ad_objet_d) 360 zero 2 auto string ]
-            set voconf(dec_objet) [ lindex $liste_objet 3 ]
-            set voconf(dec_objet_d) [ mc_angle2dms $voconf(dec_objet) 90 zero 2 + string ]
-            set voconf(mag_v_objet) [ lindex $liste_objet 5 ]
-            #--- Statut de la commande
-            $This.frame11.labURL_objet_trouve configure -text "$caption(resolver,msg_terminee)" -fg $color(red)
-         }
-      } else {
-         $::skybot_Resolver::This.frame13.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
-         if { [ lindex [ lindex $liste 0 ] 0 ] == "SKYBOTResolver" } {
-            set msg_erreur [ lindex $liste 1 ]
-            $::skybot_Resolver::This.frame13.tbl insert end [ list $msg_erreur ]
-            $::skybot_Resolver::This.frame13.tbl cellconfigure 0,0 -fg $color(red)
-         } else {
-            $::skybot_Resolver::This.frame13.tbl insert end [ list $caption(resolver,msg_internet) ]
-            $::skybot_Resolver::This.frame13.tbl cellconfigure 0,0 -fg $color(red)
-         }
-         set voconf(ad_objet)    ""
-         set voconf(ad_objet_d)  ""
-         set voconf(ad_objet_h)  ""
-         set voconf(dec_objet)   ""
-         set voconf(dec_objet_d) ""
-         set voconf(mag_v_objet) ""
-         #--- Statut de la commande
-         $This.frame11.labURL_objet_trouve configure -text ""
-      }
-
-      #--- Gestion des boutons
-      $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-      $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
    }
 
    #
-   # skybot_Resolver::cmdsearchResolver
-   # Recherche les ephemerides des objets environnants
+   # skybot_Resolver::cmdResolver
+   # Recherche les ephemerides d'un objet
    #
-   proc cmdsearchResolver { } {
+   proc cmdResolver { } {
       variable This
       global audace
       global caption
       global color
       global voconf
+      global myurl
+      global ok
 
       #--- Statut de la commande
-      $This.frame11.labURL_objet_trouve configure -text "$caption(resolver,msg_attente)" -fg $color(red)
+      $::skybot_Resolver::This configure -cursor watch
 
       #--- Gestion des boutons
-      $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state disabled
-      $::skybot_Resolver::This.frame11.but_recherche configure -relief groove -state disabled
-      $::skybot_Resolver::This.frame12.but_caract configure -relief raised -state disabled
+      $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief groove -state disabled
+      $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state disabled
+      $::skybot_Resolver::This.frame6.but_caract configure -relief raised -state disabled
+      $::skybot_Resolver::This.frame6.but_aladin configure -relief raised -state disabled
+
+      #--- Traitement de la presence du nom de l'objet
+      if { $voconf(nom_objet) == "" } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_notarget)"
+         focus $This.frame1.lab
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
+         return
+      }
+
+      #--- Tests sur l'existence d'une date
+      if { $voconf(date_ephemerides) == "" } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_noepoch)
+         set voconf(date_ephemerides) ""
+         focus $This.frame2.param.input.epoch.ep
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
+         return
+      }
+
+      #--- Conversion de la date en JD
+      set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
+      valideDate $date_calcul 0
+
+      #--- Traitement du nom des objets
+      set voconf(nom_objet) [ suppr_accents $voconf(nom_objet) ]
+
+      #--- Invocation du web service Sesame@$voconf(sesame_server)
+      set ok(sesame) 0
+      if { $voconf(but_sesame) } {
+         set erreur [ catch { vo_sesame $voconf(nom_objet) "xi" $voconf(sesame_server) } response ]
+         if { $erreur == "0" } {
+            set rep [ Extract_Sesame_Data $response ]
+            if { $rep != "1" } { 
+               set ok(sesame) 1
+               set voconf(sesame) $rep
+               set voconf(type) "SIMBAD"
+            } else {
+               set ok(sesame) 2
+               set voconf(sesame) [ list "item" [ concat "SESAME -> The celestial object '$voconf(nom_objet)' was not resolved by Sesame@$voconf(sesame_server)" ] ]
+               set voconf(type) "?"
+            }
+         } else {
+            set ok(sesame) 3
+            set voconf(sesame) [ list "item" [concat "SESAME -> $erreur"] ]
+            set voconf(type) "?"
+         }
+      }
+
+      #--- Invocation du web service skybotResolver
+      set ok(skybot) 0
+      if { $voconf(but_skybot) } {
+         set erreur [ catch { vo_skybotresolver $date_calcul $voconf(nom_objet) text basic $voconf(iau_code_obs) } voconf(skybot) ]
+         if { $erreur == "0" } {
+            if { [ lindex [ lindex $voconf(skybot) 0 ] 0 ] != "item" } {
+               set ok(skybot) 1
+               set voconf(type) "OSS"
+            } else {
+               set ok(skybot) 2
+               set voconf(type) "?"
+            }
+         } else {
+            set ok(skybot) 3
+            set voconf(skybot) [ list "item" [concat "SKYBOT -> $erreur"] ]
+            set voconf(type) "?"
+         }
+      }
+
+      #--- Gestion des erreurs
+      if { $ok(sesame) == "1" || $ok(skybot) == "1" } {
+
+         #--- ok, pas d'erreur, au moins une reponse
+         set erreur 0
+         if { $ok(sesame) == "1" } { set voconf(liste) $voconf(sesame) }
+         if { $ok(skybot) == "1" } { set voconf(liste) $voconf(skybot) }
+
+      } else {
+
+         #--- pas ok, erreur ou non reponse ?
+         if { $ok(sesame) == "0" && $ok(skybot) == "0" } {
+            #--- aucun des resolvers n'a ete invoque
+            set erreur -1
+            set voconf(liste) [ list item $caption(resolver,msg_noresolver) ]
+         } else {
+            #--- au moins un resolver a ete invoque mais:
+            if { $ok(sesame) == "2" && $ok(skybot) == "2" } { 
+               #--- les 2 resolvers n'ont pas trouve
+               set erreur -2
+               set voconf(liste) [ list item [ concat "$caption(resolver,msg_objnotfound)$voconf(sesame_server)" ] ]
+            } else {
+               #--- l'un des resolver invoque n'a rien trouve ou a genere une erreur
+               set erreur -3
+               if { $ok(sesame) == "2" || $ok(sesame) == "3" } { set voconf(liste) $voconf(sesame) }
+               if { $ok(skybot) == "2" || $ok(skybot) == "3" } { set voconf(liste) $voconf(skybot) }
+            }
+         }
+      }
+
+      #--- RAZ de la liste
+      $::skybot_Resolver::This.frame5.tbl delete 0 end
+      if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
+         $::skybot_Resolver::This.frame5.tbl deletecolumns 0 end
+      }
+
+      #--- Affichage des resultats
+      if { $erreur == "0" } {
+
+         #--- Extraction, suppression des virgules et creation des colonnes du tableau
+         set liste_titres [ lindex $voconf(liste) 0 ]
+         regsub -all "," $liste_titres "" liste_titres
+         for { set i 1 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
+            set format [ ::skybot_Resolver::cmdFormatColumn [ lindex $liste_titres $i ] ]
+            $::skybot_Resolver::This.frame5.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] [ lindex $format 2 ]
+         }
+         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
+         if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
+            $::skybot_Resolver::This.frame5.tbl columnconfigure 1 -sortmode dictionary
+         }
+         #--- Extraction du resultat
+         for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } {
+            set vo_objet($i) [ split [ lindex $voconf(liste) $i ] "|" ]
+            #--- Initialisation de RA et DEC pour la Recherche dans le FOV
+            set voconf(ad_objet) [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
+            set voconf(dec_objet) [ lindex $vo_objet($i) 3 ]
+            #--- Mise en forme de l'ascension droite
+            set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
+            #--- Mise en forme de la declinaison
+            set dec [ lindex $vo_objet($i) 3 ]
+            #--- Insertion des objets dans la table
+            $::skybot_Resolver::This.frame5.tbl insert end [ string trim $vo_objet($i) ]
+         }
+         #---
+         if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
+            #--- Trie par ordre alphabetique de la premiere colonne
+            ::skybot_Resolver::cmdSortColumn $::skybot_Resolver::This.frame5.tbl 1
+            #--- Mise en forme des resultats
+            for { set i 0 } { $i <= [ expr [ llength $voconf(liste) ] - 2 ] } { incr i } {
+               #--- Les noms des objets sont en bleu
+               $::skybot_Resolver::This.frame5.tbl cellconfigure $i,1 -fg $color(blue)
+               #--- Mise en forme de l'ascension droite
+               set ad [ $::skybot_Resolver::This.frame5.tbl cellcget $i,2 -text ]
+               set ad [ expr $ad * 15.0 ]
+               $::skybot_Resolver::This.frame5.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
+               #--- Mise en forme de la declinaison
+               set dec [ $::skybot_Resolver::This.frame5.tbl cellcget $i,3 -text ]
+               $::skybot_Resolver::This.frame5.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
+            }
+         }
+         #--- Pack les frames Parametres FOV et bouton lancer recherche
+         pack $This.frame4 -in $This -before $This.frame6 -anchor s -side top -expand 0 -fill x -pady 6
+         #--- Active le bouton de Recherche
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+
+      } else {
+
+         #--- cas ou les 2 resolvers n'ont pas trouve l'objet ou cas d'erreur
+         $::skybot_Resolver::This.frame5.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
+         $::skybot_Resolver::This.frame5.tbl insert end [ list [ lindex $voconf(liste) 1 ] ]
+         $::skybot_Resolver::This.frame5.tbl cellconfigure 0,0 -fg $color(red)
+         set voconf(ad_objet)        ""
+         set voconf(dec_objet)       ""
+
+      }
+
+      #--- Statut de la commande
+      $::skybot_Resolver::This configure -cursor arrow
+      #--- Gestion des boutons
+      $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+   #
+   # skybot_Resolver::cmdSearchResolver
+   # Recherche les ephemerides des objets environnants
+   #
+   proc cmdSearchResolver { } {
+      variable This
+      global audace
+      global caption
+      global color
+      global voconf
+      global ok
+
+      #--- Statut de la commande
+      $::skybot_Resolver::This configure -cursor watch
+
+      #--- Gestion des boutons
+      $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state disabled
+      $::skybot_Resolver::This.frame6.but_recherche configure -relief groove -state disabled
+      $::skybot_Resolver::This.frame6.but_caract configure -relief raised -state disabled
+      $::skybot_Resolver::This.frame6.but_aladin configure -relief raised -state disabled
 
       #--- Tests pour les donnees indispensables
       if { ( $voconf(ad_objet) == "" ) || ( $voconf(dec_objet) == "" ) } {
-         tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_pas_de_donnees)
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_nodata)
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
          return
       }
 
       #--- Tests sur l'ascension droite
-      if { ( [ string is double -strict $voconf(ad_objet_d) ] == "0" ) \
-            || ( $voconf(ad_objet_d) == "" ) || ( $voconf(ad_objet_d) < "0.0" ) \
-            || ( $voconf(ad_objet_d) > "360.0" ) } {
-         tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_reel_ad)
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
+      if { ( [ string is double -strict $voconf(ad_objet) ] == "0" ) || \
+           ( $voconf(ad_objet) == "" ) || ( $voconf(ad_objet) < "0.0" ) || \
+           ( $voconf(ad_objet) > "360.0" ) } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_reel_ad)
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
          return
       }
 
@@ -777,187 +1030,165 @@ namespace eval skybot_Resolver {
       if { ( [ string is double -strict $voconf(dec_objet) ] == "0" ) \
             || ( $voconf(dec_objet) == "" ) || ( $voconf(dec_objet) < "-90.0" ) \
             || ( $voconf(dec_objet) > "90.0" ) } {
-         tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_reel_dec)
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_reel_dec)
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
          return
       }
 
-      #--- Tests sur la dimension du champ
-      if { ( [ string is double -strict $voconf(taille_champ_min) ] == "0" ) \
-            || ( $voconf(taille_champ_min) == "" ) || ( $voconf(taille_champ_min) <= "0" ) \
-            || ( ( $voconf(taille_champ_min) > "600.0" ) && ( $voconf(option_champ) == "1" ) ) \
-            || ( ( $voconf(taille_champ_min) > "1200.0" ) && ( $voconf(option_champ) == "2" ) ) } {
-         if { $voconf(option_champ) == "1" } {
-            tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_reel_champ_1)
-         } elseif { $voconf(option_champ) == "2" } {
-            tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_reel_champ_2)
-         }
-         set voconf(taille_champ_min) ""
-         focus $This.frame10.entry_taille_champ
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
+      #--- Tests sur les dimensions du champ
+      if { ( [ string is double -strict $voconf(taille_champ_x) ] == "0" ) || ( $voconf(taille_champ_x) == "" ) || \
+           ( $voconf(taille_champ_x) <= "0" ) || ( $voconf(taille_champ_x) > "36000.0" ) } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_reel_fov)
+         set voconf(taille_champ_x) ""
+         focus $This.frame4.fov.param.dim.x
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
+         return
+      }
+      if { $voconf(taille_champ_y) != "" && ( ( [ string is double -strict $voconf(taille_champ_y) ] == "0" ) || \
+           ( $voconf(taille_champ_y) <= "0" ) || ( $voconf(taille_champ_y) > "36000.0" ) ) } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_reel_fov)
+         set voconf(taille_champ_y) ""
+         focus $This.frame4.fov.param.dim.y
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
+         return
+      }
+      set voconf(taille_champ) $voconf(taille_champ_x)
+      if { $voconf(taille_champ_y) != "" } {
+        set voconf(taille_champ) [ concat $voconf(taille_champ_x)x$voconf(taille_champ_y) ]
+      }
+
+      #--- Tests sur l'existence d'une date
+      if { $voconf(date_ephemerides) == "" } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_noepoch)
+         set voconf(date_ephemerides) ""
+         focus $This.frame2.param.input.epoch.ep
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
          return
       }
 
-      #--- Traitement de la date
-      if { $voconf(choix_date) == "1" } {
-         set voconf(date_ephemerides) [ mc_date2jd now ]
-      } elseif { $voconf(choix_date) == "2" } {
-         set voconf(date_ephemerides) [ mc_date2jd $voconf(date_ephemerides_calcul) ]
-      }
+      #--- Conversion de la date en JD
+      set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
+      valideDate $date_calcul 1
 
-      #--- Tests sur la date
-      if { ( $voconf(date_ephemerides_calcul) == "" ) && ( $voconf(choix_date) == "2" ) } {
-         tk_messageBox -title $caption(resolver,msg_probleme) -type ok -message $caption(resolver,msg_reel_date)
-         set voconf(date_ephemerides_calcul) ""
-         focus $This.frame5.entry_date_ephemerides
-         $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-         $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-         $This.frame11.labURL_objet_trouve configure -text ""
-         return
-      }
-      #---
-      set date [ mc_date2jd $voconf(date_ephemerides) ]
-      #--- Interrogation de la base de donnees
-      set erreur [ catch { vo_skybotstatus } statut ]
-      #---
+      #--- Invocation du web service skybot
+      set ok(skybot) 0
+      set erreur [ catch { vo_skybot $date_calcul $voconf(ad_objet) $voconf(dec_objet) $voconf(taille_champ) \
+                                     text basic $voconf(iau_code_obs) $voconf(filter) } voconf(skybot) ]
       if { $erreur == "0" } {
-         #--- Mise en forme du resultat
-         set statut [ lindex $statut 1 ]
-         regsub -all "\'" $statut "\"" statut
-         #--- Date du debut
-         set date_debut [ lindex $statut 1 ]
-         set date_d [ mc_date2ymdhms $date_debut ]
-         set date_debut_ [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date_d 2 ] \
-            [ lindex $date_d 1 ] [ lindex $date_d 0 ] [ lindex $date_d 3 ] [ lindex $date_d  4 ] [ lindex $date_d  5 ] ]
-         #--- Date de fin
-         set date_fin [ lindex $statut 2 ]
-         set date_f [ mc_date2ymdhms $date_fin ]
-         set date_fin_ [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date_f 2 ] \
-            [ lindex $date_f 1 ] [ lindex $date_f 0 ] [ lindex $date_f 3 ] [ lindex $date_f  4 ] [ lindex $date_f  5 ] ]
-         #---
-         if { $date <= $date_debut } {
-            tk_messageBox -title $caption(resolver,msg_probleme) -type ok \
-               -message "$caption(resolver,msg_reel_date>) $date_debut_"
-            set voconf(date_ephemerides_calcul) ""
-            focus $This.frame5.entry_date_ephemerides
-            $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-            $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-            $This.frame11.labURL_objet_trouve configure -text ""
-            return
+         if { [ lindex [ lindex $voconf(skybot) 0 ] 0 ] != "item" } {
+            set ok(skybot) 1
+         } else {
+            set ok(skybot) 2
          }
-         #---
-         if { $date >= $date_fin } {
-            tk_messageBox -title $caption(resolver,msg_probleme) -type ok \
-               -message "$caption(resolver,msg_reel_date<) $date_fin_"
-            set voconf(date_ephemerides_calcul) ""
-            focus $This.frame5.entry_date_ephemerides
-            $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-            $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-            $This.frame11.labURL_objet_trouve configure -text ""
-            return
-         }
+      } else {
+         set ok(skybot) 3
+         set voconf(skybot) [ list "item" [concat "SKYBOT -> $erreur"] ]
       }
+
+      #--- Gestion des erreurs
+      set erreur 0
+      if { $ok(skybot) != "1" } { set erreur -1 }
+      set voconf(liste) $voconf(skybot)
 
       #--- RAZ de la liste
-      $::skybot_Resolver::This.frame13.tbl delete 0 end
-      if { [ $::skybot_Resolver::This.frame13.tbl columncount ] != "0" } {
-         $::skybot_Resolver::This.frame13.tbl deletecolumns 0 end
+      $::skybot_Resolver::This.frame5.tbl delete 0 end
+      if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
+         $::skybot_Resolver::This.frame5.tbl deletecolumns 0 end
       }
 
-      #--- Extraction, suppression des virgules et creation des colonnes du tableau
-      set voconf(taille_champ) [ expr $voconf(taille_champ_min) * 60.0 / $voconf(option_champ) ]
-      set erreur \
-         [ catch { vo_skybot $voconf(date_ephemerides) $voconf(ad_objet_d) $voconf(dec_objet) \
-         $voconf(taille_champ) } voconf(liste) ]
+      #--- Affichage des resultats
       if { $erreur == "0" } {
+
+         #--- Extraction, suppression des virgules et creation des colonnes du tableau
          set liste_titres [ lindex $voconf(liste) 0 ]
          regsub -all "," $liste_titres "" liste_titres
          for { set i 1 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
             set format [ ::skybot_Resolver::cmdFormatColumn [ lindex $liste_titres $i ] ]
-            $::skybot_Resolver::This.frame13.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] \
-               [ lindex $format 2 ]
+            $::skybot_Resolver::This.frame5.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] [ lindex $format 2 ]
          }
-         #--- Traitement d'une erreur particuliere, la requete repond 'item'
-         if { $liste_titres == "item" } {
-            $::skybot_Resolver::This.frame13.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
-            $::skybot_Resolver::This.frame13.tbl insert end [ list $caption(resolver,msg_item) ]
-            $::skybot_Resolver::This.frame13.tbl cellconfigure 0,0 -fg $color(red)
-            set voconf(ad_objet)    ""
-            set voconf(ad_objet_d)  ""
-            set voconf(ad_objet_h)  ""
-            set voconf(dec_objet)   ""
-            set voconf(dec_objet_d) ""
-            set voconf(mag_v_objet) ""
-            #--- Statut de la commande
-            $This.frame11.labURL_objet_trouve configure -text ""
-         } else {
-            #--- Je classe les fichiers par ordre alphabetique sans tenir compte des majuscules/minuscules
-            if { [ $::skybot_Resolver::This.frame13.tbl columncount ] != "0" } {
-               $::skybot_Resolver::This.frame13.tbl columnconfigure 1 -sortmode dictionary
-            }
-            #--- Extraction du resultat
-            for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } { 
-               regsub -all "\'" [ lindex $voconf(liste) $i ] "\"" vo_objet($i)
-               #--- Mise en forme de l'ascension droite
-               set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
-               #--- Mise en forme de la declinaison
-               set dec [ lindex $vo_objet($i) 3 ]
-               #--- Liste les objets qui sont sur l'image
-               $::skybot_Resolver::This.frame13.tbl insert end $vo_objet($i)
-            }
-            #---
-            if { [ $::skybot_Resolver::This.frame13.tbl columncount ] != "0" } {
-               #--- Je trie par ordre alphabetique de la premiere colonne 
-               ::skybot_Resolver::cmdSortColumn $::skybot_Resolver::This.frame13.tbl 0
+         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
+         if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
+            $::skybot_Resolver::This.frame5.tbl columnconfigure 1 -sortmode dictionary
+         }
+         #--- Si l'objet a ete resolu par Sesame, on l'ajoute dans la table
+         if { $ok(sesame) == "1" } { 
+            set obj_sesame [ split [ lindex $voconf(sesame) 1 ] "|" ]
+            #--- Mise en forme de l'ascension droite
+            set ad [ expr 15.0 * [ lindex $obj_sesame 2 ] ]
+            #--- Mise en forme de la declinaison
+            set dec [ lindex $obj_sesame 3 ]
+            #--- Insertion de l'objet dans la table
+            $::skybot_Resolver::This.frame5.tbl insert end $obj_sesame
+            #--- Le nom de l'objet sesame est en rouge
+            $::skybot_Resolver::This.frame5.tbl cellconfigure 0,1 -fg $color(red)
+            #--- Mise en forme de l'ascension droite
+            set ad [ $::skybot_Resolver::This.frame5.tbl cellcget 0,2 -text ]
+            set ad [ expr $ad * 15.0 ]
+            $::skybot_Resolver::This.frame5.tbl cellconfigure 0,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
+            #--- Mise en forme de la declinaison
+            set dec [ $::skybot_Resolver::This.frame5.tbl cellcget 0,3 -text ]
+            $::skybot_Resolver::This.frame5.tbl cellconfigure 0,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
+         }
+         #--- Extraction du resultat
+         for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } { 
+            set vo_objet($i) [ split [ lindex $voconf(liste) $i ] "|" ]
+            #--- Mise en forme de l'ascension droite
+            set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
+            #--- Mise en forme de la declinaison
+            set dec [ lindex $vo_objet($i) 3 ]
+            #--- Insertion des objets dans la table
+            $::skybot_Resolver::This.frame5.tbl insert end $vo_objet($i)
+         }
+         #--- Si un objet a ete resolu par Sesame et affiche, on commence a 1
+         set idx_0 0
+         if { $ok(sesame) == "1" } { set idx_0 1 }
+         #--- Mise en forme des resultats
+         if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
+            for { set i $idx_0 } { $i <= [ expr [ llength $voconf(liste) ] - 2+$idx_0 ] } { incr i } {
                #--- Les noms des objets sont en bleu
-               for { set i 0 } { $i <= [ expr [ llength $voconf(liste) ] - 2 ] } { incr i } {
-                  $::skybot_Resolver::This.frame13.tbl cellconfigure $i,1 -fg $color(blue)
-                  #--- Mise en forme de l'ascension droite
-                  set ad [ $::skybot_Resolver::This.frame13.tbl cellcget $i,2 -text ]
-                  set ad [ expr $ad * 15.0 ]
-                  $::skybot_Resolver::This.frame13.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
-                  #--- Mise en forme de la declinaison
-                  set dec [ $::skybot_Resolver::This.frame13.tbl cellcget $i,3 -text ]
-                  $::skybot_Resolver::This.frame13.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
-               }
-               #--- Bilan des objets trouves dans l'image
-               if { $i > "1" } {
-                  #--- Statut de la commande
-                  $This.frame11.labURL_objet_trouve configure -text "$caption(resolver,msg_nbre_objets) $i" -fg $color(red)
-               } else {
-                  #--- Statut de la commande
-                  $This.frame11.labURL_objet_trouve configure -text "$caption(resolver,msg_nbre_objet) $i" -fg $color(red)
-               }
+               $::skybot_Resolver::This.frame5.tbl cellconfigure $i,1 -fg $color(blue)
+               #--- Mise en forme de l'ascension droite
+               set ad [ $::skybot_Resolver::This.frame5.tbl cellcget $i,2 -text ]
+               set ad [ expr $ad * 15.0 ]
+               $::skybot_Resolver::This.frame5.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
+               #--- Mise en forme de la declinaison
+               set dec [ $::skybot_Resolver::This.frame5.tbl cellcget $i,3 -text ]
+               $::skybot_Resolver::This.frame5.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
+            }
+            #--- Trie par ordre des distances a la cible
+            ::skybot_Resolver::cmdSortColumn $::skybot_Resolver::This.frame5.tbl 7
+            #--- Bilan des objets trouves dans le FOV
+            if { $i > "1" } {
+               ::console::disp "$caption(resolver,msg_nbre_objets) $i \n\n"
+            } else {
+               ::console::disp "$caption(resolver,msg_nbre_objet) $i \n\n"
             }
          }
+
       } else {
-         $::skybot_Resolver::This.frame13.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
-         if { [ lindex [ lindex $voconf(liste) 0 ] 0 ] == "SKYBOT" } {
-            set msg_erreur [ lindex $voconf(liste) 1 ]
-            $::skybot_Resolver::This.frame13.tbl insert end [ list $msg_erreur ]
-            $::skybot_Resolver::This.frame13.tbl cellconfigure 0,0 -fg $color(red)
-         } else {
-            $::skybot_Resolver::This.frame13.tbl insert end [ list $caption(resolver,msg_internet) ]
-            $::skybot_Resolver::This.frame13.tbl cellconfigure 0,0 -fg $color(red)
-         }
-         set voconf(ad_objet)    ""
-         set voconf(ad_objet_d)  ""
-         set voconf(ad_objet_h)  ""
-         set voconf(dec_objet)   ""
-         set voconf(dec_objet_d) ""
-         set voconf(mag_v_objet) ""
-         #--- Statut de la commande
-         $This.frame11.labURL_objet_trouve configure -text ""
+
+         #--- cas sans reponse ou cas d'erreur
+         $::skybot_Resolver::This.frame5.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
+         $::skybot_Resolver::This.frame5.tbl insert end [ list [ lindex $voconf(liste) 1 ] ]
+         $::skybot_Resolver::This.frame5.tbl cellconfigure 0,0 -fg $color(red)
+#         set voconf(ad_objet)        ""
+#         set voconf(dec_objet)       ""
+
       }
 
+      #--- Statut de la commande
+      $::skybot_Resolver::This configure -cursor arrow
       #--- Gestion des boutons
-      $::skybot_Resolver::This.frame6.but_ephemerides configure -relief raised -state normal
-      $::skybot_Resolver::This.frame11.but_recherche configure -relief raised -state normal
-
+      $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+      $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
    }
