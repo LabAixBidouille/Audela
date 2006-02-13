@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 13 fevrier 2006
 #
 
 package provide visio2 1.0
@@ -1340,10 +1340,6 @@ namespace eval ::Visio2::localTable {
       set index [lindex $selection 0 ]
       set name [string trimleft  [$private(tbl) cellcget $index,0 -text]]
       set filename [file join "$private(directory)" "$name"]
-
-::console::disp "image?audace(imageNo) = image$audace(imageNo) \n"
-::console::disp "conf(visu_zoom) = $conf(visu_zoom) \n"
-::console::disp "filename = $filename \n"
 
       if { "$private(previousType)" == "$private(fileImage)" } {
          ::Image::startGifAnimation image$audace(imageNo) $conf(visu_zoom) $filename

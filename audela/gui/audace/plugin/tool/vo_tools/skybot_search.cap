@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_search.cap
-# Date de mise a jour : 07 fevrier 2006
+# Date de mise a jour : 13 fevrier 2006
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(search,main_title)            "# SkyBoT - Recherche d'objets du Système Solaire"
+set caption(search,main_title)            "# SkyBoT - Recherche et identification des objets du Système Solaire"
 set caption(search,parcourir)             "..."
 set caption(search,nom_image)             "# Nom de l'image à analyser"
 set caption(search,caract_fov)            "# Caractéristiques du champ de vue :"
@@ -28,15 +28,21 @@ set caption(search,debut_image)           "# Origine de la date :"
 set caption(search,debut_pose)            "# Début de la pose"
 set caption(search,milieu_pose)           "# Milieu de la pose"
 set caption(search,date_image)            "# Date d'acquisition :"
+set caption(search,filtre_pos)            "# Filtre sur les erreurs de position :"
+set caption(search,iau_code_obs)          "# Localisation de l'observateur :"
+set caption(search,liste_code_uai)        "# Liste des codes UAI"
 set caption(search,info)                  "\[ ? \]"
 
-set caption(search,recherche)             "# Lancer la recherche"
-set caption(search,caract_objet)          "# Caractéristiques\nde l'objet\nsélectionné"
-set caption(search,ephemerides_objet)     "# Ephémérides\nde l'objet\nsélectionné"
+set caption(search,recherche)             "# Lancer la\nrecherche"
+set caption(search,caract_objet)          "# Caractéristiques de\nl'objet sélectionné"
+set caption(search,ephemerides_objet)     "# Ephémérides de\nl'objet sélectionné"
+set caption(search,view_aladin)           "# Visualiser le FOV\navec Aladin"
 set caption(search,aide)                  "# Aide"
 set caption(search,fermer)                "# Fermer"
 set caption(search,appliquer)             "# Appliquer"
 set caption(search,default)               "# Défaut"
+
+set caption(search,asteroide)             "# Astéroïdes"
 
 set caption(search,num)                   "# Numéro"
 set caption(search,name)                  "# Nom"
@@ -53,23 +59,20 @@ set caption(search,dhua)                  "# Dh (UA)"
 
 set caption(search,reperer)               "# Repérer tous les objets de l'image"
 set caption(search,effacer)               "# Effacer tous les repères de l'image"
-set caption(search,goto)                  "# Goto"
+set caption(search,goto)                  "GoTo"
 
 set caption(search,verif_calibration)     "# Vérification de la calibration astrométrique..."
 set caption(search,calibr_astrom_oui)     "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
 set caption(search,calibr_astrom_non)     "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-set caption(search,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets trouvés dans l'image :"
-set caption(search,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet trouvé dans l'image"
-set caption(search,msg_erreur)            "# Message d'erreur :"
-set caption(search,msg_probleme)          "# Problème :"
-set caption(search,msg_internet)          "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
-set caption(search,msg_item)              "# Erreur SOAP !"
+set caption(search,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
+set caption(search,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+set caption(search,msg_erreur)            "# Erreur"
 set caption(search,msg_reel_ad)           "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
 set caption(search,msg_saisir_ad)         "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
 set caption(search,msg_reel_dec)          "# La déclinaison doit être un nombre réel\ncompris entre -90.0° et 90.0°."
 set caption(search,msg_saisir_dec)        "# Veuillez charger une image ou saisir la déclinaison du centre du champ de vue."
-set caption(search,msg_reel_champ)        "# La taille du champ doit être un nombre réel positif,\nnon nul et inférieur à 1200 minutes de degré."
+set caption(search,msg_reel_champ)        "# Les dimensions du champ de vue doivent être un nombre réel positif,\nnon nul et inférieur à 600 minutes de degré (10°)"
 set caption(search,msg_reel_date)         "# Veuillez saisir une date."
 set caption(search,msg_reel_date<)        "# La date choisie doit être une date antérieure au"
 set caption(search,msg_reel_date>)        "# La date choisie doit être une date postérieure au"
@@ -102,10 +105,14 @@ set caption(search,param_spindig)         "# Valeurs min et max des distances gé
 set caption(search,param_spindih)         "# Valeurs min et max des distances héliocentriques :"
 set caption(search,param_spinppm)         "# Valeurs min et max des mouvements propres :"
 
-set caption(search,format_ad)             "# Ascension droite du centre du champ de vue exprimée dans un des formats reconnus par AudeLA :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
-set caption(search,format_dec)            "# Déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par AudeLA :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
-set caption(search,format_taille)         "# Rayon du champ de vue exprimé en minutes de degré"
-set caption(search,format_date)           "# Date d'observation du champ de vue dans un des formats reconnus par AudeLA :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+set caption(search,format_ad)             "# Saisir l'ascension droite du centre du champ de vue exprimée dans un des formats reconnus par Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
+set caption(search,format_dec)            "# Saisir la déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
+set caption(search,format_taille)         "# Saisir les dimensions RAxDEC du champ de vue exprimées en minutes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+set caption(search,format_date)           "# Saisir la date d'observation du champ de vue dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+set caption(search,format_filter)         "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
+indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+set caption(search,format_iau_code)       "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+
 set caption(search,format_fixecircle)     "# Saisir la valeur (en pixel) du rayon fixe des cercles tracés dans l'image (valeur par défaut 10)."
 set caption(search,format_basecircle)     "# Saisir la valeur (en pixel) du rayon de base des cercles tracés dans les filtres (valeur par défaut 2)."
 set caption(search,format_scalecircle)    "# Saisir le facteur multiplicatif du rayon des cercles des filtres (valeur par défaut 18)."
@@ -119,7 +126,7 @@ set caption(search,format_spinppm)        "# Filtre sur les mouvements propres :
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(search,main_title)         "SkyBoT - Recherche d'objets du Système Solaire"
+   set caption(search,main_title)         "SkyBoT - Recherche et identification des objets du Système Solaire"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "Nom de l'image à analyser"
    set caption(search,caract_fov)         "Caractéristiques du champ de vue :"
@@ -136,15 +143,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,debut_pose)         "Début de la pose"
    set caption(search,milieu_pose)        "Milieu de la pose"
    set caption(search,date_image)         "Date d'acquisition :"
+   set caption(search,filtre_pos)         "Filtre sur les erreurs de position :"
+   set caption(search,iau_code_obs)       "Localisation de l'observateur :"
+   set caption(search,liste_code_uai)     "Liste des codes UAI"
    set caption(search,info)               "\[ ? \]"
 
-   set caption(search,recherche)          "Lancer la recherche"
-   set caption(search,caract_objet)       "Caractéristiques\nde l'objet\nsélectionné"
-   set caption(search,ephemerides_objet)  "Ephémérides\nde l'objet\nsélectionné"
+   set caption(search,recherche)          "Lancer la\nrecherche"
+   set caption(search,caract_objet)       "Caractéristiques de\nl'objet sélectionné"
+   set caption(search,ephemerides_objet)  "Ephémérides de\nl'objet sélectionné"
+   set caption(search,view_aladin)        "Visualiser le FOV\navec Aladin"
    set caption(search,aide)               "Aide"
    set caption(search,fermer)             "Fermer"
    set caption(search,appliquer)          "Appliquer"
    set caption(search,default)            "Défaut"
+
+   set caption(search,asteroide)          "Astéroïdes"
 
    set caption(search,num)                "Numéro"
    set caption(search,name)               "Nom"
@@ -161,23 +174,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(search,reperer)            "Repérer tous les objets de l'image"
    set caption(search,effacer)            "Effacer tous les repères de l'image"
-   set caption(search,goto)               "Goto"
+   set caption(search,goto)               "GoTo"
 
    set caption(search,verif_calibration)  "Vérification de la calibration astrométrique..."
    set caption(search,calibr_astrom_oui)  "Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets trouvés dans l'image :"
-   set caption(search,msg_nbre_objet)     "::SkyBoT:: Un seul objet trouvé dans l'image"
-   set caption(search,msg_erreur)         "Message d'erreur :"
-   set caption(search,msg_probleme)       "Problème :"
-   set caption(search,msg_internet)       "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
-   set caption(search,msg_item)           "Erreur SOAP !"
+   set caption(search,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_erreur)         "Erreur"
    set caption(search,msg_reel_ad)        "L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
    set caption(search,msg_reel_dec)       "La déclinaison doit être un nombre réel\ncompris entre -90.0° et 90.0°."
    set caption(search,msg_saisir_dec)     "Veuillez charger une image ou saisir la déclinaison du centre du champ de vue."
-   set caption(search,msg_reel_champ)     "La taille du champ doit être un nombre réel positif,\nnon nul et inférieur à 1200 minutes de degré."
+   set caption(search,msg_reel_champ)     "Les dimensions du champ de vue doivent être un nombre réel positif,\nnon nul et inférieur à 600 minutes de degré (10°)"
    set caption(search,msg_reel_date)      "Veuillez saisir une date."
    set caption(search,msg_reel_date<)     "La date choisie doit être une date antérieure au"
    set caption(search,msg_reel_date>)     "La date choisie doit être une date postérieure au"
@@ -210,10 +220,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,param_spindih)      "Valeurs min et max des distances héliocentriques :"
    set caption(search,param_spinppm)      "Valeurs min et max des mouvements propres :"
 
-   set caption(search,format_ad)          "Ascension droite du centre du champ de vue exprimée dans un des formats reconnus par AudeLA :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_dec)         "Déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par AudeLA :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_taille)      "Rayon du champ de vue exprimé en minutes de degré"
-   set caption(search,format_date)        "Date d'observation du champ de vue dans un des formats reconnus par AudeLA :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_ad)          "Saisir l'ascension droite du centre du champ de vue exprimée dans un des formats reconnus par Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_dec)         "Saisir la déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_taille)      "Saisir les dimensions RAxDEC du champ de vue exprimées en minutes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(search,format_date)        "Saisir la date d'observation du champ de vue dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_filter)      "Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
+indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+   set caption(search,format_iau_code)    "Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+
    set caption(search,format_fixecircle)  "Saisir la valeur (en pixel) du rayon fixe des cercles tracés dans l'image (valeur par défaut 10)."
    set caption(search,format_basecircle)  "Saisir la valeur (en pixel) du rayon de base des cercles tracés dans les filtres (valeur par défaut 2)."
    set caption(search,format_scalecircle) "Saisir le facteur multiplicatif du rayon des cercles des filtres (valeur par défaut 18)."
@@ -227,7 +241,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche d'objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -244,15 +258,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,debut_pose)         "# Début de la pose"
    set caption(search,milieu_pose)        "# Milieu de la pose"
    set caption(search,date_image)         "# Date d'acquisition :"
+   set caption(search,filtre_pos)         "# Filtre sur les erreurs de position :"
+   set caption(search,iau_code_obs)       "# Localisation de l'observateur :"
+   set caption(search,liste_code_uai)     "# Liste des codes UAI"
    set caption(search,info)               "\[ ? \]"
 
-   set caption(search,recherche)          "# Lancer la recherche"
-   set caption(search,caract_objet)       "# Caractéristiques\nde l'objet\nsélectionné"
-   set caption(search,ephemerides_objet)  "# Ephémérides\nde l'objet\nsélectionné"
+   set caption(search,recherche)          "# Lancer la\nrecherche"
+   set caption(search,caract_objet)       "# Caractéristiques de\nl'objet sélectionné"
+   set caption(search,ephemerides_objet)  "# Ephémérides de\nl'objet sélectionné"
+   set caption(search,view_aladin)        "# Visualiser le FOV\navec Aladin"
    set caption(search,aide)               "# Aide"
    set caption(search,fermer)             "# Fermer"
    set caption(search,appliquer)          "# Appliquer"
    set caption(search,default)            "# Défaut"
+
+   set caption(search,asteroide)          "# Astéroïdes"
 
    set caption(search,num)                "# Numéro"
    set caption(search,name)               "# Nom"
@@ -269,23 +289,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(search,reperer)            "# Repérer tous les objets de l'image"
    set caption(search,effacer)            "# Effacer tous les repères de l'image"
-   set caption(search,goto)               "# Goto"
+   set caption(search,goto)               "GoTo"
 
    set caption(search,verif_calibration)  "# Vérification de la calibration astrométrique..."
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets trouvés dans l'image :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet trouvé dans l'image"
-   set caption(search,msg_erreur)         "# Message d'erreur :"
-   set caption(search,msg_probleme)       "# Problème :"
-   set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
-   set caption(search,msg_item)           "# Erreur SOAP !"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
    set caption(search,msg_reel_dec)       "# La déclinaison doit être un nombre réel\ncompris entre -90.0° et 90.0°."
    set caption(search,msg_saisir_dec)     "# Veuillez charger une image ou saisir la déclinaison du centre du champ de vue."
-   set caption(search,msg_reel_champ)     "# La taille du champ doit être un nombre réel positif,\nnon nul et inférieur à 1200 minutes de degré."
+   set caption(search,msg_reel_champ)     "# Les dimensions du champ de vue doivent être un nombre réel positif,\nnon nul et inférieur à 600 minutes de degré (10°)"
    set caption(search,msg_reel_date)      "# Veuillez saisir une date."
    set caption(search,msg_reel_date<)     "# La date choisie doit être une date antérieure au"
    set caption(search,msg_reel_date>)     "# La date choisie doit être une date postérieure au"
@@ -318,10 +335,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,param_spindih)      "# Valeurs min et max des distances héliocentriques :"
    set caption(search,param_spinppm)      "# Valeurs min et max des mouvements propres :"
 
-   set caption(search,format_ad)          "# Ascension droite du centre du champ de vue exprimée dans un des formats reconnus par AudeLA :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_dec)         "# Déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par AudeLA :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_taille)      "# Rayon du champ de vue exprimé en minutes de degré"
-   set caption(search,format_date)        "# Date d'observation du champ de vue dans un des formats reconnus par AudeLA :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_ad)          "# Saisir l'ascension droite du centre du champ de vue exprimée dans un des formats reconnus par Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_dec)         "# Saisir la déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_taille)      "# Saisir les dimensions RAxDEC du champ de vue exprimées en minutes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(search,format_date)        "# Saisir la date d'observation du champ de vue dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
+indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+   set caption(search,format_iau_code)    "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+
    set caption(search,format_fixecircle)  "# Saisir la valeur (en pixel) du rayon fixe des cercles tracés dans l'image (valeur par défaut 10)."
    set caption(search,format_basecircle)  "# Saisir la valeur (en pixel) du rayon de base des cercles tracés dans les filtres (valeur par défaut 2)."
    set caption(search,format_scalecircle) "# Saisir le facteur multiplicatif du rayon des cercles des filtres (valeur par défaut 18)."
@@ -335,7 +356,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche d'objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -352,15 +373,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,debut_pose)         "# Début de la pose"
    set caption(search,milieu_pose)        "# Milieu de la pose"
    set caption(search,date_image)         "# Date d'acquisition :"
+   set caption(search,filtre_pos)         "# Filtre sur les erreurs de position :"
+   set caption(search,iau_code_obs)       "# Localisation de l'observateur :"
+   set caption(search,liste_code_uai)     "# Liste des codes UAI"
    set caption(search,info)               "\[ ? \]"
 
-   set caption(search,recherche)          "# Lancer la recherche"
-   set caption(search,caract_objet)       "# Caractéristiques\nde l'objet\nsélectionné"
-   set caption(search,ephemerides_objet)  "# Ephémérides\nde l'objet\nsélectionné"
+   set caption(search,recherche)          "# Lancer la\nrecherche"
+   set caption(search,caract_objet)       "# Caractéristiques de\nl'objet sélectionné"
+   set caption(search,ephemerides_objet)  "# Ephémérides de\nl'objet sélectionné"
+   set caption(search,view_aladin)        "# Visualiser le FOV\navec Aladin"
    set caption(search,aide)               "# Aide"
    set caption(search,fermer)             "# Fermer"
    set caption(search,appliquer)          "# Appliquer"
    set caption(search,default)            "# Défaut"
+
+   set caption(search,asteroide)          "# Astéroïdes"
 
    set caption(search,num)                "# Numéro"
    set caption(search,name)               "# Nom"
@@ -377,23 +404,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(search,reperer)            "# Repérer tous les objets de l'image"
    set caption(search,effacer)            "# Effacer tous les repères de l'image"
-   set caption(search,goto)               "# Goto"
+   set caption(search,goto)               "GoTo"
 
    set caption(search,verif_calibration)  "# Vérification de la calibration astrométrique..."
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets trouvés dans l'image :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet trouvé dans l'image"
-   set caption(search,msg_erreur)         "# Message d'erreur :"
-   set caption(search,msg_probleme)       "# Problème :"
-   set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
-   set caption(search,msg_item)           "# Erreur SOAP !"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
    set caption(search,msg_reel_dec)       "# La déclinaison doit être un nombre réel\ncompris entre -90.0° et 90.0°."
    set caption(search,msg_saisir_dec)     "# Veuillez charger une image ou saisir la déclinaison du centre du champ de vue."
-   set caption(search,msg_reel_champ)     "# La taille du champ doit être un nombre réel positif,\nnon nul et inférieur à 1200 minutes de degré."
+   set caption(search,msg_reel_champ)     "# Les dimensions du champ de vue doivent être un nombre réel positif,\nnon nul et inférieur à 600 minutes de degré (10°)"
    set caption(search,msg_reel_date)      "# Veuillez saisir une date."
    set caption(search,msg_reel_date<)     "# La date choisie doit être une date antérieure au"
    set caption(search,msg_reel_date>)     "# La date choisie doit être une date postérieure au"
@@ -426,10 +450,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,param_spindih)      "# Valeurs min et max des distances héliocentriques :"
    set caption(search,param_spinppm)      "# Valeurs min et max des mouvements propres :"
 
-   set caption(search,format_ad)          "# Ascension droite du centre du champ de vue exprimée dans un des formats reconnus par AudeLA :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_dec)         "# Déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par AudeLA :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_taille)      "# Rayon du champ de vue exprimé en minutes de degré"
-   set caption(search,format_date)        "# Date d'observation du champ de vue dans un des formats reconnus par AudeLA :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_ad)          "# Saisir l'ascension droite du centre du champ de vue exprimée dans un des formats reconnus par Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_dec)         "# Saisir la déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_taille)      "# Saisir les dimensions RAxDEC du champ de vue exprimées en minutes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(search,format_date)        "# Saisir la date d'observation du champ de vue dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
+indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+   set caption(search,format_iau_code)    "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+
    set caption(search,format_fixecircle)  "# Saisir la valeur (en pixel) du rayon fixe des cercles tracés dans l'image (valeur par défaut 10)."
    set caption(search,format_basecircle)  "# Saisir la valeur (en pixel) du rayon de base des cercles tracés dans les filtres (valeur par défaut 2)."
    set caption(search,format_scalecircle) "# Saisir le facteur multiplicatif du rayon des cercles des filtres (valeur par défaut 18)."
@@ -443,7 +471,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche d'objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -460,15 +488,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,debut_pose)         "# Début de la pose"
    set caption(search,milieu_pose)        "# Milieu de la pose"
    set caption(search,date_image)         "# Date d'acquisition :"
+   set caption(search,filtre_pos)         "# Filtre sur les erreurs de position :"
+   set caption(search,iau_code_obs)       "# Localisation de l'observateur :"
+   set caption(search,liste_code_uai)     "# Liste des codes UAI"
    set caption(search,info)               "\[ ? \]"
 
-   set caption(search,recherche)          "# Lancer la recherche"
-   set caption(search,caract_objet)       "# Caractéristiques\nde l'objet\nsélectionné"
-   set caption(search,ephemerides_objet)  "# Ephémérides\nde l'objet\nsélectionné"
+   set caption(search,recherche)          "# Lancer la\nrecherche"
+   set caption(search,caract_objet)       "# Caractéristiques de\nl'objet sélectionné"
+   set caption(search,ephemerides_objet)  "# Ephémérides de\nl'objet sélectionné"
+   set caption(search,view_aladin)        "# Visualiser le FOV\navec Aladin"
    set caption(search,aide)               "# Aide"
    set caption(search,fermer)             "# Fermer"
    set caption(search,appliquer)          "# Appliquer"
    set caption(search,default)            "# Défaut"
+
+   set caption(search,asteroide)          "# Astéroïdes"
 
    set caption(search,num)                "# Numéro"
    set caption(search,name)               "# Nom"
@@ -485,23 +519,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(search,reperer)            "# Repérer tous les objets de l'image"
    set caption(search,effacer)            "# Effacer tous les repères de l'image"
-   set caption(search,goto)               "# Goto"
+   set caption(search,goto)               "GoTo"
 
    set caption(search,verif_calibration)  "# Vérification de la calibration astrométrique..."
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets trouvés dans l'image :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet trouvé dans l'image"
-   set caption(search,msg_erreur)         "# Message d'erreur :"
-   set caption(search,msg_probleme)       "# Problème :"
-   set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
-   set caption(search,msg_item)           "# Erreur SOAP !"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
    set caption(search,msg_reel_dec)       "# La déclinaison doit être un nombre réel\ncompris entre -90.0° et 90.0°."
    set caption(search,msg_saisir_dec)     "# Veuillez charger une image ou saisir la déclinaison du centre du champ de vue."
-   set caption(search,msg_reel_champ)     "# La taille du champ doit être un nombre réel positif,\nnon nul et inférieur à 1200 minutes de degré."
+   set caption(search,msg_reel_champ)     "# Les dimensions du champ de vue doivent être un nombre réel positif,\nnon nul et inférieur à 600 minutes de degré (10°)"
    set caption(search,msg_reel_date)      "# Veuillez saisir une date."
    set caption(search,msg_reel_date<)     "# La date choisie doit être une date antérieure au"
    set caption(search,msg_reel_date>)     "# La date choisie doit être une date postérieure au"
@@ -534,10 +565,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,param_spindih)      "# Valeurs min et max des distances héliocentriques :"
    set caption(search,param_spinppm)      "# Valeurs min et max des mouvements propres :"
 
-   set caption(search,format_ad)          "# Ascension droite du centre du champ de vue exprimée dans un des formats reconnus par AudeLA :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_dec)         "# Déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par AudeLA :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_taille)      "# Rayon du champ de vue exprimé en minutes de degré"
-   set caption(search,format_date)        "# Date d'observation du champ de vue dans un des formats reconnus par AudeLA :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_ad)          "# Saisir l'ascension droite du centre du champ de vue exprimée dans un des formats reconnus par Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_dec)         "# Saisir la déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_taille)      "# Saisir les dimensions RAxDEC du champ de vue exprimées en minutes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(search,format_date)        "# Saisir la date d'observation du champ de vue dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
+indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+   set caption(search,format_iau_code)    "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+
    set caption(search,format_fixecircle)  "# Saisir la valeur (en pixel) du rayon fixe des cercles tracés dans l'image (valeur par défaut 10)."
    set caption(search,format_basecircle)  "# Saisir la valeur (en pixel) du rayon de base des cercles tracés dans les filtres (valeur par défaut 2)."
    set caption(search,format_scalecircle) "# Saisir le facteur multiplicatif du rayon des cercles des filtres (valeur par défaut 18)."
@@ -551,7 +586,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche d'objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -568,15 +603,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,debut_pose)         "# Début de la pose"
    set caption(search,milieu_pose)        "# Milieu de la pose"
    set caption(search,date_image)         "# Date d'acquisition :"
+   set caption(search,filtre_pos)         "# Filtre sur les erreurs de position :"
+   set caption(search,iau_code_obs)       "# Localisation de l'observateur :"
+   set caption(search,liste_code_uai)     "# Liste des codes UAI"
    set caption(search,info)               "\[ ? \]"
 
-   set caption(search,recherche)          "# Lancer la recherche"
-   set caption(search,caract_objet)       "# Caractéristiques\nde l'objet\nsélectionné"
-   set caption(search,ephemerides_objet)  "# Ephémérides\nde l'objet\nsélectionné"
+   set caption(search,recherche)          "# Lancer la\nrecherche"
+   set caption(search,caract_objet)       "# Caractéristiques de\nl'objet sélectionné"
+   set caption(search,ephemerides_objet)  "# Ephémérides de\nl'objet sélectionné"
+   set caption(search,view_aladin)        "# Visualiser le FOV\navec Aladin"
    set caption(search,aide)               "# Aide"
    set caption(search,fermer)             "# Fermer"
    set caption(search,appliquer)          "# Appliquer"
    set caption(search,default)            "# Défaut"
+
+   set caption(search,asteroide)          "# Astéroïdes"
 
    set caption(search,num)                "# Numéro"
    set caption(search,name)               "# Nom"
@@ -593,23 +634,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(search,reperer)            "# Repérer tous les objets de l'image"
    set caption(search,effacer)            "# Effacer tous les repères de l'image"
-   set caption(search,goto)               "# Goto"
+   set caption(search,goto)               "GoTo"
 
    set caption(search,verif_calibration)  "# Vérification de la calibration astrométrique..."
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets trouvés dans l'image :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet trouvé dans l'image"
-   set caption(search,msg_erreur)         "# Message d'erreur :"
-   set caption(search,msg_probleme)       "# Problème :"
-   set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
-   set caption(search,msg_item)           "# Erreur SOAP !"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
    set caption(search,msg_reel_dec)       "# La déclinaison doit être un nombre réel\ncompris entre -90.0° et 90.0°."
    set caption(search,msg_saisir_dec)     "# Veuillez charger une image ou saisir la déclinaison du centre du champ de vue."
-   set caption(search,msg_reel_champ)     "# La taille du champ doit être un nombre réel positif,\nnon nul et inférieur à 1200 minutes de degré."
+   set caption(search,msg_reel_champ)     "# Les dimensions du champ de vue doivent être un nombre réel positif,\nnon nul et inférieur à 600 minutes de degré (10°)"
    set caption(search,msg_reel_date)      "# Veuillez saisir une date."
    set caption(search,msg_reel_date<)     "# La date choisie doit être une date antérieure au"
    set caption(search,msg_reel_date>)     "# La date choisie doit être une date postérieure au"
@@ -642,10 +680,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,param_spindih)      "# Valeurs min et max des distances héliocentriques :"
    set caption(search,param_spinppm)      "# Valeurs min et max des mouvements propres :"
 
-   set caption(search,format_ad)          "# Ascension droite du centre du champ de vue exprimée dans un des formats reconnus par AudeLA :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_dec)         "# Déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par AudeLA :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
-   set caption(search,format_taille)      "# Rayon du champ de vue exprimé en minutes de degré"
-   set caption(search,format_date)        "# Date d'observation du champ de vue dans un des formats reconnus par AudeLA :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_ad)          "# Saisir l'ascension droite du centre du champ de vue exprimée dans un des formats reconnus par Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_dec)         "# Saisir la déclinaison du centre du champ de vue exprimée dans un des formats\nreconnus par Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. type 'Angles' de la libMC)"
+   set caption(search,format_taille)      "# Saisir les dimensions RAxDEC du champ de vue exprimées en minutes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(search,format_date)        "# Saisir la date d'observation du champ de vue dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. type 'Date' de la libMC)"
+   set caption(search,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
+indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+   set caption(search,format_iau_code)    "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+
    set caption(search,format_fixecircle)  "# Saisir la valeur (en pixel) du rayon fixe des cercles tracés dans l'image (valeur par défaut 10)."
    set caption(search,format_basecircle)  "# Saisir la valeur (en pixel) du rayon de base des cercles tracés dans les filtres (valeur par défaut 2)."
    set caption(search,format_scalecircle) "# Saisir le facteur multiplicatif du rayon des cercles des filtres (valeur par défaut 18)."

@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 15 novembre 2005
+# Date de mise a jour : 13 fevrier 2006
 #
 
 namespace eval skybot_Search {
@@ -37,8 +37,13 @@ namespace eval skybot_Search {
       set column_format(Dgua)         [ list 17 "$caption(search,dgua)"       right ]
       set column_format(Dhua)         [ list 17 "$caption(search,dhua)"       right ]
       #---
+      global myurl
+      set myurl(iau_codes)     "http://cfa-www.harvard.edu/iau/lists/ObsCodes.html"
+      set myurl(astorb,CDS)    "http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&Name==="
+      set myurl(ephepos,IMCCE) "http://www.imcce.fr/cgi-bin/ephepos.cgi/calcul?"
+      #---
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -87,23 +92,28 @@ namespace eval skybot_Search {
       global current_object
 
       #--- Initialisation
-      set voconf(image_existe)       "0"
-      set voconf(centre_ad_image)    ""
-      set voconf(centre_ad_image_h)  ""
-      set voconf(centre_dec_image)   ""
-      set voconf(centre_dec_image_d) ""
-      set voconf(taille_champ_min)   ""
-      set voconf(pose)               "0"
-      set voconf(unite_pose)         "0"
-      set voconf(origine_pose)       "0"
-      set voconf(date_image)         ""
-      set current_object(num)        "-1"
+      set voconf(image_existe)        "0"
+      set voconf(centre_ad_image)     ""
+      set voconf(centre_ad_image_h)   ""
+      set voconf(centre_dec_image)    ""
+      set voconf(centre_dec_image_d)  ""
+      set voconf(taille_champ)        ""
+      set voconf(taille_champ_calcul) "600"
+      set voconf(taille_champ_x)      ""
+      set voconf(taille_champ_y)      ""
+      set voconf(pose)                "0"
+      set voconf(unite_pose)          "0"
+      set voconf(origine_pose)        "0"
+      set voconf(date_image)          ""
+      set voconf(filter)              "120"
+      set voconf(observer)            "500"
+      set current_object(num)         "-1"
 
       #--- Efface les reperes des objets
       $audace(hCanvas) delete cadres
-
       #--- Gestion des boutons
       $::skybot_Search::This.frame6.but_recherche configure -relief raised -state disabled
+      $::skybot_Search::This.frame3.fov.al.but_aladin configure -relief raised -state disabled
 
       #--- Fenetre parent
       set fenetre "$This"
@@ -126,6 +136,7 @@ namespace eval skybot_Search {
 
          #--- Gestion des boutons
          $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Search::This.frame3.fov.al.but_aladin configure -relief raised -state normal
 
          #--- RAZ de la liste
          $::skybot_Search::This.frame7.tbl delete 0 end
@@ -158,17 +169,17 @@ namespace eval skybot_Search {
             }
          }
 
-	 #--- Recherche du temps de pose de l'image (si non trouve alors 1s)
-	 set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
-	 if { [ string length $voconf(pose) ] == "0" } {
+         #--- Recherche du temps de pose de l'image (si non trouve alors 1s)
+         set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+         if { [ string length $voconf(pose) ] == "0" } {
             set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
-	 }
-	 if { [ string length $voconf(pose) ] == "0" } {
+         }
+         if { [ string length $voconf(pose) ] == "0" } {
             set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXP_TIME" ] 1 ]
-	 }
-	 if { [ string length $voconf(pose) ] == "0" } {
+         }
+         if { [ string length $voconf(pose) ] == "0" } {
             set voconf(pose) 1
-	 }
+         }
 
          #--- Affichage de la date de l'image
          ::skybot_Search::DateImage
@@ -177,11 +188,10 @@ namespace eval skybot_Search {
          set voconf(image_existe) "1"
 
       } else {
-         #--- L'image n'est pas calibree astrometriquement
 
+         #--- L'image n'est pas calibree astrometriquement
          #--- Fermeture de l'interface
          ::skybot_Search::fermer
-
          #--- Execution de la calibration astrometrique
          ::astrometry::create
 
@@ -237,7 +247,7 @@ namespace eval skybot_Search {
          incr classic
       }
       if { ( ( $calib == "1" ) && ( $nouveau == "4" ) ) || ( ( $calib == "1" ) && ( $classic >= "3" ) ) } {
-         tk_messageBox -title $caption(search,verif_calibration) -type ok -message $caption(search,calibr_astrom_oui)
+#         tk_messageBox -title $caption(search,verif_calibration) -type ok -message $caption(search,calibr_astrom_oui)
          set calibration "1"
       } else {
          tk_messageBox -title $caption(search,verif_calibration) -type ok -message $caption(search,calibr_astrom_non)
@@ -295,11 +305,11 @@ namespace eval skybot_Search {
       set voconf(Dec_n_n) $Dec_n_n
       set Dec_n_n_d       [ mc_angle2dms $Dec_n_n 90 zero 2 + string ]
 
-      #--- Dimension de la diagonale, donc du champ de l'image
-      set d [ lindex [ mc_anglesep [ list $AD_1_1 $Dec_1_1 $AD_n_n $Dec_n_n ] ] 0 ]
+      #--- Dimensions du FOV
+      set voconf(taille_champ_x) [ format "%.1f" [ expr 60.0*(abs($AD_n_n-$AD_1_1)*cos($Dec_1_1*3.1415925/360.0)) ] ]
+      set voconf(taille_champ_y) [ format "%.1f" [ expr 60.0*abs($Dec_n_n-$Dec_1_1) ] ]
+      set voconf(taille_champ)   [ concat "$voconf(taille_champ_x)x$voconf(taille_champ_y)" ]
 
-      #--- Champ de l'image, diagonale de l'image
-      set voconf(taille_champ_min) [ format "%.3f" [ expr $d * 60.0 ] ]
    }
 
    #
@@ -393,6 +403,8 @@ namespace eval skybot_Search {
          dec         { set msg $caption(search,format_dec) }
          taille      { set msg $caption(search,format_taille) }
          date        { set msg $caption(search,format_date) }
+         filter      { set msg $caption(search,format_filter) }
+         iau_code    { set msg $caption(search,format_iau_code) }
          fixecircle  { set msg $caption(search,format_fixecircle) }
          basecircle  { set msg $caption(search,format_basecircle) }
          scalecircle { set msg $caption(search,format_scalecircle) }
@@ -408,26 +420,32 @@ namespace eval skybot_Search {
    # skybot_Search::createDialog
    # Creation de l'interface graphique
    #
-   proc createDialog { } {
+   proc createDialog { { visuNo 1 } } {
       variable This
       global fov
       global audace
       global caption
       global conf
       global voconf
+      global myurl
 
       #--- Initialisation
-      set voconf(image_existe)       "0"
-      set voconf(nom_image)          ""
-      set voconf(centre_ad_image)    ""
-      set voconf(centre_ad_image_h)  ""
-      set voconf(centre_dec_image)   ""
-      set voconf(centre_dec_image_d) ""
-      set voconf(taille_champ_min)   ""
-      set voconf(pose)               "0"
-      set voconf(unite_pose)         "0"
-      set voconf(origine_pose)       "0"
-      set voconf(date_image)         ""
+      set voconf(image_existe)        "0"
+      set voconf(nom_image)           ""
+      set voconf(centre_ad_image)     ""
+      set voconf(centre_ad_image_h)   ""
+      set voconf(centre_dec_image)    ""
+      set voconf(centre_dec_image_d)  ""
+      set voconf(taille_champ)        ""
+      set voconf(taille_champ_calcul) "600"
+      set voconf(taille_champ_x)      ""
+      set voconf(taille_champ_y)      ""
+      set voconf(pose)                "0"
+      set voconf(unite_pose)          "0"
+      set voconf(origine_pose)        "0"
+      set voconf(date_image)          ""
+      set voconf(filter)              "120"
+      set voconf(observer)            "500"
 
       #--- Valeurs min-max par defaut pour les filtres
       set voconf(min_mag) "-30"
@@ -479,15 +497,17 @@ namespace eval skybot_Search {
 
       #---
       toplevel $This -class Toplevel
-      wm geometry $This 600x500$voconf(position_search)
+      wm geometry $This 640x540$voconf(position_search)
+#      wm geometry $This $voconf(position_search)
       wm resizable $This 1 1
       wm title $This $caption(search,main_title)
       wm protocol $This WM_DELETE_WINDOW { ::skybot_Search::fermer }
 
       #--- Cree un frame pour selectionner et charger l'image a analyser
-      frame $This.frame1 -borderwidth 0 
+      frame $This.frame1 -borderwidth 1 -relief raised
       pack $This.frame1 \
-         -in $This -anchor s -side top -expand 0 -fill x
+         -in $This -anchor s -side top -expand 0 -fill x \
+         -padx 10 -pady 2
 
          #--- Cree un label
          label $This.frame1.lab \
@@ -499,11 +519,12 @@ namespace eval skybot_Search {
          #--- Cree le bouton parcourir
          button $This.frame1.explore -text "$caption(search,parcourir)" -width 1 \
             -command { ::skybot_Search::charger }
-         pack $This.frame1.explore -side left -padx 3 -pady 3 -ipady 1
+         pack $This.frame1.explore -side left \
+            -padx 3 -pady 3 -ipady 1
 
          #--- Cree une ligne d'entree
-         entry $This.frame1.ent \
-            -textvariable voconf(nom_image) -width 70
+         entry $This.frame1.ent -textvariable voconf(nom_image) \
+            -borderwidth 1 -relief groove -width 70
          pack $This.frame1.ent \
             -in $This.frame1 -side left -anchor w -expand 1 \
             -padx 5 -pady 3
@@ -534,7 +555,7 @@ namespace eval skybot_Search {
             #--- Creation du bouton d'affichage de l'en-tete FITS
             button $img.but.but_en-tete_FITS -state normal \
                -text "$caption(search,en-tete_FITS)" -borderwidth 2 \
-               -command { ::audace::header }
+               -command "::audace::header $visuNo"
             pack $img.but.but_en-tete_FITS \
                -in $img.but -side left -anchor w \
                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -637,105 +658,190 @@ namespace eval skybot_Search {
         set fov [frame $This.frame3.fov -borderwidth 1 -relief solid]
         pack $fov -in $This.frame3 -anchor w -side top -expand 0 -fill x -padx 10
 
-          #--- Cree un frame pour la variable ascension droite
-          frame $fov.a -borderwidth 0 -relief flat
-          pack $fov.a \
-            -in $fov -anchor w -side top -expand 0 -fill both \
-            -padx 3 -pady 3
-            #--- Cree un label pour l'ascension droite du FOV
-            label $fov.a.label_ad_image \
-              -text "$caption(search,ad_image)" \
-              -width 20 -anchor w -borderwidth 0 -relief flat
-            pack $fov.a.label_ad_image \
-              -in $fov.a -side left -anchor w -padx 3
-            #--- Cree une ligne d'entree pour la variable ascension droite
-            entry $fov.a.data_ad_hms \
-              -textvariable voconf(centre_ad_image_h) \
-              -borderwidth 1 -relief groove -width 25 -justify center
-            pack $fov.a.data_ad_hms \
-              -in $fov.a -side left -anchor w -padx 3
-            #--- Cree un bouton pour une info sur le format de l'ascension droite du FOV
-            button $fov.a.format_ad_image -state active \
-               -borderwidth 0 -relief flat -anchor c \
-               -text "$caption(search,info)" \
-               -command { ::skybot_Search::GetInfo "ad" }
-            pack $fov.a.format_ad_image \
-              -in $fov.a -side left -anchor w -padx 5
+          #--- Cree un frame pour acceuillir les caracteristiques du FOV
+          frame $fov.ca -borderwidth 0 -relief flat
+          pack $fov.ca \
+            -in $fov -anchor w -side left -expand 0 -fill both \
+            -padx 3 -pady 1
 
-          #--- Cree un frame pour la variable declinaison
-          frame $fov.b -borderwidth 0 -relief flat
-          pack $fov.b \
-            -in $fov -anchor w -side top -expand 0 -fill both \
-            -padx 3 -pady 3
-            #--- Cree un label pour la declinaison du centre de l'image
-            label $fov.b.label_dec_image \
-              -text "$caption(search,dec_image)" \
-              -width 20 -anchor w -borderwidth 0 -relief flat
-            pack $fov.b.label_dec_image \
-              -in $fov.b -side left -anchor w -padx 3 
-            #--- Cree une ligne d'entree pour la variable declinaison
-            entry $fov.b.data_dec_dms \
-              -textvariable voconf(centre_dec_image_d) \
-              -borderwidth 1 -relief groove -width 25 -justify center
-            pack $fov.b.data_dec_dms \
-              -in $fov.b -side left -anchor w -padx 3
-            #--- Cree un label pour le format de la declinaison du FOV
-            button $fov.b.format_dec_image -state active \
-	       -borderwidth 0 -relief flat -anchor c \
-               -text "$caption(search,info)" \
-               -command { ::skybot_Search::GetInfo "dec" }
-            pack $fov.b.format_dec_image \
-              -in $fov.b -side left -anchor w -padx 5
+            #--- Cree un frame pour la variable ascension droite
+            frame $fov.ca.a -borderwidth 0 -relief flat
+            pack $fov.ca.a \
+              -in $fov.ca -anchor w -side top -expand 0 -fill both \
+              -padx 3 -pady 1
+              #--- Cree un label pour l'ascension droite du FOV
+              label $fov.ca.a.label_ad_image \
+                -text "$caption(search,ad_image)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.a.label_ad_image \
+                -in $fov.ca.a -side left -anchor w -padx 3
+              #--- Cree une ligne d'entree pour la variable ascension droite
+              entry $fov.ca.a.data_ad_hms \
+                -textvariable voconf(centre_ad_image_h) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.a.data_ad_hms \
+                -in $fov.ca.a -side left -anchor w -padx 3
+              #--- Cree un bouton pour une info sur le format de l'ascension droite du FOV
+              button $fov.ca.a.format_ad_image -state active \
+                 -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "ad" }
+              pack $fov.ca.a.format_ad_image \
+                -in $fov.ca.a -side left -anchor w -padx 5
 
-          #--- Cree un frame pour la variable taille du champ
-          frame $fov.c -borderwidth 0 -relief flat
-          pack $fov.c \
-            -in $fov -anchor w -side top -expand 0 -fill both \
-            -padx 3 -pady 3
-            #--- Cree un label pour la taille du champ (FOV) de l'image
-            label $fov.c.label_taille_champ \
-              -text "$caption(search,taille_champ)" \
-              -width 20 -anchor w -borderwidth 0 -relief flat
-            pack $fov.c.label_taille_champ \
-              -in $fov.c -side left -anchor w -padx 3 
-            #--- Cree une ligne d'entree pour la variable taille du champ
-            entry $fov.c.data_taille_champ \
-              -textvariable voconf(taille_champ_min) \
-              -borderwidth 1 -relief groove -width 25 -justify center
-            pack $fov.c.data_taille_champ \
-              -in $fov.c -side left -anchor w -padx 3
-            #--- Cree un label pour le format du rayon du FOV
-            button $fov.c.format_taille_champ -state active \
-	       -borderwidth 0 -relief flat -anchor c \
-               -text "$caption(search,info)" \
-               -command { ::skybot_Search::GetInfo "taille" }
-            pack $fov.c.format_taille_champ \
-              -in $fov.c -side left -anchor w -padx 5
+            #--- Cree un frame pour la variable declinaison
+            frame $fov.ca.b -borderwidth 0 -relief flat
+            pack $fov.ca.b \
+              -in $fov.ca -anchor w -side top -expand 0 -fill both \
+              -padx 3 -pady 1
+              #--- Cree un label pour la declinaison du centre de l'image
+              label $fov.ca.b.label_dec_image \
+                -text "$caption(search,dec_image)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.b.label_dec_image \
+                -in $fov.ca.b -side left -anchor w -padx 3 
+              #--- Cree une ligne d'entree pour la variable declinaison
+              entry $fov.ca.b.data_dec_dms \
+                -textvariable voconf(centre_dec_image_d) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.b.data_dec_dms \
+                -in $fov.ca.b -side left -anchor w -padx 3
+              #--- Cree un label pour le format de la declinaison du FOV
+              button $fov.ca.b.format_dec_image -state active \
+  	       -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "dec" }
+              pack $fov.ca.b.format_dec_image \
+                -in $fov.ca.b -side left -anchor w -padx 5
 
-          #--- Cree un frame pour la variable date
-          frame $fov.d -borderwidth 0 -relief flat
-          pack $fov.d \
-            -in $fov -anchor w -side top -expand 0 -fill both \
-            -padx 3 -pady 3
-            #--- Cree un label pour la date d'acquisition du FOV
-            label $fov.d.label_date_image \
-              -text "$caption(search,date_image)" \
-              -width 20 -anchor w -borderwidth 0 -relief flat
-            pack $fov.d.label_date_image \
-              -in $fov.d -side left -anchor w -padx 3
-            #--- Cree une ligne d'entree pour la variable date d'acquisition du FOV
-            entry $fov.d.entry_date_image \
-              -textvariable voconf(date_image) \
-              -borderwidth 1 -relief groove -width 25 -justify center
-            pack $fov.d.entry_date_image \
-              -in $fov.d -side left -anchor w -padx 3
-            #--- Cree un label pour le format de la date d'acquisition du FOV
-            button $fov.d.label_format_date -state active \
-	       -borderwidth 0 -relief flat -anchor c \
-               -text "$caption(search,info)" \
-               -command { ::skybot_Search::GetInfo "date" }
-            pack $fov.d.label_format_date \
-              -in $fov.d -side left -anchor w -padx 5
+            #--- Cree un frame pour la variable taille du champ
+            frame $fov.ca.c -borderwidth 0 -relief flat
+            pack $fov.ca.c \
+              -in $fov.ca -anchor w -side top -expand 0 -fill both \
+              -padx 3 -pady 1
+              #--- Cree un label pour la taille du champ (FOV) de l'image
+              label $fov.ca.c.label_taille_champ \
+                -text "$caption(search,taille_champ)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.c.label_taille_champ \
+                -in $fov.ca.c -side left -anchor w -padx 3 
+              #--- Cree une ligne d'entree pour la variable taille du champ
+              entry $fov.ca.c.data_taille_champ \
+                -textvariable voconf(taille_champ) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.c.data_taille_champ \
+                -in $fov.ca.c -side left -anchor w -padx 3
+              #--- Cree un label pour le format du rayon du FOV
+              button $fov.ca.c.format_taille_champ -state active \
+  	       -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "taille" }
+              pack $fov.ca.c.format_taille_champ \
+                -in $fov.ca.c -side left -anchor w -padx 5
+
+            #--- Cree un frame pour la variable date
+            frame $fov.ca.d -borderwidth 0 -relief flat
+            pack $fov.ca.d \
+              -in $fov.ca -anchor w -side top -expand 0 -fill both \
+              -padx 3 -pady 0
+              #--- Cree un label pour la date d'acquisition du FOV
+              label $fov.ca.d.label_date_image \
+                -text "$caption(search,date_image)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.d.label_date_image \
+                -in $fov.ca.d -side left -anchor w -padx 3
+              #--- Cree une ligne d'entree pour la variable date d'acquisition du FOV
+              entry $fov.ca.d.entry_date_image \
+                -textvariable voconf(date_image) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.d.entry_date_image \
+                -in $fov.ca.d -side left -anchor w -padx 3
+              #--- Cree un label pour le format de la date d'acquisition du FOV
+              button $fov.ca.d.label_format_date -state active \
+  	       -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "date" }
+              pack $fov.ca.d.label_format_date \
+                -in $fov.ca.d -side left -anchor w -padx 5
+
+            #--- Cree un frame pour la variable filter
+            frame $fov.ca.f -borderwidth 0 -relief flat
+            pack $fov.ca.f \
+              -in $fov.ca -anchor w -side top -expand 1 -fill both \
+              -padx 3 -pady 0
+              #--- Cree un label pour le filtre
+              label $fov.ca.f.label_filtre \
+                -text "$caption(search,filtre_pos)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.f.label_filtre \
+                -in $fov.ca.f -side left -anchor w -padx 3
+              #--- Cree une ligne d'entree pour la variable filter
+              entry $fov.ca.f.data_filter \
+                -textvariable voconf(filter) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.f.data_filter \
+                -in $fov.ca.f -side left -anchor w -padx 3
+              #--- Cree un bouton pour une info sur le format du filtre
+              button $fov.ca.f.format_filter -state active \
+                 -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "filter" }
+              pack $fov.ca.f.format_filter \
+                -in $fov.ca.f -side left -anchor w -padx 5
+  
+              #--- Cree un frame pour la variable iau_code
+              frame $fov.ca.u -borderwidth 0 -relief flat
+              pack $fov.ca.u \
+                -in $fov.ca -anchor w -side top -expand 0 -fill both \
+                -padx 3 -pady 0
+                #--- Cree un label pour le filtre
+                label $fov.ca.u.label_iau_code \
+                  -text "$caption(search,iau_code_obs)" \
+                  -width 30 -anchor w -borderwidth 0 -relief flat
+                pack $fov.ca.u.label_iau_code \
+                  -in $fov.ca.u -side left -anchor w -padx 3
+                #--- Cree une ligne d'entree pour la variable filter
+                entry $fov.ca.u.data_iau_code \
+                  -textvariable voconf(observer) \
+                  -borderwidth 1 -relief groove -width 6 -justify center
+                pack $fov.ca.u.data_iau_code \
+                  -in $fov.ca.u -side left -anchor w -padx 3
+                #--- Cree un bouton pour afficher la liste des code UAI
+                button $fov.ca.u.but_iau_code \
+                  -text "$caption(search,liste_code_uai)" -borderwidth 1 \
+                  -font $audace(font,arial_6_b) \
+                  -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
+                pack $fov.ca.u.but_iau_code \
+                  -in $fov.ca.u -side left -padx 3
+                #--- Cree un bouton pour une info sur le format du filtre
+                button $fov.ca.u.format_iau_code -state active \
+                   -borderwidth 0 -relief flat -anchor c \
+                   -text "$caption(search,info)" \
+                   -command { ::skybot_Search::GetInfo "iau_code" }
+                pack $fov.ca.u.format_iau_code \
+                  -in $fov.ca.u -side left -anchor w -padx 6
+
+          #--- Cree un frame pour acceuillir les caracteristiques du FOV
+          frame $fov.al -borderwidth 0 -relief flat
+          pack $fov.al \
+            -in $fov -anchor w -side left -expand 1 -fill both \
+            -padx 3 -pady 1
+
+            #--- Creation du bouton visualisation dans Aladin 
+            button $fov.al.but_aladin -relief raised -state disabled \
+               -text "$caption(search,view_aladin)" -borderwidth 2 \
+               -command { set dim_fov [ split $voconf(taille_champ) "x" ]
+                          set radius [ expr [ lindex $dim_fov 0 ] / 60.0 ]
+                          if { [ llength $dim_fov ] > 1 } {
+                             set radius_y [ lindex $dim_fov 1 ]
+                             set radius [ expr sqrt($radius*$radius+$radius_y*$radius_y)/60.0 ]
+                          }
+                          vo_launch_aladin [ concat "\"$voconf(centre_ad_image) $voconf(centre_dec_image)\"" ] $radius "DSS2" "USNO2"
+                        }
+            pack $fov.al.but_aladin \
+               -in $fov.al -side left -anchor c \
+               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
 
       #--- Cree un frame pour y mettre les boutons
       frame $This.frame6 -borderwidth 0
@@ -750,18 +856,18 @@ namespace eval skybot_Search {
             -in $This.frame6 -side left -anchor w \
             -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-         #--- Creation du bouton de recherche des caracteristiques de l'objet
+         #--- Creation du bouton d'affichage des caracteristiques de l'objet
          button $This.frame6.but_caract -relief raised -state disabled \
             -text "$caption(search,caract_objet)" -borderwidth 2 \
             -command {
-               set filename "http://vizier.u-strasbg.fr/cgi-bin/VizieR-5?-source=B/astorb/astorb&amp;Name===$voconf(name)"
+               set filename [ concat $myurl(astorb,CDS)[string trim $voconf(name)] ]
                ::audace::Lance_Site_htm $filename
             }
          pack $This.frame6.but_caract \
             -in $This.frame6 -side left -anchor w \
             -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-         #--- Creation du bouton de recherche des ephemerides de l'objet
+         #--- Creation du bouton de calcul des ephemerides de l'objet
          button $This.frame6.but_ephemerides -relief raised -state disabled \
             -text "$caption(search,ephemerides_objet)" -borderwidth 2 \
             -command {
@@ -769,9 +875,10 @@ namespace eval skybot_Search {
                set annee [ lindex $date 0 ]
                set mois [ lindex $date 1 ]
                set jour [ lindex $date 2 ]
-               set filename "http://www.imcce.fr/cgi-bin/ephepos-aladin.cgi/calcul?planete=Aster&nomaster=$voconf(name)\
-                  &scale=UTC&an=$annee&mois=$mois&jour=$jour&heure=12&minutes=00&secondes=00&nbdates=15"
-               ::audace::Lance_Site_htm $filename
+               set goto_url [ concat "$myurl(ephepos,IMCCE)planete=Aster&nomaster=[string trim $voconf(name)]\
+                         &scale=UTC&an=[string trim $annee]&mois=[string trim $mois]&jour=[string trim $jour]\
+                         &heure=12&minutes=00&secondes=00&nbdates=15" ]
+               ::audace::Lance_Site_htm $goto_url
             }
          pack $This.frame6.but_ephemerides \
             -in $This.frame6 -side left -anchor w \
@@ -1047,7 +1154,7 @@ namespace eval skybot_Search {
               #--- Cree une ligne d'entree
               entry $inputs.a.radius_base \
                 -textvariable voconf(radius_base) \
-                -borderwidth 1 -relief groove -width 12 -justify center
+                -borderwidth 1 -relief groove -width 13 -justify center
               pack $inputs.a.radius_base \
                 -in $inputs.a -side left -anchor w -padx 3
               #--- Cree un bouton info 
@@ -1072,7 +1179,7 @@ namespace eval skybot_Search {
               #--- Cree une ligne d'entree
               entry $inputs.b.radius_scale \
                 -textvariable voconf(radius_scale) \
-                -borderwidth 1 -relief groove -width 12 -justify center
+                -borderwidth 1 -relief groove -width 13 -justify center
               pack $inputs.b.radius_scale \
                 -in $inputs.b -side left -anchor w -padx 3
               #--- Cree un bouton info 
@@ -1099,7 +1206,7 @@ namespace eval skybot_Search {
               #--- Cree une ligne d'entree
               entry $inputs.c.arrow_base \
                 -textvariable voconf(arrow_base) \
-                -borderwidth 1 -relief groove -width 12 -justify center
+                -borderwidth 1 -relief groove -width 13 -justify center
               pack $inputs.c.arrow_base \
                 -in $inputs.c -side left -anchor w -padx 3
               #--- Cree un bouton info 
@@ -1128,7 +1235,7 @@ namespace eval skybot_Search {
             #--- Cree une ligne d'entree
             entry $inputs.d.radius_fixe \
               -textvariable voconf(radius_fixe) \
-              -borderwidth 1 -relief groove -width 12 -justify center
+              -borderwidth 1 -relief groove -width 13 -justify center
             pack $inputs.d.radius_fixe \
               -in $inputs.d -side left -anchor w -padx 3
             #--- Cree un bouton info 
@@ -1247,7 +1354,7 @@ namespace eval skybot_Search {
             #--- Transformation des coordonnees image en coordonnees canvas
             set can_xy [ ::audace::picture2Canvas $img_xy ]
             #--- Re-dessine en orange l'objet precedemment selectionne
-        	    if { $current_object(num) >= 0 } {
+            if { $current_object(num) >= 0 } {
                ::skybot_Search::Trace_Objet $tbl $current_object(num) $current_object(img) $current_object(can) "orange"
             }
             #--- Dessine l'objet selectionne en vert dans l'image
@@ -1275,7 +1382,7 @@ namespace eval skybot_Search {
                           }
                           ::skybot_Resolver::affiche_Outil_Tlscp
                           set catalogue(asteroide_choisi) $voconf(name)
-                          ::Tlscp::Gestion_Cata $caption(resolver,asteroide)
+                          ::Tlscp::Gestion_Cata $caption(search,asteroide)
                         }
          }
       }
@@ -1317,6 +1424,7 @@ namespace eval skybot_Search {
       #--- Gestion des boutons
       $::skybot_Search::This configure -cursor watch
       $::skybot_Search::This.frame6.but_recherche configure -relief groove -state disabled
+      $::skybot_Search::This.frame3.fov.al.but_aladin configure -relief raised -state disabled
       $::skybot_Search::This.frame6.but_caract configure -relief raised -state disabled
       $::skybot_Search::This.frame6.but_ephemerides configure -relief raised -state disabled
 
@@ -1325,7 +1433,7 @@ namespace eval skybot_Search {
       if {$voconf(image_existe) == "0"} {
          if {$voconf(centre_ad_image_h) == ""} {
             tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_saisir_ad)
-            focus $fov.a.data_ad_hms
+            focus $fov.ca.a.data_ad_hms
             $::skybot_Search::This configure -cursor arrow
             $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
             return
@@ -1334,7 +1442,7 @@ namespace eval skybot_Search {
          }
           if {$voconf(centre_dec_image_d) == ""} {
             tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_saisir_dec)
-            focus $fov.b.data_dec_dms
+            focus $fov.ca.b.data_dec_dms
             $::skybot_Search::This configure -cursor arrow
             $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
             return
@@ -1347,8 +1455,8 @@ namespace eval skybot_Search {
       if { ( [ string is double -strict $voconf(centre_ad_image) ] == "0" ) \
             || ( $voconf(centre_ad_image) == "" ) || ( $voconf(centre_ad_image) < "0.0" ) \
             || ( $voconf(centre_ad_image) > "360.0" ) } {
-         tk_messageBox -title $caption(search,msg_probleme) -type ok -message $caption(search,msg_reel_ad)
-         focus $fov.a.data_ad_hms
+         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_reel_ad)
+         focus $fov.ca.a.data_ad_hms
          $::skybot_Search::This configure -cursor arrow
          $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
          return
@@ -1358,73 +1466,115 @@ namespace eval skybot_Search {
       if { ( [ string is double -strict $voconf(centre_dec_image) ] == "0" ) \
             || ( $voconf(centre_dec_image) == "" ) || ( $voconf(centre_dec_image) < "-90.0" ) \
             || ( $voconf(centre_dec_image) > "90.0" ) } {
-         tk_messageBox -title $caption(search,msg_probleme) -type ok -message $caption(search,msg_reel_dec)
-         focus $fov.b.data_dec_dms
+         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_reel_dec)
+         focus $fov.ca.b.data_dec_dms
          $::skybot_Search::This configure -cursor arrow
          $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
          return
       }
 
       #--- Tests sur la dimension du champ
-      if { ( [ string is double -strict $voconf(taille_champ_min) ] == "0" ) \
-            || ( $voconf(taille_champ_min) == "" ) || ( $voconf(taille_champ_min) <= "0" ) \
-            || ( $voconf(taille_champ_min) > "1200.0" ) } {
-         tk_messageBox -title $caption(search,msg_probleme) -type ok -message $caption(search,msg_reel_champ)
-         focus $fov.c.data_taille_champ
+      set dim_fov [ split $voconf(taille_champ) "x" ]
+      set voconf(taille_champ_x) [ lindex $dim_fov 0 ]
+      if { [ llength $dim_fov ] > 1 } { set voconf(taille_champ_y) [ lindex $dim_fov 1 ] }
+      #--- test sur la dimension x
+      if { ( [ string is double -strict $voconf(taille_champ_x) ] == "0" ) || ( $voconf(taille_champ_x) == "" ) || \
+           ( $voconf(taille_champ_x) <= "0" ) || ( $voconf(taille_champ_x) > "600.0" ) } {
+         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_reel_champ)
+         focus $fov.ca.c.data_taille_champ
+         $::skybot_Search::This configure -cursor arrow
+         $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
+         return
+      }
+      #--- test sur la dimension y si elle existe
+      if { $voconf(taille_champ_y) != "" && ( ( [ string is double -strict $voconf(taille_champ_y) ] == "0" ) || \
+           ( $voconf(taille_champ_y) <= "0" ) || ( $voconf(taille_champ_y) > "600.0" ) ) } {
+         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_reel_champ)
+         focus $fov.ca.c.data_taille_champ
+         $::skybot_Search::This configure -cursor arrow
+         $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
+         return
+      }
+      #--- definition du FOV pour affichage (en arcmin)
+      set voconf(taille_champ) $voconf(taille_champ_x)
+      if { $voconf(taille_champ_y) != "" } {
+        set voconf(taille_champ) [ concat "$voconf(taille_champ_x)x$voconf(taille_champ_y)" ]
+      }
+      #--- definition du FOV pour calcul (en arcsec)
+      set voconf(taille_champ_calcul) [ expr 60.0*$voconf(taille_champ_x) ]
+      if { $voconf(taille_champ_y) != "" } {
+        set voconf(taille_champ_calcul) [ concat "[expr 60.0*$voconf(taille_champ_x)]x[expr 60.0*$voconf(taille_champ_y)]" ]
+      }
+
+      #--- Tests sur l'existence d'une date
+      if { $voconf(date_image) == "" } {
+         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_reel_date)
+         set voconf(date_image) ""
+         focus $fov.ca.d.entry_date_image
          $::skybot_Search::This configure -cursor arrow
          $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
          return
       }
 
-      #--- Tests sur la date
-      if { $voconf(date_image) == "" } {
-         tk_messageBox -title $caption(search,msg_probleme) -type ok -message $caption(search,msg_reel_date)
-         set voconf(date_image) ""
-         focus $fov.d.entry_date_image
-         $::skybot_Search::This configure -cursor arrow
-         $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
-         return
-      }
-      #---
+      #--- Conversion de la date en JD
       set date [ mc_date2jd $voconf(date_image) ]
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus } statut ]
       #---
       if { $erreur == "0" } {
          #--- Mise en forme du resultat
-         set statut [ lindex $statut 1 ]
-         regsub -all "\'" $statut "\"" statut
+         regsub -all "\'" [lindex $statut 1] "" statut
+         set statut [split $statut "|"]
          #--- Date du debut
-         set date_debut [ lindex $statut 1 ]
-         set date_d [ mc_date2ymdhms $date_debut ]
-         set date_debut_ [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date_d 2 ] \
-            [ lindex $date_d 1 ] [ lindex $date_d 0 ] [ lindex $date_d 3 ] [ lindex $date_d  4 ] [ lindex $date_d  5 ] ]
+         set date_debut_jd [lindex $statut 1]
+         set date_d [ mc_date2ymdhms $date_debut_jd ]
+         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
          #--- Date de fin
-         set date_fin [ lindex $statut 2 ]
-         set date_f [ mc_date2ymdhms $date_fin ]
-         set date_fin_ [ format "%02d/%02d/%2s $caption(statut,titre6) %02d:%02d:%02.0f" [ lindex $date_f 2 ] \
-            [ lindex $date_f 1 ] [ lindex $date_f 0 ] [ lindex $date_f 3 ] [ lindex $date_f  4 ] [ lindex $date_f  5 ] ]
+         set date_fin_jd [lindex $statut 2]
+         set date_d [ mc_date2ymdhms $date_fin_jd ]
+         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         #--- Tests sur la validite de la date saisie
          #---
-         if { $date <= $date_debut } {
-            tk_messageBox -title $caption(search,msg_probleme) -type ok \
-               -message "$caption(search,msg_reel_date>) $date_debut_"
+         if { $date <= $date_debut_jd } {
+            tk_messageBox -title $caption(search,msg_erreur) -type ok -message "$caption(search,msg_reel_date>) $date_debut"
             set voconf(date_image) ""
-            focus $fov.d.entry_date_image
+            focus $fov.ca.d.entry_date_image
             $::skybot_Search::This configure -cursor arrow
             $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
             return
          }
          #---
-         if { $date >= $date_fin } {
-            tk_messageBox -title $caption(search,msg_probleme) -type ok \
-               -message "$caption(search,msg_reel_date<) $date_fin_"
+         if { $date >= $date_fin_jd } {
+            tk_messageBox -title $caption(search,msg_erreur) -type ok -message "$caption(search,msg_reel_date<) $date_fin"
             set voconf(date_image) ""
-            focus $fov.d.entry_date_image
+            focus $fov.ca.d.entry_date_image
             $::skybot_Search::This configure -cursor arrow
             $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
             return
          }
       }
+
+      #--- Invocation du web service skybot
+      set ok(skybot) 0
+      set erreur [ catch { vo_skybot $voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) \
+                                     $voconf(taille_champ_calcul) "text" "basic" $voconf(observer) $voconf(filter) } voconf(skybot) ]
+      if { $erreur == "0" } {
+         if { [ lindex [ lindex $voconf(skybot) 0 ] 0 ] != "item" } {
+            set ok(skybot) 1
+         } else {
+            set ok(skybot) 2
+         }
+      } else {
+         set ok(skybot) 3
+         set voconf(skybot) [ list "item" [concat "SKYBOT -> $erreur"] ]
+      }
+
+      #--- Gestion des erreurs
+      set erreur 0
+      if { $ok(skybot) != "1" } { set erreur -1 }
+      set voconf(liste) $voconf(skybot)
 
       #--- RAZ de la liste
       $::skybot_Search::This.frame7.tbl delete 0 end
@@ -1432,12 +1582,9 @@ namespace eval skybot_Search {
          $::skybot_Search::This.frame7.tbl deletecolumns 0 end
       }
 
-      #--- Extraction, suppression des virgules et creation des colonnes du tableau
-      set voconf(taille_champ) [ expr $voconf(taille_champ_min) * 60.0 / 2.0 ]
-      set erreur \
-         [ catch { vo_skybot $voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) \
-         $voconf(taille_champ) } voconf(liste) ]
+      #--- Affichage des resultats
       if { $erreur == "0" } {
+
          set liste_titres [ lindex $voconf(liste) 0 ]
          regsub -all "," $liste_titres "" liste_titres
          for { set i 1 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
@@ -1445,149 +1592,143 @@ namespace eval skybot_Search {
             $::skybot_Search::This.frame7.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] \
                [ lindex $format 2 ]
          }
-         #--- Traitement d'une erreur particuliere, la requete repond 'item'
-         if { $liste_titres == "item" } {
-            $::skybot_Search::This.frame7.tbl insertcolumns end 100 "$caption(search,msg_erreur)" left
-            $::skybot_Search::This.frame7.tbl insert end [ list $caption(search,msg_item) ]
-            $::skybot_Search::This.frame7.tbl cellconfigure 0,0 -fg $color(red)
-         } else {
-            #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
-            if { [ $::skybot_Search::This.frame7.tbl columncount ] != "0" } {
-               $::skybot_Search::This.frame7.tbl columnconfigure 1 -sortmode dictionary
-            }
-            #--- Initialisations pour les filtres
-            set valMinFiltre(mag) "99"
-            set valMaxFiltre(mag) "-99"
-            set valMinFiltre(err) "999999"
-            set valMaxFiltre(err) "-999999"
-            set valMinFiltre(dig) "999"
-            set valMaxFiltre(dig) "0"
-            set valMinFiltre(dih) "999"
-            set valMaxFiltre(dih) "0"
-            #--- Extraction du resultat
-            set voconf(j) "0"
-            for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } {
-               regsub -all "\'" [ lindex $voconf(liste) $i ] "\"" vo_objet($i)
-               #--- Mise en forme de l'ascension droite
-               set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
-               #--- Mise en forme de la declinaison
-               set dec [ lindex $vo_objet($i) 3 ]
-               #--- Recherche des valeurs min-max pour initialiser les filtres
-                 # limites des magnitudes
-               if { [ lindex $vo_objet($i) 5 ] < $valMinFiltre(mag) } { set valMinFiltre(mag) [ lindex $vo_objet($i) 5 ] }
-               if { [ lindex $vo_objet($i) 5 ] > $valMaxFiltre(mag) } { set valMaxFiltre(mag) [ lindex $vo_objet($i) 5 ] }
-                 # limites des erreurs de pos.
-               if { [ lindex $vo_objet($i) 6 ] < $valMinFiltre(err) } { set valMinFiltre(err) [ lindex $vo_objet($i) 6 ] }
-               if { [ lindex $vo_objet($i) 6 ] > $valMaxFiltre(err) } { set valMaxFiltre(err) [ lindex $vo_objet($i) 6 ] }
-                 # limites des distances geoc.
-               if { [ lindex $vo_objet($i) 10 ] < $valMinFiltre(dig) } { set valMinFiltre(dig) [ lindex $vo_objet($i) 10 ] }
-               if { [ lindex $vo_objet($i) 10 ] > $valMaxFiltre(dig) } { set valMaxFiltre(dig) [ lindex $vo_objet($i) 10 ] }
-                 # limites des distances helioc.
-               if { [ lindex $vo_objet($i) 11 ] < $valMinFiltre(dih) } { set valMinFiltre(dih) [ lindex $vo_objet($i) 11 ] }
-               if { [ lindex $vo_objet($i) 11 ] > $valMaxFiltre(dih) } { set valMaxFiltre(dih) [ lindex $vo_objet($i) 11 ] }
-               #--- Si une image est chargee alors on recherche les objets qui sont sur l'image
-               if {$voconf(image_existe) == "1"} {
-                 if { $voconf(AD_1_1) > $voconf(AD_n_n) } {
-                     if { ( $ad > $voconf(AD_n_n) ) && ( $ad < $voconf(AD_1_1) ) } {
-                	#--- Je garde
-                	set garde(ad) "1"
-                     } else {
-                	#--- Je ne garde pas
-                	set garde(ad) "0"
-                     }
-                 } else {
-                     if { ( $ad > $voconf(AD_1_1) ) && ( $ad < $voconf(AD_n_n) ) } {
-                	#--- Je garde
-                	set garde(ad) "1"
-                     } else {
-                	#--- Je ne garde pas
-                	set garde(ad) "0"
-                     }
-                 }
-                 if { $voconf(Dec_n_n) > $voconf(Dec_1_1) } {
-                     if { ( $dec > $voconf(Dec_1_1) ) && ( $dec < $voconf(Dec_n_n) ) } {
-                	#--- Je garde
-                	set garde(dec) "1"
-                     } else {
-                	#--- Je ne garde pas
-                	set garde(dec) "0"
-                     }
-                 } else {
-                     if { ( $dec > $voconf(Dec_n_n) ) && ( $dec < $voconf(Dec_1_1) ) } {
-                	#--- Je garde
-                	set garde(dec) "1"
-                     } else {
-                	#--- Je ne garde pas
-                	set garde(dec) "0"
-                     }
-                }
-        	  #--- Liste les objets qui sont sur l'image
-        	  if { ( $garde(ad) == "1" ) && ( $garde(dec) == "1" ) } {
-                     incr voconf(j)
-                     $::skybot_Search::This.frame7.tbl insert end $vo_objet($i)
-        	  }
-               } else {
-               #--- sinon on garde tous les objets 
+         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
+         if { [ $::skybot_Search::This.frame7.tbl columncount ] != "0" } {
+            $::skybot_Search::This.frame7.tbl columnconfigure 1 -sortmode dictionary
+         }
+         #--- Initialisations pour les filtres
+         set valMinFiltre(mag) "99"
+         set valMaxFiltre(mag) "-99"
+         set valMinFiltre(err) "999999"
+         set valMaxFiltre(err) "-999999"
+         set valMinFiltre(dig) "999"
+         set valMaxFiltre(dig) "0"
+         set valMinFiltre(dih) "999"
+         set valMaxFiltre(dih) "0"
+
+         #--- Extraction du resultat
+         set voconf(j) 0
+         for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } {
+            regsub -all "\'" [ lindex $voconf(liste) $i ] "\"" vo_objet($i)
+            set vo_objet($i) [ split [ lindex $voconf(liste) $i ] "|" ]
+            #--- Mise en forme de l'ascension droite
+            set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
+            #--- Mise en forme de la declinaison
+            set dec [ lindex $vo_objet($i) 3 ]
+            #--- Recherche des valeurs min-max pour initialiser les filtres
+              # limites des magnitudes
+            if { [ lindex $vo_objet($i) 5 ] < $valMinFiltre(mag) } { set valMinFiltre(mag) [ lindex $vo_objet($i) 5 ] }
+            if { [ lindex $vo_objet($i) 5 ] > $valMaxFiltre(mag) } { set valMaxFiltre(mag) [ lindex $vo_objet($i) 5 ] }
+              # limites des erreurs de pos.
+            if { [ lindex $vo_objet($i) 6 ] < $valMinFiltre(err) } { set valMinFiltre(err) [ lindex $vo_objet($i) 6 ] }
+            if { [ lindex $vo_objet($i) 6 ] > $valMaxFiltre(err) } { set valMaxFiltre(err) [ lindex $vo_objet($i) 6 ] }
+              # limites des distances geoc.
+            if { [ lindex $vo_objet($i) 10 ] < $valMinFiltre(dig) } { set valMinFiltre(dig) [ lindex $vo_objet($i) 10 ] }
+            if { [ lindex $vo_objet($i) 10 ] > $valMaxFiltre(dig) } { set valMaxFiltre(dig) [ lindex $vo_objet($i) 10 ] }
+              # limites des distances helioc.
+            if { [ lindex $vo_objet($i) 11 ] < $valMinFiltre(dih) } { set valMinFiltre(dih) [ lindex $vo_objet($i) 11 ] }
+            if { [ lindex $vo_objet($i) 11 ] > $valMaxFiltre(dih) } { set valMaxFiltre(dih) [ lindex $vo_objet($i) 11 ] }
+            #--- Si une image est chargee alors on recherche les objets qui sont sur l'image
+            if {$voconf(image_existe) == "1"} {
+              if { $voconf(AD_1_1) > $voconf(AD_n_n) } {
+                  if { ( $ad > $voconf(AD_n_n) ) && ( $ad < $voconf(AD_1_1) ) } {
+                    #--- Je garde
+                    set garde(ad) "1"
+                  } else {
+             	#--- Je ne garde pas
+                    set garde(ad) "0"
+                  }
+              } else {
+                  if { ( $ad > $voconf(AD_1_1) ) && ( $ad < $voconf(AD_n_n) ) } {
+                    #--- Je garde
+                    set garde(ad) "1"
+                  } else {
+                    #--- Je ne garde pas
+                    set garde(ad) "0"
+                  }
+              }
+              if { $voconf(Dec_n_n) > $voconf(Dec_1_1) } {
+                  if { ( $dec > $voconf(Dec_1_1) ) && ( $dec < $voconf(Dec_n_n) ) } {
+                    #--- Je garde
+                    set garde(dec) "1"
+                  } else {
+                    #--- Je ne garde pas
+                    set garde(dec) "0"
+                  }
+              } else {
+                  if { ( $dec > $voconf(Dec_n_n) ) && ( $dec < $voconf(Dec_1_1) ) } {
+                    #--- Je garde
+                    set garde(dec) "1"
+                  } else {
+                    #--- Je ne garde pas
+                    set garde(dec) "0"
+                  }
+              }
+              #--- Liste les objets qui sont sur l'image
+              if { ( $garde(ad) == "1" ) && ( $garde(dec) == "1" ) } {
                  incr voconf(j)
-                 $::skybot_Search::This.frame7.tbl insert end $vo_objet($i)
-               }
-            }
-            #---
-            if { [ $::skybot_Search::This.frame7.tbl columncount ] != "0" } {
-               #--- Trie par ordre alphabetique de la premiere colonne 
-               ::skybot_Search::cmdSortColumn $::skybot_Search::This.frame7.tbl 0
-               #--- Les noms des objets sont en bleu
-               for { set i 0 } { $i <= [ expr $voconf(j) - 1 ] } { incr i } {
-                  $::skybot_Search::This.frame7.tbl cellconfigure $i,1 -fg $color(blue)
-                  #--- Mise en forme de l'ascension droite
-                  set ad [ $::skybot_Search::This.frame7.tbl cellcget $i,2 -text ]
-                  set ad [ expr $ad * 15.0 ]
-                  $::skybot_Search::This.frame7.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
-                  #--- Mise en forme de la declinaison
-                  set dec [ $::skybot_Search::This.frame7.tbl cellcget $i,3 -text ]
-                  $::skybot_Search::This.frame7.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
-               }
-               #--- Si une image est chargee alors on valide les entrees du popup 'bouton-3' de la table
-               if {$voconf(image_existe) == "1"} {
-                  $popupTbl entryconfigure $caption(search,reperer) -state normal
-                  $popupTbl entryconfigure $caption(search,effacer) -state normal
-                  $popupTbl entryconfigure $caption(search,filtres) -state normal
-                  $popupTbl entryconfigure $caption(search,filtre_param) -state normal
-                  $popupTbl entryconfigure $caption(search,label_objets) -state normal
-               } else {
-               #--- sinon on les rend inutilisables
-                  $popupTbl entryconfigure $caption(search,reperer) -state disabled
-                  $popupTbl entryconfigure $caption(search,effacer) -state disabled
-                  $popupTbl entryconfigure $caption(search,filtres) -state disabled
-                  $popupTbl entryconfigure $caption(search,filtre_param) -state disabled
-                  $popupTbl entryconfigure $caption(search,label_objets) -state disabled
-               }
-               #--- Si une image est chargee alors on repere les objets sur l'image
-               if {$voconf(image_existe) == "1"} { ::skybot_Search::cmdRepere_Efface }
-               #--- Bilan des objets trouves dans le FOV
-               if { $i > "1" } {
-                  ::console::disp "$caption(search,msg_nbre_objets) $i \n\n"
-               } else {
-                  ::console::disp "$caption(search,msg_nbre_objet) $i \n\n"
-               }
+                   $::skybot_Search::This.frame7.tbl insert end $vo_objet($i)
+              }
+            } else {
+              #--- sinon on garde tous les objets 
+              incr voconf(j)
+              $::skybot_Search::This.frame7.tbl insert end $vo_objet($i)
             }
          }
+         #---
+         if { [ $::skybot_Search::This.frame7.tbl columncount ] != "0" } {
+            #--- Les noms des objets sont en bleu
+            for { set i 0 } { $i <= [ expr $voconf(j) - 1 ] } { incr i } {
+               $::skybot_Search::This.frame7.tbl cellconfigure $i,1 -fg $color(blue)
+               #--- Mise en forme de l'ascension droite
+               set ad [ $::skybot_Search::This.frame7.tbl cellcget $i,2 -text ]
+               set ad [ expr $ad * 15.0 ]
+               $::skybot_Search::This.frame7.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
+               #--- Mise en forme de la declinaison
+               set dec [ $::skybot_Search::This.frame7.tbl cellcget $i,3 -text ]
+               $::skybot_Search::This.frame7.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
+            }
+            #--- Trie par ordre alphabetique de la premiere colonne 
+            ::skybot_Search::cmdSortColumn $::skybot_Search::This.frame7.tbl 7
+            #--- Si une image est chargee alors on valide les entrees du popup 'bouton-3' de la table
+            if {$voconf(image_existe) == "1"} {
+               $popupTbl entryconfigure $caption(search,reperer) -state normal
+               $popupTbl entryconfigure $caption(search,effacer) -state normal
+               $popupTbl entryconfigure $caption(search,filtres) -state normal
+               $popupTbl entryconfigure $caption(search,filtre_param) -state normal
+               $popupTbl entryconfigure $caption(search,label_objets) -state normal
+            } else {
+            #--- sinon on les rend inutilisables
+               $popupTbl entryconfigure $caption(search,reperer) -state disabled
+               $popupTbl entryconfigure $caption(search,effacer) -state disabled
+               $popupTbl entryconfigure $caption(search,filtres) -state disabled
+               $popupTbl entryconfigure $caption(search,filtre_param) -state disabled
+               $popupTbl entryconfigure $caption(search,label_objets) -state disabled
+            }
+            #--- Si une image est chargee alors on repere les objets sur l'image
+            if {$voconf(image_existe) == "1"} { ::skybot_Search::cmdRepere_Efface }
+            #--- Bilan des objets trouves dans le FOV
+            if { $i > "1" } {
+               ::console::disp "$caption(search,msg_nbre_objets) $i \n\n"
+            } else {
+               ::console::disp "$caption(search,msg_nbre_objet) $i \n\n"
+            }
+         }
+
       } else {
+
+         #--- cas sans reponse ou cas d'erreur
          $::skybot_Search::This.frame7.tbl insertcolumns end 100 "$caption(search,msg_erreur)" left
-         if { [ lindex [ lindex $voconf(liste) 0 ] 0 ] == "SKYBOT" } {
-            set msg_erreur [ lindex $voconf(liste) 1 ]
-            $::skybot_Search::This.frame7.tbl insert end [ list $msg_erreur ]
-            $::skybot_Search::This.frame7.tbl cellconfigure 0,0 -fg $color(red)
-         } else {
-            $::skybot_Search::This.frame7.tbl insert end [ list $caption(search,msg_internet) ]
-            $::skybot_Search::This.frame7.tbl cellconfigure 0,0 -fg $color(red)
-         }
+         $::skybot_Search::This.frame7.tbl insert end [ list [ lindex $voconf(liste) 1 ] ]
+         $::skybot_Search::This.frame7.tbl cellconfigure 0,0 -fg $color(red)
+
       }
 
       #--- Gestion du curseur
       $::skybot_Search::This configure -cursor arrow
       #--- Gestion des boutons
       $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
+      $::skybot_Search::This.frame3.fov.al.but_aladin configure -relief raised -state normal
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1674,8 +1815,8 @@ namespace eval skybot_Search {
          #--- Designation des objets
          if { $voconf(label_objets) == 1 } {
             set voconf(name) [ lindex [ $tbl cellconfigure $idx,1 -text ] 4 ]
-            $audace(hCanvas) create text [ expr $x - 20. ] [ expr $y - 20. ] -text $voconf(name) \
-                -fill $color($mycolor) -tags cadres -font $audace(font,arial_10_n)
+            $audace(hCanvas) create text $x [ expr $y - 20. ] -text $voconf(name) \
+                -justify center -fill $color($mycolor) -tags cadres -font $audace(font,arial_7_n)
          }
       }
 

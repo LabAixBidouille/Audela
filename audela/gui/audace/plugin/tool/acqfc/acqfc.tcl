@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 13 fevrier 2006
 #
 
 package provide acqfc 2.1
@@ -3175,7 +3175,7 @@ proc AcqFCBuildIF { visuNo } {
         frame $panneau(AcqFC,$visuNo,This).mode.video.show -relief ridge -borderwidth 2
            checkbutton $panneau(AcqFC,$visuNo,This).mode.video.show.case -text $caption(acqfc,show_video) \
               -variable panneau(AcqFC,$visuNo,showvideopreview) \
-              -command "::AcqFC::changerVideoPreview $visuNo"    
+              -command "::AcqFC::changerVideoPreview $visuNo"
            pack $panneau(AcqFC,$visuNo,This).mode.video.show.case -side left -fill x -expand true
         pack $panneau(AcqFC,$visuNo,This).mode.video.show -side top -fill x
 
@@ -3201,7 +3201,7 @@ proc AcqFCBuildIF { visuNo } {
         frame $panneau(AcqFC,$visuNo,This).mode.video_1.show -relief ridge -borderwidth 2
            checkbutton $panneau(AcqFC,$visuNo,This).mode.video_1.show.case -text $caption(acqfc,show_video) \
               -variable panneau(AcqFC,$visuNo,showvideopreview) \
-              -command "::AcqFC::changerVideoPreview $visuNo"    
+              -command "::AcqFC::changerVideoPreview $visuNo"
            pack $panneau(AcqFC,$visuNo,This).mode.video_1.show.case -side left -fill x -expand true
         pack $panneau(AcqFC,$visuNo,This).mode.video_1.show -side top -fill x
      pack $panneau(AcqFC,$visuNo,This).mode -side top -fill x

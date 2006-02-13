@@ -2,7 +2,7 @@
 # File : vo_tools.tcl
 # Description : Virtual Observatory Tools
 # Auteur : Alain KLOTZ & Jerome BERTHIER
-# Update : 10 december 2005
+# Update : 13 february 2006
 #
 
 # ------------------------------------------------------------------------------------
@@ -107,132 +107,180 @@ proc vo_aladin { args } {
 	return $texte
 }
 
- # ------------------------------------------------------------------------------------
- #
- # proc        : vo_skybotresolver { [JD] [name] [mime] [out] }
- #                 avec  JD   = jour julien de l'epoque consideree
- #                       name = nom ou numero ou designation provisoire de l'objet
- #                       mime = format de la reponse ('text', 'votable', 'html')
- #                       out  = choix des donnees en sortie ('object', 'basic','all')
- # Description : SkybotResolver webservice
- # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
- # Update      : 12 august 2005
- #
- # Ce script interroge la base SkyBoT afin de resoudre le nom
- # d'un corps du systeme solaire en ses coordonnees a l'epoque
- # consideree.
- #
- # La reponse est une liste d'elements contenant les data.
- # Le premier element de la liste est le nom des colonnees recuperees.
- #
- # Plus d'info: http://www.imcce.fr/page.php?nav=webservices/skybot/
- #
- # Dans la console, une fois la cmde executee, on peut executer:
- #    SOAP::dump -request skybotresolver
- #    SOAP::dump -reply skybotresolver
- # afin de visualiser le texte de la requete et de la reponse.
- #
- # ------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
+#
+# proc        : vo_launch_aladin { coord radius [survey] [catalog] }
+#                 avec  coord    = coordonnees du centre du FOV
+#                       radius   = rayon du FOV en arcmin
+#                       survey   = nom du survey-image
+#                       catalog  = nom du catalogue d'objets pour la reconnaissance
+#
+# Description : Aladin java launcher
+# Auteur      : Jerome BERTHIER
+# Update      : 13 february 2006
+#
+# Ce script lance le client Aladin dans le navigateur par defaut
+# et affiche l'image <survey> (par defaut DSS2) centree aux coord. <coord> +/- <radius>
+# plus, eventuellement, les objets reconnus par VizieR(<catalog>)
+#
+# Exemple: vo_launch_aladin "05 35 17.3 -05 23 28" 10 DSS2 USNO2
+#
+# ------------------------------------------------------------------------------------
 
- proc vo_skybotresolver { args } {
-    global audace
-    global conf
+proc vo_launch_aladin { args } {
 
-    package require SOAP
+   set unit "arcmin"
+   set url_aladin "http://aladin.u-strasbg.fr/java/nph-aladin.pl?from=VizieR"
 
    set argc [llength $args]
-   if {$argc>=2} {
-       # recupere les args (a ecrire)
-       #set jd "2453384.92154"
-       #set name "1996 TO66"
-       #set mime "text"
-       #set out "basic"
-       set jd [mc_date2jd [lindex $args 0]]
-       set name [lindex $args 1]
-       set mime text
-       set out basic
-       if {$argc>=3} {
-          set mime [lindex $args 2]
-       }
-       if {$argc>=4} {
-          set out [lindex $args 3]
-       }
-       SOAP::create skybotresolver -uri "http://www.imcce.fr/webservices/skybot"\
-          -proxy "http://www.imcce.fr/webservices/skybot/skybotresolver.php" \
-          -params { "epoch" "double"  "name" "string"  "mime" "string"  "out" "string"}
-       set response [skybotresolver $jd $name $mime $out]
-       return $response
-    } else {
-       error "Usage: vo_skybotresolver Date Designation ?text|votable|html? ?object|basic|all?"
-    }
+   if {$argc >= 2} {
+     regsub -all "\"" [lindex $args 0] "" coord
+     set radius [lindex $args 1]
+     set survey "DSS2"
+     if {$argc >= 3} { set survey [lindex $args 2] }
+     set catalog "USNO2"
+     if {$argc >= 4} { set catalog [lindex $args 3] }
 
- }
+     #--- construction de l'URL
+     set url_args [ concat "&script=get Aladin($survey) $coord $radius$unit;sync;get VizieR($catalog)" ]
+     set goto_url [ concat $url_aladin$url_args ]
+     #--- invocation de l'url
+     ::audace::Lance_Site_htm $goto_url
 
- # ------------------------------------------------------------------------------------
- #
- # proc        : vo_skybot { [JD] [RA] [DEC] [radius] [mime] [out] }
- #                 avec  JD     = jour julien de l'epoque consideree
- #                       RA,DEC = coordonnees equatoriales J2000 du centre du FOV (degres)
- #                       radius = rayon du FOV en arcsec
- #                       mime   = format de la reponse ('text', 'votable', 'html')
- #                       out    = choix des donnees en sortie ('object', 'basic','all')
- # Description : Skybot webservice
- # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
- # Update      : 12 august 2005
- #
- # Ce script interroge la base SkyBoT afin de fournir la liste et les coordonnees
- # de tous les corps du systeme solaire contenus dans le FOV a l'epoque et aux
- # coordonnees RA,DEC considerees.
- #
- # La reponse est une liste d'elements contenant les data.
- # Le premier element de la liste est le nom des colonnees recuperees.
- #
- # Plus d'info: http://www.imcce.fr/page.php?nav=webservices/skybot/
- #
- # Dans la console, une fois la cmde executee, on peut executer:
- #    SOAP::dump -request skybotresolver
- #    SOAP::dump -reply skybotresolver
- # afin de visualiser le texte de la requete et de la reponse.
- #
- # ------------------------------------------------------------------------------------
+  } else {
 
- proc vo_skybot { args } {
-    global audace
-    global conf
+     error "Usage: vo_launch_aladin Coord Radius [Survey Catalog]"
 
-    package require SOAP
+  }
+
+}
+
+# ------------------------------------------------------------------------------------
+#
+# proc        : vo_skybotresolver { [JD] [target] [mime] [out] [observer] }
+#                 avec  JD       = jour julien de l'epoque consideree
+#                       target   = nom ou numero ou designation provisoire de l'objet
+#                       mime     = format de la reponse ('text', 'votable', 'html')
+#                       out      = choix des donnees en sortie ('object', 'basic','all')
+#                       observer = code UAI de l'observatoire
+#
+# Description : SkybotResolver webservice
+# Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
+# Update      : 22 january 2006
+#
+# Ce script interroge la base SkyBoT afin de resoudre le nom d'un corps
+# du systeme solaire en ses coordonnees a l'epoque consideree.
+#
+# La reponse est une liste d'elements contenant les data.
+# Le premier element de la liste est le nom des colonnees recuperees.
+#
+# Plus d'info: http://skybot.imcce.fr/
+#
+# Dans la console, une fois la cmde executee, on peut executer:
+#    SOAP::dump -request skybotresolver
+#    SOAP::dump -reply skybotresolver
+# afin de visualiser le texte de la requete et de la reponse SOAP.
+#
+# ------------------------------------------------------------------------------------
+
+proc vo_skybotresolver { args } {
+   global audace
+   global conf
+
+   package require SOAP
 
    set argc [llength $args]
-   if {$argc>=4} {
-       # recupere les args (a ecrire)
-       #set jd "2453384.92154"
-       #set RA "148.67"
-       #set DEC "16.3838"
-       #set radius "600"
-       #set mime "text"
-       #set out "basic"
-       set jd [mc_date2jd [lindex $args 0]]
-       set RA [mc_angle2deg [lindex $args 1]]
-       set DEC [mc_angle2deg [lindex $args 2] 90]
-       set radius [lindex $args 3]
-       set mime text
-       set out basic
-       if {$argc>=5} {
-          set mime [lindex $args 4]
-       }
-       if {$argc>=6} {
-          set out [lindex $args 5]
-       }
+   if {$argc >= 2} {
+     set jd [mc_date2jd [lindex $args 0]]
+     set target [lindex $args 1]
+     set mime "text"
+     if {$argc >= 3} { set mime [lindex $args 2] }
+     set out "basic"
+     if {$argc >= 4} { set out [lindex $args 3] }
+     set observer "500"
+     if {$argc >= 5} { set observer [lindex $args 4] }
 
-       SOAP::create skybot -uri "http://www.imcce.fr/webservices/skybot" \
+     SOAP::create skybotresolver \
+         -uri "http://www.imcce.fr/webservices/skybot"\
+         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
+         -name "skybotresolver" \
+         -params { "epoch" "double"  "target" "string"  "mime" "string"  "out" "string"  "observer" "string"}
+     set response [ skybotresolver $jd $target $mime $out $observer ]
+     return $response
+
+  } else {
+
+     error "Usage: vo_skybotresolver Date Target ?text|votable|html? ?object|basic|all? Observer"
+
+  }
+}
+
+# ------------------------------------------------------------------------------------
+#
+# proc        : vo_skybot { [JD] [RA] [DEC] [radius] [mime] [out] [observer] [filter] }
+#                 avec  JD       = jour julien de l'epoque consideree
+#                       RA,DEC   = coordonnees equatoriales J2000 du centre du FOV (degres)
+#                       radius   = rayon du FOV en arcsec
+#                       mime     = format de la reponse ('text', 'votable', 'html')
+#                       out      = choix des donnees en sortie ('object', 'basic','all')
+#                       observer = code UAI de l'observatoire
+#                       filter   = filtre sur l'erreur de position
+#
+# Description : Skybot webservice
+# Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
+# Update      : 22 january 2006
+#
+# Ce script interroge la base SkyBoT afin de fournir la liste et les coordonnees
+# de tous les corps du systeme solaire contenus dans le FOV a l'epoque et aux
+# coordonnees RA,DEC considerees.
+#
+# La reponse est une liste d'elements contenant les data.
+# Le premier element de la liste est le nom des colonnees recuperees.
+#
+# Plus d'info: http://skybot.imcce.fr
+#
+# Dans la console, une fois la cmde executee, on peut executer:
+#    SOAP::dump -request skybotresolver
+#    SOAP::dump -reply skybotresolver
+# afin de visualiser le texte de la requete et de la reponse SOAP.
+#
+# ------------------------------------------------------------------------------------
+
+proc vo_skybot { args } {
+   global audace
+   global conf
+
+   package require SOAP
+
+   set argc [llength $args]
+   if {$argc >= 4} {
+      set jd [mc_date2jd [lindex $args 0]]
+      set RA [mc_angle2deg [lindex $args 1]]
+      set DEC [mc_angle2deg [lindex $args 2] 90]
+      set radius [lindex $args 3]
+      set mime "text"
+      if {$argc >= 5} { set mime [lindex $args 4] }
+      set out "basic"
+      if {$argc >= 6} { set out [lindex $args 5] }
+      set observer "500"
+      if {$argc >= 7} { set observer [lindex $args 6] }
+      set filter "0"
+      if {$argc >= 8} { set filter [lindex $args 7] }
+
+      SOAP::create skybot \
+          -uri "http://www.imcce.fr/webservices/skybot" \
           -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
-          -params { "epoch" "double"  "alpha" "double"  "delta" "double"  "radius" "double"  "mime" "string"  "out" "string" }
-       set response [skybot $jd $RA $DEC $radius $mime $out]
-       return $response
-    } else {
-       error "Usage: vo_skybot Date Designation ra_J2000.0 dec_J2000.0 radius_arcsec ?text|votable|html? ?object|basic|all?"
-    }
- }
+          -name "skybot" \
+          -params { "epoch" "double"  "alpha" "double"  "delta" "double"  "radius" "string"  "mime" "string"  "out" "string"  "observer" "string"  "filter" "string"}
+      set response [ skybot $jd $RA $DEC $radius $mime $out $observer $filter ]
+      return $response
+
+   } else {
+
+      error "Usage: vo_skybot Date ra_J2000.0 dec_J2000.0 radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec)"
+
+   }
+}
 
 # ------------------------------------------------------------------------------------
 #
@@ -241,7 +289,7 @@ proc vo_aladin { args } {
 #
 # Description : SkybotStatus webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 16 september 2005
+# Update      : 22 january 2006
 #
 # Ce script interroge la base SkyBoT afin d'en connaitre le statut
 #
@@ -252,12 +300,12 @@ proc vo_aladin { args } {
 #         les satellites naturels et les cometes (4 colonnes)
 #    - la date de la derniere mise a jour.
 #
-# Plus d'info: http://www.imcce.fr/page.php?nav=webservices/skybot/
+# Plus d'info: http://skybot.imcce.fr/
 #
 # Dans la console, une fois la cmde executee, on peut executer:
 #    SOAP::dump -request skybotstatus
 #    SOAP::dump -reply skybotstatus
-# afin de visualiser le texte de la requete et de la reponse.
+# afin de visualiser le texte de la requete et de la reponse SOAP.
 #
 # ------------------------------------------------------------------------------------
 
@@ -268,19 +316,113 @@ proc vo_skybotstatus { args } {
   package require SOAP
 
   set argc [llength $args]
-  if {$argc>=0} {
-      set mime "text"
-      if {$argc>=1} {
-         set mime [lindex $args 0]
-      }
-      SOAP::create skybotstatus -uri "http://www.imcce.fr/webservices/skybot"\
-         -proxy "http://www.imcce.fr/webservices/skybot/skybotstatus.php" \
+  if {$argc >= 0} {
+     set mime "text"
+     if {$argc >= 1} { set mime [lindex $args 0] }
+     SOAP::create skybotstatus \
+         -uri "http://www.imcce.fr/webservices/skybot" \
+         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
+         -name "skybotstatus" \
          -params { "mime" "string" }
-      set response [skybotstatus $mime]
-      return $response
-   } else {
-      error "Usage: vo_skybotstatus ?text|votable|html?"
-   }
+     set response [ skybotstatus $mime ]
+     return $response
 
+  } else {
+
+     error "Usage: vo_skybotstatus ?text|votable|html?"
+
+  }
 }
 
+# ------------------------------------------------------------------------------------
+#
+# proc        : vo_sesame { name resultType server }
+#
+#
+# Description : Sesame: astronomical object name Resolver
+# Auteur      : Jerome BERTHIER
+# Update      : 31 january 2006
+#
+# Ce script interroge le webservice SESAME (CDS) pour resoudre les noms des corps
+# celestes (hors objets du systeme solaire) reconnus de Simbad
+#
+# Plus d'info: http://cdsweb.u-strasbg.fr/cdsws.gml
+#
+# ------------------------------------------------------------------------------------
+
+proc vo_sesame { args } {
+  global audace
+  global conf
+
+  package require SOAP
+
+  set sesame(CDS)  "http://cdsws.u-strasbg.fr/axis/services/Sesame"
+  set sesame(ADS)  "http://vizier.cfa.harvard.edu:8080/axis/services/Sesame"
+  set sesame(ADAC) "http://vizier.nao.ac.jp:8080/axis/services/Sesame"
+  set sesame(CADC) "http://vizier.hia.nrc.ca:8080/axis/services/Sesame"
+
+  set argc [llength $args]
+  if {$argc >=1 } {
+     set name [lindex $args 0]
+     set resultType "ui"
+     if {$argc >= 2} { set resultType [lindex $args 1] }
+     set server "CDS"
+     if {$argc >= 3} { set server [lindex $args 2] }
+     SOAP::create sesame \
+         -uri $sesame($server) \
+         -proxy $sesame($server) \
+         -action "urn:sesame" \
+         -params { "name" "string"  "resultType" "string"}
+     set response [ sesame $name $resultType ]
+     return $response
+
+  } else {
+
+     error "Usage: vo_sesame name ?u|H|x?[p|i]? ?CDS|ADS|ADAC|CADC?"
+
+  }
+}
+
+# ------------------------------------------------------------------------------------
+#
+# proc        : vo_sesame_url { server }
+#
+#
+# Description : GLU: Generateur de lien uniforme (CDS)
+# Auteur      : Jerome BERTHIER
+# Update      : 03 february 2006
+#
+# Ce script interroge le webservice GLU (CDS) pour determiner l'URL
+# d'un service Sesame accessible
+#
+# Plus d'info: http://cdsweb.u-strasbg.fr/cdsws.gml
+#
+# ------------------------------------------------------------------------------------
+
+proc vo_sesame_url { args } {
+  package require SOAP
+
+  set glu(CDS)  "http://cdsws.u-strasbg.fr/axis/services/Jglu"
+  set glu(ADS)  "http://vizier.cfa.harvard.edu:8080/axis/services/Jglu"
+  set glu(ADAC) "http://vizier.nao.ac.jp:8080/axis/services/Jglu"
+  set glu(CADC) "http://vizier.hia.nrc.ca:8080/axis/services/Jglu"
+
+  set argc [llength $args]
+  if {$argc >= 1} {
+
+     set server [lindex $args 0]
+     set tag "Sesame"
+     if {$argc >= 2} { set tag [lindex $args 1] }
+
+     SOAP::create getURLfromTag \
+         -uri $glu($server) \
+         -proxy $glu($server) \
+         -action "urn:getURLfromTag" \
+         -params { "tag" "string" }
+     set response [ getURLfromTag $tag ]
+     return $response
+
+  } else {
+     error "Usage: vo_sesame_url ?CDS|ADS|ADAC|CADC?"
+  }
+}
