@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Date de mise a jour : 07 janvier 2006
+# Date de mise a jour : 16 fevrier 2006
 #
 
 #=========================================================================
@@ -181,17 +181,17 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(bermasaude,titre)                       "# Filter Wheel"
+   set caption(bermasaude,titre)                       "Filterhjul"
 
-   set caption(bermasaude,port)                        "# Port"
-   set caption(bermasaude,bermasaude_combinaison)      "# Chosen Combination"
-   set caption(bermasaude,bermasaude_bvri)             "# BGRI"
-   set caption(bermasaude,bermasaude_cmj)              "# CMY"
-   set caption(bermasaude,bermasaude_version_micro)    "# Microcontroller software:"
-   set caption(bermasaude,bermasaude_nbr_filtres_1)    "# This filter wheel has"
-   set caption(bermasaude,bermasaude_nbr_filtres_2)    "# positions."
+   set caption(bermasaude,port)                        "Port"
+   set caption(bermasaude,bermasaude_combinaison)      "Valgt combination"
+   set caption(bermasaude,bermasaude_bvri)             "BGRI"
+   set caption(bermasaude,bermasaude_cmj)              "CMG"
+   set caption(bermasaude,bermasaude_version_micro)    "Mikrocontroller software:"
+   set caption(bermasaude,bermasaude_nbr_filtres_1)    "Dette filterhjul har"
+   set caption(bermasaude,bermasaude_nbr_filtres_2)    "positioner."
 
-   set caption(bermasaude,bermasaude_port)             "# Filter Wheel Port"
+   set caption(bermasaude,bermasaude_port)             "Filterhjul port"
    set caption(bermasaude,caractere_2points)           ":"
 
    set caption(bermasaude,site_web_ref)                "Henvisning til Websider:"
@@ -204,7 +204,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_infrarouge)       "Infrarød"
    set caption(bermasaude,bermasaude_cyan)             "Cyan"
    set caption(bermasaude,bermasaude_magenta)          "Magenta"
-   set caption(bermasaude,bermasaude_jaune)            "Gult"
+   set caption(bermasaude,bermasaude_jaune)            "Gul"
    set caption(bermasaude,bermasaude_filtre_arrive_1)  ""
    set caption(bermasaude,bermasaude_filtre_arrive_2)  "filter er til rådighed."
    set caption(bermasaude,bermasaude_filtre_depart_1)  ""
