@@ -2,8 +2,8 @@
 # Fichier : compute_stellaire.tcl
 # Description : Fonction de prétraitement automatique
 # Auteur : Benoît Maugis
-# Date de MAJ : 9 octobre 2004
-# Version : 1.03b
+# Date de mise a jour : 9 octobre 2004 ---> 17 fevrier 2006
+# Version : 1.03b ---> 1.03c
 
 
 #  Documentation : voir le fichier compute_stellaire.htm dans le dossier doc_html.
@@ -12,7 +12,9 @@
 # Procédure
 
 proc compute_stellaire {args} {
-  global audace caption conf confFichierIma
+#--- Debut modif Robert
+  global audace caption conf
+#--- Fin modif Robert
 
   if {[syntaxe_args $args 1 3 [list "" [list "-buf" "-rep" "-ext" "-polyNo" "-tri"]]]=="1"} {
 
@@ -62,7 +64,9 @@ proc compute_stellaire {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz

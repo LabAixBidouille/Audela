@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 07 janvier 2006
+# Date de mise a jour : 17 fevrier 2006
 #
 
 #
@@ -26,7 +26,7 @@ namespace eval confPosObs {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -89,7 +89,7 @@ namespace eval confPosObs {
    #
    proc initConf { } {
       global conf
- 
+
       if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 1.376722 E 43.659778 142" }
       if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "142" }
       if { ! [ info exists conf(posobs,estouest) ] }        { set conf(posobs,estouest)        "E" }
@@ -454,7 +454,7 @@ namespace eval confPosObs {
       } elseif { $estouest == $caption(confgene,position_est) } {
          set estouest $caption(confgene,caractere_E)
       }
-      set longitude "$confgene(posobs,long)"            
+      set longitude "$confgene(posobs,long)"
       if { $confgene(posobs,nordsud) == $caption(confgene,position_sud) } {
          set signe $caption(confgene,caractere_tiret)
       } else {
@@ -485,7 +485,7 @@ namespace eval confPosObs {
          [lindex $confgene(posobs,observateur,gps) 1] [lindex $confgene(posobs,observateur,gps) 2]\
          [lindex $confgene(posobs,observateur,gps) 3] [lindex $confgene(posobs,observateur,gps) 4]"
       $This.lab7 configure -text "$confgene(posobs,observateur,gps)"
-   } 
+   }
 
    #
    # MPC
@@ -625,7 +625,7 @@ namespace eval confTemps {
 
    #
    # confTemps::ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration, 
+   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration,
    # et fermer la fenetre de configuration du temps
    #
    proc ok { } {
@@ -677,7 +677,7 @@ namespace eval confTemps {
    #
    proc initConf { } {
       global conf
- 
+
       if { ! [ info exists conf(temps,fushoraire) ] } { set conf(temps,fushoraire) "1" }
       if { ! [ info exists conf(temps,hhiverete) ] }  { set conf(temps,hhiverete)  "2" }
       if { ! [ info exists conf(temps,hsysteme) ] }   { set conf(temps,hsysteme)   "0" }
@@ -894,7 +894,7 @@ namespace eval confTemps {
             destroy $This.hhiverete
          }
       }
-   } 
+   }
 
    #
    # confTemps::widgetToConf
@@ -919,7 +919,7 @@ namespace eval confTemps {
 
 namespace eval confFichierIma {
    variable This
-   global confFichierIma
+   global confgene
 
    #
    # confFichierIma::run this
@@ -930,7 +930,7 @@ namespace eval confFichierIma {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -952,22 +952,22 @@ namespace eval confFichierIma {
       variable This
       global conf
       global audace
-      global confFichierIma
+      global confgene
 
       catch { 
-         buf1000 extension "$confFichierIma(extension,new)"
-         buf1001 extension "$confFichierIma(extension,new)"
-         buf1002 extension "$confFichierIma(extension,new)"
-         buf1003 extension "$confFichierIma(extension,new)"
+         buf1000 extension "$confgene(extension,new)"
+         buf1001 extension "$confgene(extension,new)"
+         buf1002 extension "$confgene(extension,new)"
+         buf1003 extension "$confgene(extension,new)"
       }
-      buf$audace(bufNo) extension "$confFichierIma(extension,new)"
-      if { $confFichierIma(fichier,compres) == "0" } {
+      buf$audace(bufNo) extension "$confgene(extension,new)"
+      if { $confgene(fichier,compres) == "0" } {
          buf$audace(bufNo) compress "none"
       } else {
          buf$audace(bufNo) compress "gzip"
       }
-      $This.labURL2 configure -text "$confFichierIma(extension,new)"
-      $This.labURL5 configure -text "$confFichierIma(jpegquality,new)"
+      $This.labURL2 configure -text "$confgene(extension,new)"
+      $This.labURL5 configure -text "$confgene(jpegquality,new)"
       widgetToConf
    }
 
@@ -1009,7 +1009,7 @@ namespace eval confFichierIma {
       global audace
       global conf
       global caption
-      global confFichierIma
+      global confgene
       global color
 
       #--- initConf
@@ -1018,9 +1018,9 @@ namespace eval confFichierIma {
       if { ! [ info exists conf(jpegquality,new) ] } { set conf(jpegquality,new)    "80" }
 
       #--- confToWidget
-      set confFichierIma(extension,new)   $conf(extension,new)
-      set confFichierIma(fichier,compres) $conf(fichier,compres)
-      set confFichierIma(jpegquality,new) $conf(jpegquality,new)
+      set confgene(extension,new)   $conf(extension,new)
+      set confgene(fichier,compres) $conf(fichier,compres)
+      set confgene(jpegquality,new) $conf(jpegquality,new)
 
       #---
       if { [winfo exists $This] } {
@@ -1077,12 +1077,12 @@ namespace eval confFichierIma {
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
       pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
 
-      entry $This.newext -textvariable confFichierIma(extension,new) -width 5 -justify center
+      entry $This.newext -textvariable confgene(extension,new) -width 5 -justify center
       pack $This.newext -in $This.frame4 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
       checkbutton $This.compress -text "$caption(confgene,fichier_image_compres)" -highlightthickness 0 \
-         -variable confFichierIma(fichier,compres)
+         -variable confgene(fichier,compres)
       pack $This.compress -in $This.frame5 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle le taux de qualite d'enregistrement par defaut des fichiers Jpeg
@@ -1098,7 +1098,7 @@ namespace eval confFichierIma {
 
       scale $This.frame8.efficacite_variant -from 5 -to 100 -length 300 -orient horizontal \
          -showvalue true -tickinterval 10 -resolution 1 -borderwidth 2 -relief groove \
-         -variable confFichierIma(jpegquality,new) -width 10
+         -variable confgene(jpegquality,new) -width 10
       pack $This.frame8.efficacite_variant -side top -padx 10 -pady 5
 
       #--- Cree le bouton 'OK'
@@ -1139,13 +1139,13 @@ namespace eval confFichierIma {
    #
    proc widgetToConf { } {
       global conf
-      global confFichierIma
+      global confgene
 
-      set conf(extension,defaut)   $confFichierIma(extension,new)
-      set conf(extension,new)      $confFichierIma(extension,new)
-      set conf(fichier,compres)    $confFichierIma(fichier,compres)
-      set conf(jpegquality,defaut) $confFichierIma(jpegquality,new)
-      set conf(jpegquality,new)    $confFichierIma(jpegquality,new)
+      set conf(extension,defaut)   $confgene(extension,new)
+      set conf(extension,new)      $confgene(extension,new)
+      set conf(fichier,compres)    $confgene(fichier,compres)
+      set conf(jpegquality,defaut) $confgene(jpegquality,new)
+      set conf(jpegquality,new)    $confgene(jpegquality,new)
    }
 }
 
@@ -1167,7 +1167,7 @@ namespace eval confAlarmeFinPose {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1340,7 +1340,7 @@ namespace eval confTempoScan {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1515,7 +1515,7 @@ namespace eval confChoixOutil {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1783,7 +1783,7 @@ namespace eval confMessages_Console {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2000,7 +2000,7 @@ namespace eval confTypeFenetre {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2063,7 +2063,7 @@ namespace eval confTypeFenetre {
    #
    proc initConf { } {
       global conf
- 
+
       if { ! [ info exists conf(ok+appliquer) ] } { set conf(ok+appliquer) "1" }
    }
 
@@ -2210,7 +2210,7 @@ namespace eval confGeneral {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2387,7 +2387,7 @@ namespace eval confVersion {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2526,30 +2526,30 @@ namespace eval confVersion {
 #
 
 namespace eval confGenerique {
-   variable This 
-   variable NameSpace  
+   variable This
+   variable NameSpace
 
    #
    # confGenerique::run this
    # Cree la fenetre de configuration generique
    # this = chemin de la fenetre
-   # 
+   #  
    #  retourne 1 si la fenetre est fermee avec le bouton OK
    #  retourne 0 si la fenetre est fermee avec le bouton FERMER
-   #
+   #  
    proc run { this namespace { visuNo "1" } } {
-      variable This 
-      variable NameSpace  
+      variable This
+      variable NameSpace
       variable confResult
 
-      set This $this 
-      set NameSpace  $namespace
+      set This $this
+      set NameSpace $namespace
       set confResult "0"
 
       createDialog $visuNo
       #tkwait visibility $This
       tkwait window $This
-      
+
       return $confResult
    }
 
@@ -2561,7 +2561,7 @@ namespace eval confGenerique {
    proc ok { visuNo } {
       variable This
       variable confResult
-      
+
       appliquer $visuNo
       set confResult "1"
       destroy $This
@@ -2572,7 +2572,8 @@ namespace eval confGenerique {
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc appliquer { visuNo } {
-      variable NameSpace  
+      variable NameSpace
+
       $NameSpace\:\:widgetToConf $visuNo
       catch {
          $NameSpace\:\:appliquer $visuNo
@@ -2584,11 +2585,11 @@ namespace eval confGenerique {
    # Fonction 'afficherAide' pour afficher l'aide 
    #
    proc showHelp { } {
-      variable NameSpace  
+      variable NameSpace
 
       set result [ catch { $NameSpace\:\:showHelp } msg ]
       if { $result == "1" } {
-         ::console::affiche_erreur "$msg\n" 
+         ::console::affiche_erreur "$msg\n"
          tk_messageBox -title "$NameSpace" -type ok -message "$msg" -icon error
          return
       }
@@ -2600,7 +2601,7 @@ namespace eval confGenerique {
    #
    proc fermer { visuNo } {
       variable This
-      variable NameSpace  
+      variable NameSpace
 
       catch {
          #--- appelle la procedure "fermer" s'il elle existe
@@ -2612,9 +2613,9 @@ namespace eval confGenerique {
    }
 
    proc createDialog { visuNo } {
-      variable This 
-      variable NameSpace 
-      global audace 
+      variable This
+      variable NameSpace
+      global audace
       global conf
       global caption
 
@@ -2631,7 +2632,7 @@ namespace eval confGenerique {
       wm resizable $This 0 0
       wm title $This "[$NameSpace\:\:getLabel] (visu$visuNo)"
 
-      #--- Frame des parametres a configurer  
+      #--- Frame des parametres a configurer
       frame $This.frame1 -borderwidth 1 -relief raised
 
       $NameSpace\:\:fillConfigPage $This.frame1 $visuNo

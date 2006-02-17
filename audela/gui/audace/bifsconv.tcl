@@ -3,7 +3,7 @@
 # Ce script permet de convertir de multiples formats d'images vers du fits.
 # Auteur : Benoît Maugis
 # Version : 1.3.1 ---> 1.3.2
-# Date de mise à jour : 10 avril 2005 ---> 24 decembre 2005
+# Date de mise a jour : 10 avril 2005 ---> 17 fevrier 2006
 #
 
 # Documentation : voir le fichier bifsconv.htm dans le dossier doc_html.
@@ -14,11 +14,15 @@ proc bifsconv {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6
   }
 
 proc bifsconv_full {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""}} {
-  global audace caption conf confFichierIma tcl_platform
+#--- Debut modif Robert
+  global audace caption conf
+#--- Fin modif Robert
   if {[file exist $fichier]=="1"} {
     # Choix de la version BifsConv selon le système d'exploitation
     set subdir_bifs "bin"
-    if {$tcl_platform(os)=="Linux"} {
+#--- Debut modif Robert
+    if {$::tcl_platform(os)=="Linux"} {
+#--- Fin modif Robert
       set bifs_version "bifsconv"
     } else {
       set bifs_version "bifsconw.exe"
@@ -38,7 +42,9 @@ proc bifsconv_full {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} 
       }
 
     # Compression si les fichiers sont compressés par défaut
-    if {$confFichierIma(fichier,compres)==1} {
+#--- Debut modif Robert
+    if {$conf(fichier,compres)==1} {
+#--- Fin modif Robert
       gzip $racine$conf(extension,defaut)
       }
 
