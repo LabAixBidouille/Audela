@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des séries d'images
 # Auteur : Benoît Maugis
-# Date de mise à jour : 10 avril 2005 ---> 14 janvier 2006
+# Date de mise a jour : 10 avril 2005 ---> 17 fevrier 2006
 # Version : 2.6.2 ---> 2.6.4
 #
 
@@ -30,7 +30,9 @@ namespace eval ::visio {
 
   proc createPanel {this} {
     variable This
-    global audace caption panneau tcl_platform
+#--- Debut Modif Robert
+    global audace caption panneau
+#--- Fin Modif Robert
     set This $this
     set panneau(menu_name,visio) $caption(visio,titre)
 
@@ -55,7 +57,9 @@ namespace eval ::visio {
     # Liste des extensions FITS prises en charge (indépendemment de $conf(extension,defaut)
     set panneau(visio,ext,fits) [list ".fit" ".fits"]
     # Liste des types de compression FITS pris en charge
-    switch $tcl_platform(os) {
+#--- Debut Modif Robert
+    switch $::tcl_platform(os) {
+#--- Fin Modif Robert
     "Linux" {
       set panneau(visio,ext,fits_comp) [list "" ".gz" ".bz2"]
       }
@@ -64,7 +68,9 @@ namespace eval ::visio {
       }
     }
     # Liste des extensions de fichiers autres que FITS pris en charge
-    switch $tcl_platform(os) {
+#--- Debut Modif Robert
+    switch $::tcl_platform(os) {
+#--- Fin Modif Robert
     "Linux" {
       set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".ps" ".eps" ".EPS" ".tif" ".TIF" ".tiff" ".TIFF" ".xbm" ".XBM" ".xpm" ".XPM"]
       }
@@ -146,7 +152,9 @@ namespace eval ::visio {
 
 # Procédure de rafraîchissement de la liste des noms génériques
   proc upd_nom_generiques {} {
-    global audace conf confFichierIma panneau
+#--- Debut modif Robert
+    global audace conf panneau
+#--- Fin modif Robert
 
     # On efface la liste des noms génériques
     for {set k 1} {$k<=$panneau(visio,nb_nom_generiques)} {incr k} {

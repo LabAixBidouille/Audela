@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Date de mise a jour : 25 decembre 2005
+# Date de mise a jour : 17 fevrier 2006
 #
 
 #
@@ -66,7 +66,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
             wm title $fenetre "$caption(audace,titre) (visu$visuNo)"
          }
       }
-  
+
       set calib 1
       if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
          set calib 0
@@ -227,7 +227,7 @@ proc savejpeg { { filename "?" } } {
 #------------------------------------------------------------
 proc visu { { cuts "autocuts" } } {
    global audace
-   
+
    ::confVisu::visu $audace(visuNo) $cuts 
 }
 
