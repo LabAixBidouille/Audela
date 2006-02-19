@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 09 fevrier 2006
+# Date de mise a jour : 16 fevrier 2006
 #
 
 #=========================================================================
@@ -1651,7 +1651,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)                "Udstyr"
    set caption(audace,menu,carte)                     "Kort"
    set caption(audace,menu,optique)                   "Optisk"
-   set caption(audace,menu,liaison)                   "# Liaison"
+   set caption(audace,menu,liaison)                   "Link"
 
    set caption(audace,menu,aide)                      "Hjælp"
    set caption(audace,menu,sommaire)                  "Indhold"
@@ -1696,15 +1696,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(termine,erreur,script)                 "Udført"
    set caption(audace,prog,quitter)                   "Ønsker du virkelig at afslutte?"
    set caption(audace,fin_traitement)                 "Slut på proces.\n"
-   set caption(audace,nbre_entier)                    "# Le nombre d'images doit être une entier."
-   set caption(audace,cte_invalide)                   "# Constante invalide."
-   set caption(audace,coef_invalide)                  "# Coefficient invalide."
-   set caption(audace,coef_invalides)                 "# Coefficients invalides."
+   set caption(audace,nbre_entier)                    "Ntal billeder skal angives med et helt tal."
+   set caption(audace,cte_invalide)                   "Ugyldig konstant."
+   set caption(audace,coef_invalide)                  "Ugyldig koefficient."
+   set caption(audace,coef_invalides)                 "Ugyldige koefficienter."
    set caption(audace,definir,constante)              "Definer en konstant."
    set caption(audace,definir,fond_ciel)              "Definer niveau på himmelbaggrunden."
    set caption(audace,definir,image_B)                "Vælg et B billede."
    set caption(audace,header,noimage_dd)              "Vælg et billede på harddisken."
-   set caption(audace,coef_manquant)                  "# Définissez le coefficient manquant."
+   set caption(audace,coef_manquant)                  "Definer den manglende koefficient."
    set caption(audace,choix_coefficient)              "Definer koefficienten."
    set caption(audace,choix_coefficients)             "Definer koefficienterne."
    set caption(audace,choix_image_entree)             "Vælg input-billeder."
@@ -1741,8 +1741,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,image,somme)                    "Sum"
    set caption(audace,image,moyenne)                  "Middelværdi"
    set caption(audace,image,ecart_type)               "Standardafvigelse"
-   set caption(audace,image,nombre-)                  "# Nombre d'images"
-   set caption(audace,image,nombre)                   "# Nombre d'images:"
+   set caption(audace,image,nombre-)                  "Antal billeder"
+   set caption(audace,image,nombre)                   "Antal billeder:"
    set caption(audace,formule)                        "Formel:"
    set caption(audace,image,image_affichee:)          "På det viste billede:"
    set caption(audace,image,image_affichee)           "På det viste billede"

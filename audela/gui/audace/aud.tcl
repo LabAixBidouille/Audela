@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 03 fevrier 2006
+# Date de mise a jour : 19 fevrier 2006
 #
 
 #--- Passage de TCL/TK 8.3 a 8.4
@@ -74,7 +74,6 @@ namespace eval ::audace {
       global audace
       global confgene
       global caption
-      global confFichierIma
 
       #--- Chargement de la librairie de definition de la commande combit
       if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
@@ -199,8 +198,8 @@ namespace eval ::audace {
       #---
       set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
       set audace(posobs,observateur,gps)   $confgene(posobs,observateur,gps)
-      set confFichierIma(fichier,compres)  $conf(fichier,compres)
-      #---      
+      set confgene(fichier,compres)        $conf(fichier,compres)
+      #---
       set audace(camNo) "0"
    }
 
@@ -993,7 +992,7 @@ namespace eval ::audace {
          set confgene(Choix_Outil,n$confgene(Choix_Outil,nbre)) $conf(panneau,n$confgene(Choix_Outil,nbre))
          if { $confgene(Choix_Outil,n$confgene(Choix_Outil,nbre)) == "1" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
-                    Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
+               Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                if { $conf(raccourci,n$i) != "" } {
                   set raccourci(n$i) $conf(raccourci,n$i)
                   if { [string range $raccourci(n$i) 0 3] == "Alt+" } {

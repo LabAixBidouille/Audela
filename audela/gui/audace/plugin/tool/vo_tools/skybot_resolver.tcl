@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 23 janvier 2006
+# Date de mise a jour : 18 fevrier 2006
 #
 
 namespace eval skybot_Resolver {
@@ -702,7 +702,7 @@ namespace eval skybot_Resolver {
    # skybot_Resolver::affiche_Outil_Tlscp
    # Affiche l'outil Telescope
    #
-   proc affiche_Outil_Tlscp { } {
+   proc affiche_Outil_Tlscp { { visuNo 1 } } {
       global conf
       global panneau
 
@@ -716,7 +716,7 @@ namespace eval skybot_Resolver {
          if { $m == "menu_name,Tlscp" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
                #--- Lancement automatique de l'outil Telescope
-               ::audace::selection_Outil ::$ns
+               ::confVisu::selectTool $visuNo ::$ns
             }
          }
       }

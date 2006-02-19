@@ -1,9 +1,9 @@
 #
-# Date de mise a jour : 07 Juin 2003
+# Date de mise a jour : 17 fevrier 2006
 #
 
 # A Resizable Notebook widget for Tcl/Tk
-# $Revision: 1.1 $
+# $Revision: 1.2 $
 #
 # Copyright (C) 1998 Daniel Roche
 #
@@ -64,173 +64,173 @@
 # Create a new notebook widget
 #
 proc Rnotebook:create {w args} {
-    global Rnotebook tcl_platform
-    # create/init base widget
-    frame $w -borderwidth 0 -relief flat
-    # init default data structure
-    set Rnotebook($w,nbtab) 1
-    set Rnotebook($w,tabs) {1}
-    set Rnotebook($w,current) 0
-    set Rnotebook($w,theight) 30
-    set Rnotebook($w,padx) 0
-    set Rnotebook($w,bwidth) 2
-    set Rnotebook($w,background) [$w cget -background]
-    set Rnotebook($w,foreground) black
-    # parse arguments
-    foreach {tag value} $args {
-	switch -- $tag {
-	    -borderwidth {
-		set Rnotebook($w,bwidth) $value
-	    }
-	    -height {
-		set Rnotebook($w,theight) $value
-	    }
-	    -tabs {
-		set Rnotebook($w,tabs) $value
-		set Rnotebook($w,nbtab) [llength $value]
-	    }
-	    -nbtab {
-		set Rnotebook($w,nbtab) $value
-	    }
-	    -padx {
-		set Rnotebook($w,padx) $value
-	    }
-	    -background {
-		set Rnotebook($w,background) $value
-	    }
-	    -foreground {
-		set Rnotebook($w,foreground) $value
-	    }
-	}
-    }
-    # build associated widgets
-    frame $w.tabs -borderwidth 0 -relief flat
-    frame $w.body -borderwidth $Rnotebook($w,bwidth) -relief raised \
-	    -background $Rnotebook($w,background)
-    frame $w.mask -borderwidth 0 -relief flat -background $Rnotebook($w,background)
-    frame $w.mskl -borderwidth 0 -relief flat -background $Rnotebook($w,background)
-    if [string compare $tcl_platform(platform) windows] {
-	# Unix look :-)
-	frame $w.mskl.ml -borderwidth $Rnotebook($w,bwidth) -relief sunken
-	place $w.mskl.ml -x -$Rnotebook($w,bwidth) -y -$Rnotebook($w,bwidth) \
-		-width [expr 2 * $Rnotebook($w,bwidth)] \
-		-height [expr 3 * $Rnotebook($w,bwidth)]
-    } else {
-	# losedoze look :-(
-	frame $w.mskl.ml -borderwidth $Rnotebook($w,bwidth) -relief raised
-	place $w.mskl.ml -x 0 -y -$Rnotebook($w,bwidth) \
-		-width [expr 2 * $Rnotebook($w,bwidth)] \
-		-height [expr 4 * $Rnotebook($w,bwidth)]
-    }
-    frame $w.mskr -borderwidth 0 -relief flat -background $Rnotebook($w,background)
-    if [string compare $tcl_platform(platform) windows] {
-	# Unix look :-)
-	frame $w.mskr.mr -borderwidth $Rnotebook($w,bwidth) -relief sunken
-	place $w.mskr.mr -x 0 -y -$Rnotebook($w,bwidth) \
-		-width [expr 2 * $Rnotebook($w,bwidth)] \
-		-height [expr 3 * $Rnotebook($w,bwidth)]
-    } else {
-	# losedoze look :-(
-	frame $w.mskr.mr -borderwidth $Rnotebook($w,bwidth) -relief raised
-	place $w.mskr.mr -x -$Rnotebook($w,bwidth) -y -$Rnotebook($w,bwidth) \
-		-width [expr 2 * $Rnotebook($w,bwidth)] \
-		-height [expr 4 * $Rnotebook($w,bwidth)]
-    }
-    place $w.tabs -x 0 -y 0 -relwidth 1.0 -height $Rnotebook($w,theight)
-    place $w.body -x 0 -y $Rnotebook($w,theight) -relwidth 1.0 \
-	    -relheight 1.0 -height -$Rnotebook($w,theight)
-    for {set ind 1} {$ind <= $Rnotebook($w,nbtab)} {incr ind} {
-	set i2 [expr $ind - 1]
-	set txt [lindex $Rnotebook($w,tabs) $i2]
-	if {! [string length $txt] } {
-	    set txt $ind
-	}
-	button $w.tabs.b$ind -text $txt -borderwidth $Rnotebook($w,bwidth) \
-		 -background $Rnotebook($w,background) \
-		 -foreground $Rnotebook($w,foreground) \
-		 -command "Rnotebook:raise $w $ind"
-	pack $w.tabs.b$ind -side left -pady 0 -padx $Rnotebook($w,padx) -fill y
-	bind $w.tabs.b$ind <Configure> "Rnotebook:raise $w current"
-	frame $w.body.f$ind -borderwidth 0
-    }
-    # show page 1
-    eval Rnotebook:raise $w 1
+   global Rnotebook
+   # create/init base widget
+   frame $w -borderwidth 0 -relief flat
+   # init default data structure
+   set Rnotebook($w,nbtab) 1
+   set Rnotebook($w,tabs) {1}
+   set Rnotebook($w,current) 0
+   set Rnotebook($w,theight) 30
+   set Rnotebook($w,padx) 0
+   set Rnotebook($w,bwidth) 2
+   set Rnotebook($w,background) [$w cget -background]
+   set Rnotebook($w,foreground) black
+   # parse arguments
+   foreach {tag value} $args {
+      switch -- $tag {
+         -borderwidth {
+         set Rnotebook($w,bwidth) $value
+         }
+         -height {
+         set Rnotebook($w,theight) $value
+         }
+         -tabs {
+         set Rnotebook($w,tabs) $value
+         set Rnotebook($w,nbtab) [llength $value]
+         }
+         -nbtab {
+         set Rnotebook($w,nbtab) $value
+         }
+         -padx {
+         set Rnotebook($w,padx) $value
+         }
+         -background {
+         set Rnotebook($w,background) $value
+         }
+         -foreground {
+         set Rnotebook($w,foreground) $value
+         }
+      }
+   }
+   # build associated widgets
+   frame $w.tabs -borderwidth 0 -relief flat
+   frame $w.body -borderwidth $Rnotebook($w,bwidth) -relief raised \
+      -background $Rnotebook($w,background)
+   frame $w.mask -borderwidth 0 -relief flat -background $Rnotebook($w,background)
+   frame $w.mskl -borderwidth 0 -relief flat -background $Rnotebook($w,background)
+   if [string compare $::tcl_platform(platform) windows] {
+      # Unix look :-)
+      frame $w.mskl.ml -borderwidth $Rnotebook($w,bwidth) -relief sunken
+      place $w.mskl.ml -x -$Rnotebook($w,bwidth) -y -$Rnotebook($w,bwidth) \
+         -width [expr 2 * $Rnotebook($w,bwidth)] \
+         -height [expr 3 * $Rnotebook($w,bwidth)]
+   } else {
+      # losedoze look :-(
+      frame $w.mskl.ml -borderwidth $Rnotebook($w,bwidth) -relief raised
+      place $w.mskl.ml -x 0 -y -$Rnotebook($w,bwidth) \
+         -width [expr 2 * $Rnotebook($w,bwidth)] \
+         -height [expr 4 * $Rnotebook($w,bwidth)]
+   }
+   frame $w.mskr -borderwidth 0 -relief flat -background $Rnotebook($w,background)
+   if [string compare $::tcl_platform(platform) windows] {
+      # Unix look :-)
+      frame $w.mskr.mr -borderwidth $Rnotebook($w,bwidth) -relief sunken
+      place $w.mskr.mr -x 0 -y -$Rnotebook($w,bwidth) \
+         -width [expr 2 * $Rnotebook($w,bwidth)] \
+         -height [expr 3 * $Rnotebook($w,bwidth)]
+   } else {
+      # losedoze look :-(
+      frame $w.mskr.mr -borderwidth $Rnotebook($w,bwidth) -relief raised
+      place $w.mskr.mr -x -$Rnotebook($w,bwidth) -y -$Rnotebook($w,bwidth) \
+         -width [expr 2 * $Rnotebook($w,bwidth)] \
+         -height [expr 4 * $Rnotebook($w,bwidth)]
+   }
+   place $w.tabs -x 0 -y 0 -relwidth 1.0 -height $Rnotebook($w,theight)
+   place $w.body -x 0 -y $Rnotebook($w,theight) -relwidth 1.0 \
+      -relheight 1.0 -height -$Rnotebook($w,theight)
+   for {set ind 1} {$ind <= $Rnotebook($w,nbtab)} {incr ind} {
+      set i2 [expr $ind - 1]
+      set txt [lindex $Rnotebook($w,tabs) $i2]
+      if {! [string length $txt] } {
+         set txt $ind
+      }
+      button $w.tabs.b$ind -text $txt -borderwidth $Rnotebook($w,bwidth) \
+         -background $Rnotebook($w,background) \
+         -foreground $Rnotebook($w,foreground) \
+         -command "Rnotebook:raise $w $ind"
+      pack $w.tabs.b$ind -side left -pady 0 -padx $Rnotebook($w,padx) -fill y
+      bind $w.tabs.b$ind <Configure> "Rnotebook:raise $w current"
+      frame $w.body.f$ind -borderwidth 0
+   }
+   # show page 1
+   eval Rnotebook:raise $w 1
 }
 
 #
 # Change configuration options for the notebook widget
 #
 proc Rnotebook:config {w args} {
-    global Rnotebook tcl_platform
-    foreach {tag value} $args {
-	switch -- $tag {
-	    -borderwidth {
-		set Rnotebook($w,bwidth) $value
-		$w.body configure -borderwidth $Rnotebook($w,bwidth)
-		$w.mskl.ml configure -borderwidth $Rnotebook($w,bwidth)
-		$w.mskr.mr configure -borderwidth $Rnotebook($w,bwidth)
-		set lst [winfo children $w.tabs]
-		foreach wid $lst {
-		    $wid configure -borderwidth $Rnotebook($w,bwidth)
-		}
-		if [string compare $tcl_platform(platform) windows] {
-		    # Unix look :-)
-		    place $w.mskl.ml -x -$Rnotebook($w,bwidth) \
-			    -y -$Rnotebook($w,bwidth) \
-			    -width [expr 2 * $Rnotebook($w,bwidth)] \
-			    -height [expr 3 * $Rnotebook($w,bwidth)]
-		} else {
-		    # losedoze look :-(
-		    place $w.mskl.ml -x 0 -y -$Rnotebook($w,bwidth) \
-			    -width [expr 2 * $Rnotebook($w,bwidth)] \
-			    -height [expr 4 * $Rnotebook($w,bwidth)]
-		}
-		if [string compare $tcl_platform(platform) windows] {
-		    # Unix look :-)
-		    place $w.mskr.mr -x 0 -y -$Rnotebook($w,bwidth) \
-			    -width [expr 2 * $Rnotebook($w,bwidth)] \
-			    -height [expr 3 * $Rnotebook($w,bwidth)]
-		} else {
-		    # losedoze look :-(
-		    place $w.mskr.mr -x -$Rnotebook($w,bwidth) -y \
-			    -$Rnotebook($w,bwidth) \
-			    -width [expr 2 * $Rnotebook($w,bwidth)] \
-			    -height [expr 4 * $Rnotebook($w,bwidth)]
-		}
-	    }
-	    -background {
-		set Rnotebook($w,background) $value
-		$w.body configure -background $Rnotebook($w,background)
-		$w.mskl.ml configure -background $Rnotebook($w,background)
-		$w.mskr.mr configure -background $Rnotebook($w,background)
-		set lst [winfo children $w.tabs]
-		foreach wid $lst {
-		    $wid configure -background $Rnotebook($w,background)
-		}
-		$w.mask configure -background $Rnotebook($w,background)
-	    }
-	    -foreground {
-		set Rnotebook($w,foreground) $value
-		set lst [winfo children $w.tabs]
-		foreach wid $lst {
-		    $wid configure -foreground $Rnotebook($w,foreground)
-		}
-	    }
-	    -height {
-		set Rnotebook($w,theight) $value
-		place $w.tabs -x 0 -y 0 -relwidth 1.0 -height $Rnotebook($w,theight)
-		place $w.body -x 0 -y $Rnotebook($w,theight) -relwidth 1.0 \
-			-relheight 1.0 -height -$Rnotebook($w,theight)
-	    }
-	    -padx {
-		set Rnotebook($w,padx) $value
-		set lst [winfo children $w.tabs]
-		foreach wid $lst {
-		    pack $wid -padx $Rnotebook($w,padx)
-		}
-	    }
-	}
-    }
+   global Rnotebook
+   foreach {tag value} $args {
+      switch -- $tag {
+         -borderwidth {
+            set Rnotebook($w,bwidth) $value
+            $w.body configure -borderwidth $Rnotebook($w,bwidth)
+            $w.mskl.ml configure -borderwidth $Rnotebook($w,bwidth)
+            $w.mskr.mr configure -borderwidth $Rnotebook($w,bwidth)
+            set lst [winfo children $w.tabs]
+            foreach wid $lst {
+               $wid configure -borderwidth $Rnotebook($w,bwidth)
+            }
+            if [string compare $::tcl_platform(platform) windows] {
+               # Unix look :-)
+               place $w.mskl.ml -x -$Rnotebook($w,bwidth) \
+                  -y -$Rnotebook($w,bwidth) \
+                  -width [expr 2 * $Rnotebook($w,bwidth)] \
+                  -height [expr 3 * $Rnotebook($w,bwidth)]
+            } else {
+               # losedoze look :-(
+               place $w.mskl.ml -x 0 -y -$Rnotebook($w,bwidth) \
+                  -width [expr 2 * $Rnotebook($w,bwidth)] \
+                  -height [expr 4 * $Rnotebook($w,bwidth)]
+            }
+            if [string compare $::tcl_platform(platform) windows] {
+               # Unix look :-)
+               place $w.mskr.mr -x 0 -y -$Rnotebook($w,bwidth) \
+                  -width [expr 2 * $Rnotebook($w,bwidth)] \
+                  -height [expr 3 * $Rnotebook($w,bwidth)]
+            } else {
+               # losedoze look :-(
+               place $w.mskr.mr -x -$Rnotebook($w,bwidth) -y \
+                  -$Rnotebook($w,bwidth) \
+                  -width [expr 2 * $Rnotebook($w,bwidth)] \
+                  -height [expr 4 * $Rnotebook($w,bwidth)]
+            }
+         }
+         -background {
+            set Rnotebook($w,background) $value
+            $w.body configure -background $Rnotebook($w,background)
+            $w.mskl.ml configure -background $Rnotebook($w,background)
+            $w.mskr.mr configure -background $Rnotebook($w,background)
+            set lst [winfo children $w.tabs]
+            foreach wid $lst {
+               $wid configure -background $Rnotebook($w,background)
+            }
+            $w.mask configure -background $Rnotebook($w,background)
+         }
+         -foreground {
+            set Rnotebook($w,foreground) $value
+            set lst [winfo children $w.tabs]
+            foreach wid $lst {
+               $wid configure -foreground $Rnotebook($w,foreground)
+            }
+         }
+         -height {
+            set Rnotebook($w,theight) $value
+            place $w.tabs -x 0 -y 0 -relwidth 1.0 -height $Rnotebook($w,theight)
+            place $w.body -x 0 -y $Rnotebook($w,theight) -relwidth 1.0 \
+               -relheight 1.0 -height -$Rnotebook($w,theight)
+         }
+         -padx {
+            set Rnotebook($w,padx) $value
+            set lst [winfo children $w.tabs]
+            foreach wid $lst {
+               pack $wid -padx $Rnotebook($w,padx)
+            }
+         }
+      }
+   }
 }
 
 #
@@ -238,80 +238,80 @@ proc Rnotebook:config {w args} {
 # first page is number 1
 #
 proc Rnotebook:raise {w num} {
-    global Rnotebook
-    if { ![string compare $num "current"] } {
-	set num $Rnotebook($w,current)
-    }
-    if { $num == 0 } {
-	set num 1
-    }
-    if { $num != $Rnotebook($w,current) } {
-	pack forget $w.body.f$Rnotebook($w,current)
-	pack $w.body.f$num -fill both -expand 1
-    }
-    set Rnotebook($w,current) $num
-    set bw $Rnotebook($w,bwidth)
+   global Rnotebook
+   if { ![string compare $num "current"] } {
+      set num $Rnotebook($w,current)
+   }
+   if { $num == 0 } {
+      set num 1
+   }
+   if { $num != $Rnotebook($w,current) } {
+      pack forget $w.body.f$Rnotebook($w,current)
+      pack $w.body.f$num -fill both -expand 1
+   }
+   set Rnotebook($w,current) $num
+   set bw $Rnotebook($w,bwidth)
 
-    set x0 [expr [winfo x $w.tabs.b$num] + [winfo x $w.tabs] + $bw ]
-    set y0 [expr [winfo y $w.tabs.b$num] + [winfo y $w.tabs] + \
-	    [winfo height $w.tabs.b$num] - $bw]
-    set w0 [expr [winfo width $w.tabs.b$num] - ($bw * 2)] 
-    set h0 [expr $bw * 2]
-    place $w.mask -x $x0 -y $y0 -width $w0 -height $h0
+   set x0 [expr [winfo x $w.tabs.b$num] + [winfo x $w.tabs] + $bw ]
+   set y0 [expr [winfo y $w.tabs.b$num] + [winfo y $w.tabs] + \
+      [winfo height $w.tabs.b$num] - $bw]
+   set w0 [expr [winfo width $w.tabs.b$num] - ($bw * 2)] 
+   set h0 [expr $bw * 2]
+   place $w.mask -x $x0 -y $y0 -width $w0 -height $h0
 
-    set x1 [expr $x0 - $bw]
-    set y1 $y0
-    set w1 $bw
-    set h1 $h0
-    place $w.mskl -x $x1 -y $y1 -width $w1 -height $h1
-    
-    set x2 [expr $x0 + $w0]
-    set y2 $y0
-    set w2 $bw
-    set h2 $h0
-    place $w.mskr -x $x2 -y $y2 -width $w2 -height $h2
+   set x1 [expr $x0 - $bw]
+   set y1 $y0
+   set w1 $bw
+   set h1 $h0
+   place $w.mskl -x $x1 -y $y1 -width $w1 -height $h1
+
+   set x2 [expr $x0 + $w0]
+   set y2 $y0
+   set w2 $bw
+   set h2 $h0
+   place $w.mskr -x $x2 -y $y2 -width $w2 -height $h2
 }
 
 #
 # Return the frame associated with a given page number
 #
 proc Rnotebook:frame {w num} {
-  global Rnotebook
-  set i "$w.body.f$num"
-  if [ winfo exists $i] {
-    return $i
-  } else {
-    return {}
-  }
+   global Rnotebook
+   set i "$w.body.f$num"
+   if [ winfo exists $i] {
+      return $i
+   } else {
+      return {}
+   }
 }
 
 #
 # Return the button associated with a given page number
 #
 proc Rnotebook:button {w num} {
-  global Rnotebook
-  set i "$w.tabs.b$num"
-  if [ winfo exists $i] {
-    return $i
-  } else {
-    return {}
-  }
+   global Rnotebook
+   set i "$w.tabs.b$num"
+   if [ winfo exists $i] {
+      return $i
+   } else {
+      return {}
+   }
 }
 
 #
 # Return the current button name
 #
 proc Rnotebook:currentName {w } {
-  global Rnotebook    
-  return [lindex $Rnotebook($w,tabs) [expr $Rnotebook($w,current) -1 ] ] 
+   global Rnotebook
+   return [lindex $Rnotebook($w,tabs) [expr $Rnotebook($w,current) -1 ] ]
 }
 
 #
 # Return the current button index
 #
 proc Rnotebook:currentIndex {w } {
-  global Rnotebook
-  return $Rnotebook($w,current)
+   global Rnotebook
+   return $Rnotebook($w,current)
 }
 
 #
@@ -319,22 +319,22 @@ proc Rnotebook:currentIndex {w } {
 # returns the selected label
 #
 proc Rnotebook:select { w {label "none"} } {
-  global Rnotebook 
-             
-  set num 0
-  if { $label != "none" } {                                  
-    set num [lsearch -exact $Rnotebook($w,tabs) "$label"]  
-    if { $num != -1 } {   
-      incr num
-    	Rnotebook:raise $w $num
-    } else {
-	Rnotebook:raise $w 1
+   global Rnotebook
+
+   set num 0
+   if { $label != "none" } {
+      set num [lsearch -exact $Rnotebook($w,tabs) "$label"]
+      if { $num != -1 } {
+         incr num
+         Rnotebook:raise $w $num
+      } else {
+         Rnotebook:raise $w 1
+         set label [Rnotebook:currentName $w ]
+      }
+   } else {
+      Rnotebook:raise $w 1
       set label [Rnotebook:currentName $w ]
-    }
-  } else {
-    Rnotebook:raise $w 1
-    set label [Rnotebook:currentName $w ]
-  }  
-  return $label
+   }
+   return $label
 }
 

@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel Pujol
-# Date de mise a jour : 01 fevrier 2006
+# Date de mise a jour : 19 fevrier 2006
 #
 
 package provide autoguider 1.0
@@ -68,7 +68,7 @@ proc ::Autoguider::Init { { in "" } { visuNo 1 } } {
    set private($visuNo,interval)           ""
    set private($visuNo,previousClock)      "0"
 
-   createPanel $visuNo 
+   createPanel $visuNo
    adaptPanel  $visuNo
 }
 
@@ -81,13 +81,12 @@ proc ::Autoguider::createPanel { visuNo } {
    variable private
    global caption
    global panneau
-
-   set panneau(menu_name,Autoguider) "$caption(autoguider,menu)"
-   variable private
-   global caption 
    global audace
 
-   #--- petit raccourci bien pratique
+   #---
+   set panneau(menu_name,Autoguider) "$caption(autoguider,menu)"
+
+   #--- Petit raccourci bien pratique
    set This $private($visuNo,This)
 
    #--- Trame de l'outil
@@ -108,10 +107,10 @@ proc ::Autoguider::createPanel { visuNo } {
       label $This.pose.lab1 -text "$caption(autoguider,pose)"
       set list_combobox {0 0.1 0.3 0.5 1 2 3 5 10}
       ComboBox $This.pose.combo \
-         -width 4 -height [ llength $list_combobox ]  \
-         -relief sunken -borderwidth 1 -editable 1  \
+         -width 4 -height [ llength $list_combobox ] \
+         -relief sunken -borderwidth 1 -editable 1 \
          -textvariable ::Autoguider::private($visuNo,pose) \
-         -values $list_combobox         
+         -values $list_combobox
 
       button $This.pose.confwebcam -text $caption(autoguider,pose) \
          -command "::Autoguider::webcamConfigure $visuNo"
@@ -125,10 +124,10 @@ proc ::Autoguider::createPanel { visuNo } {
       label $This.binning.lab1 -text "$caption(autoguider,binning)"
       set list_combobox $audace(list_binning)
       ComboBox $This.binning.combo \
-         -width 4 -height [ llength $list_combobox ]  \
-         -relief sunken -borderwidth 1 -editable 0  \
+         -width 4 -height [ llength $list_combobox ] \
+         -relief sunken -borderwidth 1 -editable 0 \
          -textvariable ::Autoguider::private($visuNo,binning) \
-         -values $list_combobox         
+         -values $list_combobox
 
       button $This.binning.selectFormat -text "$caption(autoguider,binning)" \
          -command "::Autoguider::webcamSelectFormat $visuNo"
@@ -141,27 +140,26 @@ proc ::Autoguider::createPanel { visuNo } {
       pack $This.intervalle.lab1 -anchor center -side left -padx 5
       set list_combobox {0 0.1 0.3 0.5 1 2 3 5 10}
       ComboBox $This.intervalle.combo \
-         -width 4 -height [ llength $list_combobox ]  \
-         -relief sunken -borderwidth 1 -editable 1  \
+         -width 4 -height [ llength $list_combobox ] \
+         -relief sunken -borderwidth 1 -editable 1 \
          -textvariable ::Autoguider::private($visuNo,intervalle) \
-         -values $list_combobox         
+         -values $list_combobox
       pack $This.intervalle.combo -anchor center -side left -fill x -expand 1
    pack $This.intervalle -anchor center -fill x -expand 1
 
    #--- Trame du Status
    frame $This.status -borderwidth 2 -relief ridge
-      label $This.status.lab -textvariable ::Autoguider::private($visuNo,status)\
+      label $This.status.lab -textvariable ::Autoguider::private($visuNo,status) \
          -font $audace(font,arial_10_b) -relief ridge -justify center -width 2
       pack $This.status.lab -side top -fill x -expand true -pady 1
    pack $This.status -anchor center -fill x -expand true
 
    #--- Trame du bouton Go/Stop
    frame $This.go_stop -borderwidth 2 -relief ridge
-      button $This.go_stop.but -text $caption(autoguider,GO)  -height 2 \
+      button $This.go_stop.but -text $caption(autoguider,GO) -height 2 \
         -font $audace(font,arial_12_b) -borderwidth 3 -pady 6 -command "::Autoguider::goStop $visuNo"
       pack $This.go_stop.but -fill both -padx 0 -pady 0 -expand true
    pack $This.go_stop -anchor center -fill x -expand true
-           
 
    #--- Frame pour l'autoguidage
    frame $This.suivi -borderwidth 2 -relief ridge 
@@ -178,32 +176,32 @@ proc ::Autoguider::createPanel { visuNo } {
        checkbutton $This.suivi.moteur_ok -padx 0 -pady 0 \
           -text "$caption(autoguider,ctrl_monture)" \
           -variable ::Autoguider::private($visuNo,monture_ok) -command {  }
-       label $This.suivi.label_x0 -text "$caption(autoguider,coord_origine)"
-       label $This.suivi.label_x  -text "$caption(autoguider,coord_etoile)"
-       label $This.suivi.label_d  -text "$caption(autoguider,ecart_origine_etoile)"
-       label $This.suivi.x0       -textvariable ::Autoguider::private($visuNo,x0)
-       label $This.suivi.y0       -textvariable ::Autoguider::private($visuNo,y0)
-       label $This.suivi.x        -textvariable ::Autoguider::private($visuNo,x)
-       label $This.suivi.y        -textvariable ::Autoguider::private($visuNo,y)
-       label $This.suivi.dx       -textvariable ::Autoguider::private($visuNo,dx)
-       label $This.suivi.dy       -textvariable ::Autoguider::private($visuNo,dy)
-       label $This.suivi.lab_clock  -textvariable ::Autoguider::private($visuNo,interval)
+       label $This.suivi.label_x0  -text "$caption(autoguider,coord_origine)"
+       label $This.suivi.label_x   -text "$caption(autoguider,coord_etoile)"
+       label $This.suivi.label_d   -text "$caption(autoguider,ecart_origine_etoile)"
+       label $This.suivi.x0        -textvariable ::Autoguider::private($visuNo,x0)
+       label $This.suivi.y0        -textvariable ::Autoguider::private($visuNo,y0)
+       label $This.suivi.x         -textvariable ::Autoguider::private($visuNo,x)
+       label $This.suivi.y         -textvariable ::Autoguider::private($visuNo,y)
+       label $This.suivi.dx        -textvariable ::Autoguider::private($visuNo,dx)
+       label $This.suivi.dy        -textvariable ::Autoguider::private($visuNo,dy)
+       label $This.suivi.lab_clock -textvariable ::Autoguider::private($visuNo,interval)
 
        ###grid $This.suivi.but_init  -row 0 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.but_autovisu  -row 0 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.but_showtarget  -row 1 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.moteur_ok -row 2 -column 0 -columnspan 3 -sticky {}       
-       grid $This.suivi.label_x0  -row 3 -column 0 -sticky w
-       grid $This.suivi.x0        -row 3 -column 1 -sticky w
-       grid $This.suivi.y0        -row 3 -column 2 -sticky w
-       grid $This.suivi.label_x   -row 4 -column 0 -sticky w
-       grid $This.suivi.x         -row 4 -column 1 -sticky w
-       grid $This.suivi.y         -row 4 -column 2 -sticky w
-       grid $This.suivi.label_d   -row 5 -column 0 -sticky w
-       grid $This.suivi.dx        -row 5 -column 1 -sticky w
-       grid $This.suivi.dy        -row 5 -column 2 -sticky w       
-       grid $This.suivi.lab_clock -row 6 -column 0 -columnspan 3
-       grid $This.suivi.but_config -row 7 -column 0 -columnspan 3
+       grid $This.suivi.but_autovisu   -row 0 -column 0 -columnspan 3 -sticky {}
+       grid $This.suivi.but_showtarget -row 1 -column 0 -columnspan 3 -sticky {}
+       grid $This.suivi.moteur_ok      -row 2 -column 0 -columnspan 3 -sticky {}
+       grid $This.suivi.label_x0       -row 3 -column 0 -sticky w
+       grid $This.suivi.x0             -row 3 -column 1 -sticky w
+       grid $This.suivi.y0             -row 3 -column 2 -sticky w
+       grid $This.suivi.label_x        -row 4 -column 0 -sticky w
+       grid $This.suivi.x              -row 4 -column 1 -sticky w
+       grid $This.suivi.y              -row 4 -column 2 -sticky w
+       grid $This.suivi.label_d        -row 5 -column 0 -sticky w
+       grid $This.suivi.dx             -row 5 -column 1 -sticky w
+       grid $This.suivi.dy             -row 5 -column 2 -sticky w
+       grid $This.suivi.lab_clock      -row 6 -column 0 -columnspan 3
+       grid $This.suivi.but_config     -row 7 -column 0 -columnspan 3
    pack $This.suivi -anchor center -fill x -expand true 
 
    #--- Mise a jour dynamique des couleurs
@@ -263,6 +261,7 @@ proc ::Autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
 #------------------------------------------------------------
 proc ::Autoguider::startTool { { visuNo 1 } } {
    variable private
+   global conf
 
    #--- j'affiche la fenetre
    pack $private($visuNo,This) -anchor center -expand 0 -fill y -side top -padx 0
@@ -270,8 +269,8 @@ proc ::Autoguider::startTool { { visuNo 1 } } {
    #--- je change le bind du bouton droit de la souris
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::Autoguider::setOrigin $visuNo %x %y"
 
-   set conf(Autoguider,pose)   $private($visuNo,pose)       
-   set conf(Autoguider,binning) $private($visuNo,binning)     
+   set conf(Autoguider,pose)       $private($visuNo,pose)
+   set conf(Autoguider,binning)    $private($visuNo,binning)
    set conf(Autoguider,intervalle) $private($visuNo,intervalle)
 }
 
@@ -286,7 +285,7 @@ proc ::Autoguider::stopTool { { visuNo 1 } } {
    #--- je masque la fenetre
    pack forget $private($visuNo,This)
 
-   #--- je restaure le bind par defaut du bouton droit de la souris 
+   #--- je restaure le bind par defaut du bouton droit de la souris
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
 
 }
@@ -296,16 +295,16 @@ proc ::Autoguider::stopTool { { visuNo 1 } } {
 #    lance/arrete les acquisitions
 # 
 #------------------------------------------------------------
-proc ::Autoguider::goStop { visuNo  } {
+proc ::Autoguider::goStop { visuNo } {
    variable private 
    global audace
 
-   if { $private($visuNo,demande_arret)  == 0 } {   
+   if { $private($visuNo,demande_arret)  == 0 } {
       switch $private($visuNo,go_stop) {
          go {
-            set camNo [::confVisu::getCamNo $visuNo ] 
+            set camNo [::confVisu::getCamNo $visuNo ]
             if { $camNo == 0 } {
-               ::confCam::run 
+               ::confCam::run
                tkwait window $audace(base).confCam
                return
             }
@@ -316,7 +315,7 @@ proc ::Autoguider::goStop { visuNo  } {
             ::Autoguider::acq $visuNo
          }
          stop {
-            set private($visuNo,demande_arret)  1
+            set private($visuNo,demande_arret) 1
             set private($visuNo,go_stop) "go"
             bind all <Key-Escape> ""
          }
@@ -342,7 +341,7 @@ proc ::Autoguider::acq { visuNo } {
    #--- J'autorise le bouton "STOP"
    $private($visuNo,This).go_stop.but configure -state normal -text $caption(autoguider,STOP)
 
-   #--- 
+   #---
    #set private($visuNo,x0) 
    #set private($visuNo,y0)
 
@@ -352,11 +351,11 @@ proc ::Autoguider::acq { visuNo } {
       #--- La commande bin permet de fixer le binning
       cam$camNo bin [list [string range $private($visuNo,binning) 0 0] [string range $private($visuNo,binning) 2 2]]
       
-   while { $private($visuNo,demande_arret) == "0"  } {
+   while { $private($visuNo,demande_arret) == "0" } {
 
       #--- Declenchement l'acquisition
       cam$camNo acq
-      
+
       #--- Attente de la fin de la pose
       vwait status_cam$camNo
 
@@ -382,17 +381,17 @@ proc ::Autoguider::acq { visuNo } {
 
          #--- j'affiche le symbole de la cible 
          if { $private($visuNo,showTarget) == "1" } {
-            moveTarget $visuNo $centro      
+            moveTarget $visuNo $centro
          }
 
          #--- je calcule la position de la boite autour de la nouvelle position
          set size 16
          set x  $private($visuNo,x)
          set y  $private($visuNo,y)
-         set x1 [expr int($x) - $size]   
-         set x2 [expr int($x) + $size]   
-         set y1 [expr int($y) - $size]   
-         set y2 [expr int($y) + $size]   
+         set x1 [expr int($x) - $size]
+         set x2 [expr int($x) + $size]
+         set y1 [expr int($y) - $size]
+         set y2 [expr int($y) + $size]
          set private($visuNo,targetBoxPicture) [list $x1 $y1 $x2 $y2]
 
       }
@@ -420,7 +419,7 @@ proc ::Autoguider::acq { visuNo } {
 #    initialise le point origine x0, y0
 # 
 #------------------------------------------------------------
-proc ::Autoguider::setOrigin { visuNo x y } {    
+proc ::Autoguider::setOrigin { visuNo x y } {
    variable private
    global audace
 
@@ -448,10 +447,10 @@ proc ::Autoguider::setOrigin { visuNo x y } {
    set size 16
    set x  [lindex $coord 0]
    set y  [lindex $coord 1]
-   set x1 [expr $x - $size]   
-   set x2 [expr $x + $size]   
-   set y1 [expr $y - $size]   
-   set y2 [expr $y + $size]   
+   set x1 [expr $x - $size]
+   set x2 [expr $x + $size]
+   set y1 [expr $y - $size]
+   set y2 [expr $y + $size]
    set centro [buf$bufNo centro [list $x1 $y1 $x2 $y2] ]
    set private($visuNo,x0) [lindex $centro 0]
    set private($visuNo,y0) [lindex $centro 1]
@@ -459,11 +458,11 @@ proc ::Autoguider::setOrigin { visuNo x y } {
 
    #--- je calcule la position du la nouvelle zone de recherche centree sur l'etoile
    set x  [lindex $centro 0]
-   set y  [lindex $centro 1]   
-   set x1 [expr int($x) - $size]   
-   set x2 [expr int($x) + $size]   
-   set y1 [expr int($y) - $size]   
-   set y2 [expr int($y) + $size]     
+   set y  [lindex $centro 1]
+   set x1 [expr int($x) - $size]
+   set x2 [expr int($x) + $size]
+   set y1 [expr int($y) - $size]
+   set y2 [expr int($y) + $size]
    set private($visuNo,targetBoxPicture) [list $x1 $y1 $x2 $y2]
 
    #--- je dessine la boite autour de l'étoile
@@ -471,11 +470,11 @@ proc ::Autoguider::setOrigin { visuNo x y } {
    set x  [lindex $coord 0]
    set y  [lindex $coord 1]
    set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
-   set x1 [lindex $coord 0]   
-   set y1 [lindex $coord 1]   
+   set x1 [lindex $coord 0]
+   set y1 [lindex $coord 1]
    set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
-   set x2 [lindex $coord 0]   
-   set y2 [lindex $coord 1]   
+   set x2 [lindex $coord 0]
+   set y2 [lindex $coord 1]
 
    set private($visuNo,lineH) [$private($visuNo,hCanvas) create line  $x1 $y  $x2 $y  -fill $audace(color,drag_rectangle) -tag lineH]
    set private($visuNo,lineV) [$private($visuNo,hCanvas) create line  $x  $y1 $x  $y2 -fill $audace(color,drag_rectangle) -tag lineV]
@@ -499,10 +498,10 @@ proc ::Autoguider::createTarget { visuNo targetCoord } {
    set size 16
    set x  [lindex $targetCoord 0]
    set y  [lindex $targetCoord 1]
-   set x1 [expr int($x) - $size]   
-   set x2 [expr int($x) + $size]   
-   set y1 [expr int($y) - $size]   
-   set y2 [expr int($y) + $size]   
+   set x1 [expr int($x) - $size]
+   set x2 [expr int($x) + $size]
+   set y1 [expr int($y) - $size]
+   set y2 [expr int($y) + $size]
    set private($visuNo,targetBoxPicture) [list $x1 $y1 $x2 $y2]
 
    #--- je calcule les coordonnées dans le canvas
@@ -510,11 +509,11 @@ proc ::Autoguider::createTarget { visuNo targetCoord } {
    set x  [lindex $coord 0]
    set y  [lindex $coord 1]
    set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
-   set x1 [lindex $coord 0]   
-   set y1 [lindex $coord 1]   
+   set x1 [lindex $coord 0]
+   set y1 [lindex $coord 1]
    set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
-   set x2 [lindex $coord 0]   
-   set y2 [lindex $coord 1]   
+   set x2 [lindex $coord 0]
+   set y2 [lindex $coord 1]
 
    set private($visuNo,hTarget) [eval {$private($visuNo,hCanvas) create rect} $x1 $y1 $x2 $y2 -outline red -offset center -tag target]
 
@@ -591,13 +590,13 @@ proc ::Autoguider::moveTelescope { visuNo } {
 #    efface l'image a l'ecran si autovisu==0
 # 
 #------------------------------------------------------------
-proc ::Autoguider::changeShowImage { visuNo } {    
+proc ::Autoguider::changeShowImage { visuNo } {
    variable private
 
    if { $private($visuNo,showImage) == "0" } {
       #--- je met tous les pixels a zero
       set bufNo [::confVisu::getBufNo $visuNo]
-      buf$bufNo mult 0    
+      buf$bufNo mult 0
       visu$visuNo cut {32 1}
       visu$visuNo disp
    }
@@ -608,7 +607,7 @@ proc ::Autoguider::changeShowImage { visuNo } {
 #    efface le symbole de la cible si showImage==0
 # 
 #------------------------------------------------------------
-proc ::Autoguider::changeShowTarget { visuNo } {    
+proc ::Autoguider::changeShowTarget { visuNo } {
    variable private
 
    if { $private($visuNo,showTarget) == "0" } {
