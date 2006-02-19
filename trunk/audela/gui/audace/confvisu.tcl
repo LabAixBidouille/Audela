@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Date de mise a jour : 04 fevrier 2006
+# Date de mise a jour : 19 fevrier 2006
 #
 
 namespace eval ::confVisu {
@@ -36,7 +36,6 @@ namespace eval ::confVisu {
       variable private
       global audace
       global conf
-      global confFichierIma
 
       #--- je cree une visu temporaire pour savoir quel sera le numero de visu
       set result [catch {::visu::create 1 1} visuNo]
@@ -109,7 +108,7 @@ namespace eval ::confVisu {
          #--- configuration buffer
          buf$bufNo extension $conf(extension,defaut)
          #--- Fichiers image compresses ou non
-         if { $confFichierIma(fichier,compres) == "0" } {
+         if { $conf(fichier,compres) == "0" } {
             buf$bufNo compress "none"
          } else {
             buf$bufNo compress "gzip"
@@ -128,6 +127,7 @@ namespace eval ::confVisu {
       if { $base == "" } {
          #--- je charge seulement les outils qui gérent les visu multiples
          ::AcqFC::Init $private($visuNo,This) $visuNo
+         ::Autoguider::Init $private($visuNo,This) $visuNo
       }
 
       #--- je cree le menu
@@ -135,11 +135,9 @@ namespace eval ::confVisu {
          ::confVisu::createMenu $visuNo
       }
 
-      #--- je cree les bind 
-      ::confVisu::createBindDialog $visuNo 
+      #--- je cree les bind
+      ::confVisu::createBindDialog $visuNo
 
-      ####::confVisu::boxInit $visuNo
-      
       return $visuNo
    }
 
@@ -250,7 +248,8 @@ namespace eval ::confVisu {
                   visu $visuNo [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
                }
                histoauto {
-                  buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)]"
+                  set keytype FLOAT
+                  buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)] keytype=$keytype"
                   visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
                }
                initiaux {
@@ -282,8 +281,8 @@ namespace eval ::confVisu {
          } else {
             # autre choix = on garde les seuils actuels
             set cuts [visu$visuNo cut ]
-            set sh [ expr int ( [ lindex $cuts 0 ] ) ]
-            set sb [ expr int ( [ lindex $cuts 1 ] ) ]
+            set sh [ expr [ lindex $cuts 0 ] ]
+            set sb [ expr [ lindex $cuts 1 ] ]
             set cuts [ list $sh $sb ]
          }
       } elseif { [llength $cuts] == 2 } {
@@ -549,8 +548,6 @@ namespace eval ::confVisu {
             ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
          } else { 
             ::FullScreen::close
-            #--- je restaure les bind 
-            ::confVisu::boxInit $visuNo
          }
       } else {
          set private($visuNo,fullscreen) "0"
@@ -1040,8 +1037,9 @@ namespace eval ::confVisu {
       }
       foreach m [lsort $liste] {
          set m [lindex $m 1]
-         if { $m == "menu_name,AcqFC" } {
+         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,Autoguider" ) } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
+               Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                #--- Lancement automatique de l'outil Acquisition
                ::confVisu::selectTool $visuNo ::AcqFC
             }
@@ -1600,7 +1598,7 @@ namespace eval ::confVisu {
       $private($visuNo,hCanvas) delete linev
    }
 
-} 
+}
 ####  namespace end
 
 ::confVisu::init

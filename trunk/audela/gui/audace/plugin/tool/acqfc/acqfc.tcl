@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 13 fevrier 2006
+# Date de mise a jour : 19 fevrier 2006
 #
 
 package provide acqfc 2.1
@@ -89,8 +89,8 @@ namespace eval ::AcqFC {
    proc Init { { in "" } { visuNo 1 } } {
       global panneau
 
-      set panneau(AcqFC,$visuNo,base) $in 
-      createPanel $visuNo "$in.acqFC" 
+      set panneau(AcqFC,$visuNo,base) $in
+      createPanel $visuNo "$in.acqFC"
       
       ::confVisu::addCameraListener $visuNo "::AcqFC::Adapt_Panneau_AcqFC $visuNo"
 

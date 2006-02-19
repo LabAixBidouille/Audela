@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 08 fevrier 2006
+# Date de mise a jour : 19 fevrier 2006
 #
 
 global confCam
@@ -2379,10 +2379,13 @@ namespace eval ::confCam {
      # pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
 
       frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -side bottom -fill x -pady 2
+     # pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
 
       frame $frm.frame8 -borderwidth 0 -relief raised
       pack $frm.frame8 -side bottom -fill x -pady 2
+
+      frame $frm.frame9 -borderwidth 0 -relief raised
+      pack $frm.frame9 -side bottom -fill x -pady 2
 
       #--- Label de la liaison
       label $frm.lab1 -text "$caption(confcam,dsc_liaison)"
@@ -2414,8 +2417,9 @@ namespace eval ::confCam {
                pack forget $frm.frame4
                pack forget $frm.frame5
                pack forget $frm.frame6
-               pack $frm.frame7 -side bottom -fill x -pady 2
-               pack forget $frm.frame8
+               pack forget $frm.frame7
+               pack $frm.frame8 -side bottom -fill x -pady 2
+               pack forget $frm.frame9
             } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
                set conf(confLink) "gphoto2"
                ::confLink::run
@@ -2424,8 +2428,9 @@ namespace eval ::confCam {
                pack $frm.frame4 -side top -fill x
                pack $frm.frame5 -in $frm.frame4 -anchor n -side left -fill x
                pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
-               pack forget $frm.frame7
-               pack $frm.frame8 -side bottom -fill x -pady 2
+               pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
+               pack forget $frm.frame8
+               pack $frm.frame9 -side bottom -fill x -pady 2
 
             }
          }
@@ -2463,7 +2468,7 @@ namespace eval ::confCam {
       #--- Utilisation du QuickRemote
       checkbutton $frm.quickremote -text "$caption(confcam,dsc_quickremote)" -highlightthickness 0 \
          -variable confCam(conf_dsc,quickremote)
-      pack $frm.quickremote -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+      pack $frm.quickremote -in $frm.frame7 -anchor w -side right -padx 20 -pady 10
 
       #--- Gestion du Service Windows de detection automatique des APN (DSC)
       if { $::tcl_platform(platform) == "windows" } {
@@ -2479,16 +2484,18 @@ namespace eval ::confCam {
          pack forget $frm.frame4
          pack forget $frm.frame5
          pack forget $frm.frame6
-         pack $frm.frame7 -side bottom -fill x -pady 2
-         pack forget $frm.frame8
+         pack forget $frm.frame7
+         pack $frm.frame8 -side bottom -fill x -pady 2
+         pack forget $frm.frame9
       } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
          pack forget $frm.frame2
          pack forget $frm.frame3
          pack $frm.frame4 -side top -fill x
          pack $frm.frame5 -in $frm.frame4 -anchor n -side left -fill x
          pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
-         pack forget $frm.frame7
-         pack $frm.frame8 -side bottom -fill x -pady 2
+         pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
+         pack forget $frm.frame8
+         pack $frm.frame9 -side bottom -fill x -pady 2
       }
 
       #--- Miroir en x et en y
@@ -2502,16 +2509,16 @@ namespace eval ::confCam {
 
       #--- Site web officiel de PhotoPC GPhoto2
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame7 -side top -fill x -pady 2
+      pack $frm.lab103 -in $frm.frame8 -side top -fill x -pady 2
 
       label $frm.labURL -text "$caption(confcam,site_apn)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame7 -side top -fill x -pady 2
+      pack $frm.labURL -in $frm.frame8 -side top -fill x -pady 2
 
       label $frm.lab104 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab104 -in $frm.frame8 -side top -fill x -pady 2
+      pack $frm.lab104 -in $frm.frame9 -side top -fill x -pady 2
 
       label $frm.labURLa -text "$caption(confcam,site_dsc)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURLa -in $frm.frame8 -side top -fill x -pady 2
+      pack $frm.labURLa -in $frm.frame9 -side top -fill x -pady 2
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $frm.labURL <ButtonPress-1> {

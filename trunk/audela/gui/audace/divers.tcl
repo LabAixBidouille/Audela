@@ -3,7 +3,7 @@
 # Ce script regroupe diverses petites fonctions.
 # Auteur : Benoît Maugis
 # Version : 1.18.3 ---> 1.18.4
-# Date de MAJ : 10 avril 2005 ---> 24 decembre 2005
+# Date de mise a jour : 10 avril 2005 ---> 17 fevrier 2006
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
@@ -14,7 +14,9 @@
 
 
 proc charge {args} {
-  global audace caption conf confFichierIma tcl_platform
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
     if {[syntaxe_args $args 0 1 [list [list "-novisu" "-dovisu"] [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -58,7 +60,9 @@ proc charge {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -105,7 +109,9 @@ proc charge {args} {
 
       if {[file extension $nom_complet] == ".bz2"} {
 
-        switch $tcl_platform(os) {
+#--- Debut Modif Robert
+        switch $::tcl_platform(os) {
+#--- Fin Modif Robert
         "Linux" {
           # Sous Linux, on copie le fichier dans un sous-répertoire de /tmp/.audela
           # on le décompresse et on essaie de le recharger à partir de là.
@@ -150,7 +156,9 @@ proc charge {args} {
         } else {
 
           # Le nom complet de fichier comporte des caractères accentués.
-          switch $tcl_platform(os) {
+#--- Debut Modif Robert
+          switch $::tcl_platform(os) {
+#--- Fin Modif Robert
           "Linux" {
             # Sous Linux, on copie le fichier dans /tmp/.audela
             # en supprimant les caractères accentués et on essaie 
@@ -188,7 +196,9 @@ proc charge {args} {
 
 
 proc sauve {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 1 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -223,7 +233,9 @@ proc sauve {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -332,7 +344,9 @@ proc sauve {args} {
 
 
 proc sauve_jpeg {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 1 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -465,7 +479,9 @@ proc sauve_jpeg {args} {
 
 
 proc soustrait {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -496,7 +512,9 @@ proc soustrait {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -524,7 +542,9 @@ proc soustrait {args} {
 
 
 proc normalise {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -555,7 +575,9 @@ proc normalise {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -597,7 +619,9 @@ proc normalise {args} {
 
 
 proc suppr_serie {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
     
@@ -618,7 +642,9 @@ proc suppr_serie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -634,7 +660,9 @@ proc suppr_serie {args} {
 
 
 proc suppr_fin_serie {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -656,7 +684,9 @@ proc suppr_fin_serie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -678,7 +708,9 @@ proc suppr_fin_serie {args} {
 
 
 proc suppr_debut_serie {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -700,7 +732,9 @@ proc suppr_debut_serie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -721,7 +755,9 @@ proc suppr_debut_serie {args} {
 
 
 proc renumerote {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -742,7 +778,9 @@ proc renumerote {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -768,7 +806,9 @@ proc renumerote {args} {
 
 
 proc renomme {args} {
-  global audace caption conf confFichierIma tcl_platform
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 1 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext"]]]=="1"} {
 
@@ -811,7 +851,9 @@ proc renomme {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -905,7 +947,9 @@ proc renomme {args} {
 
       # Si la série de destination est en lecture seule, on autorise l'utilisateur
       # en écriture
-      switch $tcl_platform(os) {
+#--- Debut Modif Robert
+      switch $::tcl_platform(os) {
+#--- Fin Modif Robert
       "Linux" {
         foreach index [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext] {
           if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
@@ -924,7 +968,9 @@ proc renomme {args} {
 
 
 proc copie {args} {
-  global audace caption conf confFichierIma tcl_platform
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 1 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext"]]]=="1"} {
 
@@ -967,7 +1013,9 @@ proc copie {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1062,7 +1110,9 @@ proc copie {args} {
 
       # Si la série de destination est en lecture seule, on autorise l'utilisateur
       # en écriture
-      switch $tcl_platform(os) {
+#--- Debut Modif Robert
+      switch $::tcl_platform(os) {
+#--- Fin Modif Robert
       "Linux" {
         foreach index [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext] {
           if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
@@ -1082,7 +1132,9 @@ proc copie {args} {
 
 
 proc copie_partielle {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext"]]]=="1"} {
 
@@ -1121,7 +1173,9 @@ proc copie_partielle {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1166,7 +1220,9 @@ proc copie_partielle {args} {
 
 
 proc serie_charge {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
     
@@ -1187,7 +1243,9 @@ proc serie_charge {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -1209,7 +1267,9 @@ proc serie_charge {args} {
 
 
 proc serie_fenetre {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_ext" "-ex_ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1250,7 +1310,9 @@ proc serie_fenetre {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1300,7 +1362,9 @@ proc serie_fenetre {args} {
 
 
 proc souris_fenetre {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1339,7 +1403,9 @@ proc souris_fenetre {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1375,7 +1441,9 @@ proc souris_fenetre {args} {
 
 
 proc serie_rot {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 5 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1418,7 +1486,9 @@ proc serie_rot {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1468,7 +1538,9 @@ proc serie_rot {args} {
 
 
 proc serie_trans {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 4 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1510,7 +1582,9 @@ proc serie_trans {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1560,7 +1634,9 @@ proc serie_trans {args} {
 
 
 proc series_traligne {args} {
-  global audace caption conf confFichierIma script
+#--- Debut Modif Robert
+  global audace caption conf script
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_polyNo"]]]=="1"} {
 
@@ -1595,7 +1671,9 @@ proc series_traligne {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -1700,7 +1778,9 @@ proc series_traligne {args} {
 
 
 proc serie_sauvejpeg {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-ex_name" "-qualitejpeg" "-seuils_type" "-rep" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-in_polyNo"] [list "-seuils_haut_bas" "-histo_haut_bas"]]] =="1"} {
 
@@ -1754,7 +1834,9 @@ proc serie_sauvejpeg {args} {
       }
     if {$in_ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $in_ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
     } else {
       set in_ext $conf(extension,defaut).gz
@@ -1831,7 +1913,9 @@ proc serie_sauvejpeg {args} {
 
 
 proc mediane {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -1862,7 +1946,9 @@ proc mediane {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -1938,7 +2024,9 @@ proc mediane {args} {
 
 
 proc serie_soustrait {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo" "-buf"]]]=="1"} {
 
@@ -1980,7 +2068,9 @@ proc serie_soustrait {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2053,7 +2143,9 @@ proc serie_soustrait {args} {
 
 
 proc serie_normalise {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo" "-buf"]]]=="1"} {
 
@@ -2095,7 +2187,9 @@ proc serie_normalise {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2168,7 +2262,9 @@ proc serie_normalise {args} {
 
 
 proc normalise_gain {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -2209,7 +2305,9 @@ proc normalise_gain {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2276,7 +2374,9 @@ proc normalise_gain {args} {
 
 
 proc aligne {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_ext" "-ex_ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -2317,7 +2417,9 @@ proc aligne {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2677,7 +2779,9 @@ proc decomp {args} {
 
 
 proc liste_index {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2700,7 +2804,9 @@ proc liste_index {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2758,7 +2864,9 @@ proc liste_index {args} {
 
 
 proc liste_series {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2780,7 +2888,9 @@ proc liste_series {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2808,7 +2918,9 @@ proc liste_series {args} {
 
 
 proc liste_sousreps {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 0 [list "" [list "-rep"]]]=="1"} {
 
@@ -2849,7 +2961,9 @@ proc liste_sousreps {args} {
 
 
 proc serie_existe {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2872,7 +2986,9 @@ proc serie_existe {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2892,7 +3008,9 @@ proc serie_existe {args} {
 
 
 proc numerotation_usuelle {args} { 
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2915,7 +3033,9 @@ proc numerotation_usuelle {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2943,7 +3063,9 @@ proc numerotation_usuelle {args} {
 
 
 proc compare_index_series {args} { 
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2966,7 +3088,9 @@ proc compare_index_series {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2995,7 +3119,7 @@ proc compare_index_series {args} {
 
 
 proc cree_sousrep {args} {
-  global audace caption tcl_platform
+  global audace caption
 
   if {[syntaxe_args $args 0 0 [list "" [list "-nom_base" "-rep"]]]=="1"} {
 
@@ -3023,7 +3147,9 @@ proc cree_sousrep {args} {
 
     # Si le répertoire indiqué est protégé en écriture :
     if {[file writable $rep] == 0} {
-      switch $tcl_platform(os) {
+#--- Debut Modif Robert
+      switch $::tcl_platform(os) {
+#--- Fin Modif Robert
       "Linux" {
         # Pour linux : le sous-répertoire est créé dans /tmp/.audela
         set rep [file join /tmp .audela]
@@ -3050,7 +3176,7 @@ proc cree_sousrep {args} {
 
 
 proc cree_fichier {args} {
-  global audace caption tcl_platform
+  global audace caption
 
   if {[syntaxe_args $args 0 0 [list "" [list "-nom_base" "-rep" "-ext"]]]=="1"} {
 
@@ -3089,7 +3215,9 @@ proc cree_fichier {args} {
 
     # Cas où le répertoire indiqué est protégé en écriture :
     if {[file writable $rep] == 0} {
-    switch $tcl_platform(os) {
+#--- Debut Modif Robert
+    switch $::tcl_platform(os) {
+#--- Fin Modif Robert
     "Linux"} {
       # Pour linux : le fichier est créé dans /tmp/.audela
       if {[file exist [file join /tmp .audela]]=="0"} {
