@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune 
 # Auteur : Robert DELMAS
-# Date de mise a jour : 11 decembre 2005
+# Date de mise a jour : 23 fevrier 2006
 #
 
 namespace eval obj_Lune_2 {
@@ -634,7 +634,7 @@ namespace eval obj_Lune_2 {
          22 { set obj_lune(cata_choisi) "lune_phenom_transitoires_fr.txt"
               obj_Lune_2::LitCataChoisi
            }
-	   }
+         }
       } else {
          switch -exact -- $obj_lune(goto) {
          1 { set obj_lune(cata_choisi) "lune_reference_gb.txt"
@@ -703,7 +703,7 @@ namespace eval obj_Lune_2 {
          22 { set obj_lune(cata_choisi) "lune_phenom_transitoires_gb.txt"
               obj_Lune_2::LitCataChoisi
            }
-	   }
+         }
       }
    }
 
@@ -717,8 +717,8 @@ namespace eval obj_Lune_2 {
       global obj_lune
       global frmm
 
-      #--- Charge les coordonnees pointees dans l'image0
-      bind $zone(image0) <Motion> {
+      #--- Charge les coordonnees pointees dans l'image image_cartes_lune
+      bind $zone(image_cartes_lune) <Motion> {
          #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
          set xy [::audace::screen2Canvas [list %x %y]]
          set x [lindex $xy 0]
@@ -728,70 +728,70 @@ namespace eval obj_Lune_2 {
             if { ($x>"54") && ($x<"83") } {
                set obj_lune(n_carte) "1"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar01$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 57 7 81 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 57 7 81 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "2"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar02$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 7 108 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 7 108 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "3"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar03$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 7 134 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 7 134 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "4"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar04$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 7 161 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 7 161 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "5"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar05$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 7 187 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 7 187 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "6"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar06$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 7 214 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 7 214 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"245") } {
                set obj_lune(n_carte) "7"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar07$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 7 243 38] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 7 243 38] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -802,90 +802,90 @@ namespace eval obj_Lune_2 {
             if { ($x>"23") && ($x<"57") } {
                set obj_lune(n_carte) "8"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar08$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 26 43 55 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 26 43 55 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "9"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar09$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 60 43 81 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 60 43 81 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "10"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar10$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 43 108 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 43 108 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "11"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar11$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 43 134 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 43 134 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "12"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar12$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 43 161 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 43 161 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "13"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar13$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 43 187 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 43 187 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "14"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar14$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 43 214 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 43 214 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "15"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar15$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 43 240 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 43 240 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"242") && ($x<"275") } {
                set obj_lune(n_carte) "16"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar16$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 245 43 273 75] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 245 43 273 75] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -896,110 +896,110 @@ namespace eval obj_Lune_2 {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "17"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar17$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 7 80 28 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 7 80 28 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "18"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar18$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 33 80 55 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 33 80 55 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "19"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar19$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 60 80 81 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 60 80 81 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "20"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar20$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 80 108 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 80 108 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "21"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar21$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 80 134 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 80 134 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "22"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar22$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 80 161 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 80 161 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "23"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar23$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 80 187 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 80 187 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "24"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar24$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 80 214 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 80 214 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "25"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar25$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 80 240 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 80 240 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "26"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar26$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 245 80 267 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 245 80 267 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "27"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar27$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 272 80 293 110] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 272 80 293 110] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -1010,110 +1010,110 @@ namespace eval obj_Lune_2 {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "28"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar28$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 7 115 28 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 7 115 28 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "29"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar29$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 33 115 55 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 33 115 55 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "30"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar30$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 60 115 81 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 60 115 81 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "31"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar31$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 115 108 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 115 108 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "32"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar32$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 115 134 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 115 134 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "33"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar33$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 115 161 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 115 161 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "34"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar34$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 165 115 187 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 165 115 187 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "35"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar35$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 115 214 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 115 214 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "36"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar36$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 115 240 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 115 240 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "37"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar37$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 245 115 267 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 245 115 267 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "38"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar38$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 272 115 293 146] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 272 115 293 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -1124,47 +1124,47 @@ namespace eval obj_Lune_2 {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "39"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar39$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 7 151 28 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 7 151 28 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "40"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar40$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 33 151 55 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 33 151 55 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "41"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar41$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 60 151 81 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 60 151 81 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "42"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar42$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 151 108 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 151 108 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "43"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar43$obj_lune(extension_cartes)"
                   ::obj_Lune_2::DessineRectangle [list 113 151 134 183] $color(red)
@@ -1174,60 +1174,60 @@ namespace eval obj_Lune_2 {
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "44"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar44$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 151 161 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 151 161 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "45"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar45$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 151 187 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 151 187 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "46"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar46$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 151 214 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 151 214 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "47"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar47$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 151 240 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 151 240 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "48"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar48$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 245 151 267 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 245 151 267 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "49"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar49$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 272 151 293 183] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 272 151 293 183] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -1238,110 +1238,110 @@ namespace eval obj_Lune_2 {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "50"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar50$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 7 188 28 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 7 188 28 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "51"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar51$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 33 188 55 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 33 188 55 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "52"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar52$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 60 188 81 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 60 188 81 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "53"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar53$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 188 108 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 188 108 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "54"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar54$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 188 134 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 188 134 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "55"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar55$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 188 161 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 188 161 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "56"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar56$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 188 187 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 188 187 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "57"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar57$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 188 214 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 188 214 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "58"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar58$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 188 240 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 188 240 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "59"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar59$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 245 188 267 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 245 188 267 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "60"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar60$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 272 188 293 219] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 272 188 293 219] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -1352,90 +1352,90 @@ namespace eval obj_Lune_2 {
             if { ($x>"23") && ($x<"57") } {
                set obj_lune(n_carte) "61"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar61$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 27 224 55 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 27 224 55 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "62"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar62$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 60 224 81 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 60 224 81 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "63"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar63$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 224 108 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 224 108 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "64"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar64$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 224 134 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 224 134 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "65"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar65$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 224 161 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 224 161 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "66"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar66$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 224 187 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 224 187 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "67"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar67$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 224 214 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 224 214 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "68"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar68$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 224 240 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 224 240 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"242") && ($x<"275") } {
                set obj_lune(n_carte) "69"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar69$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 245 224 274 255] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 245 224 274 255] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -1446,70 +1446,70 @@ namespace eval obj_Lune_2 {
             if { ($x>"54") && ($x<"83") } {
                set obj_lune(n_carte) "70"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar70$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 57 260 81 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 57 260 81 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "71"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar71$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 86 260 108 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 86 260 108 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "72"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar72$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 113 260 134 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 113 260 134 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "73"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar73$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 139 260 161 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 139 260 161 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "74"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar74$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 166 260 187 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 166 260 187 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "75"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar75$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 192 260 214 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 192 260 214 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
             } elseif { ($x>"216") && ($x<"245") } {
                set obj_lune(n_carte) "76"
                $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
-               bind $zone(image0) <ButtonPress-1> {
+               bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar76$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessineRectangle [list 219 260 243 291] $color(red)
+                  ::obj_Lune_2::DessineRectangle [list 219 260 243 291] $color(red)
                   ::obj_Lune_2::AfficheRepereSite
                   ::obj_Lune_2::AfficheCarteChoisie
                }
@@ -1532,7 +1532,7 @@ namespace eval obj_Lune_2 {
       global obj_lune
       global frmm
 
-      #--- Charge les coordonnees pointees dans l'image0
+      #--- Charge les coordonnees pointees dans l'image_cartes_lune
       bind $zone(image4a) <Motion> {
          #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
          set xy [::audace::screen2Canvas [list %x %y]]
@@ -1546,7 +1546,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib77$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 46 40 95 18 147 10 147 34 107 43 71 65 46 40] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 46 40 95 18 147 10 147 34 107 43 71 65 46 40] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1556,7 +1556,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib78$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 151 10 207 20 251 40 227 65 194 43 151 34 151 10] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 151 10 207 20 251 40 227 65 194 43 151 34 151 10] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1570,7 +1570,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib84$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 12 146 22 91 41 45 66 69 43 101 34 146 12 146] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 12 146 22 91 41 45 66 69 43 101 34 146 12 146] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1580,7 +1580,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib79$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 256 45 278 91 286 146 264 146 257 105 232 69 256 45] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 256 45 278 91 286 146 264 146 257 105 232 69 256 45] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1594,7 +1594,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib83$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 42 251 21 207 12 150 34 150 42 193 66 227 42 251] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 42 251 21 207 12 150 34 150 42 193 66 227 42 251] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1604,7 +1604,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib80$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 286 150 279 202 257 252 233 227 257 191 264 150 286 150] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 286 150 279 202 257 252 233 227 257 191 264 150 286 150] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1618,7 +1618,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib82$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 147 286 95 277 47 256 72 232 104 255 147 263 147 286] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 147 286 95 277 47 256 72 232 104 255 147 263 147 286] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1628,7 +1628,7 @@ namespace eval obj_Lune_2 {
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib81$obj_lune(extension_cartes)"
-	            ::obj_Lune_2::DessinePolygone [list 252 257 207 277 151 286 151 263 197 254 228 231 252 257] $color(red)
+                  ::obj_Lune_2::DessinePolygone [list 252 257 207 277 151 286 151 263 197 254 228 231 252 257] $color(red)
                   ::obj_Lune_2::AfficheRepereSite_lib
                   ::obj_Lune_2::AfficheCarte_libChoisie
                }
@@ -1939,7 +1939,7 @@ namespace eval obj_Lune_2 {
               }
             76 { ::obj_Lune_2::DessineRectangle [list 216 257 245 293] $color(blue)
               }
-	      }
+            }
          }
       }
    }
@@ -2110,7 +2110,7 @@ namespace eval obj_Lune_2 {
               }
             76 { ::obj_Lune_2::DessineRectangle_Bind [list 219 260 243 291] $color(red)
               }
-	      }
+            }
          }
          $frmm(Obj_Lune3).frame7.labURL5 configure -text "$obj_lune(n1)" -fg $color(red)
          set obj_lune(n_carte_choisie) $obj_lune(n1)
@@ -2154,7 +2154,7 @@ namespace eval obj_Lune_2 {
               }
             84 { ::obj_Lune_2::DessinePolygone [list 10 148 19 91 40 42 69 69 45 101 36 148 10 148] $color(blue)
               }
-	      }
+            }
          }
       }
    }
@@ -2189,7 +2189,7 @@ namespace eval obj_Lune_2 {
               }
             84 { ::obj_Lune_2::DessinePolygone_Bind [list 12 146 22 91 41 45 66 69 43 101 34 146 12 146] $color(red)
               }
-	      }
+            }
          }
          ::obj_Lune_2::ConversionNumeroCarte_lib1_Bind
          $frmm(Obj_Lune4).frame7.labURL5 configure -text "$obj_lune(lib_n1)" -fg $color(red)
@@ -2206,7 +2206,7 @@ namespace eval obj_Lune_2 {
       global frmm
 
       #--- Efface les rectangles des precedentes cartes selectionnees
-      $frmm(Obj_Lune3).frame4.image0 delete cadres
+      $frmm(Obj_Lune3).frame4.image_cartes_lune delete cadres
       $frmm(Obj_Lune4).frame4.image4a delete cadres
 
       #--- Efface les numeros des cartes choisies et de la carte courante
@@ -2224,7 +2224,7 @@ namespace eval obj_Lune_2 {
       global frmm
 
       #--- Efface les rectangles des precedentes cartes selectionnees
-      $frmm(Obj_Lune3).frame4.image0 delete cadres
+      $frmm(Obj_Lune3).frame4.image_cartes_lune delete cadres
 
       #--- Efface les numeros des cartes choisies et de la carte courante
       $frmm(Obj_Lune3).frame7.labURL5 configure -text "-"
@@ -2256,17 +2256,17 @@ namespace eval obj_Lune_2 {
       global frmm
 
       #--- Recupere les coordonnees
-	set x1 [lindex $rect 0]
-	set y1 [lindex $rect 1]
-	set x2 [lindex $rect 2]
-	set y2 [lindex $rect 3]
+      set x1 [lindex $rect 0]
+      set y1 [lindex $rect 1]
+      set x2 [lindex $rect 2]
+      set y2 [lindex $rect 3]
 
       if { $couleur == "$color(red)" } {
          #--- Efface les rectangles des precedentes cartes selectionnees
-	   $frmm(Obj_Lune3).frame4.image0 delete cadres
+         $frmm(Obj_Lune3).frame4.image_cartes_lune delete cadres
       }
-	#--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-      $frmm(Obj_Lune3).frame4.image0 create rectangle [expr $x1] [expr $y1] \
+      #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
+      $frmm(Obj_Lune3).frame4.image_cartes_lune create rectangle [expr $x1] [expr $y1] \
             [expr $x2] [expr $y2] -outline $couleur -tags cadres -width 2.0
    }
 
@@ -2279,13 +2279,13 @@ namespace eval obj_Lune_2 {
       global frmm
 
       #--- Recupere les coordonnees
-	set x1 [lindex $rect 0]
-	set y1 [lindex $rect 1]
-	set x2 [lindex $rect 2]
-	set y2 [lindex $rect 3]
+      set x1 [lindex $rect 0]
+      set y1 [lindex $rect 1]
+      set x2 [lindex $rect 2]
+      set y2 [lindex $rect 3]
 
-	#--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-      $frmm(Obj_Lune3).frame4.image0 create rectangle [expr $x1] [expr $y1] \
+      #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
+      $frmm(Obj_Lune3).frame4.image_cartes_lune create rectangle [expr $x1] [expr $y1] \
             [expr $x2] [expr $y2] -outline $couleur -tags cadres -width 2.0
    }
 
@@ -2299,33 +2299,33 @@ namespace eval obj_Lune_2 {
       global frmm
 
       #--- Recupere les coordonnees
-	set x1 [lindex $rect_lib 0]
-	set y1 [lindex $rect_lib 1]
-	set x2 [lindex $rect_lib 2]
-	set y2 [lindex $rect_lib 3]
-	set x3 [lindex $rect_lib 4]
-	set y3 [lindex $rect_lib 5]
-	set x4 [lindex $rect_lib 6]
-	set y4 [lindex $rect_lib 7]
-	set x5 [lindex $rect_lib 8]
-	set y5 [lindex $rect_lib 9]
-	set x6 [lindex $rect_lib 10]
-	set y6 [lindex $rect_lib 11]
-	set x7 [lindex $rect_lib 12]
-	set y7 [lindex $rect_lib 13]
+      set x1 [lindex $rect_lib 0]
+      set y1 [lindex $rect_lib 1]
+      set x2 [lindex $rect_lib 2]
+      set y2 [lindex $rect_lib 3]
+      set x3 [lindex $rect_lib 4]
+      set y3 [lindex $rect_lib 5]
+      set x4 [lindex $rect_lib 6]
+      set y4 [lindex $rect_lib 7]
+      set x5 [lindex $rect_lib 8]
+      set y5 [lindex $rect_lib 9]
+      set x6 [lindex $rect_lib 10]
+      set y6 [lindex $rect_lib 11]
+      set x7 [lindex $rect_lib 12]
+      set y7 [lindex $rect_lib 13]
 
       if { $couleur_lib == "$color(red)" } {
          #--- Efface les polygones des precedentes cartes selectionnees
-	   $frmm(Obj_Lune4).frame4.image4a delete cadres
+         $frmm(Obj_Lune4).frame4.image4a delete cadres
       }
-	#--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
+      #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
    }
 
    #
@@ -2337,29 +2337,29 @@ namespace eval obj_Lune_2 {
       global frmm
 
       #--- Recupere les coordonnees
-	set x1 [lindex $rect_lib 0]
-	set y1 [lindex $rect_lib 1]
-	set x2 [lindex $rect_lib 2]
-	set y2 [lindex $rect_lib 3]
-	set x3 [lindex $rect_lib 4]
-	set y3 [lindex $rect_lib 5]
-	set x4 [lindex $rect_lib 6]
-	set y4 [lindex $rect_lib 7]
-	set x5 [lindex $rect_lib 8]
-	set y5 [lindex $rect_lib 9]
-	set x6 [lindex $rect_lib 10]
-	set y6 [lindex $rect_lib 11]
-	set x7 [lindex $rect_lib 12]
-	set y7 [lindex $rect_lib 13]
+      set x1 [lindex $rect_lib 0]
+      set y1 [lindex $rect_lib 1]
+      set x2 [lindex $rect_lib 2]
+      set y2 [lindex $rect_lib 3]
+      set x3 [lindex $rect_lib 4]
+      set y3 [lindex $rect_lib 5]
+      set x4 [lindex $rect_lib 6]
+      set y4 [lindex $rect_lib 7]
+      set x5 [lindex $rect_lib 8]
+      set y5 [lindex $rect_lib 9]
+      set x6 [lindex $rect_lib 10]
+      set y6 [lindex $rect_lib 11]
+      set x7 [lindex $rect_lib 12]
+      set y7 [lindex $rect_lib 13]
 
-	#--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
-	$frmm(Obj_Lune4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
+      #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
+      $frmm(Obj_Lune4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
    }
 
    #
