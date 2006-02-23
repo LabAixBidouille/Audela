@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Date de mise a jour : 16 novembre 2005
+# Date de mise a jour : 22 fevrier 2006
 #
 
 global audace
@@ -740,15 +740,15 @@ namespace eval obj_Lune {
       imageflag1 configure -file [file join $audace(rep_plugin) tool obj_lune image_obj_lune lune.gif]
 
       #--- Creation d'un canvas pour affichage de cette image
-      canvas $frm.frame4.image0 -width [ expr [image width imageflag1] - 2 ] \
+      canvas $frm.frame4.image_cartes_lune -width [ expr [image width imageflag1] - 2 ] \
          -height [ expr [image height imageflag1] - 2 ] \
          -cursor circle -borderwidth 0 -relief flat
-      pack $frm.frame4.image0 -side left -anchor center -padx 0 -pady 0
-      set zone(image0) $frm.frame4.image0
+      pack $frm.frame4.image_cartes_lune -side left -anchor center -padx 0 -pady 0
+      set zone(image_cartes_lune) $frm.frame4.image_cartes_lune
 
       #--- Affichage de cette image
-      $zone(image0) create image 0 0 -anchor nw -tag display
-      $zone(image0) itemconfigure display -image imageflag1
+      $zone(image_cartes_lune) create image 0 0 -anchor nw -tag display
+      $zone(image_cartes_lune) itemconfigure display -image imageflag1
 
       #--- Labels pour les cartes
       label $frm.frame3.lab1 -text "$caption(obj_lune,atlas)" -font $audace(font,arial_12_b)
