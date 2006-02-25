@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Date de mise a jour : 19 fevrier 2006
+# Date de mise a jour : 23 fevrier 2006
 #
 
 namespace eval ::confVisu {
@@ -67,31 +67,31 @@ namespace eval ::confVisu {
       }
 
       #--- Position de l'image dans la fenetre principale
-      set private($visuNo,picture_orgx)  "0"
-      set private($visuNo,picture_orgy)  "0"
-      set private($visuNo,labcoord_type) "xy"
-      set private($visuNo,picture_w) "0"
-      set private($visuNo,picture_h) "0"
+      set private($visuNo,picture_orgx)    "0"
+      set private($visuNo,picture_orgy)    "0"
+      set private($visuNo,labcoord_type)   "xy"
+      set private($visuNo,picture_w)       "0"
+      set private($visuNo,picture_h)       "0"
       set private($visuNo,autovisuEnCours) "0"
-      set private($visuNo,lastFileName) "?"
-      set private($visuNo,maxdyn) 32767
-      set private($visuNo,mindyn) -32768
-      set private($visuNo,crosshairstate) $conf(visu,crosshairstate)
-      set private($visuNo,menu) ""
+      set private($visuNo,lastFileName)    "?"
+      set private($visuNo,maxdyn)          "32767"
+      set private($visuNo,mindyn)          "-32768"
+      set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
+      set private($visuNo,menu)            ""
 
       #--- Initialisation de variables utilisees par les menus
-      set private($visuNo,mirror_x) "0"
-      set private($visuNo,mirror_y) "0"
-      set private($visuNo,window) "0"
-      set private($visuNo,fullscreen)   "0"
-      set private($visuNo,zoom)   "1"
-      set private($visuNo,toolNameSpace) ""
-      set private($visuNo,box) ""
+      set private($visuNo,mirror_x)        "0"
+      set private($visuNo,mirror_y)        "0"
+      set private($visuNo,window)          "0"
+      set private($visuNo,fullscreen)      "0"
+      set private($visuNo,zoom)            "1"
+      set private($visuNo,toolNameSpace)   ""
+      set private($visuNo,box)             ""
 
-      set private($visuNo,camNo) "0"
-      set private($visuNo,camName) ""
+      set private($visuNo,camNo)           "0"
+      set private($visuNo,camName)         ""
 
-      set private($visuNo,intensity) "1"
+      set private($visuNo,intensity)       "1"
 
       #--- initialisation des bind de touches et de la souris
       set private($visuNo,MouseState) rien
@@ -175,9 +175,15 @@ namespace eval ::confVisu {
          ::[getTool $visuNo]::deletePanel $visuNo
       }
 
+      #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
+      if { $visuNo > "1" } {
+         ::AcqFC::deletePanel $visuNo
+         ::Autoguider::deletePanel $visuNo
+      }
+
       #--- je supprime l'image associee à la visu
       image delete image[visu$visuNo image]
-            
+
       #--- je supprime la visu
       ::visu::delete $visuNo
 
@@ -803,7 +809,7 @@ namespace eval ::confVisu {
       set private($visuNo,hCanvas) $private($visuNo,This).can1.canvas
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This      
+      ::confColor::applyColor $This
 
    }
 
