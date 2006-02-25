@@ -20,6 +20,8 @@
  * Foundation, Inc., 675 Mass Ave, Linkbridge, MA 02139, USA.
  */
 
+// $Id: liblink.h,v 1.2 2006-02-25 17:15:46 michelpujol Exp $
+
 #ifndef __LIBLINK_H__
 #define __LIBLINK_H__
 
@@ -31,32 +33,20 @@
 /*                                                               */
 /*****************************************************************/
 
-#include "liblink.h"
+//#include "liblink.h"
 
 #include "tcl.h"
 
 #define LINK_OK       0
 #define LINK_ERROR    -1
 
-
-struct cmditem {
-    char *cmd;
-    Tcl_CmdProc *func;
-};
-
-
 class CLink {
 
  public:
-
-	//CLink(Tcl_Interp * interp);
-	//~CLink();
+   virtual ~CLink();
    int init_common(int argc, char **argv);
-   // intialisation specifique
-   virtual int init(int argc, char **argv)=0;
-   // intialisation specifique
-   virtual int close()=0;
-
+   virtual int openLink(int argc, char **argv)=0;
+   virtual int closeLink()=0;
 
    int authorized;
 	Tcl_Interp *interp;
@@ -67,6 +57,17 @@ class CLink {
  protected:
 
 
-    };
+};
+
+
+CLink * createLink();
+int available(unsigned long *pnumDevices, char **list);
+
+struct cmditem {
+    char *cmd;
+    Tcl_CmdProc *func;
+};
+
+
 
 #endif

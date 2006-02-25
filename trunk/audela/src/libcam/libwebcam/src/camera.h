@@ -315,7 +315,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam);
 void cam_set_exptime(float exptime, struct camprop *cam);
 */
 
-    int webcam_snap(struct camprop *cam, int rgb);
+//    int webcam_snap(struct camprop *cam, int rgb);
 // short loadbmp24bw(char *nom, unsigned short *buf, struct camprop *cam);
 // short loadbmp24rgb(char *nom, unsigned short *bufrgb, struct camprop *cam);
     int webcam_videoformat(struct camprop *cam, char *formatname);
