@@ -20,6 +20,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+// $Id: libname.h,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+
 #ifndef __LIBNAME_H__
 #define __LIBNAME_H__
 
