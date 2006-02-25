@@ -132,6 +132,46 @@ SOURCE=..\..\util.c
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
+# Begin Source File
+
+SOURCE=..\src\camera.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\camtcl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Capture.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\CaptureListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\CropCapture.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\CropConfig.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\GuidingCapture.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\GuidingCaptureListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\libname.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\src\pwc-ioctl.h"
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

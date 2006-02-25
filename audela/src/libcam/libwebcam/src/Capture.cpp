@@ -708,8 +708,8 @@ LRESULT CALLBACK  CCapture::grabFrameCallbackProc(HWND hWnd, VIDEOHDR *vhdr) {
     BITMAPINFO tempbi;
     int        inputFormatSize = NULL;
     HIC        hic;
-    HDC        hdc;
-    HBITMAP    htempBitmap;
+//    HDC        hdc;
+//    HBITMAP    htempBitmap;
 
     
     CCapture  * capture = (CCapture *) CCapture::getCallbackUserData(hWnd, 0);

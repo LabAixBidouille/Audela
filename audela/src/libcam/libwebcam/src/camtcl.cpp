@@ -618,34 +618,6 @@ int cmdCamGetVideoFormat(ClientData clientData, Tcl_Interp * interp,
 }
 
 /**
- * cmdCamSnap - grabs black and white frame and store it in buffer.
- * Acqisition monocoup.
-*/
-int cmdCamSnap(ClientData clientData, Tcl_Interp * interp, int argc,
-               char *argv[])
-{
-   struct camprop *cam;
-   int result;
-   cam = (struct camprop *) clientData;
-   result = webcam_snap(cam, 0);
-   return result;
-}
-
-/**
- * cmdCamSnapRgb - grabs colour frame and store it in buffer.
- * Acqisition monocoup trois plans de couleurs.
-*/
-int cmdCamSnapRgb(ClientData clientData, Tcl_Interp * interp, int argc,
-                  char *argv[])
-{
-   struct camprop *cam;
-   int result;
-   cam = (struct camprop *) clientData;
-   result = webcam_snap(cam, 1);
-   return result;
-}
-
-/**
  * cmdCamLonguePose - Réglage du mode longue pose.
  *
  * Declare if use long or normal exposure,

@@ -13,8 +13,6 @@
 #define COMMON_FUNCS \
    {"videosource",          (Tcl_CmdProc *)cmdCamVideoSource}, \
    {"videoformat",          (Tcl_CmdProc *)cmdCamVideoFormat}, \
-   {"snap",                 (Tcl_CmdProc *)cmdCamSnap}, \
-   {"snaprgb",              (Tcl_CmdProc *)cmdCamSnapRgb}, \
    {"longuepose",           (Tcl_CmdProc *)cmdCamLonguePose}, \
    {"longueposelinkno",     (Tcl_CmdProc *)cmdCamLonguePoseLinkno}, \
    {"longueposelinkbit",    (Tcl_CmdProc *)cmdCamLonguePoseLinkbit}, \
@@ -58,12 +56,8 @@ extern "C" {			/* Assume C declarations for C++ */
 #endif				/* __cplusplus */
 
     /* === Specific commands for that camera === */
-// int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc,
-//                 char *argv[]);
     int cmdCamVideoSource(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamSnap(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamSnapRgb(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);

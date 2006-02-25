@@ -154,11 +154,9 @@ struct cam_drv_t CAM_DRV = {
     cam_cooler_check
 };
 
-static short loadbmp24bw(char *nom, unsigned short *buf, struct camprop *cam);
-static short loadbmp24rgb(char *nom, unsigned short *bufrgb, struct camprop *cam);
 static void yuv420p_to_rgb24(unsigned char *yuv, unsigned char *rgb, int width, int height);
 static void ng_color_yuv2rgb_init(void);
-static int readFrame(struct camprop *cam, unsigned char *rgbBuffer);
+static int readFrame(struct camprop *cam);
 static int cam_stop_longexposure(struct camprop *cam);
 
 
@@ -256,7 +254,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 #if defined(OS_LIN)
    strcpy(cam->webcamDevice, "/dev/video0");
-   strcpy(cam->longExposureDevice, "/dev/parport0");
+   //strcpy(cam->longExposureDevice, "/dev/parport0");
    cam->validFrame = VALID_FRAME;
    cam->rgbBuffer = NULL;
    cam->rgbBufferSize = 0;
@@ -465,6 +463,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->rgbBufferSize = 0;
       return 1;
    }
+/*
    if ((cam->rgbBuffer = (unsigned char *) malloc(cam->rgbBufferSize))
        == NULL) {
       strcpy(cam->msg, "Not enougt memory");
@@ -473,13 +472,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->rgbBufferSize = 0;
       return 1;
    }
+*/
 
    if ((cam->yuvBufferSize = (cam->imax * cam->jmax * 12) / 8) < 0) {
       strcpy(cam->msg, "(cam->imax*cam->jmax*12)/8 is < 0");
       close(cam->cam_fd);
       cam->cam_fd = -1;
-      free(cam->rgbBuffer);
-      cam->rgbBuffer = NULL;
+      //free(cam->rgbBuffer);
+      //cam->rgbBuffer = NULL;
       cam->rgbBufferSize = 0;
       cam->yuvBufferSize = 0;
       return 1;
@@ -489,8 +489,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       strcpy(cam->msg, "Not enough memory");
       close(cam->cam_fd);
       cam->cam_fd = -1;
-      free(cam->rgbBuffer);
-      cam->rgbBuffer = NULL;
+      //free(cam->rgbBuffer);
+      //cam->rgbBuffer = NULL;
       cam->rgbBufferSize = 0;
       cam->yuvBufferSize = 0;
       return 1;
@@ -503,8 +503,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       if (webcam_initLongExposureDevice(cam)) {
          close(cam->cam_fd);
          cam->cam_fd = -1;
-         free(cam->rgbBuffer);
-         cam->rgbBuffer = NULL;
+         //free(cam->rgbBuffer);
+         //cam->rgbBuffer = NULL;
          cam->rgbBufferSize = 0;
          free(cam->yuvBuffer);
          cam->yuvBuffer = NULL;
@@ -533,13 +533,14 @@ int cam_close(struct camprop *cam)
       cam->capture = NULL;
    }
 
+/*
 #if !defined(OS_WIN_USE_LPT_OLD_STYLE)
    if (cam->hLongExposureDevice != INVALID_HANDLE_VALUE) {
       CloseHandle(cam->hLongExposureDevice);
       cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
    }
 #endif
-
+*/
 
 #endif
 
@@ -548,18 +549,20 @@ int cam_close(struct camprop *cam)
       close(cam->cam_fd);
       cam->cam_fd = -1;
    }
+   /*
    if (cam->long_fd >= 0) {
       webcam_setLongExposureDevice(cam, cam->longueposestop);
       ioctl(cam->long_fd, PPRELEASE);
       close(cam->long_fd);
       cam->long_fd = -1;
    }
+   */
 
-   if (cam->rgbBuffer != NULL) {
-      free(cam->rgbBuffer);
-      cam->rgbBuffer = NULL;
-   }
-   cam->rgbBufferSize = 0;
+   //if (cam->rgbBuffer != NULL) {
+   //   free(cam->rgbBuffer);
+   //   cam->rgbBuffer = NULL;
+   //}
+   //cam->rgbBufferSize = 0;
 
    if (cam->yuvBuffer != NULL) {
       free(cam->yuvBuffer);
@@ -590,26 +593,18 @@ int cam_close(struct camprop *cam)
 */
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
-   int naxis1, naxis2, bin1, bin2;
-   Tcl_Interp *interp;
-#if defined(OS_WIN)
-//   char nom[1024];
-#endif
+//   int naxis1, naxis2, bin1, bin2;
+//   Tcl_Interp *interp;
 
-#if defined(OS_LIN)
-
-#endif
-
-   interp = cam->interp;
-
-   naxis1 = cam->imax;
-   naxis2 = cam->jmax;
-   bin1 = cam->binx;
-   bin2 = cam->biny;
+//   interp = cam->interp;
+//   naxis1 = cam->imax;
+//   naxis2 = cam->jmax;
+//   bin1 = cam->binx;
+//   bin2 = cam->biny;
 
    if (cam->longuepose == 0) {
       //cam->exptime = (float) (cam->capture->getTimeLimit() * 1.e-6);
-      if (readFrame(cam, cam->rgbBuffer)) {
+      if (readFrame(cam)) {
          //error description in cam->msg
          return;
       }
@@ -620,7 +615,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
          return;
       }
    }
-
 }
 
 /**
@@ -635,10 +629,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 */
 int cam_stop_longexposure(struct camprop *cam)
 {
-   Tcl_Interp *interp;
-
-   interp = cam->interp;
-
    if (cam->longuepose == 1) {
 
 //#if defined(OS_WIN)
@@ -651,7 +641,7 @@ int cam_stop_longexposure(struct camprop *cam)
          //error description in cam->msg
          return 1;
       }
-      if (readFrame(cam, cam->rgbBuffer)) {
+      if (readFrame(cam)) {
          //error description in cam->msg
          return 1;
       }
@@ -686,12 +676,6 @@ void cam_stop_exp(struct camprop *cam)
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
    unsigned char *tempRgbBuffer;
-
-#if defined(OS_LIN)
-   unsigned short *shortBwBuffer;
-   int t;
-#endif
-
    Tcl_Interp *interp;
 
    interp = cam->interp;
@@ -702,14 +686,13 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       }
    }
 
+   /* Charge l'image 24 bits */
    strcpy(cam->pixels_classe, "CLASS_RGB");
    strcpy(cam->pixels_format, "FORMAT_BYTE");
    strcpy(cam->pixels_compression, "COMPRESS_NONE");
    cam->pixels_reverse_y = 1;
    cam->pixel_data = NULL;
-   
-   /* Charge l'image 24 bits */
-#if defined(OS_WIN)
+
    // copy rgbBuffer into p
    if( cam->rgbBuffer != NULL ) {
       tempRgbBuffer = (unsigned char *) p ;
@@ -717,29 +700,15 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       for(int y = cam->jmax -1; y >= 0; y-- ) {
          ptr = cam->rgbBuffer + y * cam->imax *3 ;
          for(int x=0; x <cam->imax; x++) {
-            *(tempRgbBuffer++)= *(ptr + x*3 +2);               
-            *(tempRgbBuffer++)= *(ptr + x*3 +1);               
-            *(tempRgbBuffer++)= *(ptr + x*3 +0);               
+            *(tempRgbBuffer++)= *(ptr + x*3 +2);
+            *(tempRgbBuffer++)= *(ptr + x*3 +1);
+            *(tempRgbBuffer++)= *(ptr + x*3 +0);
          }
-         
       }
       free(cam->rgbBuffer);
       cam->rgbBuffer = NULL;
       cam->rgbBufferSize = 0;
    }
-   
-#endif
-   
-#if defined(OS_LIN)
-   shortBwBuffer = p;
-   // conversion from rgb to bw 
-   for (t = cam->rgbBufferSize / 3, tempRgbBuffer = cam->rgbBuffer;
-        t > 0; t--, shortBwBuffer++) {
-      *shortBwBuffer = (unsigned short) (*(tempRgbBuffer++))
-         + (unsigned short) (*(tempRgbBuffer++))
-         + (unsigned short) (*(tempRgbBuffer++));
-   }
-#endif
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -826,489 +795,6 @@ void cam_update_window(struct camprop *cam)
 
 }
 
-/*********************** LOADBMP24BW **********************/
-/* Chargement d'une image au format BMP (24 bits)         */
-/* et conversion en N&B                                   */
-/**********************************************************/
-short loadbmp24bw(char *nom, unsigned short *buf, struct camprop *cam)
-{
-   short i, j, imax, jmax;
-   short bytes;
-   BMPHEAD bmp;
-   FILE *source;
-   unsigned short *ptr;
-   char *p;
-   int adr;
-   short bits, val_pel;
-   short val_pel1, val_pel2, val_pel3;
-   char ligne[180];
-   Tcl_Interp *interp;
-
-   interp = cam->interp;
-
-   if ((source = fopen(nom, "rb")) == NULL) {
-      sprintf(ligne, "Fichier temporaire non trouvé");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-  /*=== lecture du header BMP ===*/
-   if (fread((char *) &bmp, 1, sizeof(BMPHEAD), source) != sizeof(BMPHEAD)) {
-      sprintf(ligne, "Fichier temporaire incorrect");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-   if (memcmp(bmp.id, "BM", 2)) {
-          /*=== ce n'est pas une image BMP ===*/
-      sprintf(ligne, "Le fichier temporaire n'est pas une image BMP");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-   imax = (short) bmp.width;
-   jmax = (short) bmp.depth;
-   bits = bmp.bits;
-
-   if (imax != cam->imax) {
-      sprintf(ligne, "Taille d'image incompatible");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-
-   }
-
-   if (bits != 24) {
-      sprintf(ligne, "Nombre de bits incorrect");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-
-   }
-
-   bytes = 3 * imax;
-   if (bytes & 0x0003) {
-      bytes |= 0x0003;
-      bytes++;
-   }
-
-   if ((p = (char *) malloc(bytes)) == NULL) {
-      sprintf(ligne, "Pas assez de mémoire");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-  /*=== on va au début des data ===*/
-   fseek(source, bmp.headersize, SEEK_SET);
-
-   adr = 0;
-   ptr = buf;
-   for (j = 0; j < jmax; j++) {
-      if (fread(p, 1, bytes, source) != (unsigned) bytes) {
-         /* problème lors de la lecture des data */
-         sprintf(ligne, "Problème de lecture du fichier temporaire");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         fclose(source);
-         free(p);
-         return TCL_ERROR;
-      }
-
-      for (i = 0; i < imax; i++, adr++) {
-         val_pel1 = (unsigned short) *(p + (3 * i));
-         if (val_pel1 < 0)
-            val_pel1 = 256 + val_pel1;
-         val_pel2 = (unsigned short) *(p + (3 * i + 1));
-         if (val_pel2 < 0)
-            val_pel2 = 256 + val_pel2;
-         val_pel3 = (unsigned short) *(p + (3 * i + 2));
-         if (val_pel3 < 0)
-            val_pel3 = 256 + val_pel3;
-         val_pel = (val_pel1 + val_pel2 + val_pel3) / 3;
-         if (val_pel > 255)
-            val_pel = 255;
-         *(ptr + adr) = val_pel;
-      }
-   }
-
-
-fclose(source);
-   free(p);
-   return TCL_OK;
-}
-
-
-/*********************** LOADBMP24RGB *********************/
-/* Chargement d'une image au format BMP (24 bits)         */
-/* et conversion en trois buffers (RGB)                   */
-/**********************************************************/
-short loadbmp24rgb(char *nom, unsigned short *bufrgb, struct camprop *cam)
-{
-   short i, j, imax, jmax;
-   short bytes;
-   BMPHEAD bmp;
-   FILE *source;
-   unsigned short *ptr;
-   char *p;
-   int adr;
-   short bits, val_pel;
-   short val_pel1, val_pel2, val_pel3;
-   char ligne[180];
-   Tcl_Interp *interp;
-
-   interp = cam->interp;
-
-   if ((source = fopen(nom, "rb")) == NULL) {
-      sprintf(ligne, "Fichier temporaire non trouvé");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-  /*=== lecture du header BMP ===*/
-   if (fread((char *) &bmp, 1, sizeof(BMPHEAD), source) != sizeof(BMPHEAD)) {
-      sprintf(ligne, "Fichier temporaire incorrect");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-   if (memcmp(bmp.id, "BM", 2)) {
-          /*=== ce n'est pas une image BMP ===*/
-      sprintf(ligne, "Le fichier temporaire n'est pas une image BMP");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-   imax = (short) bmp.width;
-   jmax = (short) bmp.depth;
-   bits = bmp.bits;
-
-   if (imax != cam->imax) {
-      sprintf(ligne, "Taille d'image incompatible");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-   if (bits != 24) {
-      sprintf(ligne, "Nombre de bits incorrect");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-   bytes = 3 * imax;
-   if (bytes & 0x0003) {
-      bytes |= 0x0003;
-      bytes++;
-   }
-
-   if ((p = (char *) malloc(bytes)) == NULL) {
-      sprintf(ligne, "Pas assez de mémoire");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      fclose(source);
-      return TCL_ERROR;
-   }
-
-  /*=== on va au début des data ===*/
-   fseek(source, bmp.headersize, SEEK_SET);
-
-   adr = 0;
-   ptr = bufrgb;
-   for (j = 0; j < jmax; j++) {
-      if (fread(p, 1, bytes, source) != (unsigned) bytes) {
-         /* problème lors de la lecture des data */
-         sprintf(ligne, "Problème de lecture du fichier temporaire");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         fclose(source);
-         free(p);
-         return TCL_ERROR;
-      }
-      adr = (jmax - j -1 )*imax*3;
-      for (i = 0; i < imax; i++) {
-         val_pel1 = (unsigned short) *(p + (3 * i));
-         if (val_pel1 < 0)
-            val_pel1 = 256 + val_pel1;
-         val_pel2 = (unsigned short) *(p + (3 * i + 1));
-         if (val_pel2 < 0)
-            val_pel2 = 256 + val_pel2;
-         val_pel3 = (unsigned short) *(p + (3 * i + 2));
-         if (val_pel3 < 0)
-            val_pel3 = 256 + val_pel3;
-         val_pel = (val_pel1 + val_pel2 + val_pel3) / 3;
-         if (val_pel > 255)
-            val_pel = 255;
-         *(ptr + adr++) = val_pel3;
-         *(ptr + adr++) = val_pel2;
-         *(ptr + adr++) = val_pel1;
-      }
-   }
-
-   fclose(source);
-   free(p);
-   return TCL_OK;
-}
-
-/**
- * webcam_snap - reads frame and stories it in (libaudela) buffer.
-*/
-
-int webcam_snap(struct camprop *cam, int rgb)
-{
-
-   char ligne[128];
-   int naxis, naxis1, naxis2, bin1, bin2;
-   char s[128];
-   double ra, dec;
-   int status;
-   Tcl_Interp *interp;
-   char dateobs[40];
-   float exptime = (float) (1. / 30.);
-
-#if defined(OS_WIN)
-   unsigned short *p;           /* cameras de 1 a 16 bits non signes */
-   char nom[1024];
-#endif
-
-#if defined(OS_LIN)
-   unsigned char *tempRgbBuffer = NULL;
-   TYPE_PIXELS *libaudelaBuffer;
-   int t;
-#endif
-
-   interp = cam->interp;
-
-   if (rgb == 0) {
-      naxis = 1;
-      naxis1 = cam->imax;
-      naxis2 = cam->jmax;
-   } else {
-      naxis = 3;
-      naxis1 = cam->imax;
-      naxis2 = cam->jmax;
-   }
-   bin1 = cam->binx;
-   bin2 = cam->biny;
-
-
-   libcam_GetCurrentFITSDate(interp, dateobs);
-   libcam_GetCurrentFITSDate_function(interp, dateobs,
-                                      "::audace::date_sys2ut");
-
-   /* Ce test permet de savoir si le buffer existe */
-   sprintf(s, "buf%d bitpix", cam->bufno);
-   if (Tcl_Eval(interp, s) == TCL_ERROR) {
-      sprintf(s, "buf::create %d", cam->bufno);
-      Tcl_Eval(interp, s);
-   }
-
-
-#if defined(OS_WIN)
-
-   if (cam->capture == NULL) {
-      sprintf(ligne, "cam->capture is NULL pointer");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-   if (cam->longuepose == 0) {
-      /* acquisition normale */
-
-
-      /* Acquisition d'une frame */
-      if (cam->capture->grabFrameNoStop() == FALSE) {
-         sprintf(ligne, "Impossible d'acquérir l'image");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-
-      /* Sauvegarge du frame sur le disque */
-      strcpy(nom, "@0.bmp");
-      if (cam->capture->saveDIBFile(nom) == FALSE) {
-         sprintf(ligne, "Impossible de sauvegarder l'image");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-   } else if (cam->longuepose == 1) {
-      /* acquisition longue pose */
-      exptime = cam->exptime;
-      if (webcam_setLongExposureDevice(cam, cam->longueposestart)) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-
-      libcam_sleep((int) (exptime * 1000));
-
-      if (cam_stop_longexposure(cam)) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-   }
-
-   if (rgb == 0) {
-      p = (unsigned short *) calloc(naxis * naxis1 * naxis2,
-                                    sizeof(unsigned short));
-      if (p == NULL) {
-         sprintf(ligne, "Plus de mémoire");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-
-      /* Charge l'image 24 bits */
-      if (loadbmp24rgb("@0.bmp", p, cam) == TCL_ERROR)
-         return TCL_ERROR;
-   } else {
-      p = (unsigned short *) calloc(naxis * naxis1 * naxis2,
-                                    sizeof(unsigned short));
-      if (p == NULL) {
-         sprintf(ligne, "Plus de mémoire");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-
-         return TCL_ERROR;
-      }
-
-
-      /* Charge l'image 24 bits */
-      //if (loadbmp24rgb("@0.bmp", p, cam) == TCL_ERROR)
-      //   return TCL_ERROR;
-      
-      sprintf(ligne,"buf%d load @0.bmp", cam->bufno);
-      if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
-         free(p);   
-         return TCL_ERROR;
-      }
-   }
-
-   
-   //remove("@0.bmp");
-
-   // copie les pixels dans le buffer 
-   /*
-   sprintf(ligne,"buf%d setpixels CLASS_RGB %d %d FORMAT_USHORT COMPRESS_NONE %d",
-      cam->bufno,
-      cam->imax,
-      cam->jmax,
-      (int) p );
-
-   if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
-      free(p);   
-      return TCL_ERROR;
-   }
-   */
-   free(p);   
-
-#endif  //OS_WIN
-
-
-#if defined(OS_LIN)
-   if (cam->longuepose == 0) {
-      /* acquisition normale 
-       * normal exposure
-       */
-      if (readFrame(cam, cam->rgbBuffer)) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-   } else if (cam->longuepose == 1) {
-      /* acquisition longue pose 
-       * long exposure
-       */
-      if (webcam_setLongExposureDevice(cam, cam->longueposestart)) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-      if ((exptime = cam->exptime) < 0) {
-         strcpy(ligne, "Exposure time is < 0 s");
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-
-      libcam_sleep((int) (exptime * 1000));
-
-      if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-
-      if (readFrame(cam, cam->rgbBuffer)) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-   }
-
-   if (rgb == 0) {
-      /* conversion from rgb to bw */
-      for (t = cam->rgbBufferSize / 3, tempRgbBuffer = cam->rgbBuffer;
-           t > 0; t--, libaudelaBuffer++) {
-         *libaudelaBuffer = (TYPE_PIXELS) (*(tempRgbBuffer++))
-            + (TYPE_PIXELS) (*(tempRgbBuffer++))
-            + (TYPE_PIXELS) (*(tempRgbBuffer++));
-      }
-      sprintf(s,"buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d",cam->bufno,naxis1,naxis2, (int)libaudelaBuffer);
-      Tcl_Eval(interp,s);
-      
-      
-   } else {
-      t = cam->rgbBufferSize;
-      while (--t >= 0)
-         *(libaudelaBuffer + t) =
-            (TYPE_PIXELS) * ((unsigned char *) (cam->rgbBuffer + t));
-
-      sprintf(s,"buf%d setpixels CLASS_RGB %d %d FORMAT_FLOAT COMPRESS_NONE %d",cam->bufno,naxis1,naxis2, (int)libaudelaBuffer);
-      Tcl_Eval(interp,s);
-
-   }
-	free(libaudelaBuffer);
-#endif                          //OS_LIN
-
-   //sprintf(s, "buf%d bitpix ushort", cam->bufno);
-   //Tcl_Eval(interp, s);
-
-   /* Add FITS keywords */
-   sprintf(s, "buf%d setkwd {NAXIS %d int \"\" \"\"}", cam->bufno, naxis);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno,
-           dateobs);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"\"}", cam->bufno,
-           exptime);
-   Tcl_Eval(interp, s);
-   libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-   if (status == 0) {
-      /* Add FITS keywords */
-      sprintf(s,
-              "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}",
-              cam->bufno, ra);
-      Tcl_Eval(interp, s);
-      sprintf(s,
-              "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}",
-              cam->bufno, dec);
-      Tcl_Eval(interp, s);
-   }
-   sprintf(s, "status_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-   cam->clockbegin = 0;
-
-
-   return TCL_OK;
-}
 
 /**
  * webcam_videoformat - sets video format.
@@ -1422,9 +908,12 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
    cam->celldimy = 3810. / cam->nb_photoy;
 
    /* Free buffers */
-   free(cam->rgbBuffer);
+   if( cam->rgbBuffer != NULL ) {
+      free(cam->rgbBuffer);
+      cam->rgbBuffer = NULL;
+   }
+
    free(cam->yuvBuffer);
-   cam->rgbBuffer = NULL;
    cam->yuvBuffer = NULL;
    cam->rgbBufferSize = 0;
    cam->yuvBufferSize = 0;
@@ -1450,8 +939,8 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
       strcpy(cam->msg, "(cam->imax*cam->jmax*12)/8 is < 0");
       close(cam->cam_fd);
       cam->cam_fd = -1;
-      free(cam->rgbBuffer);
-      cam->rgbBuffer = NULL;
+      //free(cam->rgbBuffer);
+      //cam->rgbBuffer = NULL;
       cam->rgbBufferSize = 0;
       cam->yuvBufferSize = 0;
       return 1;
@@ -1461,8 +950,8 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
       strcpy(cam->msg, "Not enough memory");
       close(cam->cam_fd);
       cam->cam_fd = -1;
-      free(cam->rgbBuffer);
-      cam->rgbBuffer = NULL;
+      //free(cam->rgbBuffer);
+      //cam->rgbBuffer = NULL;
       cam->rgbBufferSize = 0;
       cam->yuvBufferSize = 0;
       return 1;
@@ -1646,7 +1135,9 @@ int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
 
 int webcam_initLongExposureDevice(struct camprop *cam)
 {
+return 0;
 
+/*
 #if defined(OS_LIN)
    int buffer;   // buffer mode of parallel port 
 
@@ -1680,7 +1171,7 @@ int webcam_initLongExposureDevice(struct camprop *cam)
       return 1;
    }
 #endif
-
+*/
 /*
 #if defined(OS_WIN)
 #if defined(OS_WIN_USE_LPT_OLD_STYLE)
@@ -1720,6 +1211,7 @@ int webcam_initLongExposureDevice(struct camprop *cam)
    return 0;
 }
 
+
 /**
  * readFrame - reads one frame from webcam
  * and stores it in cam->rgbBuffer.
@@ -1731,16 +1223,14 @@ int webcam_initLongExposureDevice(struct camprop *cam)
  * - 0 when success.
  * - no 0 when error occurred, error description in cam->msg. 
 */
-int readFrame(struct camprop *cam, unsigned char *rgbBuffer)
+int readFrame(struct camprop *cam)
 {
-#if defined(OS_WIN)
-
    cam->rgbBufferSize = cam->imax * cam->jmax *3;
    cam->rgbBuffer = (unsigned char*)malloc(cam->rgbBufferSize);
+
+#if defined(OS_WIN)
    // on prie pour que ca soit la bonne image, sinon régler framerate à moins de 5 img/sec 
    cam->capture->readFrame(cam->rgbBuffer);
-
-
 #endif
 
 
@@ -1782,7 +1272,7 @@ int readFrame(struct camprop *cam, unsigned char *rgbBuffer)
                strcpy(cam->msg, "error while reading frame: read()");
                return -1;
             }
-            yuv420p_to_rgb24(cam->yuvBuffer, rgbBuffer,
+            yuv420p_to_rgb24(cam->yuvBuffer, cam->rgbBuffer,
                              cam->imax, cam->jmax);
             for (n = 0; n < cam->rgbBufferSize; n++) {
                /* 
@@ -1811,8 +1301,8 @@ int readFrame(struct camprop *cam, unsigned char *rgbBuffer)
       }
    }
 
-   /* Convert yuv to rgb */
-   yuv420p_to_rgb24(cam->yuvBuffer, rgbBuffer, cam->imax, cam->jmax);
+   // Convert yuv to rgb 
+   yuv420p_to_rgb24(cam->yuvBuffer, cam->rgbBuffer, cam->imax, cam->jmax);
 
 #endif
    return 0;
