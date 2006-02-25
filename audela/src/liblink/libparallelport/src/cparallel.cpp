@@ -1,22 +1,53 @@
-// File   :quickremote.c .
-// Date   :05/08/2005
-// Author :Michel Pujol
-// Description : simple API for FTDI library
+/* quickremote.cpp
+ *
+ * This file is part of the AudeLA project : <http://software.audela.free.fr>
+ * Copyright (C) 1998-2004 The AudeLA Core Team
+ *
+ * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+// $Id: cparallel.cpp,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+
 
 #include "sysexp.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #if defined(OS_WIN)
 #include <windows.h>
 #include <winspool.h>   // for EnumPorts
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#if defined(OS_LIN)
+#include <fcntl.h>              // O_RDWR
+#include <unistd.h>
+#include <linux/ppdev.h>
+#include <linux/parport.h>
+#include <sys/ioctl.h>
+#include <asm/io.h>     // outb
+#endif
 
 #include "link.h"
 
+#if defined(OS_WIN)
 #define OS_WIN_USE_PARRALLEL_OLD_STYLE
+#endif
 
 // =========== local definiton and types ===========
 
@@ -40,12 +71,13 @@ CLink * createLink() {
  */
 
 int available(unsigned long *pnumDevices, char **list) {
-#ifdef OS_WIN
    int result;
+   char ligne[1024];
+
+#ifdef OS_WIN
    DWORD pcbNeeded;
    DWORD pcReturned;
    PORT_INFO_2 * portlist;
-   char ligne[1024];
 
    *pnumDevices = 0;
 
@@ -80,9 +112,9 @@ int available(unsigned long *pnumDevices, char **list) {
    pcReturned = pcReturned;
 #endif
 
-#ifdef OS_WIN
-   // not implemented
-  result = LINK_ERROR;
+#ifdef OS_LIN
+  sprintf( ligne, "{ 0 \"/dev/parport0\" }");
+  result = LINK_OK;
 #endif
   
    return result;
@@ -108,16 +140,22 @@ CParallel::~CParallel()
 *    ouvre le port parallele
 *	  active le mode BitBang
 */
-int CParallel::init(int argc, char **argv) {
+int CParallel::openLink(int argc, char **argv) {
    int result = LINK_OK;
 
 
 #if defined(OS_LIN)
+#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+   printf("openLink OS_WIN_USE_PARRALLEL_OLD_STYLE \n");
+
+   address = 0x378;
+
+#else
    int buffer; /**< buffer mode of parallel port */
    char name[128];
 
+   index = index -1;
    sprintf(name, "/dev/parport%d", index);
-   
    if (-1 == (fileDescriptor = open(name, O_RDWR))) {
       result = LINK_ERROR;
    } else if (ioctl(fileDescriptor, PPCLAIM)) {
@@ -136,7 +174,7 @@ int CParallel::init(int argc, char **argv) {
          result = LINK_ERROR;
       }
    }
-
+#endif
 #endif
 
 #if defined(OS_WIN)
@@ -148,32 +186,34 @@ int CParallel::init(int argc, char **argv) {
 
    DWORD nNumberOfBytesWritten = 0;
    char name[128];
-   
+
    sprintf(name, "LPT%d", index);
    hLongExposureDevice =
-      CreateFile(name, GENERIC_WRITE, 0, NULL,
-                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+      CreateFile(name,  GENERIC_WRITE|GENERIC_READ, 0, NULL,
+                 OPEN_EXISTING, 0, NULL);
+
+//      CreateFile(name, GENERIC_WRITE, 0, NULL,
+//                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING, NULL);
    if (hLongExposureDevice == INVALID_HANDLE_VALUE) {
       result = LINK_ERROR;
-   } 
-
+   }
 #endif
 #endif
-
-
    if( result == LINK_OK) {
       // j'initialise la sortie à 0
       result = setChar((char)0);
    }
    return result;
-   
 }
 
-int CParallel::close()
+int CParallel::closeLink()
 {
 
 #if defined(OS_LIN)
+#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+#else 
    close(fileDescriptor);
+#endif
 #endif
 
 #if defined(OS_WIN)
@@ -204,6 +244,7 @@ void parallel_out(unsigned short a, unsigned char d)
     }
 /* *INDENT-ON* */
 #elif defined(OS_LIN)
+printf("parallel_out OS_WIN_USE_PARRALLEL_OLD_STYLE %x\n", a);
     outb(d, a);
 #elif defined(OS_MACOS)
 #endif
@@ -219,6 +260,9 @@ int CParallel::setChar(char c)
    int result = LINK_OK;
 
 #if defined(OS_LIN)
+#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+   parallel_out(address, c);
+#else
    // Write a byte 
    if (ioctl(fileDescriptor, PPWDATA, &c)) {
       ioctl(fileDescriptor, PPRELEASE);
@@ -226,6 +270,7 @@ int CParallel::setChar(char c)
       fileDescriptor = -1;
       result = LINK_ERROR;
    }
+#endif
 #endif
 
 
@@ -268,7 +313,6 @@ int CParallel::getChar(char *c) {
 */
 int CParallel::setBit(int numbit, int value)
 {
-   unsigned long  bytesWritten = 0;
    char mask; 
    char tempValue;
    int result;
@@ -306,7 +350,6 @@ int CParallel::setBit(int numbit, int value)
 */
 int CParallel::getBit(int numbit, int *value)
 {
-   unsigned long  bytesWritten = 0;
    char mask; 
    char tempValue;
 

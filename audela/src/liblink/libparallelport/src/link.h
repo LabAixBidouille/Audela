@@ -1,4 +1,4 @@
-/* camera.h
+/* link.h
  * 
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -19,6 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+// $Id: link.h,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
 
 #ifndef __LINK_H__
 #define __LINK_H__
@@ -50,10 +52,8 @@ public:
    CParallel();
    virtual ~ CParallel();
 
-   int init(int argc, char **argv);
-   
-   int open(int index);
-   int close();
+   int openLink(int argc, char **argv);
+   int closeLink();
    int setChar(char c);
    int getChar(char *c);
    int setBit(int numbit, int value);

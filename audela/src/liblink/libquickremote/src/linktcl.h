@@ -1,4 +1,4 @@
-/* camtcl.h
+/* linktcl.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -19,6 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+// $Id: linktcl.h,v 1.2 2006-02-25 17:11:13 michelpujol Exp $
 
 #ifndef __LINKTCL_H__
 #define __LINKTCL_H__

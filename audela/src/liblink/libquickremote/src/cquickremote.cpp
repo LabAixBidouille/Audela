@@ -1,24 +1,37 @@
-// File   :quickremote.c .
-// Date   :05/08/2005
-// Author :Michel Pujol
-// Description : simple API for FTDI library
+/* cquickremote.cpp
+ *
+ * This file is part of the AudeLA project : <http://software.audela.free.fr>
+ * Copyright (C) 1998-2004 The AudeLA Core Team
+ *
+ * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+// $Id: cquickremote.cpp,v 1.2 2006-02-25 17:11:13 michelpujol Exp $
+
 
 #ifdef WIN32
 #include <windows.h>
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>    /* pour strcat, strcpy */
 
-
-#include "link.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif    
-#include "ftd2xx.h"
-#ifdef __cplusplus
-}
-#endif
+#include "cquickremote.h"
 
 
 // =========== local definiton and types ===========
@@ -95,29 +108,45 @@ CQuickremote::~CQuickremote()
 *    ouvre le port FTDI
 *	  active le mode BitBang
 */
-int CQuickremote::init(int argc, char **argv) 
+int CQuickremote::openLink(int argc, char **argv) 
 {
-   if( ftHandle != NULL ) {
+ 
+fprintf(stderr, "init ftHandle=%d \n", ftHandle);
+  if( ftHandle != NULL ) {
       return  LINK_ERROR;
    }
    
+
+if( argc >= 6) {
+  index = atoi(argv[5]);
+} else {
+      return  LINK_ERROR;
+}
+
+fprintf(stderr, "init before  FT_Open index=%d\n", index);
    lastStatus = FT_Open(index,&ftHandle);
    if (lastStatus != FT_OK) {
+      getLastError(msg);
+fprintf(stderr, "init after FT_Open error=%s\n", msg);
+
       return  LINK_ERROR;
    }
+fprintf(stderr, "init before  FT_SetBitMode index=%d\n", index);
    
    // j'active le mode BitBang avec tous les bits en OUTPUT
    lastStatus = FT_SetBitMode(ftHandle, 0xff, 1);
    if (lastStatus != FT_OK) {
       return LINK_ERROR;
    }
+
+fprintf(stderr, "init before  setChar \n");
    
-   // j'unitialise les sorties à 0
+   // j'initialise les sorties à 0
    setChar((char)0);
    return LINK_OK;
 }
 
-int CQuickremote::close()
+int CQuickremote::closeLink()
 {
    if( ftHandle != NULL ) {
       lastStatus = FT_Close(ftHandle);
@@ -203,7 +232,6 @@ int CQuickremote::setBit(int numbit, int value)
 */
 int CQuickremote::getBit(int numbit, int *value)
 {
-   unsigned long  bytesWritten = 0;
    char mask; 
    char tempValue;
    
