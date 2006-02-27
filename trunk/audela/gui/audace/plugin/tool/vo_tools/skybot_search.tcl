@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 25 fevrier 2006
+# Date de mise a jour : 27 fevrier 2006
 #
 
 namespace eval skybot_Search {
@@ -882,7 +882,7 @@ namespace eval skybot_Search {
          #--- Creation du bouton aide
          button $This.frame6.but_aide \
             -text "$caption(search,aide)" -borderwidth 2 \
-            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
+            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
          pack $This.frame6.but_aide \
             -in $This.frame6 -side right -anchor e \
             -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -1029,7 +1029,7 @@ namespace eval skybot_Search {
         $popupTbl add separator
         # Acces a l'aide
         $popupTbl add command -label $caption(search,aide) \
-           -command { ::audace::showHelpPlugin "tool" "vo_tools" "vo_tools.htm" }
+           -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ] 
@@ -1094,7 +1094,7 @@ namespace eval skybot_Search {
         pack $inputs -in $paramwindow.zparam -anchor w -side top -expand 0 -fill x -padx 10
 
         if { $filter != "none" } {
-	  
+          
           #--- Cree un frame pour les spinbox des min-max du parametre courant
           frame $inputs.s -borderwidth 0 -relief flat
           pack $inputs.s \
@@ -1235,7 +1235,7 @@ namespace eval skybot_Search {
             pack $inputs.d.format_radius_fixe \
               -in $inputs.d -side left -anchor w -padx 5
 
-	}
+      }
 
       #--- Cree un frame pour y mettre les boutons
       frame $paramwindow.boutons -borderwidth 0
@@ -1254,7 +1254,7 @@ namespace eval skybot_Search {
          button $paramwindow.boutons.but_default \
             -text "$caption(search,default)" -borderwidth 2 \
             -command { set voconf(radius_fixe)  "10.0"
-	               set voconf(radius_base)  "2.0"
+                       set voconf(radius_base)  "2.0"
                        set voconf(radius_scale) "18.0"
                        set voconf(arrow_base)   "5.0"
                        ::skybot_Search::cmdRepere_Efface }
@@ -1273,7 +1273,7 @@ namespace eval skybot_Search {
          #--- Creation du bouton aide
          button $paramwindow.boutons.but_aide \
             -text "$caption(search,aide)" -borderwidth 2 \
-            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
+            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
          pack $paramwindow.boutons.but_aide \
             -in $paramwindow.boutons -side right -anchor e \
             -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0

@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_search.cap
-# Date de mise a jour : 25 fevrier 2006
+# Date de mise a jour : 27 fevrier 2006
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(search,main_title)            "# SkyBoT - Recherche et identification des objets du Système Solaire"
+set caption(search,main_title)            "# SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
 set caption(search,parcourir)             "..."
 set caption(search,nom_image)             "# Nom de l'image à analyser"
 set caption(search,caract_fov)            "# Caractéristiques du champ de vue :"
@@ -60,7 +60,7 @@ set caption(search,dhua)                  "# Dh (UA)"
 set caption(search,popup_tbl)             "# Gestion des objets de l'image"
 set caption(search,voir)                  "# Voir les objets dans l'image"
 set caption(search,pasvoir)               "# Masquer les objets dans l'image"
-set caption(search,retracer)              "# Raffraichir les objets dans l'image"
+set caption(search,retracer)              "# Rafraîchir les objets dans l'image"
 set caption(search,label_objets)          "# Afficher le nom des objets"
 set caption(search,goto)                  "GoTo"
 
@@ -68,8 +68,8 @@ set caption(search,verif_calibration)     "# Vérification de la calibration astr
 set caption(search,calibr_astrom_oui)     "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
 set caption(search,calibr_astrom_non)     "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-set caption(search,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-set caption(search,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+set caption(search,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+set caption(search,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 set caption(search,msg_erreur)            "# Erreur"
 set caption(search,msg_reel_ad)           "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
 set caption(search,msg_saisir_ad)         "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
@@ -127,7 +127,7 @@ set caption(search,format_spinppm)        "# Filtre sur les mouvements propres :
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(search,main_title)         "SkyBoT - Recherche et identification des objets du Système Solaire"
+   set caption(search,main_title)         "SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "Nom de l'image à analyser"
    set caption(search,caract_fov)         "Caractéristiques du champ de vue :"
@@ -176,7 +176,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,popup_tbl)          "Gestion des objets de l'image"
    set caption(search,voir)               "Voir les objets dans l'image"
    set caption(search,pasvoir)            "Masquer les objets dans l'image"
-   set caption(search,retracer)           "Raffraichir les objets dans l'image"
+   set caption(search,retracer)           "Rafraîchir les objets dans l'image"
    set caption(search,label_objets)       "Afficher le nom des objets"
    set caption(search,goto)               "GoTo"
 
@@ -184,8 +184,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,calibr_astrom_oui)  "Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(search,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
    set caption(search,msg_erreur)         "Erreur"
    set caption(search,msg_reel_ad)        "L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
@@ -243,7 +243,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -292,7 +292,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,popup_tbl)          "# Gestion des objets de l'image"
    set caption(search,voir)               "# Voir les objets dans l'image"
    set caption(search,pasvoir)            "# Masquer les objets dans l'image"
-   set caption(search,retracer)           "# Raffraichir les objets dans l'image"
+   set caption(search,retracer)           "# Rafraîchir les objets dans l'image"
    set caption(search,label_objets)       "# Afficher le nom des objets"
    set caption(search,goto)               "GoTo"
 
@@ -300,8 +300,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
    set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
@@ -359,7 +359,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -408,7 +408,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,popup_tbl)          "# Gestion des objets de l'image"
    set caption(search,voir)               "# Voir les objets dans l'image"
    set caption(search,pasvoir)            "# Masquer les objets dans l'image"
-   set caption(search,retracer)           "# Raffraichir les objets dans l'image"
+   set caption(search,retracer)           "# Rafraîchir les objets dans l'image"
    set caption(search,label_objets)       "# Afficher le nom des objets"
    set caption(search,goto)               "GoTo"
 
@@ -416,8 +416,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
    set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
@@ -475,7 +475,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -524,7 +524,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,popup_tbl)          "# Gestion des objets de l'image"
    set caption(search,voir)               "# Voir les objets dans l'image"
    set caption(search,pasvoir)            "# Masquer les objets dans l'image"
-   set caption(search,retracer)           "# Raffraichir les objets dans l'image"
+   set caption(search,retracer)           "# Rafraîchir les objets dans l'image"
    set caption(search,label_objets)       "# Afficher le nom des objets"
    set caption(search,goto)               "GoTo"
 
@@ -532,8 +532,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
    set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
@@ -591,7 +591,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(search,main_title)         "# SkyBoT - Recherche et identification des objets du Système Solaire"
+   set caption(search,main_title)         "# SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "# Nom de l'image à analyser"
    set caption(search,caract_fov)         "# Caractéristiques du champ de vue :"
@@ -640,7 +640,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,popup_tbl)          "# Gestion des objets de l'image"
    set caption(search,voir)               "# Voir les objets dans l'image"
    set caption(search,pasvoir)            "# Masquer les objets dans l'image"
-   set caption(search,retracer)           "# Raffraichir les objets dans l'image"
+   set caption(search,retracer)           "# Rafraîchir les objets dans l'image"
    set caption(search,label_objets)       "# Afficher le nom des objets"
    set caption(search,goto)               "GoTo"
 
@@ -648,8 +648,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(search,calibr_astrom_oui)  "# Cette image est calibrée astrométriquement.\nVous pouvez continuer l'analyse."
    set caption(search,calibr_astrom_non)  "# Cette image n'est pas calibrée astrométriquement.\nVous devez la calibrer pour continuer l'analyse."
 
-   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(search,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(search,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
    set caption(search,msg_erreur)         "# Erreur"
    set caption(search,msg_reel_ad)        "# L'ascension droite doit être un nombre\nréel compris entre 0.0° et 360.0°."
    set caption(search,msg_saisir_ad)      "# Veuillez charger une image ou saisir l'ascension droite du centre du champ de vue."
