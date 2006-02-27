@@ -130,7 +130,7 @@ proc vo_aladin { args } {
 proc vo_launch_aladin { args } {
 
    set unit "arcmin"
-   set url_aladin "http://aladin.u-strasbg.fr/java/nph-aladin.pl?from=VizieR"
+   set url_aladin "http://aladin.u-strasbg.fr/java/nph-aladin.pl?from=Audela"
 
    set argc [llength $args]
    if {$argc >= 2} {
