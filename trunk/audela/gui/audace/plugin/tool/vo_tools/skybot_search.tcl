@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 13 fevrier 2006
+# Date de mise a jour : 25 fevrier 2006
 #
 
 namespace eval skybot_Search {
@@ -664,162 +664,149 @@ namespace eval skybot_Search {
             -in $fov -anchor w -side left -expand 0 -fill both \
             -padx 3 -pady 1
 
-            #--- Cree un frame pour la variable ascension droite
+            #--- Cree un frame pour les labels
             frame $fov.ca.a -borderwidth 0 -relief flat
             pack $fov.ca.a \
-              -in $fov.ca -anchor w -side top -expand 0 -fill both \
-              -padx 3 -pady 1
-              #--- Cree un label pour l'ascension droite du FOV
+              -in $fov.ca -anchor w -side left -expand 0 -fill both \
+              -padx 3 -pady 3
+               #--- Cree un label pour l'ascension droite du FOV
               label $fov.ca.a.label_ad_image \
                 -text "$caption(search,ad_image)" \
                 -width 30 -anchor w -borderwidth 0 -relief flat
               pack $fov.ca.a.label_ad_image \
-                -in $fov.ca.a -side left -anchor w -padx 3
-              #--- Cree une ligne d'entree pour la variable ascension droite
-              entry $fov.ca.a.data_ad_hms \
-                -textvariable voconf(centre_ad_image_h) \
-                -borderwidth 1 -relief groove -width 25 -justify center
-              pack $fov.ca.a.data_ad_hms \
-                -in $fov.ca.a -side left -anchor w -padx 3
-              #--- Cree un bouton pour une info sur le format de l'ascension droite du FOV
-              button $fov.ca.a.format_ad_image -state active \
-                 -borderwidth 0 -relief flat -anchor c \
-                 -text "$caption(search,info)" \
-                 -command { ::skybot_Search::GetInfo "ad" }
-              pack $fov.ca.a.format_ad_image \
-                -in $fov.ca.a -side left -anchor w -padx 5
-
-            #--- Cree un frame pour la variable declinaison
-            frame $fov.ca.b -borderwidth 0 -relief flat
-            pack $fov.ca.b \
-              -in $fov.ca -anchor w -side top -expand 0 -fill both \
-              -padx 3 -pady 1
+                -in $fov.ca.a -side top -anchor w -padx 3 -pady 2
               #--- Cree un label pour la declinaison du centre de l'image
-              label $fov.ca.b.label_dec_image \
+              label $fov.ca.a.label_dec_image \
                 -text "$caption(search,dec_image)" \
                 -width 30 -anchor w -borderwidth 0 -relief flat
-              pack $fov.ca.b.label_dec_image \
-                -in $fov.ca.b -side left -anchor w -padx 3 
+              pack $fov.ca.a.label_dec_image \
+                -in $fov.ca.a -side top -anchor w -padx 3 -pady 2
+              #--- Cree un label pour la taille du champ (FOV) de l'image
+              label $fov.ca.a.label_taille_champ \
+                -text "$caption(search,taille_champ)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.a.label_taille_champ \
+                -in $fov.ca.a -side top -anchor w -padx 3 -pady 2
+              #--- Cree un label pour la date d'acquisition du FOV
+              label $fov.ca.a.label_date_image \
+                -text "$caption(search,date_image)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.a.label_date_image \
+                -in $fov.ca.a -side top -anchor w -padx 3 -pady 2
+              #--- Cree un label pour le filtre
+              label $fov.ca.a.label_filtre \
+                -text "$caption(search,filtre_pos)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.a.label_filtre \
+                -in $fov.ca.a -side top -anchor w -padx 3 -pady 2
+              #--- Cree un label pour le filtre
+              label $fov.ca.a.label_iau_code \
+                -text "$caption(search,iau_code_obs)" \
+                -width 30 -anchor w -borderwidth 0 -relief flat
+              pack $fov.ca.a.label_iau_code \
+                -in $fov.ca.a -side top -anchor w -padx 3 -pady 2
+
+            #--- Cree un frame pour les entrees
+            frame $fov.ca.b -borderwidth 0 -relief flat
+            pack $fov.ca.b \
+              -in $fov.ca -anchor w -side left -expand 0 -fill both \
+              -padx 3 -pady 3
+              #--- Cree une ligne d'entree pour la variable ascension droite
+              entry $fov.ca.b.data_ad_hms \
+                -textvariable voconf(centre_ad_image_h) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.b.data_ad_hms \
+                -in $fov.ca.b -side top -anchor w -padx 3 -pady 1
               #--- Cree une ligne d'entree pour la variable declinaison
               entry $fov.ca.b.data_dec_dms \
                 -textvariable voconf(centre_dec_image_d) \
                 -borderwidth 1 -relief groove -width 25 -justify center
               pack $fov.ca.b.data_dec_dms \
-                -in $fov.ca.b -side left -anchor w -padx 3
-              #--- Cree un label pour le format de la declinaison du FOV
-              button $fov.ca.b.format_dec_image -state active \
-  	       -borderwidth 0 -relief flat -anchor c \
-                 -text "$caption(search,info)" \
-                 -command { ::skybot_Search::GetInfo "dec" }
-              pack $fov.ca.b.format_dec_image \
-                -in $fov.ca.b -side left -anchor w -padx 5
-
-            #--- Cree un frame pour la variable taille du champ
-            frame $fov.ca.c -borderwidth 0 -relief flat
-            pack $fov.ca.c \
-              -in $fov.ca -anchor w -side top -expand 0 -fill both \
-              -padx 3 -pady 1
-              #--- Cree un label pour la taille du champ (FOV) de l'image
-              label $fov.ca.c.label_taille_champ \
-                -text "$caption(search,taille_champ)" \
-                -width 30 -anchor w -borderwidth 0 -relief flat
-              pack $fov.ca.c.label_taille_champ \
-                -in $fov.ca.c -side left -anchor w -padx 3 
+                -in $fov.ca.b -side top -anchor w -padx 3 -pady 1
               #--- Cree une ligne d'entree pour la variable taille du champ
-              entry $fov.ca.c.data_taille_champ \
+              entry $fov.ca.b.data_taille_champ \
                 -textvariable voconf(taille_champ) \
                 -borderwidth 1 -relief groove -width 25 -justify center
-              pack $fov.ca.c.data_taille_champ \
-                -in $fov.ca.c -side left -anchor w -padx 3
+              pack $fov.ca.b.data_taille_champ \
+                -in $fov.ca.b -side top -anchor w -padx 3 -pady 1
+              #--- Cree une ligne d'entree pour la variable date d'acquisition du FOV
+              entry $fov.ca.b.entry_date_image \
+                -textvariable voconf(date_image) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.b.entry_date_image \
+                -in $fov.ca.b -side top -anchor w -padx 3 -pady 1
+              #--- Cree une ligne d'entree pour la variable filter
+              entry $fov.ca.b.data_filter \
+                -textvariable voconf(filter) \
+                -borderwidth 1 -relief groove -width 25 -justify center
+              pack $fov.ca.b.data_filter \
+                -in $fov.ca.b -side top -anchor w -padx 3 -pady 1
+              #--- Cree un frame pour les 2 parties du code UAI
+              frame $fov.ca.b.uai -borderwidth 0 -relief flat
+              pack $fov.ca.b.uai \
+                -in $fov.ca.b -anchor w -side top -expand 0 -fill both \
+                -padx 3 -pady 3
+                 #--- Cree une ligne d'entree pour la variable code UAI
+                 entry $fov.ca.b.uai.data_iau_code \
+                   -textvariable voconf(observer) \
+                   -borderwidth 1 -relief groove -width 6 -justify center
+                 pack $fov.ca.b.uai.data_iau_code \
+                   -in $fov.ca.b.uai -side left -anchor w
+                 #--- Cree un bouton pour afficher la liste des code UAI
+                 button $fov.ca.b.uai.but_iau_code \
+                   -text "$caption(search,liste_code_uai)" -borderwidth 1 \
+                   -font $audace(font,arial_6_b) \
+                   -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
+                 pack $fov.ca.b.uai.but_iau_code \
+                   -in $fov.ca.b.uai -side left -padx 3 -expand 1 -fill x
+
+            #--- Cree un frame pour les boutons info
+            frame $fov.ca.c -borderwidth 0 -relief flat
+            pack $fov.ca.c \
+              -in $fov.ca -anchor w -side left -expand 0 -fill both \
+              -padx 3 -pady 3
+              #--- Cree un bouton pour une info sur le format de l'ascension droite du FOV
+              button $fov.ca.c.format_ad_image -state active \
+                 -borderwidth 0 -relief flat -anchor c -height 1 \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "ad" }
+              pack $fov.ca.c.format_ad_image \
+                 -in $fov.ca.c -side top -anchor w -padx 3
+               #--- Cree un label pour le format de la declinaison du FOV
+              button $fov.ca.c.format_dec_image -state active \
+                 -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "dec" }
+              pack $fov.ca.c.format_dec_image \
+                 -in $fov.ca.c -side top -anchor w -padx 3
               #--- Cree un label pour le format du rayon du FOV
               button $fov.ca.c.format_taille_champ -state active \
-  	       -borderwidth 0 -relief flat -anchor c \
+                 -borderwidth 0 -relief flat -anchor c \
                  -text "$caption(search,info)" \
                  -command { ::skybot_Search::GetInfo "taille" }
               pack $fov.ca.c.format_taille_champ \
-                -in $fov.ca.c -side left -anchor w -padx 5
-
-            #--- Cree un frame pour la variable date
-            frame $fov.ca.d -borderwidth 0 -relief flat
-            pack $fov.ca.d \
-              -in $fov.ca -anchor w -side top -expand 0 -fill both \
-              -padx 3 -pady 0
-              #--- Cree un label pour la date d'acquisition du FOV
-              label $fov.ca.d.label_date_image \
-                -text "$caption(search,date_image)" \
-                -width 30 -anchor w -borderwidth 0 -relief flat
-              pack $fov.ca.d.label_date_image \
-                -in $fov.ca.d -side left -anchor w -padx 3
-              #--- Cree une ligne d'entree pour la variable date d'acquisition du FOV
-              entry $fov.ca.d.entry_date_image \
-                -textvariable voconf(date_image) \
-                -borderwidth 1 -relief groove -width 25 -justify center
-              pack $fov.ca.d.entry_date_image \
-                -in $fov.ca.d -side left -anchor w -padx 3
+                 -in $fov.ca.c -side top -anchor w -padx 3
               #--- Cree un label pour le format de la date d'acquisition du FOV
-              button $fov.ca.d.label_format_date -state active \
-  	       -borderwidth 0 -relief flat -anchor c \
+              button $fov.ca.c.label_format_date -state active \
+                 -borderwidth 0 -relief flat -anchor c -height 1 \
                  -text "$caption(search,info)" \
                  -command { ::skybot_Search::GetInfo "date" }
-              pack $fov.ca.d.label_format_date \
-                -in $fov.ca.d -side left -anchor w -padx 5
-
-            #--- Cree un frame pour la variable filter
-            frame $fov.ca.f -borderwidth 0 -relief flat
-            pack $fov.ca.f \
-              -in $fov.ca -anchor w -side top -expand 1 -fill both \
-              -padx 3 -pady 0
-              #--- Cree un label pour le filtre
-              label $fov.ca.f.label_filtre \
-                -text "$caption(search,filtre_pos)" \
-                -width 30 -anchor w -borderwidth 0 -relief flat
-              pack $fov.ca.f.label_filtre \
-                -in $fov.ca.f -side left -anchor w -padx 3
-              #--- Cree une ligne d'entree pour la variable filter
-              entry $fov.ca.f.data_filter \
-                -textvariable voconf(filter) \
-                -borderwidth 1 -relief groove -width 25 -justify center
-              pack $fov.ca.f.data_filter \
-                -in $fov.ca.f -side left -anchor w -padx 3
+              pack $fov.ca.c.label_format_date \
+                 -in $fov.ca.c -side top -anchor w -padx 3
               #--- Cree un bouton pour une info sur le format du filtre
-              button $fov.ca.f.format_filter -state active \
+              button $fov.ca.c.format_filter -state active \
                  -borderwidth 0 -relief flat -anchor c \
                  -text "$caption(search,info)" \
                  -command { ::skybot_Search::GetInfo "filter" }
-              pack $fov.ca.f.format_filter \
-                -in $fov.ca.f -side left -anchor w -padx 5
-  
-              #--- Cree un frame pour la variable iau_code
-              frame $fov.ca.u -borderwidth 0 -relief flat
-              pack $fov.ca.u \
-                -in $fov.ca -anchor w -side top -expand 0 -fill both \
-                -padx 3 -pady 0
-                #--- Cree un label pour le filtre
-                label $fov.ca.u.label_iau_code \
-                  -text "$caption(search,iau_code_obs)" \
-                  -width 30 -anchor w -borderwidth 0 -relief flat
-                pack $fov.ca.u.label_iau_code \
-                  -in $fov.ca.u -side left -anchor w -padx 3
-                #--- Cree une ligne d'entree pour la variable filter
-                entry $fov.ca.u.data_iau_code \
-                  -textvariable voconf(observer) \
-                  -borderwidth 1 -relief groove -width 6 -justify center
-                pack $fov.ca.u.data_iau_code \
-                  -in $fov.ca.u -side left -anchor w -padx 3
-                #--- Cree un bouton pour afficher la liste des code UAI
-                button $fov.ca.u.but_iau_code \
-                  -text "$caption(search,liste_code_uai)" -borderwidth 1 \
-                  -font $audace(font,arial_6_b) \
-                  -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
-                pack $fov.ca.u.but_iau_code \
-                  -in $fov.ca.u -side left -padx 3
-                #--- Cree un bouton pour une info sur le format du filtre
-                button $fov.ca.u.format_iau_code -state active \
-                   -borderwidth 0 -relief flat -anchor c \
-                   -text "$caption(search,info)" \
-                   -command { ::skybot_Search::GetInfo "iau_code" }
-                pack $fov.ca.u.format_iau_code \
-                  -in $fov.ca.u -side left -anchor w -padx 6
+              pack $fov.ca.c.format_filter \
+                 -in $fov.ca.c -side top -anchor w -padx 3
+              #--- Cree un bouton pour une info sur le code UAI
+              button $fov.ca.c.format_iau_code -state active \
+                 -borderwidth 0 -relief flat -anchor c \
+                 -text "$caption(search,info)" \
+                 -command { ::skybot_Search::GetInfo "iau_code" }
+              pack $fov.ca.c.format_iau_code \
+                 -in $fov.ca.c -side top -anchor w -padx 3
 
           #--- Cree un frame pour acceuillir les caracteristiques du FOV
           frame $fov.al -borderwidth 0 -relief flat
@@ -971,15 +958,17 @@ namespace eval skybot_Search {
       #--- Menu pop-up associe a la table 
       menu $popupTbl -title $caption(search,popup_tbl)
         # Pour marquer les reperes sur les objets
-        $popupTbl add radiobutton -label $caption(search,reperer) \
-           -value "1" -state disabled \
-           -variable voconf(trace_efface) \
+        $popupTbl add radiobutton -label $caption(search,voir) -state disabled \
+           -value "1" -variable voconf(trace_efface) \
            -command { ::skybot_Search::cmdRepere_Efface }
         # Pour effacer les reperes sur les objets
-        $popupTbl add radiobutton -label $caption(search,effacer) \
-           -value "0" -state disabled \
-           -variable voconf(trace_efface) \
+        $popupTbl add radiobutton -label $caption(search,pasvoir) -state disabled \
+           -value "0" -variable voconf(trace_efface) \
            -command { ::skybot_Search::cmdRepere_Efface }
+        # Pour retracer les reperes sur les objets
+        $popupTbl add command -label $caption(search,retracer) -state disabled \
+           -command { set voconf(trace_efface) 2
+                      ::skybot_Search::cmdRepere_Efface }
         # Separateur
         $popupTbl add separator
         # Labels des objets dans l'image
@@ -1692,15 +1681,17 @@ namespace eval skybot_Search {
             ::skybot_Search::cmdSortColumn $::skybot_Search::This.frame7.tbl 7
             #--- Si une image est chargee alors on valide les entrees du popup 'bouton-3' de la table
             if {$voconf(image_existe) == "1"} {
-               $popupTbl entryconfigure $caption(search,reperer) -state normal
-               $popupTbl entryconfigure $caption(search,effacer) -state normal
+               $popupTbl entryconfigure $caption(search,voir) -state normal
+               $popupTbl entryconfigure $caption(search,pasvoir) -state normal
+               $popupTbl entryconfigure $caption(search,retracer) -state normal
                $popupTbl entryconfigure $caption(search,filtres) -state normal
                $popupTbl entryconfigure $caption(search,filtre_param) -state normal
                $popupTbl entryconfigure $caption(search,label_objets) -state normal
             } else {
             #--- sinon on les rend inutilisables
-               $popupTbl entryconfigure $caption(search,reperer) -state disabled
-               $popupTbl entryconfigure $caption(search,effacer) -state disabled
+               $popupTbl entryconfigure $caption(search,voir) -state disabled
+               $popupTbl entryconfigure $caption(search,pasvoir) -state disabled
+               $popupTbl entryconfigure $caption(search,retracer) -state disabled
                $popupTbl entryconfigure $caption(search,filtres) -state disabled
                $popupTbl entryconfigure $caption(search,filtre_param) -state disabled
                $popupTbl entryconfigure $caption(search,label_objets) -state disabled
@@ -1833,6 +1824,14 @@ namespace eval skybot_Search {
       global voconf
       global valMinFiltre valMaxFiltre
 
+      if { $voconf(trace_efface) == "2" } {
+
+         #--- Efface les reperes des objets
+         $audace(hCanvas) delete cadres
+         set voconf(trace_efface) 1
+
+      }
+
       if { $voconf(trace_efface) == "1" } {
 
          #--- Repere les objets sur l'image
@@ -1857,6 +1856,12 @@ namespace eval skybot_Search {
          $audace(hCanvas) delete cadres
 
       }
+
+      #--- Raffraichi les objets si le facteur de zoom de l'image change
+      tkwait variable conf(visu_zoom)
+      set voconf(trace_efface) 2
+      ::skybot_Search::cmdRepere_Efface
+
    }
 
 }

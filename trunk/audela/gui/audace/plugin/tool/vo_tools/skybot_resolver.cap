@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Date de mise a jour : 13 fevrier 2006
+# Date de mise a jour : 25 fevrier 2006
 #
 
 #=========================================================================
@@ -27,7 +27,7 @@ set caption(resolver,calcul_ephemerides)    "# Calcul de l'éphémérides de la cib
 
 set caption(resolver,titre_fov)             "# Caractéristiques du champ de vue :"
 set caption(resolver,taille_champ)          "# Dimension du champ de vue :"
-set caption(resolver,filter)                "# Filtre sur les objets :"
+set caption(resolver,filter)                "# Filtre sur les erreur de position :"
 
 set caption(resolver,asteroide)             "# Astéroïdes"
 
@@ -95,7 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(resolver,titre_fov)          "Caractéristiques du champ de vue :"
    set caption(resolver,taille_champ)       "Dimension du champ de vue :"
-   set caption(resolver,filter)             "Filtre sur les objets :"
+   set caption(resolver,filter)             "Filtre sur les erreur de position :"
 
    set caption(resolver,asteroide)          "Astéroïdes"
 
@@ -163,7 +163,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
    set caption(resolver,titre_fov)          "# Caractéristiques du champ de vue :"
    set caption(resolver,taille_champ)       "# Dimension du champ de vue :"
-   set caption(resolver,filter)             "# Filtre sur les objets :"
+   set caption(resolver,filter)             "# Filtre sur les erreur de position :"
 
    set caption(resolver,asteroide)          "# Astéroïdes"
 
@@ -231,7 +231,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
    set caption(resolver,titre_fov)          "# Caractéristiques du champ de vue :"
    set caption(resolver,taille_champ)       "# Dimension du champ de vue :"
-   set caption(resolver,filter)             "# Filtre sur les objets :"
+   set caption(resolver,filter)             "# Filtre sur les erreur de position :"
 
    set caption(resolver,asteroide)          "# Astéroïdes"
 
@@ -299,7 +299,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
    set caption(resolver,titre_fov)          "# Caractéristiques du champ de vue :"
    set caption(resolver,taille_champ)       "# Dimension du champ de vue :"
-   set caption(resolver,filter)             "# Filtre sur les objets :"
+   set caption(resolver,filter)             "# Filtre sur les erreur de position :"
 
    set caption(resolver,asteroide)          "# Astéroïdes"
 
@@ -367,7 +367,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
    set caption(resolver,titre_fov)          "# Caractéristiques du champ de vue :"
    set caption(resolver,taille_champ)       "# Dimension du champ de vue :"
-   set caption(resolver,filter)             "# Filtre sur les objets :"
+   set caption(resolver,filter)             "# Filtre sur les erreur de position :"
 
    set caption(resolver,asteroide)          "# Astéroïdes"
 

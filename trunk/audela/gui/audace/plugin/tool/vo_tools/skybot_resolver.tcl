@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 18 fevrier 2006
+# Date de mise a jour : 25 fevrier 2006
 #
 
 namespace eval skybot_Resolver {
@@ -46,7 +46,7 @@ namespace eval skybot_Resolver {
       set myurl(simbad,CDS)  "http://simbad.u-strasbg.fr/sim-id.pl?Ident="
       #---
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -221,7 +221,6 @@ namespace eval skybot_Resolver {
 
       #---
       toplevel $This -class Toplevel
-#      wm geometry $This 530x500$voconf(position_resolver)
       wm geometry $This $voconf(position_resolver)
       wm resizable $This 1 1
       wm title $This $caption(resolver,main_title)
@@ -480,7 +479,7 @@ namespace eval skybot_Resolver {
               pack $fov.param.dim.y \
                  -in $fov.param.dim -side left
               #--- Cree un label
-              label $fov.param.dim.f2 -text "arcsec" \
+              label $fov.param.dim.f2 -text " arcsec" \
                  -borderwidth 0 -relief flat
               pack $fov.param.dim.f2 \
                  -in $fov.param.dim -side left
@@ -489,16 +488,13 @@ namespace eval skybot_Resolver {
             pack $fov.param.filter \
                -in $fov.param -anchor w -side top -padx 3 -pady 3
               #--- Cree une ligne d'entree pour la saisie du param. filter
-#              entry $fov.param.filter.in \
-#                 -textvariable voconf(filter) \
-#                 -borderwidth 1 -relief groove -width 6 -justify center
               spinbox $fov.param.filter.in \
                   -textvariable voconf(filter) \
                   -from 0 -to 1000 -increment 10 -width 6 -borderwidth 1 -relief groove
               pack $fov.param.filter.in \
                  -in $fov.param.filter -anchor w -side left
               #--- Cree un label
-              label $fov.param.filter.f -text "arcsec" \
+              label $fov.param.filter.f -text " arcsec" \
                  -borderwidth 0 -relief flat
               pack $fov.param.filter.f \
                  -in $fov.param.filter -side left
@@ -1179,8 +1175,6 @@ namespace eval skybot_Resolver {
          $::skybot_Resolver::This.frame5.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
          $::skybot_Resolver::This.frame5.tbl insert end [ list [ lindex $voconf(liste) 1 ] ]
          $::skybot_Resolver::This.frame5.tbl cellconfigure 0,0 -fg $color(red)
-#         set voconf(ad_objet)        ""
-#         set voconf(dec_objet)       ""
 
       }
 
