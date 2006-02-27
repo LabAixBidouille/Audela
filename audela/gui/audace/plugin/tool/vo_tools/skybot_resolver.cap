@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Date de mise a jour : 25 fevrier 2006
+# Date de mise a jour : 27 fevrier 2006
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(resolver,main_title)            "# SkyBoT - Recherche des corps du système solaire autour d'un corps céleste"
+set caption(resolver,main_title)            "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
 set caption(resolver,nom_objet)             "# Nom de l'objet cible :"
 
 set caption(resolver,titre_param)           "# Paramètres de calcul"
@@ -50,11 +50,11 @@ set caption(resolver,msg_reel_ad)           "# L'ascension droite doit être un n
 set caption(resolver,msg_reel_dec)          "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
 set caption(resolver,msg_reel_fov)          "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
 set caption(resolver,msg_internet)          "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
-set caption(resolver,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-set caption(resolver,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+set caption(resolver,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+set caption(resolver,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
 set caption(resolver,param_none)            "# Pas d'information disponible !"
-set caption(resolver,format_target)         "# Saisir le nom d'un objet céleste:\n - du système solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
+set caption(resolver,format_target)         "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
 - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
 set caption(resolver,format_epoch)          "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
 set caption(resolver,format_loc)            "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
@@ -79,7 +79,7 @@ set caption(resolver,goto)                  "Goto"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(resolver,main_title)         "SkyBoT - Recherche des corps du système solaire autour d'un corps céleste"
+   set caption(resolver,main_title)         "SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
    set caption(resolver,nom_objet)          "Nom de l'objet cible :"
 
    set caption(resolver,titre_param)        "Paramètres de calcul"
@@ -118,11 +118,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(resolver,msg_reel_dec)       "La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
-   set caption(resolver,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
    set caption(resolver,param_none)         "Pas d'information disponible !"
-   set caption(resolver,format_target)      "Saisir le nom d'un objet céleste:\n - du système solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
+   set caption(resolver,format_target)      "Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
@@ -147,7 +147,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du système solaire autour d'un corps céleste"
+   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
    set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
 
    set caption(resolver,titre_param)        "# Paramètres de calcul"
@@ -186,11 +186,11 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
-   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du système solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
+   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
@@ -215,7 +215,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du système solaire autour d'un corps céleste"
+   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
    set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
 
    set caption(resolver,titre_param)        "# Paramètres de calcul"
@@ -254,11 +254,11 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
-   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du système solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
+   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
@@ -283,7 +283,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du système solaire autour d'un corps céleste"
+   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
    set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
 
    set caption(resolver,titre_param)        "# Paramètres de calcul"
@@ -322,11 +322,11 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
-   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du système solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
+   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
@@ -351,7 +351,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du système solaire autour d'un corps céleste"
+   set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
    set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
 
    set caption(resolver,titre_param)        "# Paramètres de calcul"
@@ -390,11 +390,11 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du système solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du système solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
-   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du système solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
+   set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"

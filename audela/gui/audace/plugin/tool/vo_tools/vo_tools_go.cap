@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Date de mise a jour : 19 fevrier 2006
+# Date de mise a jour : 27 fevrier 2006
 #
 
 #=========================================================================
@@ -26,8 +26,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,titre)         "Observatoire Virtuel"
    set caption(vo_tools_go,help_titre)    "Aide pour cet outil"
    set caption(vo_tools_go,aladin)        "Lancer Aladin\n(Portail OV)"
-   set caption(vo_tools_go,cone-search)   "Recherche des\ncorps du système\nsolaire dans un\nchamp de vue"
-   set caption(vo_tools_go,resolver)      "Recherche des\ncorps du système\nsolaire autour\nd'un corps céleste"
+   set caption(vo_tools_go,cone-search)   "Recherche des\ncorps du Système\nSolaire dans un\nchamp de vue"
+   set caption(vo_tools_go,resolver)      "Recherche des\ncorps du Système\nSolaire autour\nd'un corps céleste"
    set caption(vo_tools_go,statut)        "Statut du service\nSkyBoT"
 
 # *************** Version italienne ***************************

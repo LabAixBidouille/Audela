@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 25 fevrier 2006
+# Date de mise a jour : 27 fevrier 2006
 #
 
 namespace eval skybot_Resolver {
@@ -568,7 +568,7 @@ namespace eval skybot_Resolver {
         #--- Creation du bouton aide
         button $This.frame6.but_aide \
            -text "$caption(resolver,aide)" -borderwidth 2 \
-           -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
+           -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_3 }
         pack $This.frame6.but_aide \
            -in $This.frame6 -side right -anchor e \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -624,7 +624,7 @@ namespace eval skybot_Resolver {
       $popupTbl add separator
       #--- Acces a l'aide
       $popupTbl add command -label $caption(resolver,aide) \
-         -command { ::audace::showHelpPlugin "tool" "vo_tools" "vo_tools.htm" }
+         -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_3 }
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ] 
