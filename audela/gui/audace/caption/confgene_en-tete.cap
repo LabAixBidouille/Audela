@@ -1,6 +1,6 @@
 #
 # Fichier : confgene_en-tete.cap
-# Date de mise a jour : 08 janvier 2006
+# Date de mise a jour : 02 mars 2006
 #
 
 #=========================================================================
@@ -19,7 +19,7 @@ set caption(en-tete,a_propos_de_version_Tcl/Tk)       "Tcl/Tk Version Found: V"
 set caption(en-tete,a_propos_de_maj)                  "Release of 14 July 2005."
 set caption(en-tete,a_propos_de_libre)                "This software is open source and freeware."
 set caption(en-tete,a_propos_de_site)                 "http://software.audela.free.fr/"
-set caption(en-tete,a_propos_de_copyright1)           "Copyright (C) 1999-2005"
+set caption(en-tete,a_propos_de_copyright1)           "Copyright (C) 1999-2006"
 set caption(en-tete,a_propos_de_copyright2)           "Development Team: D. Marchais, A. Klotz, R. Delmas,"
 set caption(en-tete,a_propos_de_copyright3)           "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
 set caption(en-tete,a_propos_de_copyright4)           "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
@@ -41,7 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_maj)               "Mise à jour du 14 juillet 2005."
    set caption(en-tete,a_propos_de_libre)             "Ce logiciel est libre et gratuit."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
-   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2005"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2006"
    set caption(en-tete,a_propos_de_copyright2)        "Contributions : D. Marchais, A. Klotz, R. Delmas,"
    set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
@@ -63,7 +63,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_maj)               "Aggiornato al 14 luglio 2005."
    set caption(en-tete,a_propos_de_libre)             "Questo software e` libero e gratuito."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
-   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2005"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2006"
    set caption(en-tete,a_propos_de_copyright2)        "Sviluppatori: D. Marchais, A. Klotz, R. Delmas,"
    set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_maj)               "Publicado el 14 julio 2005."
    set caption(en-tete,a_propos_de_libre)             "Este software es gratis y con código fuente disponible."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
-   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2005"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2006"
    set caption(en-tete,a_propos_de_copyright2)        "Equipo de Desarrollo: D. Marchais, A. Klotz, R. Delmas,"
    set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
@@ -107,7 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_maj)               "Aufarbeitung vom 14 Juli 2005."
    set caption(en-tete,a_propos_de_libre)             "Diesen Software ist frei und kostenlos."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
-   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2005"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2006"
    set caption(en-tete,a_propos_de_copyright2)        "Beitrag: D. Marchais, A. Klotz, R. Delmas,"
    set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
@@ -129,7 +129,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_maj)               "Frigivet 2005-07-14"
    set caption(en-tete,a_propos_de_libre)             "Denne software er open source og freeware."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
-   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2005"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2006"
    set caption(en-tete,a_propos_de_copyright2)        "Udviklings-team: D. Marchais, A. Klotz, R. Delmas,"
    set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"

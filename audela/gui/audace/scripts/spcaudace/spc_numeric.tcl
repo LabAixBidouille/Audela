@@ -49,12 +49,11 @@ proc bm_lmax { args } {
 
 	
 ####################################################################
-#  Procedure de conversion d'étalonnage en longueur d'onde d'ordre 2
-#
+# Calcul les conefficients du polynome interpolateur de Lagrange de degre 2
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 29-01-2005
 # Date modification : 29-01-2005
-# Arguments : fichier .fit du profil de raie spatial
+# Arguments : 3 couples (x,y)
 ####################################################################
 
 proc bm_pil2 { { x1 ""} { y1 ""} { x2 ""} { y2 ""} { x3 ""} { y3 ""} } {
@@ -69,6 +68,22 @@ proc bm_pil2 { { x1 ""} { y1 ""} { x2 ""} { y2 ""} { x3 ""} { y3 ""} } {
 }
 #****************************************************************#
 
+
+####################################################################
+# Calcul la valeur du polynome interpolateur de Lagrange de degre 3 au point x
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 25-02-2006
+# Date modification : 25-02-2006
+# Arguments : 4 couples (x,y) et x
+####################################################################
+
+proc bm_pil3c { { x0 ""} { y0 ""} { x1 ""} { y1 ""} { x2 ""} { y2 ""} { x3 ""} { y3 ""} { x ""}} {
+
+    set y [ expr $y0*($x-$x1)*($x-$x2)*($x-$x3)/(($x0-$x1)*($x0-$x2)*($x0-$x3))+$y1*($x-$x0)*($x-$x2)*($x-$x3)/(($x1-$x0)*($x1-$x2)*($x1-$x3))+$y2*($x-$x0)*($x-$x1)*($x-$x3)/(($x2-$x0)*($x2-$x1)*($x2-$x3))+$y3*($x-$x0)*($x-$x1)*($x-$x2)/(($x3-$x0)*($x3-$x1)*($x3-$x2)) ]
+
+    return $y
+}
+#****************************************************************#
 
 ####################################################################
 #  Procedure d'ajustement d'un nuage de points

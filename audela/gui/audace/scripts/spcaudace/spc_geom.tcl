@@ -164,8 +164,9 @@ proc spc_register { args } {
        set filename [ lindex $args 0 ]
        # Détection fragile : * doit etre un nombre de 0 a n. glob -nocomplain ?
        set fileliste [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ]
+       # Les fichiers de fileliste contiennent aussi le nom du repertoire
        set nb_file [ llength $fileliste ]
-       set fichier1 [ lindex $fileliste 0 ]
+       set fichier1 [file tail [ lindex $fileliste 0 ]]
        buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
        set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
@@ -177,7 +178,8 @@ proc spc_register { args } {
        #::console::affiche_resultat "Liste : $fileliste\n"
        # Effectue le binning des colonnes et détermine le centroïde en Y du spectre 2D
        set fichier ""
-       foreach fichier $fileliste {
+       foreach rfichier $fileliste {
+	   set fichier [file tail $rfichier]
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	   buf$audace(bufNo) binx 1 $naxis1 3
 	   set ycentre [lindex [buf$audace(bufNo) centro $windowcoords] 1]
@@ -188,7 +190,8 @@ proc spc_register { args } {
        ::console::affiche_resultat "Recalage de $nb_file images..."
        set ycentre [ lindex $ycoords 0 ]
        set fichier ""
-       foreach fichier $fileliste {
+       foreach rfichier $fileliste {
+	   set fichier [file tail $rfichier]
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	   set yi [ lindex $ycoords $k ]
 	   set dy [ expr $ycentre-$yi ]
@@ -396,27 +399,34 @@ proc spc_crop { args } {
        set xgauche [ lindex $args 1 ]
        set ybas [ lindex $args 2 ]
        set fileliste [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ]
+       # Les fichiers de fileliste contiennent aussi le nom du repertoire !
        set nbimg [ llength $fileliste ]
        ::console::affiche_resultat "$nbimg images à traiter...\n"
 
-       set fichier1 [ lindex $fileliste 0 ]
+       set fichier1 [file tail [ lindex $fileliste 0 ]]
+       ::console::affiche_resultat "$fichier1\n"
        buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
        set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
        set windowcoords [ list $xgauche $ybas $naxis1 $naxis2 ]
 
        set fichier ""
-       foreach fichier $fileliste {
+       foreach rfichier $fileliste {
+	   set fichier [file tail $rfichier]
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	   buf$audace(bufNo) window $windowcoords
-	   set nomfichierlg [ file rootname $fichier ]
-	   set nomfichier [regexp {(.+)\-[0-9]+} $nomfichierlg match]
-	   buf$audace(bufNo) save $"audace(rep_images)/${nomfichier}_crop-$kk$conf(extension,defaut)"
+	   # 060223 : nom de fichier sortie incorrect -> impose
+	   # set nomfichierlg [ file rootname $fichier ]
+	   # set nomfichier [regexp {(.+)\-[0-9]+} $nomfichierlg match]
+	   # buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_crop-$kk$conf(extension,defaut)"
+	   buf$audace(bufNo) save "$audace(rep_images)/${filename}crop-$kk$conf(extension,defaut)"
 	   #::console::affiche_resultat "Image $kk traitée\n"
 	   incr kk
        }
-       ::console::affiche_resultat "Images sauvées sous $audace(rep_images)/${nomfichier}_crop-x$conf(extension,defaut)\n"
-       return ${nomfichier}_crop-
+       ::console::affiche_resultat "Images sauvées sous $audace(rep_images)/${filename}crop-x$conf(extension,defaut)\n"
+       #-- 060223 : nomfichier -> filename
+       # return ${nomfichier}_crop-
+       return ${filename}crop-
    } else {
        ::console::affiche_erreur "Usage: spc_crop nom_gégérique_fichiers x_gauche y_bas\n\n"
    }

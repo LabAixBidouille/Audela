@@ -443,12 +443,12 @@ proc spc_fits2dat { args } {
    #--- Pixel de l'abscisse centrale
    set xcenter [lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1]
    #--- Type de spectre : LINEAR ou NONLINEAR (elinine les espaces dans la valeur du mot cle.
-   set dtype [string trim [lindex [buf$audace(bufNo) getkwd "CTYPE1"] 1]]
+   # set dtype [string trim [lindex [buf$audace(bufNo) getkwd "CTYPE1"] 1]]
    #::console::affiche_resultat "Ici 1\n"
-   if { $dtype != "LINEAR" || $dtype == "" } {
-       ::console::affiche_resultat "Le spectre ne possède pas une disersion linéaire. Pas de conversion possible.\n"
-       exit
-   }
+   #if { $dtype != "LINEAR" || $dtype == "" } {
+   #    ::console::affiche_resultat "Le spectre ne possède pas une disersion linéaire. Pas de conversion possible.\n"
+   #    exit
+   #}
    #::console::affiche_resultat "Ici 2\n"
    set len [expr int($naxis1/$xincr)]
    ::console::affiche_resultat "$naxis1 intensités à traiter\n"
