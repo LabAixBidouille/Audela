@@ -368,19 +368,25 @@ proc spc_smooth { args } {
 
    global audace
    global conf
-   set pourcent 0.95
-   set lraie 1
+   set lraie 30
 
-   if {[llength $args] == 1} {
-     set infichier [ lindex $args 0 ]
-     set fichier [ file rootname $infichier ]
-     buf$audace(bufNo) load $audace(rep_images)/$fichier
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save $audace(rep_images)/${fichier}_smo$conf(extension,defaut)
-     ::console::affiche_resultat "Spectre adoucis sauvé sous $audace(rep_images)/${fichier}_smo$conf(extension,defaut)\n"
+   if { [llength $args] <= 2 } {
+       if { [llength $args] == 1 } {
+	   set infichier [ lindex $args 0 ]
+	   set pourcent 0.95
+       } elseif  { [llength $args] == 2 } {
+	   set infichier [ lindex $args 0 ]
+	   set pourcent [ lindex $args 1 ]
+       }
+
+       set fichier [ file rootname $infichier ]
+       buf$audace(bufNo) load $audace(rep_images)/$fichier
+       buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save $audace(rep_images)/${fichier}_smo$conf(extension,defaut)
+       ::console::affiche_resultat "Spectre adoucis sauvé sous $audace(rep_images)/${fichier}_smo$conf(extension,defaut)\n"
    } else {
-     ::console::affiche_erreur "Usage : spcsmooth nom_fichier\n\n"
+       ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage?\n\n"
    }
 }
 ##########################################################
@@ -396,23 +402,24 @@ proc spc_smooth { args } {
 # Arguments : fichier .fit du profil de raie, nouvelle dispersion
 ##########################################################
 
-proc spc_echant { args } {
+# Ne fonctionne pas : la bande passante est diminuée lorsque l'on passe par exemple de 5 à 2.2 
+proc spc_echant0 { args } {
 
    global audace
    global conf
 
    if {[llength $args] == 2} {
        set infichier [ lindex $args 0 ]
-       set newdisp [lindex $args 1 ]
-       set fichier [ file rootname $infichier ]
+       set newdisp [ lindex $args 1 ]
+       set fichier [ file tail $infichier ]
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        #buf$audace(bufNo) load $fichier
-       set olddisp [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+       set olddisp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
        set facteur [ expr $newdisp/$olddisp ]
        # rééchantillone selon l'axe X, donc facteur_y=1.
        # normaflux=1 permet de garder la dynamique initiale.
-       set factors [ list $facteur 1 ]
-       buf$audace(bufNo) scale  $factors 1
+       set lfactor [ list $facteur 1 ]
+       buf$audace(bufNo) scale  $lfactor 1
        buf$audace(bufNo) setkwd [list "CDELT1" "$newdisp" float "" ""]
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save $audace(rep_images)/${fichier}_ech$conf(extension,defaut)
@@ -423,6 +430,81 @@ proc spc_echant { args } {
    }
 }
 ##########################################################
+
+# Arguments : fichier .fit du profil de raie, nbpixels, lambda0, nouvelle dispersion
+proc spc_echant { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 4} {
+       #--- Initialisation des variables de travail
+       set infichier [ lindex $args 0 ]
+       set nbpix [ lindex $args 1 ]
+       set lambda0 [ lindex $args 2 ]
+       set newdisp [ lindex $args 3 ]
+       set fichier [ file tail $infichier ]
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set olddisp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+       set facteur [ expr $newdisp/$olddisp ]
+       set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+       set lambdadeb [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+       set lambdafin [ expr $lambdadeb+$olddisp*$naxis1 ]
+
+       #--- Création de la liste des longueurs d'onde à obtenir
+       for {set k 0} {$k<$nbpix} {incr k} {
+	   lappend lambdasfinal[ expr lamdda0+$k*$newdisp ]
+       }
+
+       #--- Création de la liste des valeurs de l'intensite
+       #-- Meth 1 :
+       set coordonnees [ spc_fits2data $fichier ]
+       set lambdas [ lindex $coordonnes 1 ]
+       set intensites [ lindex $coordonnes 1 ]
+       #-- Meth 2 :
+       set falg 0
+       if { $flag == 1 } {
+       if { $lambdadeb != 1 } {
+	   #-- Dispersion du spectre : =1 si profil non étalonné
+	   set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+	   #-- Pixel de l'abscisse centrale
+	   set xcenter [lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1]
+	   #-- Type de spectre : LINEAR ou NONLINEAR (elinine les espaces dans la valeur du mot cle.
+	   set dtype [string trim [lindex [buf$audace(bufNo) getkwd "CTYPE1"] 1]]
+	   #::console::affiche_resultat "Ici 1\n"
+	   if { $dtype != "LINEAR" || $dtype == "" } {
+	       ::console::affiche_resultat "Le spectre ne possède pas une dispersion linéaire. Pas de conversion possible.\n"
+	       exit
+	   }
+	   #-- Une liste commence à 0 ; Un vecteur fits commence à 1
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       lappend lambdas [expr $xdepart+($k)*$xincr*1.0]
+	       lappend intensites [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
+	   }
+	   #-- Spectre non calibré en lambda
+       } else {
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       lappend lambdas [expr $k+1]
+	       lappend intensites [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
+	   }
+       }
+   }
+
+       #--- Calcul les valeurs rééchantillonnées
+       foreach lambda $lambdas intensite $intensites {
+       }
+
+       #--- Sauvegarde du spectre rééchantillonné
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save $audace(rep_images)/${fichier}_ech$conf(extension,defaut)
+       ::console::affiche_resultat "Profil rééchantillonné sauvé sous $audace(rep_images)/${fichier}_ech$conf(extension,defaut)\n"
+       return ${fichier}_ech$conf(extension,defaut)
+   } else {
+       ::console::affiche_erreur "Usage: lechant nom_fichier (de type fits) nouvelle_dispersion\n\n"
+   }
+}
+##########################################################
+
 
 
 
@@ -497,33 +579,40 @@ proc spc_select { args } {
        set xdeb [ lindex $args 1 ]
        set xfin [ lindex $args 2 ]
        set fichier [ file rootname $infichier ]
-
+ 
        buf$audace(bufNo) load $audace(rep_images)/$fichier
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-       # Valeur minimale de l'abscisse : =0 si profil non étalonné
+       #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
        set xdepart [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-       # Dispersion du spectre : =1 si profil non étalonné
+       #--- Dispersion du spectre : =1 si profil non étalonné
        set disper [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-       # Pixel de l'abscisse centrale
+       #--- Pixel de l'abscisse centrale
        set xcenter [lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1]
 
        set abscisses ""
        set intensites ""
        for {set k 0} {$k<$naxis1} {incr k} {
-	   # Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	   #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
 	   lappend abscisses [expr $xdepart+($k)*$disper*1.0]
-	   # Lit la valeur des elements du fichier fit
+	   #--- Lit la valeur des elements du fichier fit
 	   lappend intensites [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
 	   ##lappend profilspc(intensite) $intensite
        }
 
-       ## Sélection des longueurs d'onde à découper
+       #--- Sélection des longueurs d'onde à découper
        #set diff1 [ expr abs($xdeb-[ lindex $abscisses 0 ]) ] 
-       #set diff2 [ expr abs($xfin-[ lindex $abscisses 0 ]) ] 
+       #set diff2 [ expr abs($xfin-[ lindex $abscisses 0 ]) ]
        set nabscisses ""
        set k 0
        foreach abscisse $abscisses intensite $intensites {
-	   if { $abscisse >= $xdeb && $abscisse <= $xfin } {
+	   #-- 060224 : gestion de lambda debut plus proche par defaut
+	   set diff [ expr abs($xdeb-$abscisse) ]
+	   if { $diff < $disper } {   
+	       set xdebl [ expr $xdeb-$disper ]
+	   } else {
+	       set xdebl $xdeb
+	   }
+	   if { $abscisse >= $xdebl && $abscisse <= $xfin } {
 	       lappend nabscisses $abscisse
 	       lappend nintensites $intensite
 	       # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
@@ -532,15 +621,14 @@ proc spc_select { args } {
        }
        set len $k
 
-       # Initialisation à blanc d'un fichier fits
+       #--- Initialisation à blanc d'un fichier fits
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
 
        for {set k 0} {$k<$len} {incr k} {
 	   buf$audace(bufNo) setpix [list [expr $k+1] 1] [ lindex $nintensites $k ]
        }
 
-
-       # Initatialisation de l'entête
+       #--- Initatialisation de l'entête
        buf$audace(bufNo) setkwd [list "NAXIS1" "$len" int "" ""]
        set xdepart [ lindex $nabscisses 0 ]
        buf$audace(bufNo) setkwd [list "CRVAL1" "$xdepart" float "" ""]
@@ -549,7 +637,7 @@ proc spc_select { args } {
        buf$audace(bufNo) setkwd [list "CRPIX1" "$xcenter" float "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" "$disper" float "" ""]
 
-       # Enregistrement du fichier fits final
+       #--- Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save $audace(rep_images)/${fichier}_sel$conf(extension,defaut)
        ::console::affiche_resultat "Sélection sauvée sous $audace(rep_images)/${fichier}_sel$conf(extension,defaut)\n"
@@ -560,3 +648,42 @@ proc spc_select { args } {
 }
 ##########################################################
 
+
+##########################################################
+# Procedure d'affichage des renseignenemts d'un profil de raies
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 12-08-2005
+# Date de mise à jour : 21-12-2005
+# Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
+##########################################################
+
+proc spc_info { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 1} {
+       set fichier [ lindex $args 0 ]
+
+       #--- Capture des renseignements
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+       set xdebut [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+       set disp [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+       set xfin [ expr $xdebut+$disp*$naxis1 ]
+
+       #-- Affichage des renseignements
+       ::console::affiche_resultat "Longueur : $naxis1 pixels\n"
+       ::console::affiche_resultat "Lambda début : $xdebut Angstroms\n"
+       ::console::affiche_resultat "Lambda fin : $xfin Angstroms\n"
+       ::console::affiche_resultat "Dispersion : $disp Angstroms/pixel\n"
+
+       #--- Création d'une liste de retour des résultats
+       set infos [ list $naxis1 $xdebut $xfin $disp ]
+       return $infos
+
+   } else {
+       ::console::affiche_erreur "Usage: spc_info nom_fichier fits\n\n"
+   }
+}
+#****************************************************************#
