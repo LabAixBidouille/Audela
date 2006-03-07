@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 19 fevrier 2006
+# Date de mise a jour : 07 mars 2006
 #
 
 package provide acqfc 2.1
@@ -126,6 +126,11 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,attente_pose)          "0"
       set panneau(AcqFC,$visuNo,pose_en_cours)         "0"
       set panneau(AcqFC,$visuNo,avancement,position)   $conf(acqfc,avancement,position)
+      if { $visuNo == "1" } {
+         set panneau(AcqFC,$visuNo,avancement_acq)     "1"
+      } else {
+         set panneau(AcqFC,$visuNo,avancement_acq)     "0"
+      }
 
       #--- Entrer ici les valeurs de temps de pose a afficher dans le menu "pose"
       set panneau(AcqFC,$visuNo,temps_pose) {0 0.1 0.3 0.5 1 2 3 5 10 15 20 30 60 90 120 180 300 600}
@@ -162,13 +167,19 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,mode,7) "$panneau(AcqFC,$visuNo,This).mode.video_1"
       #--- Mode par defaut : Une image
       if { ! [ info exists panneau(AcqFC,$visuNo,mode) ] } {
-             set panneau(AcqFC,$visuNo,mode) "$parametres(acqFC,$visuNo,mode)"
+         set panneau(AcqFC,$visuNo,mode) "$parametres(acqFC,$visuNo,mode)"
       }
 
       #--- Initialisation d'autres variables
       set panneau(AcqFC,$visuNo,go_stop)           "go"
       set panneau(AcqFC,$visuNo,index)             "1"
       set panneau(AcqFC,$visuNo,nom_image)         ""
+      set panneau(AcqFC,$visuNo,extension)         "$conf(extension,defaut)"
+      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
+         set panneau(AcqFC,$visuNo,liste_extension) [ list .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      } else {
+         set panneau(AcqFC,$visuNo,liste_extension) [ list [ buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension ].gz .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      }
       set panneau(AcqFC,$visuNo,indexer)           "0"
       set panneau(AcqFC,$visuNo,enregistrer)       "1"
       set panneau(AcqFC,$visuNo,nb_images)         "1"
@@ -214,6 +225,30 @@ namespace eval ::AcqFC {
 
    }
 #***** Fin de la procedure createPanel *************************
+
+#***** Procedure Init_List_Extension ****************************
+   proc Init_List_Extension { visuNo } {
+      global audace conf panneau
+
+      #--- S'agit-il d'une extension personnalisee
+      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
+         set panneau(AcqFC,$visuNo,liste_extension) [ list .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      } else {
+         set panneau(AcqFC,$visuNo,liste_extension) [ list [ buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension ].gz .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      }
+      #--- S'agit-il d'un format compresse
+      if { $conf(fichier,compres) == "1" } {
+         set panneau(AcqFC,$visuNo,extension) $conf(extension,new).gz
+      } else {
+         set panneau(AcqFC,$visuNo,extension) $conf(extension,new)
+      }
+      #--- Mise a jour des ComboBox concernees
+      foreach i { 1 2 3 4 5 } {
+         $panneau(AcqFC,$visuNo,mode,$i).nom.list_extension configure -height [ llength $panneau(AcqFC,$visuNo,liste_extension) ]
+         $panneau(AcqFC,$visuNo,mode,$i).nom.list_extension configure -values $panneau(AcqFC,$visuNo,liste_extension)
+      }
+   }
+#***** Fin de la procedure Init_List_Extension *****************
 
 #***** Procedure deletePanel ***********************************
    proc deletePanel { visuNo } {
@@ -1981,130 +2016,130 @@ namespace eval ::AcqFC {
    proc Avancement_pose { visuNo { t } } {
       global conf audace caption panneau color
 
-      #--- Recuperation de la position de la fenetre
-      ::AcqFC::recup_position_1 $visuNo 
+      if { $panneau(AcqFC,$visuNo,avancement_acq) == "1" } {
+         #--- Recuperation de la position de la fenetre
+         ::AcqFC::recup_position_1 $visuNo 
 
-      #--- Initialisation de la barre de progression
-      set cpt "100"
+         #--- Initialisation de la barre de progression
+         set cpt "100"
 
-      #---
-      if { [ winfo exists $panneau(AcqFC,$visuNo,base).progress ] != "1" } {
-        toplevel $panneau(AcqFC,$visuNo,base).progress
-        wm transient $panneau(AcqFC,$visuNo,base).progress $panneau(AcqFC,$visuNo,base)
-        wm resizable $panneau(AcqFC,$visuNo,base).progress 0 0
-        wm title $panneau(AcqFC,$visuNo,base).progress "$caption(acqfc,en_cours)"
-        wm geometry $panneau(AcqFC,$visuNo,base).progress $panneau(AcqFC,$visuNo,avancement,position)
+         #---
+         if { [ winfo exists $panneau(AcqFC,$visuNo,base).progress ] != "1" } {
+           toplevel $panneau(AcqFC,$visuNo,base).progress
+           wm transient $panneau(AcqFC,$visuNo,base).progress $panneau(AcqFC,$visuNo,base)
+           wm resizable $panneau(AcqFC,$visuNo,base).progress 0 0
+           wm title $panneau(AcqFC,$visuNo,base).progress "$caption(acqfc,en_cours)"
+           wm geometry $panneau(AcqFC,$visuNo,base).progress $panneau(AcqFC,$visuNo,avancement,position)
 
-        #--- Cree le widget et le label du temps ecoule
-        label $panneau(AcqFC,$visuNo,base).progress.lab_status -text "" -font $audace(font,arial_12_b) -justify center
-        pack $panneau(AcqFC,$visuNo,base).progress.lab_status -side top -fill x -expand true -pady 5
+           #--- Cree le widget et le label du temps ecoule
+           label $panneau(AcqFC,$visuNo,base).progress.lab_status -text "" -font $audace(font,arial_12_b) -justify center
+           pack $panneau(AcqFC,$visuNo,base).progress.lab_status -side top -fill x -expand true -pady 5
 
-        #---
-        if { $panneau(AcqFC,$visuNo,attente_pose) == "0" } {
-           if { $panneau(AcqFC,$visuNo,demande_arret) == "1" && $panneau(AcqFC,$visuNo,mode) != "2" && $panneau(AcqFC,$visuNo,mode) != "4" } {
-              $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text $caption(acqfc,lect)
+           #---
+           if { $panneau(AcqFC,$visuNo,attente_pose) == "0" } {
+              if { $panneau(AcqFC,$visuNo,demande_arret) == "1" && $panneau(AcqFC,$visuNo,mode) != "2" && $panneau(AcqFC,$visuNo,mode) != "4" } {
+                 $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text $caption(acqfc,lect)
+              } else {
+                 if { $t <= "0" } {
+                    destroy $panneau(AcqFC,$visuNo,base).progress
+                 } elseif { $t > "1" } {
+                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "[ expr $t-1 ] $caption(acqfc,sec) /\
+                       [ format "%d" [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ] $caption(acqfc,sec)"
+                    set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ]
+                    set cpt [ expr 100 - $cpt ]
+                 } else {
+                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
+                }
+              }
            } else {
-              if { $t <= "0" } {
-                 destroy $panneau(AcqFC,$visuNo,base).progress
-              } elseif { $t > "1" } {
-                 $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "[ expr $t-1 ] $caption(acqfc,sec) /\
-                    [ format "%d" [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ] $caption(acqfc,sec)"
-                 set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ]
-                 set cpt [ expr 100 - $cpt ]
-              } else {
-                 $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
-             }
-           }
-        } else {
-           if { $panneau(AcqFC,$visuNo,demande_arret) == "0" } {
-              if { $t < "0" } {
-                 destroy $panneau(AcqFC,$visuNo,base).progress
-              } else {
-                 if { $panneau(AcqFC,$visuNo,mode) == "4" } {
-                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                       $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_1) $caption(acqfc,sec)"
-                    set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_1) ]
-                 } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
-                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                       $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_2) $caption(acqfc,sec)"
-                    set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_2) ]
-                 } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
-                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                       $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_video) $caption(acqfc,sec)"
-                    set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_video) ]
+              if { $panneau(AcqFC,$visuNo,demande_arret) == "0" } {
+                 if { $t < "0" } {
+                    destroy $panneau(AcqFC,$visuNo,base).progress
+                 } else {
+                    if { $panneau(AcqFC,$visuNo,mode) == "4" } {
+                       $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                          $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_1) $caption(acqfc,sec)"
+                       set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_1) ]
+                    } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
+                       $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                          $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_2) $caption(acqfc,sec)"
+                       set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_2) ]
+                    } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
+                       $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                          $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_video) $caption(acqfc,sec)"
+                       set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_video) ]
+                    }
+                    set cpt [expr 100 - $cpt]
                  }
-                 set cpt [expr 100 - $cpt]
               }
            }
-        }
 
-        catch {
-           #--- Cree le widget pour la barre de progression
-           frame $panneau(AcqFC,$visuNo,base).progress.cadre -width 200 -height 30 -borderwidth 2 -relief groove
-           pack $panneau(AcqFC,$visuNo,base).progress.cadre -in $panneau(AcqFC,$visuNo,base).progress -side top \
-              -anchor center -fill x -expand true -padx 8 -pady 8
+           catch {
+              #--- Cree le widget pour la barre de progression
+              frame $panneau(AcqFC,$visuNo,base).progress.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+              pack $panneau(AcqFC,$visuNo,base).progress.cadre -in $panneau(AcqFC,$visuNo,base).progress -side top \
+                 -anchor center -fill x -expand true -padx 8 -pady 8
 
-           #--- Affiche de la barre de progression
-           frame $panneau(AcqFC,$visuNo,base).progress.cadre.barre_color_invariant -height 26 -bg $color(blue)
-           place $panneau(AcqFC,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(AcqFC,$visuNo,base).progress.cadre -x 0 -y 0 \
-              -relwidth [ expr $cpt / 100.0 ]
-           update
-        }
+              #--- Affiche de la barre de progression
+              frame $panneau(AcqFC,$visuNo,base).progress.cadre.barre_color_invariant -height 26 -bg $color(blue)
+              place $panneau(AcqFC,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(AcqFC,$visuNo,base).progress.cadre -x 0 -y 0 \
+                 -relwidth [ expr $cpt / 100.0 ]
+              update
+           }
+         } else {
+           #---
+           if { $panneau(AcqFC,$visuNo,attente_pose) == "0" } {
+              if { $panneau(AcqFC,$visuNo,demande_arret) == "1" && $panneau(AcqFC,$visuNo,mode) != "2" && $panneau(AcqFC,$visuNo,mode) != "4" } {
+                 $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text $caption(acqfc,lect)
+              } else {
+                 if { $t <= "0" } {
+                    destroy $panneau(AcqFC,$visuNo,base).progress
+                 } elseif { $t > "1" } {
+                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "[ expr $t-1 ] $caption(acqfc,sec) /\
+                       [ format "%d" [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ] $caption(acqfc,sec)"
+                    set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ]
+                    set cpt [ expr 100 - $cpt ]
+                 } else {
+                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
+                 }
+              }
+           } else {
+              if { $panneau(AcqFC,$visuNo,demande_arret) == "0" } {
+                 if { $t < "0" } {
+                    destroy $panneau(AcqFC,$visuNo,base).progress
+                 } else {
+                    if { $panneau(AcqFC,$visuNo,mode) == "4" } {
+                       $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                          $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_1) $caption(acqfc,sec)"
+                       set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_1) ]
+                    } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
+                       $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                          $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_2) $caption(acqfc,sec)"
+                       set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_2) ]
+                    } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
+                       $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                          $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_video) $caption(acqfc,sec)"
+                       set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_video) ]
+                    }
+                    set cpt [expr 100 - $cpt]
+                 }
+              }
+           }
+
+           catch {
+              #--- Affiche de la barre de progression
+              place $panneau(AcqFC,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(AcqFC,$visuNo,base).progress.cadre -x 0 -y 0 \
+                 -relwidth [ expr $cpt / 100.0 ]
+              update
+           }
+         }
+
+         #--- Mise a jour dynamique des couleurs
+         if  [ winfo exists $panneau(AcqFC,$visuNo,base).progress ] {
+           ::confColor::applyColor $panneau(AcqFC,$visuNo,base).progress
+         }
       } else {
-        #---
-        if { $panneau(AcqFC,$visuNo,attente_pose) == "0" } {
-           if { $panneau(AcqFC,$visuNo,demande_arret) == "1" && $panneau(AcqFC,$visuNo,mode) != "2" && $panneau(AcqFC,$visuNo,mode) != "4" } {
-              $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text $caption(acqfc,lect)
-           } else {
-              if { $t <= "0" } {
-                 destroy $panneau(AcqFC,$visuNo,base).progress
-              } elseif { $t > "1" } {
-                 $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "[ expr $t-1 ] $caption(acqfc,sec) /\
-                    [ format "%d" [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ] $caption(acqfc,sec)"
-                 set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ]
-                 set cpt [ expr 100 - $cpt ]
-              } else {
-                 $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
-              }
-           }
-        } else {
-           if { $panneau(AcqFC,$visuNo,demande_arret) == "0" } {
-              if { $t < "0" } {
-                 destroy $panneau(AcqFC,$visuNo,base).progress
-              } else {
-                 if { $panneau(AcqFC,$visuNo,mode) == "4" } {
-                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                       $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_1) $caption(acqfc,sec)"
-                    set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_1) ]
-                 } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
-                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                       $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_2) $caption(acqfc,sec)"
-                    set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_2) ]
-                 } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
-                    $panneau(AcqFC,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                       $caption(acqfc,sec) / $panneau(AcqFC,$visuNo,intervalle_video) $caption(acqfc,sec)"
-                    set cpt [expr $t*100 / $panneau(AcqFC,$visuNo,intervalle_video) ]
-                 }
-                 set cpt [expr 100 - $cpt]
-              }
-           }
-        }
-
-        catch {
-           #--- Affiche de la barre de progression
-           place $panneau(AcqFC,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(AcqFC,$visuNo,base).progress.cadre -x 0 -y 0 \
-              -relwidth [ expr $cpt / 100.0 ]
-           update
-        }
-      }
-
-      #--- Mise a jour dynamique des couleurs
-      if  [ winfo exists $panneau(AcqFC,$visuNo,base).progress ] {
-        if { $t > "0" } {
-           #--- La nouvelle fenetre est active
-           focus $panneau(AcqFC,$visuNo,base).progress
-        }
-        ::confColor::applyColor $panneau(AcqFC,$visuNo,base).progress
+         return
       }
    }
 #***** Fin de la procedure d'avancement de la pose *************
@@ -2907,13 +2942,33 @@ namespace eval ::AcqFC {
    }
 #***** Fin de la fenetre de selection de format de la WebCam *********
 
+#***** Changement de l'extension des images **************************
+   proc Change_extension { visuNo } {
+      global conf confgene panneau
+
+      set ext $panneau(AcqFC,$visuNo,extension)
+      set long [ string length $ext ]
+      if { [ string range $ext [ expr $long - 3 ] [ expr $long - 1 ] ] == ".gz" } {
+         set conf(extension,new) [ string trimright $ext ".gz" ]
+         set conf(fichier,compres) "1"
+      } else {
+         set conf(extension,new) $panneau(AcqFC,$visuNo,extension)
+         set conf(fichier,compres) "0"
+      }
+      set conf(extension,defaut)    $conf(extension,new)
+      #--- Mise a jour de la boite de configuration des fichiers images
+      set confgene(extension,new)   $conf(extension,new)
+      set confgene(fichier,compres) $conf(fichier,compres)
+   }
+#***** Fin du changement de l'extension des images *******************
+
 }
 #==============================================================
 #   Fin de la declaration du namespace AcqFC
 #==============================================================
 
 proc AcqFCBuildIF { visuNo } {
-   global audace panneau caption
+   global audace conf panneau caption
 
    #--- Lancement des options
    source [ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]
@@ -2973,7 +3028,7 @@ proc AcqFCBuildIF { visuNo } {
    pack $panneau(AcqFC,$visuNo,This).bin.conf -fill x -expand true -ipady 3
 
    #--- Trame de l'obturateur
-   frame $panneau(AcqFC,$visuNo,This).obt -borderwidth 2 -relief ridge -width 13
+   frame $panneau(AcqFC,$visuNo,This).obt -borderwidth 2 -relief ridge -width 15
       button $panneau(AcqFC,$visuNo,This).obt.but -text $caption(acqfc,obt) -command "::AcqFC::ChangeObt $visuNo" \
          -state normal
       pack $panneau(AcqFC,$visuNo,This).obt.but -side left -ipady 3
@@ -2981,7 +3036,7 @@ proc AcqFCBuildIF { visuNo } {
         -font $audace(font,arial_10_b) -relief groove
       pack $panneau(AcqFC,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
       label $panneau(AcqFC,$visuNo,This).obt.lab1 -text "" -font $audace(font,arial_10_b) -relief ridge \
-         -justify center -width 13
+         -justify center -width 15
       pack $panneau(AcqFC,$visuNo,This).obt.lab1 -side top -ipady 3
    pack $panneau(AcqFC,$visuNo,This).obt -side top -fill x
 
@@ -2998,7 +3053,7 @@ proc AcqFCBuildIF { visuNo } {
    #--- Trame du Status
    frame $panneau(AcqFC,$visuNo,This).status -borderwidth 2 -relief ridge
       label $panneau(AcqFC,$visuNo,This).status.lab -text "" -font $audace(font,arial_10_b) -relief ridge \
-         -justify center -width 13
+         -justify center -width 15
       pack $panneau(AcqFC,$visuNo,This).status.lab -side top -pady 1
    pack $panneau(AcqFC,$visuNo,This).status -side top
 
@@ -3013,7 +3068,7 @@ proc AcqFCBuildIF { visuNo } {
    set panneau(AcqFC,$visuNo,mode_en_cours) [ lindex $panneau(AcqFC,$visuNo,list_mode) [ expr $panneau(AcqFC,$visuNo,mode) - 1 ] ]
    frame $panneau(AcqFC,$visuNo,This).mode -borderwidth 5 -relief ridge
       ComboBox $panneau(AcqFC,$visuNo,This).mode.but \
-        -width 12         \
+        -width 14         \
         -font $audace(font,arial_10_b) \
         -height [llength $panneau(AcqFC,$visuNo,list_mode)] \
         -relief raised    \
@@ -3034,6 +3089,19 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.une.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.une.nom.entr -fill x -side top
+           label $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -fill x -side left
+           ComboBox $panneau(AcqFC,$visuNo,This).mode.une.nom.list_extension \
+              -width 7          \
+              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
+              -relief raised    \
+              -borderwidth 1    \
+              -editable 0       \
+              -justify center   \
+              -textvariable panneau(AcqFC,$visuNo,extension) \
+              -values $panneau(AcqFC,$visuNo,liste_extension) \
+              -modifycmd "::AcqFC::Change_extension $visuNo"
+           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.list_extension -side right
         pack $panneau(AcqFC,$visuNo,This).mode.une.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.une.index -relief ridge -borderwidth 2
            checkbutton $panneau(AcqFC,$visuNo,This).mode.une.index.case -pady 0 -text $caption(acqfc,index) -variable panneau(AcqFC,$visuNo,indexer)
@@ -3056,6 +3124,19 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.serie.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.entr -fill x
+           label $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -fill x -side left
+           ComboBox $panneau(AcqFC,$visuNo,This).mode.serie.nom.list_extension \
+              -width 7          \
+              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
+              -relief raised    \
+              -borderwidth 1    \
+              -editable 0       \
+              -justify center   \
+              -textvariable panneau(AcqFC,$visuNo,extension) \
+              -values $panneau(AcqFC,$visuNo,liste_extension) \
+              -modifycmd "::AcqFC::Change_extension $visuNo"
+           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.list_extension -side right
         pack $panneau(AcqFC,$visuNo,This).mode.serie.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.serie.nb -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.serie.nb.but -text $caption(acqfc,nombre) -pady 0
@@ -3088,6 +3169,19 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.continu.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.entr -fill x
+           label $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -fill x -side left
+           ComboBox $panneau(AcqFC,$visuNo,This).mode.continu.nom.list_extension \
+              -width 7          \
+              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
+              -relief raised    \
+              -borderwidth 1    \
+              -editable 0       \
+              -justify center   \
+              -textvariable panneau(AcqFC,$visuNo,extension) \
+              -values $panneau(AcqFC,$visuNo,liste_extension) \
+              -modifycmd "::AcqFC::Change_extension $visuNo"
+           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.list_extension -side right
         pack $panneau(AcqFC,$visuNo,This).mode.continu.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.continu.index.lab -text $caption(acqfc,index) -pady 0
@@ -3108,6 +3202,19 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.entr -fill x
+           label $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -fill x -side left
+           ComboBox $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.list_extension \
+              -width 7          \
+              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
+              -relief raised    \
+              -borderwidth 1    \
+              -editable 0       \
+              -justify center   \
+              -textvariable panneau(AcqFC,$visuNo,extension) \
+              -values $panneau(AcqFC,$visuNo,liste_extension) \
+              -modifycmd "::AcqFC::Change_extension $visuNo"
+           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.list_extension -side right
         pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.serie_1.nb -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.serie_1.nb.but -text $caption(acqfc,nombre) -pady 0
@@ -3140,6 +3247,19 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.entr -fill x
+           label $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -fill x -side left
+           ComboBox $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.list_extension \
+              -width 7          \
+              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
+              -relief raised    \
+              -borderwidth 1    \
+              -editable 0       \
+              -justify center   \
+              -textvariable panneau(AcqFC,$visuNo,extension) \
+              -values $panneau(AcqFC,$visuNo,liste_extension) \
+              -modifycmd "::AcqFC::Change_extension $visuNo"
+           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.list_extension -side right
         pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.continu_1.index -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.continu_1.index.lab -text $caption(acqfc,index) -pady 0
@@ -3205,6 +3325,14 @@ proc AcqFCBuildIF { visuNo } {
            pack $panneau(AcqFC,$visuNo,This).mode.video_1.show.case -side left -fill x -expand true
         pack $panneau(AcqFC,$visuNo,This).mode.video_1.show -side top -fill x
      pack $panneau(AcqFC,$visuNo,This).mode -side top -fill x
+
+      #--- Frame pour l'affichage de l'avancement de l'acqusition
+      frame $panneau(AcqFC,$visuNo,This).avancement_acq -borderwidth 2 -relief ridge
+        #--- Checkbutton petit deplacement
+        checkbutton $panneau(AcqFC,$visuNo,This).avancement_acq.check -highlightthickness 0 \
+           -text $caption(acqfc,avancement_acq) -variable panneau(AcqFC,$visuNo,avancement_acq)
+        pack $panneau(AcqFC,$visuNo,This).avancement_acq.check -side left -fill x
+     pack $panneau(AcqFC,$visuNo,This).avancement_acq -side top -fill x
 
       #--- Frame petit decalage
       frame $panneau(AcqFC,$visuNo,This).shift -borderwidth 2 -relief ridge

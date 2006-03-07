@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 19 fevrier 2006
+# Date de mise a jour : 25 fevrier 2006
 #
 
 #--- Passage de TCL/TK 8.3 a 8.4
@@ -41,6 +41,8 @@ source filtrage.tcl
 source mauclaire.tcl
 source astrometry.tcl
 source vo_tools.tcl
+source sectiongraph.tcl
+source polydraw.tcl
 
 namespace eval ::audace {
    variable This
@@ -688,6 +690,7 @@ namespace eval ::audace {
 
       Menu           $visuNo "$caption(audace,menu,analyse)"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,statwin)" "statwin $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"

@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Date de mise a jour : 15 janvier 2006
+# Date de mise a jour : 07 mars 2006
 #
 
 #=========================================================================
@@ -22,6 +22,7 @@ set caption(acqfc,GO)                        "GO CCD"
 set caption(acqfc,mode)                      "Mode"
 set caption(acqfc,uneimage)                  "One picture"
 set caption(acqfc,nom)                       "Name"
+set caption(acqfc,extension)                 "Extension"
 set caption(acqfc,index)                     "Index"
 set caption(acqfc,sauvegde)                  "Save"
 set caption(acqfc,serie)                     "Series"
@@ -124,6 +125,7 @@ set caption(acqfc,imsauvnom)                 "Image saved with name: %s%s\n"
 set caption(acqfc,pbmesserr)                 "Problem with error message"
 set caption(acqfc,lance_simu)                "\nRun the Simulation:"
 set caption(acqfc,fin_simu)                  "Stop the Simulation.\n"
+set caption(acqfc,avancement_acq)            "Acquisition\nProgress"
 set caption(acqfc,buttonShiftConfig)         "Shift"
 set caption(acqfc,acquisition)               "Aud'ACE - Acquisition of"
 
@@ -147,6 +149,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,mode)                   "Mode"
    set caption(acqfc,uneimage)               "Une image"
    set caption(acqfc,nom)                    "Nom"
+   set caption(acqfc,extension)              "Extension"
    set caption(acqfc,index)                  "Index"
    set caption(acqfc,sauvegde)               "Sauvegarder"
    set caption(acqfc,serie)                  "Série"
@@ -250,6 +253,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbmesserr)              "Problème de message d'erreur."
    set caption(acqfc,lance_simu)             "\nLancement d'une simulation :"
    set caption(acqfc,fin_simu)               "Fin de la simulation.\n"
+   set caption(acqfc,avancement_acq)         "Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Décalage"
    set caption(acqfc,acquisition)            "Aud'ACE - Acquisition de"
 
@@ -273,6 +277,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,mode)                   "Modo"
    set caption(acqfc,uneimage)               "Una immagine"
    set caption(acqfc,nom)                    "Nome"
+   set caption(acqfc,extension)              "Estensione"
    set caption(acqfc,index)                  "Indice"
    set caption(acqfc,sauvegde)               "Salvare"
    set caption(acqfc,serie)                  "Serie"
@@ -375,6 +380,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbmesserr)              "Problema del messaggio di errore"
    set caption(acqfc,lance_simu)             "\nEsecuzione della simulazione:"
    set caption(acqfc,fin_simu)               "Fine della simulazione.\n"
+   set caption(acqfc,avancement_acq)         "# Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Spostamento"
    set caption(acqfc,acquisition)            "Aud'ACE - Acquisizione di"
 
@@ -398,6 +404,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,mode)                   "Modo"
    set caption(acqfc,uneimage)               "Una imagen"
    set caption(acqfc,nom)                    "Nom"
+   set caption(acqfc,extension)              "Extension"
    set caption(acqfc,index)                  "Index"
    set caption(acqfc,sauvegde)               "Salvar"
    set caption(acqfc,serie)                  "Série"
@@ -500,6 +507,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbmesserr)              "Problema con mensaje de error"
    set caption(acqfc,lance_simu)             "\nEjecutar la simulación:"
    set caption(acqfc,fin_simu)               "Parar la simulación .\n"
+   set caption(acqfc,avancement_acq)         "# Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Desplazam."
    set caption(acqfc,acquisition)            "Aud'ACE - Acquisicion de"
 
@@ -523,6 +531,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,mode)                   "Modus"
    set caption(acqfc,uneimage)               "Ein Bild"
    set caption(acqfc,nom)                    "Namen"
+   set caption(acqfc,extension)              "Streckung"
    set caption(acqfc,index)                  "Index"
    set caption(acqfc,sauvegde)               "Speichern"
    set caption(acqfc,serie)                  "Reihe"
@@ -625,6 +634,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbmesserr)              "Problem mit die Irrtum Meldung"
    set caption(acqfc,lance_simu)             "\nDie Simulation starten:"
    set caption(acqfc,fin_simu)               "Ende der Simulation.\n"
+   set caption(acqfc,avancement_acq)         "# Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
    set caption(acqfc,image,acquisition)      "Aud'ACE - Anschaffung von"
 
@@ -648,6 +658,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,mode)                   "Mode"
    set caption(acqfc,uneimage)               "One picture"
    set caption(acqfc,nom)                    "Name"
+   set caption(acqfc,extension)              "Extension"
    set caption(acqfc,index)                  "Index"
    set caption(acqfc,sauvegde)               "Save"
    set caption(acqfc,serie)                  "Series"
@@ -750,6 +761,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbmesserr)              "Problem with error message"
    set caption(acqfc,lance_simu)             "\nRun the Simulation:"
    set caption(acqfc,fin_simu)               "Stop the Simulation.\n"
+   set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisition)            "Aud'ACE - Eksponeringer slut"
 

@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 16 fevrier 2006
+# Date de mise a jour : 06 mars 2006
 #
 
 #=========================================================================
@@ -87,6 +87,7 @@ set caption(audace,menu,log)                          "Logarithm"
 
 set caption(audace,menu,analyse)                      "Analysis"
 set caption(audace,menu,histo)                        "Histogram"
+set caption(audace,menu,coupe)                        "Section"
 set caption(audace,menu,statwin)                      "Statistics in Window"
 set caption(audace,menu,fwhm)                         "Fwhm"
 set caption(audace,menu,fitgauss)                     "Fit a gaussian"
@@ -395,6 +396,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analyse"
    set caption(audace,menu,histo)                     "Histogramme"
+   set caption(audace,menu,coupe)                     "Coupe"
    set caption(audace,menu,statwin)                   "Statistiques dans la fenêtre"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajuster une gaussienne"
@@ -703,6 +705,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analisi"
    set caption(audace,menu,histo)                     "Istogramma"
+   set caption(audace,menu,coupe)                     "# Coupe"
    set caption(audace,menu,statwin)                   "Statistiche zona selezionata"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Applicare una gaussiana"
@@ -1011,6 +1014,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Análisis"
    set caption(audace,menu,histo)                     "Histograma"
+   set caption(audace,menu,coupe)                     "# Coupe"
    set caption(audace,menu,statwin)                   "Ventana de estadísticas"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajustar perfil Gauss"
@@ -1319,6 +1323,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analyse"
    set caption(audace,menu,histo)                     "Historische Kurve"
+   set caption(audace,menu,coupe)                     "# Coupe"
    set caption(audace,menu,statwin)                   "Statistiken in das Fenster"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Eine Gauss Kurve einstellen"
@@ -1627,6 +1632,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analyse"
    set caption(audace,menu,histo)                     "Histogram"
+   set caption(audace,menu,coupe)                     "# Coupe"
    set caption(audace,menu,statwin)                   "Statistik in Vindue"
    set caption(audace,menu,fwhm)                      "Halvværdibredde (Fwhm)"
    set caption(audace,menu,fitgauss)                  "Tilpas en Gausskurve"

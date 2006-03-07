@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Date de mise a jour : 23 fevrier 2006
+# Date de mise a jour : 25 fevrier 2006
 #
 
 namespace eval ::confVisu {
@@ -762,11 +762,11 @@ namespace eval ::confVisu {
          label $This.fra1.lab2 -width 10 -text "$caption(seuil,bas)" -font $audace(font,arial_8_n)
          grid configure $This.fra1.lab2 -column 3 -row 1 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.labURLX -width 9 -font $audace(font,arial_8_n) -anchor w \
+         label $This.fra1.labURLX -width 16 -font $audace(font,arial_8_n) -anchor w \
             -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
          grid configure $This.fra1.labURLX -column 4 -row 0 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.labURLY -width 9 -font $audace(font,arial_8_n) -anchor w \
+         label $This.fra1.labURLY -width 16 -font $audace(font,arial_8_n) -anchor w \
             -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
          grid configure $This.fra1.labURLY -column 4 -row 1 -sticky we -in $This.fra1 -pady 2
 

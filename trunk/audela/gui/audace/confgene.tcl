@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 17 fevrier 2006
+# Date de mise a jour : 07 mars 2006
 #
 
 #
@@ -969,6 +969,11 @@ namespace eval confFichierIma {
       $This.labURL2 configure -text "$confgene(extension,new)"
       $This.labURL5 configure -text "$confgene(jpegquality,new)"
       widgetToConf
+      #--- Mise a jour de la liste des extensions pour toutes les visu disponibles
+      foreach visuNo [::visu::list] {
+         ::AcqFC::Init_List_Extension $visuNo
+      }
+
    }
 
    #
