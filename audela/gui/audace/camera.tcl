@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Date de mise a jour : 10 janvier 2006
+# Date de mise a jour : 05 mars 2006
 #
 
 namespace eval camera {
@@ -111,9 +111,6 @@ namespace eval camera {
                / $Nb_Line_Total $caption(camera,ligne)"
          }
       }
-
-      #--- La nouvelle fenetre est active
-      focus $audace(base).progress_scan
 
       #--- Mise a jour dynamique des couleurs
       if  [ winfo exists $audace(base).progress_scan ] {
@@ -287,11 +284,6 @@ namespace eval camera {
                -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
             update
          }
-      }
-
-      #--- La nouvelle fenetre est active
-      if { $t > "0" } {
-         focus $audace(base).progress_pose
       }
 
       #--- Mise a jour dynamique des couleurs

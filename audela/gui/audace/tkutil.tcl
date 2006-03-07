@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Date de mise a jour : 09 decembre 2005
+# Date de mise a jour : 07 mars 2006
 #
 
 namespace eval tkutil {
@@ -28,7 +28,7 @@ namespace eval tkutil {
       if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
          ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
          lappend openFileType \
-            [ list "$caption(tkutil,image_file)"       [ buf$audace(bufNo) extension ] ]    \
+            [ list "$caption(tkutil,image_file)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_file)"       [ buf$audace(bufNo) extension ].gz ] \
             [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ].gz ]
@@ -167,7 +167,7 @@ namespace eval tkutil {
       if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
          ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
          lappend saveFileType \
-            [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ]    \
+            [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_fits) gz"    [ buf$audace(bufNo) extension ].gz ]
       }
       #---
@@ -189,7 +189,9 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
          [ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
          [ list "$caption(tkutil,image_png)"        {}      PNGF ] \
-         [ list "$caption(tkutil,image_tiff)"       {}      TIFF ]
+         [ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
+         [ list "$caption(tkutil,image_raw)"        {.crw }      ] \
+         [ list "$caption(tkutil,image_raw) "       {.nef}       ]
    }
 
    #
@@ -237,7 +239,7 @@ namespace eval tkutil {
       set ad_vrai [ lindex $radec 0 ]
       set ad_vrai [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
       set dec_vrai [ lindex $radec 1 ]
-      set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]  
+      set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
 
       return [ list $ad_vrai $dec_vrai ]
    }

@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 05 mars 2006
 #
 
 #=========================================================================
@@ -116,8 +116,11 @@ set caption(confcam,dsc_name)                   "Digital Camera"
 set caption(confcam,dsc_liaison)                "Link"
 set caption(confcam,dsc_photopc)                "PhotoPC"
 set caption(confcam,dsc_gphoto2)                "GPhoto2"
+set caption(confcam,dsc_longue_pose)            "Long Exposure"
 set caption(confcam,dsc_quickremote)            "QuickRemote"
+set caption(confcam,dsc_externe)                "# Externe"
 set caption(confcam,dsc_detect_service)         "Stop Automatic Detection of Digital Cameras"
+set caption(confcam,dsc_telecharger)            "Download Image"
 set caption(confcam,apn_port)                   "Digital Camera Control Port"
 set caption(confcam,apn_baud)                   "Serial Port Speed (bauds)"
 
@@ -271,8 +274,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_liaison)             "Liaison"
    set caption(confcam,dsc_photopc)             "PhotoPC"
    set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_longue_pose)         "Longue pose"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_externe)             "Externe"
    set caption(confcam,dsc_detect_service)      "Arrêt de la détection automatique des appareils photo numériques"
+   set caption(confcam,dsc_telecharger)         "Télécharger l'image"
    set caption(confcam,apn_port)                "Port de commande de l'APN"
    set caption(confcam,apn_baud)                "Vitesse du port série (bauds)"
 
@@ -426,8 +432,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_liaison)             "Collegamento"
    set caption(confcam,dsc_photopc)             "PhotoPC"
    set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_longue_pose)         "Lunga posa"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_externe)             "# Externe"
    set caption(confcam,dsc_detect_service)      "Arresto detezione automatica delle camere digitali"
+   set caption(confcam,dsc_telecharger)         "Scaricare l'immagine"
    set caption(confcam,apn_port)                "Porta della Fotocamera digitale"
    set caption(confcam,apn_baud)                "Velocita' porta seriale (bauds)"
 
@@ -581,8 +590,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_liaison)             "Enlace"
    set caption(confcam,dsc_photopc)             "PhotoPC"
    set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_longue_pose)         "Exposición larga"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_externe)             "# Externe"
    set caption(confcam,dsc_detect_service)      "Parar la detección automática de cámaras digitales"
+   set caption(confcam,dsc_telecharger)         "Descargar imagen"
    set caption(confcam,apn_port)                "Puerto de control de la cámara digital"
    set caption(confcam,apn_baud)                "Velocidad del Puerto Serie (baudios)"
 
@@ -736,8 +748,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_liaison)             "Link"
    set caption(confcam,dsc_photopc)             "PhotoPC"
    set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_longue_pose)         "Lange Belichtung"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_externe)             "# Externe"
    set caption(confcam,dsc_detect_service)      "Ende der digitale Fotoapparate automatische Registrierung"
+   set caption(confcam,dsc_telecharger)         "Das Bild herunterladen"
    set caption(confcam,apn_port)                "Digital Fotoapparat Steuer Port"
    set caption(confcam,apn_baud)                "Seriell Port Geschwindigkeit (Bauds)"
 
@@ -891,8 +906,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_liaison)             "Link"
    set caption(confcam,dsc_photopc)             "PhotoPC"
    set caption(confcam,dsc_gphoto2)             "GPhoto2"
+   set caption(confcam,dsc_longue_pose)         "Long Exposure"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
+   set caption(confcam,dsc_externe)             "# Externe"
    set caption(confcam,dsc_detect_service)      "Stop Automatic Detection of Digital Cameras"
+   set caption(confcam,dsc_telecharger)         "Download Image"
    set caption(confcam,apn_port)                "Digital Camera Control Port"
    set caption(confcam,apn_baud)                "Serial Port Speed (bauds)"
 
