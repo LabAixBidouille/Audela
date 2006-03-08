@@ -16,7 +16,7 @@
 #---    else if {[string compare $langage "mylanguage"] == 0 } {
 #---       ...
 #---       ...
-#michel
+#
 source "version.tcl"
 
 if {[file exists audace.txt]==1} {
