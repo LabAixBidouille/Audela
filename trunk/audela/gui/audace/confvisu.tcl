@@ -2,8 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Date de mise a jour : 25 fevrier 2006
-#
+# $Id: confvisu.tcl,v 1.7 2006-03-10 21:48:17 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -196,13 +195,34 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  autovisu
+   # autovisu
    #     rafraichit l'affichage
+   # parametres
+   #  visuNo: numero de la visu
+   #  force:  -dovisu : rafraichissement complet
+   #          -no     : rafraichissement sans recalcul des seuils
+   #          -novisu : pas de rafraichissement 
+   #  retour: null
    #------------------------------------------------------------
-   proc autovisu { visuNo { force "-no" } } {
+   proc autovisu { visuNo { force "-no" } { fileName "" } } {
       variable private
       global conf  
+      global caption
 
+      #--- je mets a jour le nom du fichier dans le titre de la fenetre  
+      if { $fileName != "" } {
+        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo) - $fileName"
+      } else {
+        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
+      }
+      
+      #--- je met a jour le nom du fichier  (cette variable est surveillee par un listener)
+      set private($visuNo,lastFileName) "$fileName"   
+
+      if { $force == "-novisu" } {
+         return
+      }
+      
       set bufNo [visu$visuNo buf]
       set private($visuNo,picture_w) [lindex [buf$bufNo getkwd NAXIS1] 1]
       if { "$private($visuNo,picture_w)" == "" } { 
@@ -215,7 +235,7 @@ namespace eval ::confVisu {
 
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
-      set zoom [visu$visuNo zoom]
+      set zoom   $private($visuNo,zoom)
       set imageNo [visu$visuNo image]
 
       if { [ image type image$imageNo ] == "video" } {
@@ -301,7 +321,7 @@ namespace eval ::confVisu {
       ::confVisu::ChangeLoCutDisplay $visuNo [lindex $cuts 1]
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
-      set zoom [ visu$visuNo zoom ]
+      set zoom   $private($visuNo,zoom)
       $private($visuNo,hCanvas) configure -scrollregion [ list 0 0 [ expr int(${zoom}*$private($visuNo,picture_w)) ] [ expr int(${zoom}*$private($visuNo,picture_h)) ] ]
 
       # rafraichissement de l'affichage
@@ -392,8 +412,57 @@ namespace eval ::confVisu {
    proc setZoom { visuNo } {
       variable private 
 
+      set box [grid bbox .audace.can1 0 0]
+      ::console::disp "\n setZoom 2 box=$box \n"      
+      set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]  
+      set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
+      ::console::disp "setZoom 2 xScreenCenter=$xScreenCenter  yScreenCenter=$yScreenCenter\n"      
+
+      set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
+      ::console::disp "setZoom 2 canvasCenter=$canvasCenter \n"      
+      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
+      ::console::disp "setZoom 2 pictureCenter=$pictureCenter \n"      
+      
       visu$visuNo zoom $private($visuNo,zoom)
-      ::confVisu::autovisu $visuNo
+      ###::confVisu::autovisu $visuNo
+
+      #--- Je mets a jour la taille du reticule
+      #::confVisu::redrawCrosshair $visuNo
+      
+      visu$visuNo clear
+      
+      #--- mise à jour des scrollbar
+      $private($visuNo,hCanvas) configure \
+         -scrollregion [list 0 0 [expr int($private($visuNo,zoom) * $private($visuNo,picture_w))] [expr int($private($visuNo,zoom) * $private($visuNo,picture_h))]]
+
+      # rafraichissement de l'image
+      visu$visuNo disp   
+
+      set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]  
+      ::console::disp "setZoom 0,5  canvasCenter=$canvasCenter \n"      
+   
+      set xFactor [.audace.can1.canvas xview]
+      set yFactor [.audace.can1.canvas yview]
+      ::console::disp "setZoom 0,5  xFactor=$xFactor yFactor=$yFactor\n"      
+      set scrollRegion [.audace.can1.canvas cget -scrollregion]
+      ::console::disp "setZoom 0,5  scrollRegion=$scrollRegion \n"      
+      
+      set xmin [expr  [lindex $xFactor 0] * [lindex $scrollRegion 2] ]
+      set ymin [expr  [lindex $yFactor 0] * [lindex $scrollRegion 3] ]
+      set xmax [expr  [lindex $xFactor 1] * [lindex $scrollRegion 2] ]
+      set ymax [expr  [lindex $yFactor 1] * [lindex $scrollRegion 3] ]
+      ::console::disp "setZoom 0,5  xmin=$xmin ymin=$ymin xmax=$xmax ymax=$ymax\n"      
+      
+      set x [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ] 
+      set y [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ] 
+      if { $x < 0 } { set x 0 }
+      if { $y < 0 } { set y 0 }
+      
+      ::console::disp "setZoom 0,5  x=$x y=$y \n"      
+      
+      .audace.can1.canvas xview moveto [expr 1.0*$x / [lindex $scrollRegion 2] ]
+      .audace.can1.canvas yview moveto [expr 1.0*$y / [lindex $scrollRegion 3] ]
+      
    }
 
    #------------------------------------------------------------
@@ -621,6 +690,55 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   # addZoomListener
+   #  ajoute une procedure a appeler si on change de zoom
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc addZoomListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,zoom)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeZoomListener
+   #  supprime une procedure a appeler si on change de camera
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc removeZoomListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,zoom)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # addFileNameListener
+   #  ajoute une procedure a appeler si on change de nom de fichier image
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc addFileNameListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeFileNameListener
+   #  supprime une procedure a appeler si on change de nom de fichier image
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc removeFileNameListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+   }
+
+
+   #------------------------------------------------------------
    #  stopTool
    #     arrete l'outil courant
    #  parametres :
@@ -668,6 +786,20 @@ namespace eval ::confVisu {
       variable private
 
       return [ string trimleft $private($visuNo,toolNameSpace) "::" ]
+   }
+
+   #------------------------------------------------------------
+   #  getVisuNo
+   #     retourne le numero de visu contenant le canvas
+   #  parametres
+   #     hCanvas : nom du canvas , exemple: .audace.can1.canvas 
+   #  return : 
+   #    numera de la visu contenant le canvas
+   #------------------------------------------------------------
+   proc getVisuNo { hCanvas } {
+      #-- le numero de la visu se trouve dans le parametre "class de la toplevel 
+      #-- qui contient le canvas
+      return [winfo class [winfo toplevel $hCanvas ] ]   
    }
 
    #------------------------------------------------------------
@@ -1089,7 +1221,7 @@ namespace eval ::confVisu {
    proc canvas2Picture { visuNo coord { stick left } } {
       variable private
 
-      set zoom $private($visuNo,zoom)
+      set zoom   [visu$visuNo zoom]
       set window [visu$visuNo window]
       set bufNo  [visu$visuNo buf]
       set height $private($visuNo,picture_h)
@@ -1127,8 +1259,8 @@ namespace eval ::confVisu {
    proc picture2Canvas { visuNo coord } {
       variable private
 
-      set zoom [visu$visuNo zoom]
-      set window [visu$visuNo window]
+      set zoom    $private($visuNo,zoom)
+      set window  [visu$visuNo window]
       set height $private($visuNo,picture_h)
       if {$window=="full"} {
          set x0 0
@@ -1150,7 +1282,7 @@ namespace eval ::confVisu {
          set bufNo [visu$visuNo buf]
          set liste [::confVisu::screen2Canvas $visuNo [list $x $y]]
          if {[ buf$bufNo imageready ] == "1" } {
-            set zoom [visu$visuNo zoom]
+            set zoom   $private($visuNo,zoom)
             set width  $::confVisu::private($visuNo,picture_w)
             set height $::confVisu::private($visuNo,picture_h)
             set wz [expr $width * $zoom]
@@ -1340,7 +1472,7 @@ namespace eval ::confVisu {
       variable private
       global audace
 
-      set zoom [visu$visuNo zoom]
+      set zoom  $private($visuNo,zoom)
       set bufNo [visu$visuNo buf]
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
