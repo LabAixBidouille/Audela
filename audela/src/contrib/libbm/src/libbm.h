@@ -4,7 +4,7 @@
 // Description : Point d'entrée de la librairie
 // ============================================
 
-#define NUMERO_VERSION "1.02"
+#define NUMERO_VERSION "1.5"
 
 
 #ifndef __LIBBMH__
@@ -30,14 +30,6 @@
 
 #include "bm_c_tcl.h"
 #include "bm.h"
-
-//#ifdef LIBRARY_DLL
-//   __declspec(dllexport) int __cdecl Bm_Init(Tcl_Interp *interp);
-//#endif
-
-//#ifdef LIBRARY_SO
-//   extern int Bm_Init(Tcl_Interp *interp);
-//#endif
 
 #endif
 
