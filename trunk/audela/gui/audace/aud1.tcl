@@ -40,7 +40,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    }
 
    #--- Fenetre parent
-   set fenetre $::confVisu::private($visuNo,This)
+   set fenetre [::confVisu::getBase $visuNo]
 
    if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
@@ -55,18 +55,12 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    if { [ string compare $filename "" ] != "0" } {
       set result [ buf$bufNo load $filename ]
       if { $result == "" } {
-         set ::confVisu::private($visuNo,lastFileName) "$filename"
-         ::confVisu::clear $visuNo
-###         set audace(picture,w) [lindex [buf$bufNo getkwd NAXIS1] 1]
-###         set audace(picture,h) [lindex [buf$bufNo getkwd NAXIS2] 1]
-         if { $affichage != "-novisu" } {
-            wm title $fenetre "$caption(audace,titre) (visu$visuNo) - $filename"
-            ::audace::autovisu $visuNo
-         } else {
-            wm title $fenetre "$caption(audace,titre) (visu$visuNo)"
-         }
+         ::confVisu::autovisu $visuNo "-no" "$filename" 
+      } else {
+         #--- echec du chargement
+         ::confVisu::autovisu $visuNo "-novisu"  ""
       }
-
+      
       set calib 1
       if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
          set calib 0
@@ -149,7 +143,7 @@ proc saveima { { filename "?" } { visuNo 1 } } {
    }
 
    #--- Fenetre parent
-   set fenetre $::confVisu::private($visuNo,This)
+   set fenetre [::confVisu::getBase $visuNo]
 
    if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
