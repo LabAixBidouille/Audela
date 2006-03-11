@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 07 mars 2006
+# Date de mise a jour : 11 mars 2006
 #
 
 global confCam
@@ -100,6 +100,7 @@ namespace eval ::confCam {
       #--- initConf 7
       if { ! [ info exists conf(webcam,longuepose) ] }           { set conf(webcam,longuepose)           "0" }
       if { ! [ info exists conf(webcam,longueposeport) ] }       { set conf(webcam,longueposeport)       "lpt1" }
+      if { ! [ info exists conf(webcam,longueposelinkbit) ] }    { set conf(webcam,longueposelinkbit)    "0" }
       if { ! [ info exists conf(webcam,longueposestartvalue) ] } { set conf(webcam,longueposestartvalue) "0" }
       if { ! [ info exists conf(webcam,longueposestopvalue) ] }  { set conf(webcam,longueposestopvalue)  "1" }
       if { ! [ info exists conf(webcam,mirh) ] }                 { set conf(webcam,mirh)                 "0" }
@@ -120,14 +121,17 @@ namespace eval ::confCam {
       if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
 
       #--- initConf 10
-      if { ! [ info exists conf(dsc,link) ] }             { set conf(dsc,link)             "$caption(confcam,dsc_gphoto2)" }
-      if { ! [ info exists conf(dsc,longue_pose) ] }      { set conf(dsc,longue_pose)      "0" }
-      if { ! [ info exists conf(dsc,link_longue_pose) ] } { set conf(dsc,link_longue_pose) "$caption(confcam,dsc_quickremote)" }
-      if { ! [ info exists conf(dsc,statut_service) ] }   { set conf(dsc,statut_service)   "1" }
-      if { ! [ info exists conf(dsc,mirh) ] }             { set conf(dsc,mirh)             "0" }
-      if { ! [ info exists conf(dsc,mirv) ] }             { set conf(dsc,mirv)             "0" }
-      if { ! [ info exists conf(apn,baud) ] }             { set conf(apn,baud)             "115200" }
-     ### if { ! [ info exists conf(apn,serial_port) ] }      { set conf(apn,serial_port)      [ lindex "$audace(list_com)" 0 ] }
+      if { ! [ info exists conf(dsc,link) ] }                 { set conf(dsc,link)                 "$caption(confcam,dsc_gphoto2)" }
+      if { ! [ info exists conf(dsc,longue_pose) ] }          { set conf(dsc,longue_pose)          "0" }
+      if { ! [ info exists conf(dsc,link_longue_pose) ] }     { set conf(dsc,link_longue_pose)     "$caption(confcam,dsc_quickremote)" }
+      if { ! [ info exists conf(dsc,longueposelinkbit) ] }    { set conf(dsc,longueposelinkbit)    "0" }
+      if { ! [ info exists conf(dsc,longueposestartvalue) ] } { set conf(dsc,longueposestartvalue) "1" }
+      if { ! [ info exists conf(dsc,longueposestopvalue) ] }  { set conf(dsc,longueposestopvalue)  "0" }
+      if { ! [ info exists conf(dsc,statut_service) ] }       { set conf(dsc,statut_service)       "1" }
+      if { ! [ info exists conf(dsc,mirh) ] }                 { set conf(dsc,mirh)                 "0" }
+      if { ! [ info exists conf(dsc,mirv) ] }                 { set conf(dsc,mirv)                 "0" }
+      if { ! [ info exists conf(apn,baud) ] }                 { set conf(apn,baud)                 "115200" }
+     ### if { ! [ info exists conf(apn,serial_port) ] }          { set conf(apn,serial_port)          [ lindex "$audace(list_com)" 0 ] }
 
       #--- initConf 11
       if { ! [ info exists conf(andor,cool) ] }        { set conf(andor,cool)        "0" }
@@ -435,6 +439,8 @@ namespace eval ::confCam {
             -text "A :" -value "A" -variable confCam(cam_item) \
             -command "::confCam::selectCamItem"
          pack $This.startA.item -side left -padx 3 -pady 3 -fill x
+         label $This.startA.camNo -textvariable confCam(camera,A,camNo)
+         pack $This.startA.camNo -side left -padx 3 -pady 3 -fill x
          label $This.startA.name -textvariable conf(camera,A,camName)
          pack $This.startA.name -side left -padx 3 -pady 3 -fill x
          
@@ -460,6 +466,8 @@ namespace eval ::confCam {
             -text "B :" -value "B" -variable confCam(cam_item) \
             -command "::confCam::selectCamItem" 
          pack $This.startB.item -side left -padx 3 -pady 3 -fill x
+         label $This.startB.camNo -textvariable confCam(camera,B,camNo)
+         pack $This.startB.camNo -side left -padx 3 -pady 3 -fill x
          label $This.startB.name -textvariable conf(camera,B,camName)
          pack $This.startB.name -side left -padx 3 -pady 3 -fill x
          
@@ -485,6 +493,8 @@ namespace eval ::confCam {
             -text "C :" -value "C" -variable confCam(cam_item) \
             -command "::confCam::selectCamItem" 
          pack $This.startC.item -side left -padx 3 -pady 3 -fill x
+         label $This.startC.camNo -textvariable confCam(camera,C,camNo)
+         pack $This.startC.camNo -side left -padx 3 -pady 3 -fill x
          label $This.startC.name -textvariable conf(camera,C,camName)
          pack $This.startC.name -side left -padx 3 -pady 3 -fill x
          
@@ -651,7 +661,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,kaf400) $caption(confcam,kaf1600) $caption(confcam,kaf3200) ]
       ComboBox $frm.ccd \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -675,7 +685,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours) ]
       ComboBox $frm.ampli_ccd \
          -width 10         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -690,7 +700,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,can_ad976a) $caption(confcam,can_ltc1605) ]
       ComboBox $frm.can \
          -width 10         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -706,7 +716,7 @@ namespace eval ::confCam {
          $caption(confcam,obtu_thierry) ]
       ComboBox $frm.typeobtu \
          -width 11         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -723,7 +733,7 @@ namespace eval ::confCam {
       set confCam(conf_audine,list_foncobtu) $list_combobox
       ComboBox $frm.foncobtu \
          -width 11         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -865,7 +875,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -879,7 +889,7 @@ namespace eval ::confCam {
             set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_14bits) ]
             ComboBox $frm.res \
                -width 7          \
-               -height [ llength $list_combobox ]  \
+               -height [ llength $list_combobox ] \
                -relief sunken    \
                -borderwidth 1    \
                -editable 0       \
@@ -922,7 +932,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -953,7 +963,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -984,7 +994,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1015,7 +1025,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1046,7 +1056,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1077,7 +1087,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1108,7 +1118,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1139,7 +1149,7 @@ namespace eval ::confCam {
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
                   -width 11         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1158,7 +1168,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1175,7 +1185,7 @@ namespace eval ::confCam {
          set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_14bits) ]
          ComboBox $frm.res \
             -width 7          \
-            -height [ llength $list_combobox ]  \
+            -height [ llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
@@ -1221,7 +1231,7 @@ namespace eval ::confCam {
             $caption(confcam,obtu_synchro) ]
          ComboBox $frm.foncobtu \
             -width 11         \
-            -height [ llength $list_combobox ]  \
+            -height [ llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \
             -textvariable confCam(conf_hisis,foncobtu) \
@@ -1324,7 +1334,7 @@ namespace eval ::confCam {
       }
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1375,7 +1385,7 @@ namespace eval ::confCam {
          $caption(confcam,obtu_synchro) ]
       ComboBox $frm.foncobtu \
          -width 11         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1455,7 +1465,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1567,7 +1577,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1591,7 +1601,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur) ]
       ComboBox $frm.acc \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1709,7 +1719,7 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
                ComboBox $frm.res \
                   -width 7          \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1723,7 +1733,7 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
                ComboBox $frm.captemp \
                   -width 12         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1754,7 +1764,7 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
                ComboBox $frm.res \
                   -width 7          \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1768,7 +1778,7 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
                ComboBox $frm.captemp \
                   -width 12         \
-                  -height [ llength $list_combobox ]  \
+                  -height [ llength $list_combobox ] \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -1825,7 +1835,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1841,7 +1851,7 @@ namespace eval ::confCam {
          set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
          ComboBox $frm.res \
             -width 7          \
-            -height [ llength $list_combobox ]  \
+            -height [ llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
@@ -1867,7 +1877,7 @@ namespace eval ::confCam {
          set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
          ComboBox $frm.captemp \
             -width 12         \
-            -height [ llength $list_combobox ]  \
+            -height [ llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
@@ -1941,6 +1951,7 @@ namespace eval ::confCam {
       #--- confToWidget
       set confCam(conf_webcam,longuepose)           $conf(webcam,longuepose)
       set confCam(conf_webcam,longueposeport)       $conf(webcam,longueposeport)
+      set confCam(conf_webcam,longueposelinkbit)    $conf(webcam,longueposelinkbit)
       set confCam(conf_webcam,longueposestartvalue) $conf(webcam,longueposestartvalue)
       set confCam(conf_webcam,longueposestopvalue)  $conf(webcam,longueposestopvalue)
       set confCam(conf_webcam,mirh)                 $conf(webcam,mirh)
@@ -2003,7 +2014,7 @@ namespace eval ::confCam {
       set list_combobox [ list 0 1 2 3 4 5 6 7 8 9 ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confCam(conf_webcam,port) \
@@ -2044,7 +2055,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) $caption(confcam,quickremote) ]
       ComboBox $frm.lpport \
          -width 13         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -2074,17 +2085,25 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,link_configure)" -relief raised -command "::confLink::run"
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
-      label $frm.lab3 -text "$caption(confcam,webcam_longueposestart)"
+      label $frm.lab3 -text "$caption(confcam,webcam_longueposebit)"
       pack $frm.lab3 -in $frm.frame11 -anchor center -side left -padx 3 -pady 5
 
-      entry $frm.longueposestartvalue -width 4 -textvariable confCam(conf_webcam,longueposestartvalue) -justify center
-      pack $frm.longueposestartvalue -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
+      set list_combobox [ list 0 1 2 3 4 5 6 7 ]
+      ComboBox $frm.longueposelinkbit \
+         -width 7          \
+         -height [ llength $list_combobox ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -textvariable confCam(conf_webcam,longueposelinkbit) \
+         -editable 0       \
+         -values $list_combobox
+      pack $frm.longueposelinkbit -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
 
-      label $frm.lab4 -text "$caption(confcam,webcam_longueposestop)"
+      label $frm.lab4 -text "$caption(confcam,webcam_longueposestart)"
       pack $frm.lab4 -in $frm.frame12 -anchor center -side left -padx 3 -pady 5
 
-      entry $frm.longueposestopvalue -width 4 -textvariable confCam(conf_webcam,longueposestopvalue) -justify center
-      pack $frm.longueposestopvalue -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
+      entry $frm.longueposestartvalue -width 4 -textvariable confCam(conf_webcam,longueposestartvalue) -justify center
+      pack $frm.longueposestartvalue -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
 
       #--- WebCam modifiee avec un capteur Noir et Blanc
       checkbutton $frm.ccd_N_B -text "$caption(confcam,ccd_N_B)" -highlightthickness 0 \
@@ -2094,7 +2113,7 @@ namespace eval ::confCam {
       set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
       ComboBox $frm.dim_ccd_N_B \
          -width 6         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -2197,7 +2216,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -2293,7 +2312,7 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
       ComboBox $frm.port \
          -width 7          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -2348,14 +2367,17 @@ namespace eval ::confCam {
       global frmm
 
       #--- confToWidget
-      set confCam(conf_dsc,link)             $conf(dsc,link)
-      set confCam(conf_dsc,longue_pose)      $conf(dsc,longue_pose)
-      set confCam(conf_dsc,link_longue_pose) $conf(dsc,link_longue_pose)
-      set confCam(conf_dsc,statut_service)   $conf(dsc,statut_service)
-      set confCam(conf_dsc,mirh)             $conf(dsc,mirh)
-      set confCam(conf_dsc,mirv)             $conf(dsc,mirv)
-      set confCam(conf_apn,baud)             $conf(apn,baud)
-     ### set confCam(conf_apn,serial_port)      $conf(apn,serial_port)
+      set confCam(conf_dsc,link)                 $conf(dsc,link)
+      set confCam(conf_dsc,longue_pose)          $conf(dsc,longue_pose)
+      set confCam(conf_dsc,link_longue_pose)     $conf(dsc,link_longue_pose)
+      set confCam(conf_dsc,longueposelinkbit)    $conf(dsc,longueposelinkbit)
+      set confCam(conf_dsc,longueposestartvalue) $conf(dsc,longueposestartvalue)
+      set confCam(conf_dsc,longueposestopvalue)  $conf(dsc,longueposestopvalue)
+      set confCam(conf_dsc,statut_service)       $conf(dsc,statut_service)
+      set confCam(conf_dsc,mirh)                 $conf(dsc,mirh)
+      set confCam(conf_dsc,mirv)                 $conf(dsc,mirv)
+      set confCam(conf_apn,baud)                 $conf(apn,baud)
+     ### set confCam(conf_apn,serial_port)          $conf(apn,serial_port)
 
       #--- Initialisation
       set frmm(Camera10) [ Rnotebook:frame $nn 10 ]
@@ -2384,13 +2406,22 @@ namespace eval ::confCam {
      # pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
 
       frame $frm.frame8 -borderwidth 0 -relief raised
-     # pack $frm.frame8 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
+     # pack $frm.frame8 -in $frm.frame7 -anchor n -side top -fill x
 
       frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -side bottom -fill x -pady 2
+     # pack $frm.frame9 -in $frm.frame7 -anchor n -side top -fill x
 
       frame $frm.frame10 -borderwidth 0 -relief raised
-      pack $frm.frame10 -side bottom -fill x -pady 2
+     # pack $frm.frame10 -in $frm.frame7 -anchor n -side top -fill x
+
+      frame $frm.frame11 -borderwidth 0 -relief raised
+     # pack $frm.frame11 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
+
+      frame $frm.frame12 -borderwidth 0 -relief raised
+      pack $frm.frame12 -side bottom -fill x -pady 2
+
+      frame $frm.frame13 -borderwidth 0 -relief raised
+      pack $frm.frame13 -side bottom -fill x -pady 2
 
       #--- Label de la liaison
       label $frm.lab1 -text "$caption(confcam,dsc_liaison)"
@@ -2424,8 +2455,11 @@ namespace eval ::confCam {
                pack forget $frm.frame6
                pack forget $frm.frame7
                pack forget $frm.frame8
-               pack $frm.frame9 -side bottom -fill x -pady 2
+               pack forget $frm.frame9
                pack forget $frm.frame10
+               pack forget $frm.frame11
+               pack $frm.frame12 -side bottom -fill x -pady 2
+               pack forget $frm.frame13
             } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
                set conf(confLink) "gphoto2"
                ::confLink::run
@@ -2435,12 +2469,15 @@ namespace eval ::confCam {
                pack $frm.frame5 -in $frm.frame4 -anchor n -side top -fill x
                pack $frm.frame6 -in $frm.frame4 -anchor s -side left -fill x
                pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
-               pack $frm.frame8 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
-               pack forget $frm.frame9
-               pack $frm.frame10 -side bottom -fill x -pady 2
+               pack $frm.frame8 -in $frm.frame7 -anchor n -side top -fill x
+               pack $frm.frame9 -in $frm.frame7 -anchor n -side top -fill x
+               pack $frm.frame10 -in $frm.frame7 -anchor n -side top -fill x
+               pack $frm.frame11 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
+               pack forget $frm.frame12
+               pack $frm.frame13 -side bottom -fill x -pady 2
             }
          }
-      pack $frm.port -in $frm.frame1 -anchor center -side left -padx 20
+      pack $frm.port -in $frm.frame1 -anchor center -side left -padx 20 -pady 5
 
       #--- Definition du port serie
      ### label $frm.lab2 -text $caption(confcam,apn_port)
@@ -2463,7 +2500,7 @@ namespace eval ::confCam {
       set list_combobox [ list 115200 57600 38400 19200 9600 ]
       ComboBox $frm.liste1 \
          -width 14         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confCam(conf_apn,baud) \
@@ -2482,26 +2519,48 @@ namespace eval ::confCam {
          -textvariable confCam(conf_dsc,link_longue_pose) \
          -values $list_combobox \
          -modifycmd {
-            global frmm
-            set frm $frmm(Camera10)
             #--- Ouvre la configuration des liaisons sur le bon onglet
             if { $confCam(conf_dsc,link_longue_pose) == "$caption(confcam,dsc_quickremote)" } {
+               set confCam(conf_dsc,longueposestartvalue) "1"
+               set confCam(conf_dsc,longueposestopvalue)  "0"
                set conf(confLink) "quickremote"
                ::confLink::run
             } elseif { $confCam(conf_dsc,link_longue_pose) == "$caption(confcam,dsc_externe)" } {
                
             }
          }
-      pack $frm.moyen_longue_pose -in $frm.frame7 -anchor center -side right -padx 20
+      pack $frm.moyen_longue_pose -in $frm.frame8 -anchor center -side right -padx 20
 
       #--- Bouton de configuration des liaisons pour la longue pose
       button $frm.configure_longue_pose -text "$caption(confcam,link_configure)" -relief raised -command "::confLink::run"
-      pack $frm.configure_longue_pose -in $frm.frame7 -side right -pady 10 -ipadx 10 -ipady 1
+      pack $frm.configure_longue_pose -in $frm.frame8 -side right -pady 10 -ipadx 10 -ipady 1
 
       #--- Utilisation de la longue pose
       checkbutton $frm.longue_pose -text "$caption(confcam,dsc_longue_pose)" -highlightthickness 0 \
          -variable confCam(conf_dsc,longue_pose)
-      pack $frm.longue_pose -in $frm.frame7 -anchor w -side right -padx 10 -pady 10
+      pack $frm.longue_pose -in $frm.frame8 -anchor w -side right -padx 10 -pady 10
+
+      #--- Choix du numero du bit pour la commande de la longue pose
+      label $frm.lab4 -text "$caption(confcam,dsc_longueposebit)"
+      pack $frm.lab4 -in $frm.frame9 -anchor center -side left -padx 3 -pady 5
+
+      set list_combobox [ list 0 1 2 3 4 5 6 7 ]
+      ComboBox $frm.longueposelinkbit \
+         -width 7          \
+         -height [ llength $list_combobox ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -textvariable confCam(conf_dsc,longueposelinkbit) \
+         -editable 0       \
+         -values $list_combobox
+      pack $frm.longueposelinkbit -in $frm.frame9 -anchor center -side right -padx 20 -pady 5
+
+      #--- Choix du niveau de depart pour la commande de la longue pose
+      label $frm.lab5 -text "$caption(confcam,dsc_longueposestart)"
+      pack $frm.lab5 -in $frm.frame10 -anchor center -side left -padx 3 -pady 5
+
+      entry $frm.longueposestartvalue -width 4 -textvariable confCam(conf_dsc,longueposestartvalue) -justify center
+      pack $frm.longueposestartvalue -in $frm.frame10 -anchor center -side right -padx 20 -pady 5
 
       #--- Gestion du Service Windows de detection automatique des APN (DSC)
       if { $::tcl_platform(platform) == "windows" } {
@@ -2519,8 +2578,11 @@ namespace eval ::confCam {
          pack forget $frm.frame6
          pack forget $frm.frame7
          pack forget $frm.frame8
-         pack $frm.frame9 -side bottom -fill x -pady 2
+         pack forget $frm.frame9
          pack forget $frm.frame10
+         pack forget $frm.frame11
+         pack $frm.frame12 -side bottom -fill x -pady 2
+         pack forget $frm.frame13
       } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
          pack forget $frm.frame2
          pack forget $frm.frame3
@@ -2528,9 +2590,12 @@ namespace eval ::confCam {
          pack $frm.frame5 -in $frm.frame4 -anchor n -side top -fill x
          pack $frm.frame6 -in $frm.frame4 -anchor s -side left -fill x
          pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
-         pack $frm.frame8 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
-         pack forget $frm.frame9
-         pack $frm.frame10 -side bottom -fill x -pady 2
+         pack $frm.frame8 -in $frm.frame7 -anchor n -side top -fill x
+         pack $frm.frame9 -in $frm.frame7 -anchor n -side top -fill x
+         pack $frm.frame10 -in $frm.frame7 -anchor n -side top -fill x
+         pack $frm.frame11 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
+         pack forget $frm.frame12
+         pack $frm.frame13 -side bottom -fill x -pady 2
       }
 
       #--- Miroir en x et en y
@@ -2545,20 +2610,20 @@ namespace eval ::confCam {
       #--- Bouton du choix du telechargement de l'image de l'APN
       button $frm.config_telechargement -text $caption(confcam,dsc_telecharger) -state normal \
          -command "::confCam::Telecharge_image"
-      pack $frm.config_telechargement -in $frm.frame8 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
+      pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel de PhotoPC GPhoto2
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame9 -side top -fill x -pady 2
+      pack $frm.lab103 -in $frm.frame12 -side top -fill x -pady 2
 
       label $frm.labURL -text "$caption(confcam,site_apn)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame9 -side top -fill x -pady 2
+      pack $frm.labURL -in $frm.frame12 -side top -fill x -pady 2
 
       label $frm.lab104 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab104 -in $frm.frame10 -side top -fill x -pady 2
+      pack $frm.lab104 -in $frm.frame13 -side top -fill x -pady 2
 
       label $frm.labURLa -text "$caption(confcam,site_dsc)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURLa -in $frm.frame10 -side top -fill x -pady 2
+      pack $frm.labURLa -in $frm.frame13 -side top -fill x -pady 2
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $frm.labURL <ButtonPress-1> {
@@ -2699,7 +2764,7 @@ namespace eval ::confCam {
          $caption(confcam,obtu_synchro) ]
       ComboBox $frm.foncobtu \
          -width 11         \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -2868,6 +2933,7 @@ namespace eval ::confCam {
          #--- Je desassocie la camera de la visu
          if { $confCam(camera,$cam_item,visuNo) != 0 } {
             ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) 0
+            set confCam(camera,$cam_item,visuNo) "0"
          }
          
          #--- Supprime la camera
@@ -2880,7 +2946,7 @@ namespace eval ::confCam {
       if { $cam_item == "A" } {
          set audace(camNo) $confCam(camera,$cam_item,camNo)
       }
-      set confCam(camera,$cam_item,camName) ""
+      set conf(camera,$cam_item,camName) ""
 
    }
 
@@ -3043,6 +3109,7 @@ namespace eval ::confCam {
          } else {
             scan $confCam(camera,$cam_item,visuName) "visu%d" visuNo
          }
+         set confCam(camera,$cam_item,visuNo) $visuNo
       } else {
          #--- Si c'est l'ouverture d'une camera au demarrage de Audela
          #--- J'impose la visu :
@@ -3053,8 +3120,8 @@ namespace eval ::confCam {
 
       #--- Remise a jour de la liste des visu
       set list_visu [list ]
-      foreach visuNo [::visu::list] {
-         lappend list_visu "visu$visuNo"
+      foreach n [::visu::list] {
+         lappend list_visu "visu$n"
       }
       lappend list_visu $caption(confcam,nouvelle_visu)
       set confCam(camera,list_visu) $list_visu
@@ -3537,17 +3604,14 @@ namespace eval ::confCam {
                         #--- Test Longue Pose via le port parallele lpt1
                         set conf(webcam,longueposelinktype)  "parallelport"
                         set conf(webcam,longueposelinkindex) "1" ; # Numero du port parallele (lpt1 - 1, lpt2 - 2, ...)
-                        set conf(webcam,longueposelinkbit)   "0" ; # Numero du bit du port parallele
                      } elseif { $conf(webcam,longueposeport) == "$caption(confcam,lpt2)" } {
                         #--- Test Longue Pose via le port parallele lpt2
                         set conf(webcam,longueposelinktype)  "parallelport"
                         set conf(webcam,longueposelinkindex) "1" ; # Numero du port parallele (lpt1 - 1, lpt2 - 2, ...)
-                        set conf(webcam,longueposelinkbit)   "0" ; # Numero du bit du port parallele
                      } elseif { $conf(webcam,longueposeport) == "$caption(confcam,quickremote)" } {
                         #--- Test Longue Pose via Quickremote
                         set conf(webcam,longueposelinktype)  "quickremote"
                         set conf(webcam,longueposelinkindex) "0" ; # Numero du QuickRemote (0, 1, ...)
-                        set conf(webcam,longueposelinkbit)   "0" ; # Numero du bit du QuickRemote (0 a 7)
                      }
                      #--- Je cree la liaison
                      set linkno [::link::create $conf(webcam,longueposelinktype) $conf(webcam,longueposelinkindex)]
@@ -3607,25 +3671,21 @@ namespace eval ::confCam {
                      cam$confCam(camera,$cam_item,camNo) systemservice 0
                      #--- Parametrage des longues poses 
                      cam$confCam(camera,$cam_item,camNo) longuepose $conf(dsc,longue_pose)
-                     if { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_quickremote)" } {
-                        ### #--- Liaison par LPT
-                        ### set conf(dsc,longueposelinktype)  "parallelport"
-                        ### set conf(dsc,longueposelinkindex) "1"
-                        #--- Liaison par Quickremote index=0 (je fixe les valeurs en dur en attendant que ce soit saisi dans le panneau de configuration)
-                        set conf(dsc,longueposelinktype)      "quickremote"
-                        set conf(dsc,longueposelinkindex)     "0"
-                        set conf(dsc,longueposelinkbit)       "0"
-                        set conf(dsc,longueposestartvalue)    "1"
-                        set conf(dsc,longueposestopvalue)     "0"
-                        #--- Je cree la liaison
-                        set linkno [::link::create $conf(dsc,longueposelinktype) $conf(dsc,longueposelinkindex)]
-                        #---
-                        cam$confCam(camera,$cam_item,camNo) longueposelinkno $linkno
-                        cam$confCam(camera,$cam_item,camNo) longueposelinkbit $conf(dsc,longueposelinkbit)
-                        cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dsc,longueposestartvalue)
-                        cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dsc,longueposestopvalue)
-                     } elseif { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_externe)" } {
-                        
+                     if { $conf(dsc,longue_pose) == "1" } {
+                        if { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_quickremote)" } {
+                           #--- Liaison par QuickRemote index=0 (je fixe les valeurs en dur en attendant que ce soit saisi dans la boite de configuration)
+                           set conf(dsc,longueposelinktype)  "quickremote"
+                           set conf(dsc,longueposelinkindex) "0"
+                           #--- Je cree la liaison
+                           set linkno [::link::create $conf(dsc,longueposelinktype) $conf(dsc,longueposelinkindex)]
+                           #---
+                           cam$confCam(camera,$cam_item,camNo) longueposelinkno $linkno
+                           cam$confCam(camera,$cam_item,camNo) longueposelinkbit $conf(dsc,longueposelinkbit)
+                           cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dsc,longueposestartvalue)
+                           cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dsc,longueposestopvalue)
+                        } elseif { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_externe)" } {
+                           
+                        }
                      }
                      ::confVisu::visuDynamix $visuNo 512 -255
                   }
@@ -3846,10 +3906,9 @@ namespace eval ::confCam {
          #--- En cas de probleme, camera par defaut
          set conf(camera,$cam_item,camName)  ""
          set confCam(camera,$cam_item,camNo) "0"
-        ### set conf(audine,port)               "lpt1"
+         set confCam(camera,$cam_item,visuNo) "0"
       } else {
          #--- Affectation de la visu
-         set confCam(camera,$cam_item,visuNo) $visuNo
          if { $conf(camera,$cam_item,camName) == "dsc" } {
             if { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
                ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) $confCam(camera,$cam_item,camNo) $conf(apn,model)
@@ -3960,6 +4019,7 @@ namespace eval ::confCam {
       set frm [ Rnotebook:frame $nn 7 ]
       set conf(webcam,longuepose)           $confCam(conf_webcam,longuepose)
       set conf(webcam,longueposeport)       $confCam(conf_webcam,longueposeport)
+      set conf(webcam,longueposelinkbit)    $confCam(conf_webcam,longueposelinkbit)
       set conf(webcam,longueposestartvalue) $confCam(conf_webcam,longueposestartvalue)
       set conf(webcam,longueposestopvalue)  $confCam(conf_webcam,longueposestopvalue)
       set conf(webcam,mirh)                 $confCam(conf_webcam,mirh)
@@ -3983,6 +4043,9 @@ namespace eval ::confCam {
       set conf(dsc,link)                    $confCam(conf_dsc,link)
       set conf(dsc,longue_pose)             $confCam(conf_dsc,longue_pose)
       set conf(dsc,link_longue_pose)        $confCam(conf_dsc,link_longue_pose)
+      set conf(dsc,longueposelinkbit)       $confCam(conf_dsc,longueposelinkbit)
+      set conf(dsc,longueposestartvalue)    $confCam(conf_dsc,longueposestartvalue)
+      set conf(dsc,longueposestopvalue)     $confCam(conf_dsc,longueposestopvalue)
       set conf(dsc,statut_service)          $confCam(conf_dsc,statut_service)
       set conf(dsc,mirh)                    $confCam(conf_dsc,mirh)
       set conf(dsc,mirv)                    $confCam(conf_dsc,mirv)
