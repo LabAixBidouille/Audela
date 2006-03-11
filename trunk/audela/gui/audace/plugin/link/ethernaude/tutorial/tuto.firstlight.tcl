@@ -198,7 +198,7 @@ pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor ce
 # === Setting the astronomical devices ===
 # ========================================
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image_a) create image 1 1 -image image1 -anchor nw -tag img1
+$zone(image_a) create image 1 1 -image image100 -anchor nw -tag img1
 #
 
 frame .second.textFrame

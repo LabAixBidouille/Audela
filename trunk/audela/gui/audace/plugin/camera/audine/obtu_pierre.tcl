@@ -2,7 +2,7 @@
 # Fichier : obtu_pierre.tcl
 # Description : Permet le parametrage de l'obturateur a base de servo pour modelisme
 # Auteurs : Pierre Thierry et Robert DELMAS
-# Date de mise a jour : 23 avril 2005
+# Date de mise a jour : 11 mars 2006
 #
 
 namespace eval Obtu_Pierre {
@@ -152,7 +152,7 @@ namespace eval Obtu_Pierre {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
-	   $This.frame2.ent configure -state disabled
+         $This.frame2.ent configure -state disabled
          $This.frame3.ent configure -state disabled
          $This.frame4.ent configure -state disabled
          focus $This
@@ -194,7 +194,7 @@ namespace eval Obtu_Pierre {
             -value 1 -variable confcolor(obtu,vald) -padx 0 -pady 0 \
             -command { 
                if { $confcolor(obtu,vald) == "1" } { 
-	            $::Obtu_Pierre::This.frame2.ent configure -state normal
+                  $::Obtu_Pierre::This.frame2.ent configure -state normal
                   $::Obtu_Pierre::This.frame3.ent configure -state normal
                   $::Obtu_Pierre::This.frame4.ent configure -state normal
                   pack $::Obtu_Pierre::This.button.but_valid \
@@ -202,13 +202,13 @@ namespace eval Obtu_Pierre {
                      -padx 30 -pady 10 -ipadx 5 -ipady 5
                }
             }
-	   pack $This.frame1.rad1 -side left -anchor center -expand 1 -fill x \
+         pack $This.frame1.rad1 -side left -anchor center -expand 1 -fill x \
             -padx 10 -pady 3  
          radiobutton $This.frame1.rad2 -anchor nw -highlightthickness 0 -text "$caption(obtu_pierre,ouvert)" \
             -value 2 -variable confcolor(obtu,vald) -padx 0 -pady 0 \
             -command { 
                if { $confcolor(obtu,vald) == "2" } {
-	            $::Obtu_Pierre::This.frame2.ent configure -state disabled
+                  $::Obtu_Pierre::This.frame2.ent configure -state disabled
                   $::Obtu_Pierre::This.frame3.ent configure -state normal
                   $::Obtu_Pierre::This.frame4.ent configure -state disabled
                   pack $::Obtu_Pierre::This.button.but_valid \
@@ -216,13 +216,13 @@ namespace eval Obtu_Pierre {
                      -padx 30 -pady 10 -ipadx 5 -ipady 5
                }
             }
-	   pack $This.frame1.rad2 -side left -anchor center -expand 1 -fill x \
+         pack $This.frame1.rad2 -side left -anchor center -expand 1 -fill x \
             -padx 10 -pady 3  
          radiobutton $This.frame1.rad3 -anchor nw -highlightthickness 0 -text "$caption(obtu_pierre,ferme)" \
             -value 3 -variable confcolor(obtu,vald) -padx 0 -pady 0 \
             -command { 
                if { $confcolor(obtu,vald) == "3" } { 
-	            $::Obtu_Pierre::This.frame2.ent configure -state normal
+                  $::Obtu_Pierre::This.frame2.ent configure -state normal
                   $::Obtu_Pierre::This.frame3.ent configure -state disabled
                   $::Obtu_Pierre::This.frame4.ent configure -state disabled
                   pack $::Obtu_Pierre::This.button.but_valid \
@@ -230,7 +230,7 @@ namespace eval Obtu_Pierre {
                      -padx 30 -pady 10 -ipadx 5 -ipady 5
                }
             }
-	   pack $This.frame1.rad3 -side left -anchor center -expand 1 -fill x \
+         pack $This.frame1.rad3 -side left -anchor center -expand 1 -fill x \
             -padx 10 -pady 3  
 
       #--- Cree un frame 

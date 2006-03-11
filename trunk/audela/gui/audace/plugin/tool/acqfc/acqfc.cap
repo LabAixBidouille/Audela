@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Date de mise a jour : 07 mars 2006
+# Date de mise a jour : 11 mars 2006
 #
 
 #=========================================================================
@@ -56,10 +56,6 @@ set caption(acqfc,start_capture_error)       "Error when starting capture:"
 set caption(acqfc,error)                     "Error:"
 set caption(acqfc,no_package)                "Error: No tkimgvideo package."
 set caption(acqfc,no_video_mode)             "Camera has no video mode."
-set caption(acqfc,telecharger)               "Download Image"
-set caption(acqfc,pas_telecharger)           "Do Not Download"
-set caption(acqfc,immediat)                  "Now"
-set caption(acqfc,acq_suivante)              "During next acquisition"
 set caption(acqfc,pb)                        "Problem"
 set caption(acqfc,pbouvfich)                 "Unable to open the log file.\n \
    Change the tool now and check\nyou can access the image folder."
@@ -183,10 +179,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Erreur :"
    set caption(acqfc,no_package)             "Erreur : Package tkimgvideo non trouvé."
    set caption(acqfc,no_video_mode)          "La caméra n'a pas de mode vidéo."
-   set caption(acqfc,telecharger)            "Télécharger l'image"
-   set caption(acqfc,pas_telecharger)        "Ne pas télécharger"
-   set caption(acqfc,immediat)               "Immédiatement"
-   set caption(acqfc,acq_suivante)           "Pendant l'acquisition suivante"
    set caption(acqfc,pb)                     "Problème"
    set caption(acqfc,pbouvfich)              "Impossible d'ouvrir le fichier \
       log.\nChangez immédiatement d'outil, puis vérifiez\nque \
@@ -311,10 +303,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Errore:"
    set caption(acqfc,no_package)             "Errore: Package tkimgvideo non trovato."
    set caption(acqfc,no_video_mode)          "La camera non ha il modo video."
-   set caption(acqfc,telecharger)            "Scaricare l'immagine"
-   set caption(acqfc,pas_telecharger)        "Non scaricare"
-   set caption(acqfc,immediat)               "Adesso"
-   set caption(acqfc,acq_suivante)           "Durante la successiva acquisizione"
    set caption(acqfc,pb)                     "Problema"
    set caption(acqfc,pbouvfich)              "Impossibile aprire il file di \
       log.\nCambiare l'accessorio e verificare\nche \
@@ -438,10 +426,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Error:"
    set caption(acqfc,no_package)             "Error: No tengo el paquete tkimgvideo."
    set caption(acqfc,no_video_mode)          "La cámara no tiene modo de vídeo."
-   set caption(acqfc,telecharger)            "Descargar imagen"
-   set caption(acqfc,pas_telecharger)        "No descargar"
-   set caption(acqfc,immediat)               "Inmediatamente"
-   set caption(acqfc,acq_suivante)           "Durante la próxima adquisición"
    set caption(acqfc,pb)                     "Problema"
    set caption(acqfc,pbouvfich)              "No se puede abrir el fichero \
       de log.\nCambie la herramienta ahora y compruebe\nque \
@@ -565,10 +549,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Irrtum:"
    set caption(acqfc,no_package)             "Irrtum: Kein tkimgvideo Programmpaket."
    set caption(acqfc,no_video_mode)          "Die Kamera hat keinen Video Modus."
-   set caption(acqfc,telecharger)            "Das Bild herunterladen"
-   set caption(acqfc,pas_telecharger)        "Nicht herunterladen"
-   set caption(acqfc,immediat)               "Sofort"
-   set caption(acqfc,acq_suivante)           "Während die nächste Erwerbung"
    set caption(acqfc,pb)                     "Problem"
    set caption(acqfc,pbouvfich)              "Log. Datei unmöglich zu \
       öffnen.\nErst das Gerät wechseln, und dann kontrollieren\ndass \
@@ -692,10 +672,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Error:"
    set caption(acqfc,no_package)             "Error: No tkimgvideo package."
    set caption(acqfc,no_video_mode)          "Camera has no video mode."
-   set caption(acqfc,telecharger)            "Download Image"
-   set caption(acqfc,pas_telecharger)        "Do Not Download"
-   set caption(acqfc,immediat)               "Now"
-   set caption(acqfc,acq_suivante)           "During Next Acquisition"
    set caption(acqfc,pb)                     "Problem"
    set caption(acqfc,pbouvfich)              "Unable to open the log file.\n \
       Change the tool now and check\nyou can access the image folder."

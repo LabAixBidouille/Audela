@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 07 mars 2006
+# Date de mise a jour : 11 mars 2006
 #
 
 package provide acqfc 2.1
@@ -207,11 +207,6 @@ namespace eval ::AcqFC {
         set panneau(AcqFC,$visuNo,lg_film) "$parametres(acqFC,$visuNo,lg_film)"
       }
 
-      #--- Mode de telechargement des images des cameras DSC (APN)
-      if { ! [ info exists panneau(AcqFC,$visuNo,telecharge_mode) ] } {
-        set panneau(AcqFC,$visuNo,telecharge_mode) "$parametres(acqFC,$visuNo,telecharge_mode)"
-      }
-
       AcqFCBuildIF $visuNo 
 
       #--- Traitement du bouton Configuration pour la camera DSC (APN)
@@ -286,10 +281,6 @@ namespace eval ::AcqFC {
          set camProduct ""
       } else { 
          set camProduct [ cam$camNo product ]
-      }
-      #---
-      if { "$camProduct" == "dsc" } {
-         set panneau(AcqFC,$visuNo,telecharge_mode) "1"
       }
       #---
       if { "$camProduct" == "webcam" } {
@@ -407,7 +398,6 @@ namespace eval ::AcqFC {
       if { ! [ info exists parametres(acqFC,$visuNo,mode) ] }            { set parametres(acqFC,$visuNo,mode)            "1" }   ; #--- Mode : Une image
       if { ! [ info exists parametres(acqFC,$visuNo,lg_film) ] }         { set parametres(acqFC,$visuNo,lg_film)         "10" }  ; #--- Duree de la video : 10s
       if { ! [ info exists parametres(acqFC,$visuNo,rate) ] }            { set parametres(acqFC,$visuNo,rate)            "5" }   ; #--- Images/sec. : 5
-      if { ! [ info exists parametres(acqFC,$visuNo,telecharge_mode) ] } { set parametres(acqFC,$visuNo,telecharge_mode) "2" }   ; #--- Mode de telechargement
    }
 #***** Fin de la procedure Chargement_Var **********************
 
@@ -418,15 +408,14 @@ namespace eval ::AcqFC {
       global panneau
 
       #---
-      set panneau(AcqFC,$visuNo,mode)               [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
+      set panneau(AcqFC,$visuNo,mode)       [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
       #---
-      set parametres(acqFC,$visuNo,pose)            $panneau(AcqFC,$visuNo,pose)
-      set parametres(acqFC,$visuNo,bin)             $panneau(AcqFC,$visuNo,bin)
-      set parametres(acqFC,$visuNo,obt)             $panneau(AcqFC,$visuNo,obt)
-      set parametres(acqFC,$visuNo,mode)            $panneau(AcqFC,$visuNo,mode)
-      set parametres(acqFC,$visuNo,lg_film)         $panneau(AcqFC,$visuNo,lg_film)
-      set parametres(acqFC,$visuNo,rate)            $panneau(AcqFC,$visuNo,rate)
-      set parametres(acqFC,$visuNo,telecharge_mode) $panneau(AcqFC,$visuNo,telecharge_mode)
+      set parametres(acqFC,$visuNo,pose)    $panneau(AcqFC,$visuNo,pose)
+      set parametres(acqFC,$visuNo,bin)     $panneau(AcqFC,$visuNo,bin)
+      set parametres(acqFC,$visuNo,obt)     $panneau(AcqFC,$visuNo,obt)
+      set parametres(acqFC,$visuNo,mode)    $panneau(AcqFC,$visuNo,mode)
+      set parametres(acqFC,$visuNo,lg_film) $panneau(AcqFC,$visuNo,lg_film)
+      set parametres(acqFC,$visuNo,rate)    $panneau(AcqFC,$visuNo,rate)
 
       #--- Sauvegarde des parametres
       catch {
@@ -513,12 +502,10 @@ namespace eval ::AcqFC {
       } elseif { $panneau(AcqFC,$visuNo,mode) == "6" } {
          set panneau(AcqFC,$visuNo,fenetre) "0"
          ::AcqFC::selectVideoMode $visuNo
-         ::AcqFC::recup_position_telecharge $visuNo
          $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
       } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
          set panneau(AcqFC,$visuNo,fenetre) "0"
          ::AcqFC::selectVideoMode $visuNo
-         ::AcqFC::recup_position_telecharge $visuNo
          $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
       }
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
@@ -636,7 +623,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure Go/Stop (appui sur le bouton Go/Stop) *********
    proc GoStop { visuNo } {
-      global panneau audace caption conf
+      global audace caption conf panneau
 
       #--- Ouverture du fichier historique
       if { $panneau(AcqFC,$visuNo,session_ouverture) == "1" } {
@@ -1295,7 +1282,7 @@ namespace eval ::AcqFC {
                        Message $visuNo consolog $caption(acqfc,fin_simu)
                     } 
                     #--- Cas particulier des cameras DSC (APN)
-                    if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
+                    if { $conf(dsc,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1365,7 +1352,7 @@ namespace eval ::AcqFC {
                        ::DlgShift::Decalage_Telescope
                     }
                     #--- Cas particulier des cameras DSC (APN)
-                    if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
+                    if { $conf(dsc,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1438,7 +1425,7 @@ namespace eval ::AcqFC {
                        set panneau(AcqFC,$visuNo,attente_pose) "0"
                     }
                     #--- Cas particulier des cameras DSC (APN)
-                    if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
+                    if { $conf(dsc,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1528,7 +1515,7 @@ namespace eval ::AcqFC {
                        set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) + 1 ]
                     }
                     #--- Cas particulier des cameras DSC (APN)
-                    if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" } {
+                    if { $conf(dsc,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1828,7 +1815,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure de lancement d'acquisition ********************
    proc acq { visuNo exptime binning } {
-      global audace conf panneau caption
+      global audace caption conf panneau
 
       #--- Petits raccourcis
       set camNo     [ ::confVisu::getCamNo $visuNo ]
@@ -1879,19 +1866,33 @@ namespace eval ::AcqFC {
       }
 
       #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
-      if { $panneau(AcqFC,$visuNo,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
-        after 10 {
-           set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
+      if { $conf(dsc,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
+           set result [ catch { cam$camNo loadlastimage } msg ]
            if { $result == "1" } {
               ::console::disp "::AcqFC::acq loadlastimage $msg \n"
            } else { 
               ::console::disp "::AcqFC::acq loadlastimage OK \n"
            }
-        }
       }
 
       #--- Attente de la fin de la pose
-      vwait status_cam$camNo
+      switch $camNo {
+         1 {
+              if { $::status_cam1 == "exp" } {
+                 vwait status_cam$camNo
+              }
+         }
+         2 {
+              if { $::status_cam2 == "exp" } {
+                 vwait status_cam$camNo
+              }
+         }
+         3 {
+              if { $::status_cam3 == "exp" } {
+                 vwait status_cam$camNo
+              }
+         }
+      }
 
       #--- Je retablis le choix du fonctionnement de l'obturateur
       if { $exptime == "0" } {
@@ -2321,83 +2322,6 @@ namespace eval ::AcqFC {
       return
    }
 #***** Fin du bouton pour le decalage du telescope *****************
-
-#***** Fenetre de configuration du telechargement d'images APN *****
-   proc Telecharge_image { visuNo } {
-      global conf
-      global audace
-      global caption
-      global panneau
-
-      #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(acqfc,telecharge,position) ] } { set conf(acqfc,telecharge,position) "+120+140" }
-
-      #---
-      if { [ winfo exists $panneau(AcqFC,$visuNo,base).telecharge_image ] } {
-        wm withdraw $panneau(AcqFC,$visuNo,base).telecharge_image
-        wm deiconify $panneau(AcqFC,$visuNo,base).telecharge_image
-        focus $panneau(AcqFC,$visuNo,base).telecharge_image
-        return
-      }
-
-      #--- Creation de la fenetre
-      toplevel $panneau(AcqFC,$visuNo,base).telecharge_image
-      wm transient $panneau(AcqFC,$visuNo,base).telecharge_image $panneau(AcqFC,$visuNo,base)
-      wm resizable $panneau(AcqFC,$visuNo,base).telecharge_image 0 0
-      wm title $panneau(AcqFC,$visuNo,base).telecharge_image "$caption(acqfc,telecharger)"
-      wm geometry $panneau(AcqFC,$visuNo,base).telecharge_image $conf(acqfc,telecharge,position)
-      wm protocol $panneau(AcqFC,$visuNo,base).telecharge_image WM_DELETE_WINDOW " \
-        ::AcqFC::recup_position_telecharge $visuNo \
-      "
-
-      radiobutton $panneau(AcqFC,$visuNo,base).telecharge_image.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-        -text "$caption(acqfc,pas_telecharger)" -value 1 -variable panneau(AcqFC,$visuNo,telecharge_mode) -state normal \
-        -command "::AcqFC::ChangerSelectionTelechargementAPN $visuNo" 
-      pack $panneau(AcqFC,$visuNo,base).telecharge_image.rad1 -anchor w -expand 1 -fill none \
-        -side top -padx 30 -pady 5
-      radiobutton $panneau(AcqFC,$visuNo,base).telecharge_image.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-        -text "$caption(acqfc,immediat)" -value 2 -variable panneau(AcqFC,$visuNo,telecharge_mode) -state normal \
-        -command "::AcqFC::ChangerSelectionTelechargementAPN $visuNo"
-      pack $panneau(AcqFC,$visuNo,base).telecharge_image.rad2 -anchor w -expand 1 -fill none \
-        -side top -padx 30 -pady 5
-      radiobutton $panneau(AcqFC,$visuNo,base).telecharge_image.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-        -text "$caption(acqfc,acq_suivante)" -value 3 -variable panneau(AcqFC,$visuNo,telecharge_mode) -state normal \
-        -command "::AcqFC::ChangerSelectionTelechargementAPN $visuNo"
-      pack $panneau(AcqFC,$visuNo,base).telecharge_image.rad3 -anchor w -expand 1 -fill none \
-        -side top -padx 30 -pady 5
-
-      #--- New message window is on
-      focus $panneau(AcqFC,$visuNo,base).telecharge_image
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(AcqFC,$visuNo,base).telecharge_image
-   }
-#***** Fin fenetre de configuration du telechargement d'images APN *******************
-
-#***** Gestion du telechargement d'images APN ****************************************
-   proc ChangerSelectionTelechargementAPN { visuNo } {
-      global audace
-      global panneau
-
-      catch {
-        switch -exact -- $panneau(AcqFC,$visuNo,telecharge_mode) {
-           1  {
-              #--- Ne pas telecharger
-              cam[ ::confVisu::getCamNo $visuNo ] autoload 0
-           }
-           2  {
-              #--- Telechargement immediat
-              cam[ ::confVisu::getCamNo $visuNo ] autoload 1
-           }
-           3  {
-              #--- Telechargement pendant la pose suivante
-              cam[ ::confVisu::getCamNo $visuNo ] autoload 0
-           }
-        }
-        ::console::disp "panneau(AcqFC,$visuNo,telecharge_mode)=$panneau(AcqFC,$visuNo,telecharge_mode) cam[ ::confVisu::getCamNo $visuNo ] autoload=[ cam[ ::confVisu::getCamNo $visuNo ] autoload ] \n"
-      }
-   }        
-#***** Fin gestion du telechargement d'images APN ************************************
 
 #***** Fenetre de configuration series d'images a intervalle regulier en continu *****
    proc Intervalle_continu_1 { visuNo } {
@@ -2832,25 +2756,6 @@ namespace eval ::AcqFC {
    }
 #***** Fin enregistrement de la position des fenetres Continu (1), Continu (2), Video et Video (1) ****
 
-#***** Enregistrement de la position de la fenetre Configuration DigiCalm *****************************
-   proc recup_position_telecharge { visuNo } {
-      global audace
-      global conf
-      global panneau
-
-      #--- Cas de la fenetre Configuration DSC (APN)
-      if [ winfo exists $panneau(AcqFC,$visuNo,base).telecharge_image ] {
-        #--- Determination de la position de la fenetre
-        set geometry [ wm geometry $panneau(AcqFC,$visuNo,base).telecharge_image ]
-        set deb [ expr 1 + [ string first + $geometry ] ]
-        set fin [ string length $geometry ]
-        set conf(acqfc,telecharge,position) "+[ string range $geometry $deb $fin ]"
-        #--- Fermeture de la fenetre
-        destroy $panneau(AcqFC,$visuNo,base).telecharge_image
-      }
-   }
-#***** Fin enregistrement de la position de la fenetre Configuration DigiCalm *************************
-
 #***** Enregistrement de la position de la fenetre Avancement ********
    proc recup_position_1 { visuNo } {
       global audace conf panneau
@@ -2879,18 +2784,6 @@ namespace eval ::AcqFC {
       }
    }
 #***** Fin de l'aquisition fenetree avec une WebCam ******************
-
-#***** Choix du telechargement de l'image de l'APN *******************
-   proc choixTelechargement { visuNo } {
-      global panneau
-
-      if { ( $panneau(AcqFC,$visuNo,mode) == "1" ) || ( $panneau(AcqFC,$visuNo,mode) == "2" ) || \
-         ( $panneau(AcqFC,$visuNo,mode) == "3" ) || ( $panneau(AcqFC,$visuNo,mode) == "4" ) || \
-         ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
-         ::AcqFC::Telecharge_image $visuNo
-      }
-   }
-#***** Fin du choix du telechargement de l'image de l'APN ************
 
 #***** Affichage de la fenetre de configuration de WebCam ************
    proc webcamConfigure { visuNo } {
@@ -2961,6 +2854,18 @@ namespace eval ::AcqFC {
       set confgene(fichier,compres) $conf(fichier,compres)
    }
 #***** Fin du changement de l'extension des images *******************
+
+#***** Ouverture de la boite de configuration du telechargement ******
+   proc choixTelechargement { visuNo} {
+      global panneau
+
+      if { ( $panneau(AcqFC,$visuNo,mode) == "1" ) || ( $panneau(AcqFC,$visuNo,mode) == "2" ) || \
+         ( $panneau(AcqFC,$visuNo,mode) == "3" ) || ( $panneau(AcqFC,$visuNo,mode) == "4" ) || \
+         ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
+         ::cameraDSC::Telecharge_image
+      }
+   }
+#***** Fin de la configuration du telechargement *********************
 
 }
 #==============================================================

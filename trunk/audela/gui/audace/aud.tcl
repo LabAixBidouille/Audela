@@ -2,8 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 25 fevrier 2006
-#
+# Date de mise a jour : 11 mars 2006
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -1970,9 +1969,7 @@ namespace eval ::audace {
       #--- Arrete le plugin liaison
       ::confLink::stopDriver
       #--- Arrete les plugins camera
-      ::confCam::stopDriver A
-      ::confCam::stopDriver B
-      ::confCam::stopDriver C
+      ::confCam::stopDriver
       #--- Arrete le plugin monture
       ### ::confTel::stopDriver
       #--- Arrete le plugin equipement
