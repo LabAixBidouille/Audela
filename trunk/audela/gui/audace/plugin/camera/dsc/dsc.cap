@@ -1,0 +1,64 @@
+#
+# Fichier : dsc.cap
+# Date de mise a jour : 11 mars 2006
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(dsc,telecharger)               "Download Image"
+set caption(dsc,pas_telecharger)           "Do Not Download"
+set caption(dsc,immediat)                  "Now"
+set caption(dsc,acq_suivante)              "During next acquisition"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(dsc,telecharger)            "Télécharger l'image"
+   set caption(dsc,pas_telecharger)        "Ne pas télécharger"
+   set caption(dsc,immediat)               "Immédiatement"
+   set caption(dsc,acq_suivante)           "Pendant l'acquisition suivante"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(dsc,telecharger)            "Scaricare l'immagine"
+   set caption(dsc,pas_telecharger)        "Non scaricare"
+   set caption(dsc,immediat)               "Adesso"
+   set caption(dsc,acq_suivante)           "Durante la successiva acquisizione"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(dsc,telecharger)            "Descargar imagen"
+   set caption(dsc,pas_telecharger)        "No descargar"
+   set caption(dsc,immediat)               "Inmediatamente"
+   set caption(dsc,acq_suivante)           "Durante la próxima adquisición"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(dsc,telecharger)            "Das Bild herunterladen"
+   set caption(dsc,pas_telecharger)        "Nicht herunterladen"
+   set caption(dsc,immediat)               "Sofort"
+   set caption(dsc,acq_suivante)           "Während die nächste Erwerbung"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(dsc,telecharger)            "Download Image"
+   set caption(dsc,pas_telecharger)        "Do Not Download"
+   set caption(dsc,immediat)               "Now"
+   set caption(dsc,acq_suivante)           "During Next Acquisition"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
