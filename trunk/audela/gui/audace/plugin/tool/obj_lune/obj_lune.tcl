@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Date de mise a jour : 22 fevrier 2006
+# Date de mise a jour : 11 mars 2006
 #
 
 global audace
@@ -114,6 +114,14 @@ namespace eval obj_Lune {
       variable This
       global obj_lune
 
+      #--- Destruction des images specifiques a cet outil
+      catch {
+         image delete imageflag2a
+         image delete imageflag4a
+         image delete imageflag4b
+         image delete imageflag5a
+      }
+      #---
       set obj_lune(espion) "1"
       destroy $This
    }
