@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 11 mars 2006
 #
 
 #--- Initialisation des variables confTel(conf_lx200,connect), (conf_temma,connect), (conf_mcmt,connect) et confTel(...)
@@ -1993,7 +1993,7 @@ namespace eval ::confTel {
    #
    proc configureTelescope { } {
       variable This
-      global audace caption conf confTel espion frmm ouranoscom
+      global audace caption color conf confTel espion frmm ouranoscom
 
       #--- Affichage d'un message d'alerte si necessaire
       ::confTel::Connect_Telescope
@@ -2317,9 +2317,9 @@ namespace eval ::confTel {
          set confTel(audecom,connect)    "0"
          set confTel(conf_temma,connect) "0"
          set confTel(conf_mcmt,connect)  "0"
-         $audace(base).fra1.labTel_name configure -text "$caption(conftel,tiret)"
+         $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,tiret)" -fg $color(blue)
       } else {
-         $audace(base).fra1.labTel_name configure -text "$conf(telescope)"
+         $audace(base).fra1.labTel_name_labURL configure -text "$conf(telescope)" -fg $color(blue)
       }
 
       #--- Gestion des boutons actifs/inactifs

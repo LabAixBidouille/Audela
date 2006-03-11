@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.8 2006-03-11 17:11:32 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.9 2006-03-11 19:10:49 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -508,17 +508,18 @@ namespace eval ::confVisu {
    proc setCamera { visuNo camNo { model "" } } {
       variable private
       global caption
+      global color
 
       set private($visuNo,camNo) $camNo
       if { $camNo == 0 } {
          set private($visuNo,camName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
-            $private($visuNo,This).fra1.labCam_name configure -text $caption(caractere,tiret)
+            $private($visuNo,This).fra1.labCam_name_labURL configure -text $caption(caractere,tiret) -fg $color(blue)
          }
       } else {
          set private($visuNo,camName) [cam$camNo name]
          set private($visuNo,camProductName) [cam$camNo product]
-         $private($visuNo,This).fra1.labCam_name configure -text "$private($visuNo,camName) $model"
+         $private($visuNo,This).fra1.labCam_name_labURL configure -text "$private($visuNo,camName) $model" -fg $color(blue)
       }
    }
 
@@ -858,7 +859,8 @@ namespace eval ::confVisu {
       variable private
       global conf
       global audace
-      global caption 
+      global caption
+      global color
 
       #---
       frame $This.fra1 -borderwidth 2 -cursor arrow -relief groove
@@ -903,21 +905,21 @@ namespace eval ::confVisu {
             -textvariable "audace(tu,format,dmyhmsint)"
          grid configure $This.fra1.labTime -column 5 -row 1 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.labCam -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,camera) $caption(caractere,2points)"
-         grid configure $This.fra1.labCam -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
+         label $This.fra1.labCam_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(audace,menu,camera) $caption(caractere,2points)" -fg $color(blue)
+         grid configure $This.fra1.labCam_labURL -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.labCam_name -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,tiret)"
-         grid configure $This.fra1.labCam_name -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
+         label $This.fra1.labCam_name_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,tiret)" -fg $color(blue)
+         grid configure $This.fra1.labCam_name_labURL -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.labTel -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,monture) $caption(caractere,2points)"
-         grid configure $This.fra1.labTel -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
+         label $This.fra1.labTel_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(audace,menu,monture) $caption(caractere,2points)" -fg $color(blue)
+         grid configure $This.fra1.labTel_labURL -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.labTel_name -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,tiret)"
-         grid configure $This.fra1.labTel_name -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
+         label $This.fra1.labTel_name_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,tiret)" -fg $color(blue)
+         grid configure $This.fra1.labTel_name_labURL -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
 
       pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
 
@@ -973,11 +975,32 @@ namespace eval ::confVisu {
       bind $This.fra1.sca2 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
 
       #--- bind du canvas avec la souris , j'ative les valeurs par defaut
-      createBindCanvas $visuNo <ButtonPress-1>   "default"      
+      createBindCanvas $visuNo <ButtonPress-1>   "default"
       createBindCanvas $visuNo <ButtonRelease-1> "default"
       createBindCanvas $visuNo <B1-Motion>       "default"
       createBindCanvas $visuNo <Motion>          "default"
       createBindCanvas $visuNo <ButtonPress-3>   "default"
+
+      #--- bind pour l'ouverture de la boite de configuration des cameras
+      bind $This.fra1.labCam_labURL <ButtonPress-1> {
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
+      bind $This.fra1.labCam_name_labURL <ButtonPress-1> {
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
+
+      #--- bind pour l'ouverture de la boite de configuration des montures
+      bind $This.fra1.labTel_labURL <ButtonPress-1> {
+         ::confTel::run
+         tkwait window $audace(base).confTel
+      }
+      bind $This.fra1.labTel_name_labURL <ButtonPress-1> {
+         ::confTel::run
+         tkwait window $audace(base).confTel
+      }
+
    }
 
    #------------------------------------------------------------
@@ -1015,6 +1038,15 @@ namespace eval ::confVisu {
       createBindCanvas $visuNo <B1-Motion>       ""
       createBindCanvas $visuNo <Motion>          ""
       createBindCanvas $visuNo <ButtonPress-3>   ""
+
+      #--- bind pour l'ouverture de la boite de configuration des cameras
+      bind $This.fra1.labCam_name_labURL <ButtonPress-1> ""
+      bind $This.fra1.labCam_labURL <ButtonPress-1>      ""
+
+      #--- bind pour l'ouverture de la boite de configuration des montures
+      bind $This.fra1.labTel_name_labURL <ButtonPress-1> ""
+      bind $This.fra1.labTel_labURL <ButtonPress-1>      ""
+
    }
 
    #------------------------------------------------------------
