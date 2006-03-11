@@ -24,7 +24,7 @@ namespace eval ::confCam {
       global conf
       global confCam
       global caption
- 
+
       #--- Charge le fichier caption
       uplevel #0 "source \"[ file join $audace(rep_caption) confcam.cap ]\""
 
@@ -43,6 +43,7 @@ namespace eval ::confCam {
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dsc dsc.tcl ]\""
 
       #--- Intialise les variables de chaque camera
       
@@ -156,6 +157,9 @@ namespace eval ::confCam {
       set confCam(camera,A,visuNo)   "0"
       set confCam(camera,B,visuNo)   "0"
       set confCam(camera,C,visuNo)   "0"
+      set confCam(camera,A,camName)  $conf(camera,A,camName)
+      set confCam(camera,B,camName)  $conf(camera,B,camName)
+      set confCam(camera,C,camName)  $conf(camera,C,camName)
       set confCam(camName)           $conf(camera,$confCam(cam_item),camName)
       set confCam(camera,position)   $conf(camera,position)
    }
@@ -164,7 +168,7 @@ namespace eval ::confCam {
    # confCam::run
    # Cree la fenetre de choix et de configuration des cameras
    # This = chemin de la fenetre
-   # conf(camera,A,camName) = nom de la camera (audine hisis sbig cookbook starlight kitty webcam \
+   # confCam(camera,A,camName) = nom de la camera (audine hisis sbig cookbook starlight kitty webcam \
    # th7852a scr1300xtc dsc andor)
    #
    proc run { } {
@@ -175,20 +179,38 @@ namespace eval ::confCam {
 
       set This "$audace(base).confCam"
       createDialog
-      if { $conf(camera,$confCam(cam_item),camName) != "" } {
+      if { $confCam(camera,$confCam(cam_item),camName) != "" } {
          set cam_item $confCam(cam_item)
-         select $conf(camera,$cam_item,camName)
-         if { [ string compare $conf(camera,$cam_item,camName) sbig ] == "0" } {
+         select $confCam(camera,$cam_item,camName)
+         if { [ string compare $confCam(camera,$cam_item,camName) sbig ] == "0" } {
             ::confCam::SbigDispTemp
-         } elseif { [ string compare $conf(camera,$cam_item,camName) kitty ] == "0" } {
+         } elseif { [ string compare $confCam(camera,$cam_item,camName) kitty ] == "0" } {
             ::confCam::KittyDispTemp
-         } elseif { [ string compare $conf(camera,$cam_item,camName) andor ] == "0" } {
+         } elseif { [ string compare $confCam(camera,$cam_item,camName) andor ] == "0" } {
             ::confCam::AndorDispTemp
          }
       } else {
          select audine
       }
       catch { tkwait visibility $This }
+   }
+
+   #
+   # confCam::stopDriver
+   # Ferme toutes les cameras ouvertes
+   #
+   proc stopDriver { } {
+      global conf
+      global confCam
+
+      #---
+      set conf(camera,A,camName) $confCam(camera,A,camName)
+      set conf(camera,B,camName) $confCam(camera,B,camName)
+      set conf(camera,C,camName) $confCam(camera,C,camName)
+      #---
+      ::confCam::stopItem A
+      ::confCam::stopItem B
+      ::confCam::stopItem C
    }
 
    #
@@ -221,7 +243,7 @@ namespace eval ::confCam {
       $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled 
       #--- J'arrete la camera
-      stopDriver $confCam(cam_item)
+      stopItem $confCam(cam_item)
       #--- je copie les parametres de la nouvelle camera dans conf()
       widgetToConf     $confCam(cam_item)
       configureCamera  $confCam(cam_item)
@@ -355,6 +377,31 @@ namespace eval ::confCam {
    }
 
    #
+   # confCam::ConfDSC
+   # Permet d'activer ou de desactiver le bouton de configuration des APN (DSC)
+   #
+   proc ConfDSC { } {
+      variable This
+      global confCam
+      global frmm
+
+      set cam_item $confCam(cam_item)
+
+      if { [ info exists This ] } {
+         set frm $frmm(Camera10)
+         if { [ winfo exists $frm.config_telechargement ] } {
+            if { [::confCam::getProduct $confCam(camera,$cam_item,camNo)] == "dsc" } {
+               #--- Bouton de configuration des APN (DSC)
+               $frm.config_telechargement configure -state normal
+            } else {
+               #--- Bouton de configuration des APN (DSC)
+               $frm.config_telechargement configure -state disabled
+            }
+         }
+      }
+   }
+
+   #
    # confCam::recup_position
    # Permet de recuperer et de sauvegarder la position de la fenetre de configuration de la camera
    #
@@ -369,7 +416,7 @@ namespace eval ::confCam {
       set confCam(camera,position) "+[ string range $confCam(camera,geometry) $deb $fin ]"
       #---
       set conf(camera,position) $confCam(camera,position)
-   }        
+   }
 
    proc createDialog { } {
       variable This
@@ -382,7 +429,7 @@ namespace eval ::confCam {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
-         select $conf(camera,$confCam(cam_item),camName)
+         select $confCam(camera,$confCam(cam_item),camName)
          focus $This
          return
       }
@@ -441,7 +488,7 @@ namespace eval ::confCam {
          pack $This.startA.item -side left -padx 3 -pady 3 -fill x
          label $This.startA.camNo -textvariable confCam(camera,A,camNo)
          pack $This.startA.camNo -side left -padx 3 -pady 3 -fill x
-         label $This.startA.name -textvariable conf(camera,A,camName)
+         label $This.startA.name -textvariable confCam(camera,A,camName)
          pack $This.startA.name -side left -padx 3 -pady 3 -fill x
          
          ComboBox $This.startA.visu \
@@ -453,7 +500,7 @@ namespace eval ::confCam {
             -textvariable confCam(camera,A,visuName) \
             -values $confCam(camera,list_visu)
          pack $This.startA.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopDriver A" 
+         button $This.startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A" 
          pack $This.startA.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.startA.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,A,start)
@@ -468,7 +515,7 @@ namespace eval ::confCam {
          pack $This.startB.item -side left -padx 3 -pady 3 -fill x
          label $This.startB.camNo -textvariable confCam(camera,B,camNo)
          pack $This.startB.camNo -side left -padx 3 -pady 3 -fill x
-         label $This.startB.name -textvariable conf(camera,B,camName)
+         label $This.startB.name -textvariable confCam(camera,B,camName)
          pack $This.startB.name -side left -padx 3 -pady 3 -fill x
          
          ComboBox $This.startB.visu \
@@ -480,7 +527,7 @@ namespace eval ::confCam {
             -textvariable confCam(camera,B,visuName) \
             -values $confCam(camera,list_visu)
          pack $This.startB.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopDriver B"
+         button $This.startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem B"
          pack $This.startB.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.startB.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,B,start)
@@ -495,7 +542,7 @@ namespace eval ::confCam {
          pack $This.startC.item -side left -padx 3 -pady 3 -fill x
          label $This.startC.camNo -textvariable confCam(camera,C,camNo)
          pack $This.startC.camNo -side left -padx 3 -pady 3 -fill x
-         label $This.startC.name -textvariable conf(camera,C,camName)
+         label $This.startC.name -textvariable confCam(camera,C,camName)
          pack $This.startC.name -side left -padx 3 -pady 3 -fill x
          
          ComboBox $This.startC.visu \
@@ -507,7 +554,7 @@ namespace eval ::confCam {
             -textvariable confCam(camera,C,visuName) \
             -values $confCam(camera,list_visu)
          pack $This.startC.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopDriver C"
+         button $This.startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem C"
          pack $This.startC.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.startC.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,C,start)
@@ -2609,8 +2656,11 @@ namespace eval ::confCam {
 
       #--- Bouton du choix du telechargement de l'image de l'APN
       button $frm.config_telechargement -text $caption(confcam,dsc_telecharger) -state normal \
-         -command "::confCam::Telecharge_image"
+         -command "::cameraDSC::Telecharge_image"
       pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
+
+      #--- Gestion du bouton actif/inactif
+      ::confCam::ConfDSC
 
       #--- Site web officiel de PhotoPC GPhoto2
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
@@ -2860,16 +2910,6 @@ namespace eval ::confCam {
    }
 
    #----------------------------------------------------------------------------
-   # confCam::Telecharge_image
-   # Selectionne le mode de telechargement des images issues d'un APN
-   #----------------------------------------------------------------------------
-   proc Telecharge_image { } {
-      foreach visuNo [::visu::list] {
-         ::AcqFC::Telecharge_image $visuNo
-      }
-   }
-
-   #----------------------------------------------------------------------------
    # confCam::select
    # Selectionne un onglet en passant le nom (eventuellement) de
    # la camera decrite dans l'onglet
@@ -2910,14 +2950,14 @@ namespace eval ::confCam {
       set cam_item $confCam(cam_item)
       
       #--- je selectionne l'onglet correspondant a la camera de cet item
-      ::confCam::select $conf(camera,$cam_item,camName) 
+      ::confCam::select $confCam(camera,$cam_item,camName) 
    }
 
    #----------------------------------------------------------------------------
-   # confCam::stopDriver
+   # confCam::stopItem
    # Arrete la camera cam_item
    #----------------------------------------------------------------------------
-   proc stopDriver { cam_item } {
+   proc stopItem { cam_item } {
       global audace
       global conf
       global confCam
@@ -2925,7 +2965,7 @@ namespace eval ::confCam {
       set camNo $confCam(camera,$cam_item,camNo)
       if { $camNo != 0 } {
          #--- Restitue si necessaire l'etat du service WIA sous Windows
-         if { ( $::tcl_platform(platform) == "windows" ) && ( $conf(camera,$cam_item,camName) == "dsc" ) } {
+         if { ( $::tcl_platform(platform) == "windows" ) && ( $confCam(camera,$cam_item,camName) == "dsc" ) } {
             if { [ cam$camNo systemservice ] != "$conf(dsc,statut_service)" } {
                cam$camNo systemservice $conf(dsc,statut_service)
             }
@@ -2946,7 +2986,7 @@ namespace eval ::confCam {
       if { $cam_item == "A" } {
          set audace(camNo) $confCam(camera,$cam_item,camNo)
       }
-      set conf(camera,$cam_item,camName) ""
+      set confCam(camera,$cam_item,camName) ""
 
    }
 
@@ -3061,8 +3101,8 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::setVisu
-   #  associe une visu a une camera
+   # confCam::closeCamera
+   #  Ferme la camera
    # 
    #  parametre 
    #    
@@ -3070,20 +3110,20 @@ namespace eval ::confCam {
       global confCam
       
       if { $confCam(camera,A,camNo) == $camNo } {
-         stopDriver "A"
+         stopItem "A"
       }
       if { $confCam(camera,B,camNo) == $camNo } {
-         stopDriver "B"
+         stopItem "B"
       }
       if { $confCam(camera,C,camNo) == $camNo } {
-         stopDriver "C"
+         stopItem "C"
       }
    }
 
    #
    # confCam::configureCamera
    # Configure la camera en fonction des donnees contenues dans le tableau conf :
-   # conf(camera,A,camName) -> type de camera employe
+   # confCam(camera,A,camName) -> type de camera employe
    # conf(cam,A,...) -> proprietes de ce type de camera
    #
    proc configureCamera { cam_item } {
@@ -3095,6 +3135,9 @@ namespace eval ::confCam {
       global confCam
       global panneau
 
+      # Initialisation de la variable erreur
+      set erreur "1"
+
       #--- Affichage d'un message d'alerte si necessaire
       ::confCam::Connect_Camera
 
@@ -3102,7 +3145,7 @@ namespace eval ::confCam {
       ::audace::menustate disabled
 
       #--- Je recupere le numero de visu associe a la camera
-      if { "$conf(camera,$cam_item,camName)" != "" } {
+      if { "$confCam(camera,$cam_item,camName)" != "" } {
          if { $confCam(camera,$cam_item,visuName) == $caption(confcam,nouvelle_visu) } {
             set visuNo [::confVisu::create]
             set confCam(camera,$cam_item,visuName) visu$visuNo
@@ -3138,7 +3181,7 @@ namespace eval ::confCam {
       #--- Je recupere le numero buffer associe a la camera
       set bufNo [::confVisu::getBufNo $visuNo]
 
-      switch -exact -- $conf(camera,$cam_item,camName) {
+      switch -exact -- $confCam(camera,$cam_item,camName) {
          hisis {
                if { $conf(hisis,modele) == "11" } {
                   set erreur [ catch { cam::create hisis $conf(hisis,port) -name Hi-SIS11 } camNo ]
@@ -3687,6 +3730,22 @@ namespace eval ::confCam {
                            
                         }
                      }
+                     #--- Parametrage du telechargement des images
+                     switch -exact -- $conf(dsc,telecharge_mode) {
+                        1  {
+                           #--- Ne pas telecharger
+                           cam$confCam(camera,$cam_item,camNo) autoload 0
+                        }
+                        2  {
+                           #--- Telechargement immediat
+                           cam$confCam(camera,$cam_item,camNo) autoload 1
+                        }
+                        3  {
+                           #--- Telechargement pendant la pose suivante
+                           cam$confCam(camera,$cam_item,camNo) autoload 0
+                        }
+                     }
+                     #---
                      ::confVisu::visuDynamix $visuNo 512 -255
                   }
                } elseif { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
@@ -3902,14 +3961,14 @@ namespace eval ::confCam {
       #--- Gestion du modele de camera connecte
       if { $erreur == "1" } {
          #--- En cas de probleme, je desactive le demarrage automatique
-         set conf(camera,$cam_item,start)    "0"
+         set conf(camera,$cam_item,start)      "0"
          #--- En cas de probleme, camera par defaut
-         set conf(camera,$cam_item,camName)  ""
-         set confCam(camera,$cam_item,camNo) "0"
-         set confCam(camera,$cam_item,visuNo) "0"
+         set confCam(camera,$cam_item,camName) ""
+         set confCam(camera,$cam_item,camNo)   "0"
+         set confCam(camera,$cam_item,visuNo)  "0"
       } else {
          #--- Affectation de la visu
-         if { $conf(camera,$cam_item,camName) == "dsc" } {
+         if { $confCam(camera,$cam_item,camName) == "dsc" } {
             if { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
                ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) $confCam(camera,$cam_item,camNo) $conf(apn,model)
             } elseif { $conf(dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
@@ -3929,6 +3988,7 @@ namespace eval ::confCam {
       ::confCam::ConfAudine
       ::confCam::ConfKitty
       ::confCam::ConfWebCam
+      ::confCam::ConfDSC
       if { [ winfo exists "$audace(base).conflink" ] } {
          ::ethernaude::ConfEthernAude
       }
@@ -3961,7 +4021,7 @@ namespace eval ::confCam {
       global confCam
       global caption
 
-      set conf(camera,$cam_item,camName) $confCam(camName) 
+      set confCam(camera,$cam_item,camName) $confCam(camName)
 
       set nn $This.usr.book
       #--- Memorise la configuration de Audine dans le tableau conf(audine,...)

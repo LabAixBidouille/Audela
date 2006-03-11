@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 05 fevrier 2006
+# Date de mise a jour : 11 mars 2006
 #
 
 #!/bin/sh
@@ -106,7 +106,7 @@ set lpt "lpt1"
 set num(buf1) [buf::create]
 
 #--- declare a new visu space to display the buffer
-set num(visu1) [visu::create $num(buf1) 1 ]
+set num(visu1) [visu::create $num(buf1) 100 ]
 
 #--- declare a new image
 set num(imageNo) $num(visu1)
@@ -381,10 +381,11 @@ proc tuto_exit { } {
    global audace
    global num
    ::visu::delete $num(visu1)
-   catch {unset texte}
-   if {[info exists audace]==1} {
-      catch {destroy .main}
-      catch {destroy .second}
+   catch { image delete image100 }
+   catch { unset texte }
+   if { [ info exists audace ] == "1" } {
+      catch { destroy .main }
+      catch { destroy .second }
    } else {
       destroy .
       exit

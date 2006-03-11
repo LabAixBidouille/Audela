@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.7 2006-03-10 21:48:17 michelpujol Exp $
+# $Id: confvisu.tcl,v 1.8 2006-03-11 17:11:32 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -413,18 +413,13 @@ namespace eval ::confVisu {
       variable private 
 
       set box [grid bbox .audace.can1 0 0]
-      ::console::disp "\n setZoom 2 box=$box \n"      
       set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]  
       set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
-      ::console::disp "setZoom 2 xScreenCenter=$xScreenCenter  yScreenCenter=$yScreenCenter\n"      
 
       set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
-      ::console::disp "setZoom 2 canvasCenter=$canvasCenter \n"      
       set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
-      ::console::disp "setZoom 2 pictureCenter=$pictureCenter \n"      
-      
+
       visu$visuNo zoom $private($visuNo,zoom)
-      ###::confVisu::autovisu $visuNo
 
       #--- Je mets a jour la taille du reticule
       #::confVisu::redrawCrosshair $visuNo
@@ -438,30 +433,28 @@ namespace eval ::confVisu {
       # rafraichissement de l'image
       visu$visuNo disp   
 
-      set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]  
-      ::console::disp "setZoom 0,5  canvasCenter=$canvasCenter \n"      
+      set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
    
       set xFactor [.audace.can1.canvas xview]
       set yFactor [.audace.can1.canvas yview]
-      ::console::disp "setZoom 0,5  xFactor=$xFactor yFactor=$yFactor\n"      
       set scrollRegion [.audace.can1.canvas cget -scrollregion]
-      ::console::disp "setZoom 0,5  scrollRegion=$scrollRegion \n"      
       
       set xmin [expr  [lindex $xFactor 0] * [lindex $scrollRegion 2] ]
       set ymin [expr  [lindex $yFactor 0] * [lindex $scrollRegion 3] ]
       set xmax [expr  [lindex $xFactor 1] * [lindex $scrollRegion 2] ]
       set ymax [expr  [lindex $yFactor 1] * [lindex $scrollRegion 3] ]
-      ::console::disp "setZoom 0,5  xmin=$xmin ymin=$ymin xmax=$xmax ymax=$ymax\n"      
       
       set x [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ] 
       set y [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ] 
       if { $x < 0 } { set x 0 }
       if { $y < 0 } { set y 0 }
       
-      ::console::disp "setZoom 0,5  x=$x y=$y \n"      
-      
-      .audace.can1.canvas xview moveto [expr 1.0*$x / [lindex $scrollRegion 2] ]
-      .audace.can1.canvas yview moveto [expr 1.0*$y / [lindex $scrollRegion 3] ]
+      if { [lindex $scrollRegion 2] != "0" } {
+         .audace.can1.canvas xview moveto [expr 1.0*$x / [lindex $scrollRegion 2] ]
+      }
+      if { [lindex $scrollRegion 3] != "0" } {
+         .audace.can1.canvas yview moveto [expr 1.0*$y / [lindex $scrollRegion 3] ]
+      }
       
    }
 
