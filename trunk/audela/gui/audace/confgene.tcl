@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 07 mars 2006
+# Date de mise a jour : 12 mars 2006
 #
 
 #
@@ -969,11 +969,19 @@ namespace eval confFichierIma {
       $This.labURL2 configure -text "$confgene(extension,new)"
       $This.labURL5 configure -text "$confgene(jpegquality,new)"
       widgetToConf
-      #--- Mise a jour de la liste des extensions pour toutes les visu disponibles
+      #--- Mise a jour de l'extension pour toutes les visu disponibles
       foreach visuNo [::visu::list] {
-         ::AcqFC::Init_List_Extension $visuNo
+         ::confFichierIma::MAJ_Extension
       }
-
+      #--- Mise a jour de la combobox pour la creation d'une extension personnalisee
+      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || \
+         ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
+         set confgene(liste_extension) [ list .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      } else {
+         set confgene(liste_extension) [ list [ buf$audace(bufNo) extension ] .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      }
+      $This.newext configure -height [ llength $confgene(liste_extension) ]
+      $This.newext configure -values $confgene(liste_extension)
    }
 
    #
@@ -1003,9 +1011,10 @@ namespace eval confFichierIma {
    #
    proc initConf { } {
       global conf
- 
-      if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut) ".fit" }
-      if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)  "0" }
+
+      #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::Recup_Config)
+      if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut)   ".fit" }
+      if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)    "0" }
       if { ! [ info exists conf(jpegquality,defaut) ] } { set conf(jpegquality,defaut) "80" }
    }
 
@@ -1018,9 +1027,12 @@ namespace eval confFichierIma {
       global color
 
       #--- initConf
-      #--- Initialisation indispensable de 2 variables dans aud.tcl (::audace::Recup_Config)
-      if { ! [ info exists conf(extension,new) ] }   { set conf(extension,new)      ".fit" }
-      if { ! [ info exists conf(jpegquality,new) ] } { set conf(jpegquality,new)    "80" }
+      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || \
+         ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
+         set confgene(liste_extension) [ list .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      } else {
+         set confgene(liste_extension) [ list [ buf$audace(bufNo) extension ] .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      }
 
       #--- confToWidget
       set confgene(extension,new)   $conf(extension,new)
@@ -1082,7 +1094,15 @@ namespace eval confFichierIma {
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
       pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
 
-      entry $This.newext -textvariable confgene(extension,new) -width 5 -justify center
+      ComboBox $This.newext \
+         -width 7          \
+         -height [llength $confgene(liste_extension)] \
+         -relief raised    \
+         -borderwidth 1    \
+         -editable 1       \
+         -justify center   \
+         -textvariable confgene(extension,new) \
+         -values $confgene(liste_extension)
       pack $This.newext -in $This.frame4 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
@@ -1151,6 +1171,29 @@ namespace eval confFichierIma {
       set conf(fichier,compres)    $confgene(fichier,compres)
       set conf(jpegquality,defaut) $confgene(jpegquality,new)
       set conf(jpegquality,new)    $confgene(jpegquality,new)
+   }
+
+   proc MAJ_Extension { } {
+      variable This
+      global conf confgene panneau
+
+      if { ( $conf(extension,new) == ".bmp" ) || ( $conf(extension,new) == ".gif" ) || ( $conf(extension,new) == ".jpg" ) \
+         || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) || ( $conf(extension,new) == ".xbm" ) \
+         || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) || ( $conf(extension,new) == ".crw" ) \
+         || ( $conf(extension,new) == ".nef" ) } {
+         set confgene(fichier,compres) "0"
+         $This.compress configure -variable confgene(fichier,compres)
+         set conf(fichier,compres) $confgene(fichier,compres)
+      }
+
+      #--- Mise a jour de l'extension pour toutes les visu disponibles
+      foreach visuNo [::visu::list] {
+         if { $conf(fichier,compres) == "1" } {
+            set panneau(AcqFC,$visuNo,extension) $conf(extension,new).gz
+         } else {
+            set panneau(AcqFC,$visuNo,extension) $conf(extension,new)
+         }
+      }
    }
 }
 
