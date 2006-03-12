@@ -1205,8 +1205,8 @@ namespace eval ::audace {
    #     rafraichit l'affichage
    #------------------------------------------------------------
 
-   proc autovisu { visuNo { force "-no" } } {
-      ::confVisu::autovisu $visuNo $force
+   proc autovisu { visuNo { force "-no" } { fileName "" } } {
+      ::confVisu::autovisu $visuNo $force $fileName
    }
 
    #------------------------------------------------------------
