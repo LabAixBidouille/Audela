@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Date de mise a jour : 11 mars 2006
+# $Id: acqfc.tcl,v 1.12 2006-03-12 08:59:19 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -1846,16 +1846,12 @@ namespace eval ::AcqFC {
         $panneau(AcqFC,$visuNo,This).status.lab configure -text $caption(acqfc,lect)
         update
       }
-
       #--- J'autorise le bouton "STOP"
       $panneau(AcqFC,$visuNo,This).go_stop.but configure -state normal
-
       #--- Declenchement l'acquisition
       cam$camNo acq
-
       #--- Alarme sonore de fin de pose
       ::camera::alarme_sonore $exptime
-
       #--- Appel du timer
       if { $exptime > "1" } {
         ::camera::dispTime_2 cam$camNo $panneau(AcqFC,$visuNo,This).status.lab "::AcqFC::Avancement_pose" $visuNo
@@ -1864,34 +1860,15 @@ namespace eval ::AcqFC {
            ::AcqFC::Avancement_pose $visuNo "1"
         }
       }
-
       #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
       if { $conf(dsc,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
-           set result [ catch { cam$camNo loadlastimage } msg ]
-           if { $result == "1" } {
-              ::console::disp "::AcqFC::acq loadlastimage $msg \n"
-           } else { 
-              ::console::disp "::AcqFC::acq loadlastimage OK \n"
-           }
-      }
-
-      #--- Attente de la fin de la pose
-      switch $camNo {
-         1 {
-              if { $::status_cam1 == "exp" } {
-                 vwait status_cam$camNo
-              }
-         }
-         2 {
-              if { $::status_cam2 == "exp" } {
-                 vwait status_cam$camNo
-              }
-         }
-         3 {
-              if { $::status_cam3 == "exp" } {
-                 vwait status_cam$camNo
-              }
-         }
+           after 10  ::AcqFC::loadLastImage $visuNo $camNo
+      }      
+      #--- J'attends la fin de l'acquisition
+      #--- remarque : la commande [set $xxx] permet de recuperer le contenu du contenu d'une variable
+      set statusVariableName "::status_cam$camNo"
+      if { [set $statusVariableName] == "exp"  } {
+         vwait status_cam$camNo
       }
 
       #--- Je retablis le choix du fonctionnement de l'obturateur
@@ -1916,8 +1893,10 @@ namespace eval ::AcqFC {
       $panneau(AcqFC,$visuNo,This).status.lab configure -text ""
       update
 
-      #--- Visualisation de l'image
-      ::audace::autovisu $visuNo
+      #--- Visualisation de l'image si on n'est pas en chargement differe
+      if { $conf(dsc,telecharge_mode) != "3" } {
+         ::audace::autovisu $visuNo
+      }
 
       #--- Effacement de la barre de progression quand la pose est terminee
       destroy $panneau(AcqFC,$visuNo,base).progress
@@ -1925,6 +1904,17 @@ namespace eval ::AcqFC {
       wm title $panneau(AcqFC,$visuNo,base) "$caption(acqfc,acquisition) $exptime s"
    }
 #***** Fin de la procedure de lancement d'acquisition **********
+
+#***** Procedure chargement differe d'image pour DSC ************************
+   proc loadLastImage { visuNo camNo } {
+      set result [ catch { cam$camNo loadlastimage } msg ]
+      if { $result == "1" } {
+         ::console::disp "::AcqFC::acq loadlastimage camNo$camNo error=$msg \n"
+      } else { 
+         ::console::disp "::AcqFC::acq loadlastimage visuNo$visuNo OK \n"
+         ::confVisu::autovisu $visuNo
+      }
+   }
 
 #***** Procedure d'apercu en mode video ************************
    proc changerVideoPreview { visuNo } {
