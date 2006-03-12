@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 11 mars 2006
+# Date de mise a jour : 12 mars 2006
 #
 
 #!/bin/sh
@@ -381,11 +381,16 @@ proc tuto_exit { } {
    global audace
    global num
    ::visu::delete $num(visu1)
-   catch { image delete image100 }
-   catch { unset texte }
+   catch {
+      image delete image21
+      image delete image100
+      unset texte
+   }
    if { [ info exists audace ] == "1" } {
-      catch { destroy .main }
-      catch { destroy .second }
+      catch {
+         destroy .main
+         destroy .second
+      }
    } else {
       destroy .
       exit
