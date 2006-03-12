@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.12 2006-03-12 08:59:19 michelpujol Exp $
+# $Id: acqfc.tcl,v 1.13 2006-03-12 09:49:48 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -175,11 +175,6 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,index)             "1"
       set panneau(AcqFC,$visuNo,nom_image)         ""
       set panneau(AcqFC,$visuNo,extension)         "$conf(extension,defaut)"
-      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
-         set panneau(AcqFC,$visuNo,liste_extension) [ list .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      } else {
-         set panneau(AcqFC,$visuNo,liste_extension) [ list [ buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension ].gz .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      }
       set panneau(AcqFC,$visuNo,indexer)           "0"
       set panneau(AcqFC,$visuNo,enregistrer)       "1"
       set panneau(AcqFC,$visuNo,nb_images)         "1"
@@ -220,30 +215,6 @@ namespace eval ::AcqFC {
 
    }
 #***** Fin de la procedure createPanel *************************
-
-#***** Procedure Init_List_Extension ****************************
-   proc Init_List_Extension { visuNo } {
-      global audace conf panneau
-
-      #--- S'agit-il d'une extension personnalisee
-      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
-         set panneau(AcqFC,$visuNo,liste_extension) [ list .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      } else {
-         set panneau(AcqFC,$visuNo,liste_extension) [ list [ buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension ].gz .fit .fit.gz .fts .fts.gz .fits .fits.gz .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      }
-      #--- S'agit-il d'un format compresse
-      if { $conf(fichier,compres) == "1" } {
-         set panneau(AcqFC,$visuNo,extension) $conf(extension,new).gz
-      } else {
-         set panneau(AcqFC,$visuNo,extension) $conf(extension,new)
-      }
-      #--- Mise a jour des ComboBox concernees
-      foreach i { 1 2 3 4 5 } {
-         $panneau(AcqFC,$visuNo,mode,$i).nom.list_extension configure -height [ llength $panneau(AcqFC,$visuNo,liste_extension) ]
-         $panneau(AcqFC,$visuNo,mode,$i).nom.list_extension configure -values $panneau(AcqFC,$visuNo,liste_extension)
-      }
-   }
-#***** Fin de la procedure Init_List_Extension *****************
 
 #***** Procedure deletePanel ***********************************
    proc deletePanel { visuNo } {
@@ -1862,12 +1833,12 @@ namespace eval ::AcqFC {
       }
       #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
       if { $conf(dsc,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
-           after 10  ::AcqFC::loadLastImage $visuNo $camNo
-      }      
+         after 10 ::AcqFC::loadLastImage $visuNo $camNo
+      }
       #--- J'attends la fin de l'acquisition
-      #--- remarque : la commande [set $xxx] permet de recuperer le contenu du contenu d'une variable
+      #--- Remarque : La commande [set $xxx] permet de recuperer le contenu du contenu d'une variable
       set statusVariableName "::status_cam$camNo"
-      if { [set $statusVariableName] == "exp"  } {
+      if { [set $statusVariableName] == "exp" } {
          vwait status_cam$camNo
       }
 
@@ -2825,26 +2796,6 @@ namespace eval ::AcqFC {
    }
 #***** Fin de la fenetre de selection de format de la WebCam *********
 
-#***** Changement de l'extension des images **************************
-   proc Change_extension { visuNo } {
-      global conf confgene panneau
-
-      set ext $panneau(AcqFC,$visuNo,extension)
-      set long [ string length $ext ]
-      if { [ string range $ext [ expr $long - 3 ] [ expr $long - 1 ] ] == ".gz" } {
-         set conf(extension,new) [ string trimright $ext ".gz" ]
-         set conf(fichier,compres) "1"
-      } else {
-         set conf(extension,new) $panneau(AcqFC,$visuNo,extension)
-         set conf(fichier,compres) "0"
-      }
-      set conf(extension,defaut)    $conf(extension,new)
-      #--- Mise a jour de la boite de configuration des fichiers images
-      set confgene(extension,new)   $conf(extension,new)
-      set confgene(fichier,compres) $conf(fichier,compres)
-   }
-#***** Fin du changement de l'extension des images *******************
-
 #***** Ouverture de la boite de configuration du telechargement ******
    proc choixTelechargement { visuNo} {
       global panneau
@@ -2984,19 +2935,11 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.une.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.une.nom.entr -fill x -side top
-           label $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -text $caption(acqfc,extension) -pady 0
-           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -fill x -side left
-           ComboBox $panneau(AcqFC,$visuNo,This).mode.une.nom.list_extension \
-              -width 7          \
-              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
-              -relief raised    \
-              -borderwidth 1    \
-              -editable 0       \
-              -justify center   \
-              -textvariable panneau(AcqFC,$visuNo,extension) \
-              -values $panneau(AcqFC,$visuNo,liste_extension) \
-              -modifycmd "::AcqFC::Change_extension $visuNo"
-           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.list_extension -side right
+           label $panneau(AcqFC,$visuNo,This).mode.une.nom.lab_extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.lab_extension -fill x -side left
+           button $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -textvariable "panneau(AcqFC,$visuNo,extension)" \
+              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -side right -fill x
         pack $panneau(AcqFC,$visuNo,This).mode.une.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.une.index -relief ridge -borderwidth 2
            checkbutton $panneau(AcqFC,$visuNo,This).mode.une.index.case -pady 0 -text $caption(acqfc,index) -variable panneau(AcqFC,$visuNo,indexer)
@@ -3019,19 +2962,11 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.serie.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.entr -fill x
-           label $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -text $caption(acqfc,extension) -pady 0
-           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -fill x -side left
-           ComboBox $panneau(AcqFC,$visuNo,This).mode.serie.nom.list_extension \
-              -width 7          \
-              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
-              -relief raised    \
-              -borderwidth 1    \
-              -editable 0       \
-              -justify center   \
-              -textvariable panneau(AcqFC,$visuNo,extension) \
-              -values $panneau(AcqFC,$visuNo,liste_extension) \
-              -modifycmd "::AcqFC::Change_extension $visuNo"
-           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.list_extension -side right
+           label $panneau(AcqFC,$visuNo,This).mode.serie.nom.lab_extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.lab_extension -fill x -side left
+           button $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -textvariable "panneau(AcqFC,$visuNo,extension)" \
+              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -side right -fill x
         pack $panneau(AcqFC,$visuNo,This).mode.serie.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.serie.nb -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.serie.nb.but -text $caption(acqfc,nombre) -pady 0
@@ -3064,19 +2999,11 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.continu.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.entr -fill x
-           label $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -text $caption(acqfc,extension) -pady 0
-           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -fill x -side left
-           ComboBox $panneau(AcqFC,$visuNo,This).mode.continu.nom.list_extension \
-              -width 7          \
-              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
-              -relief raised    \
-              -borderwidth 1    \
-              -editable 0       \
-              -justify center   \
-              -textvariable panneau(AcqFC,$visuNo,extension) \
-              -values $panneau(AcqFC,$visuNo,liste_extension) \
-              -modifycmd "::AcqFC::Change_extension $visuNo"
-           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.list_extension -side right
+           label $panneau(AcqFC,$visuNo,This).mode.continu.nom.lab_extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.lab_extension -fill x -side left
+           button $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -textvariable "panneau(AcqFC,$visuNo,extension)" \
+              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -side right -fill x
         pack $panneau(AcqFC,$visuNo,This).mode.continu.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.continu.index.lab -text $caption(acqfc,index) -pady 0
@@ -3097,19 +3024,11 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.entr -fill x
-           label $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -text $caption(acqfc,extension) -pady 0
-           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -fill x -side left
-           ComboBox $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.list_extension \
-              -width 7          \
-              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
-              -relief raised    \
-              -borderwidth 1    \
-              -editable 0       \
-              -justify center   \
-              -textvariable panneau(AcqFC,$visuNo,extension) \
-              -values $panneau(AcqFC,$visuNo,liste_extension) \
-              -modifycmd "::AcqFC::Change_extension $visuNo"
-           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.list_extension -side right
+           label $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.lab_extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.lab_extension -fill x -side left
+           button $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -textvariable "panneau(AcqFC,$visuNo,extension)" \
+              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -side right -fill x
         pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.serie_1.nb -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.serie_1.nb.but -text $caption(acqfc,nombre) -pady 0
@@ -3142,19 +3061,11 @@ proc AcqFCBuildIF { visuNo } {
            entry $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.entr -width 10 -textvariable panneau(AcqFC,$visuNo,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.entr -fill x
-           label $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -text $caption(acqfc,extension) -pady 0
-           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -fill x -side left
-           ComboBox $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.list_extension \
-              -width 7          \
-              -height [llength $panneau(AcqFC,$visuNo,liste_extension)] \
-              -relief raised    \
-              -borderwidth 1    \
-              -editable 0       \
-              -justify center   \
-              -textvariable panneau(AcqFC,$visuNo,extension) \
-              -values $panneau(AcqFC,$visuNo,liste_extension) \
-              -modifycmd "::AcqFC::Change_extension $visuNo"
-           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.list_extension -side right
+           label $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.lab_extension -text $caption(acqfc,extension) -pady 0
+           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.lab_extension -fill x -side left
+           button $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -textvariable "panneau(AcqFC,$visuNo,extension)" \
+              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -side right -fill x
         pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.continu_1.index -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.continu_1.index.lab -text $caption(acqfc,index) -pady 0
