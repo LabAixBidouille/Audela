@@ -17,6 +17,12 @@
 #---       ...
 #---       ...
 #
+
+set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
+if {$nameofexecutable!="audela"} {
+	catch {source roc.tcl}
+}
+
 source "version.tcl"
 
 if {[file exists audace.txt]==1} {
