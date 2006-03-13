@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Date de mise a jour : 10 fevrier 2004
+# Date de mise a jour : 03 decembre 2005
 #
 # offset  val
 # offset2  in out const nb
@@ -44,7 +44,7 @@ proc offset {args} {
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
       buf$audace(bufNo) imaseries "OFFSET offset=[lindex $args 0]"
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : offset val"
    }
@@ -114,7 +114,7 @@ proc add {args} {
          set operand "${operand}[buf$audace(bufNo) extension]"
       }
       buf$audace(bufNo) add "$operand" [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : add image val"
    }
@@ -177,7 +177,7 @@ proc sub {args} {
          set operand "${operand}[buf$audace(bufNo) extension]"
       }
       buf$audace(bufNo) sub "$operand" [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : sub image val"
    }
@@ -235,7 +235,7 @@ proc div {args} {
          set operand "${operand}[buf$audace(bufNo) extension]"
       }
       buf$audace(bufNo) div "$operand" [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : div image val"
    }
@@ -312,7 +312,7 @@ proc opt {args} {
          set offset "${offset}[buf$audace(bufNo) extension]"
       }
       buf$audace(bufNo) opt "$dark" "$offset"
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : opt dark offset"
    }
@@ -592,7 +592,7 @@ proc uncosmic {args} {
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
       buf$audace(bufNo) imaseries "FILTER kernel_width=3 kernel_type=med kernel_coef=[lindex $args 0]"
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : uncosmic coef"
    }
@@ -619,7 +619,7 @@ proc convgauss {args} {
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
       buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=[lindex $args 0]"
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : convgauss sigma"
    }
@@ -647,7 +647,7 @@ proc mult {args} {
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
       buf$audace(bufNo) imaseries "MULT constant=[lindex $args 0]"
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : mult constant"
    }
@@ -680,7 +680,7 @@ proc trans {args} {
    if {[llength $args] == 2} {
       set ext [buf$audace(bufNo) extension]
       buf$audace(bufNo) imaseries "TRANS trans_x=[lindex $args 0] trans_y=[lindex $args 1]"
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage : trans dx dy"
    }

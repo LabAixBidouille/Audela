@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Date de mise a jour : 16 novembre 2005
+# Date de mise a jour : 09 decembre 2005
 #
 
 namespace eval ::console {
@@ -9,7 +9,7 @@ namespace eval ::console {
    variable This
    variable CmdLine
 
-   proc create {{this ""}} {
+   proc create { { this "" } } {
       variable This
       global audace
       global audela
@@ -33,7 +33,7 @@ namespace eval ::console {
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(audace,console)"
-      wm protocol $This WM_DELETE_WINDOW ::audace::quitter
+      wm protocol $This WM_DELETE_WINDOW " ::audace::quitter "
 
       scrollbar $This.scr1 -orient vert -command console::onScr1Scroll
       entry $This.ent1 -bg #FFFFFF -fg #000000 -textvariable console::CmdLine
@@ -60,6 +60,7 @@ namespace eval ::console {
       $This.txt1 tag configure style_cmd -foreground black
       $This.txt1 tag configure style_erreur -foreground red
       $This.txt1 tag configure style_prompt -foreground purple
+      $This.txt1 insert end "#\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,interface_audace_audela) $audela(version)\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright1)\n" style_entete
       $This.txt1 insert end "#\n" style_entete

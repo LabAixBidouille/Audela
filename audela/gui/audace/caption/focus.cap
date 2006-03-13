@@ -1,6 +1,6 @@
 #
 # Fichier : focus.cap
-# Date de mise a jour : 10 octobre 2004
+# Date de mise a jour : 08 janvier 2006
 #
 
 #=========================================================================
@@ -11,44 +11,44 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(focus,x1)		"x1"
-set caption(focus,x5)		"x5"
-set caption(focus,interro)	"?"
+set caption(focus,x1)         "x1"
+set caption(focus,x5)         "x5"
+set caption(focus,interro)    "?"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(focus,x1)	"x1"
-   set caption(focus,x5)	"x5"
-   set caption(focus,interro)	"?"
+   set caption(focus,x1)      "x1"
+   set caption(focus,x5)      "x5"
+   set caption(focus,interro) "?"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(focus,x1)	"x1"
-   set caption(focus,x5)	"x5"
-   set caption(focus,interro)	"?"
+   set caption(focus,x1)      "x1"
+   set caption(focus,x5)      "x5"
+   set caption(focus,interro) "?"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(focus,x1)	"x1"
-   set caption(focus,x5)	"x5"
-   set caption(focus,interro)	"?"
+   set caption(focus,x1)      "x1"
+   set caption(focus,x5)      "x5"
+   set caption(focus,interro) "?"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(focus,x1)	"x1"
-   set caption(focus,x5)	"x5"
-   set caption(focus,interro)	"?"
+   set caption(focus,x1)      "x1"
+   set caption(focus,x5)      "x5"
+   set caption(focus,interro) "?"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(focus,x1)	"x1"
-   set caption(focus,x5)	"x5"
-   set caption(focus,interro)	"?"
+   set caption(focus,x1)      "x1"
+   set caption(focus,x5)      "x5"
+   set caption(focus,interro) "?"
 
 }
 

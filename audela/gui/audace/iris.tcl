@@ -2,8 +2,8 @@
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 # Auteur : Benoît MAUGIS
-# Date de mise a jour : 09 avril 2005
-# Version 1.04
+# Date de mise a jour : 17 fevrier 2006
+# Version 1.05
 #
 
 #
@@ -18,12 +18,12 @@ proc iris_initlinux { } {
   close $fileId
 
   catch { exec wine scriptis.exe scriptis_init.tcl }
- 
+
   file delete [ file join $audace(rep_install) bin scriptis_init.tcl ]
 }
 
 proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""} } {
-  global audace tcl_platform
+  global audace
 
   #--- Cas particuliers 
   switch $commande {
@@ -47,8 +47,8 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
   set vieuxrep [pwd]
   cd [ file join $audace(rep_install) bin ]
   set fileId [ open [ file join $audace(rep_install) bin scriptis.tcl ] w ]
-  
-  switch -regexp $tcl_platform(os) {
+
+  switch -regexp $::tcl_platform(os) {
   "Linux" {
     iris_initlinux
     set line ""    
@@ -57,25 +57,25 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
     set line ""
     }
   }
-  
+
   append line $commande " " $arg1 " " $arg2 " " $arg3 " " $arg4 " " $arg5 " " $arg6 " " $arg7 " " $arg8 " " $arg9 " " $arg10 " " $arg11 " " $arg12 " " $arg13 " " $arg14 " " $arg15
-  
+
   #--- Suppression des blancs à la fin
   set nb_blocs [llength $line]
   set mine [lrange $line 0 [expr $nb_blocs-1]]
-  
+
   puts -nonewline $fileId $mine
 
-  switch -regexp $tcl_platform(os) {
+  switch -regexp $::tcl_platform(os) {
   "Linux" {
     }
   "Windows" {
     puts $fileId ""
     }
   }
-  
+
   close $fileId
-  switch -regexp $tcl_platform(os) {
+  switch -regexp $::tcl_platform(os) {
   "Linux" {
     catch {exec wine scriptis.exe scriptis.tcl}
     }
@@ -107,7 +107,7 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
   file delete [ file join $audace(rep_install) bin scriptis.tcl ]
   return ""
 }
-  
+
 proc iris2_select { {nom_ini} {nom_final} {nombre} } {
   global audace
 
@@ -121,7 +121,7 @@ proc iris2_select { {nom_ini} {nom_final} {nombre} } {
     }
   close $fileId
   }
-    
+
 proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_total} } {
   global audace caption conf
 
@@ -204,16 +204,15 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
   #--- Suppression, si ce n'est déjà fait, du dernier fichier maître temporaire
   if {[file exist [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]]=="1"} {
     file delete [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]}
-    
-  #--- Inscription dans un fichier texte des caractéristiques du traitement
-  set fileId [open [file join $subdir iris2_compute_trichro1.txt] w]
-  puts $fileId $caption(iris,nom_maitre)$maitre
-  puts $fileId $caption(iris,nom_rouge)$r
-  puts $fileId $caption(iris,nom_vert)$v
-  puts $fileId $caption(iris,nom_bleu)$b
-  puts $fileId $caption(iris,taille_pregistr)$taille
-  puts $fileId $caption(iris,nb_tot)$nb_total
-  puts $fileId $caption(iris,nb_select)$nb_select
-  close $fileId
-  }
+    #--- Inscription dans un fichier texte des caractéristiques du traitement
+    set fileId [open [file join $subdir iris2_compute_trichro1.txt] w]
+    puts $fileId $caption(iris,nom_maitre)$maitre
+    puts $fileId $caption(iris,nom_rouge)$r
+    puts $fileId $caption(iris,nom_vert)$v
+    puts $fileId $caption(iris,nom_bleu)$b
+    puts $fileId $caption(iris,taille_pregistr)$taille
+    puts $fileId $caption(iris,nb_tot)$nb_total
+    puts $fileId $caption(iris,nb_select)$nb_select
+    close $fileId
+    }
 

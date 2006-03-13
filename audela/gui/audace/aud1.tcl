@@ -1,162 +1,115 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Date de mise a jour : 01 novembre 2005
+# Date de mise a jour : 17 fevrier 2006
 #
 
 #
-# loadima [filename] [-novisu]
+# loadima [filename] [visuNo] [-novisu)
 # Chargement d'une image : Sans arguments, ou avec "?" comme nom de fichier, ouvre une fenetre de selection
 # avec l'option "-novisu" l'image n'est pas affichee
 #
 # Exemple :
-# loadima             #--- Ouvre une fenetre de selection, et affiche l'image
-# loadima ? -novisu   #--- Ouvre une fenetre de selection, et n'affiche pas l'image
-# loadima m57         #--- Charge l'image m57.fit (extension par defaut)
-# loadima n4565.fits  #--- Charge l'image n4565.fits
+# loadima                      #--- Ouvre une fenetre de selection, et affiche l'image dans la visu numero 1
+# loadima m57                  #--- Charge l'image m57.fit (extension par defaut) et affiche l'image dans la visu numero 1
+# loadima n4565.fits           #--- Charge l'image n4565.fits et affiche l'image dans la visu numero 1
+# loadima n4565.fits 2         #--- Charge l'image n4565.fits et affiche l'image dans la visu numero 2
+# loadima n4565.fits 1 -novisu #--- Charge l'image n4565.fits dans le buffer associe a la visu 1 sans afficher l'image
 #
-proc loadima {{filename "?"} {affichage "-dovisu"}} {
+proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    global conf
    global audace
    global caption
-   global color
 
-   #--- Je masque la fentre des films
-   ::Movie::deleteMovieWindow $audace(hCanvas)
+   #---
+   set bufNo [ visu$visuNo buf ]
 
    #--- Recuperation de l'extension par defaut
-   buf$audace(bufNo) extension "$conf(extension,defaut)"
-
-   #--- Recuperation du zoom par defaut
-   visu$audace(visuNo) zoom $conf(visu_zoom)
+   buf$bufNo extension "$conf(extension,defaut)"
 
    #--- Recuperation de l'information de compression ou non
-   if {$conf(fichier,compres)==1} {
-      buf$audace(bufNo) compress gzip
+   if { $conf(fichier,compres) == "1" } {
+      buf$bufNo compress gzip
    } else {
-      buf$audace(bufNo) compress none
+      buf$bufNo compress none
    }
 
-   if {$filename == "?"} {
-      #--- Fenetre parent
-      set fenetre "$audace(base)"
+   #--- Suppression de la zone selectionnee avec la souris si elle existe
+   if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
+      ::confVisu::deleteBox $visuNo
+   }
+
+   #--- Fenetre parent
+   set fenetre [::confVisu::getBase $visuNo]
+
+   if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
    } else {
       if {[file pathtype $filename] == "relative"} {
-	   set filename [file join $audace(rep_images) $filename]
+         set filename [file join $audace(rep_images) $filename]
       }
    }
 
    #---
-   if {[string compare $filename ""] != 0 } {
-      set result [buf$audace(bufNo) load $filename]
-      if {$result == ""} {
-         set audace(lastFileName) "$filename"
-	   catch { ::astrometry::quit }
-         catch { ::AcqFC::stopPreview }
-         image delete image0
-         image create photo image0
-         set audace(picture,w) [lindex [buf$audace(bufNo) getkwd NAXIS1] 1]
-         set audace(picture,h) [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
-         if {$affichage != "-novisu"} {
-            wm title $audace(base) "$caption(audace,titre) - $filename"
-            ::audace::autovisu visu$audace(visuNo)
-         } else {
-            wm title $audace(base) "$caption(audace,titre)"
-	   }
-         set zoom [visu$audace(visuNo) zoom]
-         $audace(hCanvas) configure \
-            -scrollregion [list 0 0 [expr int(${zoom}*$audace(picture,w))] [expr int(${zoom}*$audace(picture,h))]]
-         $audace(hCanvas) itemconfigure display -state normal
-         set calib 1
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CRPIX1] 0] ""] == 0 } {
-            set calib 0
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CRPIX2] 0] ""] == 0 } {
-            set calib 0
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CRVAL1] 0] ""] == 0 } {
-            set calib 0
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CRVAL2] 0] ""] == 0 } {
-            set calib 0
-         }
-         set classic 0
-         set nouveau 0
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CD1_1] 0] ""] != 0 } {
-            incr nouveau
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CD1_2] 0] ""] != 0 } {
-            incr nouveau
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CD2_1] 0] ""] != 0 } {
-            incr nouveau
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CD2_2] 0] ""] != 0 } {
-            incr nouveau
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CDELT1] 0] ""] != 0 } {
-            incr classic
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CDELT2] 0] ""] != 0 } {
-            incr classic
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CROTA1] 0] ""] != 0 } {
-            incr classic
-         }
-         if { [string compare [lindex [buf$audace(bufNo) getkwd CROTA2] 0] ""] != 0 } {
-            incr classic
-         }
-         if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
-            $audace(base).fra1.labURLX configure -fg $color(blue)
-            $audace(base).fra1.labURLY configure -fg $color(blue)
-            set audace(labcoord,type) xy
-
-            bind $audace(base).fra1.labURLX <Button-1> {
-               global audace
-               if { $audace(labcoord,type) == "xy" } {
-                  set audace(labcoord,type) radec
-                  $audace(base).fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
-                  $audace(base).fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
-               } else {
-                  set audace(labcoord,type) xy
-                  $audace(base).fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
-                  $audace(base).fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
-               }
-            }
-            bind $audace(base).fra1.labURLY <Button-1> {
-               global audace
-               if { $audace(labcoord,type) == "xy" } {
-                  set audace(labcoord,type) radec
-                  $audace(base).fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
-                  $audace(base).fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
-               } else {
-                  set audace(labcoord,type) xy
-                  $audace(base).fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
-                  $audace(base).fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
-               }
-            }
-         } else {
-            $audace(base).fra1.labURLX configure -fg $audace(color,textColor)
-            $audace(base).fra1.labURLY configure -fg $audace(color,textColor)
-            set audace(labcoord,type)  xy
-            #--- Annulation des bindings
-            bind $audace(base).fra1.labURLX <Button-1> {}
-            bind $audace(base).fra1.labURLY <Button-1> {}
-         }
+   if { [ string compare $filename "" ] != "0" } {
+      set result [ buf$bufNo load $filename ]
+      if { $result == "" } {
+         ::confVisu::autovisu $visuNo "-no" "$filename" 
+      } else {
+         #--- echec du chargement
+         ::confVisu::autovisu $visuNo "-novisu"  ""
       }
-      #--- Suppression de la fenetre a l'ecran
-      catch {
-         unset audace(box)
-         $audace(hCanvas) delete $audace(hBox)
+      
+      set calib 1
+      if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
+         set calib 0
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
+         set calib 0
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
+         set calib 0
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
+         set calib 0
+      }
+      set classic 0
+      set nouveau 0
+      if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
+         incr nouveau
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
+         incr nouveau
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
+         incr nouveau
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
+         incr nouveau
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
+         incr classic
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
+         incr classic
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
+         incr classic
+      }
+      if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
+         incr classic
+      }
+      if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
+         ::confVisu::setAvailableScale $visuNo "xy_radec"
+      } else {
+         ::confVisu::setAvailableScale $visuNo "xy"
       }
    }
-   return
 }
 
 #
-# saveima [filename]
+# saveima [filename] [visuNo]
 # Enregistrement d'une image : Sans arguments, ou avec "?" comme nom de fichier,
 # ouvre une fenetre de selection pour demander le nom de fichier
 #
@@ -166,35 +119,45 @@ proc loadima {{filename "?"} {affichage "-dovisu"}} {
 # saveima m57         #--- Enregistre l'image sous le nom m57.fit (extension par defaut)
 # saveima n4565.fits  #--- Enregistre l'image sous le nom n4565.fits
 #
-proc saveima {{filename "?"}} {
+proc saveima { { filename "?" } { visuNo 1 } } {
    global conf
    global audace
    global caption
 
-   #--- Recuperation de l'extension par defaut
-   buf$audace(bufNo) extension "$conf(extension,defaut)"
-   #--- Recuperation de l'information de compression ou non
-   if {$conf(fichier,compres)==1} {
-      buf$audace(bufNo) compress gzip
-   } else {
-      buf$audace(bufNo) compress none
+   #---
+   set bufNo [ visu$visuNo buf ]
+
+   #--- On sort immediatement s'il n'y a pas d'image dans le buffer
+   if { [ buf$bufNo imageready ] == "0" } {
+      return
    }
 
-   if {$filename == "?"} {
-      #--- Fenetre parent
-      set fenetre "$audace(base)"
+   #--- Recuperation de l'extension par defaut
+   buf$bufNo extension "$conf(extension,defaut)"
+
+   #--- Recuperation de l'information de compression ou non
+   if { $conf(fichier,compres) == "1" } {
+      buf$bufNo compress gzip
+   } else {
+      buf$bufNo compress none
+   }
+
+   #--- Fenetre parent
+   set fenetre [::confVisu::getBase $visuNo]
+
+   if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
    } else {
       if {[file pathtype $filename] == "relative"} {
-	   set filename [file join $audace(rep_images) $filename]
+         set filename [file join $audace(rep_images) $filename]
       }
    }
-   if {[string compare $filename ""] != 0 } {
-      if { [ buf$audace(bufNo) imageready ] == "1" } {
-         set result [buf$audace(bufNo) save $filename]
-         if {$result == ""} {
-            wm title $audace(base) "$caption(audace,titre) - $filename"
+   if { [ string compare $filename "" ] != "0" } {
+      if { [ buf$bufNo imageready ] == "1" } {
+         set result [ buf$bufNo save $filename ]
+         if { $result == "" } {
+            wm title $fenetre "$caption(audace,titre) (visu$visuNo) - $filename"
          }
       }
    }
@@ -211,86 +174,55 @@ proc saveima {{filename "?"}} {
 # saveima ?           #--- Idem precedent
 # saveima m57         #--- Enregistre l'image sous le nom m57.jpg (extension par defaut)
 #
-proc savejpeg {{filename "?"}} {
+proc savejpeg { { filename "?" } } {
    global conf
    global audace
    global caption
 
-   if {$filename == "?"} {
-      #--- Fenetre parent
-      set fenetre "$audace(base)"
+   #--- Fenetre parent
+   set fenetre "$audace(base)"
+
+   if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "2" ]
    } else {
-      if {[file pathtype $filename] == "relative"} {
-	   set filename [file join $audace(rep_images) $filename]
+      if { [ file pathtype $filename ] == "relative" } {
+          set filename [ file join $audace(rep_images) $filename ]
       }
    }
-   if {[string compare $filename ""] != 0 } {
+   if { [ string compare $filename "" ] != 0 } {
       if { [ buf$audace(bufNo) imageready ] == "1" } {
-         if {[info exists conf(jpegquality,defaut)]==0} {
-            set result [buf$audace(bufNo) savejpeg $filename]
+         if { [ info exists conf(jpegquality,defaut) ] == "0" } {
+            set result [ buf$audace(bufNo) savejpeg $filename ]
          } else {
             set quality "$conf(jpegquality,defaut)"
-            set err [catch {
-               set quality [expr $quality]
-            }]
-            if {$err==1} {
+            set err [ catch { set quality [ expr $quality ] } ]
+            if { $err == "1" } {
                set quality 80
             }
-            set result [buf$audace(bufNo) savejpeg $filename $quality ]
+            set result [ buf$audace(bufNo) savejpeg $filename $quality ]
          }
-         if {$result == ""} {
-            wm title $audace(base) "$caption(audace,titre) - $filename"
+         if { $result == "" } {
+            wm title $audace(base) "$caption(audace,titre) (visu1) - $filename"
          }
       }
    }
    return
 }
 
-#
-# visu [l2i cuts]
+#------------------------------------------------------------
+# visu
 # Visualisation du buffer : Eventuellement on peut changer les seuils en passant une liste de
-# deux elements entiers : le seuil haut et le seuil bas
+# deux elements entiers, le seuil haut et le seuil bas
 #
 # Exemple :
 # visu
 # visu {500 0}
-#
-proc visu { visuName { cuts "autocuts" } } {
+#------------------------------------------------------------
+proc visu { { cuts "autocuts" } } {
    global audace
 
-   set bufferName "buf[ $visuName buf ]"
-
-   if { [llength $cuts] == 1 } {
-      if { $cuts == "autocuts"} {
-         set cuts [ lrange [ $bufferName autocuts ] 0 1 ]
-      } else {
-         # autre choix = on garde les seuils actuels
-         set cuts [ $visuName cut ]
-         set sh [ expr int ( [ lindex $cuts 0 ] ) ]
-         set sb [ expr int ( [ lindex $cuts 1 ] ) ]
-         set cuts [ list $sh $sb ]
-      }
-   } elseif { [llength $cuts] == 2 } {
-      $visuName cut $cuts
-   }
-
-   if { $visuName == "visu$audace(visuNo)" } {
-      image delete image0
-      image create photo image0
-      ::audace::ComputeScaleRange         
-      ::audace::ChangeHiCutDisplay [lindex $cuts 0]
-      ::audace::ChangeLoCutDisplay [lindex $cuts 1]
-      set audace(picture,w) [ lindex [ $bufferName getkwd NAXIS1 ] 1 ]
-      set audace(picture,h) [ lindex [ $bufferName getkwd NAXIS2 ] 1 ]
-      set zoom [ $visuName zoom ]
-      $audace(hCanvas) configure -scrollregion [ list 0 0 [ expr int(${zoom}*$audace(picture,w)) ] [ expr int(${zoom}*$audace(picture,h)) ] ]
-   }
-
-   $visuName disp
-
-   ::Crosshair::redrawCrosshair
+   ::confVisu::visu $audace(visuNo) $cuts 
 }
 
 #
@@ -315,14 +247,11 @@ proc stat { } {
 # acq 10 2
 #
 proc acq { exptime binning } {
-   global conf
    global audace
    global caption
 
-   #--- Petits raccourcis
+   #--- Petit raccourci
    set camera cam$audace(camNo)
-   set visu visu$audace(visuNo)
-   set buffer buf$audace(bufNo)
 
    #--- La commande exptime permet de fixer le temps de pose de l'image
    $camera exptime $exptime
@@ -336,45 +265,43 @@ proc acq { exptime binning } {
    #--- Attente de la fin de la pose
    vwait status_$camera
 
-   #--- Retournement de l'image
-   set cam $conf(camera)
-   if {$conf($cam,mirx)==1} {
-      $buffer mirrorx
-   }
-   if {$conf($cam,miry)==1} {
-      $buffer mirrory
-   }
-
    #--- Visualisation de l'image
-   image delete image0
-   image create photo image0
-   ::audace::autovisu $visu
+   ::audace::autovisu $audace(visuNo)
 
    wm title $audace(base) "$caption(audace,image,acquisition) $exptime s"
 }
 
-proc statwin { box } {
-   variable This
+proc statwin { visuNo } {
    global conf
    global audace
    global caption
 
-   set This "$audace(base).statwin"
+   #---
+   set base [ ::confVisu::getBase $visuNo ] 
+   #---
+   set This "$base.statwin"
    if [ winfo exists $This ] {
       ferme_fenetre_analyse $This statwin
+   }
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
    }
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(statwin,position) ] } { set conf(statwin,position) "+350+75" }
    #--- Creation de la fenetre
    toplevel $This
-   wm transient $This $audace(base)
+   wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(audace,menu,statwin)"
    wm geometry $This $conf(statwin,position)
    wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This statwin"
    #--- Lecture des statistiques fenetre
-   set valeurs [ buf$audace(bufNo) stat $box ]
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] stat $box ]
    #--- Cree les etiquettes
+   label $This.lab0 -text "Visu$visuNo"
+   pack $This.lab0 -padx 10 -pady 2
    label $This.lab1 -text "$caption(audace,image,max) [ lindex $valeurs 2 ]"
    pack $This.lab1 -padx 10 -pady 2
    label $This.lab2 -text "$caption(audace,image,min) [ lindex $valeurs 3 ]"
@@ -395,27 +322,37 @@ proc statwin { box } {
    ::confColor::applyColor $This
 }
 
-proc fwhm { box } {
+proc fwhm { visuNo } {
    global conf
    global audace
    global caption
 
-   set This "$audace(base).fwhm"
+   #---
+   set base [ ::confVisu::getBase $visuNo ] 
+   #---
+   set This "$base.fwhm"
    if [ winfo exists $This ] {
       ferme_fenetre_analyse $This fwhm
+   }
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
    }
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(fwhm,position) ] } { set conf(fwhm,position) "+350+75" }
    #--- Creation de la fenetre
    toplevel $This
-   wm transient $This $audace(base)
+   wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(audace,menu,fwhm)"
    wm geometry $This $conf(fwhm,position)
    wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This fwhm"
    #--- Lecture de fwhmx et fwhmy
-   set valeurs [ buf$audace(bufNo) fwhm $box ]
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fwhm $box ]
    #--- Cree les etiquettes
+   label $This.lab0 -text "Visu$visuNo"
+   pack $This.lab0 -padx 10 -pady 2
    label $This.lab1 -text "$caption(audace,fwhm,x) : [ lindex $valeurs 0 ]"
    pack $This.lab1 -padx 10 -pady 2
    label $This.lab2 -text "$caption(audace,fwhm,y) : [ lindex $valeurs 1 ]"
@@ -428,29 +365,39 @@ proc fwhm { box } {
    ::confColor::applyColor $This
 }
 
-proc fitgauss { box } {
+proc fitgauss { visuNo } {
    global conf
    global audace
    global caption
    global color
 
-   set This "$audace(base).fitgauss"
+   #---
+   set base [ ::confVisu::getBase $visuNo ] 
+   #---
+   set This "$base.fitgauss"
    if [ winfo exists $This ] {
       ferme_fenetre_analyse $This fitgauss
+   }
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
    }
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(fitgauss,position) ] } { set conf(fitgauss,position) "+350+75" }
    #--- Creation de la fenetre
    toplevel $This
-   wm transient $This $audace(base)
+   wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(audace,menu,fitgauss)"
    wm geometry $This $conf(fitgauss,position)
    wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This fitgauss"
    #--- Lecture de la gaussienne d'ajustement
-   set valeurs [ buf$audace(bufNo) fitgauss $box ]
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box ]
    #--- Cree les etiquettes
-   ::console::affiche_resultat "$caption(audace,title_gauss)\n"
+   label $This.lab0 -text "Visu$visuNo"
+   pack $This.lab0 -padx 10 -pady 2
+   ::console::affiche_resultat "Visu$visuNo $caption(audace,title_gauss)\n"
    ::console::affiche_resultat "$caption(audace,coord_box) : $box\n"
    set texte "$caption(audace,center,xy) : [ format "%.2f" [ lindex $valeurs 1 ] ] / [ format "%.2f" [ lindex $valeurs 5 ] ]"
    ::console::affiche_resultat "$texte\n"
@@ -483,10 +430,10 @@ proc fitgauss { box } {
    set dmag [ expr abs($mag1-$mag0) ]
    set texte "$caption(audace,mag_instrument) : [ format %6.3f $mag0 ] +/- [ format %6.3f $dmag ]"
    ::console::affiche_resultat "$texte\n"
-   if { [ $audace(base).fra1.labURLX cget -fg ] == "$color(blue)" } {
-      set radec [ buf$audace(bufNo) xy2radec [ list [ lindex $valeurs 1 ] [ lindex $valeurs 5 ] ] ]
-	set ra [ lindex $radec 0 ]
-	set dec [ lindex $radec 1 ]
+   if { [ $base.fra1.labURLX cget -fg ] == "$color(blue)" } {
+      set radec [ buf[ ::confVisu::getBufNo $visuNo ] xy2radec [ list [ lindex $valeurs 1 ] [ lindex $valeurs 5 ] ] ]
+      set ra [ lindex $radec 0 ]
+      set dec [ lindex $radec 1 ]
       set rah [ mc_angle2hms $ra 360 zero 2 auto string ]
       set decd [ mc_angle2dms $dec 90 zero 2 + string ]
       set texte "$caption(caractere,RA) $caption(caractere,DEC) : $ra $dec"
@@ -498,8 +445,8 @@ proc fitgauss { box } {
       #--- C2003 10 18.89848 : Indique la date du milieu de la pose pour l'image
       #--- (annee, mois, jour decimal --> qui permet d'avoir l'heure du milieu de la pose a la seconde pres)
       set mpc "$caption(audace,MPC_format)\n     .        C"
-      set demiexposure [ expr ( [ lindex [ buf$audace(bufNo) getkwd EXPOSURE ] 1 ]+0. )/86400./2. ]
-      set d [mc_date2iso8601 [ mc_datescomp [ lindex [ buf$audace(bufNo) getkwd DATE-OBS ] 1 ] + $demiexposure ] ]
+      set demiexposure [ expr ( [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]+0. )/86400./2. ]
+      set d [mc_date2iso8601 [ mc_datescomp [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd DATE-OBS ] 1 ] + $demiexposure ] ]
       set annee [ string range $d 0 3 ]
       set mois  [ string range $d 5 6 ]
       set jour  [ string range $d 8 9 ]
@@ -523,11 +470,12 @@ proc fitgauss { box } {
       set s [ string replace $s 2 2 . ]
       append mpc "$d $m $s "
       append mpc "         "
-      set cmagr [ expr ( [ lindex [ buf$audace(bufNo) getkwd CMAGR ] 1 ]+0. ) ]
+      set cmagr [ expr ( [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd CMAGR ] 1 ]+0. ) ]
       if { $cmagr == "0" } { set cmagr "23" }
       set mag [ expr $cmagr+$mag0 ]
       append mpc "[ format %04.1f $mag ]"
       #---
+      if { ! [ info exists conf(posobs,station_uai) ] } { set conf(posobs,station_uai) "" }
       if { $conf(posobs,station_uai) == "" } {
          set xxx "xxx"
       } else {
@@ -537,14 +485,13 @@ proc fitgauss { box } {
       append mpc "        $xxx"
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "$mpc\n"
-      ::console::affiche_resultat "\n"
       #---
       if { $xxx != "xxx" } {
          ::console::affiche_erreur "$caption(audace,boite,attention)\n"
          ::console::affiche_erreur "[eval [concat {format} { $caption(audace,UAI_site_image) $conf(posobs,station_uai) } ] ]\n"
-         ::console::affiche_resultat "\n"
       }
    }
+   ::console::affiche_resultat "\n\n"
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -553,27 +500,37 @@ proc fitgauss { box } {
    ::confColor::applyColor $This
 }
 
-proc center { box } {
+proc center { visuNo } {
    global conf
    global audace
    global caption
 
-   set This "$audace(base).center"
+   #---
+   set base [ ::confVisu::getBase $visuNo ] 
+   #---
+   set This "$base.center"
    if [ winfo exists $This ] {
-      ferme_fenetre_analyse $This centro
+      ferme_fenetre_analyse $This center
+   }
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
    }
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(center,position) ] } { set conf(center,position) "+350+75" }
    #--- Creation de la fenetre
    toplevel $This
-   wm transient $This $audace(base)
+   wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(audace,menu,centro)"
    wm geometry $This $conf(center,position)
    wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This centro"
    #--- Lecture de la fonction
-   set valeurs [ buf$audace(bufNo) centro $box ]
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] centro $box ]
    #--- Cree les etiquettes
+   label $This.lab0 -text "Visu$visuNo"
+   pack $This.lab0 -padx 10 -pady 2
    label $This.lab1 -text "$caption(audace,center,xy) : ( [ format "%.2f" [ lindex $valeurs 0 ] ] / [ format "%.2f" [ lindex $valeurs 1 ] ] )"
    pack $This.lab1 -padx 10 -pady 2
    #--- La fenetre est active
@@ -584,27 +541,37 @@ proc center { box } {
    ::confColor::applyColor $This
 }
 
-proc photom { box } {
+proc photom { visuNo } {
    global conf
    global audace
    global caption
 
-   set This "$audace(base).photom"
+   #---
+   set base [ ::confVisu::getBase $visuNo ] 
+   #---
+   set This "$base.photom"
    if [ winfo exists $This ] {
       ferme_fenetre_analyse $This photom
+   }
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
    }
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(photom,position) ] } { set conf(photom,position) "+350+75" }
    #--- Creation de la fenetre
    toplevel $This
-   wm transient $This $audace(base)
+   wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(audace,menu,phot)"
    wm geometry $This $conf(photom,position)
    wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This photom"
    #--- Lecture de la fonction
-   set valeurs [ buf$audace(bufNo) phot $box ]
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] phot $box ]
    #--- Cree les etiquettes
+   label $This.lab0 -text "Visu$visuNo"
+   pack $This.lab0 -padx 10 -pady 2
    label $This.lab1 -text "$caption(audace,integflux) : [ lindex $valeurs 0 ]"
    pack $This.lab1 -padx 10 -pady 2
    #--- La fenetre est active
@@ -627,276 +594,259 @@ proc ferme_fenetre_analyse { This nom_conf } {
    destroy $This
 }
 
-proc subfitgauss { box } {
-   global audace
-   global caption
-
-   set valeurs [ buf$audace(bufNo) fitgauss $box -sub ]
-   ::audace::autovisu visu$audace(visuNo)
+proc subfitgauss { visuNo } {
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
+   }
+   #---
+   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box -sub ]
+   ::confVisu::autovisu $visuNo
 }
 
-proc scar { box } {
-   global audace
-   global caption
-
-   set valeurs [ buf$audace(bufNo) scar $box ]
-   ::audace::autovisu visu$audace(visuNo)
+proc scar { visuNo } {
+   #---
+   set box [ ::confVisu::getBox $visuNo ]
+   if { $box == "" } {
+      return
+   }
+   #---
+   set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
+   ::confVisu::autovisu $visuNo
 }
 
 proc offset { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) offset [lindex $args 0]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : offset val"
+      error "Usage: offset val"
    }
 }
 
 proc mult { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) mult [lindex $args 0]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : mult val"
+      error "Usage: mult val"
    }
 }
 
 proc noffset { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) noffset [lindex $args 0]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : noffset val"
+      error "Usage: noffset val"
    }
 }
 
 proc ngain { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) ngain [lindex $args 0]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : ngain val"
+      error "Usage: ngain val"
    }
 }
 
 proc add { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) add [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : add image val"
+      error "Usage: add image val"
    }
 }
 
 proc sub { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) sub [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : sub image val"
+      error "Usage: sub image val"
    }
 }
 
 proc div { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) div [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : div image val"
+      error "Usage: div image val"
    }
 }
 
 proc opt { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) opt [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : opt dark offset"
+      error "Usage: opt dark offset"
    }
 }
 
 proc deconvflat { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) unsmear [lindex $args 0]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : deconvflat coef"
+      error "Usage: deconvflat coef"
    }
 }
 
 proc rot { args } {
    global audace
-   global caption
 
    if {[llength $args] == 3} {
       buf$audace(bufNo) rot [lindex $args 0] [lindex $args 1] [lindex $args 2]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : rot x0 y0 angle"
+      error "Usage: rot x0 y0 angle"
    }
 }
 
 proc log { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) log [lindex $args 0]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } elseif {[llength $args] == 3} {
       buf$audace(bufNo) log [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : log coef ?offset?"
+      error "Usage: log coef ?offset?"
    }
 }
 
 proc binx { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) binx [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } elseif {[llength $args] == 3} {
       buf$audace(bufNo) binx [lindex $args 0] [lindex $args 1] [lindex $args 2]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : binx x1 x2 ?width?"
+      error "Usage: binx x1 x2 ?width?"
    }
 }
 
 proc biny { args } {
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       buf$audace(bufNo) biny [lindex $args 0] [lindex $args 1]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } elseif {[llength $args] == 3} {
       buf$audace(bufNo) biny [lindex $args 0] [lindex $args 1] [lindex $args 2]
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : biny y1 y2 ?height?"
+      error "Usage: biny y1 y2 ?height?"
    }
 }
 
-proc window { args } {
+proc window { { args "" } } {
    global audace
    global caption
 
-   if {[llength $args] == 1} {
-      buf$audace(bufNo) window [lindex $args 0]
-      catch {
-         unset audace(box)
-         $audace(hCanvas) delete $audace(hBox)
+   if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
+      if {$args == ""} {
+         set args [ list [ ::confVisu::getBox $audace(visuNo) ] ]
       }
-      ::audace::autovisu visu$audace(visuNo)
+      if {[llength $args] == 1} {
+         buf$audace(bufNo) window [lindex $args 0]
+         ::confVisu::deleteBox $audace(visuNo)
+         ::audace::autovisu $audace(visuNo)
+      } else {
+         error "Usage: window {x1 y1 x2 y2}"
+      }
    } else {
-      error "Usage : window {x1 y1 x2 y2}"
+      tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
    }
 }
 
 proc clipmin { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) clipmin [lindex $args 0]
-      catch {
-         unset audace(box)
-         $audace(hCanvas) delete $audace(hBox)
-      }
-      ::audace::autovisu visu$audace(visuNo)
+      ::confVisu::deleteBox $audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : clipmin value"
+      error "Usage: clipmin value"
    }
 }
 
 proc clipmax { args } {
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       buf$audace(bufNo) clipmax [lindex $args 0]
-      catch {
-         unset audace(box)
-         $audace(hCanvas) delete $audace(hBox)
-      }
-      ::audace::autovisu visu$audace(visuNo)
+      ::confVisu::deleteBox $audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : clipmax value"
+      error "Usage: clipmax value"
    }
 }
 
 proc resample { args } {
    global audace
-   global caption
 
    if {[llength $args] >= 1} {
       if {[llength $args] >= 2} {
-         buf$audace(bufNo) scale [lindex $args 0] [lindex $args 1]
+         buf$audace(bufNo) scale [ list [lindex $args 0] [lindex $args 1] ]
       } else {
          buf$audace(bufNo) scale [lindex $args 0] 1
       }
-      catch {
-         unset audace(box)
-         $audace(hCanvas) delete $audace(hBox)
-      }
-      ::audace::autovisu visu$audace(visuNo)
+      ::confVisu::deleteBox $audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : scale ScalingFactor ?NormaFlux?"
+      error "Usage: resample Factor_x Factor_y ?NormaFlux?"
    }
 }
 
 proc mirrorx { args } {
    global audace
-   global caption
 
    if {[llength $args] == 0} {
       buf$audace(bufNo) mirrorx
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : mirrorx"
+      error "Usage: mirrorx"
    }
 }
 
 proc mirrory { args } {
    global audace
-   global caption
 
    if {[llength $args] == 0} {
       buf$audace(bufNo) mirrory
-      ::audace::autovisu visu$audace(visuNo)
+      ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : mirrory"
+      error "Usage: mirrory"
    }
 }
 
@@ -909,7 +859,6 @@ proc mirrory { args } {
 proc delete2 { args } {
    global conf
    global audace
-   global caption
 
    #--- Recuperation de l'extension par defaut
    buf$audace(bufNo) extension "$conf(extension,defaut)"
@@ -920,7 +869,7 @@ proc delete2 { args } {
       set nb [lindex $args 1]
       for {set i 1} {$i <= $nb} {incr i} {file delete -force $in$i$ext}
    } else {
-      error "Usage : delete2 in nb"
+      error "Usage: delete2 in nb"
    }
 }
 
@@ -933,8 +882,6 @@ proc delete2 { args } {
 #    offset maps. Temporary files named flat-tmp-1.fit to flat-tmp-5.fit are generated and deleted
 #
 proc extract_flat { args } {
-   global caption
-
    if {[llength $args] == 5} {
       set in [lindex $args 0]
       set dark [lindex $args 1]
@@ -948,7 +895,7 @@ proc extract_flat { args } {
       smedian $tmp $out $nb
       delete2 $tmp $nb
    } else {
-      error "Usage : extract_flat in dark offset out nb"
+      error "Usage: extract_flat in dark offset out nb"
    }
 }
 
@@ -957,30 +904,26 @@ proc extract_flat { args } {
 # Renvoie la date courante au format FITS
 #
 proc fitsdate { args } {
-   global caption
-
    if {[llength $args] == 0} {
       clock format [clock seconds] -format "%Y-%m-%dT%H:%M:%S.00"
    } else {
-      error "Usage : fitsdate"
+      error "Usage: fitsdate"
    }
 }
 
 proc dir { { rgxp "*" } } {
-   global caption
-
    set res [glob $rgxp]
    set maxlen 0
    foreach elem $res {
       if {[string length $elem]>$maxlen} {
-         set maxlen [string length $elem]
+   set maxlen [string length $elem]
       }
    }
    foreach elem $res {
       if {[file isdirectory $elem]} {
-         set comment "<DIR>"
+   set comment "<DIR>"
       } else {
-         set comment "([file size $elem])"
+   set comment "([file size $elem])"
       }
       ::console::affiche_resultat [format "%-[subst $maxlen]s  %s\n" $elem $comment]
    }
@@ -997,42 +940,48 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} } {
 
    set len [string length $conf(rep_images)]
    set folder "$conf(rep_images)"
-   if {$len>0} {
+   if {$len>"0"} {
       set car [string index "$conf(rep_images)" [expr $len-1]]
       if {$car!="/"} {
          append folder "/"
       }
    }
    set basecanvas $audace(base).can1.canvas
+   #--- Je sauvegarde le numero de l'image associe à la visu
+   set imageNo [visu$audace(visuNo) image]
    #--- On va creer nb zones de visu a partir de 101
    set off 100
    #--- Cree les visu et les Tk_photoimage
    for {set k 1} {$k<=$nb} {incr k} {
       set kk [expr $k+$off]
-      ::visu::create 1 $kk $kk
-      image create photo image$kk
+      #--- Cree l'image si elle n'existe pas et l'associe a la visu
+      visu$audace(visuNo) image $kk
       buf$audace(bufNo) load "$folder$filename$k"
-      ::audace::autovisu visu$kk
+      #--- Affiche l'image associee a la visu
+      ::audace::autovisu $audace(visuNo)
    }
    #--- Animation
    for {set t 1} {$t<=$nbtours} {incr t} {
       for {set k 1} {$k<=$nb} {incr k} {
          set kk [expr $k+$off]
          $basecanvas itemconfigure display -image image$kk
+         #--- Change l'image associee a la visu
+         visu$audace(visuNo) image $kk
          update
          after $millisecondes
       }
    }
-   #--- Detruit les visu et les Tk_photoimage
+   #--- Detruit les Tk_photoimage
    for {set k 1} {$k<=$nb} {incr k} {
       set kk [expr $k+$off]
-      ::visu::delete $kk
       image delete image$kk
    }
    #--- Reconfigure pour Aud'ACE normal
-   $basecanvas itemconfigure display -image image0
+   $basecanvas itemconfigure display -image image$imageNo
    update
+   #--- Je restaure le numero de l'image associe a la visu
+   visu$audace(visuNo) image $imageNo
    buf$audace(bufNo) load $folder${filename}1
-   ::audace::autovisu visu$audace(visuNo)
+   ::audace::autovisu $audace(visuNo)
 }
 

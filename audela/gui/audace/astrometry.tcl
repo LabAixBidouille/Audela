@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 03 juillet 2005
+# Date de mise a jour : 08 janvier 2006
 #
 
 namespace eval ::astrometry {
@@ -15,7 +15,7 @@ namespace eval ::astrometry {
       set astrom(list_combobox) [ list $caption(astrometry,cat,usno) $caption(astrometry,cat,microcat) \
          $caption(astrometry,cat,personal) ]
 
-	if { $::tcl_platform(os) == "Linux" } {
+      if { $::tcl_platform(os) == "Linux" } {
          if { ! [ info exists conf(astrometry,catfolder) ] } { set conf(astrometry,catfolder) "/cdrom/" }
       } else {
          if { ! [ info exists conf(astrometry,catfolder) ] } { set conf(astrometry,catfolder) "d:/" }
@@ -49,7 +49,7 @@ namespace eval ::astrometry {
    }
 
    proc create { } {
-   	variable astrom
+      variable astrom
       global audace
       global caption
 
@@ -100,27 +100,27 @@ namespace eval ::astrometry {
       set dimx [lindex [buf$audace(bufNo) getkwd NAXIS1 ] 1]
       set dimy [lindex [buf$audace(bufNo) getkwd NAXIS2 ] 1]
       if {$::astrometry::astrom(wcsvalues,CRPIX1)==""} {
-	   set ::astrometry::astrom(wcsvalues,CRPIX1) [expr $dimx /2.]
+         set ::astrometry::astrom(wcsvalues,CRPIX1) [expr $dimx /2.]
       }
       if {$::astrometry::astrom(wcsvalues,CRPIX2)==""} {
-	   set ::astrometry::astrom(wcsvalues,CRPIX2) [expr $dimy /2.]
+         set ::astrometry::astrom(wcsvalues,CRPIX2) [expr $dimy /2.]
       }
       #---
       if {($::astrometry::astrom(wcsvalues,CRVAL1)=="")&&($::astrometry::astrom(wcsvalues,RA)=="")} {
-	   set ::astrometry::astrom(wcsvalues,RA) 0.
+         set ::astrometry::astrom(wcsvalues,RA) 0.
       }
       if {($::astrometry::astrom(wcsvalues,CRVAL1)=="")&&($::astrometry::astrom(wcsvalues,RA)!="")} {
-	   set ::astrometry::astrom(wcsvalues,CRVAL1) $::astrometry::astrom(wcsvalues,RA)
+         set ::astrometry::astrom(wcsvalues,CRVAL1) $::astrometry::astrom(wcsvalues,RA)
       } elseif {($::astrometry::astrom(wcsvalues,CRVAL1)!="")&&($::astrometry::astrom(wcsvalues,RA)=="")} {
-	   set ::astrometry::astrom(wcsvalues,RA) $::astrometry::astrom(wcsvalues,CRVAL1)
+         set ::astrometry::astrom(wcsvalues,RA) $::astrometry::astrom(wcsvalues,CRVAL1)
       }
       if {($::astrometry::astrom(wcsvalues,CRVAL2)=="")&&($::astrometry::astrom(wcsvalues,DEC)=="")} {
-	   set ::astrometry::astrom(wcsvalues,DEC) 0.
+         set ::astrometry::astrom(wcsvalues,DEC) 0.
       }
       if {($::astrometry::astrom(wcsvalues,CRVAL2)=="")&&($::astrometry::astrom(wcsvalues,DEC)!="")} {
-	   set ::astrometry::astrom(wcsvalues,CRVAL2) $::astrometry::astrom(wcsvalues,DEC)
+         set ::astrometry::astrom(wcsvalues,CRVAL2) $::astrometry::astrom(wcsvalues,DEC)
       } elseif {($::astrometry::astrom(wcsvalues,CRVAL2)!="")&&($::astrometry::astrom(wcsvalues,DEC)=="")} {
-	   set ::astrometry::astrom(wcsvalues,DEC) $::astrometry::astrom(wcsvalues,CRVAL2)
+         set ::astrometry::astrom(wcsvalues,DEC) $::astrometry::astrom(wcsvalues,CRVAL2)
       }
       #---
       set valid_optic 2
@@ -146,48 +146,48 @@ namespace eval ::astrometry {
       set upixsize1 1.
       set upixsize2 1.
       if {($valid_optic>=8)} {
-	   if {$::astrometry::astrom(wcsunits,FOCLEN)=="um"} {
-	      set ufoclen 1e-6
-	   }
-	   if {$::astrometry::astrom(wcsunits,FOCLEN)=="mm"} {
-		set ufoclen 1e-3
-	   }
-	   if {$::astrometry::astrom(wcsunits,FOCLEN)=="m"} {
-		set ufoclen 1.
-	   }
-	   if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="um"} {
-		set upixsize1 1e-6
-	   }
-	   if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="mm"} {
-		set upixsize1 1e-3
-	   }
-	   if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="m"} {
-		set upixsize1 1.
-	   }
-	   if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="um"} {
-		set upixsize2 1e-6
-	   }
-	   if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="mm"} {
-		set upixsize2 1e-3
-	   }
-	   if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="m"} {
-		set upixsize2 1.
-	   }
+         if {$::astrometry::astrom(wcsunits,FOCLEN)=="um"} {
+            set ufoclen 1e-6
+         }
+         if {$::astrometry::astrom(wcsunits,FOCLEN)=="mm"} {
+            set ufoclen 1e-3
+         }
+         if {$::astrometry::astrom(wcsunits,FOCLEN)=="m"} {
+            set ufoclen 1.
+         }
+         if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="um"} {
+            set upixsize1 1e-6
+         }
+         if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="mm"} {
+            set upixsize1 1e-3
+         }
+         if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="m"} {
+            set upixsize1 1.
+         }
+         if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="um"} {
+            set upixsize2 1e-6
+         }
+         if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="mm"} {
+            set upixsize2 1e-3
+         }
+         if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="m"} {
+            set upixsize2 1.
+         }
       }
       #::console::affiche_resultat "valid_classic=$valid_classic valid_optic=$valid_optic valid_matrix=$valid_matrix\n"
       if {($valid_optic>=8)&&($valid_classic<7)} {
-	   set ::astrometry::astrom(wcsvalues,CDELT1) [expr -2*atan($::astrometry::astrom(wcsvalues,PIXSIZE1)*$upixsize1/2./$::astrometry::astrom(wcsvalues,FOCLEN)/$ufoclen)];
-	   set ::astrometry::astrom(wcsvalues,CDELT2) [expr  2*atan($::astrometry::astrom(wcsvalues,PIXSIZE2)*$upixsize2/2./$::astrometry::astrom(wcsvalues,FOCLEN)/$ufoclen)];
+         set ::astrometry::astrom(wcsvalues,CDELT1) [expr -2*atan($::astrometry::astrom(wcsvalues,PIXSIZE1)*$upixsize1/2./$::astrometry::astrom(wcsvalues,FOCLEN)/$ufoclen)];
+         set ::astrometry::astrom(wcsvalues,CDELT2) [expr  2*atan($::astrometry::astrom(wcsvalues,PIXSIZE2)*$upixsize2/2./$::astrometry::astrom(wcsvalues,FOCLEN)/$ufoclen)];
       }
       #if {(valid_matrix>=8)} {}
       if {($valid_optic>=8)&&($valid_classic<7)} {
-	   set pi [expr 4*atan(1.)]
-	   set cosr [expr cos($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
-	   set sinr [expr sin($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
-	   set ::astrometry::astrom(wcsvalues,CD1_1) [expr $::astrometry::astrom(wcsvalues,CDELT1)*$cosr ]
-	   set ::astrometry::astrom(wcsvalues,CD1_2) [expr  abs($::astrometry::astrom(wcsvalues,CDELT2))*$::astrometry::astrom(wcsvalues,CDELT1)/abs($::astrometry::astrom(wcsvalues,CDELT1))*$sinr ]
-	   set ::astrometry::astrom(wcsvalues,CD2_1) [expr -abs($::astrometry::astrom(wcsvalues,CDELT1))*$::astrometry::astrom(wcsvalues,CDELT2)/abs($::astrometry::astrom(wcsvalues,CDELT2))*$sinr ]
-	   set ::astrometry::astrom(wcsvalues,CD2_2) [expr $::astrometry::astrom(wcsvalues,CDELT2)*$cosr ]
+         set pi [expr 4*atan(1.)]
+         set cosr [expr cos($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
+         set sinr [expr sin($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
+         set ::astrometry::astrom(wcsvalues,CD1_1) [expr $::astrometry::astrom(wcsvalues,CDELT1)*$cosr ]
+         set ::astrometry::astrom(wcsvalues,CD1_2) [expr  abs($::astrometry::astrom(wcsvalues,CDELT2))*$::astrometry::astrom(wcsvalues,CDELT1)/abs($::astrometry::astrom(wcsvalues,CDELT1))*$sinr ]
+         set ::astrometry::astrom(wcsvalues,CD2_1) [expr -abs($::astrometry::astrom(wcsvalues,CDELT1))*$::astrometry::astrom(wcsvalues,CDELT2)/abs($::astrometry::astrom(wcsvalues,CDELT2))*$sinr ]
+         set ::astrometry::astrom(wcsvalues,CD2_2) [expr $::astrometry::astrom(wcsvalues,CDELT2)*$cosr ]
       }
       #--- Display the values of header keywords
       ::astrometry::keyword optic RA
@@ -306,7 +306,7 @@ namespace eval ::astrometry {
    }
 
    proc quit { } {
-   	variable astrom
+      variable astrom
 
       ::astrometry::recup_position
       destroy $astrom(This)
@@ -319,14 +319,14 @@ namespace eval ::astrometry {
    }
 
    proc updatewcs { } {
-	variable astrom
-	global audace
+      variable astrom
+      global audace
 
       #--- Read the values of header keywords
       set k 0
       foreach kwd $astrom(kwds) {
-	   set d [buf$audace(bufNo) getkwd $kwd]
-	   if {[lindex $d 1]==""} {
+         set d [buf$audace(bufNo) getkwd $kwd]
+         if {[lindex $d 1]==""} {
             #--- The value does not exists in image, we take the default value
             set ::astrometry::astrom(wcsvalues,$kwd) [lindex $astrom(values) $k]
             set ::astrometry::astrom(wcsunits,$kwd) [lindex $astrom(units) $k]
@@ -344,12 +344,12 @@ namespace eval ::astrometry {
    }
 
    proc start { } {
-   	variable astrom
-   	global audace caption color
+      variable astrom
+      global audace caption color
 
-   	set sextractor no
-   	set starfile no
-	#::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
+      set sextractor no
+      set starfile no
+      #::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
       if {$astrom(currenttypecal)=="delwcs"} {
          set kwddels {CD1_1 CD1_2 CD2_1 CD2_2 CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 FOCLEN CRPIX1 CRPIX2}
          set kwdnews {}
@@ -357,25 +357,25 @@ namespace eval ::astrometry {
          if {$astrom(currenttypewcs)=="optic"} {
             set kwddels {CD1_1 CD1_2 CD2_1 CD2_2 CRVAL1 CRVAL2 CDELT1 CDELT2}
             set kwdnews {FOCLEN PIXSIZE1 PIXSIZE2 CROTA2 CRPIX1 CRPIX2 RA DEC CRVAL1 CRVAL2 CDELT1 CDELT2}
-   	   }
-   	   if {$astrom(currenttypewcs)=="classic"} {
-   	   	set kwddels {FOCLEN CD1_1 CD1_2 CD2_1 CD2_2}
-	   	set kwdnews {CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CRPIX1 CRPIX2}
-   	   }
-   	   if {$astrom(currenttypewcs)=="matrix"} {
-   	   	set kwddels {FOCLEN CDELT1 CDELT2 CROTA2}
-	   	set kwdnews {CRVAL1 CRVAL2 CD1_1 CD1_2 CD2_1 CD2_2 CRPIX1 CRPIX2}
-   	   }
-   	}
-    	foreach kwd $kwddels {
-         catch {buf$audace(bufNo) delkwd $kwd}
-	   #::console::affiche_resultat " DEL $kwd\n"
+         }
+         if {$astrom(currenttypewcs)=="classic"} {
+            set kwddels {FOCLEN CD1_1 CD1_2 CD2_1 CD2_2}
+            set kwdnews {CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CRPIX1 CRPIX2}
+         }
+         if {$astrom(currenttypewcs)=="matrix"} {
+            set kwddels {FOCLEN CDELT1 CDELT2 CROTA2}
+         set kwdnews {CRVAL1 CRVAL2 CD1_1 CD1_2 CD2_1 CD2_2 CRPIX1 CRPIX2}
+         }
       }
-    	foreach kwd $kwdnews {
+      foreach kwd $kwddels {
+         catch {buf$audace(bufNo) delkwd $kwd}
+         #::console::affiche_resultat " DEL $kwd\n"
+      }
+       foreach kwd $kwdnews {
          set d [list $kwd "$::astrometry::astrom(wcsvalues,$kwd)" "$::astrometry::astrom(wcstypes,$kwd)" "$::astrometry::astrom(wcscomments,$kwd)" "$::astrometry::astrom(wcsunits,$kwd)"]
-	   set kwd0 [lindex $d 0]
-	   set val [lindex $d 1]
-	   #::console::affiche_resultat " set d=$d\n"
+         set kwd0 [lindex $d 0]
+         set val [lindex $d 1]
+         #::console::affiche_resultat " set d=$d\n"
          if {$kwd0!=""} {
             if {$kwd0=="RA"}     { set val [mc_angle2deg $val 360] }
             if {$kwd0=="DEC"}    { set val [mc_angle2deg $val 90] }
@@ -383,18 +383,18 @@ namespace eval ::astrometry {
             if {$kwd0=="CRVAL2"} { set val [mc_angle2deg $val 90] }
             if {$kwd0=="CROTA2"} { set val [mc_angle2deg $val 360] }
             set d [lreplace $d 1 1 $val]
-	      buf$audace(bufNo) setkwd $d
-	   }
-	   #::console::affiche_resultat " SET $d\n"
-	}
+            buf$audace(bufNo) setkwd $d
+         }
+         #::console::affiche_resultat " SET $d\n"
+      }
       if {$astrom(currenttypewcs)=="optic"} {
-	   set valra 0.0
-	   set valdec 0.0
-	   foreach kwd $kwdnews {
+         set valra 0.0
+         set valdec 0.0
+         foreach kwd $kwdnews {
             set d [list $kwd "$::astrometry::astrom(wcsvalues,$kwd)" "$::astrometry::astrom(wcstypes,$kwd)" "$::astrometry::astrom(wcscomments,$kwd)" "$::astrometry::astrom(wcsunits,$kwd)"]
-	      set kwd0 [lindex $d 0]
-	      set val [lindex $d 1]
-	      #::console::affiche_resultat " set d1=$d\n"
+            set kwd0 [lindex $d 0]
+            set val [lindex $d 1]
+            #::console::affiche_resultat " set d1=$d\n"
             if {$kwd0!=""} {
                if {$kwd0=="RA"}       { set valra [mc_angle2deg $val 360] }
                if {$kwd0=="DEC"}      { set valdec [mc_angle2deg $val 90] }
@@ -404,19 +404,19 @@ namespace eval ::astrometry {
             }
          }
          set pi [expr 4*atan(1.)]
-	   foreach kwd $kwdnews {
+         foreach kwd $kwdnews {
             set d [list $kwd "$::astrometry::astrom(wcsvalues,$kwd)" "$::astrometry::astrom(wcstypes,$kwd)" "$::astrometry::astrom(wcscomments,$kwd)" "$::astrometry::astrom(wcsunits,$kwd)"]
-	      set kwd0 [lindex $d 0]
-	      set val [lindex $d 1]
-	      #::console::affiche_resultat " set d2=$d ($valdec)\n"
+            set kwd0 [lindex $d 0]
+            set val [lindex $d 1]
+            #::console::affiche_resultat " set d2=$d ($valdec)\n"
             if {$kwd0!=""} {
                if {$kwd0=="CRVAL1"} { set val $valra }
                if {$kwd0=="CRVAL2"} { set val $valdec }
                if {$kwd0=="CDELT1"} { set val [expr -2*atan($valpixsize1/$valfoclen*1e-6/2.)*180/$pi] }
                if {$kwd0=="CDELT2"} { set val [expr 2*atan($valpixsize2/$valfoclen*1e-6/2.)*180/$pi] }
                set d [lreplace $d 1 1 $val]
-   	         buf$audace(bufNo) setkwd $d
-	      }
+               buf$audace(bufNo) setkwd $d
+            }
          }
       }
       $astrom(This).status.lab configure -text "$caption(astrometry,start,0)"
@@ -505,7 +505,7 @@ namespace eval ::astrometry {
          ::astrometry::updatewcs
       }
       if {$catastar<3} {
-	   return
+         return
       }
       #--- Read the values of header keywords
       ::astrometry::updatewcs
@@ -542,7 +542,7 @@ namespace eval ::astrometry {
          set stars [mc_readcat [ list BUFFER $audace(bufNo) ] [ list * ASTROMMICROCAT $astrom(catfolder) ] {LIST} -objmax 10000 -magr< 14 -magr> 10]
          set texte ""
          foreach re $stars {
-	      append texte "$re\n"
+            append texte "$re\n"
          }
          set f [open "microcat.txt" w ]
          puts -nonewline $f "$texte"
@@ -552,52 +552,52 @@ namespace eval ::astrometry {
          foreach re $stars {
             set dimx [lindex [buf$audace(bufNo) getkwd NAXIS1 ] 1]
             set dimy [lindex [buf$audace(bufNo) getkwd NAXIS2 ] 0]
-	      set racat [lindex $re 0]
-	      set deccat [lindex $re 1]
-	      set racat0 [lindex $re 0]
-	      set deccat0 [lindex $re 1]
-	      set xcat0 [lindex $re 4]
-	     # if {($xcat0>1030)&&($xcat0<1040)} {
-		  # continue
-	     # }
-	      set ycat0 [lindex $re 5]
-	      set err [catch {set xycat [buf$audace(bufNo) radec2xy [list $racat $deccat]]}]
-	      if {$err==1} {
-   	         break
-	      }
-	      #::console::affiche_resultat "$re\n $xycat\n"
-	      set xcat [lindex $xycat 0]
-	      #if {$xcat>1035} {
-		   # set xcat [expr $xcat-4.]
-	      #}
-	      set ycat [lindex $xycat 1]
-	      set fen 4
-	      set x1 [expr int($xcat-$fen)]
-	      set y1 [expr int($ycat-$fen)]
-	      set x2 [expr int($xcat+$fen)]
- 	      set y2 [expr int($ycat+$fen)]
-	      if {$x1<1} {set x1 1}
-	      if {$y1<1} {set y1 1}
-	      if {$x2>$dimx} {set x2 $dimx}
- 	      if {$y2>$dimy} {set y2 $dimy}
-	      set box [list $x1 $y1 $x2 $y2]
-	      set d [buf$audace(bufNo) fitgauss $box]
-	      set xmes [lindex $d 1]
-	      #if {$xmes>1035} {
-		   # set xmes [expr $xmes+4.]
-	      #}
-	      set ymes [lindex $d 5]
-	      set radecmes [buf$audace(bufNo) xy2radec [list $xmes $ymes] 1]
-	      set rames [lindex $radecmes 0]
-	      set decmes [lindex $radecmes 1]
-	      set d [mc_anglesep [list $rames $decmes $racat0 $deccat0 ]]
-	      #::console::affiche_resultat "$xmes $ymes $d  $xcat0 $ycat0 \n"
+            set racat [lindex $re 0]
+            set deccat [lindex $re 1]
+            set racat0 [lindex $re 0]
+            set deccat0 [lindex $re 1]
+            set xcat0 [lindex $re 4]
+           # if {($xcat0>1030)&&($xcat0<1040)} {
+              # continue
+           # }
+            set ycat0 [lindex $re 5]
+            set err [catch {set xycat [buf$audace(bufNo) radec2xy [list $racat $deccat]]}]
+            if {$err==1} {
+               break
+            }
+            #::console::affiche_resultat "$re\n $xycat\n"
+            set xcat [lindex $xycat 0]
+            #if {$xcat>1035} {
+               # set xcat [expr $xcat-4.]
+            #}
+            set ycat [lindex $xycat 1]
+            set fen 4
+            set x1 [expr int($xcat-$fen)]
+            set y1 [expr int($ycat-$fen)]
+            set x2 [expr int($xcat+$fen)]
+            set y2 [expr int($ycat+$fen)]
+            if {$x1<1} {set x1 1}
+            if {$y1<1} {set y1 1}
+            if {$x2>$dimx} {set x2 $dimx}
+            if {$y2>$dimy} {set y2 $dimy}
+            set box [list $x1 $y1 $x2 $y2]
+            set d [buf$audace(bufNo) fitgauss $box]
+            set xmes [lindex $d 1]
+            #if {$xmes>1035} {
+               # set xmes [expr $xmes+4.]
+            #}
+            set ymes [lindex $d 5]
+            set radecmes [buf$audace(bufNo) xy2radec [list $xmes $ymes] 1]
+            set rames [lindex $radecmes 0]
+            set decmes [lindex $radecmes 1]
+            set d [mc_anglesep [list $rames $decmes $racat0 $deccat0 ]]
+            #::console::affiche_resultat "$xmes $ymes $d  $xcat0 $ycat0 \n"
             append texte "$xmes $ymes $d $xcat0 $ycat0 $rames $decmes $racat0 $deccat0\n"
             #---
-	      set radecmes [buf$audace(bufNo) xy2radec [list $xmes $ymes] 2]
-	      set rames [lindex $radecmes 0]
-	      set decmes [lindex $radecmes 1]
-	      set d [mc_anglesep [list $rames $decmes $racat0 $deccat0 ]]
+            set radecmes [buf$audace(bufNo) xy2radec [list $xmes $ymes] 2]
+            set rames [lindex $radecmes 0]
+            set decmes [lindex $radecmes 1]
+            set d [mc_anglesep [list $rames $decmes $racat0 $deccat0 ]]
             append texte2 "$xmes $ymes $d $xcat0 $ycat0 $rames $decmes $racat0 $deccat0\n"
          }
          set f [open "compare1.txt" w ]
@@ -610,7 +610,7 @@ namespace eval ::astrometry {
          set texte ""
          for {set k1 1} {$k1<=2} {incr k1} {
             for {set k2 0} {$k2<=10} {incr k2} {
-	         append texte "[lindex [buf$audace(bufNo) getkwd PV${k1}_${k2}] 1] \n"
+               append texte "[lindex [buf$audace(bufNo) getkwd PV${k1}_${k2}] 1] \n"
             }
          }
          set f [open "pv.txt" w ]
@@ -622,21 +622,21 @@ namespace eval ::astrometry {
    }
 
    proc wcs_pack { { wcs + } } {
-   	variable astrom
+      variable astrom
       global caption
 
       foreach xwcs $astrom(typewcs) {
          pack forget $astrom(This).wcs.${xwcs}
       }
-	set n [llength $astrom(typewcs)]
+      set n [llength $astrom(typewcs)]
       if {$wcs=="+"} {
          set k [lsearch $astrom(typewcs) $astrom(currenttypewcs)]
-	   incr k
-	   if {$k>=$n} { set k 0 }
+         incr k
+         if {$k>=$n} { set k 0 }
       } else {
          set k [lsearch $astrom(typewcs) $wcs]
          if {$k<0} { set k 0 }
-	   if {$k>$n} { set k [expr $n-1] }
+         if {$k>$n} { set k [expr $n-1] }
       }
       set astrom(currenttypewcs) [lindex $astrom(typewcs) $k]
       pack $astrom(This).wcs.$astrom(currenttypewcs) -in $astrom(This).wcs -anchor center -fill x
@@ -645,21 +645,21 @@ namespace eval ::astrometry {
    }
 
    proc cal_pack { { cal + } } {
-   	variable astrom
+      variable astrom
       global caption
 
       foreach xcal $astrom(typecal) {
          pack forget $astrom(This).cal.${xcal}
       }
-	set n [llength $astrom(typecal)]
+      set n [llength $astrom(typecal)]
       if {$cal=="+"} {
          set k [lsearch $astrom(typecal) $astrom(currenttypecal)]
-	   incr k
-	   if {$k>=$n} { set k 0 }
+         incr k
+         if {$k>=$n} { set k 0 }
       } else {
          set k [lsearch $astrom(typecal) $cal]
          if {$k<0} { set k 0 }
-	   if {$k>$n} { set k [expr $n-1] }
+         if {$k>$n} { set k [expr $n-1] }
       }
       set astrom(currenttypecal) [lindex $astrom(typecal) $k]
       pack $astrom(This).cal.$astrom(currenttypecal) -in $astrom(This).cal -anchor center -fill x
@@ -669,7 +669,7 @@ namespace eval ::astrometry {
    }
 
    proc keyword { wcs kwd } {
-   	variable astrom
+      variable astrom
 
       frame $astrom(This).wcs.${wcs}.fra_${kwd}
          label $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -text ${kwd}
@@ -682,12 +682,12 @@ namespace eval ::astrometry {
    }
 
    proc getdirname { } {
-   	variable astrom
-	global audace
-	global caption
+      variable astrom
+      global audace
+      global caption
 
       set dirname [tk_chooseDirectory -title "$caption(astrometry,cal,catfolder)" \
-	   -initialdir $audace(rep_catalogues) -parent $astrom(This)]
+         -initialdir $audace(rep_catalogues) -parent $astrom(This)]
       set len [ string length $dirname ]
       set folder "$dirname"
       if { $len > "0" } {
@@ -697,40 +697,40 @@ namespace eval ::astrometry {
          }
          set dirname $folder
       }
-	return $dirname
+      return $dirname
    }
 
    proc calibrate_from_file { fullfilename } {
-   	variable astrom
+      variable astrom
       global audace
 
       set k [::buf::create]
       buf$k load $fullfilename
       foreach kwd $astrom(kwds) {
-	   set d [buf$k getkwd $kwd]
-	   catch {buf$audace(bufNo) delkwd $kwd}
-	   if {[lindex $d 0]!=""} {
-	      buf$audace(bufNo) setkwd $d
-	   }
+         set d [buf$k getkwd $kwd]
+         catch {buf$audace(bufNo) delkwd $kwd}
+         if {[lindex $d 0]!=""} {
+            buf$audace(bufNo) setkwd $d
+         }
       }
       set kwds {CMAGR CATASTAR}
       foreach kwd $kwds {
-	   set d [buf$k getkwd $kwd]
-	   if {[lindex $d 0]!=""} {
-		buf$audace(bufNo) setkwd $d
-	   }
+         set d [buf$k getkwd $kwd]
+         if {[lindex $d 0]!=""} {
+            buf$audace(bufNo) setkwd $d
+         }
       }
       ::buf::delete $k
    }
 
    proc mpc_provisional2packed { designation } {
-	# 2000EL118 <=> K00EB8L
-	#--- On supprime les espaces
-	regsub -all " " $designation "" a
-	#--- Verifie la longueur de la chaine
-	set len [string length $a]
+      # 2000EL118 <=> K00EB8L
+      #--- On supprime les espaces
+      regsub -all " " $designation "" a
+      #--- Verifie la longueur de la chaine
+      set len [string length $a]
       if {$len<6} {
-	   return ""
+         return ""
       }
       #--- Decode le siecle
       set yy [string range $a 0 1]
@@ -742,21 +742,21 @@ namespace eval ::astrometry {
       #--- Decode le nombre
       set numorder [string range $a 6 end]
       if {$numorder==""} {
-	   set a3 0
-	   set a4 0
+         set a3 0
+         set a4 0
       } else {
-   	   set len [string length $numorder]
-   	   if {$len==1} {
-	   	set a3 0
-	   	set a4 [string index $numorder 0]
-   	   } elseif {$len==2} {
-	   	set a3 [string index $numorder 0]
-	   	set a4 [string index $numorder 1]
-   	   } else {
-	   	set yy [string range $numorder 0 1]
+         set len [string length $numorder]
+         if {$len==1} {
+            set a3 0
+            set a4 [string index $numorder 0]
+         } elseif {$len==2} {
+            set a3 [string index $numorder 0]
+            set a4 [string index $numorder 1]
+         } else {
+            set yy [string range $numorder 0 1]
             set a3 [format %c [expr 65+$yy-10]]
-	   	set a4 [string index $numorder 2]
-   	   }
+            set a4 [string index $numorder 2]
+         }
       }
       #--- Chaine finale
       set designation "${a1}${a2}${a3}${a4}${a5}"
@@ -764,18 +764,18 @@ namespace eval ::astrometry {
    }
 
    proc mpc_packed2provisional2 { designation } {
-	# 2000EL118 <=> K00EB8L
-	#--- On supprime les espaces
-	regsub -all " " $designation "" a
-	#--- Verifie la longueur de la chaine
-	set len [string length $a]
+      # 2000EL118 <=> K00EB8L
+      #--- On supprime les espaces
+      regsub -all " " $designation "" a
+      #--- Verifie la longueur de la chaine
+      set len [string length $a]
       if {$len<7} {
-	   return ""
+         return ""
       }
       #--- Table de conversion
       set table ""
       for {set k 1} {$k<=26} {incr k} {
-	   lappend table [format %c [expr 64+$k]]
+         lappend table [format %c [expr 64+$k]]
       }
       #--- Decode le siecle
       set yy [string range $a 0 0]
@@ -788,15 +788,15 @@ namespace eval ::astrometry {
       set numorder [string range $a 4 4]
       set a3 [expr 10+[lsearch $table $numorder]]
       if {$a3==9} {
-	   set a3 [expr $numorder]
+         set a3 [expr $numorder]
       }
       if {$a3==0} {
-	   set a3 ""
+         set a3 ""
       }
       set numorder [string range $a 5 5]
-	   set a4 [expr $numorder]
+         set a4 [expr $numorder]
       if {$a4==0} {
-	   set a4 ""
+         set a4 ""
       }
       #--- Chaine finale
       set designation "${a1}${a2}${a5}${a3}${a4}"

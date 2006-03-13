@@ -3,7 +3,7 @@
 # Fichier : filtrage.tcl
 # Description : Scripts pour un usage aise des fonctions d'audela
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Date de mise a jour : 15 janvier 2006
+# Date de mise a jour : 28 janvier 2006
 #
 #-----------------------------------------------------------------------------#
 
@@ -38,9 +38,6 @@
 #*****************************************************************************#
 #
 # Description : Convolution par un filtre passe-bas effectuant un masque flou d'une image
-# Auteur : Benjamin MAUCLAIRE
-# Date creation: 17 mai 2003
-# Date de mise a jour : 15 janvier 2006
 #
 #*****************************************************************************#
 
@@ -109,10 +106,8 @@ proc bm_masque_flou { args } {
 #-----------------------------------------------------------------------------#
 
 #*****************************************************************************#
+#
 # Description : Filtres passe-bas, passe-haut, median, min, max
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 29 aout 2003
-# Date de mise a jour : 15 janvier 2006
 #
 #*****************************************************************************#
 
@@ -255,9 +250,6 @@ proc bm_filtre_max { args } {
 #*****************************************************************************#
 #
 # Description : Filtres de convolution gaussian, morlet, mexican
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 29 aout 2003
-# Date de mise a jour : 15 janvier 2006
 #
 #*****************************************************************************#
 
@@ -384,9 +376,6 @@ proc bm_ondelette_mex { args } {
 #*****************************************************************************#
 #
 # Description : Decoupage d'une zone selectionnee a la souris
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 9 septembre 2003
-# Date de mise a jour : 15 janvier 2006
 #
 #*****************************************************************************#
 
@@ -414,9 +403,6 @@ proc bm_cutima {} {
 #*****************************************************************************#
 #
 # Description : Zoom d'une image ou d'une zone selectionnee a la souris
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 9 septembre 2003
-# Date de mise a jour : 15 janvier 2006
 #
 #*****************************************************************************#
 
@@ -458,9 +444,6 @@ proc bm_zoomima { args } {
 # Description : Logarithme d'une image avec des coeficients adpates a une image
 # brillante
 # Evolution future : Fenetre avec reglage des coefficients a l'aide d'ascenseurs
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 9 septembre 2003
-# Date de mise a jour : 15 janvier 2006
 #
 #*****************************************************************************#
 

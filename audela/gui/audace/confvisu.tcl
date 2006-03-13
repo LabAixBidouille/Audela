@@ -2,11 +2,10 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Date de mise a jour : 18 janvier 2006
-#
+# $Id: confvisu.tcl,v 1.1.1.1 2006-03-13 12:15:15 alainklotz Exp $
 
 namespace eval ::confVisu {
-   
+
    #--- variables locales de ce namespace
    array set private {
       driverlist     ""
@@ -34,93 +33,92 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc create { { base "" } } {
       variable private
-      global audace   
+      global audace
       global conf
-      global confFichierIma
-      
+
       #--- je cree une visu temporaire pour savoir quel sera le numero de visu
       set result [catch {::visu::create 1 1} visuNo]
       if { $result } {
          #--- je cree une exception
-         error "erreur creation visu temporaire\n"         
+         error "erreur creation visu temporaire\n"
       } else {
          #--- je detruis la visu temporaire
          ::visu::delete $visuNo
       }
-      
+
       #--- cree les variables dans conf(..) si elles n'existent pas
-      if { ! [ info exists conf(audace,visu$visuNo,wmgeometry) ] } { 
+      if { ! [ info exists conf(audace,visu$visuNo,wmgeometry) ] } {
          set conf(audace,visu$visuNo,wmgeometry) "600x400+0+0"
       }
-      if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } { 
+      if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } {
          set conf(seuils,visu$visuNo,mode) "histoauto"
       }
-      if { ! [ info exists conf(visu,crosshairstate) ] }   { 
-      	set conf(visu,crosshairstate) "0" 
+      if { ! [ info exists conf(visu,crosshairstate) ] } {
+         set conf(visu,crosshairstate) "0"
       }
       if { $base != "" } {
          set private($visuNo,This) $base
-          #--- pas besoin de creer de toplevel
+         #--- pas besoin de creer de toplevel
       } else {
          #--- creation de la fenetre toplevel 
          set private($visuNo,This) ".visu$visuNo"
          ::confVisu::createToplevel $visuNo $private($visuNo,This)
-      }      
+      }
 
       #--- Position de l'image dans la fenetre principale
-      set private($visuNo,picture_orgx)  "0"
-      set private($visuNo,picture_orgy)  "0"
-      set private($visuNo,labcoord_type) "xy"
-      set private($visuNo,picture_w) "0"
-      set private($visuNo,picture_h) "0"
+      set private($visuNo,picture_orgx)    "0"
+      set private($visuNo,picture_orgy)    "0"
+      set private($visuNo,labcoord_type)   "xy"
+      set private($visuNo,picture_w)       "0"
+      set private($visuNo,picture_h)       "0"
       set private($visuNo,autovisuEnCours) "0"
-      set private($visuNo,lastFileName) "?"
-      set private($visuNo,maxdyn) 32767
-      set private($visuNo,mindyn) -32768
-      set private($visuNo,crosshairstate) $conf(visu,crosshairstate)
-      set private($visuNo,menu) ""
+      set private($visuNo,lastFileName)    "?"
+      set private($visuNo,maxdyn)          "32767"
+      set private($visuNo,mindyn)          "-32768"
+      set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
+      set private($visuNo,menu)            ""
 
       #--- Initialisation de variables utilisees par les menus
-      set private($visuNo,mirror_x) "0"
-      set private($visuNo,mirror_y) "0"
-      set private($visuNo,window) "0"
-      set private($visuNo,fullscreen)   "0"
-      set private($visuNo,zoom)   "1"
-      set private($visuNo,toolNameSpace) ""
-      set private($visuNo,box) ""
+      set private($visuNo,mirror_x)        "0"
+      set private($visuNo,mirror_y)        "0"
+      set private($visuNo,window)          "0"
+      set private($visuNo,fullscreen)      "0"
+      set private($visuNo,zoom)            "1"
+      set private($visuNo,toolNameSpace)   ""
+      set private($visuNo,box)             ""
 
-      set private($visuNo,camNo) "0"
-      set private($visuNo,camName) ""
+      set private($visuNo,camNo)           "0"
+      set private($visuNo,camName)         ""
 
-      set private($visuNo,intensity) "1"
+      set private($visuNo,intensity)       "1"
 
-      #--- initialisation des bind de touches et de la souris      
+      #--- initialisation des bind de touches et de la souris
       set private($visuNo,MouseState) rien
 
       #--- je cree la fenetre 
       ::confVisu::createDialog $visuNo $private($visuNo,This)
-      
+
       #--- je cree le buffer
       set result [catch {::buf::create} bufNo]
       if { $result } {
          #--- je cree une exception
          error  "erreur creation buffer pour nouvelle visu\n"
       } else {
-         #--- configuration buffer         
+         #--- configuration buffer
          buf$bufNo extension $conf(extension,defaut)
          #--- Fichiers image compresses ou non
-         if { $confFichierIma(fichier,compres) == "0" } {
+         if { $conf(fichier,compres) == "0" } {
             buf$bufNo compress "none"
          } else {
             buf$bufNo compress "gzip"
          }
       }
-      
+
       #--- Creation de l'image associee a la visu dans le tag "display"
       $private($visuNo,hCanvas) create image 0 0 -anchor nw -tag display
       image create photo image$visuNo
       $private($visuNo,hCanvas) itemconfigure display -image image$visuNo
-      
+
       #--- je cree la visu associee au buffer bufNo et a l'image image$visuNo
       set visuNo [::visu::create $bufNo $visuNo]
 
@@ -128,20 +126,19 @@ namespace eval ::confVisu {
       if { $base == "" } {
          #--- je charge seulement les outils qui gérent les visu multiples
          ::AcqFC::Init $private($visuNo,This) $visuNo
-      }      
+         ::Autoguider::Init $private($visuNo,This) $visuNo
+      }
 
       #--- je cree le menu
       if { $base == "" } {
          ::confVisu::createMenu $visuNo
-      }      
-      
-      #--- je cree les bind 
-      ::confVisu::createBindDialog $visuNo 
+      }
 
-      ####::confVisu::boxInit $visuNo
-      
+      #--- je cree les bind
+      ::confVisu::createBindDialog $visuNo
+
       return $visuNo
-   }    
+   }
 
    #------------------------------------------------------------
    #  close
@@ -152,7 +149,7 @@ namespace eval ::confVisu {
       global conf 
       global caption
 
-      set bufNo [visu$visuNo buf]      
+      set bufNo [visu$visuNo buf]
       
       #--- si une camera a le meme buffer que la visu, je ferme la camera
       foreach camNo [::cam::list] {
@@ -177,9 +174,15 @@ namespace eval ::confVisu {
          ::[getTool $visuNo]::deletePanel $visuNo
       }
 
+      #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
+      if { $visuNo > "1" } {
+         ::AcqFC::deletePanel $visuNo
+         ::Autoguider::deletePanel $visuNo
+      }
+
       #--- je supprime l'image associee à la visu
       image delete image[visu$visuNo image]
-            
+
       #--- je supprime la visu
       ::visu::delete $visuNo
 
@@ -192,37 +195,58 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  autovisu
+   # autovisu
    #     rafraichit l'affichage
+   # parametres
+   #  visuNo: numero de la visu
+   #  force:  -dovisu : rafraichissement complet
+   #          -no     : rafraichissement sans recalcul des seuils
+   #          -novisu : pas de rafraichissement 
+   #  retour: null
    #------------------------------------------------------------
-   proc autovisu { visuNo { force "-no" } } {
+   proc autovisu { visuNo { force "-no" } { fileName "" } } {
       variable private
       global conf  
+      global caption
 
+      #--- je mets a jour le nom du fichier dans le titre de la fenetre  
+      if { $fileName != "" } {
+        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo) - $fileName"
+      } else {
+        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
+      }
+      
+      #--- je met a jour le nom du fichier  (cette variable est surveillee par un listener)
+      set private($visuNo,lastFileName) "$fileName"   
+
+      if { $force == "-novisu" } {
+         return
+      }
+      
       set bufNo [visu$visuNo buf]
       set private($visuNo,picture_w) [lindex [buf$bufNo getkwd NAXIS1] 1]
       if { "$private($visuNo,picture_w)" == "" } { 
          set private($visuNo,picture_w)  0
       }
       set private($visuNo,picture_h) [lindex [buf$bufNo getkwd NAXIS2] 1]
-      if { "$private($visuNo,picture_h)" == "" } { 
-         set private($visuNo,picture_h)  0
+      if { "$private($visuNo,picture_h)" == "" } {
+         set private($visuNo,picture_h) 0
       }
-      
+
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
-      set zoom [visu$visuNo zoom]
+      set zoom   $private($visuNo,zoom)
       set imageNo [visu$visuNo image]
 
-      if { [ image type image$imageNo ] == "video" } { 
-      
+      if { [ image type image$imageNo ] == "video" } {
          #--- Je mets la fenetre a l'echelle
-         image$imageNo configure -scale "$zoom" 
-      
+         image$imageNo configure -scale "$zoom"
+
          #--- Je mets a jour la taille les scrollbars
-         $private($visuNo,hCanvas) configure -scrollregion [list 0 0 $width $height ] 
+         $private($visuNo,hCanvas) configure -scrollregion [list 0 0 $width $height ]
          #--- Je mets a jour la taille du reticule
-         ::confVisu::redrawCrosshair $visuNo        
+         ::confVisu::redrawCrosshair $visuNo
+
       } else {
          #--- mise à jour des scrollbar
          $private($visuNo,hCanvas) configure \
@@ -230,7 +254,7 @@ namespace eval ::confVisu {
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
          #--- Je mets a jour la taille du reticule
-         ::confVisu::redrawCrosshair $visuNo         
+         ::confVisu::redrawCrosshair $visuNo
 
          #--- Si le buffer est vide, on n'essaie pas de mettre à jour en fonction des seuils
          if { [ buf$bufNo imageready ] == "1" } {
@@ -250,7 +274,8 @@ namespace eval ::confVisu {
                   visu $visuNo [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
                }
                histoauto {
-                  buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)]"
+                  set keytype FLOAT
+                  buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)] keytype=$keytype"
                   visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
                }
                initiaux {
@@ -273,39 +298,39 @@ namespace eval ::confVisu {
    #
    proc visu { visuNo { cuts "autocuts" } } {
       variable private 
-   
+
       set bufNo [visu$visuNo buf ]
-   
+
       if { [llength $cuts] == 1 } {
          if { $cuts == "autocuts"} {
             set cuts [ lrange [ buf$bufNo autocuts ] 0 1 ]
          } else {
             # autre choix = on garde les seuils actuels
             set cuts [visu$visuNo cut ]
-            set sh [ expr int ( [ lindex $cuts 0 ] ) ]
-            set sb [ expr int ( [ lindex $cuts 1 ] ) ]
+            set sh [ expr [ lindex $cuts 0 ] ]
+            set sb [ expr [ lindex $cuts 1 ] ]
             set cuts [ list $sh $sb ]
          }
       } elseif { [llength $cuts] == 2 } {
          visu$visuNo cut $cuts
       }
-   
+
       visu$visuNo clear
-      ::confVisu::ComputeScaleRange $visuNo        
+      ::confVisu::ComputeScaleRange $visuNo
       ::confVisu::ChangeHiCutDisplay $visuNo [lindex $cuts 0]
       ::confVisu::ChangeLoCutDisplay $visuNo [lindex $cuts 1]
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
-      set zoom [ visu$visuNo zoom ]
+      set zoom   $private($visuNo,zoom)
       $private($visuNo,hCanvas) configure -scrollregion [ list 0 0 [ expr int(${zoom}*$private($visuNo,picture_w)) ] [ expr int(${zoom}*$private($visuNo,picture_h)) ] ]
-   
+
       # rafraichissement de l'affichage
       visu$visuNo disp   
    }
 
    #------------------------------------------------------------
    #  clear
-   #     efface le contenu de la visu 
+   #     efface le contenu de la visu
    #  
    #------------------------------------------------------------
    proc clear { visuNo } {
@@ -364,18 +389,18 @@ namespace eval ::confVisu {
    #    scales :  "xy" ou "xy_radec"
    #------------------------------------------------------------
    proc toogleCoordType { visuNo } {
-         global caption
-         variable private
-         
-          if { $private($visuNo,labcoord_type) == "xy" } {
-            set private($visuNo,labcoord_type) radec
-            $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
-            $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
-          } else {
-            set private($visuNo,labcoord_type) xy
-            $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
-            $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
-          }
+      global caption
+      variable private
+
+       if { $private($visuNo,labcoord_type) == "xy" } {
+         set private($visuNo,labcoord_type) radec
+         $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
+         $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
+       } else {
+         set private($visuNo,labcoord_type) xy
+         $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
+         $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
+       }
    }
 
    #------------------------------------------------------------
@@ -386,9 +411,51 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc setZoom { visuNo } {
       variable private 
-      
+
+      set box [grid bbox .audace.can1 0 0]
+      set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]  
+      set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
+
+      set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
+      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
+
       visu$visuNo zoom $private($visuNo,zoom)
-      ::confVisu::autovisu $visuNo
+
+      #--- Je mets a jour la taille du reticule
+      #::confVisu::redrawCrosshair $visuNo
+      
+      visu$visuNo clear
+      
+      #--- mise à jour des scrollbar
+      $private($visuNo,hCanvas) configure \
+         -scrollregion [list 0 0 [expr int($private($visuNo,zoom) * $private($visuNo,picture_w))] [expr int($private($visuNo,zoom) * $private($visuNo,picture_h))]]
+
+      # rafraichissement de l'image
+      visu$visuNo disp   
+
+      set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
+   
+      set xFactor [.audace.can1.canvas xview]
+      set yFactor [.audace.can1.canvas yview]
+      set scrollRegion [.audace.can1.canvas cget -scrollregion]
+      
+      set xmin [expr  [lindex $xFactor 0] * [lindex $scrollRegion 2] ]
+      set ymin [expr  [lindex $yFactor 0] * [lindex $scrollRegion 3] ]
+      set xmax [expr  [lindex $xFactor 1] * [lindex $scrollRegion 2] ]
+      set ymax [expr  [lindex $yFactor 1] * [lindex $scrollRegion 3] ]
+      
+      set x [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ] 
+      set y [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ] 
+      if { $x < 0 } { set x 0 }
+      if { $y < 0 } { set y 0 }
+      
+      if { [lindex $scrollRegion 2] != "0" } {
+         .audace.can1.canvas xview moveto [expr 1.0*$x / [lindex $scrollRegion 2] ]
+      }
+      if { [lindex $scrollRegion 3] != "0" } {
+         .audace.can1.canvas yview moveto [expr 1.0*$y / [lindex $scrollRegion 3] ]
+      }
+      
    }
 
    #------------------------------------------------------------
@@ -400,8 +467,8 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc setMirrorX { visuNo } {
       variable private
-      
-      set bufNo [visu$visuNo buf]      
+
+      set bufNo [visu$visuNo buf]
       if { [ buf$bufNo imageready ] == "1" } {
          visu$visuNo mirrorx $private($visuNo,mirror_x)
          ::confVisu::autovisu $visuNo
@@ -409,7 +476,7 @@ namespace eval ::confVisu {
          set private($visuNo,mirror_x) "0"
       }
    }
-        
+
    #------------------------------------------------------------
    #  setMirrorY
    #     applique un miroir par rapport à l'axe des Y
@@ -420,7 +487,7 @@ namespace eval ::confVisu {
    proc setMirrorY { visuNo } {
       variable private
       
-      set bufNo [visu$visuNo buf]      
+      set bufNo [visu$visuNo buf]
       if { [ buf$bufNo imageready ] == "1" } {
          visu$visuNo mirrory $private($visuNo,mirror_y)
          ::confVisu::autovisu $visuNo
@@ -441,18 +508,19 @@ namespace eval ::confVisu {
    proc setCamera { visuNo camNo { model "" } } {
       variable private
       global caption
-      
+      global color
+
       set private($visuNo,camNo) $camNo
       if { $camNo == 0 } {
          set private($visuNo,camName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
-            $private($visuNo,This).fra1.labCam_name configure -text $caption(caractere,tiret)
+            $private($visuNo,This).fra1.labCam_name_labURL configure -text $caption(caractere,tiret) -fg $color(blue)
          }
       } else {
          set private($visuNo,camName) [cam$camNo name]
-         $private($visuNo,This).fra1.labCam_name configure -text "$private($visuNo,camName) $model"
+         set private($visuNo,camProductName) [cam$camNo product]
+         $private($visuNo,This).fra1.labCam_name_labURL configure -text "$private($visuNo,camName) $model" -fg $color(blue)
       }
-      
    }
 
    #------------------------------------------------------------
@@ -463,7 +531,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc getCamNo { visuNo } {
       variable private
-      
+
       return $private($visuNo,camNo)
    }
 
@@ -475,10 +543,22 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc getCamera { visuNo } {
       variable private
-      
+
       return $private($visuNo,camName)
    }
-        
+
+   #------------------------------------------------------------
+   #  getProduct
+   #     retourne le nom de famille de la camera associee à la visu
+   #  parametres :
+   #  
+   #------------------------------------------------------------
+   proc getProduct { visuNo } {
+      variable private
+
+      return $private($visuNo,camProductName)
+   }
+
    #------------------------------------------------------------
    #  getBufNo
    #     retourne le nom de camera associee à la visu
@@ -487,10 +567,10 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc getBufNo { visuNo } {
       variable private
-      
+
       return [visu$visuNo buf]
    }
-        
+
    #------------------------------------------------------------
    #  setWindow
    #     affiche une partie de l'image
@@ -500,7 +580,7 @@ namespace eval ::confVisu {
    proc setWindow { visuNo } {
       variable private
       global caption
-      
+
       set bufNo [visu$visuNo buf]      
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,window) == "0" } {
@@ -530,15 +610,13 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc setFullScreen { visuNo } {
       variable private
-           
+
       set bufNo [visu$visuNo buf]
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,fullscreen) == "1" } {
             ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
          } else { 
             ::FullScreen::close
-            #--- je restaure les bind 
-            ::confVisu::boxInit $visuNo
          }
       } else {
          set private($visuNo,fullscreen) "0"
@@ -552,10 +630,10 @@ namespace eval ::confVisu {
    #  parametres :
    #      
    #------------------------------------------------------------
-   proc setVideo { visuNo state} {
+   proc setVideo { visuNo state } {
       variable private
       set imageNo [visu$visuNo image]
-           
+
       if { $state == 1 } {
          #--- j'active le mode video
          #--- Je supprime l'image precedente
@@ -563,7 +641,7 @@ namespace eval ::confVisu {
          buf[visu$visuNo buf] clear
          #--- Je cree une image de type "video"
          image create video image$imageNo
-         #--- Je connecte la sortie de la camera a l'image            
+         #--- Je connecte la sortie de la camera a l'image
          set result [ catch { cam$private($visuNo,camNo) startvideoview $visuNo } msg ]
       } else {
          #--- Je deconnecte la sortie de la camera 
@@ -572,12 +650,12 @@ namespace eval ::confVisu {
          image delete image$imageNo
          #--- Je cree une image de type "photo"
          image create photo image$imageNo
-      }            
-      
+      }
+
       if { $result != 1 } {
          ::confVisu::autovisu $visuNo
       }
-      
+
       return $result
    }
 
@@ -606,6 +684,55 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   # addZoomListener
+   #  ajoute une procedure a appeler si on change de zoom
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc addZoomListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,zoom)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeZoomListener
+   #  supprime une procedure a appeler si on change de camera
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc removeZoomListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,zoom)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # addFileNameListener
+   #  ajoute une procedure a appeler si on change de nom de fichier image
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc addFileNameListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeFileNameListener
+   #  supprime une procedure a appeler si on change de nom de fichier image
+   #  parametre :
+   #
+   #------------------------------------------------------------
+   proc removeFileNameListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+   }
+
+
+   #------------------------------------------------------------
    #  stopTool
    #     arrete l'outil courant
    #  parametres :
@@ -628,9 +755,9 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc selectTool { visuNo toolName } {
       variable private
-   
+
       if { "private($visuNo,toolNameSpace)" != "" } {
-         #--- Cela veut dire qu'il y a deja un outil selectionne            
+         #--- Cela veut dire qu'il y a deja un outil selectionne
          if { "private($visuNo,toolNameSpace)" != "$toolName" } {
             #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
             stopTool $visuNo
@@ -653,6 +780,20 @@ namespace eval ::confVisu {
       variable private
 
       return [ string trimleft $private($visuNo,toolNameSpace) "::" ]
+   }
+
+   #------------------------------------------------------------
+   #  getVisuNo
+   #     retourne le numero de visu contenant le canvas
+   #  parametres
+   #     hCanvas : nom du canvas , exemple: .audace.can1.canvas 
+   #  return : 
+   #    numera de la visu contenant le canvas
+   #------------------------------------------------------------
+   proc getVisuNo { hCanvas } {
+      #-- le numero de la visu se trouve dans le parametre "class de la toplevel 
+      #-- qui contient le canvas
+      return [winfo class [winfo toplevel $hCanvas ] ]   
    }
 
    #------------------------------------------------------------
@@ -692,8 +833,8 @@ namespace eval ::confVisu {
       global conf
       global audace
       global caption 
-      
-      toplevel $This  -class $visuNo
+
+      toplevel $This -class $visuNo
       wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
       wm maxsize $This [winfo screenwidth .] [winfo screenheight .]
       wm minsize $This 320 240
@@ -703,7 +844,7 @@ namespace eval ::confVisu {
       wm protocol $This WM_DELETE_WINDOW " ::confVisu::close $visuNo "
       update
    }
-   
+
    #------------------------------------------------------------
    #  createDialog
    #     cree une fentetre toplevel avec le canvas et la frame de seuils
@@ -718,69 +859,70 @@ namespace eval ::confVisu {
       variable private
       global conf
       global audace
-      global caption 
-            
+      global caption
+      global color
+
       #---
       frame $This.fra1 -borderwidth 2 -cursor arrow -relief groove
-   
-       button $This.fra1.but_seuils_auto -text "$caption(audace,seuil,auto)" \
-          -command "::confVisu::onCutLabelLeftClick $visuNo" -width 5
-       grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we -in $This.fra1 -padx 5
-   
-       button $This.fra1.but_config_glissieres -text "$caption(script,parcourir)" \
-          -command "::seuilWindow::run $::confVisu::private($visuNo,This) $visuNo"
-       grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} -in $This.fra1 -padx 5
-   
-       scale $This.fra1.sca1 -orient horizontal -to 32767 -from -32768 -length 150 \
-          -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-          -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
-       grid configure $This.fra1.sca1 -column 2 -row 0 -sticky we -in $This.fra1 -pady 2
-   
-       scale $This.fra1.sca2 -orient horizontal -to 32767 -from -32768 -length 150 \
-          -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-          -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
-       grid configure $This.fra1.sca2 -column 2 -row 1 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.lab1 -width 10 -text "$caption(seuil,haut)" -font $audace(font,arial_8_n)
-       grid configure $This.fra1.lab1 -column 3 -row 0 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.lab2 -width 10 -text "$caption(seuil,bas)" -font $audace(font,arial_8_n)
-       grid configure $This.fra1.lab2 -column 3 -row 1 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labURLX -width 9 -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
-       grid configure $This.fra1.labURLX -column 4 -row 0 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labURLY -width 9 -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
-       grid configure $This.fra1.labURLY -column 4 -row 1 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labI -width 19 -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
-       grid configure $This.fra1.labI -column 5 -row 0 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labTime -width 19 -font $audace(font,arial_8_n) -anchor w \
-          -textvariable "audace(tu,format,dmyhmsint)"
-       grid configure $This.fra1.labTime -column 5 -row 1 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labCam -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(audace,menu,camera) $caption(caractere,2points)"
-       grid configure $This.fra1.labCam -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labCam_name -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(caractere,tiret)"
-       grid configure $This.fra1.labCam_name -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labTel -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(audace,menu,monture) $caption(caractere,2points)"
-       grid configure $This.fra1.labTel -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
-   
-       label $This.fra1.labTel_name -font $audace(font,arial_8_n) -anchor w \
-          -text "$caption(caractere,tiret)"
-       grid configure $This.fra1.labTel_name -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
-   
+
+         button $This.fra1.but_seuils_auto -text "$caption(audace,seuil,auto)" \
+            -command "::confVisu::onCutLabelLeftClick $visuNo" -width 5
+         grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we -in $This.fra1 -padx 5
+
+         button $This.fra1.but_config_glissieres -text "$caption(script,parcourir)" \
+            -command "::seuilWindow::run $::confVisu::private($visuNo,This) $visuNo"
+         grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} -in $This.fra1 -padx 5
+
+         scale $This.fra1.sca1 -orient horizontal -to 32767 -from -32768 -length 150 \
+            -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
+            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
+         grid configure $This.fra1.sca1 -column 2 -row 0 -sticky we -in $This.fra1 -pady 2
+
+         scale $This.fra1.sca2 -orient horizontal -to 32767 -from -32768 -length 150 \
+            -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
+            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
+         grid configure $This.fra1.sca2 -column 2 -row 1 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.lab1 -width 10 -text "$caption(seuil,haut)" -font $audace(font,arial_8_n)
+         grid configure $This.fra1.lab1 -column 3 -row 0 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.lab2 -width 10 -text "$caption(seuil,bas)" -font $audace(font,arial_8_n)
+         grid configure $This.fra1.lab2 -column 3 -row 1 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labURLX -width 16 -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
+         grid configure $This.fra1.labURLX -column 4 -row 0 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labURLY -width 16 -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
+         grid configure $This.fra1.labURLY -column 4 -row 1 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labI -width 19 -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
+         grid configure $This.fra1.labI -column 5 -row 0 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labTime -width 19 -font $audace(font,arial_8_n) -anchor w \
+            -textvariable "audace(tu,format,dmyhmsint)"
+         grid configure $This.fra1.labTime -column 5 -row 1 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labCam_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(audace,menu,camera) $caption(caractere,2points)" -fg $color(blue)
+         grid configure $This.fra1.labCam_labURL -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labCam_name_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,tiret)" -fg $color(blue)
+         grid configure $This.fra1.labCam_name_labURL -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labTel_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(audace,menu,monture) $caption(caractere,2points)" -fg $color(blue)
+         grid configure $This.fra1.labTel_labURL -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
+
+         label $This.fra1.labTel_name_labURL -font $audace(font,arial_8_n) -anchor w \
+            -text "$caption(caractere,tiret)" -fg $color(blue)
+         grid configure $This.fra1.labTel_name_labURL -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
+
       pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
-      
+
       grid columnconfigure $This.fra1 5 -weight 1
 
       #--- Canvas de dessin de l'image
@@ -794,10 +936,9 @@ namespace eval ::confVisu {
       set private($visuNo,hCanvas) $private($visuNo,This).can1.canvas
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This      
+      ::confColor::applyColor $This
 
    }
-
 
    #------------------------------------------------------------
    #  createBindDialog
@@ -808,9 +949,9 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc createBindDialog { visuNo } {
       variable private
-      
+
       set This $private($visuNo,This)
-      
+
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
 
@@ -832,13 +973,34 @@ namespace eval ::confVisu {
       $This.fra1.sca2 configure -command "::confVisu::onLoCutCommand $visuNo"
       bind $This.fra1.sca1 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
       bind $This.fra1.sca2 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
-      
+
       #--- bind du canvas avec la souris , j'ative les valeurs par defaut
-      createBindCanvas $visuNo <ButtonPress-1>   "default"      
+      createBindCanvas $visuNo <ButtonPress-1>   "default"
       createBindCanvas $visuNo <ButtonRelease-1> "default"
       createBindCanvas $visuNo <B1-Motion>       "default"
       createBindCanvas $visuNo <Motion>          "default"
       createBindCanvas $visuNo <ButtonPress-3>   "default"
+
+      #--- bind pour l'ouverture de la boite de configuration des cameras
+      bind $This.fra1.labCam_labURL <ButtonPress-1> {
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
+      bind $This.fra1.labCam_name_labURL <ButtonPress-1> {
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
+
+      #--- bind pour l'ouverture de la boite de configuration des montures
+      bind $This.fra1.labTel_labURL <ButtonPress-1> {
+         ::confTel::run
+         tkwait window $audace(base).confTel
+      }
+      bind $This.fra1.labTel_name_labURL <ButtonPress-1> {
+         ::confTel::run
+         tkwait window $audace(base).confTel
+      }
+
    }
 
    #------------------------------------------------------------
@@ -850,7 +1012,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc deleteBindDialog { visuNo } {
       variable private
-      
+
       set This $private($visuNo,This)
       
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -860,8 +1022,8 @@ namespace eval ::confVisu {
       bind $This.fra1.lab1 <ButtonPress-1> ""
       bind $This.fra1.lab2 <ButtonPress-1> ""
       bind $This.fra1.lab1 <ButtonPress-3> ""
-      bind $This.fra1.lab2 <ButtonPress-3> ""   
-      
+      bind $This.fra1.lab2 <ButtonPress-3> ""
+
       #--- Raccourci pour affichage du reticule
       bind $This <Key-C> ""
       bind $This <Key-c> ""
@@ -869,13 +1031,22 @@ namespace eval ::confVisu {
       #--- bind des glissieres
       bind $This.fra1.sca1 <ButtonRelease> ""
       bind $This.fra1.sca2 <ButtonRelease> ""
-      
+
       #--- bind du canvas avec la souris 
-      createBindCanvas $visuNo <ButtonPress-1>   ""      
+      createBindCanvas $visuNo <ButtonPress-1>   ""
       createBindCanvas $visuNo <ButtonRelease-1> ""
       createBindCanvas $visuNo <B1-Motion>       ""
       createBindCanvas $visuNo <Motion>          ""
       createBindCanvas $visuNo <ButtonPress-3>   ""
+
+      #--- bind pour l'ouverture de la boite de configuration des cameras
+      bind $This.fra1.labCam_name_labURL <ButtonPress-1> ""
+      bind $This.fra1.labCam_labURL <ButtonPress-1>      ""
+
+      #--- bind pour l'ouverture de la boite de configuration des montures
+      bind $This.fra1.labTel_name_labURL <ButtonPress-1> ""
+      bind $This.fra1.labTel_labURL <ButtonPress-1>      ""
+
    }
 
    #------------------------------------------------------------
@@ -889,14 +1060,14 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc createBindCanvas { visuNo sequence { command "default" } } {
       variable private 
-      
+
       if { "$command" == "default" } {
          switch -exact $sequence     {
             <ButtonPress-1> {
-               bind $private($visuNo,hCanvas) <ButtonPress-1>   "::confVisu::pressButton1 $visuNo %x %y"      
+               bind $private($visuNo,hCanvas) <ButtonPress-1>   "::confVisu::pressButton1 $visuNo %x %y"
             }
             <ButtonRelease-1> {
-               bind $private($visuNo,hCanvas) <ButtonRelease-1> "::confVisu::releaseButton1 $visuNo %x %y"      
+               bind $private($visuNo,hCanvas) <ButtonRelease-1> "::confVisu::releaseButton1 $visuNo %x %y"
             }
             <B1-Motion> {
                bind $private($visuNo,hCanvas) <B1-Motion>       "::confVisu::motionButton1 $visuNo %x %y"
@@ -905,15 +1076,14 @@ namespace eval ::confVisu {
                bind $private($visuNo,hCanvas) <Motion>          "::confVisu::motionMouse $visuNo %x %y"
             }
             <ButtonPress-3> {
-               bind $private($visuNo,hCanvas) <ButtonPress-3>   "::confVisu::showPopupMenu $visuNo %X %Y"      
+               bind $private($visuNo,hCanvas) <ButtonPress-3>   "::confVisu::showPopupMenu $visuNo %X %Y"
             }
          }
-      }  else  {
+      }  else {
          bind $private($visuNo,hCanvas) $sequence  "$command"
-      }          
+      }
    }
-   
-   
+
    proc createMenu { visuNo } {
       variable private
       global audace
@@ -921,11 +1091,11 @@ namespace eval ::confVisu {
       global caption
       global panneau
 
-      set This $private($visuNo,This)      
+      set This $private($visuNo,This)
       set bufNo [ visu$visuNo buf ]
-      
+
       set private($visuNo,menu) "$This.menubar"
-      
+
       Menu_Setup $visuNo $private($visuNo,menu)
 
       Menu           $visuNo "$caption(audace,menu,fichier)"
@@ -943,7 +1113,6 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(creer,dialogue,fermer)" \
          " ::confVisu::close $visuNo "
 
-              
       Menu           $visuNo "$caption(audace,menu,affichage)"
 
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
@@ -991,7 +1160,7 @@ namespace eval ::confVisu {
       Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,plein_ecran)" \
                "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      
+
       Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" \
               "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
       Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" \
@@ -1031,22 +1200,25 @@ namespace eval ::confVisu {
       }
       foreach m [lsort $liste] {
          set m [lindex $m 1]
-         if { $m == "menu_name,AcqFC" } {
+         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,Autoguider" ) } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
+               Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                #--- Lancement automatique de l'outil Acquisition
                ::confVisu::selectTool $visuNo ::AcqFC
             }
          }
-      }         
+      }
    }
 
    proc cursor { visuNo curs } {
-      variable private      
+      variable private
+
       $private($visuNo,hCanvas) configure -cursor $curs
    }
 
    proc bg { coul } {
       variable private
+
       $private($visuNo,hCanvas) configure -background $coul
    }
 
@@ -1057,6 +1229,7 @@ namespace eval ::confVisu {
    #
    proc screen2Canvas { visuNo coord } {
       variable private
+
       scan [$private($visuNo,hCanvas) canvasx [lindex $coord 0]] "%d" xx
       scan [$private($visuNo,hCanvas) canvasy [lindex $coord 1]] "%d" yy
       return [list $xx $yy]
@@ -1073,7 +1246,7 @@ namespace eval ::confVisu {
    proc canvas2Picture { visuNo coord { stick left } } {
       variable private
 
-      set zoom $private($visuNo,zoom)
+      set zoom   [visu$visuNo zoom]
       set window [visu$visuNo window]
       set bufNo  [visu$visuNo buf]
       set height $private($visuNo,picture_h)
@@ -1085,7 +1258,7 @@ namespace eval ::confVisu {
          set x0 [lindex $window 0]
          set y0 [lindex $window 1]
       }
-      
+
       if {$zoom >= 1} {
          set xx [expr [lindex $coord 0] / $zoom - $private($visuNo,picture_orgx) + 1 + $x0]
          set yy [expr $height + $private($visuNo,picture_orgy) - ([lindex $coord 1]/$zoom) - $y0]
@@ -1111,8 +1284,8 @@ namespace eval ::confVisu {
    proc picture2Canvas { visuNo coord } {
       variable private
 
-      set zoom [visu$visuNo zoom]
-      set window [visu$visuNo window]
+      set zoom    $private($visuNo,zoom)
+      set window  [visu$visuNo window]
       set height $private($visuNo,picture_h)
       if {$window=="full"} {
          set x0 0
@@ -1121,20 +1294,20 @@ namespace eval ::confVisu {
          set x0 [lindex $window 0]
          set y0 [lindex $window 1]
       }
-      set xx [ expr int(( [lindex $coord 0] + $private($visuNo,picture_orgx) - 1 - $x0)*$zoom) ]      
+      set xx [ expr int(( [lindex $coord 0] + $private($visuNo,picture_orgx) - 1 - $x0)*$zoom) ]
       set yy [ expr int(( $height  -[lindex $coord 1] + $private($visuNo,picture_orgy) + $y0)*$zoom) ]
       return [list $xx $yy]
    }
 
-   proc pressButton1 { visuNo x y} {
+   proc pressButton1 { visuNo x y } {
       variable private
       global caption
-      
+
       if { [string compare $::confVisu::private($visuNo,MouseState) rien] == 0 } {
          set bufNo [visu$visuNo buf]
          set liste [::confVisu::screen2Canvas $visuNo [list $x $y]]
          if {[ buf$bufNo imageready ] == "1" } {
-            set zoom [visu$visuNo zoom]
+            set zoom   $private($visuNo,zoom)
             set width  $::confVisu::private($visuNo,picture_w)
             set height $::confVisu::private($visuNo,picture_h)
             set wz [expr $width * $zoom]
@@ -1152,7 +1325,7 @@ namespace eval ::confVisu {
          }
       }
    }
-   
+
    proc motionButton1 { visuNo x y } {
       variable private
 
@@ -1161,9 +1334,9 @@ namespace eval ::confVisu {
          ::confVisu::displayCursorCoord $visuNo [list $x $y]
          #--- On n'oublie pas de dragger eventuellement la fenetre
          ::confVisu::boxDrag $visuNo [list $x $y]
-      }      
+      }
    }
-   
+
    proc releaseButton1 { visuNo x y } {
       variable private
       if { [string compare $private($visuNo,MouseState) dragging] == 0 } {
@@ -1171,7 +1344,7 @@ namespace eval ::confVisu {
          catch { ::confVisu::boxEnd $visuNo [list $x $y] }
       }
    }
-   
+
    proc showPopupMenu { visuNo X Y } {
       variable private
       global audace
@@ -1181,7 +1354,7 @@ namespace eval ::confVisu {
          set menuName "$caption(audace,menu,analyse)"
       } else {
          set menuName "$caption(audace,menu,analyse)"
-      }      
+      }
 
       if { [string compare $::confVisu::private($visuNo,MouseState) rien] == 0 } {
          [MenuGet $visuNo $menuName] post $X $Y
@@ -1194,7 +1367,7 @@ namespace eval ::confVisu {
       }
    }
 
-   proc motionMouse { visuNo x y} {
+   proc motionMouse { visuNo x y } {
       #--- Affichage des coordonnees
       ::confVisu::displayCursorCoord $visuNo [list $x $y]
    }
@@ -1209,11 +1382,11 @@ namespace eval ::confVisu {
 
          set This $private($visuNo,This)
          set bufNo [visu$visuNo buf]
-     
+
          #--- xi et yi sont des 'coordonnees-image'
          set xi [ lindex $coord 0 ]
          set yi [ lindex $coord 1 ]
-     
+
          #--- ii contiendra l'intensite du pixel pointe
          set ii [ buf$bufNo getpix [ list $xi $yi ] ]
          if { $private($visuNo,intensity) == "1" } {
@@ -1231,7 +1404,7 @@ namespace eval ::confVisu {
                   $caption(couleur,bleu)[ string trimleft [ format "%8.0f" [ lindex $ii 3 ] ] " " ]"
             }
          }
-     
+
          #--- Affichage a l'ecran
          if { $private($visuNo,labcoord_type) == "xy" } {
             $This.fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $xi"
@@ -1324,7 +1497,7 @@ namespace eval ::confVisu {
       variable private
       global audace
 
-      set zoom [visu$visuNo zoom]
+      set zoom  $private($visuNo,zoom)
       set bufNo [visu$visuNo buf]
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
@@ -1350,7 +1523,7 @@ namespace eval ::confVisu {
 
    proc deleteBox { { visuNo "1" } } {
       variable private
-   
+
       if { $private($visuNo,box) != "" } {
          set private($visuNo,box) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
@@ -1381,7 +1554,7 @@ namespace eval ::confVisu {
          set private($visuNo,intensity) "1"
       }
    }
-   
+
    proc onCutLabelLeftClick { visuNo } {
       variable private 
 
@@ -1399,6 +1572,7 @@ namespace eval ::confVisu {
 
    proc onCutLabelRightClick { visuNo } {
       variable private
+
       ::seuilWindow::run $private($visuNo,This) $visuNo 
    }
 
@@ -1415,12 +1589,12 @@ namespace eval ::confVisu {
    }
 
    proc ChangeHiCutDisplay { visuNo val } {
-      variable private     
+      variable private
 
       $private($visuNo,This).fra1.sca1 set $val
       $private($visuNo,This).fra1.lab1 configure -text $val
    }
- 
+
    proc ChangeLoCutDisplay { visuNo val } {
       variable private     
       
@@ -1429,8 +1603,8 @@ namespace eval ::confVisu {
    }
    
    proc onCutScaleRelease { visuNo } {
-      variable private     
-      
+      variable private
+
       ComputeScaleRange $visuNo
       visu$visuNo disp
    }
@@ -1438,7 +1612,7 @@ namespace eval ::confVisu {
    proc ComputeScaleRange { visuNo } {
       variable private
       global conf
-      
+
       set zone(sh1) $private($visuNo,This).fra1.sca1
       set zone(sb1) $private($visuNo,This).fra1.sca2
       if { $conf(seuils,auto_manuel) == 1 } {
@@ -1468,19 +1642,19 @@ namespace eval ::confVisu {
          $zone(sh1) configure -from $private($visuNo,mindyn) -to $private($visuNo,maxdyn)
       }
    }
-   
 
    #------------------------------------------------------------
    #  setCrosshair
    #  set Crosshair  state 
    #   state = 0 or 1
    #------------------------------------------------------------
-   proc setCrosshair { visuNo state} {
+   proc setCrosshair { visuNo state } {
       variable private
+
       set private($visuNo,crosshairstate) $state
-      redrawCrosshair $visuNo     
+      redrawCrosshair $visuNo
    }
-   
+
    #------------------------------------------------------------
    #  toggleCrosshair
    #  toggle drawing/hiding Crosshair 
@@ -1488,6 +1662,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc getCrosshair { visuNo } {
       variable private
+
       return $private($visuNo,crosshairstate)
    }
 
@@ -1504,7 +1679,7 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,crosshairstate) "0"
       }
-      redrawCrosshair $visuNo     
+      redrawCrosshair $visuNo
    }
 
    #------------------------------------------------------------
@@ -1513,11 +1688,11 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc redrawCrosshair { visuNo } {
       variable private
- 
+
       #--- je masque le reticule
       hideCrosshair $visuNo
       
-      if { "$private($visuNo,crosshairstate)" == "1"  } {
+      if { "$private($visuNo,crosshairstate)" == "1" } {
          #--- j'affiche le reticule
          displayCrosshair $visuNo  
       }
@@ -1544,7 +1719,7 @@ namespace eval ::confVisu {
       #--- je cree le label representant la ligne verticale
       if { ![winfo exists $private($visuNo,hCrosshairV)] } {
          label $private($visuNo,hCrosshairV) -bg $conf(crosshair,color)
-      } 
+      }
 
       #--- j'applique la couleur
       $private($visuNo,hCrosshairH) configure -bg $conf(crosshair,color)
@@ -1581,12 +1756,12 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc hideCrosshair { visuNo } {
       variable private
- 
+
       $private($visuNo,hCanvas) delete lineh
       $private($visuNo,hCanvas) delete linev
    }
 
-} 
+}
 ####  namespace end
 
 ::confVisu::init
