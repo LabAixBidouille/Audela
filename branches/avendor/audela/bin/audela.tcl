@@ -16,6 +16,12 @@
 #---    else if {[string compare $langage "mylanguage"] == 0 } {
 #---       ...
 #---       ...
+#
+
+set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
+if {$nameofexecutable!="audela"} {
+	catch {source roc.tcl}
+}
 
 source "version.tcl"
 

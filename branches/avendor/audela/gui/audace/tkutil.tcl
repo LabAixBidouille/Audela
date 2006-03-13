@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Date de mise a jour : 13 novembre 2005
+# Date de mise a jour : 07 mars 2006
 #
 
 namespace eval tkutil {
@@ -28,7 +28,7 @@ namespace eval tkutil {
       if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
          ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
          lappend openFileType \
-            [ list "$caption(tkutil,image_file)"       [ buf$audace(bufNo) extension ] ]    \
+            [ list "$caption(tkutil,image_file)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_file)"       [ buf$audace(bufNo) extension ].gz ] \
             [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ].gz ]
@@ -49,7 +49,7 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_file)"       {.xbm}       ] \
          [ list "$caption(tkutil,image_file)"       {.xpm}       ] \
          [ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
-         [ list "$caption(tkutil,image_file)"       {.crw .nef}  ] \
+         [ list "$caption(tkutil,image_file)"       {.crw .nef .cr2 .dng} ] \
          [ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
          [ list "$caption(tkutil,image_fits)"       {.fit}       ] \
          [ list "$caption(tkutil,image_fits)"       {.fit.gz}    ] \
@@ -77,14 +77,14 @@ namespace eval tkutil {
    # tkutil::box_load parent initialdir numero_buffer type
    # Ouvre la fenetre de selection des fichiers a proposer au chargement (hors fichiers html)
    #
-   proc box_load { { parent } { initialdir } { numero_buffer } { type } } {
+   proc box_load { { parent } { initialdir } { numero_buffer } { type } { visuNo "1" } } {
       variable openFileType
       global audace
       global caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {
-         set title "$caption(tkutil,charger_image)"
+         set title "$caption(tkutil,charger_image) (visu$visuNo)"
          ::tkutil::getOpenFileType
          set filetypes "$openFileType"
       } elseif { $type == "2" } {
@@ -167,7 +167,7 @@ namespace eval tkutil {
       if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
          ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
          lappend saveFileType \
-            [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ]    \
+            [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_fits) gz"    [ buf$audace(bufNo) extension ].gz ]
       }
       #---
@@ -189,25 +189,27 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
          [ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
          [ list "$caption(tkutil,image_png)"        {}      PNGF ] \
-         [ list "$caption(tkutil,image_tiff)"       {}      TIFF ]
+         [ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
+         [ list "$caption(tkutil,image_raw)"        {.crw }      ] \
+         [ list "$caption(tkutil,image_raw) "       {.nef}       ]
    }
 
    #
    # tkutil::box_save parent initialdir numero_buffer type
    # Ouvre la fenetre de selection des fichiers a proposer au chargement
    #
-   proc box_save { { parent } { initialdir } { numero_buffer } { type } } {
+   proc box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo "" } } {
       variable saveFileType
       global audace
       global caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {
-         set title "$caption(tkutil,sauver_image)"
+         set title "$caption(tkutil,sauver_image) (visu$visuNo)"
          ::tkutil::getSaveFileType
          set filetypes "$saveFileType"
       } elseif { $type == "2" } {
-         set title "$caption(tkutil,sauver_image_jpeg)"
+         set title "$caption(tkutil,sauver_image_jpeg) (visu1)"
          set filetypes [ list [ list "$caption(tkutil,image_jpeg)" ".jpg" ] ]
       }
       set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
@@ -237,7 +239,7 @@ namespace eval tkutil {
       set ad_vrai [ lindex $radec 0 ]
       set ad_vrai [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
       set dec_vrai [ lindex $radec 1 ]
-      set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]  
+      set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
 
       return [ list $ad_vrai $dec_vrai ]
    }

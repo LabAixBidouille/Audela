@@ -2,15 +2,17 @@
 # Fichier poly.tcl
 # Ce script regroupe des fonctions pour gérer des images FITS polychromes.
 # Auteur : Benoît Maugis
-# Version : 1.2
-# Date de MAJ : 27 mars 2005
+# Version : 1.2 ---> 1.3
+# Date de mise a jour : 27 mars 2005 ---> 17 fevrier 2006
 #
 
 # Documentation : voir le fichier poly.htm dans le dossier doc_html.
 
-    
+
 proc seriesApoly {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -44,7 +46,9 @@ proc seriesApoly {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -74,7 +78,9 @@ proc seriesApoly {args} {
 
 
 proc polyAserie {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-ex_polyNo"]]]=="1"} {
 
@@ -110,7 +116,9 @@ proc polyAserie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -140,7 +148,9 @@ proc polyAserie {args} {
 
 
 proc polyAseries {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -174,7 +184,9 @@ proc polyAseries {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -197,7 +209,9 @@ proc polyAseries {args} {
 
 
 proc poly_nbcouleurs {args} { 
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -220,7 +234,9 @@ proc poly_nbcouleurs {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -255,7 +271,9 @@ proc poly_nbcouleurs {args} {
 
 
 proc poly_fenetre {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -290,7 +308,9 @@ proc poly_fenetre {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -307,7 +327,9 @@ proc poly_fenetre {args} {
 
 
 proc poly_souris_fenetre {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -341,7 +363,9 @@ proc poly_souris_fenetre {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -356,7 +380,9 @@ proc poly_souris_fenetre {args} {
 
 
 proc poly_rot {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 5 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -393,7 +419,9 @@ proc poly_rot {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -410,7 +438,9 @@ proc poly_rot {args} {
 
 
 proc poly_trans {args} {
-  global audace caption conf confFichierIma
+#--- Debut Modif Robert
+  global audace caption conf
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 4 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -446,7 +476,9 @@ proc poly_trans {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -463,7 +495,9 @@ proc poly_trans {args} {
 
 
 proc poly_series_traligne {args} {
-  global audace caption conf confFichierIma script
+#--- Debut Modif Robert
+  global audace caption conf script
+#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -498,7 +532,9 @@ proc poly_series_traligne {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-    } elseif {$confFichierIma(fichier,compres)==0} {
+#--- Debut Modif Robert
+    } elseif {$conf(fichier,compres)==0} {
+#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz

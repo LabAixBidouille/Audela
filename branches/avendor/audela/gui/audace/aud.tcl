@@ -2,8 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 16 novembre 2005
-#
+# Date de mise a jour : 11 mars 2006
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -37,9 +36,12 @@ source compute_stellaire.tcl
 source divers.tcl
 source iris.tcl
 source poly.tcl
+source filtrage.tcl
 source mauclaire.tcl
 source astrometry.tcl
 source vo_tools.tcl
+source sectiongraph.tcl
+source polydraw.tcl
 
 namespace eval ::audace {
    variable This
@@ -48,57 +50,38 @@ namespace eval ::audace {
       variable This
       global audace
 
+      #--- Active le debugger
+     ### ramdebugger
+
       set This $this
       set audace(base) $This
 
       initEnv
-      createDialog
-      createMenu
-      initLastEnv
+      set visuNo [ createDialog ]
+      createMenu 
+      initLastEnv $visuNo
       dispClock1
       affiche_Outil_F2
+
+      #::console::disp "::confVisu::create \n"      
+      #loadima $audace(rep_images)/m57.fit
+      #::confVisu::create
+      #loadima $audace(rep_images)/aaa.jpg 2
+      
    }
 
    proc initEnv { } {
       global conf
       global audace
       global confgene
+      global caption
 
       #--- Chargement de la librairie de definition de la commande combit
       if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
          catch { load libcombit[ info sharedlibextension ] }
       }
-      #--- Creation du buffer et de la visu
-      set res [catch {::buf::create} msg]
       #--- Dans l'interface Aud'ACE, c'est la premiere fois que l'on appelle une fonction de libaudela.
       #--- Si libaudela n'a pas ete chargee, ca plante ici. D'ou le catch.
-      if { $res == "1" } {
-	   set message "Error caused by libaudela. Verify:\n"
-	   if { $::tcl_platform(os) == "Linux" } {
-		append message "1) the file libaudela.so is in the bin folder.\n"
-		append message "2) the bin folder is declared by LD_LIBRARY_PATH as:\n"
-		cd ..
-		append message "   typeset -x LD_LIBRARY_PATH=[pwd]/bin\n"
-		cd audace
-	   } else {
-            append message "the file libaudela.dll is in the bin folder.\n"
-	   }
-         tk_messageBox -message "$message" -icon error
-         exit
-      }
-      set audace(bufNo) $msg
-      set audace(visuNo) [::visu::create $audace(bufNo) 0]
-      #--- Position de l'image dans la fenetre principale
-      set audace(picture,orgx)  "0"
-      set audace(picture,orgy)  "0"
-      set audace(labcoord,type) "xy"
-      #--- Initialisation de variables
-      set audace(lastFileName) ""
-      set audace(fullscreen)   "0"
-      #--- Initialisation des variables de miroir
-      set audace(mirror_x) "0"
-      set audace(mirror_y) "0"
-      set audace(mirror_xy) "0"
       #--- Utilisation de la Console
       set audace(console) "::console"
       set audace(Console) ".console"
@@ -112,24 +95,22 @@ namespace eval ::audace {
       set audace(rep_gui)    "[pwd]"
       set audace(rep_audela) "[pwd]"
       #--- Repertoire d'installation
-      set audace(rep_install)  [ file normalize [ file join $audace(rep_audela) .. ] ]
+      set audace(rep_install) [ file normalize [ file join $audace(rep_audela) .. ] ]
       #--- Recherche des ports com
       ::audace::Recherche_Ports
       #--- Chargement de la configuration (config.ini)
       Recup_Config
-      #--- Extension des fichiers
-      buf$audace(bufNo) extension $conf(extension,defaut)
       #--- Chargement du repertoire des images
       if { [ info exists conf(rep_images) ] } {
          if { [ file exists "$conf(rep_images)" ] } {
             set audace(rep_images) "$conf(rep_images)"
          } else {
-            set audace(rep_images) [ file join $audace(rep_audela) audace images ]
-            set conf(rep_images)   [ file join $audace(rep_audela) audace images ]
+            set audace(rep_images) [ file join $audace(rep_install) images ]
+            set conf(rep_images)   [ file join $audace(rep_install) images ]
          }
       } else {
-         set audace(rep_images) [ file join $audace(rep_audela) audace images ]
-         set conf(rep_images)   [ file join $audace(rep_audela) audace images ]
+         set audace(rep_images) [ file join $audace(rep_install) images ]
+         set conf(rep_images)   [ file join $audace(rep_install) images ]
       }
       #--- Chargement du repertoire des scripts
       if { [ info exists conf(rep_scripts) ] } {
@@ -181,7 +162,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_caption) iris.cap ]\"" 
       uplevel #0 "source \"[ file join $audace(rep_caption) newscript.cap ]\"" 
       uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\"" 
-      uplevel #0 "source \"[ file join $audace(rep_caption) mauclaire.cap ]\"" 
+      uplevel #0 "source \"[ file join $audace(rep_caption) filtrage.cap ]\"" 
 
       #--- Creation de la console
       $audace(console)::create
@@ -196,6 +177,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace focus.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace crosshair.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace carte.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace conflink.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confeqt.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confcam.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confcat.tcl ]\""
@@ -204,29 +186,44 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace conftel.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace catagoto.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace plotxy.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace movie.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace confvisu.tcl ]\""
 
+      #---
+      set audace(rep_audela) [pwd]
+
+      #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
+      set confgene(temps,hsysteme)         [ lindex "$caption(audace,temps_heurelegale) $caption(audace,temps_universel)" "$conf(temps,hsysteme)" ]
+      set confgene(temps,fushoraire)       $conf(temps,fushoraire)
+      set confgene(temps,hhiverete)        [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
+      #---
+      set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
+      set audace(posobs,observateur,gps)   $confgene(posobs,observateur,gps)
+      set confgene(fichier,compres)        $conf(fichier,compres)
+      #---
+      set audace(camNo) "0"
    }
 
    proc Default_exeutils { } {
-	global conf
+        global conf
 
       if { $::tcl_platform(os) == "Linux" } {
-         set path [ file join / usr bin ]
+              set path [ file join / usr bin ]
       } else {
-	   set defaultpath [ file join C: "Program Files" ]
-	   catch {
-	      set testpath "$::env(ProgramFiles)"
-	      set kend [expr [string length $testpath]-1]
-	      for {set k 0} {$k<=$kend} {incr k} {
-		   set car [string index "$testpath" $k]
-		   if {$car=="\\"} {
-		      set testpath [string replace "$testpath" $k $k /]
-	         }
+           set defaultpath [ file join C: "Program Files" ]
+           catch {
+              set testpath "$::env(ProgramFiles)"
+              set kend [expr [string length $testpath]-1]
+              for {set k 0} {$k<=$kend} {incr k} {
+                   set car [string index "$testpath" $k]
+                   if {$car=="\\"} {
+                      set testpath [string replace "$testpath" $k $k /]
+                 }
             }
-	      set defaultpath "$testpath"
+              set defaultpath "$testpath"
          }
-	   set path "$defaultpath"
-	   set drive [ lindex [ file split "$path" ] 0 ]
+           set path "$defaultpath"
+           set drive [ lindex [ file split "$path" ] 0 ]
       }
       if { ! [ info exists conf(editnotice_pdf) ] } {
          if { $::tcl_platform(os) == "Linux" } {
@@ -235,15 +232,15 @@ namespace eval ::audace {
                set conf(editnotice_pdf) [ file join ${path} xpdf ]
             }
          } else {
-		set defaultname [ file join ${path} Adobe "Acrobat 4.0" Reader AcroRd32.exe ]
-		for { set k 10 } { $k > 1 } { incr k -1 } {
-	    	   set testname [ file join ${path} Adobe "Acrobat ${k}.0" Reader AcroRd32.exe ]
-		   if { [ file executable "$testname" ] == "1" } {
-		      set defaultname "$testname"
-		      break;
-		   }
-		}
-		set conf(editnotice_pdf) "$defaultname"
+                set defaultname [ file join ${path} Adobe "Acrobat 4.0" Reader AcroRd32.exe ]
+                for { set k 10 } { $k > 1 } { incr k -1 } {
+                       set testname [ file join ${path} Adobe "Acrobat ${k}.0" Reader AcroRd32.exe ]
+                   if { [ file executable "$testname" ] == "1" } {
+                      set defaultname "$testname"
+                      break;
+                   }
+                }
+                set conf(editnotice_pdf) "$defaultname"
          }
       }
       if { ! [ info exists conf(editscript) ] } {
@@ -253,7 +250,7 @@ namespace eval ::audace {
                set conf(editscript) [ file join ${path} emacs ]
             }
          } else {
-	      set conf(editscript) "write"
+              set conf(editscript) "write"
          }
       }
       if { ! [ info exists conf(editsite_htm) ] } {
@@ -263,16 +260,16 @@ namespace eval ::audace {
                set conf(editsite_htm) [ file join ${path} mozilla ]
             }
          } else {
-		set defaultname [ file join ${path} "Internet Explorer" Iexplore.exe ]
-	      set testnames [ list [ file join ${path} Netscape Netscape Netscp.exe ] \
+                set defaultname [ file join ${path} "Internet Explorer" Iexplore.exe ]
+              set testnames [ list [ file join ${path} Netscape Netscape Netscp.exe ] \
                [ file join ${path} Netscape Communicator Program Netscape.exe ] ]
-	      foreach testname $testnames {
-		   if { [ file executable "$testname" ] == "1" } {
-		      set defaultname "$testname"
-		      break;
-		   }
-		}
-		set conf(editsite_htm) "$defaultname"
+              foreach testname $testnames {
+                   if { [ file executable "$testname" ] == "1" } {
+                      set defaultname "$testname"
+                      break;
+                   }
+                }
+                set conf(editsite_htm) "$defaultname"
          }
       }
       if { ! [ info exists conf(edit_viewer) ] } {
@@ -282,16 +279,16 @@ namespace eval ::audace {
                set conf(edit_viewer) ""
             }
          } else {
-		set defaultname ""
-	      set testnames [ list [ file join ${path} "ACD Systems" "ACDSee" ACDSee.exe ] \
+                set defaultname ""
+              set testnames [ list [ file join ${path} "ACD Systems" "ACDSee" ACDSee.exe ] \
                [ file join ${path} IrfanView i_view32.exe ] [ file join ${path} XnView xnview.exe ] ]
-	      foreach testname $testnames {
-		   if { [ file executable "$testname" ] == "1" } {
-		      set defaultname "$testname"
-		      break;
-		   }
-		}
-		set conf(edit_viewer) "$defaultname"
+              foreach testname $testnames {
+                   if { [ file executable "$testname" ] == "1" } {
+                      set defaultname "$testname"
+                      break;
+                   }
+                }
+                set conf(edit_viewer) "$defaultname"
          }
       }
    }
@@ -402,8 +399,7 @@ namespace eval ::audace {
       return $repertoire
    }
 
-   proc Recup_Config { } {
-      variable autovisuEnCours
+   proc Recup_Config { { visuNo 1 } } {
       global conf
       global audace
       global tmp
@@ -411,15 +407,15 @@ namespace eval ::audace {
       #--- Initialisation
       if {[info exists conf]} {unset conf}
 
-      #--- Ouverture du fichier de parametres
+      #--- Ouverture du fichier de paramètres
       if { $::tcl_platform(os) == "Linux" } {
-         set fichier [ file join ~ .audela config.ini ]
-         #--- Si le dossier ~/.audela n'existe pas, on le cree
-         if { ! [ file exist [ file join ~ .audela ] ] } {
-            file mkdir [ file join ~ .audela ]
-         }
+              set fichier [ file join ~ .audela config.ini ]
+              #--- Si le dossier ~/.audela n'existe pas, on le cree
+              if { ! [ file exist [ file join ~ .audela ] ] } {
+                 file mkdir [ file join ~ .audela ]
+              }
       } else {
-         set fichier [ file join audace config.ini ]
+              set fichier [ file join audace config.ini ]
       }
       if { [ file exists $fichier ] } { uplevel #0 "source $fichier" }
 
@@ -433,24 +429,19 @@ namespace eval ::audace {
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
 
-      #--- Initialisation de variables privees
-      set autovisuEnCours "0"
-
       #--- Initialisation de variables de configuration
       if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
       if { ! [ info exists conf(visu_palette) ] }              { set conf(visu_palette)              "1" }
-      if { ! [ info exists conf(fonction_transfert,mode) ] }   { set conf(fonction_transfert,mode)   "1" }
       if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
       if { ! [ info exists conf(fonction_transfert,param3) ] } { set conf(fonction_transfert,param3) "1" }
       if { ! [ info exists conf(fonction_transfert,param4) ] } { set conf(fonction_transfert,param4) "1" }
-      set tmp(fonction_transfert,mode) $conf(fonction_transfert,mode)
 
       #--- Initialisation des executables
       ::audace::Default_exeutils
    }
 
    proc verifip { ipinit } {
-	#--- IP local
+      #--- IP local
       set ip [lindex [hostaddress] 0]
       set ipmaskhost "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2]"
       set ipnumhost  "[lindex $ip 3]"
@@ -459,13 +450,13 @@ namespace eval ::audace {
       set ipmask "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2]"
       set ipnum  "[lindex $ip 3]"
       if {$ipmask!=$ipmaskhost} {
-	   set ipmask $ipmaskhost
+           set ipmask $ipmaskhost
       }
       if {($ipnum==$ipnumhost)||($ipnum=="")} {
-	   set ipnum [expr $ipnumhost+10]
-	   if {$ipnum>255} {
-	      set ipnum [expr $ipnumhost-10]
-	   }
+           set ipnum [expr $ipnumhost+10]
+           if {$ipnum>255} {
+              set ipnum [expr $ipnumhost-10]
+           }
       }
       return "${ipmask}.${ipnum}"
    }
@@ -476,115 +467,38 @@ namespace eval ::audace {
       global audace
       global caption
 
-      toplevel $This
+      #---
+      toplevel $This -class 1
       wm geometry $This 631x453+0+0
       wm maxsize $This [winfo screenwidth .] [winfo screenheight .]
       wm minsize $This 631 453
       wm resizable $This 1 1
       wm deiconify $This
-      wm title $This "$caption(audace,titre)"
-      wm protocol $This WM_DELETE_WINDOW ::audace::quitter
+
+      #--- Je cree la visu de la fenetre principale
+      set visuNo [::confVisu::create $audace(base)]
+        
+      #---
+      wm title $This "$caption(audace,titre) (visu$visuNo)"
+      wm protocol $This WM_DELETE_WINDOW " ::audace::quitter "
       update
 
+      #--- Creation des variables audace dependant de la visu
+      set audace(visuNo) $visuNo
+      set audace(bufNo)  [visu$visuNo buf]
+      set audace(imageNo) [visu$visuNo image]
+      set audace(hCanvas) $::confVisu::private($visuNo,hCanvas)
+      
       #--- Chargement des differents outils
       foreach fichier [ glob [ file join audace plugin tool * pkgIndex.tcl ] ] {
-         uplevel #0 "source $fichier"
-         set nom [ file tail [ file dirname "$fichier" ] ]
-         package require $nom
-         $audace(console)::affiche_prompt "# $fichier [ package present $nom ] \n"
+              uplevel #0 "source $fichier"
+              set nom [ file tail [ file dirname "$fichier" ] ]
+              package require $nom
+              $audace(console)::affiche_prompt "# $fichier [ package present $nom ] \n"
       }
       $audace(console)::disp "\n"
-      $audace(console)::disp "\n"
 
-      #---
-      frame $This.fra1 -borderwidth 2 -cursor arrow -relief groove
-
-         button $This.fra1.but_seuils_auto -text "$caption(audace,seuil,auto)" \
-            -command { ::audace::onCutLabelLeftClick } -width 5
-         grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we -in $This.fra1 -padx 5
-
-         button $This.fra1.but_config_glissieres -text "$caption(script,parcourir)" \
-            -command { ::seuilWindow::run "$audace(base).seuilWindow" }
-         grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} -in $This.fra1 -padx 5
-
-         scale $This.fra1.sca1 -orient horizontal -to 32767 -from -32768 -length 150 \
-            -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
-         grid configure $This.fra1.sca1 -column 2 -row 0 -sticky we -in $This.fra1 -pady 2
-
-         scale $This.fra1.sca2 -orient horizontal -to 32767 -from -32768 -length 150 \
-            -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
-         grid configure $This.fra1.sca2 -column 2 -row 1 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.lab1 -width 10 -text "$caption(seuil,haut)" -font $audace(font,arial_8_n)
-         grid configure $This.fra1.lab1 -column 3 -row 0 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.lab2 -width 10 -text "$caption(seuil,bas)" -font $audace(font,arial_8_n)
-         grid configure $This.fra1.lab2 -column 3 -row 1 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labURLX -width 16 -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
-         grid configure $This.fra1.labURLX -column 4 -row 0 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labURLY -width 16 -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
-         grid configure $This.fra1.labURLY -column 4 -row 1 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labI -width 19 -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
-         grid configure $This.fra1.labI -column 5 -row 0 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labTime -width 19 -font $audace(font,arial_8_n) -anchor w \
-            -textvariable "audace(tu,format,dmyhmsint)"
-         grid configure $This.fra1.labTime -column 5 -row 1 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labCam -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,camera) $caption(caractere,2points)"
-         grid configure $This.fra1.labCam -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labCam_name -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,tiret)"
-         grid configure $This.fra1.labCam_name -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labTel -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,monture) $caption(caractere,2points)"
-         grid configure $This.fra1.labTel -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
-
-         label $This.fra1.labTel_name -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,tiret)"
-         grid configure $This.fra1.labTel_name -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
-
-      pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
-
-      #--- Canvas de dessin de l'image
-      Scrolled_Canvas $This.can1 -borderwidth 0 -relief flat \
-         -width 300 -height 200 -scrollregion {0 0 0 0} -cursor crosshair
-      pack $This.can1 -in $This -anchor center -expand 1 -fill both -side right
-      $This.can1.canvas configure -borderwidth 0
-      $This.can1.canvas configure -relief flat
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
-
-      #---
-      bind $This.fra1.lab1 <ButtonPress-1> ::audace::onCutLabelLeftClick
-      bind $This.fra1.lab2 <ButtonPress-1> ::audace::onCutLabelLeftClick
-      bind $This.fra1.lab1 <ButtonPress-3> ::audace::onCutLabelRightClick
-      bind $This.fra1.lab2 <ButtonPress-3> ::audace::onCutLabelRightClick    
-      
-      #--- Raccourci pour affichage du reticule
-      bind $This <Key-C> { ::Crosshair::toggleCrosshair }
-      bind $This <Key-c> { ::Crosshair::toggleCrosshair }
-
-      #--- Mise a jour des glissieres
-      $This.fra1.sca1 configure -command ::audace::onHiCutCommand
-      $This.fra1.sca2 configure -command ::audace::onLoCutCommand
-      bind $This.fra1.sca1 <ButtonRelease> ::audace::onCutScaleRelease
-      bind $This.fra1.sca2 <ButtonRelease> ::audace::onCutScaleRelease
-      
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+      return $visuNo
    }
 
    proc createMenu { } {
@@ -593,407 +507,317 @@ namespace eval ::audace {
       global conf
       global caption
 
-      Menu_Setup $This.menubar
+      set visuNo $audace(visuNo)
+      set bufNo [ visu$visuNo buf ]
+      Menu_Setup $visuNo $This.menubar
 
-      Menu           "$caption(audace,menu,fichier)"
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." ::audace::charger
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" {
-         if { [ buf$audace(bufNo) imageready ] == "1" } {
-            ::audace::enregistrer
-         }
-      }
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer_sous)..." {
-         ::audace::enregistrer_sous
-      }
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,copyjpeg)..." ::audace::copyjpeg
-      Menu_Separator "$caption(audace,menu,fichier)"
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,nouveau_script)..." ::audace::newScript
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,editer_script)..." ::audace::editScript
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,lancer_script)..." ::audace::runScript
-      Menu_Separator "$caption(audace,menu,fichier)"
-      Menu_Command   "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" ::audace::quitter
+      Menu           $visuNo "$caption(audace,menu,fichier)"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
+         "::audace::charger $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
+         "::audace::enregistrer $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer_sous)..." \
+         "::audace::enregistrer_sous $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,copyjpeg)..." "::audace::copyjpeg"
 
-      Menu           "$caption(audace,menu,affichage)"
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
-         "1" "conf(visu_palette)" { ::audace::MAJ_palette }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_inverse)" \
-         "2" "conf(visu_palette)" { ::audace::MAJ_palette }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_iris)" \
-         "3" "conf(visu_palette)" { ::audace::MAJ_palette }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
-         "5" "conf(visu_palette)" { ::audace::MAJ_palette }
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Cascade "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)" 
-      Menu_Command_Radiobutton "$caption(fcttransfert,titre)" "$caption(fcttransfert,lin)" "1" \
-         "conf(fonction_transfert,mode)" { ::audace::fonction_transfert }
-      Menu_Command_Radiobutton "$caption(fcttransfert,titre)" "$caption(fcttransfert,log)" "2" \
-         "conf(fonction_transfert,mode)" { ::audace::fonction_transfert }
-      Menu_Command_Radiobutton "$caption(fcttransfert,titre)" "$caption(fcttransfert,exp)" "3" \
-         "conf(fonction_transfert,mode)" { ::audace::fonction_transfert }
-      Menu_Command_Radiobutton "$caption(fcttransfert,titre)" "$caption(fcttransfert,arc)" "4" \
-         "conf(fonction_transfert,mode)" { ::audace::fonction_transfert }
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Command "$caption(audace,menu,affichage)" "$caption(seuils,titre)..." \
-         { ::seuilWindow::run "$audace(base).seuilWindow" }
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,zoom)     $caption(audace,menu,zoom_0.125)" "0.125" "conf(visu_zoom)" {
-         set conf(visu_zoom) "0.125" ; visu$audace(visuNo) zoom $conf(visu_zoom)
-            if { [ image type image0 ] == "video" } { 
-               ::audace::zoom_video
-            } else {                      
-               ::audace::autovisu visu$audace(visuNo)
-            }
-         }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,zoom)     $caption(audace,menu,zoom_0.25)" "0.25" "conf(visu_zoom)" {
-         set conf(visu_zoom) "0.25" ; visu$audace(visuNo) zoom $conf(visu_zoom)
-            if { [ image type image0 ] == "video" } { 
-               ::audace::zoom_video
-            } else {                      
-               ::audace::autovisu visu$audace(visuNo)
-            }
-         }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,zoom)     $caption(audace,menu,zoom_0.5)" "0.5" "conf(visu_zoom)" {
-         set conf(visu_zoom) "0.5" ; visu$audace(visuNo) zoom $conf(visu_zoom)
-            if { [ image type image0 ] == "video" } { 
-               ::audace::zoom_video
-            } else {                      
-               ::audace::autovisu visu$audace(visuNo)
-            }
-         }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,zoom)     $caption(audace,menu,zoom_1)" "1" "conf(visu_zoom)" {
-         set conf(visu_zoom) "1" ; visu$audace(visuNo) zoom $conf(visu_zoom)
-            if { [ image type image0 ] == "video" } { 
-               ::audace::zoom_video
-            } else {                      
-               ::audace::autovisu visu$audace(visuNo)
-            }
-         }
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,zoom)     $caption(audace,menu,zoom_2)" "2" "conf(visu_zoom)" {
-         set conf(visu_zoom) "2" ; visu$audace(visuNo) zoom $conf(visu_zoom)
-            if { [ image type image0 ] == "video" } { 
-               ::audace::zoom_video
-            } else {                      
-               ::audace::autovisu visu$audace(visuNo)
-            }
-         }
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Check "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,plein_ecran)" "audace(fullscreen)" {
-            if { [ buf$audace(bufNo) imageready ] == "1" } {
-               if { $audace(fullscreen) == "1" } {
-                  ::FullScreen::showBuffer buf$audace(bufNo)
-               } else { 
-                  ::FullScreen::close  
-               }
-            } else {
-               set audace(fullscreen) "0"
-            }
-         }
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Check   "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" "audace(mirror_x)" {
-         visu$audace(visuNo) mirrorx $audace(mirror_x)
-         ::audace::autovisu visu$audace(visuNo)
-         }
-      Menu_Check   "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" "audace(mirror_y)" {
-         visu$audace(visuNo) mirrory $audace(mirror_y)
-         ::audace::autovisu visu$audace(visuNo)
-         }
-      Menu_Check   "$caption(audace,menu,affichage)" "$caption(audace,menu,window)" "audace(fenetre)" {
-         global audace
-         if { [ buf$audace(bufNo) imageready ] == "1" } {
-            if { $audace(fenetre) == "0" } {
-               visu$audace(visuNo) window full
-               ::audace::autovisu visu$audace(visuNo)
-            } else {
-               if { [ info exists audace(box) ] } {
-                  visu$audace(visuNo) window $audace(box)
-                  catch {
-                     unset audace(box)
-                     $audace(hCanvas) delete $audace(hBox)
-                  }
-                  ::audace::autovisu visu$audace(visuNo)
-               } else {
-                 tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
-                 set audace(fenetre) "0"
-               }
-            }
-         } else {
-            set audace(fenetre) "0"
-         }
-      }
-      Menu_Separator "$caption(audace,menu,affichage)"
+      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" "::audace::header $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,select)..." ::selectWindow::run
+      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,nouveau_script)..." ::audace::newScript
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,editer_script)..." ::audace::editScript
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,lancer_script)..." ::audace::runScript
+      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
+      Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" "::audace::quitter"
 
-      Menu_Command_Radiobutton "$caption(audace,menu,affichage)" \
-         "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" { 
-            ::confColor::switchDayNight
-            if { [ winfo exists $audace(base).select_color ] } {
-               destroy $audace(base).select_color
-               ::confColor::run
-            }
-         }
+      Menu           $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
+              "1" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_inverse)" \
+              "2" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_iris)" \
+              "3" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
+              "5" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)" 
+      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,lin)" "1" \
+              "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,log)" "2" \
+              "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,exp)" "3" \
+              "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,arc)" "4" \
+              "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command $visuNo "$caption(audace,menu,affichage)" "$caption(seuils,titre)..." \
+              "::seuilWindow::run $This $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.125)" "0.125" \
+              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.25)" "0.25" \
+              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_0.5)" "0.5" \
+              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_1)" "1" \
+              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
+              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Check $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,plein_ecran)" \
+              "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Check   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" \
+              "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
+      Menu_Check   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" \
+              "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
+      Menu_Check   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,window)" \
+              "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+         "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
+         "::confColor::switchDayNight ; \
+            if { [ winfo exists $audace(base).select_color ] } { \
+               destroy $audace(base).select_color \
+               ::confColor::run $visuNo\
+            } \
+         "
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
+              "::confGenerique::run $audace(base).confCrossHair ::Crosshair $visuNo"
 
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Command   "$caption(audace,menu,affichage)" "$caption(audace,menu,entete)" ::audace::header
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Command   "$caption(audace,menu,affichage)" "$caption(audace,menu,select)..." ::selectWindow::run
-      Menu_Separator "$caption(audace,menu,affichage)"
-      Menu_Command   "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
-         { ::confGenerique::run "$audace(base).confCrossHair" "::Crosshair" }
-
-      Menu           "$caption(audace,menu,pretraite)"
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_x)" {
-         buf$audace(bufNo) mirrorx
-         ::audace::autovisu visu$audace(visuNo)
-         }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_y)" {
-         buf$audace(bufNo) mirrory
-         ::audace::autovisu visu$audace(visuNo)
-         }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_xy)" {
-            if { [ buf$audace(bufNo) imageready ] == "1" } {
-               buf$audace(bufNo) imaseries "invert xy"
-               ::audace::autovisu visu$audace(visuNo)
-            }
-         }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,window1)" {
-         global audace ; if { [info exists audace(box)] } { window $audace(box) ; ::audace::autovisu visu$audace(visuNo) } }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
+      Menu           $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_x)" {
+              if { [ buf$audace(bufNo) imageready ] == "1" } {
+                 buf$audace(bufNo) mirrorx
+                 ::audace::autovisu $audace(visuNo)
+              }
+           }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_y)" {
+              if { [ buf$audace(bufNo) imageready ] == "1" } {
+                 buf$audace(bufNo) mirrory
+                 ::audace::autovisu $audace(visuNo)
+              }
+           }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_xy)" {
+              if { [ buf$audace(bufNo) imageready ] == "1" } {
+                 buf$audace(bufNo) imaseries "invert xy"
+                 ::audace::autovisu $audace(visuNo)
+              }
+           }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,window1)" {
+              if { [ buf$audace(bufNo) imageready ] == "1" } {
+                 "window"
+                 ::audace::autovisu $audace(visuNo)
+              }
+           }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
          { ::traiteImage::run "$caption(audace,menu,scale)" "$audace(base).traiteImage" }
-      Menu_Separator "$caption(audace,menu,pretraite)"
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
+      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
          { ::traiteImage::run "$caption(audace,menu,offset)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
          { ::traiteImage::run "$caption(audace,menu,mult_cte)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
          { ::traiteImage::run "$caption(audace,menu,noffset)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
          { ::traiteImage::run "$caption(audace,menu,ngain)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,addition)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,addition)..." \
          { ::traiteImage::run "$caption(audace,menu,addition)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,soust)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,soust)..." \
          { ::traiteImage::run "$caption(audace,menu,soust)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,division)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,division)..." \
          { ::traiteImage::run "$caption(audace,menu,division)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
          { ::traiteImage::run "$caption(audace,menu,subsky)" "$audace(base).traiteImage" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
          { ::traiteImage::run "$caption(audace,menu,clip)" "$audace(base).traiteImage" }
-      Menu_Separator "$caption(audace,menu,pretraite)"
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,run,median)..." \
+      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,run,median)..." \
          { ::traiteWindow::run "$caption(audace,run,median)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,image,somme)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,somme)..." \
          { ::traiteWindow::run "$caption(audace,image,somme)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,image,moyenne)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,moyenne)..." \
          { ::traiteWindow::run "$caption(audace,image,moyenne)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,image,ecart_type)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,ecart_type)..." \
          { ::traiteWindow::run "$caption(audace,image,ecart_type)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
          { ::traiteWindow::run "$caption(audace,menu,offset)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
          { ::traiteWindow::run "$caption(audace,menu,noffset)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
          { ::traiteWindow::run "$caption(audace,menu,ngain)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,addition)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,addition)..." \
          { ::traiteWindow::run "$caption(audace,menu,addition)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,soust)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,soust)..." \
          { ::traiteWindow::run "$caption(audace,menu,soust)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,menu,division)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,division)..." \
          { ::traiteWindow::run "$caption(audace,menu,division)" "$audace(base).traiteWindow" }
-      Menu_Command   "$caption(audace,menu,pretraite)" "$caption(audace,optimisation,noir)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,optimisation,noir)..." \
          { ::traiteWindow::run "$caption(audace,optimisation,noir)" "$audace(base).traiteWindow" }
 
-      Menu           "$caption(audace,menu,traitement)"
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,masque_flou)..." \
+      Menu           $visuNo "$caption(audace,menu,traitement)"
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,masque_flou)..." \
          { ::traiteFilters::run "$caption(audace,menu,masque_flou)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_passe-bas)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_passe-bas)..." \
          { ::traiteFilters::run "$caption(audace,menu,filtre_passe-bas)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_passe-haut)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_passe-haut)..." \
          { ::traiteFilters::run "$caption(audace,menu,filtre_passe-haut)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_median)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_median)..." \
          { ::traiteFilters::run "$caption(audace,menu,filtre_median)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_minimum)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_minimum)..." \
          { ::traiteFilters::run "$caption(audace,menu,filtre_minimum)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_maximum)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_maximum)..." \
          { ::traiteFilters::run "$caption(audace,menu,filtre_maximum)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_gaussien)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,filtre_gaussien)..." \
          { ::traiteFilters::run "$caption(audace,menu,filtre_gaussien)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,ond_morlet)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,ond_morlet)..." \
          { ::traiteFilters::run "$caption(audace,menu,ond_morlet)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,ond_mexicain)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,ond_mexicain)..." \
          { ::traiteFilters::run "$caption(audace,menu,ond_mexicain)" "$audace(base).traiteFilters" }
-      Menu_Command   "$caption(audace,menu,traitement)" "$caption(audace,menu,log)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,log)..." \
          { ::traiteFilters::run "$caption(audace,menu,log)" "$audace(base).traiteFilters" }
 
-      Menu           "$caption(audace,menu,analyse)"
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,histo)" ::audace::Histo
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,statwin)" {
-         global audace ; if { [info exists audace(box)] } { statwin $audace(box) } }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,fwhm)" {
-         global audace ; if { [info exists audace(box)] } { fwhm $audace(box) } }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,fitgauss)" {
-         global audace ; if { [info exists audace(box)] } { fitgauss $audace(box) } }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,centro)" {
-         global audace ; if { [info exists audace(box)] } { center $audace(box) } }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,phot)" {
-         global audace ; if { [info exists audace(box)] } { photom $audace(box) } }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,subfitgauss)" {
-         global audace ; if { [info exists audace(box)] } { subfitgauss $audace(box) } }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" {
-         global audace ; if { [info exists audace(box)] } { scar $audace(box) } }
-      Menu_Separator "$caption(audace,menu,analyse)"
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,astrometry)..." ::astrometry::create
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,carte_champ)..." \
+      Menu           $visuNo "$caption(audace,menu,analyse)"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,statwin)" "statwin $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,centro)" "center $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,phot)" "photom $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" "scar $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,analyse)"
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,astrometry)..." ::astrometry::create
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte_champ)..." \
          { ::mapWindow::run "$audace(base).mapWindow" }
-      Menu_Command   "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
          { ::carte::showMapFromBuffer buf$audace(bufNo) }
 
-      Menu           "$caption(audace,menu,outils)"
-      Menu_Command   "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" { ::audace::pas_Outil }
-      Menu_Separator "$caption(audace,menu,outils)"
+      Menu           $visuNo "$caption(audace,menu,outils)"
+      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" { ::audace::pas_Outil }
+      Menu_Separator $visuNo "$caption(audace,menu,outils)"
       #--- Affichage des outils du menu Outils
-      ::audace::affiche_Outil
-      Menu_Separator "$caption(audace,menu,outils)"
-      Menu_Command   "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)..." \
+      ::audace::affiche_Outil $visuNo
+      Menu_Separator $visuNo "$caption(audace,menu,outils)"
+      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)..." \
          { ::confChoixOutil::run "$audace(base).confChoixOutil" }
 
-      Menu           "$caption(audace,menu,configuration)"
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,general)..." \
+      Menu           $visuNo "$caption(audace,menu,configuration)"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,general)..." \
          { ::confGeneral::run "$audace(base).confGeneral" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,cwd)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,cwd)..." \
          { ::cwdWindow::run "$audace(base).cwdWindow" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,editeur)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,editeur)..." \
          { ::confEditScript::run "$audace(base).confEditScript" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,temps)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,temps)..." \
          { ::confTemps::run "$audace(base).confTemps" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,position)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,position)..." \
          { ::confPosObs::run "$audace(base).confPosObs" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,fichier_image)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,fichier_image)..." \
          { ::confFichierIma::run "$audace(base).confFichierIma" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,alarme)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,alarme)..." \
          { ::confAlarmeFinPose::run "$audace(base).confAlarmeFinPose" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,tempo_scan)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,tempo_scan)..." \
          { ::confTempoScan::run "$audace(base).confTempoScan" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,messages_console)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,messages_console)..." \
          { ::confMessages_Console::run "$audace(base).confMessages_Console" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(confgene,type_fenetre)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,type_fenetre)..." \
          { ::confTypeFenetre::run "$audace(base).confTypeFenetre" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,apparence)..." ::confColor::run
-      Menu_Separator "$caption(audace,menu,configuration)"
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." ::confCam::run
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,monture)..." ::confTel::run
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,optique)..." \
-         { ::confGenerique::run "$audace(base).confOptic" "::confOptic" }
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,equipement)..." ::confEqt::run
-      Menu_Separator "$caption(audace,menu,configuration)"
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,raquette)..." ::confPad::run
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,carte)..." ::confCat::run
-      Menu_Separator "$caption(audace,menu,configuration)"
-      Menu_Command   "$caption(audace,menu,configuration)" "$caption(audace,menu,sauve_config)" ::audace::sauve_config
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,apparence)..." \
+         "::confColor::run $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,configuration)"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." ::confCam::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,monture)..." ::confTel::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,liaison)..." ::confLink::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,optique)..." \
+         "::confGenerique::run $audace(base).confOptic ::confOptic $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,equipement)..." ::confEqt::run
+      Menu_Separator $visuNo "$caption(audace,menu,configuration)"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,raquette)..." ::confPad::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,carte)..." ::confCat::run
+      Menu_Separator $visuNo "$caption(audace,menu,configuration)"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,sauve_config)" \
+         " ::audace::enregistrerConfiguration $visuNo "
 
-      Menu           "$caption(audace,menu,aide)"
-      Menu_Command   "$caption(audace,menu,aide)" "$caption(audace,menu,sommaire)" ::audace::showMain
-      Menu_Command   "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" ::audace::showFunctions
-      Menu_Cascade   "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
-      Menu_Command   "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" {
+      Menu           $visuNo "$caption(audace,menu,aide)"
+      Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,sommaire)" ::audace::showMain
+      Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" ::audace::showFunctions
+      Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
+      Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" {
          set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
-      Menu_Command   "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_dd)..." ::audace::editSiteWebAudeLA
-      Menu_Command   "$caption(audace,menu,aide)" "$caption(audace,menu,notice_pdf)..." ::audace::editNotice_pdf
-      Menu_Command   "$caption(audace,menu,aide)" "$caption(audace,menu,a_propos_de)" \
+      Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_dd)..." ::audace::editSiteWebAudeLA
+      Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,notice_pdf)..." ::audace::editNotice_pdf
+      Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,a_propos_de)" \
          { ::confVersion::run "$audace(base).confVersion" }
 
       #--- Exemple d'association d'une touche du clavier avec une option d'un menu deroulant ou un outil
-      Menu_Bind $This <Control-o> "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
+      Menu_Bind $visuNo $This <Control-o> "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
          "$caption(touche,controle,O)"
-      bind $audace(Console) <Control-o> " focus $audace(base) ; ::audace::charger "
-      Menu_Bind $This <Control-s> "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
+      bind $audace(Console) <Control-o> " focus $audace(base) ; ::audace::charger $visuNo "
+      Menu_Bind $visuNo $This <Control-s> "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
          "$caption(touche,controle,S)"
       bind $audace(Console) <Control-s> " focus $audace(base) ; ::audace::enregistrer "
-      Menu_Bind $This <Control-q> "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" \
+      Menu_Bind $visuNo $This <Control-q> "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" \
          "$caption(touche,controle,Q)"
       bind $audace(Console) <Control-q> " focus $audace(base) ; ::audace::quitter "
-      Menu_Bind $This <F12>       "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" \
+      Menu_Bind $visuNo $This <F12>       "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" \
          "$caption(touche,F12)"
       bind $audace(Console) <F12> " focus $audace(base) ; ::audace::pas_Outil "
    }
 
-   proc initLastEnv { } {
+   proc initLastEnv { visuNo } {
       variable This
       global audace
       global conf
       global caption
       global confgene
-      global confFichierIma
       global tmp
-
+      
       #--- Mise a jour des couleurs des interfaces
       ::confColor::applyColor $audace(base)
       ::confColor::applyColor $audace(Console)
 
-      image create photo image0
-      set audace(hCanvas) $This.can1.canvas
-      $audace(hCanvas) create image 0 0 -anchor nw -tag display
-      $audace(hCanvas) itemconfigure display -image image0
-
-      set audace(rep_audela) [pwd]
-      set audace(maxdyn) 32767
-      set audace(mindyn) -32768
-      set audace(MenuPosted) 0
-      set audace(MouseState) rien
-
-      ::audace::boxInit
-      ::audace::visuDynamix $audace(maxdyn) $audace(mindyn)
-
-      if {[info exists conf(audace,wmgeometry)]==1} {
-         wm geometry $This $conf(audace,wmgeometry)
+      if { [ info exists conf(audace,visu$visuNo,wmgeometry) ] == "1" } {
+              wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
       } else {
-         wm geometry $This 631x453+0+0
+              wm geometry $This 631x453+0+0
       }
 
-      if {[info exists conf(console,wmgeometry)]==1} {
-         wm geometry $audace(Console) $conf(console,wmgeometry)
+      if { [ info exists conf(console,wmgeometry) ] == "1" } {
+              wm geometry $audace(Console) $conf(console,wmgeometry)
       } else {
-         wm geometry $audace(Console) 360x200+220+180
-      }
-
-      #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
-      set confgene(temps,hsysteme)         [ lindex "$caption(audace,temps_heurelegale) $caption(audace,temps_universel)" "$conf(temps,hsysteme)" ]
-      set confgene(temps,fushoraire)       $conf(temps,fushoraire)
-      set confgene(temps,hhiverete)        [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
-      #---
-      set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
-      set audace(posobs,observateur,gps)   $confgene(posobs,observateur,gps)
-      set confFichierIma(fichier,compres)  $conf(fichier,compres)
-
-      #--- Fichiers image compresses ou non
-      if { $confFichierIma(fichier,compres) == "0" } {
-         buf$audace(bufNo) compress "none"
-      } else {
-         buf$audace(bufNo) compress "gzip"
+              wm geometry $audace(Console) 360x200+220+180
       }
 
       #--- Affichage des ports com disponibles
       if { [ llength $audace(list_com) ] != "0" } {
-        $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $audace(list_com) \n\n"
+              $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $audace(list_com) \n\n"
       } else {
-        $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port) \n\n"
+              $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port) \n\n"
       }
 
-      #--- Definition d'un fichier palette temporaire, modifiable dynamiquement
+      #--- Définition d'un fichier palette temporaire, modifiable dynamiquement
       #--- On stocke le nom de ce fichier dans tmp(fichier_palette)
       #--- Attention : On stocke le nom du fichier sans l'extension .pal
       if { ! [ info exist tmp(fichier_palette) ] } {
          switch $::tcl_platform(os) {
             Linux {
-               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'ecriture pour tout le monde
+               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'écriture pour tout le monde
                if {[file exist [file join /tmp .audela]]=="0"} {
                   file mkdir [file join /tmp .audela]
                   exec chmod a+w [file join /tmp .audela]
-	         }
+               }
                set tmp(fichier_palette) [ file rootname [ cree_fichier -nom_base fonction_transfert -rep [ file join /tmp .audela ] -ext .pal ] ]
             }
             default {
@@ -1003,7 +827,7 @@ namespace eval ::audace {
       }
 
       #--- Prise en compte de la palette prealablement choisie
-      ::audace::MAJ_palette
+      ::audace::MAJ_palette $visuNo
 
       #--- Configure PortTalk
       if { $::tcl_platform(os) == "Windows NT" } {
@@ -1011,12 +835,12 @@ namespace eval ::audace {
          set no_administrator "PortTalk: You do not have rights to access"
          if { ( $res == "1" ) && ( [ file exists "[ file join $audace(rep_install) bin allowio.txt ]" ] == "0" ) } {
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               console::affiche_erreur "$msg\n\n$caption(audace,porttalk_erreur)\n"
+               $audace(console)::affiche_erreur "$msg\n\n$caption(audace,porttalk_erreur)\n"
             } else {
-               console::affiche_erreur "$msg\n"
+               $audace(console)::affiche_erreur "$msg\n"
             }
             set base ".allowio"
-            toplevel $base
+            toplevel $base 
             wm geometry $base +50+100
             wm resizable $base 0 0
             wm deiconify $base
@@ -1047,23 +871,35 @@ namespace eval ::audace {
             tkwait window $base
          } else {
             catch {
-               console::affiche_prompt "$caption(audace,porttalk) $result\n\n"
+               $audace(console)::affiche_prompt "$caption(audace,porttalk) $result\n\n"
             }
          }
       }
 
-      #--- Connexion au demarrage de la camera
-      if { $conf(camera,start) == "1" } {
-         ::confCam::configureCamera
+      #--- Connexion au demarrage des cameras
+      if { $conf(camera,A,start) == "1" } {
+         if { $conf(confLink,start) == "1" } {
+            ::confLink::configureDriver
+         }
+         ::confCam::configureCamera "A"
+      }
+      if { $conf(camera,B,start) == "1" } {
+         ::confCam::configureCamera "B"
+      }
+      if { $conf(camera,C,start) == "1" } {
+         ::confCam::configureCamera "C"
       }
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {
+         if { $conf(confLink,start) == "1" } {
+            ::confLink::configureDriver
+         }
          ::confTel::configureTelescope
       }
 
       #--- Connexion au demarrage du driver de la raquette
-      if { $conf(confPad,start) == "1" } {  
+      if { $conf(confPad,start) == "1" } {
          ::confPad::configureDriver
       }
 
@@ -1083,16 +919,16 @@ namespace eval ::audace {
       global caption
 
       #--- Suivant l'OS
-	if { $::tcl_platform(os) == "Linux" } {
+      if { $::tcl_platform(os) == "Linux" } {
          set port_com "/dev/ttyS"
          set port_com_usb "/dev/ttyUSB"
          set kk "0"
          set kd "2"
-	} else {
+      } else {
          set port_com "com"
          set kk "1"
          set kd "3"
-	}
+      }
 
       #--- Recherche des ports com
       set comlist              ""
@@ -1114,7 +950,7 @@ namespace eval ::audace {
          lappend audace(list_com) "$port_com[ lindex $comlist $k ]"
       }
 
-	if { $::tcl_platform(os) == "Linux" } {
+      if { $::tcl_platform(os) == "Linux" } {
          for { set k $kk } { $k < 20 } { incr k } {
             set errnum [ catch { open $port_com_usb$k r+ } msg ]
             if { $errnum == "0" } {
@@ -1130,33 +966,11 @@ namespace eval ::audace {
       }
    }
 
-   proc onCutLabelLeftClick { } {
-      variable autovisuEnCours
-      global audace
-
-      if { $autovisuEnCours == "0" } {
-         set autovisuEnCours "1"
-         save_cursor
-         all_cursor watch
-         #--- Le -force permet de forcer la visu si on a choisi
-         #--- dans le boite de config "pas de recalcul automatique"
-         catch { ::audace::autovisu visu$audace(visuNo) -force }
-         restore_cursor
-         set autovisuEnCours "0"
-      }
-   }
-
-   proc onCutLabelRightClick { } {
-      global audace
-
-      ::seuilWindow::run "$audace(base).seuilWindow"
-   }
-
    #
-   # ::audace::affiche_Outil
+   # ::audace::affiche_Outil 
    # Fonction qui permet d'afficher les outils dans le menu Outils
    #
-   proc affiche_Outil { } {
+   proc affiche_Outil { visuNo } {
       global audace
       global panneau
       global caption
@@ -1180,7 +994,7 @@ namespace eval ::audace {
          set confgene(Choix_Outil,n$confgene(Choix_Outil,nbre)) $conf(panneau,n$confgene(Choix_Outil,nbre))
          if { $confgene(Choix_Outil,n$confgene(Choix_Outil,nbre)) == "1" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
-               Menu_Command "$caption(audace,menu,outils)" "$panneau($m)" "::audace::selection_Outil ::$ns"
+               Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                if { $conf(raccourci,n$i) != "" } {
                   set raccourci(n$i) $conf(raccourci,n$i)
                   if { [string range $raccourci(n$i) 0 3] == "Alt+" } {
@@ -1192,8 +1006,8 @@ namespace eval ::audace {
                   lappend audace(list_raccourcis) [ list $conf(raccourci,n$i) ]
                   lappend audace(list_ns_raccourcis) [ list $ns ]
                   #---
-                  Menu_Bind $audace(base) <$raccourci(n$i)> "$caption(audace,menu,outils)" "$panneau($m)" "$conf(raccourci,n$i)"
-                  bind $audace(Console) <$raccourci(n$i)> "focus $audace(base) ; ::audace::selection_Outil ::$ns"
+                  Menu_Bind $visuNo $audace(base) <$raccourci(n$i)> "$caption(audace,menu,outils)" "$panneau($m)" "$conf(raccourci,n$i)"
+                            bind $audace(Console) <$raccourci(n$i)> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$ns"
                }
             }
          }
@@ -1207,6 +1021,7 @@ namespace eval ::audace {
    proc affiche_Outil_F2 { } {
       global conf
       global panneau
+      global audace
 
       #---
       set i "0"
@@ -1222,7 +1037,7 @@ namespace eval ::audace {
             if { $raccourci(n$i) == "F2" } {
                if { [scan "$m" "menu_name,%s" ns] == "1" } {
                   #--- Lancement automatique de l'outil ayant le raccourci F2
-                  ::audace::selection_Outil ::$ns
+                  ::confVisu::selectTool $audace(visuNo) ::$ns
                }
             }
          }
@@ -1234,12 +1049,10 @@ namespace eval ::audace {
    # Efface l'interface de l'outil si elle est affichee
    #
    proc pas_Outil { } {
-      global unpackFunction
 
-      catch {
-         $unpackFunction
-         unset unpackFunction
-      }
+
+      global audace
+      ::confVisu::stopTool $audace(visuNo)
    }
 
    #
@@ -1326,13 +1139,13 @@ namespace eval ::audace {
       return $time1
    }
 
-   proc enregistrer { } {
+   proc enregistrer { visuNo } {
       global audace
 
       menustate disabled
       save_cursor
       all_cursor watch
-      set errnum [ catch { saveima $audace(lastFileName) } msg ]
+      set errnum [ catch { saveima $::confVisu::private($visuNo,lastFileName) $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
@@ -1340,11 +1153,11 @@ namespace eval ::audace {
       menustate normal
    }
 
-   proc enregistrer_sous { } {
+   proc enregistrer_sous { visuNo } {
       menustate disabled
       save_cursor
       all_cursor watch
-      set errnum [ catch { saveima } msg ]
+      set errnum [ catch { saveima ? $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
@@ -1352,13 +1165,11 @@ namespace eval ::audace {
       menustate normal
    }
 
-   proc charger { } {
-      global audace conf
-
+   proc charger { visuNo } {
       menustate disabled
       save_cursor
       all_cursor watch
-      set errnum [ catch { loadima } msg ]
+      set errnum [ catch { loadima ? $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
@@ -1367,10 +1178,21 @@ namespace eval ::audace {
    }
 
    proc copyjpeg { } {
+      global audace
+
       menustate disabled
       save_cursor
       all_cursor watch
-      set errnum [ catch { sauve_jpeg } msg ]
+      #---
+      set bufNo [ visu$audace(visuNo) buf ]
+      #--- On sort immediatement s'il n'y a pas d'image dans le buffer
+      if { [ buf$bufNo imageready ] == "0" } {
+         restore_cursor
+         menustate normal
+         return
+      }
+      #---
+      set errnum [ catch { sauve_jpeg ? } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
@@ -1378,172 +1200,148 @@ namespace eval ::audace {
       menustate normal
    }
 
-   proc zoom_video { } {
-      global audace conf
+   #------------------------------------------------------------
+   #  autovisu
+   #     rafraichit l'affichage
+   #------------------------------------------------------------
 
-      #--- Je mets la fenetre a l'echelle
-      image0 configure -scale "$conf(visu_zoom)" 
-      #--- Je mets a jour la taille les scrollbars
-      set audace(picture,w) [expr int([lindex [cam$audace(camNo) nbpix ] 0] * $conf(visu_zoom)) ]
-      set audace(picture,h) [expr int([lindex [cam$audace(camNo) nbpix ] 1] * $conf(visu_zoom)) ]
-      $audace(hCanvas) configure -scrollregion [list 0 0 $audace(picture,w) $audace(picture,h) ] 
-      #--- Je mets a jour la taille du reticule
-      ::Crosshair::redrawCrosshair         
+   proc autovisu { visuNo { force "-no" } { fileName "" } } {
+      ::confVisu::autovisu $visuNo $force $fileName
    }
 
-   proc autovisu { visuName { force "-no" } } {
-      global audace conf
-
-      #---
-      set bufferName "buf[ $visuName buf ]"
-
-      #--- Si le buffer est vide, on n'essaie pas de l'afficher
-      if { [ $bufferName imageready ] == "1" } {
-         switch -exact -- $conf(seuils,mode) {
-            disable {
-               if { $force == "-no" } {
-                  visu $visuName current
-               } else {
-                  visu $visuName [ lrange [ $bufferName stat ] 0 1 ]
-               }
-            }
-            loadima {
-               visu $visuName [ lrange [ $bufferName stat ] 0 1 ]
-            }
-            iris {
-               set moyenne [ lindex [ $bufferName stat ] 4 ]
-               visu $visuName [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
-            }
-            histoauto {
-               $bufferName imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)]"
-               visu $visuName [ list [ lindex [ $bufferName getkwd MIPS-HI ] 1 ] [ lindex [ $bufferName getkwd MIPS-LO ] 1 ] ]
-            }
-            initiaux {
-               $bufferName initialcut
-               visu $visuName [ list [ lindex [ $bufferName getkwd MIPS-HI ] 1 ] [ lindex [ $bufferName getkwd MIPS-LO ] 1 ] ]
-            }
-         }
-      }
-   }
-
-   #--- Procedure d'affichage de la fenetre "fonctions de transfert"
-   proc fonction_transfert { } {
+   #------------------------------------------------------------
+   # fonction_transfert
+   #    Procédure d'affichage de la fenêtre "fonctions de transfert"
+   #------------------------------------------------------------
+   proc fonction_transfert { visuNo } {
       global audace caption conf tmp
 
-      if { ! [ info exists conf(fonction_transfert,position) ] } { set conf(fonction_transfert,position) "+0+0" }
+      #--- Fenetre de base
+      set base $::confVisu::private($visuNo,This)
 
-      if { [ info exists conf(fonction_transfert,geometry) ] } {
-         set deb [ expr 1 + [ string first + $conf(fonction_transfert,geometry) ] ]
-         set fin [ string length $conf(fonction_transfert,geometry) ]
-         set conf(fonction_transfert,position) "+[string range $conf(fonction_transfert,geometry) $deb $fin]"
-      }
+      #---
+      if { ! [ info exists conf(fonction_transfert,visu$visuNo,position) ] } \
+         { set conf(fonction_transfert,visu$visuNo,position) "+0+0" }
+      #---
+      if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } \
+         { set conf(fonction_transfert,visu$visuNo,mode) "1" }
 
-      if {[winfo exists $audace(base).fonction_transfert] == 0} {
-         #--- Creation de la fenetre
-         toplevel $audace(base).fonction_transfert
-         wm geometry $audace(base).fonction_transfert $conf(fonction_transfert,position)
-         wm title $audace(base).fonction_transfert $caption(fcttransfert,titre)
-         wm protocol $audace(base).fonction_transfert WM_DELETE_WINDOW ::audace::fonction_transfertquit
+      #---
+      if { [ winfo exists $base.fonction_transfert ] == "0" } {
+         #--- Création de la fenêtre
+         toplevel $base.fonction_transfert
+         wm geometry $base.fonction_transfert $conf(fonction_transfert,visu$visuNo,position)
+         wm title $base.fonction_transfert "$caption(fcttransfert,titre) (visu$visuNo)"
+         wm transient $base.fonction_transfert [ winfo parent $base.fonction_transfert ] 
+         wm protocol $base.fonction_transfert WM_DELETE_WINDOW " ::audace::fonction_transfertquit $visuNo "
 
-         #--- Enregistrement des reglages courants
-        # set tmp(fonction_transfert,mode)   $conf(fonction_transfert,mode)
+         #--- Enregistrement des réglages courants
+         set tmp(fonction_transfert,visu$visuNo,mode) $conf(fonction_transfert,visu$visuNo,mode)
          set tmp(fonction_transfert,param2) $conf(fonction_transfert,param2)
          set tmp(fonction_transfert,param3) $conf(fonction_transfert,param3)
          set tmp(fonction_transfert,param4) $conf(fonction_transfert,param4)
 
-         #--- Sous-trame reglage fonction de transfert
-         frame $audace(base).fonction_transfert.regl
-         pack $audace(base).fonction_transfert.regl -expand true
+         #--- Sous-trame réglage fonction de transfert
+         frame $base.fonction_transfert.regl
+         pack $base.fonction_transfert.regl -expand true
 
-         frame $audace(base).fonction_transfert.regl.1
-         pack $audace(base).fonction_transfert.regl.1 -fill x
-         radiobutton $audace(base).fonction_transfert.regl.1.but -variable conf(fonction_transfert,mode) \
+         frame $base.fonction_transfert.regl.1
+         pack $base.fonction_transfert.regl.1 -fill x
+         radiobutton $base.fonction_transfert.regl.1.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,lin) -value 1
-         pack $audace(base).fonction_transfert.regl.1.but -side left
-         frame $audace(base).fonction_transfert.regl.2
-         pack $audace(base).fonction_transfert.regl.2 -fill x      
-         radiobutton $audace(base).fonction_transfert.regl.2.but -variable conf(fonction_transfert,mode) \
+         pack $base.fonction_transfert.regl.1.but -side left
+         frame $base.fonction_transfert.regl.2
+         pack $base.fonction_transfert.regl.2 -fill x      
+         radiobutton $base.fonction_transfert.regl.2.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,log) -value 2
-         pack $audace(base).fonction_transfert.regl.2.but -side left
-         entry $audace(base).fonction_transfert.regl.2.ent -textvariable conf(fonction_transfert,param2) \
+         pack $base.fonction_transfert.regl.2.but -side left
+         entry $base.fonction_transfert.regl.2.ent -textvariable conf(fonction_transfert,param2) \
             -font $audace(font,arial_8_b) -width 4 -justify center
-         pack $audace(base).fonction_transfert.regl.2.ent -side right
-         frame $audace(base).fonction_transfert.regl.3
-         pack $audace(base).fonction_transfert.regl.3 -fill x
-         radiobutton $audace(base).fonction_transfert.regl.3.but -variable conf(fonction_transfert,mode) \
+         pack $base.fonction_transfert.regl.2.ent -side right
+         frame $base.fonction_transfert.regl.3
+         pack $base.fonction_transfert.regl.3 -fill x
+         radiobutton $base.fonction_transfert.regl.3.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,exp) -value 3
-         pack $audace(base).fonction_transfert.regl.3.but -side left      
-         entry $audace(base).fonction_transfert.regl.3.ent -textvariable conf(fonction_transfert,param3) \
+         pack $base.fonction_transfert.regl.3.but -side left      
+         entry $base.fonction_transfert.regl.3.ent -textvariable conf(fonction_transfert,param3) \
             -font $audace(font,arial_8_b) -width 4 -justify center
-         pack $audace(base).fonction_transfert.regl.3.ent -side right
-         frame $audace(base).fonction_transfert.regl.4
-         pack $audace(base).fonction_transfert.regl.4 -fill x
-         radiobutton $audace(base).fonction_transfert.regl.4.but -variable conf(fonction_transfert,mode) \
+         pack $base.fonction_transfert.regl.3.ent -side right
+         frame $base.fonction_transfert.regl.4
+         pack $base.fonction_transfert.regl.4 -fill x
+         radiobutton $base.fonction_transfert.regl.4.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,arc) -value 4
-         pack $audace(base).fonction_transfert.regl.4.but -side left      
-         entry $audace(base).fonction_transfert.regl.4.ent -textvariable conf(fonction_transfert,param4) \
+         pack $base.fonction_transfert.regl.4.but -side left      
+         entry $base.fonction_transfert.regl.4.ent -textvariable conf(fonction_transfert,param4) \
             -font $audace(font,arial_8_b) -width 4 -justify center
-         pack $audace(base).fonction_transfert.regl.4.ent -side right
-         button $audace(base).fonction_transfert.regl.aide -command ::audace::fonction_transfertaide \
+         pack $base.fonction_transfert.regl.4.ent -side right
+         button $base.fonction_transfert.regl.aide -command ::audace::fonction_transfertaide \
             -text $caption(conf,aide) -width 8
-         pack $audace(base).fonction_transfert.regl.aide -expand true -padx 10 -pady 10
+         pack $base.fonction_transfert.regl.aide -expand true -padx 10 -pady 10
 
-         #--- Sous-trame boutons OK, previsu & quitter
-         frame $audace(base).fonction_transfert.buttons
-         pack $audace(base).fonction_transfert.buttons
-         button $audace(base).fonction_transfert.buttons.ok -command ::audace::fonction_transfertok \
+         #--- Sous-trame boutons OK, prévisu & quitter
+         frame $base.fonction_transfert.buttons
+         pack $base.fonction_transfert.buttons
+         button $base.fonction_transfert.buttons.ok -command " ::audace::fonction_transfertok $visuNo " \
             -text $caption(conf,ok)
-         pack $audace(base).fonction_transfert.buttons.ok -side left -expand true -padx 10 -pady 10 -ipadx 10
-         button $audace(base).fonction_transfert.buttons.previsu -command ::audace::MAJ_palette \
+         pack $base.fonction_transfert.buttons.ok -side left -expand true -padx 14 -pady 10 -ipadx 10
+         button $base.fonction_transfert.buttons.previsu -command " ::audace::MAJ_palette $visuNo " \
             -text $caption(conf,previsu)
-         pack $audace(base).fonction_transfert.buttons.previsu -side left -expand true -padx 10 -pady 10 -ipadx 10
-         button $audace(base).fonction_transfert.buttons.quit -command ::audace::fonction_transfertquit \
+         pack $base.fonction_transfert.buttons.previsu -side left -expand true -padx 14 -pady 10 -ipadx 10
+         button $base.fonction_transfert.buttons.quit -command " ::audace::fonction_transfertquit $visuNo " \
             -text $caption(conf,quitter)
-         pack $audace(base).fonction_transfert.buttons.quit -side left -expand true -padx 10 -pady 10 -ipadx 10
+         pack $base.fonction_transfert.buttons.quit -side left -expand true -padx 14 -pady 10 -ipadx 10
 
          #--- Focus
-         focus $audace(base).fonction_transfert
+         focus $base.fonction_transfert
 
          #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-         bind $audace(base).fonction_transfert <Key-F1> { $audace(console)::GiveFocus }
+         bind $base.fonction_transfert <Key-F1> { $audace(console)::GiveFocus }
 
          #--- Mise a jour dynamique des couleurs
-         ::confColor::applyColor $audace(base).fonction_transfert
-      } else { focus $audace(base).fonction_transfert }
+         ::confColor::applyColor $base.fonction_transfert
+      } else {
+         focus $base.fonction_transfert
+      }
    }
 
-   proc fonction_transfertok { } {
+   proc fonction_transfertok { visuNo } {
       global audace conf tmp
 
-      set tmp(fonction_transfert,mode) $conf(fonction_transfert,mode)
-      #--- Recuperation de la position de la fenetre de reglages
-      fonction_transfert_recup_position
+      #--- Fenetre de base
+      set base $::confVisu::private($visuNo,This)
       #---
-      destroy $audace(base).fonction_transfert
-      ::audace::MAJ_palette
+      set tmp(fonction_transfert,visu$visuNo,mode) $conf(fonction_transfert,visu$visuNo,mode)
+      #--- Récupération de la position de la fenêtre de réglages
+      fonction_transfert_recup_position $visuNo
+      #---
+      destroy $base.fonction_transfert
+      ::audace::MAJ_palette $visuNo
    }
 
-   proc fonction_transfertquit { } {
+   proc fonction_transfertquit { visuNo } {
       global conf tmp
 
-      #--- On recupere les anciens parametres
-      set conf(fonction_transfert,mode)   $tmp(fonction_transfert,mode)
+      #--- On récupère les anciens paramètres
+      set conf(fonction_transfert,visu$visuNo,mode) $tmp(fonction_transfert,visu$visuNo,mode)
       set conf(fonction_transfert,param2) $tmp(fonction_transfert,param2)
       set conf(fonction_transfert,param3) $tmp(fonction_transfert,param3)
       set conf(fonction_transfert,param4) $tmp(fonction_transfert,param4)
-      fonction_transfertok
+      fonction_transfertok $visuNo
    }
 
-   proc fonction_transfert_recup_position { } {
+   proc fonction_transfert_recup_position { visuNo } {
       global audace conf
 
-      set conf(fonction_transfert,geometry) [ wm geometry $audace(base).fonction_transfert ]
-      set deb [ expr 1 + [ string first + $conf(fonction_transfert,geometry) ] ]
-      set fin [ string length $conf(fonction_transfert,geometry) ]
-      set conf(fonction_transfert,position) "+[string range $conf(fonction_transfert,geometry) $deb $fin]"
+      #--- Fenetre de base
+      set base $::confVisu::private($visuNo,This)
+      #---
+      set fonction_transfert(visu$visuNo,geometry) [ wm geometry $base.fonction_transfert ]
+      set deb [ expr 1 + [ string first + $fonction_transfert(visu$visuNo,geometry) ] ]
+      set fin [ string length $fonction_transfert(visu$visuNo,geometry) ]
+      set conf(fonction_transfert,visu$visuNo,position) "+[string range $fonction_transfert(visu$visuNo,geometry) $deb $fin]"
    }
 
-   #--- Procedure d'affichage de la fenetre "aide pour reglage de la fonction de transfert"
+   #--- Procédure d'affichage de la fenêtre "aide pour réglage de la fonction de transfert"
    proc fonction_transfertaide { } {
       global help
 
@@ -1551,11 +1349,11 @@ namespace eval ::audace {
       ::audace::showHelpItem "$help(dir,affichage)" "1020transfert.htm"
    }
 
-   #--- Procedure de creation dynamique de la palette en fonction de la fonction de transfert
-   proc MAJ_palette { } {
+   #--- Procédure de création dynamique de la palette en fonction de la fonction de transfert
+   proc MAJ_palette { visuNo } {
       global audace conf tmp
 
-      #--- On recupere le nom du fichier palette "de base"
+      #--- On récupère le nom du fichier palette "de base"
       switch $conf(visu_palette) {
          1 { set fichier_palette_in [ file join $audace(rep_audela) audace palette gray ] }
          2 { set fichier_palette_in [ file join $audace(rep_audela) audace palette inv ] }
@@ -1563,20 +1361,20 @@ namespace eval ::audace {
          5 { set fichier_palette_in [ file join $audace(rep_audela) audace palette rainbow ] }
       }
 
-      switch $conf(fonction_transfert,mode) {
+      switch $conf(fonction_transfert,visu$visuNo,mode) {
          1 {
-            #--- Fonction de transfert lineaire : pas besoin de creer une palette
-            visu$audace(visuNo) paldir [file dirname $fichier_palette_in]
-            visu$audace(visuNo) pal [file tail $fichier_palette_in]         }
+            #--- Fonction de transfert linéaire : pas besoin de créer une palette
+            visu$visuNo paldir [file dirname $fichier_palette_in]
+            visu$visuNo pal [file tail $fichier_palette_in]         }
          2 {
             #--- Fonction de transfert log
             if { $conf(fonction_transfert,param2) == 0 } {
-               #--- On est ramene au cas lineaire
-	         visu$audace(visuNo) pal $fichier_palette_in
+               #--- On est ramené au cas linéaire
+                 visu$visuNo pal $fichier_palette_in
             } else {
                set conf(fonction_transfert,param2) [expr abs($conf(fonction_transfert,param2))]
-               #--- On determine quelle partie de la courbe log on utilise (abcisses [a b])
-               #--- (celle au dessus de la droite d'equation y=x-1-param)
+               #--- On détermine quelle partie de la courbe log on utilise (abcisses [a b])
+               #--- (celle au dessus de la droite d'équation y=x-1-param)
                set dicho 0.5
                set a 0.5
                while {$dicho>0.001} {
@@ -1606,55 +1404,55 @@ namespace eval ::audace {
 
                #--- Ouverture des fichiers de palette
                set palette_in [open ${fichier_palette_in}.pal r]
-	         set palette_ex [open ${tmp(fichier_palette)}.pal w]
+               set palette_ex [open ${tmp(fichier_palette)}.pal w]
 
                set k_in 0
                #--- Ecriture du fichier de palette sortant
-	         for {set k_ex 0} {$k_ex<256} {incr k_ex} {
-	            set valeur [expr abs((log($a+1.*$k_ex*$deltax/255)-$Ya)*255/$deltaY)]
+               for {set k_ex 0} {$k_ex<256} {incr k_ex} {
+                  set valeur [expr abs((log($a+1.*$k_ex*$deltax/255)-$Ya)*255/$deltaY)]
 
                   #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
                   #--- dessous et juste au dessus de $valeur
-                  #--- Meme s'il est entier, ca marche aussi
+                  #--- Même s'il est entier, ça marche aussi
                   while {$k_in<$valeur} {
                      incr k_in
-	               set entree-1_in [gets $palette_in]
-	            }
+                     set entree-1_in [gets $palette_in]
+                  }
 
-	            if {[expr $k_in -1] < $valeur} {
-                     #--- Test de securite : on ne continue que si $k_in < 255
+                  if {[expr $k_in -1] < $valeur} {
+                     #--- Test de sécurité : on ne continue que si $k_in < 255
                      if {$k_in < 255 } {
-	                  if { [ info exist entree_in ] } {
+                        if { [ info exist entree_in ] } {
                            set entree-1_in $entree_in
-	                  }
+                        }
                         set entree_in [gets $palette_in]
                         incr k_in
                      }
-	            }
+                  }
 
                   if { ! [info exist entree-1_in]} {
                      set entree-1_in $entree_in
-	            }
+                  }
                   puts $palette_ex [list [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 0]+(1-$valeur+int($valeur))*[lindex $entree_in 0]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 1]+(1-$valeur+int($valeur))*[lindex $entree_in 1]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 2]+(1-$valeur+int($valeur))*[lindex $entree_in 2]]]
                }
 
                close $palette_in
                close $palette_ex
 
-               visu$audace(visuNo) paldir [file dirname $tmp(fichier_palette)]
-               visu$audace(visuNo) pal [file tail $tmp(fichier_palette)]
+               visu$visuNo paldir [file dirname $tmp(fichier_palette)]
+               visu$visuNo pal [file tail $tmp(fichier_palette)]
             }
          }
          3 {
             #--- Fonction de transfert exp
             if { $conf(fonction_transfert,param3) == 0 } {
-               #--- On est ramene au cas lineaire
-               visu$audace(visuNo) pal $fichier_palette
+               #--- On est ramené au cas linéaire
+               visu$visuNo pal $fichier_palette
             } else {
-	         set conf(fonction_transfert,param3) [expr abs($conf(fonction_transfert,param3))]
+               set conf(fonction_transfert,param3) [expr abs($conf(fonction_transfert,param3))]
 
-               #--- On determine quelle partie de la courbe exp on utilise (abcisses [a b])
-               #--- (celle au dessus de la droite d'equation y=x+1+parametre_exp)
+               #--- On détermine quelle partie de la courbe exp on utilise (abcisses [a b])
+               #--- (celle au dessus de la droite d'équation y=x+1+paramètre_exp)
                set dicho [expr $conf(fonction_transfert,param3)+1]
                set a [expr -$conf(fonction_transfert,param3)-1]
                while {$dicho>0.001} {
@@ -1692,47 +1490,47 @@ namespace eval ::audace {
 
                   #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
                   #--- dessous et juste au dessus de $valeur
-                  #--- Meme s'il est entier, ca marche aussi
+                  #--- Même s'il est entier, ça marche aussi
                   while {$k_in<$valeur} {
                      incr k_in
-	               set entree-1_in [gets $palette_in]
-	            }
+                     set entree-1_in [gets $palette_in]
+                  }
 
-	            if {[expr $k_in -1] < $valeur} {
-                     #--- Test de securite : on ne continue que si $k_in < 255
+                  if {[expr $k_in -1] < $valeur} {
+                     #--- Test de sécurité : on ne continue que si $k_in < 255
                      if {$k_in < 255 } {
-	                  if {[info exist entree_in]} {
+                        if {[info exist entree_in]} {
                            set entree-1_in $entree_in
-	                  }
+                        }
                         set entree_in [gets $palette_in]
                         incr k_in
                      }
-	            }
+                  }
 
                   if { ! [ info exist entree-1_in ] } {
                      set entree-1_in $entree_in
-	            }
+                  }
                   puts $palette_ex [list [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 0]+(1-$valeur+int($valeur))*[lindex $entree_in 0]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 1]+(1-$valeur+int($valeur))*[lindex $entree_in 1]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 2]+(1-$valeur+int($valeur))*[lindex $entree_in 2]]]
                }
 
                close $palette_in
                close $palette_ex
 
-               visu$audace(visuNo) paldir [file dirname $tmp(fichier_palette)]
-               visu$audace(visuNo) pal [file tail $tmp(fichier_palette)]
+               visu$visuNo paldir [file dirname $tmp(fichier_palette)]
+               visu$visuNo pal [file tail $tmp(fichier_palette)]
             }
          }    
          4 {
-            #--- Fonction de transfert arctangente / sigmoide
+            #--- Fonction de transfert arctangente / sigmoïde
             if {$conf(fonction_transfert,param4)==0} {
-               #--- On est ramene au cas lineaire
-               visu$audace(visuNo) pal $fichier_palette
+               #--- On est ramené au cas linéaire
+               visu$visuNo pal $fichier_palette
             } else {
                set f [open $tmp(fichier_palette) w]
                set conf(fonction_transfert,param4) [expr abs($conf(fonction_transfert,param4))]
 
-               #--- On determine quelle partie de la courbe exp on utilise (abcisses [a b])
-               #--- (celle coupant la droite d'equation y=x/(1+parametre_arc))
+               #--- On détermine quelle partie de la courbe exp on utilise (abcisses [a b])
+               #--- (celle coupant la droite d'équation y=x/(1+paramètre_arc))
                set dicho [expr $conf(fonction_transfert,param4)+1]
                set a [expr -$conf(fonction_transfert,param4)-1]
                while {$dicho>0.001} {
@@ -1762,72 +1560,46 @@ namespace eval ::audace {
 
                #--- Ouverture des fichiers de palette
                set palette_in [open ${fichier_palette_in}.pal r]
-	         set palette_ex [open ${tmp(fichier_palette)}.pal w]
+               set palette_ex [open ${tmp(fichier_palette)}.pal w]
 
                set k_in 0
                #--- Ecriture du fichier de palette sortant
-	         for {set k_ex 0} {$k_ex<256} {incr k_ex} {
-	            set valeur [expr abs((atan($a+1.*$k_ex*$deltax/255)-$Ya)*255/$deltaY)]
+               for {set k_ex 0} {$k_ex<256} {incr k_ex} {
+                  set valeur [expr abs((atan($a+1.*$k_ex*$deltax/255)-$Ya)*255/$deltaY)]
 
-               #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
-               #--- dessous et juste au dessus de $valeur
-               #--- Meme s'il est entier, ca marche aussi
-               while {$k_in<$valeur} {
-                  incr k_in
-	            set entree-1_in [gets $palette_in]
-	         }
-
-	         if { [expr $k_in -1] < $valeur } {
-                  #--- Test de securite : on ne continue que si $k_in < 255
-                  if { $k_in < 255 } {
-	               if { [info exist entree_in] } {
-                        set entree-1_in $entree_in
-	               }
-                     set entree_in [gets $palette_in]
+                  #--- Si $valeur n'est pas entier, il faut interpoler entre les entiers juste au
+                  #--- dessous et juste au dessus de $valeur
+                  #--- Même s'il est entier, ça marche aussi
+                  while {$k_in<$valeur} {
                      incr k_in
+                     set entree-1_in [gets $palette_in]
                   }
-	         }
+
+                  if { [expr $k_in -1] < $valeur } {
+                     #--- Test de sécurité : on ne continue que si $k_in < 255
+                     if { $k_in < 255 } {
+                        if { [info exist entree_in] } {
+                           set entree-1_in $entree_in
+                        }
+                        set entree_in [gets $palette_in]
+                        incr k_in
+                  }
+               }
 
                if { ! [info exist entree-1_in] } {
                   set entree-1_in $entree_in
-	         }
+               }
                puts $palette_ex [list [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 0]+(1-$valeur+int($valeur))*[lindex $entree_in 0]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 1]+(1-$valeur+int($valeur))*[lindex $entree_in 1]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 2]+(1-$valeur+int($valeur))*[lindex $entree_in 2]]]
             }
 
             close $palette_in
             close $palette_ex
 
-            visu$audace(visuNo) paldir [file dirname $tmp(fichier_palette)]
-            visu$audace(visuNo) pal [file tail $tmp(fichier_palette)]
+            visu$visuNo paldir [file dirname $tmp(fichier_palette)]
+            visu$visuNo pal [file tail $tmp(fichier_palette)]
             }
          }
       }
-   }
-
-   #
-   # ::audace::selection_Outil outil
-   # Affiche l'outil passe en parametre : Il doit correspondre au nom des fonctions de
-   # pack/unpack donnees dans les fichiers des outils. Par exemple, pour afficher
-   # l'outil d'acquisition des noirs, il faut appeller "::audace::selection_Outil AcqDark"
-   # car les fonctions s'appellent unpackAcqDark et packAcqDark
-   #
-   proc selection_Outil { outil } {
-      global audace
-      global unpackFunction
-
-      if {[info exist unpackFunction] == 1} {
-      #--- Cela veut dire qu'il y a deja un outil selectionne
-         set nom_outil "::unpack"
-         if {$unpackFunction != "$outil$nom_outil" } {
-         #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
-            eval $unpackFunction
-            namespace inscope $outil pack
-         }
-      } else {
-      #--- Dans ce cas, aucun outil n'est selectionne
-         namespace inscope $outil pack
-      }
-      set audace(namespace_current_tool) [ string trimleft $outil "::" ]
    }
 
    #
@@ -1892,7 +1664,7 @@ namespace eval ::audace {
             }
          } else {
             $audace(console)::affiche_saut "\n"
-	      $audace(console)::disp $filename
+              $audace(console)::disp $filename
             $audace(console)::affiche_saut "\n"
             set audace(current_edit) $input
            # $audace(console)::affiche_erreur "$caption(audace,console,gagne)\n"
@@ -2096,34 +1868,37 @@ namespace eval ::audace {
    # ::audace::Histo
    # Visualisation de l'histogramme de l'image
    #
-   proc Histo { } {
+   proc Histo { visuNo } {
       global audace
       global caption
 
-      if { [ buf$audace(bufNo) imageready ] == "1" } {
-         buf$audace(bufNo) imaseries "CUTS lofrac=0.01 hifrac=0.99 hicut=SH locut=SB keytype=FLOAT"
-         set mini [ lindex [ buf$audace(bufNo) getkwd SB ] 1 ]
-         set maxi [ lindex [ buf$audace(bufNo) getkwd SH ] 1 ]
-         set r [ buf$audace(bufNo) histo 50 $mini $maxi ]
+      #---
+      set bufNo [ visu$visuNo buf ]
+
+      if { [ buf$bufNo imageready ] == "1" } {
+         buf$bufNo imaseries "CUTS lofrac=0.01 hifrac=0.99 hicut=SH locut=SB keytype=FLOAT"
+         set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
+         set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
+         set r [ buf$bufNo histo 50 $mini $maxi ]
          ::plotxy::figure 1
          ::plotxy::plot [ lindex $r 1 ]  [ lindex $r 0 ]
          ::plotxy::xlabel "$caption(audace,histo,adu)"
          ::plotxy::ylabel "$caption(audace,histo,nbpix)"
-         ::plotxy::title "$caption(audace,histo,titre)"
+         ::plotxy::title "$caption(audace,histo,titre) (visu$visuNo)"
       }
    }
 
    #
-   # ::audace::sauve_config
+   # ::audace::enregistrerConfiguration
    # Demande la confirmation pour enregistrer la configuration
    #
-   proc sauve_config { } {
+   proc enregistrerConfiguration { visuNo } {
       global audace caption conf
 
       #---
       menustate disabled
       #--- Positions des fenetres
-      set conf(audace,wmgeometry) "[wm geometry $audace(base)]"
+      set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $audace(base)]"
       set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
       if {[winfo exists $audace(base).tjrsvisible]==1} {
          set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
@@ -2172,30 +1947,43 @@ namespace eval ::audace {
       global conf
       global audace
       global caption
-      global unpackFunction
       global tmp
 
+      #--- Si le tutorial EthernAude est affiche, je le ferme en premier avant de quitter
+      if { [ winfo exist .main ] } {
+         if { [ winfo exist .second ] } {
+            destroy .second
+         }
+         destroy .main
+      }
       #---
       menustate disabled
       wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
       wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::rien
       #--- Positions des fenetres
-      set conf(audace,wmgeometry) "[wm geometry $audace(base)]"
+      set conf(audace,visu1,wmgeometry) "[wm geometry $audace(base)]"
       set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
       if {[winfo exists $audace(base).tjrsvisible]==1} {
          set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
       }
-
-      #--- Arrete le plugin camera
+      #--- Arrete le plugin liaison
+      ::confLink::stopDriver
+      #--- Arrete les plugins camera
       ::confCam::stopDriver
       #--- Arrete le plugin monture
-     ### ::confTel::stopDriver
+      ### ::confTel::stopDriver
       #--- Arrete le plugin equipement
       ::confEqt::stopDriver
       #--- Arrete le plugin raquette
       ::confPad::stopDriver
       #--- Arrete le plugin carte
       ::confCat::stopDriver
+      #--- Arrete les visu sauf la visu1
+      foreach visuNo [visu::list] {
+         if { $visuNo != "1"  } {
+            ::confVisu::close $visuNo
+         }
+      }
 
       if { $::tcl_platform(os) == "Linux" } {
          set filename [ file join ~ .audela config.ini ]
@@ -2231,32 +2019,32 @@ namespace eval ::audace {
             #--- Enregistrer la configuration
             array set theconf [ini_merge file_conf conf]
             ini_writeIniFile $filename2 theconf
-            if [info exists unpackFunction] {eval $unpackFunction}
+            ::confVisu::stopTool $audace(visuNo)
             ::audace::shutdown_devices
             exit
          } elseif {$choice=="no"} {
             #--- Pas d'enregistrement
-            wm protocol $audace(base) WM_DELETE_WINDOW ::audace::quitter
-            wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::quitter
-            if [info exists unpackFunction] {eval $unpackFunction}
+            wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
+            wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
+            ::confVisu::stopTool $audace(visuNo)
             ::audace::shutdown_devices
             exit
          } else {
-            wm protocol $audace(base) WM_DELETE_WINDOW ::audace::quitter
-            wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::quitter
+            wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
+            wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
          }
          focus $old_focus
       } else {
-         set choice [tk_messageBox -type yesno -icon warning -title "$caption(attention,enregistrer,config)" -message \
-            "$caption(audace,prog,quitter)"]
+         set choice [tk_messageBox -type yesno -icon warning -title "$caption(attention,enregistrer,config)" \
+            -message "$caption(audace,prog,quitter)"]
          if {$choice=="yes"} {
-            if [info exists unpackFunction] {eval $unpackFunction}
+            ::confVisu::stopTool $audace(visuNo)
             ::audace::shutdown_devices
             exit
          }
          $audace(console)::affiche_resultat "$caption(sur,enregistrer,config5)\n\n"
-         wm protocol $audace(base) WM_DELETE_WINDOW ::audace::quitter
-         wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::quitter
+         wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
+         wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
       }
       #---
       menustate normal
@@ -2279,7 +2067,7 @@ namespace eval ::audace {
    }
 
    proc rien { } {
-      #--- Sert a bloquer l'affichage multiple de la fenetre Quitter
+      #--- Sert a bloquer l'affichage multiple de la fenêtre Quitter
    }
 
    proc menustate { state } {
@@ -2296,366 +2084,88 @@ namespace eval ::audace {
    proc cursor { curs } {
       global audace
 
-      $audace(hCanvas) configure -cursor $curs
+      ::confVisu::cursor $curs
    }
 
    proc bg { coul } {
       global audace
 
-      $audace(hCanvas) configure -background $coul
+      ::confVisu::bg $coul
    }
 
-   #
    # ::audace::screen2Canvas coord
    # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne egalement une liste de deux entiers
+   # et retourne également une liste de deux entiers
    #
    proc screen2Canvas { coord } {
       global audace
-
-      scan [$audace(hCanvas) canvasx [lindex $coord 0]] "%d" xx
-      scan [$audace(hCanvas) canvasy [lindex $coord 1]] "%d" yy
-      return [list $xx $yy]
+      
+      return [ ::confVisu::screen2Canvas $audace(visuNo) $coord ]
    }
 
-   #
    # ::audace::canvas2Picture coord {stick left}
    # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de deux entiers,
-   # et retourne egalement une liste de deux entiers.
+   # et retourne également une liste de deux entiers.
    # Les coordonnees canvas commencent a 0,0 dans le coin superieur gauche de l'image.
    # Les coordonnees image  commencent a 1,1 dans le coin inferieur gauche de l'image.
    # En passant un argument <> de left pour stick, calcule les coordonnees par arrondi superieur.
    #
    proc canvas2Picture { coord { stick left } } {
       global audace
-
-      set zoom [visu$audace(visuNo) zoom]
-      set window [visu$audace(visuNo) window]
-      if {$window=="full"} {
-         set x0 0
-         set y0 0
-      } else {
-	   set x0 [lindex $window 0]
-	   set y0 [lindex $window 1]
-      }
-      if {$zoom >= 1} {
-         set xx [expr [lindex $coord 0] / [visu$audace(visuNo) zoom] - $audace(picture,orgx) + 1 + $x0]
-         set yy [expr $audace(picture,h) + $audace(picture,orgy) - ([lindex $coord 1]/[visu$audace(visuNo) zoom]) - $y0]
-     } else {
-         if {$stick == "left"} {
-            #--- Ce calcul sert a obtenir la borne inferieure en cas de sous-echantillonnage
-            set xx [expr int([lindex $coord 0] / $zoom - $audace(picture,orgx) + 1 + $x0)]
-            set yy [expr int($audace(picture,h) + $audace(picture,orgy) - ([lindex $coord 1] + 1) / $zoom + 1 - $y0)]
-         } else {
-            #--- Alors que ce calcul sert a obtenir la borne superieure en cas de sous-echantillonnage
-            set xx [expr int(([lindex $coord 0] + 1) / $zoom - $audace(picture,orgx) + $x0)]
-            set yy [expr int($audace(picture,h) + $audace(picture,orgy) - [lindex $coord 1] / $zoom - $y0)]
-         }
-      }
-      return [list $xx $yy]
-    }
+      
+      return [ ::confVisu::canvas2Picture $audace(visuNo) $coord $stick ]
+   }
 
    #
    # ::audace::picture2Canvas coord
    # Transforme des coordonnees image en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne egalement une liste de deux entiers
+   # et retourne également une liste de deux entiers
    #
    proc picture2Canvas { coord } {
       global audace
-
-      set zoom [visu$audace(visuNo) zoom]
-      set window [visu$audace(visuNo) window]
-      if {$window=="full"} {
-	   set x0 0
-	   set y0 0
-      } else {
-	   set x0 [lindex $window 0]
-	   set y0 [lindex $window 1]
-      }
-      set xx [ expr int(( [lindex $coord 0] + $audace(picture,orgx) - 1 - $x0)*$zoom) ]
-      set yy [ expr int((-[lindex $coord 1] + $audace(picture,orgy) + $audace(picture,h) + $y0)*$zoom) ]
-      return [list $xx $yy]
-   }
-
-   proc boxInit { } {
-      global audace
-      global caption
-
-      bind $audace(hCanvas) <ButtonPress-3> {
-         global audace
-
-         if { [string compare $audace(MouseState) rien] == 0 } {
-            [MenuGet "$caption(audace,menu,analyse)"] post %X %Y
-            set audace(MouseState) context
-         } else {
-            if { [string compare $audace(MouseState) context] == 0 } {
-               [MenuGet "$caption(audace,menu,analyse)"] unpost
-               set audace(MouseState) rien
-            }
-         }
-      }
-      bind $audace(hCanvas) <ButtonPress-1> {
-         global audace
-
-         if { [string compare $audace(MouseState) rien] == 0 } {
-            set liste [::audace::screen2Canvas [list %x %y]]
-            if {[info exists audace(picture,w)]==1} {
-               set zoom [visu$audace(visuNo) zoom]
-               set wz [expr $audace(picture,w)*$zoom]
-               set hz [expr $audace(picture,h)*$zoom]
-               if {[lindex $liste 0]<$wz && [lindex $liste 1]<$hz} {
-                  ::audace::boxBegin [list %x %y]
-                  set audace(MouseState) dragging
-                  set audace(clickxy) [::audace::canvas2Picture [::audace::screen2Canvas [list %x %y] ] ]
-               }
-            }
-         } else {
-            if { [string compare $audace(MouseState) context] == 0 } {
-               [MenuGet "$caption(audace,menu,analyse)"] unpost
-               set audace(MouseState) rien
-            }
-         }
-      }
-      bind $audace(hCanvas) <ButtonRelease-1> {
-         global audace
-         if { [string compare $audace(MouseState) dragging] == 0 } {
-            set audace(MouseState) rien
-            catch { ::audace::boxEnd [list %x %y] }
-         }
-      }
-      bind $audace(hCanvas) <B1-Motion> {
-         global audace
-         if { [string compare $audace(MouseState) dragging] == 0 } {
-            #--- Affichage des coordonnees
-            ::audace::displayCursorCoord [list %x %y]
-            #--- On n'oublie pas de dragger eventuellement la fenetre
-            ::audace::boxDrag [list %x %y]
-         }
-      }
-      bind $audace(hCanvas) <Motion> {
-         #--- Affichage des coordonnees
-        # global audace
-         set a_exec "::audace::displayCursorCoord \[list %x %y\]"
-         catch "$a_exec" m
-        # $audace(console)::affiche_erreur "$m\n"
-      }
-   }
-
-   proc displayCursorCoord { coord } {
-      variable This
-      global audace
-      global caption
-
-      if { [ catch {
-         #--- Transformation des coordonnees ecran en coordonnees image (pour tenir compte du retournement de l'image)
-         set coord [ ::audace::canvas2Picture [ ::audace::screen2Canvas $coord ] ]
-
-         #--- xi et yi sont des 'coordonnees-image'
-         set xi [ lindex $coord 0 ]
-         set yi [ lindex $coord 1 ]
-
-         #--- ii contiendra l'intensite du pixel pointe
-         set ii [ buf$audace(bufNo) getpix [ list $xi $yi ] ]
-
-         #--- Affichage a l'ecran
-         if { $audace(labcoord,type) == "xy" } {
-            $This.fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $xi"
-            $This.fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $yi"
-            $This.fra1.labI configure -text "$caption(caractere,I) $caption(caractere,egale) $ii"
-         } else {
-            set temp [ buf$audace(bufNo) xy2radec [ list $xi $yi ] ]
-            $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) [ mc_angle2hms [ lindex $temp 0 ] 360 zero 1 auto string ]"
-            $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) [ mc_angle2dms [ lindex $temp 1 ] 90 zero 0 + string ]"
-            $This.fra1.labI configure -text "$caption(caractere,I) $caption(caractere,egale) $ii"
-         }
-      } msg ] } {
-        # $audace(console)::affiche_erreur "$msg\n"
-      }
-   }
-
-   #
-   # Attention : Les coordonnees coord sont des coordonnees canvas et non ecran
-   #
-   proc boxBegin { coord } {
-      global audace
-
-      catch { unset audace(box) }
-      set audace(box,1) [ screen2Canvas $coord ]
-   }
-
-   #
-   # Attention : Les coordonnees x et y sont des coordonnees canvas et non ecran
-   #
-   proc boxEnd { coord } {
-      global audace
-
-      ::audace::boxDrag $coord
-      if { $audace(box,1) == $audace(box,2) } {
-         catch {unset audace(box)}
-         $audace(hCanvas) delete $audace(hBox)
-         # set coord [::audace::canvas2Picture $coord]
-         # set x1 [lindex $coord 0]
-         # set y1 [lindex $coord 1]
-         # set audace(box) [list $x1 $y1 $x1 $y1]
-      } else {
-         if {[lindex $audace(box,1) 0] > [lindex $audace(box,2) 0]} {
-            set x1 [lindex $audace(box,2) 0]
-            set x2 [lindex $audace(box,1) 0]
-         } else {
-            set x1 [lindex $audace(box,1) 0]
-            set x2 [lindex $audace(box,2) 0]
-         }
-         if {[lindex $audace(box,1) 1] < [lindex $audace(box,2) 1]} {
-            # !! Le test est inverse car l'origine en canvas est en haut !!
-            set y1 [lindex $audace(box,2) 1]
-            set y2 [lindex $audace(box,1) 1]
-         } else {
-            set y1 [lindex $audace(box,1) 1]
-            set y2 [lindex $audace(box,2) 1]
-         }
-         set coord1 [::audace::canvas2Picture [list $x1 $y1]]
-         set coord2 [::audace::canvas2Picture [list $x2 $y2] -right ]
-         set x1 [lindex $coord1 0]
-         set y1 [lindex $coord1 1]
-         set x2 [lindex $coord2 0]
-         set y2 [lindex $coord2 1]
-         catch {unset audace(box)}
-         set audace(box) [list $x1 $y1 $x2 $y2]
-      }
-   }
-
-   #
-   # Attention : Les coordonnees x et y sont des coordonnees canvas et non ecran
-   #
-   proc boxDrag { coord } {
-      variable This
-      global audace
-
-      set zoom [visu$audace(visuNo) zoom]
-      set wz [expr $audace(picture,w)*$zoom]
-      set hz [expr $audace(picture,h)*$zoom]
-
-      catch {$audace(hCanvas) delete $audace(hBox)}
-      set x [lindex $coord 0]
-      if {$x<0} {set coord [lreplace $coord 0 0 0]}
-      if {$x>=$wz} {
-          set coord [lreplace $coord 0 0 [expr $wz-1]]
-      }
-      set y [lindex $coord 1]
-      if {$y<0} {set coord [lreplace $coord 1 1 0]}
-      if {$y>=$hz} {
-          set coord [lreplace $coord 1 1 [expr $hz-1]]
-      }
-      set audace(box,2) [screen2Canvas $coord]
-      set audace(hBox) [eval {$audace(hCanvas) create rect} $audace(box,1) \
-         $audace(box,2) -outline $audace(color,drag_rectangle) -tag selBox]
-   }
-
-   proc visuDynamix { max min } {
-      variable This
-
-      $This.fra1.sca1 configure -from $min -to $max
-      $This.fra1.sca2 configure -from $min -to $max
-   }
-
-   proc ChangeHiCutDisplay { val } {
-      variable This
-
-      $This.fra1.sca1 set $val
-      $This.fra1.lab1 configure -text $val
-   }
- 
-   proc ChangeLoCutDisplay { val } {
-      variable This
       
-      $This.fra1.sca2 set $val
-      $This.fra1.lab2 configure -text $val
+      return [ ::confVisu::picture2Canvas $audace(visuNo) $coord ]
    }
 
-   proc onHiCutCommand { val } {
-      global audace
-      
-      set sbh [visu$audace(visuNo) cut]
-      visu$audace(visuNo) cut [list $val [lindex $sbh 1]]
-      ChangeHiCutDisplay $val
+   #
+   # ::audace::getBox
+   # Retourne la boite de selection a la souris
+   #
+   proc getBox { } {
+      return [ ::confVisu::getBox 1 ]
    }
 
-   proc onLoCutCommand { val } {
-      global audace
-      
-      set sbh [visu$audace(visuNo) cut]
-      visu$audace(visuNo) cut [list [lindex $sbh 0] $val]
-      ChangeLoCutDisplay $val
-   }
-
-   proc onCutScaleRelease { } {
-      global audace
-      
-      ComputeScaleRange
-      visu$audace(visuNo) disp
-   }
-
-   proc ComputeScaleRange { } {
-      variable This
-      global audace
-      global conf
-      
-      set zone(sh1) $This.fra1.sca1
-      set zone(sb1) $This.fra1.sca2
-      if { $conf(seuils,auto_manuel) == 1 } {
-         #--- Calcule les nouveaux seuils
-         set sh [lindex [visu$audace(visuNo) cut] 0]
-         set sb [lindex [visu$audace(visuNo) cut] 1]
-         if {$sb<$sh} {
-            set maxi $sh
-            set mini $sb
-         } else {
-            set maxi $sb
-            set mini $sh
-         }
-         set range [expr $maxi-$mini]
-         if {$range == 0} {
-            set range 1024
-         }
-         set maxi [ expr $maxi + $conf(pourcentage_dynamique) / 100.0 * $range ]
-         set mini [ expr $mini - $conf(pourcentage_dynamique) / 100.0 * $range ]
-         #--- Redimensionne le scale widget
-         $zone(sb1) configure -from $mini -to $maxi
-         $zone(sh1) configure -from $mini -to $maxi
-         set audace(mindyn) $mini
-         set audace(maxdyn) $maxi
-      } elseif { $conf(seuils,auto_manuel) == 2 } {
-         $zone(sb1) configure -from $audace(mindyn) -to $audace(maxdyn)
-         $zone(sh1) configure -from $audace(mindyn) -to $audace(maxdyn)
-      }
-   }
-
-   proc header { } {
+   proc header { visuNo } {
       global audace caption color
 
+      #---
+      set base [ ::confVisu::getBase $visuNo ]
+      #---
       set i 0
-      if [winfo exists $audace(base).header] {
-         destroy $audace(base).header
+      if [winfo exists $base.header] {
+         destroy $base.header
       }
-      toplevel $audace(base).header
-      wm transient $audace(base).header $audace(base)
-      if { [ buf$audace(bufNo) imageready ] == "1" } {
-         wm minsize $audace(base).header 632 303
+      toplevel $base.header
+      wm transient $base.header $base
+      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
+         wm minsize $base.header 632 303
       }
-      wm resizable $audace(base).header 0 1
-      wm title $audace(base).header "$caption(audace,menu,entete)"
-      wm geometry $audace(base).header +3+75
+      wm resizable $base.header 0 1
+      wm title $base.header "$caption(audace,menu,entete) (visu$visuNo)"
+      set posx_header [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
+      set posy_header [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
+      wm geometry $base.header +[ expr $posx_header + 3 ]+[ expr $posy_header + 75 ]
 
-      if { [ buf$audace(bufNo) imageready ] == "1" } {
-         Scrolled_Text $audace(base).header.slb -width 87 -font $audace(font,en_tete_1) -height 20
-         pack $audace(base).header.slb -fill y -expand true
-         $audace(base).header.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
-         $audace(base).header.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
-         $audace(base).header.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
-         $audace(base).header.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
-         $audace(base).header.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
-         foreach kwd [lsort -dictionary [buf$audace(bufNo) getkwds]] {
-            set liste [buf$audace(bufNo) getkwd $kwd]
+      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
+         Scrolled_Text $base.header.slb -width 87 -font $audace(font,en_tete_1) -height 20
+         pack $base.header.slb -fill y -expand true
+         $base.header.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
+         $base.header.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
+         $base.header.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
+         $base.header.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
+         $base.header.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
+         foreach kwd [ lsort -dictionary [ buf[ ::confVisu::getBufNo $visuNo ] getkwds ] ] {
+            set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
             set koff 0
             if {[llength $liste]>5} {
                #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
@@ -2665,26 +2175,26 @@ namespace eval ::audace {
             if {[string length $keyword]<=8} {
                set keyword "[format "%8s" $keyword]"
             }
-            $audace(base).header.slb.list insert end "$keyword " keyw
-            $audace(base).header.slb.list insert end "= " egal
-            $audace(base).header.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
-            $audace(base).header.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
-            $audace(base).header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
+            $base.header.slb.list insert end "$keyword " keyw
+            $base.header.slb.list insert end "= " egal
+            $base.header.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
+            $base.header.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
+            $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
          }
       } else {
-         label $audace(base).header.l -text "$caption(audace,header,noimage)"
-         pack $audace(base).header.l -padx 20 -pady 10
+         label $base.header.l -text "$caption(audace,header,noimage)"
+         pack $base.header.l -padx 20 -pady 10
       }
       update
 
       #--- Focus
-      focus $audace(base).header
+      focus $base.header
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).header <Key-F1> { $audace(console)::GiveFocus }
+      bind $base.header <Key-F1> { $audace(console)::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).header
+      ::confColor::applyColor $base.header
    }
 
    #
@@ -2719,11 +2229,11 @@ namespace eval ::audace {
       set mem_names [array names mem_array]
       foreach a $mem_names {
          if {[lsearch -exact $file_names $a]==-1} {
-            # $audace(console)::affiche_erreur "$a not in file\n"
+           # $audace(console)::affiche_erreur "$a not in file\n"
             return 1
          } else {
             if {[string compare [array get file_array $a] [array get mem_array $a]]!=0} {
-               # $audace(console)::affiche_erreur "$a different between file and mem : \"[array get file_array $a]\" \"[array get mem_array $a]\"\n"
+              # $audace(console)::affiche_erreur "$a different between file and mem : \"[array get file_array $a]\" \"[array get mem_array $a]\"\n"
                return 1;
             }
          }
@@ -2797,7 +2307,6 @@ namespace eval ::audace {
       }
       array set file_conf [ ini_getArrayFromFile $filename ]
       if { [ ini_fileNeedWritten file_conf conf ] } {
-
          set old_focus [focus]
          set choice [ tk_messageBox -message "$caption(sur,enregistrer,config1)" \
             -title "$caption(sur,enregistrer,config3)" -icon question -type yesno ]
@@ -2813,16 +2322,29 @@ namespace eval ::audace {
          $audace(console)::affiche_resultat "caption(sur,enregistrer,config5)\n\n"
       }
    }
+   
+   #------------------------------------------------------------
+   #  visuDynamix
+   #      appelle ::confVisu::visuDynamix 
+   #      avec la visu par defaut numero 1 
+   #
+   #    procedure a supprimer quand plus aucun programme de l'utilisera
+   #------------------------------------------------------------
+   proc visuDynamix { max min } {
+      variable private
+      global audace
+      
+      ::confVisu::visuDynamix $audace(visuNo) $max $min 
+   }      
 
 }
+############# fin du namespace audace #############################################
 
-#
 # Scrolled_Canvas
 # Cree un canvas scrollable, ainsi que les deux scrollbars pour le bouger
 # Ref : Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392
 #
 proc Scrolled_Canvas { c args } {
-   global audace
 
    frame $c
    eval {canvas $c.canvas \
@@ -2840,7 +2362,6 @@ proc Scrolled_Canvas { c args } {
 }
 
 proc Scrolled_Text { f args } {
-   global audace
 
    frame $f
    text $f.list -xscrollcommand [list Scroll_Set $f.xscroll [list grid $f.xscroll -row 1 -column 0 -sticky we]] \
@@ -2885,7 +2406,7 @@ proc save_cursor { } {
    while {$window_list != ""} {
       set next {}
       foreach w $window_list {
-        catch { 
+         catch { 
             #--- Le catch permet de traiter le cas des fenetres qui n'ont pas l'option -cursor 
             #--- en les ignorant (exemple BWidget)
             set cursor [lindex [$w configure -cursor] 4]
@@ -2914,6 +2435,42 @@ proc restore_cursor { } {
    foreach w $busy {
       catch {[lindex $w 0] config -cursor [lindex $w 1]}
    }
+}
+
+
+#------------------------------------------------------------
+#  getVisuNo
+#     retourne le numero de visu associe un element tk 
+#
+#    le numero de visu se trouve dans l'attribut "class" 
+#    de la toplevel .audace ou .visu
+#  exemple :
+#    [getVisuNo  .audace.menubar.menu.windowseuil] 
+#      => retourne "1"  
+#------------------------------------------------------------
+proc getVisuNo { tkpath } {
+   return [winfo class [winfo toplevel $tkpath ]]
+}
+
+#------------------------------------------------------------
+#  ramdebugger
+#     active le debugger "ramdebugger"
+#
+#     le Ramdebugger doit être installé dans le répertoire
+#      audace/lib/RamDebugger
+#------------------------------------------------------------
+proc ramdebugger { } {
+   global audace 
+   
+   if { [info exists audace(rep_install) ] } {
+      lappend ::auto_path "$audace(rep_install)/lib/RamDebugger/addons"
+   } else {
+      lappend ::auto_path "[pwd]/../../lib/RamDebugger/addons"
+   }
+   package require commR
+   comm::register audela 1
+   comm::register audela 1
+   comm::register audela 1
 }
 
 #

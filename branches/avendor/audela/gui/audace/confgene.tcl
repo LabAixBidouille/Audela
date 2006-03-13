@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 16 novembre 2005
+# Date de mise a jour : 12 mars 2006
 #
 
 #
@@ -26,7 +26,7 @@ namespace eval confPosObs {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -89,7 +89,7 @@ namespace eval confPosObs {
    #
    proc initConf { } {
       global conf
- 
+
       if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 1.376722 E 43.659778 142" }
       if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "142" }
       if { ! [ info exists conf(posobs,estouest) ] }        { set conf(posobs,estouest)        "E" }
@@ -216,7 +216,7 @@ namespace eval confPosObs {
          -editable 0       \
          -textvariable confgene(posobs,estouest) \
          -values $list_combobox
-	pack $This.estouest -in $This.frame13 -anchor e -side top -padx 10 -pady 5
+      pack $This.estouest -in $This.frame13 -anchor e -side top -padx 10 -pady 5
 
       entry $This.long -textvariable confgene(posobs,long) -width 16
       pack $This.long -in $This.frame14 -anchor w -side top -padx 10 -pady 5
@@ -234,7 +234,7 @@ namespace eval confPosObs {
          -editable 0       \
          -textvariable confgene(posobs,nordsud) \
          -values $list_combobox
-	pack $This.nordsud -in $This.frame13 -anchor e -side top -padx 10 -pady 5
+      pack $This.nordsud -in $This.frame13 -anchor e -side top -padx 10 -pady 5
 
       entry $This.lat -textvariable confgene(posobs,lat) -width 16
       pack $This.lat -in $This.frame14 -anchor w -side top -padx 10 -pady 5
@@ -263,7 +263,7 @@ namespace eval confPosObs {
          -editable 0       \
          -textvariable confgene(posobs,ref_geodesique) \
          -values $list_combobox
-	pack $This.ref_geodesique -in $This.frame16 -anchor w -side top -padx 10 -pady 5
+      pack $This.ref_geodesique -in $This.frame16 -anchor w -side top -padx 10 -pady 5
 
       #--- Cree le bouton 'Mise à jour du format GPS'
       button $This.but_gps -text "$caption(confgene,position_miseajour_gps)" -borderwidth 2 \
@@ -454,7 +454,7 @@ namespace eval confPosObs {
       } elseif { $estouest == $caption(confgene,position_est) } {
          set estouest $caption(confgene,caractere_E)
       }
-      set longitude "$confgene(posobs,long)"            
+      set longitude "$confgene(posobs,long)"
       if { $confgene(posobs,nordsud) == $caption(confgene,position_sud) } {
          set signe $caption(confgene,caractere_tiret)
       } else {
@@ -485,7 +485,7 @@ namespace eval confPosObs {
          [lindex $confgene(posobs,observateur,gps) 1] [lindex $confgene(posobs,observateur,gps) 2]\
          [lindex $confgene(posobs,observateur,gps) 3] [lindex $confgene(posobs,observateur,gps) 4]"
       $This.lab7 configure -text "$confgene(posobs,observateur,gps)"
-   } 
+   }
 
    #
    # MPC
@@ -576,7 +576,7 @@ namespace eval confPosObs {
          close $f
          }
       }
-   } 
+   }
 
    #
    # confPosObs::widgetToConf
@@ -625,7 +625,7 @@ namespace eval confTemps {
 
    #
    # confTemps::ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration, 
+   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration,
    # et fermer la fenetre de configuration du temps
    #
    proc ok { } {
@@ -657,6 +657,7 @@ namespace eval confTemps {
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
+      variable This
       global caption
       global conf
       global confgene
@@ -667,7 +668,6 @@ namespace eval confTemps {
 
       set confgene(espion) "1"
 
-      variable This
       destroy $This
    }
 
@@ -677,7 +677,7 @@ namespace eval confTemps {
    #
    proc initConf { } {
       global conf
- 
+
       if { ! [ info exists conf(temps,fushoraire) ] } { set conf(temps,fushoraire) "1" }
       if { ! [ info exists conf(temps,hhiverete) ] }  { set conf(temps,hhiverete)  "2" }
       if { ! [ info exists conf(temps,hsysteme) ] }   { set conf(temps,hsysteme)   "0" }
@@ -735,11 +735,11 @@ namespace eval confTemps {
       #--- Legendes
       label $This.lab1 -text "$caption(confgene,temps_heure_legale1) $caption(confgene,caractere_2points)\
          $caption(confgene,temps_heure_legale2)"
-	pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
 
       label $This.lab2 -text "$caption(confgene,temps_universel1) $caption(confgene,caractere_2points)\
          $caption(confgene,temps_universel2)"
-	pack $This.lab2 -in $This.frame3 -anchor center -side right -padx 10 -pady 5
+      pack $This.lab2 -in $This.frame3 -anchor center -side right -padx 10 -pady 5
 
       #--- Heure systeme = tu ou heure legale
       label $This.lab3 -text "$caption(confgene,temps_hsysteme)"
@@ -755,11 +755,11 @@ namespace eval confTemps {
          -modifycmd { ::confTemps::Temps_TU_TSL } \
          -textvariable confgene(temps,hsysteme) \
          -values $list_combobox
- 	pack $This.hsysteme -in $This.frame6 -anchor w -side top -padx 10 -pady 5
+      pack $This.hsysteme -in $This.frame6 -anchor w -side top -padx 10 -pady 5
 
       #--- Fuseau horaire
       label $This.lab4 -text "$caption(confgene,temps_fushoraire1)"
-	pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
+      pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
 
       set list_combobox [ list -12 -11 -10 -9 -8 -7 -6 -5 -4 -3:30 -3 -2 -1 0 1 2 3 3:30\
          4 4:30 5 5:30 6 7 8 9 9:30 10 11 12 ]
@@ -772,11 +772,11 @@ namespace eval confTemps {
          -modifycmd { ::confTemps::Temps_TU_TSL } \
          -textvariable confgene(temps,fushoraire) \
          -values $list_combobox
-	pack $This.fushoraire -in $This.frame6 -anchor w -side top -padx 10 -pady 5
+      pack $This.fushoraire -in $This.frame6 -anchor w -side top -padx 10 -pady 5
 
       #--- Heure d'hiver / heure d'ete
       label $This.lab5 -text "$caption(confgene,temps_hhiverete)"
-	pack $This.lab5 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
+      pack $This.lab5 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
 
       set list_combobox [ list $caption(confgene,temps_aucune) $caption(confgene,temps_hiver) \
          $caption(confgene,temps_ete) ]
@@ -789,21 +789,21 @@ namespace eval confTemps {
          -modifycmd { ::confTemps::Temps_TU_TSL } \
          -textvariable confgene(temps,hhiverete) \
          -values $list_combobox
- 	pack $This.hhiverete -in $This.frame6 -anchor w -side top -padx 10 -pady 5
+      pack $This.hhiverete -in $This.frame6 -anchor w -side top -padx 10 -pady 5
 
       #--- Temps sideral local
       label $This.lab8 -text "$caption(confgene,temps_tsl)"
-	pack $This.lab8 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
+      pack $This.lab8 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
 
       label $This.lab9 -borderwidth 1 -textvariable "audace(tsl,format,hmsint)" -width 12 -anchor w
-	pack $This.lab9 -in $This.frame6 -anchor w -side bottom -padx 10 -pady 5
+      pack $This.lab9 -in $This.frame6 -anchor w -side bottom -padx 10 -pady 5
 
       #--- Temps universel
       label $This.lab6 -text "$caption(confgene,temps_tu)"
-	pack $This.lab6 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
+      pack $This.lab6 -in $This.frame5 -anchor w -side bottom -padx 10 -pady 5
 
       label $This.lab7 -borderwidth 1 -textvariable "audace(tu,format,hmsint)" -width 12 -anchor w
-	pack $This.lab7 -in $This.frame6 -anchor w -side bottom -padx 10 -pady 5
+      pack $This.lab7 -in $This.frame6 -anchor w -side bottom -padx 10 -pady 5
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
@@ -854,7 +854,7 @@ namespace eval confTemps {
             set confgene(espion) "1"
             #--- Fuseau horaire
             label $This.lab4 -text "$caption(confgene,temps_fushoraire1)"
-	      pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
+            pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
             set list_combobox [ list -12 -11 -10 -9 -8 -7 -6 -5 -4 -3:30 -3 -2 -1 0 1 2 3 3:30\
                4 4:30 5 5:30 6 7 8 9 9:30 10 11 12 ]
             ComboBox $This.fushoraire \
@@ -866,10 +866,10 @@ namespace eval confTemps {
                -modifycmd { ::confTemps::Temps_TU_TSL } \
                -textvariable confgene(temps,fushoraire) \
                -values $list_combobox
-	      pack $This.fushoraire -in $This.frame6 -anchor w -side top -padx 10 -pady 5
+            pack $This.fushoraire -in $This.frame6 -anchor w -side top -padx 10 -pady 5
             #--- Heure d'hiver / heure d'ete
             label $This.lab5 -text "$caption(confgene,temps_hhiverete)"
-	      pack $This.lab5 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
+            pack $This.lab5 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
             set list_combobox [ list $caption(confgene,temps_aucune) $caption(confgene,temps_hiver) \
                $caption(confgene,temps_ete) ]
             ComboBox $This.hhiverete \
@@ -881,7 +881,7 @@ namespace eval confTemps {
                -modifycmd { ::confTemps::Temps_TU_TSL } \
                -textvariable confgene(temps,hhiverete) \
                -values $list_combobox
- 	      pack $This.hhiverete -in $This.frame6 -anchor w -side top -padx 10 -pady 5
+            pack $This.hhiverete -in $This.frame6 -anchor w -side top -padx 10 -pady 5
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $This
          }
@@ -894,7 +894,7 @@ namespace eval confTemps {
             destroy $This.hhiverete
          }
       }
-   } 
+   }
 
    #
    # confTemps::widgetToConf
@@ -919,7 +919,7 @@ namespace eval confTemps {
 
 namespace eval confFichierIma {
    variable This
-   global confFichierIma
+   global confgene
 
    #
    # confFichierIma::run this
@@ -930,7 +930,7 @@ namespace eval confFichierIma {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -952,23 +952,36 @@ namespace eval confFichierIma {
       variable This
       global conf
       global audace
-      global confFichierIma
+      global confgene
 
       catch { 
-         buf1000 extension "$confFichierIma(extension,new)"
-         buf1001 extension "$confFichierIma(extension,new)"
-         buf1002 extension "$confFichierIma(extension,new)"
-         buf1003 extension "$confFichierIma(extension,new)"
+         buf1000 extension "$confgene(extension,new)"
+         buf1001 extension "$confgene(extension,new)"
+         buf1002 extension "$confgene(extension,new)"
+         buf1003 extension "$confgene(extension,new)"
       }
-      buf$audace(bufNo) extension "$confFichierIma(extension,new)"
-      if { $confFichierIma(fichier,compres) == "0" } {
+      buf$audace(bufNo) extension "$confgene(extension,new)"
+      if { $confgene(fichier,compres) == "0" } {
          buf$audace(bufNo) compress "none"
       } else {
          buf$audace(bufNo) compress "gzip"
       }
-      $This.labURL2 configure -text "$confFichierIma(extension,new)"
-      $This.labURL5 configure -text "$confFichierIma(jpegquality,new)"
+      $This.labURL2 configure -text "$confgene(extension,new)"
+      $This.labURL5 configure -text "$confgene(jpegquality,new)"
       widgetToConf
+      #--- Mise a jour de l'extension pour toutes les visu disponibles
+      foreach visuNo [::visu::list] {
+         ::confFichierIma::MAJ_Extension
+      }
+      #--- Mise a jour de la combobox pour la creation d'une extension personnalisee
+      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || \
+         ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
+         set confgene(liste_extension) [ list .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      } else {
+         set confgene(liste_extension) [ list [ buf$audace(bufNo) extension ] .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      }
+      $This.newext configure -height [ llength $confgene(liste_extension) ]
+      $This.newext configure -values $confgene(liste_extension)
    }
 
    #
@@ -998,9 +1011,10 @@ namespace eval confFichierIma {
    #
    proc initConf { } {
       global conf
- 
-      if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut) ".fit" }
-      if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)  "0" }
+
+      #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::Recup_Config)
+      if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut)   ".fit" }
+      if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)    "0" }
       if { ! [ info exists conf(jpegquality,defaut) ] } { set conf(jpegquality,defaut) "80" }
    }
 
@@ -1009,18 +1023,21 @@ namespace eval confFichierIma {
       global audace
       global conf
       global caption
-      global confFichierIma
+      global confgene
       global color
 
       #--- initConf
-      #--- Initialisation indispensable de 2 variables dans aud.tcl (::audace::Recup_Config)
-      if { ! [ info exists conf(extension,new) ] }   { set conf(extension,new)      ".fit" }
-      if { ! [ info exists conf(jpegquality,new) ] } { set conf(jpegquality,new)    "80" }
+      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || \
+         ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
+         set confgene(liste_extension) [ list .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      } else {
+         set confgene(liste_extension) [ list [ buf$audace(bufNo) extension ] .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
+      }
 
       #--- confToWidget
-      set confFichierIma(extension,new)   $conf(extension,new)
-      set confFichierIma(fichier,compres) $conf(fichier,compres)
-      set confFichierIma(jpegquality,new) $conf(jpegquality,new)
+      set confgene(extension,new)   $conf(extension,new)
+      set confgene(fichier,compres) $conf(fichier,compres)
+      set confgene(jpegquality,new) $conf(jpegquality,new)
 
       #---
       if { [winfo exists $This] } {
@@ -1068,37 +1085,45 @@ namespace eval confFichierIma {
 
       #--- Rappelle l'extension par defaut des fichiers image
       label $This.lab1 -text "$caption(confgene,fichier_image_ext_defaut)"
-	pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
 
       label $This.labURL2 -text "$conf(extension,defaut)" -fg $color(blue)
-	pack $This.labURL2 -in $This.frame3 -anchor center -side right -padx 10 -pady 5
+      pack $This.labURL2 -in $This.frame3 -anchor center -side right -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la nouvelle extension par defaut
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
-	pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
 
-      entry $This.newext -textvariable confFichierIma(extension,new) -width 5 -justify center
-	pack $This.newext -in $This.frame4 -anchor center -side right -padx 10 -pady 5
+      ComboBox $This.newext \
+         -width 7          \
+         -height [llength $confgene(liste_extension)] \
+         -relief raised    \
+         -borderwidth 1    \
+         -editable 1       \
+         -justify center   \
+         -textvariable confgene(extension,new) \
+         -values $confgene(liste_extension)
+      pack $This.newext -in $This.frame4 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
       checkbutton $This.compress -text "$caption(confgene,fichier_image_compres)" -highlightthickness 0 \
-         -variable confFichierIma(fichier,compres)
-	pack $This.compress -in $This.frame5 -anchor center -side left -padx 10 -pady 5
+         -variable confgene(fichier,compres)
+      pack $This.compress -in $This.frame5 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle le taux de qualite d'enregistrement par defaut des fichiers Jpeg
       label $This.lab4 -text "$caption(confgene,fichier_image_jpeg_quality)"
-	pack $This.lab4 -in $This.frame6 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab4 -in $This.frame6 -anchor center -side left -padx 10 -pady 5
 
       label $This.labURL5 -text "$conf(jpegquality,defaut)" -fg $color(blue)
       pack $This.labURL5 -in $This.frame6 -anchor center -side right -padx 10 -pady 5
 
       #--- Cree la glissiere de reglage pour la nouvelle valeur de qualite par defaut
       label $This.lab6 -text "$caption(confgene,fichier_image_jpeg_newquality)"
-	pack $This.lab6 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab6 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
 
       scale $This.frame8.efficacite_variant -from 5 -to 100 -length 300 -orient horizontal \
          -showvalue true -tickinterval 10 -resolution 1 -borderwidth 2 -relief groove \
-         -variable confFichierIma(jpegquality,new) -width 10
+         -variable confgene(jpegquality,new) -width 10
       pack $This.frame8.efficacite_variant -side top -padx 10 -pady 5
 
       #--- Cree le bouton 'OK'
@@ -1139,13 +1164,36 @@ namespace eval confFichierIma {
    #
    proc widgetToConf { } {
       global conf
-      global confFichierIma
+      global confgene
 
-      set conf(extension,defaut)   $confFichierIma(extension,new)
-      set conf(extension,new)      $confFichierIma(extension,new)
-      set conf(fichier,compres)    $confFichierIma(fichier,compres)
-      set conf(jpegquality,defaut) $confFichierIma(jpegquality,new)
-      set conf(jpegquality,new)    $confFichierIma(jpegquality,new)
+      set conf(extension,defaut)   $confgene(extension,new)
+      set conf(extension,new)      $confgene(extension,new)
+      set conf(fichier,compres)    $confgene(fichier,compres)
+      set conf(jpegquality,defaut) $confgene(jpegquality,new)
+      set conf(jpegquality,new)    $confgene(jpegquality,new)
+   }
+
+   proc MAJ_Extension { } {
+      variable This
+      global conf confgene panneau
+
+      if { ( $conf(extension,new) == ".bmp" ) || ( $conf(extension,new) == ".gif" ) || ( $conf(extension,new) == ".jpg" ) \
+         || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) || ( $conf(extension,new) == ".xbm" ) \
+         || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) || ( $conf(extension,new) == ".crw" ) \
+         || ( $conf(extension,new) == ".nef" ) } {
+         set confgene(fichier,compres) "0"
+         $This.compress configure -variable confgene(fichier,compres)
+         set conf(fichier,compres) $confgene(fichier,compres)
+      }
+
+      #--- Mise a jour de l'extension pour toutes les visu disponibles
+      foreach visuNo [::visu::list] {
+         if { $conf(fichier,compres) == "1" } {
+            set panneau(AcqFC,$visuNo,extension) $conf(extension,new).gz
+         } else {
+            set panneau(AcqFC,$visuNo,extension) $conf(extension,new)
+         }
+      }
    }
 }
 
@@ -1167,7 +1215,7 @@ namespace eval confAlarmeFinPose {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1264,14 +1312,14 @@ namespace eval confAlarmeFinPose {
       #--- Ouvre le choix a l'utilisation ou non de l'alarme sonore
       checkbutton $This.alarme -text "$caption(confgene,alarme_active)" -highlightthickness 0 \
          -variable confgene(alarme,active)
-	pack $This.alarme -in $This.frame3 -anchor w -side left -padx 10 -pady 3
+      pack $This.alarme -in $This.frame3 -anchor w -side left -padx 10 -pady 3
 
       #--- Cree la zone a renseigner du delai pour l'alarme de fin de pose
       entry $This.delai -textvariable confgene(alarme,delai) -width 3 -justify center
-	pack $This.delai -in $This.frame4 -anchor w -side left -padx 20 -pady 3
+      pack $This.delai -in $This.frame4 -anchor w -side left -padx 20 -pady 3
 
       label $This.lab1 -text "$caption(confgene,alarme_delai)"
-	pack $This.lab1 -in $This.frame4 -anchor w -side left -padx 0 -pady 3
+      pack $This.lab1 -in $This.frame4 -anchor w -side left -padx 0 -pady 3
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
@@ -1340,7 +1388,7 @@ namespace eval confTempoScan {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1430,27 +1478,27 @@ namespace eval confTempoScan {
 
       #--- Commentaire sur la temporisation
       label $This.lab1 -text "$caption(confgene,tempo_scan_titre)"
-	pack $This.lab1 -in $This.frame3 -anchor w -side top -padx 10 -pady 3
+      pack $This.lab1 -in $This.frame3 -anchor w -side top -padx 10 -pady 3
 
       #--- Radio-bouton 'sans temporisation'
       radiobutton $This.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confgene,tempo_scan_sans)" -value 0 -variable confgene(tempo_scan,active)
-	pack $This.rad1 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
+      pack $This.rad1 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Radio-bouton 'avec temporisation'
       radiobutton $This.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confgene,tempo_scan_avec)" -value 1 -variable confgene(tempo_scan,active)
-	pack $This.rad2 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
+      pack $This.rad2 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Cree la zone a renseigner du delai entre l'arret du moteur d'A.D. et le debut de la pose
       label $This.lab3 -text "$caption(confgene,tempo_scan_delai)"
-	pack $This.lab3 -in $This.frame5 -anchor w -side left -padx 10 -pady 3
+      pack $This.lab3 -in $This.frame5 -anchor w -side left -padx 10 -pady 3
 
       entry $This.delai -textvariable confgene(tempo_scan,delai) -width 3 -justify center
-	pack $This.delai -in $This.frame5 -anchor w -side left -padx 0 -pady 2
+      pack $This.delai -in $This.frame5 -anchor w -side left -padx 0 -pady 2
 
       label $This.lab4 -text "$caption(confgene,tempo_scan_seconde)"
-	pack $This.lab4 -in $This.frame5 -anchor w -side left -padx 0 -pady 3
+      pack $This.lab4 -in $This.frame5 -anchor w -side left -padx 0 -pady 3
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
@@ -1515,7 +1563,7 @@ namespace eval confChoixOutil {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1538,24 +1586,18 @@ namespace eval confChoixOutil {
       global caption
 
       widgetToConf
-      Menu_Delete "$caption(audace,menu,outils)" all
+      #--- Je supprime toutes les entrees du menu Outil
+      Menu_Delete $audace(visuNo) "$caption(audace,menu,outils)" entries
       #--- Rafraichissement du menu Outil
-      Menu_Command   "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" {
-         catch {
-            global unpackFunction
-            $unpackFunction
-            unset unpackFunction
-         }
-      }
-      Menu_Separator "$caption(audace,menu,outils)"
-      ::audace::affiche_Outil
-      Menu_Separator "$caption(audace,menu,outils)"
-      Menu_Command   "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)" \
+      Menu_Command $audace(visuNo)  "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $audace(visuNo)"
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,outils)"
+      ::audace::affiche_Outil $audace(visuNo) 
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,outils)"
+      Menu_Command $audace(visuNo) "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)" \
          { ::confChoixOutil::run "$audace(base).confChoixOutil" }
       #---
       set This "$audace(base)"
-      Menu_Bind $This <F12> "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "$caption(touche,F12)"
-
+      Menu_Bind $audace(visuNo) $This <F12> "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "$caption(touche,F12)"
    }
 
    #
@@ -1689,7 +1731,7 @@ namespace eval confChoixOutil {
                   -editable 0       \
                   -textvariable confgene(Choix_Outil,raccourci_n$i) \
                   -values $list_combobox
-	         pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
+               pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
             pack $This.framea$num -in $This.frame5 -side top -fill both -expand 1
             set colonne "1"
          } else {
@@ -1707,7 +1749,7 @@ namespace eval confChoixOutil {
                   -editable 0       \
                   -textvariable confgene(Choix_Outil,raccourci_n$i) \
                   -values $list_combobox
-	         pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
+               pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
             pack $This.frameb$num -in $This.frame6 -side top -fill both -expand 1
             set colonne "0"
          }
@@ -1789,7 +1831,7 @@ namespace eval confMessages_Console {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2006,7 +2048,7 @@ namespace eval confTypeFenetre {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2069,7 +2111,7 @@ namespace eval confTypeFenetre {
    #
    proc initConf { } {
       global conf
- 
+
       if { ! [ info exists conf(ok+appliquer) ] } { set conf(ok+appliquer) "1" }
    }
 
@@ -2080,8 +2122,8 @@ namespace eval confTypeFenetre {
       global caption
       global confgene
 
-      #--- initConf
       #--- Initialisation indispensable de la variable du type de fenetre dans aud.tcl (::audace::Recup_Config)
+      #--- initConf
 
       #--- confToWidget
       set confgene(TypeFenetre,ok+appliquer) $conf(ok+appliquer)
@@ -2216,7 +2258,7 @@ namespace eval confGeneral {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2393,7 +2435,7 @@ namespace eval confVersion {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -2518,10 +2560,10 @@ namespace eval confVersion {
       }
       bind $This.labURL4 <Enter> {
          $::confVersion::This.labURL4 configure -fg $color(purple)
-      } 
+      }
       bind $This.labURL4 <Leave> {
          $::confVersion::This.labURL4 configure -fg $color(blue)
-      } 
+      }
    }
 }
 
@@ -2532,30 +2574,30 @@ namespace eval confVersion {
 #
 
 namespace eval confGenerique {
-   variable This 
-   variable NameSpace  
+   variable This
+   variable NameSpace
 
    #
    # confGenerique::run this
    # Cree la fenetre de configuration generique
    # this = chemin de la fenetre
-   # 
+   #  
    #  retourne 1 si la fenetre est fermee avec le bouton OK
    #  retourne 0 si la fenetre est fermee avec le bouton FERMER
-   #
-   proc run { this namespace } {
-      variable This 
-      variable NameSpace  
+   #  
+   proc run { this namespace { visuNo "1" } } {
+      variable This
+      variable NameSpace
       variable confResult
 
-      set This $this 
-      set NameSpace  $namespace
+      set This $this
+      set NameSpace $namespace
       set confResult "0"
 
-      createDialog 
+      createDialog $visuNo
       #tkwait visibility $This
       tkwait window $This
-      
+
       return $confResult
    }
 
@@ -2564,11 +2606,11 @@ namespace eval confGenerique {
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
    # et fermer la fenetre de configuration generique
    #
-   proc ok { } {
+   proc ok { visuNo } {
       variable This
       variable confResult
-      
-      appliquer
+
+      appliquer $visuNo
       set confResult "1"
       destroy $This
    }
@@ -2577,13 +2619,13 @@ namespace eval confGenerique {
    # confGenerique::appliquer
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
-   proc appliquer { } {
-      variable NameSpace  
-      $NameSpace\:\:widgetToConf
+   proc appliquer { visuNo } {
+      variable NameSpace
+
+      $NameSpace\:\:widgetToConf $visuNo
       catch {
-         $NameSpace\:\:appliquer
+         $NameSpace\:\:appliquer $visuNo
       }
-      
    }
 
    #
@@ -2591,11 +2633,11 @@ namespace eval confGenerique {
    # Fonction 'afficherAide' pour afficher l'aide 
    #
    proc showHelp { } {
-      variable NameSpace  
+      variable NameSpace
 
       set result [ catch { $NameSpace\:\:showHelp } msg ]
       if { $result == "1" } {
-         ::console::affiche_erreur "$msg\n" 
+         ::console::affiche_erreur "$msg\n"
          tk_messageBox -title "$NameSpace" -type ok -message "$msg" -icon error
          return
       }
@@ -2605,23 +2647,23 @@ namespace eval confGenerique {
    # confGenerique::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc fermer { } {
+   proc fermer { visuNo } {
       variable This
-      variable NameSpace  
+      variable NameSpace
 
       catch {
          #--- appelle la procedure "fermer" s'il elle existe
-         $NameSpace\:\:fermer
+         $NameSpace\:\:fermer $visuNo
       }
 
       #--- supprime la fenetre
       destroy $This
    }
 
-   proc createDialog { } {
-      variable This 
-      variable NameSpace 
-      global audace 
+   proc createDialog { visuNo } {
+      variable This
+      variable NameSpace
+      global audace
       global conf
       global caption
 
@@ -2636,12 +2678,12 @@ namespace eval confGenerique {
       toplevel $This -class Toplevel
       wm geometry $This +180+50
       wm resizable $This 0 0
-      wm title $This "[$NameSpace\:\:getLabel]"
+      wm title $This "[$NameSpace\:\:getLabel] (visu$visuNo)"
 
-      #--- Frame des parametres a configurer  
+      #--- Frame des parametres a configurer
       frame $This.frame1 -borderwidth 1 -relief raised
 
-      $NameSpace\:\:fillConfigPage  $This.frame1
+      $NameSpace\:\:fillConfigPage $This.frame1 $visuNo
 
       pack $This.frame1 -side top -fill both -expand 1
 
@@ -2651,14 +2693,14 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
-         -command { ::confGenerique::ok }
+         -command "::confGenerique::ok $visuNo"
       if { $conf(ok+appliquer) == "1" } {
          pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3  -ipady 5
       }
 
       #--- Cree le bouton 'Appliquer'
       button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
-         -command { ::confGenerique::appliquer }
+         -command "::confGenerique::appliquer $visuNo"
       pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree un label 'Invisible' pour simuler un espacement
@@ -2667,12 +2709,12 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
-         -command { ::confGenerique::fermer }
+         -command "::confGenerique::fermer $visuNo"
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confGenerique::showHelp } 
+         -command "::confGenerique::showHelp"
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active

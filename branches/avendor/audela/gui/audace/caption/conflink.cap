@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Date de mise a jour : 24 janvier 2006
+# Date de mise a jour : 09 fevrier 2006
 #
 
 #=========================================================================
@@ -11,17 +11,17 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(conflink,liaison)                "# Liaison :"
-set caption(conflink,config)                 "# Configuration de la liaison"
-set caption(conflink,creer_au_demarrage)     "# Connexion automatique de cette liaison au prochain démarrage"
+set caption(conflink,liaison)                "Link:"
+set caption(conflink,config)                 "Link Configuration"
+set caption(conflink,creer_au_demarrage)     "Next time software is run connect this link automatically"
 set caption(conflink,ok)                     "OK"
 set caption(conflink,appliquer)              "Apply"
 set caption(conflink,fermer)                 "Close"
 set caption(conflink,aide)                   "Help"
 
 set caption(conflink,attention)              "Warning"
-set caption(conflink,connexion_texte1)       "# Veuillez patienter quelques secondes"
-set caption(conflink,connexion_texte2)       "# pendant la connexion de votre liaison."
+set caption(conflink,connexion_texte1)       "Link Connection in Progress..."
+set caption(conflink,connexion_texte2)       "Please wait a few seconds."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -41,62 +41,62 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(conflink,liaison)             "# Liaison :"
-   set caption(conflink,config)              "# Configuration de la liaison"
-   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,liaison)             "Collegamento:"
+   set caption(conflink,config)              "Configurazione del collegamento"
+   set caption(conflink,creer_au_demarrage)  "Connessione automatica di questo collegamento alla prossima esecuzione del software"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Applica"
    set caption(conflink,fermer)              "Chiudi"
    set caption(conflink,aide)                "Aiuto"
 
    set caption(conflink,attention)           "Attenzione"
-   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
-   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+   set caption(conflink,connexion_texte1)    "Attendere qualche secondo per la"
+   set caption(conflink,connexion_texte2)    "connessione del collegamento."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(conflink,liaison)             "# Liaison :"
-   set caption(conflink,config)              "# Configuration de la liaison"
-   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,liaison)             "Enlace:"
+   set caption(conflink,config)              "Configuracion del enlace"
+   set caption(conflink,creer_au_demarrage)  "La próxima vez que se ejecute el programa, el enlace se conecta automáticamente"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Aplicar"
    set caption(conflink,fermer)              "Cerrar"
    set caption(conflink,aide)                "Ayuda"
 
    set caption(conflink,attention)           "!Cuidado¡"
-   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
-   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+   set caption(conflink,connexion_texte1)    "Conectando con el enlace..."
+   set caption(conflink,connexion_texte2)    "Por favor, espere unos segundos."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(conflink,liaison)             "# Liaison :"
-   set caption(conflink,config)              "# Configuration de la liaison"
-   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,liaison)             "Link :"
+   set caption(conflink,config)              "Link Konfiguration"
+   set caption(conflink,creer_au_demarrage)  "Nächste Mal diesem Link automatisch anschließen"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Anwenden"
    set caption(conflink,fermer)              "Schließen"
    set caption(conflink,aide)                "Hilfe"
 
    set caption(conflink,attention)           "Achtung"
-   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
-   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+   set caption(conflink,connexion_texte1)    "Bitte, einige Sekunden warten"
+   set caption(conflink,connexion_texte2)    "während die Verbindung zum Link."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(conflink,liaison)             "# Liaison :"
-   set caption(conflink,config)              "# Configuration de la liaison"
-   set caption(conflink,creer_au_demarrage)  "# Connexion automatique de cette liaison au prochain démarrage"
+   set caption(conflink,liaison)             "Link:"
+   set caption(conflink,config)              "Link Configuration"
+   set caption(conflink,creer_au_demarrage)  "Next time software is run connect this link automatically"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Apply"
    set caption(conflink,fermer)              "Close"
    set caption(conflink,aide)                "Help"
 
    set caption(conflink,attention)           "Warning"
-   set caption(conflink,connexion_texte1)    "# Veuillez patienter quelques secondes"
-   set caption(conflink,connexion_texte2)    "# pendant la connexion de votre liaison."
+   set caption(conflink,connexion_texte1)    "Link Connection in Progress..."
+   set caption(conflink,connexion_texte2)    "Please wait a few seconds."
 
 }
 

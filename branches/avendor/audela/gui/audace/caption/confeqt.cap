@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Date de mise a jour : 29 octobre 2005
+# Date de mise a jour : 08 janvier 2006
 #
 
 #=========================================================================
@@ -11,86 +11,92 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(confeqt,config)					"Equipment Setup"
-set caption(confeqt,creer_au_demarrage)			"Next time software is run connect this equipment automatically"
-set caption(confeqt,ok)						"OK"
-set caption(confeqt,appliquer)				"Apply"
-set caption(confeqt,fermer)					"Close"
-set caption(confeqt,aide)					"Help"
+set caption(confeqt,equipement)             "Equipment:"
+set caption(confeqt,config)                 "Equipment Setup"
+set caption(confeqt,creer_au_demarrage)     "Next time software is run connect this equipment automatically"
+set caption(confeqt,ok)                     "OK"
+set caption(confeqt,appliquer)              "Apply"
+set caption(confeqt,fermer)                 "Close"
+set caption(confeqt,aide)                   "Help"
 
-set caption(confeqt,attention)				"Warning"
-set caption(confeqt,connexion_texte1)			"Equipment Connection in Progress..."
-set caption(confeqt,connexion_texte2)			"Please wait a few seconds."
+set caption(confeqt,attention)              "Warning"
+set caption(confeqt,connexion_texte1)       "Equipment Connection in Progress..."
+set caption(confeqt,connexion_texte2)       "Please wait a few seconds."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(confeqt,config)				"Configuration de l'équipement"
-   set caption(confeqt,creer_au_demarrage)		"Connexion automatique de cet équipement au prochain démarrage"
-   set caption(confeqt,ok)					"OK"
-   set caption(confeqt,appliquer)				"Appliquer"
-   set caption(confeqt,fermer)				"Fermer"
-   set caption(confeqt,aide)					"Aide"
+   set caption(confeqt,equipement)          "Equipement :"
+   set caption(confeqt,config)              "Configuration de l'équipement"
+   set caption(confeqt,creer_au_demarrage)  "Connexion automatique de cet équipement au prochain démarrage"
+   set caption(confeqt,ok)                  "OK"
+   set caption(confeqt,appliquer)           "Appliquer"
+   set caption(confeqt,fermer)              "Fermer"
+   set caption(confeqt,aide)                "Aide"
 
-   set caption(confeqt,attention)				"Attention"
-   set caption(confeqt,connexion_texte1)			"Veuillez patienter quelques secondes"
-   set caption(confeqt,connexion_texte2)			"pendant la connexion de votre équipement."
+   set caption(confeqt,attention)           "Attention"
+   set caption(confeqt,connexion_texte1)    "Veuillez patienter quelques secondes"
+   set caption(confeqt,connexion_texte2)    "pendant la connexion de votre équipement."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(confeqt,config)				"Configurazione equipaggiamento"
-   set caption(confeqt,creer_au_demarrage)		"Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
-   set caption(confeqt,ok)					"OK"
-   set caption(confeqt,appliquer)				"Applica"
-   set caption(confeqt,fermer)				"Chiudi"
-   set caption(confeqt,aide)					"Aiuto"
+   set caption(confeqt,equipement)          "Equipaggiamento:"
+   set caption(confeqt,config)              "Configurazione equipaggiamento"
+   set caption(confeqt,creer_au_demarrage)  "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
+   set caption(confeqt,ok)                  "OK"
+   set caption(confeqt,appliquer)           "Applica"
+   set caption(confeqt,fermer)              "Chiudi"
+   set caption(confeqt,aide)                "Aiuto"
 
-   set caption(confeqt,attention)				"Attenzione"
-   set caption(confeqt,connexion_texte1)			"Attendere qualche secondo per la"
-   set caption(confeqt,connexion_texte2)			"connessione del equipaggiamento."
+   set caption(confeqt,attention)           "Attenzione"
+   set caption(confeqt,connexion_texte1)    "Attendere qualche secondo per la"
+   set caption(confeqt,connexion_texte2)    "connessione del equipaggiamento."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(confeqt,config)				"Configuración del equipo"
-   set caption(confeqt,creer_au_demarrage)		"La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
-   set caption(confeqt,ok)					"OK"
-   set caption(confeqt,appliquer)				"Aplicar"
-   set caption(confeqt,fermer)				"Cerrar"
-   set caption(confeqt,aide)					"Ayuda"
+   set caption(confeqt,equipement)          "Equipo:"
+   set caption(confeqt,config)              "Configuración del equipo"
+   set caption(confeqt,creer_au_demarrage)  "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
+   set caption(confeqt,ok)                  "OK"
+   set caption(confeqt,appliquer)           "Aplicar"
+   set caption(confeqt,fermer)              "Cerrar"
+   set caption(confeqt,aide)                "Ayuda"
 
-   set caption(confeqt,attention)				"!Cuidado¡"
-   set caption(confeqt,connexion_texte1)			"Conectando con al equipo..."
-   set caption(confeqt,connexion_texte2)			"Por favor, espere unos segundos."
+   set caption(confeqt,attention)           "!Cuidado¡"
+   set caption(confeqt,connexion_texte1)    "Conectando con al equipo..."
+   set caption(confeqt,connexion_texte2)    "Por favor, espere unos segundos."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(confeqt,config)				"Einrichtung Konfiguration"
-   set caption(confeqt,creer_au_demarrage)		"Nächste Mal diese Einrichtung automatisch anschließen"
-   set caption(confeqt,ok)					"OK"
-   set caption(confeqt,appliquer)				"Anwenden"
-   set caption(confeqt,fermer)				"Schließen"
-   set caption(confeqt,aide)					"Hilfe"
+   set caption(confeqt,equipement)          "Einrichtung:"
+   set caption(confeqt,config)              "Einrichtung Konfiguration"
+   set caption(confeqt,creer_au_demarrage)  "Nächste Mal diese Einrichtung automatisch anschließen"
+   set caption(confeqt,ok)                  "OK"
+   set caption(confeqt,appliquer)           "Anwenden"
+   set caption(confeqt,fermer)              "Schließen"
+   set caption(confeqt,aide)                "Hilfe"
 
-   set caption(confeqt,attention)				"Achtung"
-   set caption(confeqt,connexion_texte1)			"Bitte, einige Sekunden warten"
-   set caption(confeqt,connexion_texte2)			"während das Ausrüstung Anschluß."
+   set caption(confeqt,attention)           "Achtung"
+   set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"
+   set caption(confeqt,connexion_texte2)    "während das Ausrüstung Anschluß."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(confeqt,config)				"Equipment Setup"
-   set caption(confeqt,creer_au_demarrage)		"Next time software is run connect this equipment automatically"
-   set caption(confeqt,ok)					"OK"
-   set caption(confeqt,appliquer)				"Apply"
-   set caption(confeqt,fermer)				"Close"
-   set caption(confeqt,aide)					"Help"
+   set caption(confeqt,equipement)          "Equipement:"
+   set caption(confeqt,config)              "Equipment Setup"
+   set caption(confeqt,creer_au_demarrage)  "Next time software is run connect this equipment automatically"
+   set caption(confeqt,ok)                  "OK"
+   set caption(confeqt,appliquer)           "Apply"
+   set caption(confeqt,fermer)              "Close"
+   set caption(confeqt,aide)                "Help"
 
-   set caption(confeqt,attention)				"Warning"
-   set caption(confeqt,connexion_texte1)			"Equipment Connection in Progress..."
-   set caption(confeqt,connexion_texte2)			"Please wait a few seconds."
+   set caption(confeqt,attention)           "Warning"
+   set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
+   set caption(confeqt,connexion_texte2)    "Please wait a few seconds."
 
 }
 

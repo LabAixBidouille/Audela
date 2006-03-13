@@ -83,7 +83,7 @@ namespace eval ::Movie {
       #--- je redessine le reticule
       set audace(picture,w) $w
       set audace(picture,h) $h
-      ::Crosshair::redrawCrosshair      
+      ::confVisu::redrawCrosshair $audace(visuNo)     
 
       #--- je cree un bind pour raffraichir l'affichage chaque fois que le curseur de la souris revient sur la fenetre
       bind $hWindow <Enter> {  
