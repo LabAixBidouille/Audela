@@ -1,0 +1,82 @@
+#
+# Fichier : camera.cap
+# Date de mise a jour : 08 janvier 2006
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(camera,en_cours)        "Acquiring..."
+set caption(camera,secondes)        "seconds"
+set caption(camera,seconde)         "second"
+set caption(camera,sec)             "sec."
+set caption(camera,ligne)           "lines"
+set caption(camera,attente)         "Waiting:"
+set caption(camera,numerisation)    "Read CCD"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(camera,en_cours)     "Acquisition en cours..."
+   set caption(camera,secondes)     "secondes"
+   set caption(camera,seconde)      "seconde"
+   set caption(camera,sec)          "sec."
+   set caption(camera,ligne)        "lignes"
+   set caption(camera,attente)      "Attente :"
+   set caption(camera,numerisation) "Lecture CCD"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(camera,en_cours)     "Acquisizione in corso ..."
+   set caption(camera,secondes)     "secondi"
+   set caption(camera,seconde)      "secondo"
+   set caption(camera,sec)          "sec."
+   set caption(camera,ligne)        "linee"
+   set caption(camera,attente)      "Attendere:"
+   set caption(camera,numerisation) "Lettura CCD"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(camera,en_cours)     "Adquiriendo ..."
+   set caption(camera,secondes)     "segundos"
+   set caption(camera,seconde)      "segundo"
+   set caption(camera,sec)          "seg."
+   set caption(camera,ligne)        "lineas"
+   set caption(camera,attente)      "Esperando:"
+   set caption(camera,numerisation) "Leer CCD"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(camera,en_cours)     "Laufende Anschaffung..."
+   set caption(camera,secondes)     "Sekunden"
+   set caption(camera,seconde)      "Sekunde"
+   set caption(camera,sec)          "Sek."
+   set caption(camera,ligne)        "Reihen"
+   set caption(camera,attente)      "Warten:"
+   set caption(camera,numerisation) "CCD Lesen"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(camera,en_cours)     "Eksponering er aktiv..."
+   set caption(camera,secondes)     "sekunder"
+   set caption(camera,seconde)      "sekund"
+   set caption(camera,sec)          "sek."
+   set caption(camera,ligne)        "linjer"
+   set caption(camera,attente)      "Venter:"
+   set caption(camera,numerisation) "Læs CCD"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
