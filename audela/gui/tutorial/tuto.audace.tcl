@@ -37,17 +37,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
+  set caption(max_zero) "Probleme de connexion"
+  set caption(satured) "Des pixels sont satures"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation à l'imagerie CCD"
+  set texte(firstdark_1) "Initiation a l'imagerie CCD"
   set texte(firstdark_2) "L'acquisition par la pratique"
-  set texte(firstdark_3) "Ca y est, vous êtes maintenant capables d'obtenir des images du ciel grâce à cette petite interface.\
-Vous pouvez maintenant passer à l'interface Aud'ACE qui est plus élaborée (mais aussi plus complexe). Aud'ACE vous permettra de prétraiter\
+  set texte(firstdark_3) "Ca y est, vous etes maintenant capables d'obtenir des images du ciel grace a cette petite interface.\
+Vous pouvez maintenant passer a l'interface Aud'ACE qui est plus elaboree (mais aussi plus complexe). Aud'ACE vous permettra de pretraiter\
 vos images, de modifier leurs seuils de visualisation, etc.\n\n 
 En route pour l'aventure !\n"
-  set texte(firstdark_exit) " Retour à la page principale."
+  set texte(firstdark_exit) " Retour a la page principale."
 
 }
 }

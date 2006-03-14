@@ -39,17 +39,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
+  set caption(max_zero) "Probleme de connexion"
+  set caption(satured) "Des pixels sont satures"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation à l'imagerie CCD"
-  set texte(firstdark_2) "Connexion des câbles de la caméra"
-  set texte(firstdark_3) "Sur cette photo, la caméra Audine est posée sur son boîtier d'alimentation (vue face arrière).\
-L'ordinateur (en-dessous) est connecté à la caméra via le câble en nappe multicolore sur le port imprimante (sortie parallèle LPT).\
-La caméra est reliée à son boîtier d'alimentation via un câble rond (prises jaune et rouge).\
-Enfin, le boîtier d'alimentation est branché sur le secteur (220V 50Hz).\n"
-  set texte(firstdark_exit) " Retour à la page principale."
+  set texte(firstdark_1) "Initiation a l'imagerie CCD"
+  set texte(firstdark_2) "Connexion des cables de la camera"
+  set texte(firstdark_3) "Sur cette photo, la camera Audine est posee sur son boitier d'alimentation (vue face arriere).\
+L'ordinateur (en-dessous) est connecte a la camera via le cable en nappe multicolore sur le port imprimante (sortie parallele LPT).\
+La camera est reliee a son boitier d'alimentation via un cable rond (prises jaune et rouge).\
+Enfin, le boitier d'alimentation est branche sur le secteur (220V 50Hz).\n"
+  set texte(firstdark_exit) " Retour a la page principale."
 }
 }
 

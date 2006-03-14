@@ -3,7 +3,7 @@
 #
 
 # A Resizable Notebook widget for Tcl/Tk
-# $Revision: 1.4 $
+# $Revision: 1.1.1.1 $
 #
 # Copyright (C) 1998 Daniel Roche
 #

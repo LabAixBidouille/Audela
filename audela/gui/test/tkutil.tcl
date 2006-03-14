@@ -22,7 +22,7 @@ proc Scrolled_Canvas { c args } {
 
 #
 #   Transforme des coordonnees ecran en coordonnees canvas. L'argument
-#   est une liste de deux entiers, et retourne également une liste de
+#   est une liste de deux entiers, et retourne egalement une liste de
 #   deux entiers.
 #
 proc screen2Canvas {coord} {
@@ -34,7 +34,7 @@ proc screen2Canvas {coord} {
 
 #
 #   Transforme des coordonnees canvas en coordonnees image. L'argument
-#   est une liste de deux entiers, et retourne également une liste de
+#   est une liste de deux entiers, et retourne egalement une liste de
 #   deux entiers.
 #
 proc canvas2Picture {coord} {

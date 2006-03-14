@@ -44,24 +44,24 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
+  set caption(max_zero) "Probleme de connexion"
+  set caption(satured) "Des pixels sont satures"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation à l'imagerie CCD"
-  set texte(firstdark_2) "Adaptation mécanique sur le porte-oculaire"
-  set texte(firstdark_3) "Sur cette photo, la caméra Audine est placée dans le porte-oculaire du télescope.\
-Ce montage simpliste permet de réaliser facilement les premières images puisqu'il suffit de pointer\
-avec un oculaire puis, une fois centré à l'oeil, de remplacer l'oculaire par la caméra.\n
-On notera, toutefois, que ce montage présente deux inconvénients. Le premier est que la mise au point\
-(la focalisation) est différente entre l'oculaire et la caméra. On s'arrangera pour régler la focalisation\
-de façon à avoir une image nette sur la caméra (cf. plus loin) puis de placer l'oculaire pour avoir une image\
-nette sans bouger la mise au point (il faut parfois ajouter une bague mécanique).\n
-Le deuxième inconvénient est que l'on perd le \"flat\" entre chaque image. Nous considérons que ce problème\
-est mineur lorsque l'on réalise ses premières images. Il faudra ensuite penser à modifier le montage pour\
-garder la caméra en place pendant toute la durée de l'observation. Nous vous rappelons que de nombreux\
-conseils peuvent vous être donnés en vous inscrivant à la liste Aude ou Audine sur Internet.\n"
-  set texte(firstdark_exit) " Retour à la page principale."
+  set texte(firstdark_1) "Initiation a l'imagerie CCD"
+  set texte(firstdark_2) "Adaptation mecanique sur le porte-oculaire"
+  set texte(firstdark_3) "Sur cette photo, la camera Audine est placee dans le porte-oculaire du telescope.\
+Ce montage simpliste permet de realiser facilement les premieres images puisqu'il suffit de pointer\
+avec un oculaire puis, une fois centre a l'oeil, de remplacer l'oculaire par la camera.\n
+On notera, toutefois, que ce montage presente deux inconvenients. Le premier est que la mise au point\
+(la focalisation) est differente entre l'oculaire et la camera. On s'arrangera pour regler la focalisation\
+de facon a avoir une image nette sur la camera (cf. plus loin) puis de placer l'oculaire pour avoir une image\
+nette sans bouger la mise au point (il faut parfois ajouter une bague mecanique).\n
+Le deuxieme inconvenient est que l'on perd le \"flat\" entre chaque image. Nous considerons que ce probleme\
+est mineur lorsque l'on realise ses premieres images. Il faudra ensuite penser a modifier le montage pour\
+garder la camera en place pendant toute la duree de l'observation. Nous vous rappelons que de nombreux\
+conseils peuvent vous etre donnes en vous inscrivant a la liste Aude ou Audine sur Internet.\n"
+  set texte(firstdark_exit) " Retour a la page principale."
 }
 }
 

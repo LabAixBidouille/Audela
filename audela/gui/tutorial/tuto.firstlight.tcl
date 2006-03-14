@@ -36,17 +36,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
+  set caption(max_zero) "Probleme de connexion"
+  set caption(satured) "Des pixels sont satures"
   set caption(maxlight) "Valeur maximum ="
   set caption(lowlevel) "Niveau bas ="
   set caption(highlevel) "Niveau haut ="
 
-  set texte(firstlight_1) "Initiation à l'imagerie CCD"
-  set texte(firstlight_2) "Première lumière, caméra non-refroidie"
-  set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur. La caméra n'est pas refroidie.\n
+  set texte(firstlight_1) "Initiation a l'imagerie CCD"
+  set texte(firstlight_2) "Premiere lumiere, camera non-refroidie"
+  set texte(firstlight_3) "Installer votre materiel d'acquisition CCD (camera branchee sur l'ordinateur) dans une piece faiblement eclairee. Le mieux est de proceder pendant la nuit dans une piece eclairee par l'ecran de l'ordinateur. La camera n'est pas refroidie.\n
 Cliquer sur le bouton rouge $caption(go) pour faire une image.\n"
-  set texte(firstlight_exit) " Retour à la page principale."
+  set texte(firstlight_exit) " Retour a la page principale."
 
 }
 }

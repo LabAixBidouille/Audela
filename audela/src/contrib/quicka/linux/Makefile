@@ -1,4 +1,0 @@
-
-all:
-
-include ../../../Makefile.rules

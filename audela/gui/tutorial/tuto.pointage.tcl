@@ -37,17 +37,17 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
+  set caption(max_zero) "Probleme de connexion"
+  set caption(satured) "Des pixels sont satures"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Initiation à l'imagerie CCD"
-  set texte(firstdark_2) "Pointage des objets célestes"
-  set texte(firstdark_3) "Pointer votre télescope vers votre objet préféré (quelque chose de brillant pour un premier test comme une étoile de magnitude 1 par exemple) et remplacer l'oculaire\
-par la caméra CCD. Cliquer sur le bouton rouge pour effectuer une pose. L'image est sans doute très défocalisée et l'étoile ressemble à un gros rond avec un trou noir au centre. C'est normal.\n
-Cette page vous sert à centrer l'objet dans le champ. Effectuer des poses successives en déplaçant le tube de façon à amener l'objet au centre. Nous allons maintenant pouvoir passer à l'étape\
+  set texte(firstdark_1) "Initiation a l'imagerie CCD"
+  set texte(firstdark_2) "Pointage des objets celestes"
+  set texte(firstdark_3) "Pointer votre telescope vers votre objet prefere (quelque chose de brillant pour un premier test comme une etoile de magnitude 1 par exemple) et remplacer l'oculaire\
+par la camera CCD. Cliquer sur le bouton rouge pour effectuer une pose. L'image est sans doute tres defocalisee et l'etoile ressemble a un gros rond avec un trou noir au centre. C'est normal.\n
+Cette page vous sert a centrer l'objet dans le champ. Effectuer des poses successives en deplacant le tube de facon a amener l'objet au centre. Nous allons maintenant pouvoir passer a l'etape\
 de la focalisation.\n"
-  set texte(firstdark_exit) " Retour à la page principale."
+  set texte(firstdark_exit) " Retour a la page principale."
 
 }
 }

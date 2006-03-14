@@ -1,2 +1,0 @@
-LIBRARY libstarlight
-EXPORTS Starlight_Init @1

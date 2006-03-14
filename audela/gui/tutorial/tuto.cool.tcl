@@ -44,24 +44,24 @@ if {[string compare $langage french] ==0 } {
   set caption(compute) "Analyse..."
   set caption(exit) "Quitter"
   set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
+  set caption(max_zero) "Probleme de connexion"
+  set caption(satured) "Des pixels sont satures"
   set caption(maxdark) "Valeur maximum ="
 
-  set texte(firstdark_1) "Refroidissement de la caméra"
-  set texte(firstdark_2) "Afin d'augmenter la qualité des images, il est conseillé de refroidir la caméra CCD"
-  set texte(firstdark_3) "Pour refroidir la caméra, commencer par mettre le ventilateur en fonctionnement puis\
-le bouton du Peltier en marche. Attendre quelques minutes que la caméra se soit refroidie. Vérifier aussi qu'il n'y a pas\ 
-de givre qui se dépose sur le CCD.\n
-La photo montre la face avant du boîtier d'alimentation de la caméra Audine sur laquelle se trouvent les boutons\
-à actionner.\n
-Le refroidissement est obligatoire si l'on veut obtenir des images CCD de qualité. En effet, plus le CCD est \"chaud\"\
-plus il génère de signal thermique qui masque les détails de l'image. Avec le refroidissement Peltier, la caméra Audine\
-génère peu de signal thermique et il est possible de le soustraire de l'image brute en soustrayant une pose\
-appelée \"dark\".\n
-Lorsque vous voulez arrêter la caméra, commencez par couper le Peltier puis attendre au moins 15 minutes avant d'arrêter\
-le ventilateur afin d'éviter de provoquer l'apparition de givre sur le CCD.\n"
-  set texte(firstdark_exit) " Retour à la page principale."
+  set texte(firstdark_1) "Refroidissement de la camera"
+  set texte(firstdark_2) "Afin d'augmenter la qualite des images, il est conseille de refroidir la camera CCD"
+  set texte(firstdark_3) "Pour refroidir la camera, commencer par mettre le ventilateur en fonctionnement puis\
+le bouton du Peltier en marche. Attendre quelques minutes que la camera se soit refroidie. Verifier aussi qu'il n'y a pas\ 
+de givre qui se depose sur le CCD.\n
+La photo montre la face avant du boitier d'alimentation de la camera Audine sur laquelle se trouvent les boutons\
+a actionner.\n
+Le refroidissement est obligatoire si l'on veut obtenir des images CCD de qualite. En effet, plus le CCD est \"chaud\"\
+plus il genere de signal thermique qui masque les details de l'image. Avec le refroidissement Peltier, la camera Audine\
+genere peu de signal thermique et il est possible de le soustraire de l'image brute en soustrayant une pose\
+appelee \"dark\".\n
+Lorsque vous voulez arreter la camera, commencez par couper le Peltier puis attendre au moins 15 minutes avant d'arreter\
+le ventilateur afin d'eviter de provoquer l'apparition de givre sur le CCD.\n"
+  set texte(firstdark_exit) " Retour a la page principale."
 }
 }
 

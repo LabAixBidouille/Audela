@@ -1,2 +1,0 @@
-LIBRARY libcamth
-EXPORTS Camth_Init @1
