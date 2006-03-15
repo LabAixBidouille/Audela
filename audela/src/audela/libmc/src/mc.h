@@ -433,6 +433,8 @@ typedef struct {
 /* --- CDR positions pour courbes de lumieres d'asteroides */
 typedef struct {
    /* --- for each phase index */
+   double jdtt;
+   double phasett;
    double jd;
    double phase;
    double xaster;
@@ -443,6 +445,9 @@ typedef struct {
    double zearth;
    double delta;
    double r;
+   double angelong;
+   double angphase;
+   double mag0;
    double mag1;
    double mag2;
 } mc_cdrpos;
@@ -451,7 +456,8 @@ typedef struct {
 typedef struct {
    int htmlevel;
    double lon_phase0; /* rad */
-   double jd_phase0; /* JD */
+   double jd_phase0; /* JD dans le repere de l'asteroide */
+   double jd_phase0tt ; /* JD TT dans le repere terrestre */
    double period; /* sideral, day */
    double lonpole; /* rad */
    double latpole; /* rad */

@@ -200,12 +200,13 @@ void mc_tdminusut(double jj,double *dt)
 /* Retourne la valeur dt(sec)=TT-UT partir de jj en TU                     */
 /***************************************************************************/
 /* Algo : Meeus "Astronomical Algorithms" p72                              */
+/* and ftp://maia.usno.navy.mil/ser7/tai-utc.dat                           */
 /***************************************************************************/
 {
    double ds=0.,ds1,ds2,t=0.;
-   int indexmax=191,k,k2;
+   int indexmax=194,k,k2;
    double jjmax,jj1,jj2;
-   double table[191*2]={
+   double table[194*2]={
       2312752.5, +124., /* 1620 */
       2313483.5, +115.,
       2314213.5, +106.,
@@ -392,11 +393,15 @@ void mc_tdminusut(double jj,double *dt)
       2446431.5,   54.9,  /* 1986 */
       2447161.5,   55.8,  /* 1988 */
       2447892.5,   56.9,  /* 1990 */
-      2448622.5,   58.7,
-      2449353.5,   59.7,
-      2450083.5,   61.2,
-      2450814.5,   64.,
-      2451544.5,  +67.};  /* 2000 */
+      2448257.5, 58.184,  /* 1991 JAN  1 */
+      2448804.5, 59.184,  /* 1992 JUL  1 */
+      2449169.5, 60.184,  /* 1993 JUL  1 */
+      2449534.5, 61.184,  /* 1994 JUL  1 */
+      2450083.5, 62.184,  /* 1996 JAN  1 */
+      2450630.5, 63.184,  /* 1997 JUL  1 */
+      2451179.5, 64.184,  /* 1999 JAN  1 */
+      2453736.5, 65.184   /* 2006 JAN  1 */
+   };
    jjmax=table[(indexmax-1)*2];
    if (jj<=2067314.5) {
       /* --- date <= anne948 ---*/
@@ -413,7 +418,7 @@ void mc_tdminusut(double jj,double *dt)
       return;
    }
    if (jj<=jjmax) {
-      /* --- date <= anne2000 ---*/
+      /* --- date <= indexmax ---*/
       k2=indexmax;
       for (k=1;k<indexmax;k++) {
          k2=k;
@@ -432,7 +437,7 @@ void mc_tdminusut(double jj,double *dt)
    }
    /* --- extrapolation ---*/
    t=(jj-J2000)/365.25;
-   ds=67.+1.3*t;
+   ds=65.184+t/6.;
    *dt=ds;
 }
 
