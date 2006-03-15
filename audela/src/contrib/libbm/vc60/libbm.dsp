@@ -98,7 +98,31 @@ SOURCE=..\src\bm_c_tcl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\bm_trt-img.cpp
+SOURCE=..\src\Image_base.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image_conversion.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image_ecriturepixel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image_lecturepixel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image_max.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image_maxxy.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image_trt.cpp
 # End Source File
 # Begin Source File
 
@@ -108,10 +132,58 @@ SOURCE=..\src\libbm.cpp
 
 SOURCE=.\libbm.def
 # End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_base.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_conversion.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_ecritureelement.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_lectureelement.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_max.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_maxx.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur_trt.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\src\bm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\bm_c_tcl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Image.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\libbm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\Vecteur.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
