@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 06 mars 2006
+# Date de mise a jour : 15 mars 2006
 #
 
 #=========================================================================
@@ -705,7 +705,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analisi"
    set caption(audace,menu,histo)                     "Istogramma"
-   set caption(audace,menu,coupe)                     "# Coupe"
+   set caption(audace,menu,coupe)                     "Sezione"
    set caption(audace,menu,statwin)                   "Statistiche zona selezionata"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Applicare una gaussiana"
@@ -1014,7 +1014,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Análisis"
    set caption(audace,menu,histo)                     "Histograma"
-   set caption(audace,menu,coupe)                     "# Coupe"
+   set caption(audace,menu,coupe)                     "Sección"
    set caption(audace,menu,statwin)                   "Ventana de estadísticas"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajustar perfil Gauss"
