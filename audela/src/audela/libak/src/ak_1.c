@@ -712,9 +712,14 @@ int ak_util_meansigma(double *x,int kdeb,int n,double *mean,double *sigma)
    }
    *mean=mu_ii;
    *sigma=0.;
+   /*Modif Yassine: pour avoir la meme chose que matlab
    if (i!=0.) {
       *sigma=sqrt(sx_ii/i);
+   }*/
+   if (i>1.) {
+      *sigma=sqrt(sx_ii/(i-1));
    }
+   /*fin*/
    return 0;
 }
 

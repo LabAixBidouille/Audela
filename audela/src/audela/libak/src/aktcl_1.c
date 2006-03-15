@@ -39,7 +39,7 @@ load libak ; ak_reduceusno c:/d/usno/ c:/d/usnoshort ZONE0750 10
 */
 /****************************************************************************/
 {
-   char s[1024],pathname_in[1024],pathname_out[1024];
+   char s[100],pathname_in[1024],pathname_out[1024];
    char zonename[1024],ligne[1024];
    FILE *catin,*catout,*accout;
    int n,nin,nout,noutold;
@@ -156,7 +156,7 @@ int Cmd_aktcl_radecinrefzmgmes(ClientData clientData, Tcl_Interp *interp, int ar
 /****************************************************************************/
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char filename_in[1024],generic_filename[1024],filename_out[1024];
    struct_htmref  htmref,htmref0;
@@ -232,8 +232,8 @@ int Cmd_aktcl_radecinrefzmgmes(ClientData clientData, Tcl_Interp *interp, int ar
                         htmmes.maginst,htmmes.magcali);
                         */
                         if (htmmes.jd>2e6) {
-                           fprintf(f_out,"%15.6f %8.4f %7.3f %3d\n",
-                           htmmes.jd,htmmes.magcali,htmmes.dmag,htmmes.codecam);
+                           fprintf(f_out,"%15.6f %8.4f %3d\n",
+                           htmmes.jd,htmmes.magcali,htmmes.codecam);
                         }
                      }
                   }
@@ -254,7 +254,7 @@ int Cmd_aktcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char filename_in[1024],generic_filename[1024],filename_out[1024];
    struct_htmmes  htmmes,*htmmess=NULL;
@@ -268,6 +268,7 @@ int Cmd_aktcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc
    int n,kkzmg,n_val,n_ref0;
    unsigned char ukcam,ukfil;
    FILE *f_in,*f_out;
+/*FILE *ff;*/
    int codes[256][256];
    double mean,sigma,magmax,magmin;
    /*double sigmoy,sigsig;
@@ -279,9 +280,9 @@ int Cmd_aktcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc
    /*rajout Yassine*/
    int kvar,critvartot,kkkzmg,k_iter,k_photo,k_backg;
    double somme_sig_photo,somme_moy_photo,somme_sig_backg,somme_moy_backg;
-   double val_droite,pente_photo=0,pente_backg=0,ordo_alorigine_photo,ordo_alorigine_backg;
-   double ampli;
-   int nstarmin = 20;
+   double val_droite,ordo_alorigine_photo,ordo_alorigine_backg;
+   double ampli,rien;
+   int minobs;
    /*fin*/
 
 /*
@@ -291,16 +292,20 @@ int Cmd_aktcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc
 FILE *f;
 #endif
    if(argc<3) {
-      sprintf(s,"Usage: %s path generic_filename ?nstarmin?", argv[0]);
+      sprintf(s,"Usage: %s path generic_filename", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
-      /* --- decodage des arguments ---*/
+       /* --- decodage des arguments ---*/
       strcpy(path,argv[1]);
       strcpy(generic_filename,argv[2]);
-      if (argc>=4) {
-          nstarmin=atoi(argv[3]);
-      }
+	  /*myfiltre=atof(argv[3]);
+	  myfiltre2=(unsigned char)myfiltre;*/
+	  if (argc==3) {
+		  minobs=30;
+	  } else {
+          minobs=atoi(argv[3]);
+	  }
       /* --- init des tableaux ---*/
       for (kcam=0;kcam<256;kcam++) {
          for (kfil=0;kfil<256;kfil++) {
@@ -550,22 +555,6 @@ fclose(f);
                 /* --- Pas assez de mesures faites avec cette combinason cam+filtre ---*/
                 continue;
 			}
-			if (ukfil==66) {
-				pente_photo=pente_photo_B;
-                pente_backg=pente_backg_B;
-			} else if (ukfil==67) {
-				pente_photo=pente_photo_C;
-                pente_backg=pente_backg_C;
-			} else if (ukfil==73) {
-				pente_photo=pente_photo_I;
-                pente_backg=pente_backg_I;
-			} else if (ukfil==82) {
-				pente_photo=pente_photo_R;
-                pente_backg=pente_backg_R;
-			} else if (ukfil==86) {
-				pente_photo=pente_photo_V;
-                pente_backg=pente_backg_V;
-			}
 #if defined DEBUG_refzmgmes2vars
 f=fopen("toto.txt","at");
 fprintf(f,"   kcam=%d  kfil=%d\n",kcam,kfil);
@@ -591,6 +580,7 @@ f=fopen("toto.txt","at");
 fprintf(f,"   VALEUR MOYENNE\n");
 fclose(f);
 #endif
+/*ff=fopen("toto.txt","w");*/
             for (kref=0;kref<n_ref;kref++) {
 #if defined DEBUG_refzmgmes2vars
 f=fopen("toto.txt","at");
@@ -668,6 +658,7 @@ fclose(f);
 					 ak_util_qsort_double(val,0,n,NULL);
 					 ampli = val[n-1]-val[0];
 					 flt_mes[AK_AMPLI*n_ref+kref]=(float)ampli;
+/*fprintf(ff,"%4d %7.4f %7.4f %7.4f %4d\n",kref,mean,sigma,ampli,n);*/
 					 /*fin*/
                      /* --- nb de mesures superieures a 3*sigma ---*/
                      magmax=mean+3*sigma;
@@ -678,10 +669,12 @@ fclose(f);
                         if (val[k]>magmax) kk++;
                      }
                      flt_mes[AK_SIGJD*n_ref+kref]=(float)kk;
+	
+
                   }
                }
             }
-			
+/*fclose(ff);*/
 			k_iter=0;
 			while (k_iter<NB_ITER) {
 				somme_sig_photo=0;
@@ -693,7 +686,7 @@ fclose(f);
 				for (kref=0;kref<n_ref;kref++) {
 					mean=(double)flt_mes[AK_MAGMOY*n_ref+kref];
 					sigma=(double)flt_mes[AK_SIGMOY*n_ref+kref];
-					val_droite=(double)flt_mes[AK_FIT*n_ref+kref]*XMOYFIT;
+					val_droite=(double)flt_mes[AK_FIT*n_ref+kref];
 					/*La combinaison mean>-99.9 avec val_droite nous évite de prendre de mauvais points*/
 					/*Au debut je prends tous les points car val_droite=1000 partout*/
 					if (sigma<val_droite) {
@@ -701,24 +694,39 @@ fclose(f);
 							somme_sig_photo=somme_sig_photo+log(sigma);
 							somme_moy_photo=somme_moy_photo+mean;
                             k_photo++;
-						} else if ((mean<MAG_BACKG)&&(mean>MAG_PHOTO)) {
+						} else if ((mean<=MAG_BACKG)&&(mean>MAG_PHOTO)) {
 							somme_sig_backg=somme_sig_backg+log(sigma);
 							somme_moy_backg=somme_moy_backg+mean;
 							k_backg++;
 						}
 					}
 				}
-				ordo_alorigine_photo=(somme_sig_photo-pente_photo*somme_moy_photo)/k_photo;
-				ordo_alorigine_backg=(somme_sig_backg-pente_backg*somme_moy_backg)/k_backg;
+				if (k_photo==0) {
+					ordo_alorigine_photo=0;
+				} else {
+                    ordo_alorigine_photo=(somme_sig_photo-pente_photo*somme_moy_photo)/k_photo;
+				}
+				if (k_backg==0) {
+					ordo_alorigine_backg=0;
+				} else {
+                    ordo_alorigine_backg=(somme_sig_backg-pente_backg*somme_moy_backg)/k_backg;
+				}
                 for (kref=0;kref<n_ref;kref++) {
 					mean=(double)flt_mes[AK_MAGMOY*n_ref+kref];
-					if (mean>-99.9) {
+					if ((mean<=MAG_PHOTO)&&(mean>-99.9)) {
                         val_droite=sqrt(exp(2*(pente_photo*mean+ordo_alorigine_photo))+exp(2*(pente_backg*mean+ordo_alorigine_backg)));
-						flt_mes[AK_FIT*n_ref+kref]=(float)val_droite;
+						flt_mes[AK_FIT*n_ref+kref]=(float)(XMOYFIT1*val_droite);
+					} else if ((mean<=MAG_BACKG)&&(mean>MAG_PHOTO)) {
+						val_droite=sqrt(exp(2*(pente_photo*mean+ordo_alorigine_photo))+exp(2*(pente_backg*mean+ordo_alorigine_backg)));
+						flt_mes[AK_FIT*n_ref+kref]=(float)(XMOYFIT2*val_droite);
+					}
+					if (kref==3) {
+						rien=flt_mes[AK_FIT*n_ref+kref];
 					}
 				}
                 k_iter++;
 			}
+/*ff=fopen("resume.txt","wt");*/
 			for (kref=0;kref<n_ref;kref++) {
 				/*Init de critvar*/
 				for (kvar=0;kvar<2;kvar++) {
@@ -726,10 +734,12 @@ fclose(f);
 				}
 				mean=(double)flt_mes[AK_MAGMOY*n_ref+kref];
 				sigma=(double)flt_mes[AK_SIGMOY*n_ref+kref];
-				val_droite=(double)flt_mes[AK_FIT*n_ref+kref]*XMOY;
+				val_droite=XMOY*sqrt(exp(2*(pente_photo*mean+ordo_alorigine_photo))+exp(2*(pente_backg*mean+ordo_alorigine_backg)));
+				/*val_droite=(double)flt_mes[AK_FIT*n_ref+kref]*XMOY;*/
 				ampli=(float)flt_mes[AK_AMPLI*n_ref+kref];
 				n=(int)flt_mes[AK_ALLJD*n_ref+kref];
-				if ((sigma>=val_droite)&&(ampli>sigma)&&(n>=nstarmin)) {
+/*fprintf(ff,"%4d %7.6f %7.6f %4d\n",kref,mean,sigma,n);*/
+				if ((sigma>=val_droite)&&(ampli>sigma)&&(n>=minobs)) {
                     critvar[0]=1;
 				}
 				/*sigjd=(int)flt_mes[AK_SIGJD*n_ref+num_etoi];
@@ -796,7 +806,7 @@ fclose(f);
 					fclose(f_out);
 				}
 			}
-
+/*fclose(ff);*/
 #if defined DEBUG_refzmgmes2vars
 f=fopen("toto.txt","at");
 fprintf(f,"   FIN DE PETITE BOUCLE\n");
@@ -835,7 +845,7 @@ int Cmd_aktcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /* cmag est mis a jour.                                                     */
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char filename_in[1024],generic_filename[1024],filename_out[1024];
    struct_htmmes  htmmes,*htmmess=NULL;
@@ -1200,7 +1210,7 @@ int Cmd_aktcl_sortmes(ClientData clientData, Tcl_Interp *interp, int argc, char 
 /* Doit etre effectue apres une serie de ak_file2refzmgmes et avant updates */
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char filename_in[1024],generic_filename[1024],filename_out[1024];
    struct_htmmes  htmmes,*htmmess=NULL;
@@ -1264,6 +1274,9 @@ int Cmd_aktcl_sortmes(ClientData clientData, Tcl_Interp *interp, int argc, char 
       k=0;
       while (feof(f_in)==0) {
          if (fread(&htmmes,1,sizeof(struct_htmmes),f_in)>1) {
+ /*Rajout Yassine:pour nettoyer un petit bug*/
+			if (htmmes.jd<2400000.){continue;}
+/*fin du rajout Yassine*/
             htmmess[k]=htmmes;
             sprintf(s,"%d%f",htmmes.indexref,htmmes.jd);
             val_ind_mes[k]=(double)atof(s);
@@ -1272,6 +1285,9 @@ int Cmd_aktcl_sortmes(ClientData clientData, Tcl_Interp *interp, int argc, char 
          }
       }
       fclose(f_in);
+/*Rajout Yassine:pour nettoyer un petit bug n_mes devient k*/
+	  n_mes=k;
+/*fin du rajout Yassine*/
       /* --- on trie les donnees ---*/
       ak_util_qsort_double(val_ind_mes,0,n_mes,ind_ind_mes);
       /* --- ecriture des donnees triees ---*/
@@ -1307,7 +1323,7 @@ int Cmd_aktcl_refzmgmes2ascii(ClientData clientData, Tcl_Interp *interp, int arg
 /* Fonction utile pour le debuggogage.                                      */
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char filename_in[1024],generic_filename[1024],filename_out[1024];
    struct_htmref  htmref;
@@ -1403,7 +1419,7 @@ int Cmd_aktcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
 /* ra dec jd codecam codefiltre maginst exposure airmass dmag(en binaires)  */
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char filename_in[1024],generic_filename_out[1024],filename_out[1024];
    FILE *f_in,*f_out;
@@ -2045,11 +2061,11 @@ int Cmd_aktcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 /* Input :                                                                  */
 /* ra dec jd codecam codefiltre maginst exposure airmass (ASCII)            */
-/* Output : un fichier pour chaque HTM (ou tout le ciel si htm_level=-1     */
+/* Output : un fichier pour chaque HTM                                      */
 /* ra dec jd codecam codefiltre maginst exposure airmass  (binaire)         */
 /****************************************************************************/
 {
-   char s[1024];
+   char s[100];
    char path[1024];
    char ligne[2000],texte[2000],filename_in[1024],generic_filename_out[1024],filename_out[1024];
    char htm[80],htm_only[80];
@@ -2064,7 +2080,7 @@ int Cmd_aktcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char
    struct_htmfile htmfile;
 
    if(argc<5) {
-      sprintf(s,"Usage: %s filename_in path generic_filename_out htm_level|-1 ?htm_only?", argv[0]);
+      sprintf(s,"Usage: %s filename_in path generic_filename_out htm_level ?htm_only?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -2073,6 +2089,7 @@ int Cmd_aktcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char
       strcpy(path,argv[2]);
       strcpy(generic_filename_out,argv[3]);
       htm_level=(int)atoi(argv[4]);
+      if (htm_level<0) { htm_level=0; }
       if (htm_level>12) { htm_level=12; }
       strcpy(htm_only,"");
       if (argc>=6) {
@@ -2100,11 +2117,7 @@ int Cmd_aktcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char
 			   sscanf(ligne,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                &ra,&dec,&jd,&codecam,&codefiltre,&maginst,&exposure,&airmass,&dmag,&flagsext);
                /* fin*/
-                if (htm_level>=0) {
-                    ak_radec2htm(ra*dr,dec*dr,htm_level,htm);
-                } else {
-                    strcpy(htm,"allsky");
-                }
+               ak_radec2htm(ra*dr,dec*dr,htm_level,htm);
                /* === fichier (generic)_htm.bin === */
                sprintf(filename_out,"%s%s_%s.bin",path,generic_filename_out,htm);
                gofile=0;
@@ -2112,8 +2125,6 @@ int Cmd_aktcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char
                   gofile=1;
                } else if (strcmp(htm_only,htm)==0) {
                   gofile=1;
-               } else if (htm_level<0) {
-                   gofile=1;
                }
                if (gofile==1) {
                   f_out=fopen(filename_out,"ab");
@@ -2154,7 +2165,7 @@ int Cmd_aktcl_bugbias(ClientData clientData, Tcl_Interp *interp, int argc, char 
 /****************************************************************************/
 {
    int result;
-   char s[1024];
+   char s[100];
    char ligne[2000],filename_in[1024],filename_out[1024];
    FILE *f_in,*f_out;
    int sortie,n;
@@ -2497,37 +2508,44 @@ int aktcl_getinfoimage(Tcl_Interp *interp,int numbuf, ak_image *image)
    return(TCL_OK);
 }
 
-/*int Cmd_aktcl_photometric_parallax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Cmd_aktcl_photometric_parallax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Construit les images (MD,Av) pour les etoiles mesurees dans les bandes   */
 /* BVRIJHK.                                                                 */
 /****************************************************************************/
 /* Entrees :                                                                */
-/* Fichier texte : 1 etoile/ligne, format index,b,v,r,i,j,h,k               */
+/* Fichier texte : 1 etoile/ligne, format ...*/
 /* Fichier texte : couples (H-K,J-H)                                        */
 /* Fichier texte : couples (H-K,K)                                          */
 /*
 load libak; ak_photometric_parallax stars.txt colcol.txt colmag.txt ; buf1 load colcol1.fit ; mult 10 ;visu {1 0}
 load libak; ak_photometric_parallax stars.txt colcol.txt colmag.txt ; buf1 load avmd1.fit ; visu {1 0}
 load libak; ak_photometric_parallax stars.txt colcol.txt colmag.txt ; buf1 load colmag.fit ; visu {1 0}
+load libak; ak_photometric_parallax twomass.txt colcol.txt colmag.txt
 */
 /****************************************************************************/
-/*
 {
    char stringresult[1024];
    char s[100];
-   char ascii_star[1024],ascii_colcol[1024],ascii_colmag[1024];
+   char ascii_star[1024],ascii_htmav[1024],ascii_colcol[1024],ascii_colmag[1024],path[1024];
+   int filetype=1,htmlevel=10,savetmpfiles=0,colcolmagtype=0;
    int result=TCL_ERROR;
-   if(argc<4) {
-      sprintf(s,"Usage: %s ascii_(index,b,v,r,i,j,h,k) ascii_(H-K,J-H) ascii_(H-K,K)", argv[0]);
+   if(argc<10) {
+      sprintf(s,"Usage: %s path magfile magfiletype HTMLevel createTMPFiles ascii_out(HTM,Av) colcol_(H-K,J-H) colmag_(H-K,K) colcolmag_type", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
       /* --- decodage des arguments ---*/
- /*     strcpy(ascii_star,argv[1]);
-      strcpy(ascii_colcol,argv[2]);
-      strcpy(ascii_colmag,argv[3]);
-      strcpy(stringresult,ak_photometric_parallax(ascii_star,ascii_colcol,ascii_colmag));
+      strcpy(path,argv[1]);
+      strcpy(ascii_star,argv[2]);
+      filetype=(int)atoi(argv[3]);
+      htmlevel=(int)atoi(argv[4]);
+      savetmpfiles=(int)atoi(argv[5]);
+      strcpy(ascii_htmav,argv[6]);
+      strcpy(ascii_colcol,argv[7]);
+      strcpy(ascii_colmag,argv[8]);
+      colcolmagtype=(int)atoi(argv[9]);
+      strcpy(stringresult,ak_photometric_parallax(path,ascii_star,filetype,htmlevel,savetmpfiles,ascii_htmav,ascii_colcol,ascii_colmag,colcolmagtype));
       if (strcmp(stringresult,"")==0) {
          result=0;
       } else {
@@ -2614,7 +2632,7 @@ int Cmd_aktcl_rectification(ClientData clientData, Tcl_Interp *interp, int argc,
    }
    return TCL_OK;
 }
-/*int Cmd_aktcl_photometric_parallax_avmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])*/
+int Cmd_aktcl_photometric_parallax_avmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Construit l'image de la carte d'extinction */
 /****************************************************************************/
@@ -2628,7 +2646,6 @@ load libak; ak_photometric_parallax_avmap ./ htmav.txt htmav.fit htmdm.fit 300 3
   compter 39s pour 1000 etoiles
 */
 /****************************************************************************/
-/*
 {
    char stringresult[1024];
    char s[100];
@@ -2641,7 +2658,7 @@ load libak; ak_photometric_parallax_avmap ./ htmav.txt htmav.fit htmdm.fit 300 3
       return TCL_ERROR;
    } else {
       /* --- decodage des arguments ---*/
-/*      strcpy(path,argv[1]);
+      strcpy(path,argv[1]);
       strcpy(ascii_htmav,argv[2]);
       strcpy(fitsfilenameav,argv[3]);
       strcpy(fitsfilenamedm,argv[4]);
@@ -2657,6 +2674,6 @@ load libak; ak_photometric_parallax_avmap ./ htmav.txt htmav.fit htmdm.fit 300 3
    }
    return result;
 }
-*/
+
 
 

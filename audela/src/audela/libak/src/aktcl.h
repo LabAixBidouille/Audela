@@ -121,15 +121,18 @@ typedef struct {
 /*fin*/
 
 /*rajout Yassine*/
-#define MAG_PHOTO  13
+#define MAG_PHOTO  13.5
 #define MAG_BACKG  15.5
 /*En prenant XMOYFIT=1.5 ca revient a prendre XMOY=(environ)1.5 */
-#define XMOY        1.5
-#define XMOYFIT     2
-#define NB_ITER     2
+#define XMOY       1.5
+#define XMOYFIT1   1.0
+#define XMOYFIT2   3.0
+#define NB_ITER    5
 /*Voici les pentes des fit obtenues sous matlab*/
 /*Cam 2 */
-#define pente_photo_B 0.252
+#define pente_photo 0.20
+#define pente_backg 0.60
+/*#define pente_photo_B 0.252
 #define pente_backg_B 0.271
 #define pente_photo_C 0.145
 #define pente_backg_C 0.290
@@ -138,7 +141,7 @@ typedef struct {
 #define pente_photo_R 0.110
 #define pente_backg_R 0.299
 #define pente_photo_V 0.217
-#define pente_backg_V 0.334
+#define pente_backg_V 0.334*/
 /*Cam1
 #define pente_photo_B 0.282
 #define pente_backg_B 0.324

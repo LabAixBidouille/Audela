@@ -83,7 +83,8 @@ int Cmd_aktcl_aliasing(ClientData clientData, Tcl_Interp *interp, int argc, char
 int yd_entropie(gsl_matrix *EntMat,int n,int m,double *Entropie);
 int yd_moin_carr(gsl_vector *jds, gsl_vector *mags,gsl_vector *bars, double per , int n_arm,int nmes, gsl_vector *coefs, double *residu);
 int yd_perchoice(gsl_vector *jds, int nmes, int *temoin, int *indice_prem_date, int *indice_dern_date);
-int yd_dichotomie(double per, double *badpers, int nbad, int *temoin2, int *k_bad);
+int yd_dichotomie(double per, gsl_vector *badpers, int nbad, int *temoin2, int *k_bad);
+int yd_util_pgcd(double *vecteur, int taille, double limit,double tolerance,double *pgcd, int *temoin);
 
 /***************************************************************************/
 /***************************************************************************/

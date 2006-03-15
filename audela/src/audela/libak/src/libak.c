@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -39,6 +39,7 @@
 #define XTERN
 #include "libak.h"
 #include "ak_3.h"    /* Yassine */
+#include "ak_4.h"    /* Yassine */
 
 
 /***************************************************************************/
@@ -73,8 +74,8 @@
    Tcl_CreateCommand(interp,"ak_updatezmg",(Tcl_CmdProc *)Cmd_aktcl_updatezmg,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_refzmgmes2vars",(Tcl_CmdProc *)Cmd_aktcl_refzmgmes2vars,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_radecinrefzmgmes",(Tcl_CmdProc *)Cmd_aktcl_radecinrefzmgmes,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   /*Tcl_CreateCommand(interp,"ak_photometric_parallax",(Tcl_CmdProc *)Cmd_aktcl_photometric_parallax,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);*/
-   /*Tcl_CreateCommand(interp,"ak_photometric_parallax_avmap",(Tcl_CmdProc *)Cmd_aktcl_photometric_parallax_avmap,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);*/
+   Tcl_CreateCommand(interp,"ak_photometric_parallax",(Tcl_CmdProc *)Cmd_aktcl_photometric_parallax,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"ak_photometric_parallax_avmap",(Tcl_CmdProc *)Cmd_aktcl_photometric_parallax_avmap,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_reduceusno",(Tcl_CmdProc *)Cmd_aktcl_reduceusno,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    /* */
 	Tcl_CreateCommand(interp,"ak_cour_final",(Tcl_CmdProc *)Cmd_aktcl_cour_finalbis,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
@@ -93,5 +94,8 @@
    Tcl_CreateCommand(interp,"yd_moy_bars_comp",(Tcl_CmdProc *)Cmd_aktcl_moy_bars_comp,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    /*Tcl_CreateCommand(interp,"yd_rectif",(Tcl_CmdProc *)Cmd_aktcl_rectification,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);*/
    Tcl_CreateCommand(interp,"yd_aliasing",(Tcl_CmdProc *)Cmd_aktcl_aliasing,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"yd_starnum",(Tcl_CmdProc *)Cmd_aktcl_starnum,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"yd_statcata",(Tcl_CmdProc *)Cmd_aktcl_statcata,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+
 	return TCL_OK;
 }

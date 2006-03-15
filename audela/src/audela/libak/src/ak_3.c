@@ -41,11 +41,12 @@ int Cmd_aktcl_aliasing(ClientData clientData, Tcl_Interp *interp, int argc, char
 	car leur influence diminue audela de cette limite : 
 	fréquence d'artefact = frequence +/- x*frequence d'aliasing (x=0.5,1,2)*/
 	char s[200];
-    int code,nmes=0;
-	double dj,badper,maxim,maxim2,limit_sup,limit_inf,contraste;
-	int *hist=NULL;
-	int nbad,nbad2,nhist,kj1,kj2,k_hist,val,kk;
-	gsl_vector *jds,*badpers;
+    int code,nmes=0,nbad,nbad1,nbad2;
+	double dj,badper,maxim1,maxim2,limit_inf,limit_sup,pgcd;
+	int *hist1=NULL,*hist2=NULL;
+	int nhist1,nhist2,kj1,kj2,k_hist,k_fact,val,kk,temoin,temoin2,nfact1,nfact2=13;
+	gsl_vector *jds;
+	double *maximums1=NULL,*maximums2=NULL,*badpers=NULL,facteurs[13];
 	Tcl_DString dsptr;
 /*FILE *f;*/
 	if(argc!=2) {
@@ -55,84 +56,200 @@ int Cmd_aktcl_aliasing(ClientData clientData, Tcl_Interp *interp, int argc, char
 	} else {
         /* --- decodage des arguments ---*/
 		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
-		/*Je vais construire un histogramme des périodes d'aliasing avec un pas constant de 1h 
-		où la période de 1j est le centre d'une boite, je le décale de 0.5h:
+		/*Je vais construire 2 histogrammes des périodes d'aliasing 
+		1er: P<10.5h avec un pas constant de 10mn (60 cases)
+		2eme : P>10h avec un pas constant de 4h centre sur 1 j (157 cases)
 		       
-		/*Je marrête à 20j : mon histogramme fait 20*24=480 cases */
-		nhist=480;
+		/*Je marrête à 20j : mon histogramme fait 20*12=240 cases */
+		nhist1=60;
+		nhist2=118;
 		limit_sup=20;
-		limit_inf=1/48.;
+		limit_inf=10/24.;
+		nfact1=6;
+		facteurs[0]=1.;
+		facteurs[1]=0.5;
+		facteurs[2]=1/3.;
+		facteurs[3]=0.25;
+		facteurs[4]=2.;
+		facteurs[5]=3.;
+		facteurs[6]=4;
+		facteurs[7]=0.2;
+		facteurs[8]=1/6.;
+		facteurs[9]=1/7.;
+		facteurs[10]=0.125;
+		facteurs[11]=1/9.;
+		facteurs[12]=0.1;
 		/*J'alloue la mémoire: je n'utilise pas de vecteur gsl car c'est un vecteur d'entiers*/
-		hist=(int*)calloc(nhist,sizeof(int));
-		if (hist==NULL) {
-			sprintf(s,"error : hist pointer out of memory (%d elements)",nhist);
+		hist1=(int*)calloc(nhist1,sizeof(int));
+		if (hist1==NULL) {
+			sprintf(s,"error : hist1 pointer out of memory (%d elements)",nhist1);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             gsl_vector_free(jds);
             return TCL_ERROR;
         }
+		hist2=(int*)calloc(nhist2,sizeof(int));
+		if (hist2==NULL) {
+			sprintf(s,"error : hist2 pointer out of memory (%d elements)",nhist2);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            gsl_vector_free(jds);
+			free(hist1);
+            return TCL_ERROR;
+        }
 		/*Je construis mon histogramme*/		
 /*f=fopen("init.txt","wt");*/
+		temoin=0;
 		for (kj1=0;kj1<nmes-1;kj1++) {
             for (kj2=kj1+1;kj2<nmes;kj2++) {
 				/*par construction jds est trié*/
                 dj=jds->data[kj2]-jds->data[kj1];
 				if (dj>limit_sup) {continue;}
-				if (dj<limit_inf) {continue;}
+				if (dj<limit_inf) {
 /*fprintf(f,"%10.8f\n",dj);*/
-				k_hist=(int)floor(24*(dj-limit_inf));
-				hist[k_hist]++;
-			}
-		}
-/*fclose(f);*/
-		
-		/*Je cherche le maximum de l'histogramme*/
-		maxim=0.;
-		for (k_hist=0;k_hist<nhist;k_hist++) {
-			val=hist[k_hist];
-			if (val>maxim) {maxim=(double)val;}
-		}
-		maxim2=0.1*maxim;
-		maxim=0.8*maxim;
-
-/*maxim=0.;*/
-		/*Je compte le nombre d'éléments de l'histogramme > maxim (0.1maxim)*/
-		nbad=0;
-		nbad2=0;
-		for (k_hist=0;k_hist<nhist;k_hist++) {
-			val=hist[k_hist];
-			if (val>maxim) {nbad++;}
-			if (val>maxim2) {nbad2++;}
-		}
-		contraste=nbad2/nbad;
-		if (contraste>20) {
-            badpers=gsl_vector_calloc(nbad);
-		    kk=0;
-			/*Le remplis le vecteur des périodes d'aliasing : centres des cases*/
-/*f=fopen("final.txt","wt");*/
-			for (k_hist=0;k_hist<nhist;k_hist++) {
-				val=hist[k_hist];
-				if (val>maxim) {
-					badper=(k_hist+1)/24.;
-					badpers->data[kk]=badper;
-					kk++;
-/*fprintf(f,"%f %5d\n",badper,val);*/
+					k_hist=(int)floor(144*dj);
+					/*144=24*6*/
+					hist1[k_hist]++;
+					temoin++; 
+					continue;
+				} else {
+/*fprintf(f,"%10.8f\n",dj);*/
+					k_hist=(int)floor(6*(dj-limit_inf));
+					hist2[k_hist]++;
+					temoin++; 
 				}
 			}
-/*fclose(f);*/
+		}
+/*fclose(f);*/		
+		if (temoin!=0) {
+            /*Je cherche le maximum de l'histogramme*/
+			maxim1=0.;
+			for (k_hist=0;k_hist<nhist1;k_hist++) {
+				val=hist1[k_hist];
+				if (val>maxim1) {maxim1=(double)val;}
+			}
+			maxim1=0.5*maxim1;
+			maxim2=0.;
+			for (k_hist=0;k_hist<nhist2;k_hist++) {
+				val=hist2[k_hist];
+				if (val>maxim2) {maxim2=(double)val;}
+			}
+			maxim2=0.75*maxim2;
+
+/*maxim=0.;*/
+			/*Je compte le nombre de cases > maxim*/
+			/*on applique un traitement séparé pour les périodes <0.5j (car divise ts les autres)*/
+			kk=0;
+			for (k_hist=0;k_hist<nhist2;k_hist++) {
+				val=hist2[k_hist];
+				if (val>=maxim2) {
+					kk++;
+				}
+			}
+            nbad2=kk;
+			if (maxim1>maxim2) {
+				kk=0;
+				for (k_hist=0;k_hist<nhist1;k_hist++) {
+					val=hist1[k_hist];
+					if (val>=maxim1) {
+						kk++;
+					}
+				}
+				nbad1=kk;
+				/*Allocation de la memoire*/
+				maximums1=(double*)calloc(nbad1*nfact1,sizeof(double));
+				if (maximums1==NULL) {
+					sprintf(s,"error : maximums pointer out of memory (%d elements)",nbad1*nfact1);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					gsl_vector_free(jds);
+					free(hist1);
+					free(hist2);
+					return TCL_ERROR;
+				}
+				/*Je remplis maximums1 en tenant compte des facteurs multiplicatifs*/
+				kk=0;
+				for (k_hist=0;k_hist<nhist1;k_hist++) {
+					val=hist1[k_hist];
+					if (val>=maxim1) {
+                        for (k_fact=0;k_fact<nfact1;k_fact++) {
+							badper=(k_hist+0.5)/144;
+							maximums1[kk+k_fact*nbad1]=badper*facteurs[k_fact];;
+						}
+						kk++;
+					}
+				}
+				nbad1*=nfact1;
+			} else {
+				nbad1=0;
+			}
+			/*J'alloue le vecteur des badpers*/
+			if (nbad2<nfact2){nbad2=nfact2;} 
+			maximums2=(double*)calloc(nbad2,sizeof(double));
+			if (maximums2==NULL) {
+				sprintf(s,"error : maximums2 pointer out of memory (%d elements)",nbad2);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				gsl_vector_free(jds);
+				return TCL_ERROR;
+			}
+			/*je remplis ce vecteur*/
+			kk=0;
+			for (k_hist=0;k_hist<nhist2;k_hist++) {
+				val=hist2[k_hist];
+				if (val>=maxim2) {
+					maximums2[kk]=(k_hist+0.5)/6.+limit_inf;
+					kk++;
+				}
+			}
+			ak_util_qsort_double(maximums2,0,kk,NULL);
+			yd_util_pgcd(maximums2,kk,0.25,0.01,&pgcd,&temoin2);
+			if (temoin2==1) {
+				 for (k_fact=0;k_fact<nfact2;k_fact++) {
+					maximums2[k_fact]=pgcd*facteurs[k_fact];;
+				}
+			} else {
+				nbad2=0;
+			}
+			/*Je vais maintenant coller les 2 vecteurs maximums et les trier*/
+			nbad=nbad1+nbad2;
+			if (nbad==0) {nbad=1;}
+            badpers=(double*)calloc(nbad,sizeof(double));
+			if (badpers==NULL) {
+				sprintf(s,"error : badpers pointer out of memory (%d elements)",nbad);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				gsl_vector_free(jds);
+				free(hist1);
+				free(hist2);
+				return TCL_ERROR;
+			}
+			if (nbad1>0) {
+				for (kk=0;kk<nbad1;kk++) {
+					badpers[kk]=maximums1[kk];
+				}
+			}
+			if (nbad2>0) {
+				for (kk=0;kk<nbad2;kk++) {
+					badpers[nbad1+kk]=maximums2[kk];
+				}
+			}
+			ak_util_qsort_double(badpers,0,nbad,NULL);
 		} else {
 			nbad=1;
-			badpers=gsl_vector_calloc(nbad);
-			badpers->data[0]=0;
+			badpers=(double*)calloc(nbad,sizeof(double));
+			badpers[0]=0;
 		}
 	    /* --- sortie du resultat ---*/
 		Tcl_DStringInit(&dsptr);
-		gsltcltcl_setgslvector(interp,&dsptr,badpers,nbad);	
+		for (kk=0;kk<nbad;kk++) {
+            sprintf(s,"%14.6f",badpers[kk]);
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}	
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
 		/* --- liberation de la memoire ---*/
-		gsl_vector_free(badpers);
+		free(badpers);
 		gsl_vector_free(jds);
-		free(hist);
+		free(hist1);
+		free(hist2);
+		if (nbad1>0) {free(maximums1);}
+		if (nbad2>0) {free(maximums2);}
 		return TCL_OK;
     }
 }
@@ -157,21 +274,19 @@ int Cmd_aktcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 {
 	char s[200];
     int code,code2,code3;
-    int n_jd=0,n_mag=0,nmes;
+    int n_jd=0,n_mag=0,nbad=0,nmes;
     Tcl_DString dsptr;
     gsl_matrix *phases;
     gsl_vector *jds,*mags,*badpers,*periodes,*tetas,*jds2,*mags2,*phase,*phase2,*temp,*temp2;
 	/**histo_phase,*/
-	int nper,nbad,nper2,nbad2,nfact;
+	int nper,nper2;
 	double err,delmag,eps,minmag,maxmag,phi;
 	double per,somme,maxim,phase_prec,phase_suiv,mag_prec,mag_suiv,nu,delta_mag,delta_phi;
-	int k_x,k_xx,kk,k_per,nrej,k_bad,k_fact,indice,i_per;
+	int k_x,k_xx,kk,k_per,nrej,k_bad,i_per;
 	gsl_permutation *perm,*perm2;
     double ni_per,dper,dper_lim,accu;
-	double per_range_min,per_range_max,duree,per_range_max2,badper;
+	double per_range_min,per_range_max,duree,per_range_max2;
 	int temoin,temoin2,indice_prem_date,indice_dern_date,compteur,compteur_date;
-	double *badpers2=NULL,*facteurs=NULL;
-	/*ind_histo,k_hist,nhisto=10,*/
     /*FILE *f;*/
     if(argc!=9) {
 		sprintf(s,"Usage: %s Invalid number of inputs", argv[0]);
@@ -242,72 +357,7 @@ int Cmd_aktcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
         periodes=gsl_vector_calloc(nper);
 		tetas=gsl_vector_calloc(nper);
 		/*histo_phase=gsl_vector_calloc(nhisto);*/
-		/*Je définie mes facteurs multiplicatif pour les periodes d'aliasing*/
-        nfact=8;
-		facteurs=(double*)calloc(nfact,sizeof(double));
-		if (facteurs==NULL) {
-			sprintf(s,"error : facteurs pointer out of memory (%d elements)",nfact);
-            Tcl_SetResult(interp,s,TCL_VOLATILE);
-            gsl_vector_free(jds);
-			gsl_vector_free(mags);
-			gsl_vector_free(jds2);
-			gsl_vector_free(mags2);
-			gsl_vector_free(temp2);
-			gsl_vector_free(phase2);
-			gsl_permutation_free(perm2);
-			gsl_vector_free(temp);
-			if (temoin==1) {
-				gsl_vector_free(phase);
-				gsl_permutation_free(perm);
-			}
-			gsl_vector_free(periodes);
-			gsl_vector_free(tetas);
-			gsl_vector_free(badpers);
-            return TCL_ERROR;
-        }
-		facteurs[0]=1.;
-		facteurs[1]=0.5;
-		facteurs[2]=1/3.;
-		facteurs[3]=0.25;
-		facteurs[4]=0.2;
-		facteurs[5]=1/6.;
-		facteurs[6]=1/7.;
-		facteurs[7]=0.125;
-
-		nbad2=nbad*nfact;
-		badpers2=(double*)calloc(nbad2,sizeof(double));
-		if (badpers2==NULL) {
-			sprintf(s,"error : badpers2 pointer out of memory (%d elements)",nbad2);
-            Tcl_SetResult(interp,s,TCL_VOLATILE);
-            gsl_vector_free(jds);
-			gsl_vector_free(mags);
-			gsl_vector_free(jds2);
-			gsl_vector_free(mags2);
-			gsl_vector_free(temp2);
-			gsl_vector_free(phase2);
-			gsl_permutation_free(perm2);
-			gsl_vector_free(temp);
-			if (temoin==1) {
-				gsl_vector_free(phase);
-				gsl_permutation_free(perm);
-			}
-			gsl_vector_free(periodes);
-			gsl_vector_free(tetas);
-			gsl_vector_free(badpers);
-			free(facteurs);
-            return TCL_ERROR;
-        }
 		
-		/*Je remplis badpers2 avec les éléments de badpers2 en tenant compte des facteurs multiplicatifs*/
-		for (k_bad=0;k_bad<nbad;k_bad++) {
-			badper=badpers->data[k_bad];
-			for (k_fact=0;k_fact<nfact;k_fact++) {
-				indice=k_bad+k_fact*nbad;
-				badpers2[indice]=badper*facteurs[k_fact];;
-			}
-		}
-		/*Je trie ce vecteur*/
-		ak_util_qsort_double(badpers2,0,nbad2,NULL);
 		k_bad=0;
 
 		while (k_per<nper) {
@@ -324,7 +374,7 @@ int Cmd_aktcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 				dper=dper_lim;
 			}
 			/*Je regarde si cette période correspond à une période aliasing*/
-			yd_dichotomie(per,badpers2,nbad2,&temoin2,&k_bad);
+			yd_dichotomie(per,badpers,nbad,&temoin2,&k_bad);
 			if (temoin2==1) {
 				per=per+dper;
 				nrej++;
@@ -398,7 +448,7 @@ int Cmd_aktcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 				dper=dper_lim;
 			}
 			/*Je regarde si cette période correspond à une période aliasing*/
-			yd_dichotomie(per,badpers2,nbad2,&temoin2,&k_bad);
+			yd_dichotomie(per,badpers,nbad,&temoin2,&k_bad);
 			if (temoin2==1) {
 				per=per+dper;
 				nrej++;
@@ -474,7 +524,7 @@ int Cmd_aktcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 					dper=dper_lim;
 				}
 				/*Je regarde si cette période correspond à une période aliasing*/
-				yd_dichotomie(per,badpers2,nbad2,&temoin2,&k_bad);
+				yd_dichotomie(per,badpers,nbad,&temoin2,&k_bad);
 				if (temoin2==1) {
 					per=per+dper;
 					nrej++;
@@ -597,8 +647,6 @@ int Cmd_aktcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		gsl_vector_free(periodes);
 		gsl_vector_free(tetas);
 		gsl_vector_free(badpers);
-		free(badpers2);
-		free(facteurs);
 		/*gsl_vector_free(histo_phase);*/
 		return TCL_OK;
     }
@@ -1845,9 +1893,11 @@ int yd_perchoice(gsl_vector *jds, int nmes, int *temoin, int *indice_prem_date, 
 				indice_dern_date2=imes-1;
 				indice_prem_date2=indice_prem_date_temp;
 				indice_prem_date_temp=imes;
+				compteur_date_temp=0;
 			}
 		}		
 		imes++;
+		compteur_date_temp++;
 	}
 	/*il se peut que dans la derniere annee on a plus d'observavation sans pour autant 
 	qu'elle soit superieure a 6 mois*/
@@ -1933,10 +1983,11 @@ int Cmd_aktcl_per_range(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /***************************************************************************/
 {
 	char s[200];
-    int code,nmes=0,i,j,temoin,temoin2;
-	double per_range_minmin,per_range_max,per_range_min,delta,eps,res;
+    int code,nmes=0,i,temoin,nmes2;
+	double per_range_minmin,per_range_max,per_range_min,pgcd;
 	Tcl_DString dsptr;
-    gsl_vector *jds,*dt;
+    gsl_vector *jds;
+	double *dt;
 	if(argc!=3) {
 		sprintf(s,"Usage: %s Invalid input : must be a vector", argv[0]);
         Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -1945,39 +1996,28 @@ int Cmd_aktcl_per_range(ClientData clientData, Tcl_Interp *interp, int argc, cha
         /* --- decodage des arguments ---*/
 		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
 		per_range_minmin=atof(argv[2]);
-		/*Normalement jds est trié*/
-		eps=0.01;
-		dt=gsl_vector_calloc(nmes-1);
-		for (i=0;i<nmes-1;i++) {
-			dt->data[i]=jds->data[i+1]-jds->data[0];
+		nmes2=nmes-1;
+		/*Je calcule les différences entre dates successives*/
+		dt=(double*)calloc(nmes-1,sizeof(double));
+		if (dt==NULL) {
+			sprintf(s,"error : dt pointer out of memory (%d elements)",nmes2);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            gsl_vector_free(jds);
+            return TCL_ERROR;
+        }
+		for (i=0;i<nmes2;i++) {
+			dt[i]=jds->data[i+1]-jds->data[i];			
 		}
-		delta=dt->data[0];
-		i=1;
-		temoin=0;
-		while(delta>0) {
-			delta=delta/i;
-			temoin2=0;
-			for (j=0;j<nmes-1;j++) {
-				res=dt->data[j]/delta;
-				res=res-(int)floor(res);
-				if(res<eps) {
-                    temoin2=1;
-					temoin=temoin+temoin2;
-				} else {
-					temoin=0;
-					break;
-				}		
-			}
-			if (temoin>0) {
-                break;
-			}
-			i++;
-		}
-		per_range_max=2*dt->data[nmes-2];
-		per_range_min=2*delta;
-		if (per_range_min<per_range_minmin) {
+		/*on trie le vecteur dt et on cherche le pgcd de ses elements*/
+		ak_util_qsort_double(dt,0,nmes2,NULL);
+		yd_util_pgcd(dt,nmes2,per_range_minmin/2.,0.01,&pgcd,&temoin);
+		if (temoin==1) {
+			per_range_min=2.*pgcd;
+		} else {
 			per_range_min=per_range_minmin;
-		}
+		}	
+		per_range_max=2*(jds->data[nmes-1]-jds->data[0]);
+		
 		Tcl_DStringInit(&dsptr);
 		Tcl_DStringAppend(&dsptr,"{",-1);
 		sprintf(s,"%f",per_range_min);
@@ -1989,7 +2029,7 @@ int Cmd_aktcl_per_range(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
 		gsl_vector_free(jds);
-		gsl_vector_free(dt);
+		free(dt);
 	}
     return TCL_OK;
 }
@@ -2040,23 +2080,25 @@ int Cmd_aktcl_moy_bars_comp(ClientData clientData, Tcl_Interp *interp, int argc,
     return TCL_OK;
 }
 /************************************************************************************************************************************************************/
-int yd_dichotomie(double per, double *badpers, int nbad, int *temoin2, int *k_bad)
+int yd_dichotomie(double per, gsl_vector *badpers, int nbad, int *temoin2, int *k_bad)
 /*************************************************************************************************************************************************************/
 /* Fonction que j'utilise dans yd_nettoyage, elle me sert de retrouver les éléments d'un vecteur
    grace à l'algo de dichotomie utilisé par Alain dans ak_filehtm2refzmgmes
 */
 {
 	int k,k_per,k_per1,k_per2,sortie;
-	double dper,badper,deltaper,badpersmax;
+	double dper,badper,deltaper,badpersmax,fact;
 
     *temoin2=0;
-	badpersmax=badpers[nbad-1]+0.02;
-	/** badpersmax*/
+	fact=0.05;
+	badpersmax=badpers->data[nbad-1]*(1+fact*badpers->data[nbad-1]);
+	if (badpersmax>20) {
+		badpersmax=20;
+	}
+	/** badpersmax voir yd_aliasing*/
 	if (per>badpersmax) {
 		return 0;
 	}
-    deltaper=1/48.;
-	
     /*il n'y a pas de soucis: badpers est trié par construction
 	je vais utiliser l'algorithme de dichotomie pour voir si la période
 	est le résultat d'une combinaison linéaire avec les périodes d'aliasing:
@@ -2072,7 +2114,7 @@ int yd_dichotomie(double per, double *badpers, int nbad, int *temoin2, int *k_ba
 	while(sortie==0) {
         if ((k_per2-k_per1)<=1) { break; }
 		k_per=(k_per1+k_per2+1)/2;
-        badper=badpers[k_per];
+        badper=badpers->data[k_per];
         if (per<=badper) {
 			k_per2=k_per;
         } else {
@@ -2080,7 +2122,8 @@ int yd_dichotomie(double per, double *badpers, int nbad, int *temoin2, int *k_ba
         }
     }
     for (k=k_per;k>=0;k--) {
-		badper=badpers[k];
+		badper=badpers->data[k];
+		deltaper=fact*badper;
 		/*On determine le deltaper (largeur de l'histogramme)*/
         dper=per-badper;
         if (dper>deltaper) { break; }
@@ -2092,7 +2135,8 @@ int yd_dichotomie(double per, double *badpers, int nbad, int *temoin2, int *k_ba
         }
     }
  	for (k=k_per+1;k<nbad;k++) {
-		badper=badpers[k];
+		badper=badpers->data[k];
+		deltaper=fact*badper;
 		/*On determine le deltaper (largeur de l'histogramme)*/
 		dper=badper-per;
         if (dper>deltaper) { break; }
@@ -2105,4 +2149,42 @@ int yd_dichotomie(double per, double *badpers, int nbad, int *temoin2, int *k_ba
     }
  
 	return 0;
+}
+/************************************************************************************************************************************************************/
+int yd_util_pgcd(double *vecteur, int taille, double limit,double tolerance,double *pgcd, int *temoin)
+/*************************************************************************************************************************************************************/
+{
+	int i,j,sortie,temoin2;
+	double delta,res,eps,eps2;
+	/*Init*/
+	eps=tolerance;
+	eps2=1.-tolerance;
+	/**/
+	i=1;
+	sortie=0;
+	temoin2=0;
+	delta=vecteur[0]/i;
+	*pgcd=delta;
+	*temoin=0;
+	while (sortie==0) {
+		delta=vecteur[0]/i;
+		if (delta<limit) {break;}
+		for (j=0;j<taille;j++) {
+			res=vecteur[j]/delta;
+			res=res-(int)floor(res);
+			if((res<eps)||(res>eps2)) {
+				temoin2=1;
+			} else {
+				temoin2=0;
+				break;
+			}		
+		}
+		if (temoin2>0) {
+			*temoin=1;
+			*pgcd=delta;
+			break;
+		}
+		i++;
+	}
+	return 0;	
 }
