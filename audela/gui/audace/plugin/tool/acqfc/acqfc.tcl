@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.13 2006-03-12 09:49:48 robertdelmas Exp $
+# $Id: acqfc.tcl,v 1.14 2006-03-15 22:49:09 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -1866,6 +1866,10 @@ namespace eval ::AcqFC {
 
       #--- Visualisation de l'image si on n'est pas en chargement differe
       if { $conf(dsc,telecharge_mode) != "3" } {
+         if { $conf(dsc,telecharge_mode) == "1" } {
+            #-- raz du buffer si le telechargement est desactive
+            $buffer clear
+         }
          ::audace::autovisu $visuNo
       }
 
