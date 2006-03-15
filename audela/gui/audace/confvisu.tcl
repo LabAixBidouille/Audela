@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.10 2006-03-15 20:08:20 michelpujol Exp $
+# $Id: confvisu.tcl,v 1.11 2006-03-15 21:30:18 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -216,8 +216,6 @@ namespace eval ::confVisu {
         wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
       }
       
-      #--- je met a jour le nom du fichier  (cette variable est surveillee par un listener)
-      set private($visuNo,lastFileName) "$fileName"   
 
       if { $force == "-novisu" } {
          return
@@ -237,6 +235,7 @@ namespace eval ::confVisu {
       set height $private($visuNo,picture_h)
       set zoom   $private($visuNo,zoom)
       set imageNo [visu$visuNo image]
+
 
       if { [ image type image$imageNo ] == "video" } {
          #--- Je mets la fenetre a l'echelle
@@ -283,8 +282,14 @@ namespace eval ::confVisu {
                   visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
                }
             }
+         } else { 
+            #--- nettoyage de l'affichage  s'il n'y a pas d'image
+            visu $visuNo current     
          }
       }
+      
+      #--- je met a jour le nom du fichier  (cette variable est surveillee par un listener)
+      set private($visuNo,lastFileName) "$fileName"   
    }
 
    #
