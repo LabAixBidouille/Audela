@@ -194,7 +194,7 @@ int Cmd_mctcl_rvcor(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /****************************************************************************/
    double jjfrom=0.,asd2=0.,dec2=0.,radeg,decdeg,v;
    int result=TCL_ERROR;
-   char s[100];
+   char s[1000];
    char **argvv=NULL;
    int argcc,method;
    char usage[]="Usage: %s ListRaDec Equinox KLSR|DLSR|GALC|LOG|COSM";
@@ -221,6 +221,7 @@ int Cmd_mctcl_rvcor(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	   }
       /* --- ---*/
       mc_strupr(argv[3],s);
+      strcpy(s,"KLSR");
       method=-1;
       if (strcmp(s,"KLSR")==0) { method=RV_KLSR; }
       else if (strcmp(s,"DLSR")==0) { method=RV_DLSR; }
