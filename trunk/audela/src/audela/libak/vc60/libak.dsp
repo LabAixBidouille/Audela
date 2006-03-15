@@ -106,6 +106,10 @@ SOURCE=..\src\ak_3.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\ak_4.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\aktcl_1.c
 # End Source File
 # Begin Source File
