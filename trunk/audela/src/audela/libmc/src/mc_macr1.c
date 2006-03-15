@@ -127,7 +127,7 @@ void mc_macro16(char *nom_fichier_obs,char *nom_fichier_ele)
 void mc_macro17(char *nom_fichier_obs,char *nom_fichier_ele)
 /***************************************************************************/
 {
-mc_orbi_auto(nom_fichier_obs,nom_fichier_ele);
+   mc_orbi_auto(nom_fichier_obs,nom_fichier_ele);
 }
 
 void mc_macro18(char *nom_fichier_obs,char *nom_fichier_ele)

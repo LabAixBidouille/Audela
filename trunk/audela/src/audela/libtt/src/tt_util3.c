@@ -503,9 +503,9 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
    double x1,y1,mag1,x2,y2,mag2,rien;
    short flag1;
    double x_ra,x_dec,x_mag1,x_mag2,x_mag;
-   char attrib[10],mise_enforme[]="%5d %2d %7.2f %7.2f %+8.3f %7.3f %10.1f %10.1f %9.5f %9.5f %+8.4f %+8.4f %7.4f %+8.4f %7.4f %3d %3d %10.1f %7.2f %7.2f %7.2f %7.2f %7.2f %7.1f %7.2f %3d \n";
-   char           mise_enforme0[]="%5d %2d %7.2lf %7.2lf %+8.3lf %7.3lf %10.1lf %10.1lf %9.5lf %9.5lf %+8.4lf %+8.4lf %7.4lf %+8.4lf %7.4lf %3d %3d %10.1lf %7.2lf %7.2lf %7.2lf %7.2lf %7.2lf %7.1f %7.2lf %3d \n";
-   int nl=208; /* nombres de caracteres sur une ligne (\n inclus) */
+   char attrib[10],mise_enforme[]="%5d %2d %7.2f %7.2f %+8.3f %7.3f %11.1f %10.1f %9.5f %9.5f %+8.4f %+8.4f %7.4f %+8.4f %7.4f %3d %3d %10.1f %+10.2f %+10.2f %+10.2f %+10.2f %+10.2f %7.1f %7.2f %3d \n";
+   char           mise_enforme0[]="%5d %2d %7.2lf %7.2lf %+8.3lf %7.3lf %11.1lf %10.1lf %9.5lf %9.5lf %+8.4lf %+8.4lf %7.4lf %+8.4lf %7.4lf %3d %3d %10.1lf %+10.2lf %+10.2lf %+10.2lf %+10.2lf %+10.2lf %7.1f %7.2lf %3d \n";
+   int nl=224; /* nombres de caracteres sur une ligne (\n inclus) */
    int ni; /* nombres de caracteres pour l'indice (%5d) */
    char pointzeroname[TT_LEN_SHORTFILENAME];
    int nball,nbcom,taille,nombre,k,kk,ntot;
@@ -893,7 +893,9 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
                         /* -1 de sextractor */
 								/*Modif Yassine
 								fprintf(ficcom,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext,classstar);*/
+								//sprintf(ligne,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext);
 								fprintf(ficcom,mise_enforme,ntot,cas,x+1.,y+1.,mag,errmag,flux,errflux,x_ra*180./(TT_PI),x_dec*180./(TT_PI),x_mag,x_mag1,err1,x_mag2,err2,nbvois,150,backgnd,x2,y2,xy,a_ellipse,b_ellipse,theta,fwhm,flag_sext);
+								//fprintf(ficcom,"%s",ligne);
 								/*fin*/
 							}
 						}

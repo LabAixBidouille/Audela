@@ -131,6 +131,7 @@ void mc_entree(struct mcvar *param)
          /* chaine2 : nom du fichier de sortie des elements         */
          /***********************************************************/
          mc_macro19(param->chaine1,param->reel1,param->chaine2);
+         break;
       case 21:
          /**************************************************************/
          /* 2. conversion de formats d'elements d'orbite               */

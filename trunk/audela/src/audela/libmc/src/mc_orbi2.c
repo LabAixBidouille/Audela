@@ -606,14 +606,20 @@ void mc_mvc2d(struct observ *obs,double ee,struct elemorb *elem,double jj_equino
    double x[4],y[4],z[4],r[4];
    double xs[4],ys[4],zs[4],xxs,yys,zzs,eps;
    double lls[10],mms[10],uus[10],ls,bs,rs;
-   int k,ke;
+   int k;
    double tau1,f1,g1,u2;
-   double w2,vx2,vy2,vz2,ww2,contrainte,contrainte0,drho2;
+   double w2,vx2,vy2,vz2,contrainte,drho2;
    double mu;
    double paradx,parady,paradz;
-   double rv,v,rr,ex,ey,ez,e0,em[3];
+   double rv,v,rr,ex,ey,ez,e0;
    int centre; /* helio=SOLEIL  geo=TERRE */
    double kgrav;
+   double *xiter,*yiter,yitermin;
+   double rhomax;
+   int niter,kiter,kk,kyitermin,sortie,elemok=0;
+   struct elemorb elem0;
+   double areach=3.0,dareachmin=1e23,dareach;
+   /*FILE *f;*/
    
    centre=SOLEIL;
    /*centre=TERRE;*/
@@ -646,6 +652,7 @@ void mc_mvc2d(struct observ *obs,double ee,struct elemorb *elem,double jj_equino
          mc_jd2lbr1b(jj[k],SOLEIL,lls,mms,uus,&ls,&bs,&rs);
          mc_lbr2xyz(ls,bs,rs,&xxs,&yys,&zzs);
          mc_xyzec2eq(xxs,yys,zzs,eps,&xxs,&yys,&zzs);
+         mc_precxyz((obs+k)->jjtd,xxs,yys,zzs,jj_equinoxe,&xxs,&yys,&zzs);
       }
       if (centre==TERRE) {
 	      xxs=0.0;
@@ -656,7 +663,9 @@ void mc_mvc2d(struct observ *obs,double ee,struct elemorb *elem,double jj_equino
       xxs-=paradx;
       yys-=parady;
       zzs-=paradz;
-      mc_precxyz((obs+k)->jjtd,xxs,yys,zzs,jj_equinoxe,&xxs,&yys,&zzs);
+      if (centre==TERRE) {
+         mc_precxyz((obs+k)->jjtd,xxs,yys,zzs,jj_equinoxe,&xxs,&yys,&zzs);
+      }
       mc_xyzeq2cu(xxs,yys,zzs,a,&xs[k],&ys[k],&zs[k]);
    }
 
@@ -664,127 +673,165 @@ void mc_mvc2d(struct observ *obs,double ee,struct elemorb *elem,double jj_equino
       /*--- valeur initiale de rho[2] assumee ---*/
       rho[2]=1e-4;
       /*--- valeur initiale du pas sur rho[2] ---*/
-      drho2=1e-4;
+      drho2=1e-2;
+      /*--- valeur maximale sur rho[2] ---*/
+      rhomax=100.;
    }
    if (centre==TERRE) {
       /*--- valeur initiale de rho[2] assumee ---*/
       rho[2]=5e-5;
       /*--- valeur initiale du pas sur rho[2] ---*/
       drho2=1e-6;
+      /*--- valeur maximale sur rho[2] ---*/
+      rhomax=0.05;
+   }
+   niter = (int)ceil((rhomax-rho[2])/drho2);
+   xiter=(double*)calloc(niter,sizeof(double));
+   if (xiter==NULL) {
+      return;
+   }
+   yiter=(double*)calloc(niter,sizeof(double));
+   if (yiter==NULL) {
+      free(xiter);
+      return;
+   }
+   for (kiter=0;kiter<niter;kiter++) {
+      xiter[kiter]=rho[2]+(drho2*kiter);
+      yiter[kiter]=0.;
    }
 
-   /*--- initialisation de la premiere valeur de la contrainte ---*/
-   contrainte0=0;
-   for (k=0;k<3;k++) {
-      em[k]=0.;
-   }
-   ww2=1;
+   /* --- kk=0 : premiere boucle pour calculer la variation globale des residus ---*/
+   /* --- kk=1 : boucle pour calculer les elements d'orbites au plus près de chaque solution ---*/
+   /* --- kk=2 : calcule les elements d'orbites pour le plus faible résidu ---*/
+   yitermin=1e23;
+   sortie=0;
+   for (kk=0;kk<=2;kk++) {
 
-   /*--- recherche iterative sur le produit scalaire r2.v2 ---*/
-   ke=0;
-   do {
-
-      for (k=1;k<=2;k++) {
-         rho0[k]=0;
+      if (sortie==1) {
+         break;
       }
 
-      /*--- recherche iterative de rho[1] ---*/
-      /*--- l'iteration porte uniquement sur l'aberration planetaire ---*/
-      do {
+      for (kiter=0;kiter<niter;kiter++) {
+         rho[2]=xiter[kiter];
 
-         /*--- vecteurs heliocentriques de l'astre ---*/
-         /*--- etape ii de Marsden ---*/
-         k=2;
-         x[k]=rho[k]*l[k]-xs[k];
-         y[k]=rho[k]*m[k]-ys[k];
-         z[k]=rho[k]*n[k]-zs[k];
-         r[k]=sqrt(x[k]*x[k]+y[k]*y[k]+z[k]*z[k]);
-
-         /*--- initialisation du coefs tau1 ---*/
-         tau1=kgrav*(jj[1]-jj[2]);
-
-         /*--- calcul de f1 g1 ---*/
-         /*--- etape iii de Marsden ---*/
-         u2=r[2]*r[2]*r[2];
-         f1=1-tau1*tau1/(2*u2);
-         g1=(tau1-tau1*tau1*tau1/(6*u2))/(kgrav);
-
-         /*--- etape iv de Marsden formule 10 pp 1546 ---*/
-         rho[1]=(f1*r[2]*r[2]+xs[1]*x[2]+ys[1]*y[2]+zs[1]*z[2])/(l[1]*x[2]+m[1]*y[2]+n[1]*z[2]);
-
-         /*--- correction de l'aberration planetaire ---*/
-         for (w2=0,k=1;k<=2;k++) {
-            jj[k]=(obs+k)->jjtd-0.005768*rho[k];
-            w2+=fabs(rho0[k]-rho[k]);
-            rho0[k]=rho[k];
-         }
-         if (w2<1e-7) { w2=-1; /* flag de sortie */ }
-
-      } while (w2>0);
-
-      /*--- calcul du vecteur vitesse a l'instant 2 (form. 2 pp 1542) ---*/
-      vx2=(rho[1]*l[1]-f1*x[2]-xs[1])/g1;
-      vy2=(rho[1]*m[1]-f1*y[2]-ys[1])/g1;
-      vz2=(rho[1]*n[1]-f1*z[2]-zs[1])/g1;
-
-      /*--- calcul du produit scalaire r2.v2=contrainte ---*/
-      mc_prodscal(x[2],y[2],z[2],vx2,vy2,vz2,&rv);
-      v=sqrt(vx2*vx2+vy2*vy2+vz2*vz2);
-      rr=sqrt(x[2]*x[2]+y[2]*y[2]+z[2]*z[2]);
-      ex=(v*v/mu-1/rr)*x[2]-rv/mu*vx2;
-      ey=(v*v/mu-1/rr)*y[2]-rv/mu*vy2;
-      ez=(v*v/mu-1/rr)*z[2]-rv/mu*vz2;
-      e0=sqrt(ex*ex+ey*ey+ez*ez);
-      contrainte=e0-ee;
-
-      /*--- adapte le pas d'iteration et condition de sortie ---*/
-      /*--- la contrainte doit changer de signe pour sortir  ---*/
-      /*--- et le pas de drho2 doit etre petit.              ---*/
-      if (centre==SOLEIL) {
-         if ((contrainte*contrainte0)<0) {
-            if (fabs(drho2)<1e-6) {
-               ww2=-1;
-            } else {
-               drho2=-drho2/2.;
+         if (kk==1) {
+            if (kiter>niter-2) {
+               continue;
             }
-         } else {
-            drho2=1.5*drho2;
-         }
-         rho[2]+=drho2;
-      }
-      contrainte0=contrainte;
-      if (centre==TERRE) {
-         ke++;
-         em[0]=em[1];
-         em[1]=em[2];
-         em[2]=fabs(e0-ee);
-         if (ke>3) {
-            if ((em[1]<em[0])&&(em[1]<em[2])) {
-               rho[2]-=(2.*drho2);
-               drho2=drho2/2.;
-            } else {
-               rho[2]+=drho2;
+            if (fabs(yiter[kiter])<=yitermin) {
+               kyitermin=kiter;
+               yitermin=fabs(yiter[kiter]);
             }
+            if ((yiter[kiter]*yiter[kiter+1])>0) {
+               continue;
+            }
+            /* --- on affine la valeur ---*/
+            rho[2]=xiter[kiter]+drho2*yiter[kiter]/(yiter[kiter]-yiter[kiter+1]);
          }
-         if (drho2<1e-11) {
-            ww2=-1;
+
+         if (kk==2) {
+            kiter=kyitermin;
+            /* --- on affine la valeur ---*/
+            rho[2]=xiter[kiter]+drho2*yiter[kiter]/(yiter[kiter]-yiter[kiter+1]);
+         }
+
+         for (k=1;k<=2;k++) {
+            rho0[k]=0;
+         }
+
+         /*--- recherche iterative de rho[1] ---*/
+         /*--- l'iteration porte uniquement sur l'aberration planetaire ---*/
+         do {
+
+            /*--- vecteurs heliocentriques de l'astre ---*/
+            /*--- etape ii de Marsden ---*/
+            k=2;
+            x[k]=rho[k]*l[k]-xs[k];
+            y[k]=rho[k]*m[k]-ys[k];
+            z[k]=rho[k]*n[k]-zs[k];
+            r[k]=sqrt(x[k]*x[k]+y[k]*y[k]+z[k]*z[k]);
+
+            /*--- initialisation du coefs tau1 ---*/
+            tau1=kgrav*(jj[1]-jj[2]);
+
+            /*--- calcul de f1 g1 ---*/
+            /*--- etape iii de Marsden ---*/
+            u2=r[2]*r[2]*r[2];
+            f1=1-tau1*tau1/(2*u2);
+            g1=(tau1-tau1*tau1*tau1/(6*u2))/(kgrav);
+
+            /*--- etape iv de Marsden formule 10 pp 1546 ---*/
+            rho[1]=(f1*r[2]*r[2]+xs[1]*x[2]+ys[1]*y[2]+zs[1]*z[2])/(l[1]*x[2]+m[1]*y[2]+n[1]*z[2]);
+   
+            /*--- correction de l'aberration planetaire ---*/
+            for (w2=0,k=1;k<=2;k++) {
+               jj[k]=(obs+k)->jjtd-0.005768*rho[k];
+               w2+=fabs(rho0[k]-rho[k]);
+               rho0[k]=rho[k];
+            }
+            if (w2<1e-7) { w2=-1; /* flag de sortie */ }
+   
+         } while (w2>0);
+ 
+         /*--- calcul du vecteur vitesse a l'instant 2 (form. 2 pp 1542) ---*/
+         vx2=(rho[1]*l[1]-f1*x[2]-xs[1])/g1;
+         vy2=(rho[1]*m[1]-f1*y[2]-ys[1])/g1;
+         vz2=(rho[1]*n[1]-f1*z[2]-zs[1])/g1;
+   
+         /*--- calcul du produit scalaire r2.v2=contrainte ---*/
+         mc_prodscal(x[2],y[2],z[2],vx2,vy2,vz2,&rv);
+         v=sqrt(vx2*vx2+vy2*vy2+vz2*vz2);
+         rr=sqrt(x[2]*x[2]+y[2]*y[2]+z[2]*z[2]);
+         ex=(v*v/mu-1/rr)*x[2]-rv/mu*vx2;
+         ey=(v*v/mu-1/rr)*y[2]-rv/mu*vy2;
+         ez=(v*v/mu-1/rr)*z[2]-rv/mu*vz2;
+         e0=sqrt(ex*ex+ey*ey+ez*ez);
+         contrainte=e0-ee;
+         yiter[kiter]=contrainte;
+
+         /*
+         if (kk==0) {
+            if (kiter==0) {
+               f=fopen("toto.txt","wt");
+            } else {
+               f=fopen("toto.txt","at");
+            }
+            fprintf(f,"%f %f %f\n",xiter[kiter],yiter[kiter],e0);
+            fclose(f);
+         }
+         */
+
+         if (kk>=1) {
+            /*--- recherche des elements orbitaux a l'instant 2 ---*/
+            mc_cu2xyzeq(x[2],y[2],z[2],a,&x[2],&y[2],&z[2]);
+            if (centre==SOLEIL) {
+               mc_xyzeq2ec(x[2],y[2],z[2],eps,&x[2],&y[2],&z[2]);
+            }
+            mc_cu2xyzeq(vx2,vy2,vz2,a,&vx2,&vy2,&vz2);
+            if (centre==SOLEIL) {
+               mc_xyzeq2ec(vx2,vy2,vz2,eps,&vx2,&vy2,&vz2);
+            }
+            mc_xvx2elem(x[2],y[2],z[2],vx2,vy2,vz2,jj[2],jj_equinoxe,kgrav,&elem0);
+            mc_elemplus(obs,&elem0,2);
+            elem0.code2+=2;
+            /* */
+            dareach = fabs(elem0.q/(1.-elem0.e)-areach);
+            if (dareach<dareachmin) {
+               dareachmin=dareach;
+               *elem=elem0;
+               elemok=1;
+            }
+            sortie=1;
          }
       }
 
-   } while(ww2>0) ;
+   }
+   if (elemok==0) {
+      *elem=elem0;
+   }
 
-   /*--- recherche des elements orbitaux a l'instant 2 ---*/
-   mc_cu2xyzeq(x[2],y[2],z[2],a,&x[2],&y[2],&z[2]);
-   if (centre==SOLEIL) {
-      mc_xyzeq2ec(x[2],y[2],z[2],eps,&x[2],&y[2],&z[2]);
-   }
-   mc_cu2xyzeq(vx2,vy2,vz2,a,&vx2,&vy2,&vz2);
-   if (centre==SOLEIL) {
-      mc_xyzeq2ec(vx2,vy2,vz2,eps,&vx2,&vy2,&vz2);
-   }
-   mc_xvx2elem(x[2],y[2],z[2],vx2,vy2,vz2,jj[2],jj_equinoxe,kgrav,elem);
-   mc_elemplus(obs,elem,2);
-   elem->code2+=2;
+   free(xiter);
+   free(yiter);
 
 }
 

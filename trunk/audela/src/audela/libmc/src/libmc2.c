@@ -21,8 +21,6 @@
  */
 
 #include "libmc.h"
-#include <errno.h>
-
 
 struct obsreq {
    double quota_user;
@@ -3252,7 +3250,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /*    nombre decimal <  1000000 : Jour Julien Modifie						       */
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
-/* Refdates : =0 UTC, =1 dans le repere de l'asteroide */
+/* Refdates : =0 TT, =1 dans le repere de l'asteroide */
 /* HTM_level  : niveau du découpage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
@@ -3260,6 +3258,8 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
+/*               Ce parametre doit etre celculé dans le repere de date      */
+/*               donné par Refdates.                                        */
 /* sideral_period_h : periode de rotation sidérale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
@@ -3299,7 +3299,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
    int klon,klat,nlon,nlat;
    char **argvv=NULL;
    int argcc,njd,code;
-   double *jds;
+   double *jds,jdk;
 //double dlt;
 
    if(argc<15) {
@@ -3374,7 +3374,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       }
       if ((fichier_relief=fopen(filename_relief,"rt") ) == NULL) {
          free(relief);
-         sprintf(s,"Error : file %s cannot be read: %s",argv[4],strerror( errno ));
+         sprintf(s,"Error : file %s cannot be read: %s",argv[5],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
          return TCL_ERROR;
@@ -3397,7 +3397,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       }
       if (fclose(fichier_relief)!=0) {
          free(relief);
-         sprintf(s,"Error : file %s cannot be closed: %s",argv[4],strerror( errno ));
+         sprintf(s,"Error : file %s cannot be closed: %s",argv[6],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
          return TCL_ERROR;
@@ -3503,17 +3503,42 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
          return TCL_ERROR;
       }
       /*phi=cdr.jd_phase0-cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);*/
+      /* --- calcule jd_phase0 dans le repere de l'asteroide ---*/
+      if (cdr.frame_time==0) {
+         cdr.jd_phase0tt=cdr.jd_phase0;
+         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         /* On transforme jd_phase0 dans le repere de l'asteroide */
+         mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0);
+      }
+      /* --- calcule jd_phase0tt dans le repere terrestre ---*/
+      if (cdr.frame_time==1) {
+         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         /* On transforme jd_phase0 dans le repere de terrestre */
+         mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0tt);
+      }
+      /* --- calcule tous les parametres de l'asteroide pour chaque date ---*/
       for (k=0;k<n;k++) {
          cdrpos[k].jd=jds[k];
+         /* jd doit etre en TT */
+		   mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         if (cdr.frame_time==1) {
+            /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
+            /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
+            mc_aberpla(cdrpos[k].jd,-delta,&jdk);
+            cdrpos[k].jdtt=jdk;
+   		   mc_xyzasaaphelio(jdk,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+            cdrpos[k].jd=jds[k];
+         } else {
+            cdrpos[k].jdtt=cdrpos[k].jd;
+            /* On transforme JD dans le repere de l'asteroide */
+            mc_aberpla(cdrpos[k].jd,delta,&cdrpos[k].jd);
+         }
+         /* --- la phase est calculee dans le repere de l'asteroide ---*/
          cdrpos[k].phase=(cdrpos[k].jd-cdr.jd_phase0)/cdr.period;
          cdrpos[k].phase=cdrpos[k].phase-floor(cdrpos[k].phase);
-		 mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
-         if (cdr.frame_time==1) {
-            /*  corriger la base de temps avec delta */
-            mc_aberpla(cdrpos[k].jd,-delta,&cdrpos[k].jd);
-   		    mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
-            cdrpos[k].jd=jds[k];
-         }
+         /* --- la phase est calculee dans le repere terrestre ---*/
+         cdrpos[k].phasett=(cdrpos[k].jdtt-cdr.jd_phase0tt)/cdr.period;
+         cdrpos[k].phasett=cdrpos[k].phasett-floor(cdrpos[k].phasett);
          /*
           xearth=1.;
           yearth=0.;
@@ -3528,6 +3553,9 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
          cdrpos[k].yaster=yaster;
          cdrpos[k].zaster=zaster;
          cdrpos[k].r=r;
+         cdrpos[k].angelong=elong;
+         cdrpos[k].angphase=phase;
+         cdrpos[k].mag0=mag;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
          if (cdr.frame_center==0) { 
@@ -3571,8 +3599,54 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
          sprintf(s,"%f ",cdrpos[k].mag2);
          Tcl_DStringAppend(&dsptr,s,-1);
       }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag0);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].xearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].yearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].zearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].xaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].yaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].zaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].angelong/(DR));
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].angphase/(DR));
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
       Tcl_DStringAppend(&dsptr,"} ",-1);
       /* === sortie et destructeurs ===*/
+      free(jds);
       free(cdrpos);
       free(relief);
       free(albedo);
@@ -3606,7 +3680,13 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*    Rien pour INTERNAL													             */
 /*    NameFile pour designer le fichier des elements						       */
 /*    String pour la chaine qui contient les elements.						    */
-/* fileJdMagobs */
+/* ListObs nom de l'array qui contient les series d'observations (ex. mes) */
+/*    mes(n) : contient le nombre de series. */
+/*    mes(jd,1) : liste Dates TT de la premiere serie d'observations. */
+/*    mes(mag,1) : liste magnitudes differentielles de la premiere serie d'observations. */
+/*    ... */
+/*    mes(jd,n) : liste Dates TT de la derniere serie d'observations. */
+/*    mes(mag,n) : liste magnitudes differentielles de la derniere serie d'observations. */
 /* Dates 													                               */
 /*  Le 1er element contient le debut de la date.                            */
 /*    NOW (defauf) pour designer l'instant actuel. 							    */
@@ -3657,19 +3737,28 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 
    double xearth,yearth,zearth,xaster,yaster,zaster;
    double dl;
-   int n,k;
+   int n,k,nk,kseries,nseries,kjd,kjdd,kjds0,kjdbest;
    mc_cdrpos *cdrpos=NULL;
    mc_cdr cdr;
    double *relief=NULL;
    double *albedo=NULL;
-   int klon,klat,nlon,nlat;
+   double *lonpoles=NULL;
+   double *latpoles=NULL;
+   int klon,klat,nlon,nlat,nlonpole,nlatpole;
    char **argvv=NULL;
-   int argcc,njd,code;
-   double *jds;
-//double dlt;
+   int argcc,code,res;
+   double jdk,tot,dif,offmag,stdmag;
+   double jd1,jd2,jdmed,djd;
+   double stdmagmin,offmagmin;
+   int kjdmin;
+   char mesures[]="mes";
+
+   int njd=100;
+   mc_cdrpos cdrpos100[100];
+   int kjds[100]; 
 
    if(argc<15) {
-      sprintf(s,"Usage: %s Planet fileJdMagobs Ref_dates HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0 sideral_period_h lonpole latpole a_m", argv[0]);
+      sprintf(s,"Usage: %s Planet ListObs Ref_dates HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0 sideral_period_h List_lonpole List_latpole a_m", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -3685,15 +3774,50 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      /* --- decode les dates & mags ---*/
-      if ((fid=fopen(argv[2],"rt") ) == NULL) {
-         sprintf(s,"Error : file %s cannot be read",argv[2]);
+      /* --- verifie les dates & mags ---*/
+      sprintf(s,"source %s",argv[2]);
+      res=Tcl_Eval(interp,s);
+      if (res==TCL_ERROR) {
+         sprintf(s,"File %s not found",argv[2]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
-
       }
-      fclose(fid);
-
+      sprintf(s,"expr int($%s(n))",mesures);
+      res=Tcl_Eval(interp,s);
+      if (res==TCL_ERROR) {
+         sprintf(s,"Variable %s not defined",mesures);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n=(int)atoi(interp->result);
+      if (n<=0) {
+         sprintf(s,"%s(n)=%d must be strictly positive",mesures,n);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      for (k=1;k<=n;k++) {
+         sprintf(s,"llength $%s(jd,%d)",mesures,k);
+         res=Tcl_Eval(interp,s);
+         if (res==TCL_ERROR) {
+            sprintf(s,"List %s(jd,%d) contains no element",mesures,k);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         nk=atoi(interp->result);
+         sprintf(s,"llength $%s(mag,%d)",mesures,k);
+         res=Tcl_Eval(interp,s);
+         if (res==TCL_ERROR) {
+            sprintf(s,"List %s(jd,%d) contains no element",mesures,k);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         if (nk!=atoi(interp->result)) {
+            sprintf(s,"Lists %s(jd,%d) and %s(jd,%d) must have same number of elements",mesures,k,mesures,k);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+      }
+      nseries=n;
       /* --- decode le referentiel des dates ---*/
       cdr.frame_time=atoi(argv[3]);
       /* --- decode les parametres physiques ---*/
@@ -3705,15 +3829,39 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
       cdr.lon_phase0=atof(argv[9]);
       mctcl_decode_date(interp,argv[10],&cdr.jd_phase0);
       cdr.period=atof(argv[11])/24.;
-      cdr.lonpole=atof(argv[12]);
-      cdr.latpole=atof(argv[13]);
+ 	  /* --- decode la liste des longitudes de pole a tester ---*/
+      code=Tcl_SplitList(interp,argv[12],&argcc,&argvv);
+      nlonpole=argcc;
+      if (code==TCL_OK) {
+         lonpoles=(double*)calloc(argcc,sizeof(double));
+         if (lonpoles==NULL) {
+            return TCL_ERROR;
+         }
+         for (k=0;k<argcc;k++) {
+            lonpoles[k]=(double)atof(argvv[k]);
+         }
+         Tcl_Free((char *) argvv);
+      } else {
+         return TCL_ERROR;
+      }
+ 	  /* --- decode la liste des latitudes de pole a tester ---*/
+      code=Tcl_SplitList(interp,argv[13],&argcc,&argvv);
+      nlatpole=argcc;
+      if (code==TCL_OK) {
+         latpoles=(double*)calloc(argcc,sizeof(double));
+         if (latpoles==NULL) {
+            return TCL_ERROR;
+         }
+         for (k=0;k<argcc;k++) {
+            latpoles[k]=(double)atof(argvv[k]);
+         }
+         Tcl_Free((char *) argvv);
+      } else {
+         return TCL_ERROR;
+      }
+      /**/
       cdr.a=atof(argv[14]); /* demi-grand axe */
       cdr.density=1.; /* assumed but will be recomputed */
-      if (argc>=16) {
-         genefilename=argv[15];
-      } else {
-         genefilename=NULL;
-      }
       /* --- */
       dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
       dl=5.;
@@ -3729,14 +3877,12 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
       if (relief==NULL) {
          strcpy(s,"Error : memory allocation for relief");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(jds);
          return TCL_ERROR;
       }
       if ((fichier_relief=fopen(filename_relief,"rt") ) == NULL) {
          free(relief);
          sprintf(s,"Error : file %s cannot be read: %s",argv[4],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(jds);
          return TCL_ERROR;
 
       }
@@ -3759,7 +3905,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
          free(relief);
          sprintf(s,"Error : file %s cannot be closed: %s",argv[4],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(jds);
          return TCL_ERROR;
       }
       /* === */
@@ -3770,7 +3915,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
          free(relief);
          strcpy(s,"Error : memory allocation for albedo");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(jds);
          return TCL_ERROR;
       }
       if ((fichier_albedo=fopen(filename_albedo,"rt") ) == NULL) {
@@ -3778,7 +3922,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
          free(albedo);
          sprintf(s,"Error : file %s cannot be read",argv[4]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(jds);
          return TCL_ERROR;
 
       }
@@ -3809,7 +3952,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
             sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             free(relief);
-            free(jds);
             return TCL_ERROR;
 		   }
       }
@@ -3845,97 +3987,227 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(relief);
          free(albedo);
-         free(jds);
          return TCL_ERROR;
       }
       mc_aster2elem(aster,&elem);
-      /* === */
-	   /* === Calcul des coordonnes heliocentriques de la planete et de la Terre pour chaque phase ===*/
-      /* === */
-      n=argcc;
-      cdrpos=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
-      if (cdrpos==NULL) {
-         strcpy(s,"Error : memory allocation for cdrpos");
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(relief);
-         free(albedo);
-         free(jds);
-         return TCL_ERROR;
+      /* --- calcule jd_phase0 dans le repere de l'asteroide ---*/
+      if (cdr.frame_time==0) {
+         cdr.jd_phase0tt=cdr.jd_phase0;
+         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         /* On transforme jd_phase0 dans le repere de l'asteroide */
+         mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0);
       }
-      /*phi=cdr.jd_phase0-cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);*/
-      for (k=0;k<n;k++) {
-         cdrpos[k].jd=jds[k];
-         cdrpos[k].phase=(cdrpos[k].jd-cdr.jd_phase0)/cdr.period;
-         cdrpos[k].phase=cdrpos[k].phase-floor(cdrpos[k].phase);
-		 mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
-         if (cdr.frame_time==1) {
-            /*  corriger la base de temps avec delta */
-            mc_aberpla(cdrpos[k].jd,-delta,&cdrpos[k].jd);
-   		    mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
-            cdrpos[k].jd=jds[k];
+      /* --- calcule jd_phase0tt dans le repere terrestre ---*/
+      if (cdr.frame_time==1) {
+         mc_xyzasaaphelio(cdr.jd_phase0,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         /* On transforme jd_phase0 dans le repere de terrestre */
+         mc_aberpla(cdr.jd_phase0,delta,&cdr.jd_phase0tt);
+      }
+      /* === */
+	   /* === Grande boucle sur les series ===*/
+      /* === */
+      for (kseries=2;kseries<=2;kseries++) {
+      //for (kseries=1;kseries<=nseries;kseries++) {
+         sprintf(s,"llength $%s(jd,%d)",mesures,kseries);
+         res=Tcl_Eval(interp,s);
+         n=(int)atoi(interp->result);
+         /* === */
+	      /* === Calcul des coordonnes heliocentriques de la planete et de la Terre pour chaque phase ===*/
+         /* === */
+         cdrpos=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
+         if (cdrpos==NULL) {
+            strcpy(s,"Error : memory allocation for cdrpos");
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            free(relief);
+            free(albedo);
+            return TCL_ERROR;
          }
-         /*
-          xearth=1.;
-          yearth=0.;
-          zearth=0.;
-          delta=1.;
-          dlt=0.*(DR);
-          xaster=xearth+delta*cos(dlt);
-          yaster=yearth+delta*sin(dlt);
-          zaster=zearth;
-          */
-         cdrpos[k].xaster=xaster;
-         cdrpos[k].yaster=yaster;
-         cdrpos[k].zaster=zaster;
-         cdrpos[k].r=r;
-         cdrpos[k].mag1=mag;
-         cdrpos[k].mag2=mag;
-         if (cdr.frame_center==0) { 
-            /* heliocentric */
-            cdrpos[k].xearth=0.;
-            cdrpos[k].yearth=0.;
-            cdrpos[k].zearth=0.;
-            cdrpos[k].delta=r;
-         } else {
-            /* geocentric */
-            cdrpos[k].xearth=xearth;
-            cdrpos[k].yearth=yearth;
-            cdrpos[k].zearth=zearth;
-            cdrpos[k].delta=delta;
+         /* --- calcule la date de la premiere et de la derniere observation ---*/
+         for (k=0;k<n;k+=n-1) {
+            sprintf(s,"mc_date2jd [lindex $%s(jd,%d) %d]",mesures,kseries,k);
+            res=Tcl_Eval(interp,s);
+            cdrpos[k].jd=(double)atof(interp->result);
+            cdrpos[k].jdtt=cdrpos[k].jd;
+            if (cdr.frame_time==1) {
+   		      mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+               /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
+               /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
+               mc_aberpla(cdrpos[k].jd,-delta,&jdk);
+               cdrpos[k].jdtt=jdk;
+            }
          }
-      }
-      /* === */
-	   /* === Calcul de la courbe de lumiere ===*/
-      /* === */
-      mc_simulcbin(cdr,relief,albedo,cdrpos,n,genefilename);
-      /* === */
-	   /* === Sortie des resultats ===*/
-      /* === */
-      Tcl_DStringAppend(&dsptr,"{",-1);
-      for (k=0;k<n;k++) {
-         sprintf(s,"%f ",cdrpos[k].jd);
-         Tcl_DStringAppend(&dsptr,s,-1);
-      }
-      Tcl_DStringAppend(&dsptr,"} {",-1);
-      for (k=0;k<n;k++) {
-         sprintf(s,"%f ",cdrpos[k].phase);
-         Tcl_DStringAppend(&dsptr,s,-1);
-      }
-      Tcl_DStringAppend(&dsptr,"} {",-1);
-      for (k=0;k<n;k++) {
-         sprintf(s,"%f ",cdrpos[k].mag1);
-         Tcl_DStringAppend(&dsptr,s,-1);
-      }
-      Tcl_DStringAppend(&dsptr,"} {",-1);
-      for (k=0;k<n;k++) {
-         sprintf(s,"%f ",cdrpos[k].mag2);
-         Tcl_DStringAppend(&dsptr,s,-1);
-      }
-      Tcl_DStringAppend(&dsptr,"} ",-1);
+	      /* === Calcule les njd(=100) dates qui encadrent le mieux l'observation ===*/
+         jdmed=(cdrpos[0].jdtt+cdrpos[n-1].jdtt)/2;
+         jd1=jdmed-cdr.period/2.;
+         jd2=jd1+cdr.period;
+         djd=cdr.period*njd/(njd-1); /* pour obtenir la meme phase au debut et a la fin */
+         /* --- calcule tous les parametres de l'asteroide pour les njd(=100) dates TT couvrant une periode complete  ---*/
+         for (k=0;k<njd;k++) {
+            cdrpos100[k].jdtt=jd1+(djd*k)/njd; /* Formule lin1 */
+            /* jd est toujours en TT ici */
+		      mc_xyzasaaphelio(cdrpos100[k].jdtt,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+            if (cdr.frame_time==0) {
+               /* On transforme JD dans le repere de l'asteroide */
+               mc_aberpla(cdrpos100[k].jdtt,delta,&cdrpos100[k].jd);
+            }
+            /* --- la phase est calculee dans le repere de l'asteroide ---*/
+            cdrpos100[k].phase=(cdrpos100[k].jd-cdr.jd_phase0)/cdr.period;
+            cdrpos100[k].phase=cdrpos100[k].phase-floor(cdrpos100[k].phase);
+            /* --- la phase est calculee dans le repere terrestre ---*/
+            cdrpos100[k].phasett=(cdrpos100[k].jdtt-cdr.jd_phase0tt)/cdr.period;
+            cdrpos100[k].phasett=cdrpos100[k].phasett-floor(cdrpos100[k].phasett);
+            cdrpos100[k].xaster=xaster;
+            cdrpos100[k].yaster=yaster;
+            cdrpos100[k].zaster=zaster;
+            cdrpos100[k].r=r;
+            cdrpos100[k].angelong=elong;
+            cdrpos100[k].angphase=phase;
+            cdrpos100[k].mag1=mag;
+            cdrpos100[k].mag2=mag;
+            if (cdr.frame_center==0) { 
+               /* heliocentric */
+               cdrpos100[k].xearth=0.;
+               cdrpos100[k].yearth=0.;
+               cdrpos100[k].zearth=0.;
+               cdrpos100[k].delta=r;
+            } else {
+               /* geocentric */
+               cdrpos100[k].xearth=xearth;
+               cdrpos100[k].yearth=yearth;
+               cdrpos100[k].zearth=zearth;
+               cdrpos100[k].delta=delta;
+            }
+         }
+         /* --- calcule les parametres observes de l'asteroide ---*/
+         for (k=0;k<n;k++) {
+            sprintf(s,"mc_date2jd [lindex $%s(jd,%d) %d]",mesures,kseries,k);
+            res=Tcl_Eval(interp,s);
+            cdrpos[k].jd=(double)atof(interp->result);
+            sprintf(s,"lindex $%s(mag,%d) %d",mesures,kseries,k);
+            res=Tcl_Eval(interp,s);
+            cdrpos[k].mag0=(double)atof(interp->result);
+            /* jd doit etre en TT pour mc_xyzasaaphelio */
+		      mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+            if (cdr.frame_time==1) {
+               /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
+               /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
+               mc_aberpla(cdrpos[k].jd,-delta,&cdrpos[k].jdtt);
+   		      mc_xyzasaaphelio(cdrpos[k].jdtt,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+            } else {
+               /* On transforme JD dans le repere de l'asteroide */
+               cdrpos[k].jdtt=cdrpos[k].jd;
+               mc_aberpla(cdrpos[k].jdtt,delta,&cdrpos[k].jd);
+            }
+            /* --- la phase est calculee dans le repere de l'asteroide ---*/
+            cdrpos[k].phase=(cdrpos[k].jd-cdr.jd_phase0)/cdr.period;
+            cdrpos[k].phase=cdrpos[k].phase-floor(cdrpos[k].phase);
+            /* --- la phase est calculee dans le repere terrestre ---*/
+            cdrpos[k].phasett=(cdrpos[k].jdtt-cdr.jd_phase0tt)/cdr.period;
+            cdrpos[k].phasett=cdrpos[k].phasett-floor(cdrpos[k].phasett);
+            cdrpos[k].xaster=xaster;
+            cdrpos[k].yaster=yaster;
+            cdrpos[k].zaster=zaster;
+            cdrpos[k].r=r;
+            cdrpos[k].angelong=elong;
+            cdrpos[k].angphase=phase;
+            cdrpos[k].mag1=mag;
+            cdrpos[k].mag2=mag;
+            if (cdr.frame_center==0) { 
+               /* heliocentric */
+               cdrpos[k].xearth=0.;
+               cdrpos[k].yearth=0.;
+               cdrpos[k].zearth=0.;
+               cdrpos[k].delta=r;
+            } else {
+               /* geocentric */
+               cdrpos[k].xearth=xearth;
+               cdrpos[k].yearth=yearth;
+               cdrpos[k].zearth=zearth;
+               cdrpos[k].delta=delta;
+            }
+         }
+         /* === */
+	      /* === Boucles sur les couples (lon,lat) ===*/
+         /* === */
+         for (kjd=0;kjd<njd;kjd++) {
+            kjds[kjd]=kjd;
+         }
+         for (klon=0;klon<nlonpole;klon++) {
+            for (klat=0;klat<nlatpole;klat++) {
+               /* === */
+	            /* === Calcul de la courbe de lumiere ===*/
+               /* === */
+               cdr.lonpole=lonpoles[klon];
+               cdr.latpole=latpoles[klat];
+               mc_simulcbin(cdr,relief,albedo,cdrpos100,njd,genefilename);
+               /* --- boucle sur les longitudes initiales ---*/
+               stdmagmin=1e20;
+               for (kjd=0;kjd<njd;kjd++) {
+                  /* === */
+	               /* === Calcul l'offset a appliquer sur les mesures de magnitude ===*/
+                  /* === */
+                  tot=0;
+                  for (k=0;k<n;k++) {
+                     kjdbest=(int)((cdrpos[k].jdtt-jd1)/djd*njd); /* Formule lin1 inverse */
+                     if (kjdbest<0) {kjdbest=0;}
+                     if (kjdbest>=njd) {kjdbest=njd-1;}
+                     tot+=(cdrpos[k].mag0-cdrpos100[kjds[kjdbest]].mag2);
+                  }
+                  offmag=tot/n;
+                  /* === */
+	               /* === Calcul l'ecart type o-c ===*/
+                  /* === */
+                  tot=0;
+                  for (k=0;k<n;k++) {
+                     kjdbest=(int)((cdrpos[k].jdtt-jd1)/djd*njd); /* Formule lin1 inverse */
+                     if (kjdbest<0) {kjdbest=0;}
+                     if (kjdbest>=njd) {kjdbest=njd-1;}
+                     dif=(cdrpos[k].mag0-offmag-cdrpos100[kjds[kjdbest]].mag2);
+                     tot+=dif*dif;
+                  }
+                  stdmag=sqrt(tot/n);
+                  if (stdmag<stdmagmin) {
+                     stdmagmin=stdmag;
+                     offmagmin=offmag;
+                     kjdmin=kjds[0];
+                  }
+                  /* --- on fait tourner les indices d'un cran ---*/
+                  kjds0=kjds[0];
+                  for (kjdd=0;kjdd<njd-1;kjdd++) {
+                     kjds[kjdd]=kjds[kjdd+1];
+                  }
+                  kjds[njd-1]=kjds0;
+               }
+               Tcl_DStringAppend(&dsptr,"{",-1);
+               sprintf(s,"%f %f %d %e",cdr.lonpole,cdr.latpole,kseries,stdmagmin);
+               Tcl_DStringAppend(&dsptr,s,-1);
+               for (kjd=0;kjd<njd;kjd++) {
+                  kjds[kjd]=kjdmin+kjd;
+                  if (kjds[kjd]>=njd) {
+                     kjds[kjd]-=njd;
+                  }
+               }
+               for (k=0;k<n;k++) {
+                  kjdbest=(int)((cdrpos[k].jdtt-jd1)/djd*njd); /* Formule lin1 inverse */
+                  if (kjdbest<0) {kjdbest=0;}
+                  if (kjdbest>=njd) {kjdbest=njd-1;}
+                  Tcl_DStringAppend(&dsptr,"{",-1);
+                  sprintf(s,"%f %f",cdrpos[k].mag0-offmagmin,cdrpos100[kjds[kjdbest]].mag2);
+                  Tcl_DStringAppend(&dsptr,"} ",-1);
+               }
+               Tcl_DStringAppend(&dsptr,"} ",-1);
+            }
+         }
+         /* === */
+	      /* === Libere la memoire de cette serie ===*/
+         /* === */
+         free(cdrpos);
+      } /*=== fin de la boucle sur les series ===*/
       /* === sortie et destructeurs ===*/
-      free(cdrpos);
       free(relief);
       free(albedo);
+      free(lonpoles);
+      free(latpoles);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
    }
