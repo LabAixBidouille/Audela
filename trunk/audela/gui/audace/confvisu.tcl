@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.9 2006-03-11 19:10:49 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.10 2006-03-15 20:08:20 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -330,8 +330,9 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  clear
-   #     efface le contenu de la visu
-   #  
+   #    efface le contenu de la visu
+   #  parametres :
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc clear { visuNo } {
       variable private
@@ -358,6 +359,7 @@ namespace eval ::confVisu {
    #       "xy" : 
    #       
    #  parametres :
+   #    visuNo: numero de la visu
    #    scales :  "xy"         coordonnes x,y uniquement
    #              "xy_radec"   coordonnes x,y  ou ra,dec
    #------------------------------------------------------------
@@ -384,9 +386,9 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  toogleCoordType
-   #     change l'echelle des coordonnees
+   #     change l'echelle des coordonnees  (xy <=> radec)
    #  parametres :
-   #    scales :  "xy" ou "xy_radec"
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc toogleCoordType { visuNo } {
       global caption
@@ -404,10 +406,26 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  getCanvasCenter
+   #     retourne les coordonnees du centre du canvas (referentiel canvas)
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getCanvasCenter { visuNo } {
+      variable private 
+
+      set box [grid bbox .audace.can1 0 0]
+      set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]  
+      set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
+
+      set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
+   }
+
+   #------------------------------------------------------------
    #  setZoom
    #     change le zoom  et rafraichit l'affichage
    #  parametres :
-   #    scales :  "xy" ou "xy_radec"
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc setZoom { visuNo } {
       variable private 
@@ -463,7 +481,7 @@ namespace eval ::confVisu {
    #     applique un miroir par rapport à l'axe des X
    #
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc setMirrorX { visuNo } {
       variable private
@@ -482,7 +500,7 @@ namespace eval ::confVisu {
    #     applique un miroir par rapport à l'axe des Y
    #
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc setMirrorY { visuNo } {
       variable private
@@ -500,8 +518,9 @@ namespace eval ::confVisu {
    #  setCamera
    #     associe une camera à la visu
    #  parametres :
-   #      
-   #
+   #    visuNo: numero de la visu
+   #    camNo : numero de la camera
+   #    model : libelle de la camera a afficher dans la visu
    #  exemple : setCamera 2 3 "EOS 300D" cree l'association entre visu2 et cam3
    #            setCamera 2 "" ""        supprime l'association
    #------------------------------------------------------------
@@ -527,7 +546,7 @@ namespace eval ::confVisu {
    #  getCamNo
    #     retourne le numero de camera associee à la visu
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getCamNo { visuNo } {
       variable private
@@ -539,7 +558,7 @@ namespace eval ::confVisu {
    #  getCamera
    #     retourne le nom de camera associee à la visu
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getCamera { visuNo } {
       variable private
@@ -551,7 +570,7 @@ namespace eval ::confVisu {
    #  getProduct
    #     retourne le nom de famille de la camera associee à la visu
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getProduct { visuNo } {
       variable private
@@ -563,7 +582,7 @@ namespace eval ::confVisu {
    #  getBufNo
    #     retourne le nom de camera associee à la visu
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getBufNo { visuNo } {
       variable private
@@ -575,7 +594,7 @@ namespace eval ::confVisu {
    #  setWindow
    #     affiche une partie de l'image
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc setWindow { visuNo } {
       variable private
@@ -606,7 +625,7 @@ namespace eval ::confVisu {
    #  setFullScreen
    #     affiche la visu en plein ecran
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc setFullScreen { visuNo } {
       variable private
@@ -625,10 +644,12 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setVideo
-   #     active/desactive le mode video pour une camera
+   #     active/desactive le mode video pour une camera pour afficher
+   #     des films AVI
    #   
    #  parametres :
-   #      
+   #    visuNo: numero de la visu
+   #    state : 1= active le mode video , 0=desactive le mode video
    #------------------------------------------------------------
    proc setVideo { visuNo state } {
       variable private
@@ -661,9 +682,10 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # addCameraListener
-   #  ajoute une procedure a appeler si on change de camera
-   #  parametre :
-   #
+   #    ajoute une procedure a appeler si on change de camera
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand la camera associee à la visu change
    #------------------------------------------------------------
    proc addCameraListener { visuNo cmd } {
       variable private
@@ -673,9 +695,10 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeCameraListener
-   #  supprime une procedure a appeler si on change de camera
-   #  parametre :
-   #
+   #    supprime une procedure a appeler si on change de camera
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand la camera associee à la visu change
    #------------------------------------------------------------
    proc removeCameraListener { visuNo cmd } {
       variable private
@@ -685,9 +708,10 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # addZoomListener
-   #  ajoute une procedure a appeler si on change de zoom
-   #  parametre :
-   #
+   #    ajoute une procedure a appeler si on change de zoom
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc addZoomListener { visuNo cmd } {
       variable private
@@ -697,9 +721,10 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeZoomListener
-   #  supprime une procedure a appeler si on change de camera
-   #  parametre :
-   #
+   #   supprime une procedure a appeler si on change de camera
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc removeZoomListener { visuNo cmd } {
       variable private
@@ -709,9 +734,10 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # addFileNameListener
-   #  ajoute une procedure a appeler si on change de nom de fichier image
-   #  parametre :
-   #
+   #   ajoute une procedure a appeler si on change de nom de fichier image
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le fichier change
    #------------------------------------------------------------
    proc addFileNameListener { visuNo cmd } {
       variable private
@@ -721,9 +747,10 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeFileNameListener
-   #  supprime une procedure a appeler si on change de nom de fichier image
-   #  parametre :
-   #
+   #   supprime une procedure a appeler si on change de nom de fichier image
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le fichier change
    #------------------------------------------------------------
    proc removeFileNameListener { visuNo cmd } {
       variable private
@@ -736,7 +763,7 @@ namespace eval ::confVisu {
    #  stopTool
    #     arrete l'outil courant
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable private
@@ -751,7 +778,8 @@ namespace eval ::confVisu {
    #     arrete l'outil courant 
    #     demarre le nouvel outil
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
+   #    toolName : nom de l'outil a lancer
    #------------------------------------------------------------
    proc selectTool { visuNo toolName } {
       variable private
@@ -772,9 +800,9 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getTool
-   #     retourne 
+   #     retourne  le nom de l'outil courant
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getTool { visuNo } {
       variable private
@@ -788,7 +816,7 @@ namespace eval ::confVisu {
    #  parametres
    #     hCanvas : nom du canvas , exemple: .audace.can1.canvas 
    #  return : 
-   #    numera de la visu contenant le canvas
+   #    numero de la visu contenant le canvas
    #------------------------------------------------------------
    proc getVisuNo { hCanvas } {
       #-- le numero de la visu se trouve dans le parametre "class de la toplevel 
@@ -800,7 +828,7 @@ namespace eval ::confVisu {
    #  getZoom
    #     retourne  la valeur du zoom
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getZoom { visuNo } {
       variable private
@@ -809,9 +837,9 @@ namespace eval ::confVisu {
    }
    #------------------------------------------------------------
    #  getBase
-   #     retourne 
+   #     retourne le chemin de la toplevel de la visu
    #  parametres :
-   #  
+   #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getBase { visuNo } {
       variable private
@@ -851,9 +879,9 @@ namespace eval ::confVisu {
    #  
    #  parametres :
    #     visuNo  : numero de la visu associee
-   #
+   #     This    : chemin de la toplevel contenant la dialog
    #  retour
-   #  
+   #     null
    #------------------------------------------------------------
    proc createDialog { visuNo This } {
       variable private
@@ -1054,6 +1082,7 @@ namespace eval ::confVisu {
    #     associe un evenement du canvas avec une commande
    #      
    #  parametres :
+   #     visuNo : numero de la visu
    #     sequence : evenement associe
    #     command  : command a executer. si command="default"  
    #                alors c'est la commande par defaut qui est associe
@@ -1423,7 +1452,7 @@ namespace eval ::confVisu {
    #  getBox
    #     retourne 
    #  parametres :
-   #  
+   #     visuNo : numero de la visu
    #------------------------------------------------------------
    proc getBox { { visuNo "1" } } {
       variable private
@@ -1433,7 +1462,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getCanvas
-   #     retourne le nom du canvas
+   #     retourne le nom du canvas (chemin TK)
    #  parametres :
    #     visuNo : numero de la visu
    #------------------------------------------------------------
