@@ -87,39 +87,45 @@ proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { 
    }
 
    set bufNo [::confVisu::getBufNo 1]
-   set nbcolor [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
-   set lx [list ]
-   set lyR [list ]
-   set lyG [list ]
-   set lyB [list ]
-	set xDiff [expr {$x2 - $x1}]
-	set yDiff [expr {$y2 - $y1}]
-	set numPixels [expr {hypot($xDiff,$yDiff)}]
-	set xRatio    [expr {$xDiff / $numPixels}]
-	set yRatio    [expr {$yDiff / $numPixels}]
-	set width      [buf$bufNo getpixelswidth]
-	set height      [buf$bufNo getpixelsheight]
-
-   #--- je copie l'intensite ds points de ligne de coupe dans les vecteurs du graphe
-	for {set p 0} {$p < $numPixels} {incr p} {
-		set x [expr {round($xRatio * $p) + $x1}]
-		set y [expr {round($yRatio * $p) + $y1}]
-      lappend lx $p
-      if { ($x>0)  && ($x<=$width) && ($y>0) && ($y<=$height) } {
-         lappend lyR [lindex [buf$bufNo getpix [list $x $y ] ] 1]
-         if { $nbcolor == 3 } {
-            lappend lyG [lindex [buf$bufNo getpix [list $x $y ] ] 2]
-            lappend lyB [lindex [buf$bufNo getpix [list $x $y ] ] 3]
-         }
+      set lx [list ]
+      set lyR [list ]
+      set lyG [list ]
+      set lyB [list ]
+      set xDiff [expr {$x2 - $x1}]
+      set yDiff [expr {$y2 - $y1}]
+      set numPixels [expr {hypot($xDiff,$yDiff)}]
+      set xRatio    [expr {$xDiff / $numPixels}]
+      set yRatio    [expr {$yDiff / $numPixels}]
+      set width     [buf$bufNo getpixelswidth]
+      set height    [buf$bufNo getpixelsheight]
+      
+      if { $width > 0 && $height > 0 } {
+         #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
+         set nbcolor [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
       } else {
-         #--- si le point est hors de l'image , j'affecte la valeur 0
-         lappend lyR 0
-         if { $nbcolor == 3 } {
-            lappend lyG 0
-            lappend lyB 0
-         }
+         set nbcolor 1
       }
-	}
+   
+      #--- je copie l'intensite ds points de ligne de coupe dans les vecteurs du graphe
+      for {set p 0} {$p < $numPixels} {incr p} {
+         set x [expr {round($xRatio * $p) + $x1}]
+         set y [expr {round($yRatio * $p) + $y1}]
+         lappend lx $p
+         if { ($x>0)  && ($x<=$width) && ($y>0) && ($y<=$height) } {
+            lappend lyR [lindex [buf$bufNo getpix [list $x $y ] ] 1]
+            if { $nbcolor == 3 } {
+               lappend lyG [lindex [buf$bufNo getpix [list $x $y ] ] 2]
+               lappend lyB [lindex [buf$bufNo getpix [list $x $y ] ] 3]
+            }
+         } else {
+            #--- si le point est hors de l'image , j'affecte la valeur 0
+            lappend lyR 0
+            if { $nbcolor == 3 } {
+               lappend lyG 0
+               lappend lyB 0
+            }
+         }
+   	}
 
    #--- j'affiche le graphe
    sectiongraphX$visuNo set $lx
