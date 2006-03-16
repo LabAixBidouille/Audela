@@ -2,7 +2,8 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# $Id 25 fevrier 2006 $
+# $Id 16 mars 2006 $
+#
 
 namespace eval ::sectiongraph {
 }
@@ -16,13 +17,10 @@ proc ::sectiongraph::init { visuNo } {
    variable private
    global audace
    global conf
-   global caption
 
    if { [ buf[::confVisu::getBufNo $visuNo] imageready] == "0" } {
       return
    }
-
-   set caption(sectiongraph,title) "Graphe de la coupe"
 
    #--- j'initalise les variables de travail
    ::blt::vector create sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
@@ -31,7 +29,7 @@ proc ::sectiongraph::init { visuNo } {
    ::polydraw::setMouseAddItem $visuNo "0"
    ::polydraw::setMouseAddNode $visuNo "0"
    #--- je cree la fenetre contenant le graphe
-   ::sectiongraph::createToplevel 1
+   ::sectiongraph::createToplevel $visuNo
    #--- je dessine la ligne de coupe au centre du canvas 
    set canvasCenter [::confVisu::getCanvasCenter $visuNo ]
    set x1 [expr [lindex $canvasCenter 0 ] - 20 ]
@@ -40,13 +38,11 @@ proc ::sectiongraph::init { visuNo } {
    set private($visuNo,itemNo) [::polydraw::createLine $visuNo [list $x1 $y $x2 $y ] ]
    #--- j'active le rafraichissement automatique sur déplacement de la ligne de coupe
    ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-   #--- je declare le rafraichissement automatique changement d'image
+   #--- je declare le rafraichissement automatique au changement d'image
    ::confVisu::addFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
    #--- je rafraichis le graphe
    ::sectiongraph::refresh $visuNo $private($visuNo,itemNo)
 }
-
-
 
 #------------------------------------------------------------
 #  refresh
@@ -78,7 +74,7 @@ proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { 
       set x1 $x2
       set x2 $x
    }
-   
+
    #--- je redresse haut/bas
    if { $y1 > $y2 } {
       set y  $y1
@@ -86,70 +82,69 @@ proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { 
       set y2 $y
    }
 
-   set bufNo [::confVisu::getBufNo 1]
-      set lx [list ]
-      set lyR [list ]
-      set lyG [list ]
-      set lyB [list ]
-      set xDiff [expr {$x2 - $x1}]
-      set yDiff [expr {$y2 - $y1}]
-      set numPixels [expr {hypot($xDiff,$yDiff)}]
-      set xRatio    [expr {$xDiff / $numPixels}]
-      set yRatio    [expr {$yDiff / $numPixels}]
-      set width     [buf$bufNo getpixelswidth]
-      set height    [buf$bufNo getpixelsheight]
-      
-      if { $width > 0 && $height > 0 } {
-         #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
-         set nbcolor [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
-      } else {
-         set nbcolor 1
-      }
-   
-      #--- je copie l'intensite ds points de ligne de coupe dans les vecteurs du graphe
-      for {set p 0} {$p < $numPixels} {incr p} {
-         set x [expr {round($xRatio * $p) + $x1}]
-         set y [expr {round($yRatio * $p) + $y1}]
-         lappend lx $p
-         if { ($x>0)  && ($x<=$width) && ($y>0) && ($y<=$height) } {
-            lappend lyR [lindex [buf$bufNo getpix [list $x $y ] ] 1]
-            if { $nbcolor == 3 } {
-               lappend lyG [lindex [buf$bufNo getpix [list $x $y ] ] 2]
-               lappend lyB [lindex [buf$bufNo getpix [list $x $y ] ] 3]
-            }
-         } else {
-            #--- si le point est hors de l'image , j'affecte la valeur 0
-            lappend lyR 0
-            if { $nbcolor == 3 } {
-               lappend lyG 0
-               lappend lyB 0
-            }
+   set bufNo     [::confVisu::getBufNo $visuNo]
+   set lx        [list ]
+   set lyR       [list ]
+   set lyG       [list ]
+   set lyB       [list ]
+   set xDiff     [expr {$x2 - $x1}]
+   set yDiff     [expr {$y2 - $y1}]
+   set numPixels [expr {hypot($xDiff,$yDiff)}]
+   set xRatio    [expr {$xDiff / $numPixels}]
+   set yRatio    [expr {$yDiff / $numPixels}]
+   set width     [buf$bufNo getpixelswidth]
+   set height    [buf$bufNo getpixelsheight]
+
+   if { $width > 0 && $height > 0 } {
+      #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
+      set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
+   } else {
+      set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
+   }
+
+   #--- je copie l'intensite des points de la ligne de coupe dans les vecteurs du graphe
+   for {set p 0} {$p < $numPixels} {incr p} {
+      set x [expr {round($xRatio * $p) + $x1}]
+      set y [expr {round($yRatio * $p) + $y1}]
+      lappend lx $p
+      if { ($x>0) && ($x<=$width) && ($y>0) && ($y<=$height) } {
+         lappend lyR [lindex [buf$bufNo getpix [list $x $y ] ] 1]
+         if { $nbcolor($visuNo) == 3 } {
+            lappend lyG [lindex [buf$bufNo getpix [list $x $y ] ] 2]
+            lappend lyB [lindex [buf$bufNo getpix [list $x $y ] ] 3]
          }
-   	}
+      } else {
+         #--- si le point est hors de l'image , j'affecte la valeur 0
+         lappend lyR 0
+         if { $nbcolor($visuNo) == 3 } {
+            lappend lyG 0
+            lappend lyB 0
+         }
+      }
+   }
 
    #--- j'affiche le graphe
    sectiongraphX$visuNo set $lx
    sectiongraphYR$visuNo set $lyR
-   if { $nbcolor == 1 } {
+   if { $nbcolor($visuNo) == 1 } {
       #--- j'affiche une courbe blanche
-      $private(graph,horz) element configure lineR -color white
-      $private(graph,horz) element configure lineR -hide no
+      $private($visuNo,graph,horz) element configure lineR -color white
+      $private($visuNo,graph,horz) element configure lineR -hide no
       #--- je masque les deux autres courbes
-      $private(graph,horz) element configure lineG -hide yes
-      $private(graph,horz) element configure lineB -hide yes
+      $private($visuNo,graph,horz) element configure lineG -hide yes
+      $private($visuNo,graph,horz) element configure lineB -hide yes
    } else {
       sectiongraphYG$visuNo set $lyG
       sectiongraphYB$visuNo set $lyB
       #--- j'affiche trois courbes rouge, vert, bleu
-      $private(graph,horz) element configure lineR -color red
-      $private(graph,horz) element configure lineG -color green
-      $private(graph,horz) element configure lineB -color blue
-      $private(graph,horz) element configure lineR -hide no
-      $private(graph,horz) element configure lineG -hide no
-      $private(graph,horz) element configure lineB -hide no
+      $private($visuNo,graph,horz) element configure lineR -color red
+      $private($visuNo,graph,horz) element configure lineG -color green
+      $private($visuNo,graph,horz) element configure lineB -color blue
+      $private($visuNo,graph,horz) element configure lineR -hide no
+      $private($visuNo,graph,horz) element configure lineG -hide no
+      $private($visuNo,graph,horz) element configure lineB -hide no
    }
 }
-
 
 #------------------------------------------------------------
 #  createToplevel
@@ -186,7 +181,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
    wm protocol $This WM_DELETE_WINDOW "::sectiongraph::closeToplevel $visuNo"
 
    # Horizontal Graph
-   set private(graph,horz) [blt::graph $This.horz \
+   set private($visuNo,graph,horz) [blt::graph $This.horz \
             -title "" \
             -width $width -height $height \
             -takefocus 0 \
@@ -202,24 +197,24 @@ proc ::sectiongraph::createToplevel { visuNo } {
    set fgColor white
    set canvasFont "*helvetica-medium-r-*-100-*"
 
-   $private(graph,horz) element create lineR \
+   $private($visuNo,graph,horz) element create lineR \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color $fgColor -symbol ""
-   $private(graph,horz) element create lineG \
+   $private($visuNo,graph,horz) element create lineG \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYG$visuNo -color $fgColor -symbol ""
-   $private(graph,horz) element create lineB \
+   $private($visuNo,graph,horz) element create lineB \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYB$visuNo -color $fgColor -symbol ""
-   $private(graph,horz) legend configure -hide yes
-   $private(graph,horz) xaxis configure -title "" -hide yes
-   $private(graph,horz) x2axis configure -title "" -hide yes
-   $private(graph,horz) yaxis configure -title "" -hide yes
-   $private(graph,horz) y2axis configure -title "" -hide no -color $fgColor \
+   $private($visuNo,graph,horz) legend configure -hide yes
+   $private($visuNo,graph,horz) xaxis configure -title "" -hide yes
+   $private($visuNo,graph,horz) x2axis configure -title "" -hide yes
+   $private($visuNo,graph,horz) yaxis configure -title "" -hide yes
+   $private($visuNo,graph,horz) y2axis configure -title "" -hide no -color $fgColor \
       -ticklength 4 -tickfont $canvasFont
-   $private(graph,horz) grid configure -mapy y -dashes ""
-   $private(graph,horz) crosshairs configure -color green
-   # $private(graph,horz) element configure line1 -hide yes
-   $private(graph,horz) element configure lineR -hide no
+   $private($visuNo,graph,horz) grid configure -mapy y -dashes ""
+   $private($visuNo,graph,horz) crosshairs configure -color green
+   # $private($visuNo,graph,horz) element configure line1 -hide yes
+   $private($visuNo,graph,horz) element configure lineR -hide no
 
-   pack $private(graph,horz)
+   pack $private($visuNo,graph,horz)
 
 }
 
@@ -235,7 +230,6 @@ proc ::sectiongraph::closeToplevel { visuNo } {
    #--- je supprime les listener
    ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
    ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-
 
    ::polydraw::deleteItem $visuNo $private($visuNo,itemNo)
    ::polydraw::close $visuNo
