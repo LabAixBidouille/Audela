@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 15 mars 2006
+# Date de mise a jour : 16 mars 2006
 #
 
 #=========================================================================
@@ -295,6 +295,8 @@ set caption(seuils,initiaux)                          "Initial Thresholds"
 set caption(script,parcourir)                         "..."
 
 set caption(plotxy,figure)                            "Figure"
+
+set caption(sectiongraph,title)                       "Graph of the section"
 
 set caption(audace,temps_universel)                   "UT"
 set caption(audace,temps_heurelegale)                 "CT"
@@ -605,6 +607,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figure"
 
+   set caption(sectiongraph,title)                    "Graphe de la coupe"
+
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HL"
 
@@ -913,6 +917,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(script,parcourir)                      "..."
 
    set caption(plotxy,figure)                         "Figura"
+
+   set caption(sectiongraph,title)                    "# Graphe de la coupe"
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "O"
@@ -1223,6 +1229,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figura"
 
+   set caption(sectiongraph,title)                    "# Graphe de la coupe"
+
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HC"
 
@@ -1532,6 +1540,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figur"
 
+   set caption(sectiongraph,title)                    "# Graphe de la coupe"
+
    set caption(audace,temps_universel)                "WZ"
    set caption(audace,temps_heurelegale)              "UZ"
 
@@ -1840,6 +1850,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(script,parcourir)                      "..."
 
    set caption(plotxy,figure)                         "Figur"
+
+   set caption(sectiongraph,title)                    "# Graphe de la coupe"
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
