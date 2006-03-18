@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.12 2006-03-16 22:39:13 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.13 2006-03-18 08:12:11 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -150,7 +150,7 @@ namespace eval ::confVisu {
       global caption
 
       set bufNo [visu$visuNo buf]
-      
+
       #--- si une camera a le meme buffer que la visu, je ferme la camera
       foreach camNo [::cam::list] {
          if { [cam$camNo buf] == $bufNo } {
@@ -189,7 +189,9 @@ namespace eval ::confVisu {
       #--- je supprime le buffer associe a la visu
       ::buf::delete $bufNo
 
-      
+      #--- je supprime les graphes des coupes
+      ::sectiongraph::closeToplevel $visuNo
+
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
    }
@@ -288,8 +290,8 @@ namespace eval ::confVisu {
          }
       }
       
-      #--- je met a jour le nom du fichier  (cette variable est surveillee par un listener)
-      set private($visuNo,lastFileName) "$fileName"   
+      #--- je mets a jour le nom du fichier (cette variable est surveillee par un listener)
+      set private($visuNo,lastFileName) "$fileName"
    }
 
    #
