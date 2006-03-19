@@ -1,10 +1,10 @@
 #
 # Fichier : carteducielv3.tcl
-# Description : Driver de communication avec "Cartes Du Ciel" (communication TCP)  
+# Description : Driver de communication avec "Cartes Du Ciel" (communication TCP)
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Date de mise a jour : 22 decembre 2005
+# Date de mise a jour : 20 mars 2006
 #
 
 package provide carteducielv3 1.0
@@ -12,53 +12,53 @@ package provide carteducielv3 1.0
 #
 # Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,..)
 #     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : retourne le nom affichable du driver 
+#     getLabel          : retourne le nom affichable du driver
 #     getHelp           : retourne la documentation htm associee
 #     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
 #     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver
 #     confToWidget      : copie le tableau conf() dans les variables des widgets
 #     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver 
-#     stopDriver	      : arrete le driver 
+#     configureDriver   : configure le driver
+#     stopDriver	      : arrete le driver
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
-# Procedures specifiques a ce driver :  
-#     gotoObject        : centre le champ de la carte  sur un objet 
+# Procedures specifiques a ce driver :
+#     gotoObject        : centre le champ de la carte  sur un objet
 #     getSelectedObject : recupere les coordonnees de l'objet selectionne sur la carte
 #    
 namespace eval carteducielv3 {
-   global audace                     
-   
+   global audace
+
    #--- variables  privees utilisees uniquement dans les procedures de ce namespace
-   array set private { 
+   array set private {
       socket ""
-   }    
+   }
 
    #==============================================================
    # fonctions generiques de configuration des drivers
    #==============================================================
 
    #------------------------------------------------------------
-   #  init 
-   #     initialise le driver 
+   #  init
+   #     initialise le driver
    #  
    #  return namespace name
    #------------------------------------------------------------
-   proc init { } {  
+   proc init { } {
       global audace
 
       #--- je cree les variables dans conf(...)
-      initConf   
+      initConf
 
       #--- charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_plugin) chart carteducielv3 carteducielv3.cap ]\" " 
+      uplevel #0 "source \"[ file join $audace(rep_plugin) chart carteducielv3 carteducielv3.cap ]\" "
       
       return [ namespace current ]
    }
 
    #------------------------------------------------------------
-   #  getDriverType 
+   #  getDriverType
    #     retourne le type de driver
    #  
    #  return "catalog"
@@ -124,7 +124,7 @@ namespace eval carteducielv3 {
    #  return rien
    #------------------------------------------------------------
    proc Recherche_Fichier { } {
-      variable widget               
+      variable widget
 
       if { ( $widget(dirname) != "" ) && ( $widget(fichier_recherche) != "" ) } {
          #--- Fichier a rechercher
@@ -160,13 +160,13 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   #  confToWidget 
+   #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
    #  
    #  return rien
    #------------------------------------------------------------
-   proc confToWidget { } {   
-      variable widget  
+   proc confToWidget { } {
+      variable widget
       global conf
 
       set widget(fixedfovstate)     "$conf(carteducielv3,fixedfovstate)"
@@ -186,7 +186,7 @@ namespace eval carteducielv3 {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc widgetToConf { } {   
+   proc widgetToConf { } {
       variable widget  
       global conf
 
@@ -201,7 +201,7 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   #  fillConfigPage 
+   #  fillConfigPage
    #     fenetre de configuration du driver
    #  
    #  return rien
@@ -212,10 +212,10 @@ namespace eval carteducielv3 {
       global caption
       global color
 
-      #--- je memorise la reference de la frame 
+      #--- je memorise la reference de la frame
       set widget(frm) $frm
       
-      #--- j'initialise les valeurs 
+      #--- j'initialise les valeurs
       confToWidget
 
       #--- Creation des differents frames
@@ -289,7 +289,7 @@ namespace eval carteducielv3 {
       pack $frm.cdcport -in $frm.frame4 -anchor center -side left -padx 5 -pady 7
 
       button $frm.ping -text "$caption(carteducielv3,testping)" -relief raised -state normal \
-         -command { 
+         -command {
             global caption
             global confCam
 
@@ -335,10 +335,10 @@ namespace eval carteducielv3 {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } { 
+   proc configureDriver { } {
 
       #rien a faire pour carteduciel
-      return 
+      return
    }
 
    #------------------------------------------------------------
@@ -347,19 +347,19 @@ namespace eval carteducielv3 {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } { 
+   proc stopDriver { } {
 
       #rien a faire pour carteduciel
-      return 
+      return
    }
 
    #------------------------------------------------------------
-   #  isReady 
+   #  isReady
    #     informe de l'etat de fonctionnement du driver
    #  
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
-   proc isReady { } {   
+   proc isReady { } {
 
       set ready 0
       return  $ready
@@ -371,46 +371,46 @@ namespace eval carteducielv3 {
 
    #------------------------------------------------------------
    # gotoObject
-   # Affiche la carte de champ de l'objet choisi 
-   #  parametres : 
-   #     nom_objet :    nom de l'objet (ex: "NGC7000" )
+   # Affiche la carte de champ de l'objet choisi
+   #  parametres :
+   #     nom_objet :    nom de l'objet (ex: "NGC7000")
    #     ad :           ascension droite   (ex: "16h41m42s")
    #     dec :          declinaison     (ex: "+36d28m00s")
-   #     zoom_objet :   champ 1 à 10 
-   #     avant_plan :   1=mettre la carte au premier plan 0=ne pas mettre au premier plan 
+   #     zoom_objet :   champ 1 à 10
+   #     avant_plan :   1=mettre la carte au premier plan 0=ne pas mettre au premier plan
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       
       set result "0"
-      #console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"        
-      if { $nom_objet != "#etoile#" && $nom_objet != "" } { 
+      #console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
+      if { $nom_objet != "#etoile#" && $nom_objet != "" } {
          selectObject $nom_objet
-      } else { 
+      } else {
          moveCoord $ad $dec
-      } 
+      }
    }
 
    #------------------------------------------------------------
-   #  moveCoord  radec 
+   #  moveCoord radec
    #     centre la fenetre de carteduciel sur les coordonnees passes en parametre
-   #     et fixe le champ de diametre fov   
-   #     envoie a carteducciel  "MOVE RA: xxhxxmxxs.00s DEC:xxdxx'xx" FOV:xxdxx'xx" 
+   #     et fixe le champ de diametre fov
+   #     envoie a carteducciel  "MOVE RA: xxhxxmxxs.00s DEC:xxdxx'xx" FOV:xxdxx'xx"
    #  
    #  return 0 (OK) , 1(error)
    #------------------------------------------------------------
    proc moveCoord { ra dec } {
-      global conf 
+      global conf
 
       #--- je fixe la taille du champ de la carte
-      if { $conf(carteducielv3,fixedfovstate) != 0 }  {
+      if { $conf(carteducielv3,fixedfovstate) != 0 } {
          # j'utilise le champ fixe
-         set fov $conf(carteducielv3,fixedfovvalue)  
+         set fov $conf(carteducielv3,fixedfovvalue)
          # je remplace les unites par des espaces
          if { [ sendRequest "SETFOV $fov" ] != "OK!" } {
             return 1
          }
-      } 
-      
+      }
+
       set command "SETRA RA:$ra"
       if { [ sendRequest $command ] != "OK!" } {
          return 1
@@ -420,46 +420,46 @@ namespace eval carteducielv3 {
       if { [ sendRequest $command ] != "OK!" } {
          return 1
       }
- 
+
       if { [ sendRequest "REDRAW" ] != "OK!" } {
          return 1
       }
 
       return 0
-   }   
-   
+   }
+
    #------------------------------------------------------------
    #  selectObject
-   #     selectionne un objet dans CarteDuCiel 
+   #     selectionne un objet dans CarteDuCiel
    #
    #  return "0" (OK) , "1"(error)
    #------------------------------------------------------------
    proc selectObject { objectName } {
       global conf
-        
+
       #--- je fixe la taille du champ de la carte
-      if { $conf(carteducielv3,fixedfovstate) == 1 }  {
+      if { $conf(carteducielv3,fixedfovstate) == 1 } {
          # j'utilise le champ fixe
-         set fov $conf(carteducielv3,fixedfovvalue)  
+         set fov $conf(carteducielv3,fixedfovvalue)
          if { [ sendRequest "SETFOV $fov" ] != "OK!" } {
             return 1
          }
-      }       
+      }
 
       #--- j'envoie la requete vers carteducielv3
       if { [ sendRequest "search $objectName" ] == "Not found!" } {
          return 1
       }
-      
+
       return 0
 
-   }   
+   }
 
    #------------------------------------------------------------
    #  getSelectedObject {}
-   #     recupere les coordonnées et le nom de l'objet selectionne dans CarteDuCiel 
+   #     recupere les coordonnées et le nom de l'objet selectionne dans CarteDuCiel
    #  
-   #  return [list $ra $dec $objName ]   
+   #  return [list $ra $dec $objName ]
    #     $ra : right ascension  (ex: "16h41m42")
    #     $dec : declinaison     (ex: "+36d28m00")
    #     $objName: object name  (ex: "M 13")
@@ -467,53 +467,53 @@ namespace eval carteducielv3 {
    #     ou  ""  si erreur
    #     
    #
-   #  Remarque : Si aucun objet n'est selectionne dans CarteDuCiel, 
-   #  alors getSelectedObject retourne les coordonnées du centre de la carte 
+   #  Remarque : Si aucun objet n'est selectionne dans CarteDuCiel,
+   #  alors getSelectedObject retourne les coordonnées du centre de la carte
    #
-   #  Description de l'interface Audela / CarteDuCiel 
+   #  Description de l'interface Audela / CarteDuCiel
    #  -------------------------------------
    #  Requete TCP envoyee a CarteDuCiel :
-   #     puts socket "GETMSGBOX" 
+   #     puts socket "GETMSGBOX"
    #  Reponse DDE retournee par CarteDuCiel :
    #     ligne : position du centre et champ de vision de la carte
-   #                 
+   #
    #  exemple de reponse :
    #     ligne : 14h15m39.70s +19°10'57.0"   * HR 5340 HD124897 Fl: 16 Ba:Alp  const:Boo mV:-0.04 b-v: 1.23 sp:  K1.5IIIFe-0.5      pm:-1.093 -1.998 ;ARCTURUS; Haris-el-sema
    #
-   #     Les coordonnées et le nom de l'objet sont extraits de la ligne 2.
-   #     Le autres lignes ne sont pas utilisees.  
+   #     Les coordonnées et le nom de l'objet sont extraits de la ligne 2
+   #     Le autres lignes ne sont pas utilisees.
    #
    #     Format de la ligne 2 : "$ra $dec $objType $detail"
-   #     avec 
+   #     avec
    #       $ra      = right ascension  ex: "16h41m42.00s"
    #       $dec     = declinaison      ex: "+36°28'00.0""
    #       $objType = object type      ex: "M "
    #       $detail  = object detail    ex :"13 NGC 6205 const: HER Dim: 23.2'x 23.2'  m: 5.90 sbr:12.00 desc: !!eB,vRi,vgeCM,*11...;Hercules cluster;Messier said round nebula contains no star"
    #  
-   #  Mise en forme de la reponse    
+   #  Mise en forme de la reponse
    #  ---------------------------
-   #  1)Mise en forme de l'ascension droite  $ra
+   #  1)Mise en forme de l'ascension droite $ra
    #       supprimer les fractions de secondes dans $ra
    #
    #  2)Mise en forme de la declinaison $dec
-   #       remplacer "°" par "d" 
-   #       remplacer "'" par "m" 
-   #       remplacer """ par "s" 
-   #       supprimer les fractions de secondes          
+   #       remplacer "°" par "d"
+   #       remplacer "'" par "m"
+   #       remplacer """ par "s"
+   #       supprimer les fractions de secondes
    #
-   #  3)Mise en forme du nom de l'objet $objName    
+   #  3)Mise en forme du nom de l'objet $objName
    #
-   #     SI $objType = "*" ALORS   
-   #        je mets dans $objName le nom usuel de l'etoile s'il existe  
-   #        ou le nom du catalogue et le numéro de l'étoile 
+   #     SI $objType = "*" ALORS
+   #        je mets dans $objName le nom usuel de l'etoile s'il existe
+   #        ou le nom du catalogue et le numéro de l'étoile
    #        et eventuellement le nom de la constellation (catalogues Ba et Fl)
    #
-   #       SI existe un point virgule dans $detail  ALORS
-   #          $objName = nom usuel de l'etoile se situant 
+   #       SI existe un point virgule dans $detail ALORS
+   #          $objName = nom usuel de l'etoile se situant
    #                     apres le premier point virgule de $detail
    #                     et jusqu'au point virgule suivant ou la fin de $detail
    #       SINON
-   #          $catName = premiere chaine de caractère de $detail jusqu'au premier espace  
+   #          $catName = premiere chaine de caractère de $detail jusqu'au premier espace
    #          $const   = chaine de caractere dans $detail qui suit "const:" jusqu'au premier espace suivant
    #          SI       $catName = "GSC"  ALORS $objName = "GSC"+ 10 caracteres de $detail apres catName
    #          SINON SI $catName = "TYC"  ALORS $objName = "TYC"+ 15 caracteres de $detail apres catName
@@ -526,10 +526,10 @@ namespace eval carteducielv3 {
    #        FINSI
    #     FINSI
    #
-   #     SI $objType = "Gb" ou "Gx" ou "Nb" ou "OC" ou "Pl"   
-   #       je mets dans $objName le nom du catalogue et le numéro de l'objet 
+   #     SI $objType = "Gb" ou "Gx" ou "Nb" ou "OC" ou "Pl"
+   #       je mets dans $objName le nom du catalogue et le numéro de l'objet
    #
-   #       $catName = premiere chaine de caractère de $detail jusqu'au premier espace  
+   #       $catName = premiere chaine de caractère de $detail jusqu'au premier espace
    #       SI       $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
    #       SINON SI $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
    #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
@@ -539,44 +539,44 @@ namespace eval carteducielv3 {
    #       SINON SI $catName = "OCL"  ALORS  $objName = "OCL" + 6 caracteres de $detail apres catName
    #     FINSI
    #
-   #     SI $objType = "As"  ALORS
-   #       $objName  = 17 premiers caracteres de $detail
+   #     SI $objType = "As" ALORS
+   #       $objName = 17 premiers caracteres de $detail
    #     FINSI
    #
    #     SI $objType = "Cm"  ALORS
-   #       $objName  = debut de detail jusqu'a la premiere parenthese fermante ")"
+   #       $objName = debut de detail jusqu'a la premiere parenthese fermante ")"
    #     FINSI
    #
-   #     SI $objType = "P"  ALORS
-   #       $objName  = debut de detail jusqu'au premier espace ""
+   #     SI $objType = "P" ALORS
+   #       $objName = debut de detail jusqu'au premier espace ""
    #     FINSI   
    #     
    #     SI $objType = "C2"  ALORS             (catalogue externe UGC )
-   #       $objName  = debut de detail jusqu'a Dim 
-   #     FINSI  
+   #       $objName = debut de detail jusqu'a Dim 
+   #     FINSI
    #
    # Remarque 
    # ------------------------
-   #  Quand un objet est reference dans plusieurs catalogues, 
+   #  Quand un objet est reference dans plusieurs catalogues,
    #  le nom retenu depend de l'ordre des SI $catName=... SINON ..
    #  Si vous preferez retenir en priorité le nom de l'objet d'un autre catalogue 
    #  il suffit de changer l'ordre des SI $catName=... SINON ..
    # 
    #  ex: l'amas  M13 a s'appelle aussi NGC6205    
    #  
-   #  Par defaut , objName est retourne avec la valeur "M 13"  
-   #  car l'agorithme commence par chercher si l'objet a un nom dans le catalogue Messier   
+   #  Par defaut , objName est retourne avec la valeur "M 13"
+   #  car l'agorithme commence par chercher si l'objet a un nom dans le catalogue Messier
    #       SI       $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
    #       SINON SI $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
    #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
-   #       ....
+   #       ...
    #
-   #  Si vous préférez retenir en priorité le nom du catalogue NGC, 
+   #  Si vous préférez retenir en priorité le nom du catalogue NGC,
    #  il suffit d'inverser l'ordre des tests :
    #       SI       $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
    #       SINON SI $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
    #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
-   #       ....
+   #       ...
    #  
    #  le catalogue externe UGC peut etre trouve sur :
    #     http://www.astrogeek.org/ftp/pub/cdc/ugc2001a.exe (version catgen)
@@ -585,12 +585,12 @@ namespace eval carteducielv3 {
    proc getSelectedObject { } {
       global caption
       global panneau
-       
-      set result [ sendRequest "GETMSGBOX" ] 
+
+      set result [ sendRequest "GETMSGBOX" ]
       if { $result == "" } {
          return ""
       }
-     
+
       #je sépare les coordonnees des autres données
       set ligne $result
       set cr  ""
@@ -598,7 +598,7 @@ namespace eval carteducielv3 {
       set dec ""
       set objType ""
       set detail ""
-      scan $ligne "%s %s %s %s %\[^\r\] " cr ra dec objType detail 
+      scan $ligne "%s %s %s %s %\[^\r\] " cr ra dec objType detail
 
      # console::disp "CDC ----------------\n"
      # console::disp "CDC entry cr=$cr\n"
@@ -606,24 +606,24 @@ namespace eval carteducielv3 {
      # console::disp "CDC entry dec=$dec\n"
      # console::disp "CDC entry objType=$objType\n"
      # console::disp "CDC entry detail=$detail \n"
-      
-      #Mise en forme de ra 
+
+      #Mise en forme de ra
       set ra [lindex [split $ra "."] 0]
 
       #Mise en forme de dec
       # je remplace les unites par d, m, s
-      set dec  [string map { "\°" d "ß" d "\'" m "\"" s } $dec ]
-      # je remplace le quatrieme caractere par "d" 
-      set dec  [string replace $dec 3 3 "d" ]
+      set dec [string map { "\°" d "ß" d "\'" m "\"" s } $dec ]
+      # je remplace le quatrieme caractere par "d"
+      set dec [string replace $dec 3 3 "d" ]
       #je supprime les diziemes de secondes apres le point decimal
       set dec [lindex [split $dec "."] 0]
       #j'ajoute l'unite des secondes
       append dec "s"
-      
+
       #Mise en forme de objName
       if { $objType=="" || $objType=="port:"} {
          console::affiche_erreur "$caption(carteducielv3,no_object_select)\n"
-         return  ""
+         return ""
       } else {
          #j'extrait les coordonnées du detail de la ligne2
          set usualName ""
@@ -644,7 +644,7 @@ namespace eval carteducielv3 {
          set png ""
          set messier ""
          set planete ""
-         
+
          set index [string first ";" $detail]
          if { $index >= 0 } {
             set index1 [expr $index +1]
@@ -655,77 +655,77 @@ namespace eval carteducielv3 {
                set usualName [string trim [string range $detail $index1 $index2 ] ]
             }
          }
-           
+
          # je recherche tous les catalogues cites dans la ligne de detail
-         set index [string first "Fl:" $detail] 
+         set index [string first "Fl:" $detail]
          if { $index >= 0 } {
             set fl [string trim [string range $detail [expr $index + 3] [expr $index + 6] ] ]
          }
-         set index [string first "Ba:" $detail] 
+         set index [string first "Ba:" $detail]
          if { $index >= 0 } {
             set ba [string trim [string range $detail [expr $index + 3] [expr $index + 6] ] ]
          }
-         set index [string first "const:" $detail] 
+         set index [string first "const:" $detail]
          if { $index >= 0 } {
             set const [string trim [string range $detail [expr $index + 6] [expr $index + 9] ] ]
          }
-         set index [string first "M " $detail] 
+         set index [string first "M " $detail]
          if { $index >= 0 } {
             set messier [string trim [string range $detail [expr $index + 2] [expr $index + 5] ] ]
          }
-         set index [string first "GSC" $detail] 
+         set index [string first "GSC" $detail]
          if { $index >= 0 } {
             set gsc [string trim [string range $detail $index [expr $index + 12] ] ]
          }
-         set index [string first "TYC" $detail] 
+         set index [string first "TYC" $detail]
          if { $index >= 0 } {
             set tyc [string range $detail $index [expr $index + 15 ] ]
          }
-         set index [string first "HD" $detail] 
+         set index [string first "HD" $detail]
          if { $index >= 0 } {
             set hd [string range $detail $index [expr $index + 8 ] ]
          }
-         set index [string first "BD" $detail] 
+         set index [string first "BD" $detail]
          if { $index >= 0 } {
             set bd [string range $detail $index [expr $index + 10 ] ]
          }
-         set index [string first "HR" $detail] 
+         set index [string first "HR" $detail]
          if { $index >= 0 } {
             set hr [string range $detail $index [expr $index + 7 ] ]
          }
-         set index [string first "SAO" $detail] 
+         set index [string first "SAO" $detail]
          if { $index >= 0 } {
             set sao [string range $detail $index [expr $index + 9 ] ]
          }
-         set index [string first "NGC" $detail] 
+         set index [string first "NGC" $detail]
          if { $index >= 0 } {
             set ngc [string range $detail $index [expr $index + 9 ] ]
          }
-         set index [string first "UGC" $detail] 
+         set index [string first "UGC" $detail]
          if { $index >= 0 } {
             set ugc [string range $detail $index [expr $index + 9 ] ]
          }
-         set index [string first "PGC" $detail] 
+         set index [string first "PGC" $detail]
          if { $index >= 0 } {
             set pgc [string range $detail $index [expr $index + 8 ] ]
          }
-         set index [string first "PNG" $detail] 
+         set index [string first "PNG" $detail]
          if { $index >= 0 } {
             set png [string range $detail $index [expr $index + 13 ] ]
          }
-         set index [string first "LBN" $detail] 
+         set index [string first "LBN" $detail]
          if { $index >= 0 } {
             set lbn [string range $detail $index [expr $index + 6 ] ]
          }
-         set index [string first "OCL" $detail] 
+         set index [string first "OCL" $detail]
          if { $index >= 0 } {
             set ocl [string range $detail $index [expr $index + 6 ] ]
          }
       }
-                   
+
       # je choisi la reference et le catalogue en fonction du type de l'objet
-      if { $objType=="*" } {  
-         #pour une étoile : nom usuel ou numero d'un catalogue         
+      if { $objType=="*" } {
+         #pour une étoile : nom usuel ou numero d'un catalogue
          #intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $usualName!="" } {
             # je retiens d'abord le nom usuel s'il existe
@@ -748,9 +748,9 @@ namespace eval carteducielv3 {
             set objName "$bd"
          }
       } elseif { $objType=="Gb" || $objType=="Gx" || $objType=="Nb" || $objType=="OC" || $objType=="Pl" } {
-         #pour une galaxie , nébuleuse ou un amas   
-         #  intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
-         if  { $messier!="" } {
+         #pour une galaxie , nébuleuse ou un amas
+         # intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
+         if { $messier!="" } {
             set objName "M$messier"
          } elseif { $ngc != "" } {
             set objName "$ngc"
@@ -765,19 +765,19 @@ namespace eval carteducielv3 {
             set objName $lbn
          } elseif { $png != "" } {
             set objName $png
-         }   
-      } elseif { $objType=="As" } {  
+         }
+      } elseif { $objType=="As" } {
          #pour un astéroide, je prends les 17 premiers caracteres 
          set objName [string trim [string range $detail 0 17  ] ]
-      } elseif { $objType=="P" } {  
+      } elseif { $objType=="P" } {
          #pour une planete : je prends le premier mot
          set objName [lindex [split $detail " " ] 0 ] 
-      } elseif { $objType=="Cm" } {  
+      } elseif { $objType=="Cm" } {
          #pour une comete: je prends jusqu'à la parenthese fermante.
-         set index [string first ")" $detail]      
-         set objName [string trim [string range $detail 0 $index  ] ]
+         set index [string first ")" $detail]
+         set objName [string trim [string range $detail 0 $index ] ]
       } elseif { $objType=="C2" } {  
-         set objName [string trim [lindex [split $detail "Dim" ] 0 ] ]  
+         set objName [string trim [lindex [split $detail "Dim" ] 0 ] ]
          if { [string range $objName 0 2] == "UGC" } {
             # Pour le catalogue externe UGC genere sans catgen
             # je supprime les espaces entre UGC et le numero de galaxie
@@ -790,7 +790,7 @@ namespace eval carteducielv3 {
       #console::disp "CDC result objName=$objName\n"
       
       return [list $ra $dec $objName ]
-   } 
+   }
 
    #------------------------------------------------------------
    # launch
@@ -853,11 +853,11 @@ namespace eval carteducielv3 {
       }
       after 2000
       return "0"
-      
+
    }
    
    #==============================================================
-   # Fonctions comunication avec carteducielv3 
+   # Fonctions comunication avec carteducielv3
    #==============================================================
 
    #------------------------------------------------------------
@@ -866,10 +866,10 @@ namespace eval carteducielv3 {
    #     retourne la reponse fournie par CDC
    #     ou "" si erreur
    #------------------------------------------------------------
-   proc sendRequest  { req } {
+   proc sendRequest { req } {
       variable private
       global caption
-      
+
       # j'ouvre la connexion vers CarteDuCiel
       if { [ openConnection ] == 1 } {
          #--- si erreur :
@@ -887,14 +887,14 @@ namespace eval carteducielv3 {
                console::affiche_erreur "$caption(carteducielv3,no_connect)\n"
                tk_messageBox -message "$caption(carteducielv3,no_connect)" -icon info
                return ""
-            }           
+            }
          } else {
             return ""
          }
       }
-      
+
       set result ""
-      catch {      
+      catch {
          #console::disp "sendRequest socket=$private(socket)\n"
          #console::disp "sendRequest REQ= $req\n"
          puts  $private(socket) $req
@@ -902,7 +902,7 @@ namespace eval carteducielv3 {
          set result [gets $private(socket)]
          #console::disp "sendRequest REP= $result\n"
       }
-      
+
       #--- je ferme la connexion
       closeConnection
       return $result
@@ -914,10 +914,10 @@ namespace eval carteducielv3 {
    #  
    #  return 0 (OK) , 1(error)
    #------------------------------------------------------------
-   proc openConnection  { } {
+   proc openConnection { } {
       global conf
       variable private
-      
+
       set result 1
       catch { 
          #console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
@@ -931,11 +931,11 @@ namespace eval carteducielv3 {
             #console::disp "CONNECT= $response\n"
             set result 0
          } 
-         
+
       } msg
-            
+
       return $result
-      
+
    }
 
    #------------------------------------------------------------
@@ -944,9 +944,9 @@ namespace eval carteducielv3 {
    #  
    #  return  : nothing
    #------------------------------------------------------------
-   proc closeConnection  { } {
+   proc closeConnection { } {
       variable private 
-      
+
       puts  $private(socket) "QUIT"
       close $private(socket) 
       #console::disp "closeConnection socket=$private(socket)\n"
