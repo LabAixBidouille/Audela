@@ -22,6 +22,14 @@ proc ::sectiongraph::init { visuNo } {
       return
    }
 
+   #--- je verifie si la variable 
+   if { [info exists private($visuNo,This)] } {
+      wm withdraw $private($visuNo,This)
+      wm deiconify $private($visuNo,This)
+      focus $private($visuNo,This)
+      return 
+   }
+
    #--- j'initalise les variables de travail
    ::blt::vector create sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
    ::polydraw::init $visuNo
@@ -228,15 +236,19 @@ proc ::sectiongraph::closeToplevel { visuNo } {
    variable private
 
    #--- je supprime les listener
-   ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-   ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+   if { [info exists private($visuNo,itemNo)] } {
+      ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+      ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
 
-   ::polydraw::deleteItem $visuNo $private($visuNo,itemNo)
-   ::polydraw::close $visuNo
-
-   blt::vector destroy sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
+      ::polydraw::deleteItem $visuNo $private($visuNo,itemNo)
+      ::polydraw::close $visuNo
+      blt::vector destroy sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
    
-   #--- je supprime la fenetre
-   destroy $private($visuNo,This)
+      #--- je supprime la fenetre
+      destroy $private($visuNo,This)
+      
+      #--- je supprime les variables associees a la visu      
+      array unset private $visuNo,*
+   }
 }
 

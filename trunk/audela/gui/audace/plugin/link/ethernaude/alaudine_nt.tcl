@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Date de mise a jour : 28 janvier 2006
+# Date de mise a jour : 19 mars 2006
 #
 
 namespace eval AlAudine_NT {
@@ -268,18 +268,28 @@ namespace eval AlAudine_NT {
       global confCam
 
       catch {
-         if { stats_cam$confCam(camera,$confCam(cam_item),camNo) == "read" } {
-            #--- Si on lit une image de la camera, il ne faut pas lire la temperature
+      #   #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
+      #   set statusVariableName "::status_cam$confCam(camera,$confCam(cam_item),camNo)"
+      #   if { [set $statusVariableName] == "read" } {
+      #      #--- Si on lit une image de la camera, il ne faut pas lire la temperature
+      #      set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
+      #   } else {
+      #      if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam(camera,$confCam(cam_item),camNo) temperature ] } ] == "0" } {
+      #         set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
+      #         $This.lab7 configure \
+      #            -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
+      #         set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
+      #      } else {
+      #         catch { unset confCam(alaudine_nt,aftertemp) }
+      #      }
+      #   }
+         if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam(camera,$confCam(cam_item),camNo) temperature ] } ] == "0" } {
+            set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
+            $This.lab7 configure \
+               -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
             set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
          } else {
-            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam(camera,$confCam(cam_item),camNo) temperature ] } ] == "0" } {
-               set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
-               $This.lab7 configure \
-                  -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
-               set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
-            } else {
-               catch { unset confCam(alaudine_nt,aftertemp) }
-            }
+            catch { unset confCam(alaudine_nt,aftertemp) }
          }
       }
    }

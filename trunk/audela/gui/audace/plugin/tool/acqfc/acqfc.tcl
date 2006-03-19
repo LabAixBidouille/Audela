@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.14 2006-03-15 22:49:09 michelpujol Exp $
+# $Id: acqfc.tcl,v 1.15 2006-03-19 19:25:51 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -18,7 +18,7 @@ namespace eval ::AcqFC {
    source [ file join $audace(rep_plugin) tool acqfc acqfc.cap ]
 
    #--- Numero de la version du logiciel
-   set ::AcqFC::numero_version "2.4"
+   set ::AcqFC::numero_version "2.5"
 
 #***** Procedure DemarrageAcqFC ********************************
    proc DemarrageAcqFC { visuNo } {
@@ -27,11 +27,11 @@ namespace eval ::AcqFC {
       #--- Gestion du fichier de log
       #--- Creation du nom de fichier log
       set nom_generique "acqfc-visu$visuNo-"
-      #--- Heure a partir de laquelle on passe sur un nouveau fichier de log...
+      #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
       set heure_nouveau_fichier "12"
       set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
       if { $heure_courante < $heure_nouveau_fichier } {
-        #--- Si avant l'heure de changement... Je prends la date de la veille
+        #--- Si avant l'heure de changement, je prends la date de la veille
         set formatdate [clock format [expr {[clock seconds] - 86400}] -format "%Y-%m-%d"]
       } else {
         #--- Sinon, je prends la date du jour
@@ -46,7 +46,7 @@ namespace eval ::AcqFC {
          tk_messageBox -title $caption(acqfc,pb) -type ok \
             -message $caption(acqfc,pbouvfich)
          #--- Note importante : Je detecte si j'ai un pb a l'ouverture du fichier, mais je ne sais pas traiter ce cas :
-         #--- Il faudrait interdire l'ouverture du panneau, mais le processus  est deja lance a ce stade...
+         #--- Il faudrait interdire l'ouverture du panneau, mais le processus est deja lance a ce stade...
          #--- Tout ce que je fais, c'est inviter l'utilisateur a changer d'outil !
       } else {
          #--- En-tete du fichier
@@ -1836,7 +1836,7 @@ namespace eval ::AcqFC {
          after 10 ::AcqFC::loadLastImage $visuNo $camNo
       }
       #--- J'attends la fin de l'acquisition
-      #--- Remarque : La commande [set $xxx] permet de recuperer le contenu du contenu d'une variable
+      #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
       set statusVariableName "::status_cam$camNo"
       if { [set $statusVariableName] == "exp" } {
          vwait status_cam$camNo
@@ -1865,8 +1865,8 @@ namespace eval ::AcqFC {
       update
 
       #--- Visualisation de l'image si on n'est pas en chargement differe
-      if { $conf(dsc,telecharge_mode) != "3" } {
-         if { $conf(dsc,telecharge_mode) == "1" } {
+      if { $conf(dsc,telecharge_mode) != "3" || [ cam$camNo product ] != "dsc" } {
+         if { $conf(dsc,telecharge_mode) == "1" && [ cam$camNo product ] == "dsc" } {
             #-- raz du buffer si le telechargement est desactive
             $buffer clear
          }
@@ -2329,19 +2329,7 @@ namespace eval ::AcqFC {
       frame $panneau(AcqFC,$visuNo,base).intervalle_continu_1.b
         checkbutton $panneau(AcqFC,$visuNo,base).intervalle_continu_1.b.check_simu \
            -text "$caption(acqfc,simu_deja_faite)" \
-           -variable panneau(AcqFC,$visuNo,simulation_deja_faite) -command " \
-              if { $panneau(AcqFC,$visuNo,simulation_deja_faite) == \"1\" } { \
-                 set panneau(AcqFC,$visuNo,intervalle) \"xxx\" ; \
-                 $panneau(AcqFC,$visuNo,base).intervalle_continu_1.lab3 configure \
-                    -text \"$caption(acqfc,int_mini_serie) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)\" ; \
-                 focus $panneau(AcqFC,$visuNo,base).intervalle_continu_1.a.ent1 ; \
-              } else { \
-                 set panneau(AcqFC,$visuNo,intervalle) \".....\" ; \
-                 $panneau(AcqFC,$visuNo,base).intervalle_continu_1.lab3 configure \
-                    -text \"$caption(acqfc,int_mini_serie) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)\" ; \
-                 focus $panneau(AcqFC,$visuNo,base).intervalle_continu_1.but1 ; \
-              } \
-           "
+           -variable panneau(AcqFC,$visuNo,simulation_deja_faite) -command "::AcqFC::Simu_deja_faite_1 $visuNo"
         pack $panneau(AcqFC,$visuNo,base).intervalle_continu_1.b.check_simu -anchor w -expand 1 -fill none \
            -side left -padx 10 -pady 5
       pack $panneau(AcqFC,$visuNo,base).intervalle_continu_1.b -side bottom -anchor w -padx 10 -pady 5
@@ -2379,6 +2367,25 @@ namespace eval ::AcqFC {
    }
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (1) ********
 
+#***** Si une simulation a deja ete faite pour la fenetre Continu (1) ********************
+   proc Simu_deja_faite_1 { visuNo } {
+      global caption
+      global panneau
+
+      if { $panneau(AcqFC,$visuNo,simulation_deja_faite) == "1" } {
+         set panneau(AcqFC,$visuNo,intervalle) "xxx"
+         $panneau(AcqFC,$visuNo,base).intervalle_continu_1.lab3 configure \
+            -text "$caption(acqfc,int_mini_serie) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)"
+         focus $panneau(AcqFC,$visuNo,base).intervalle_continu_1.a.ent1
+      } else {
+         set panneau(AcqFC,$visuNo,intervalle) "....."
+         $panneau(AcqFC,$visuNo,base).intervalle_continu_1.lab3 configure \
+            -text "$caption(acqfc,int_mini_serie) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)"
+         focus $panneau(AcqFC,$visuNo,base).intervalle_continu_1.but1
+      }
+   }
+#***** Fin de si une simulation a deja ete faite pour la fenetre Continu (1) ********
+
 #***** Fenetre de configuration images a intervalle regulier en continu ******************
    proc Intervalle_continu_2 { visuNo } {
       global conf
@@ -2386,7 +2393,8 @@ namespace eval ::AcqFC {
       global caption
       global panneau
 
-      set panneau(AcqFC,$visuNo,intervalle) "....."
+      set panneau(AcqFC,$visuNo,intervalle)            "....."
+      set panneau(AcqFC,$visuNo,simulation_deja_faite) "0"
 
       ::AcqFC::recup_position $visuNo
 
@@ -2419,19 +2427,7 @@ namespace eval ::AcqFC {
       frame $panneau(AcqFC,$visuNo,base).intervalle_continu_2.b
         checkbutton $panneau(AcqFC,$visuNo,base).intervalle_continu_2.b.check_simu \
            -text "$caption(acqfc,simu_deja_faite)" \
-           -variable panneau(AcqFC,$visuNo,simulation_deja_faite) -command " \
-              if { $panneau(AcqFC,$visuNo,simulation_deja_faite) == \"1\" } { ; \
-                 set panneau(AcqFC,$visuNo,intervalle) \"xxx\" ; \
-                 $panneau(AcqFC,$visuNo,base).intervalle_continu_2.lab3 configure \
-                    -text \"$caption(acqfc,int_mini_image) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)\" ; \
-                 focus $panneau(AcqFC,$visuNo,base).intervalle_continu_2.a.ent1 ; \
-              } else {
-                 set panneau(AcqFC,$visuNo,intervalle) \".....\" ; \
-                 $panneau(AcqFC,$visuNo,base).intervalle_continu_2.lab3 configure \
-                    -text \"$caption(acqfc,int_mini_image) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)\" ; \
-                 focus $panneau(AcqFC,$visuNo,base).intervalle_continu_2.but1 ; \
-              }
-           "
+           -variable panneau(AcqFC,$visuNo,simulation_deja_faite) -command "::AcqFC::Simu_deja_faite_2 $visuNo"
         pack $panneau(AcqFC,$visuNo,base).intervalle_continu_2.b.check_simu -anchor w -expand 1 -fill none \
            -side left -padx 10 -pady 5
       pack $panneau(AcqFC,$visuNo,base).intervalle_continu_2.b -side bottom -anchor w -padx 10 -pady 5
@@ -2469,6 +2465,25 @@ namespace eval ::AcqFC {
       $panneau(AcqFC,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
    }
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (2) ********
+
+#***** Si une simulation a deja ete faite pour la fenetre Continu (2) ********************
+   proc Simu_deja_faite_2 { visuNo } {
+      global caption
+      global panneau
+
+      if { $panneau(AcqFC,$visuNo,simulation_deja_faite) == "1" } {
+         set panneau(AcqFC,$visuNo,intervalle) "xxx" ; \
+         $panneau(AcqFC,$visuNo,base).intervalle_continu_2.lab3 configure \
+            -text "$caption(acqfc,int_mini_image) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)"
+         focus $panneau(AcqFC,$visuNo,base).intervalle_continu_2.a.ent1
+      } else {
+         set panneau(AcqFC,$visuNo,intervalle) "....."
+         $panneau(AcqFC,$visuNo,base).intervalle_continu_2.lab3 configure \
+            -text "$caption(acqfc,int_mini_image) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)"
+         focus $panneau(AcqFC,$visuNo,base).intervalle_continu_2.but1
+      }
+   }
+#***** Fin de si une simulation a deja ete faite pour la fenetre Continu (2) ********
 
 #***** Fenetre de configuration video ****************************************************
    proc selectVideoMode { visuNo } {
