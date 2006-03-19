@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Date de mise a jour : 15 mars 2006
+# Date de mise a jour : 19 mars 2006
 #
 
 #=========================================================================
@@ -614,7 +614,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbmesserr)              "Problem mit die Irrtum Meldung"
    set caption(acqfc,lance_simu)             "\nDie Simulation starten:"
    set caption(acqfc,fin_simu)               "Ende der Simulation.\n"
-   set caption(acqfc,avancement_acq)         "# Avancement de\nl'acquisition"
+   set caption(acqfc,avancement_acq)         "Anschaffung\nim Gange"
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
    set caption(acqfc,image,acquisition)      "Aud'ACE - Anschaffung von"
 

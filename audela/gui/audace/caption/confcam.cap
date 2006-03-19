@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Date de mise a jour : 15 mars 2006
+# Date de mise a jour : 19 mars 2006
 #
 
 #=========================================================================
@@ -743,7 +743,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam_canal_usb)        "USB Video Kanal"
    set caption(confcam,webcam_longuepose)       "Lange Belichtung Option (S. Chambers)"
    set caption(confcam,webcam_longueposeport)   "Kontroll Port der Option"
-   set caption(confcam,webcam_longueposebit)    "# Numéro du bit de commande"
+   set caption(confcam,webcam_longueposebit)    "Steuer Bit Nummer"
    set caption(confcam,webcam_longueposestart)  "Anfang der Belichtung Antrieb"
    set caption(confcam,conf_webcam)             "Wahl der Videoquelle"
    set caption(confcam,format_webcam)           "Wahl des Videoformats"
@@ -758,8 +758,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_gphoto2)             "GPhoto2"
    set caption(confcam,dsc_longue_pose)         "Lange Belichtung"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_externe)             "# Externe"
-   set caption(confcam,dsc_longueposebit)       "# Numéro du bit de commande"
+   set caption(confcam,dsc_externe)             "Manuell"
+   set caption(confcam,dsc_longueposebit)       "Steuer Bit Nummer"
    set caption(confcam,dsc_longueposestart)     "Anfang der Belichtung Antrieb"
    set caption(confcam,dsc_detect_service)      "Ende der digitale Fotoapparate automatische Registrierung"
    set caption(confcam,dsc_telecharger)         "Das Bild herunterladen"

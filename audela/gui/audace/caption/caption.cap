@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 16 mars 2006
+# Date de mise a jour : 19 mars 2006
 #
 
 #=========================================================================
@@ -918,7 +918,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figura"
 
-   set caption(sectiongraph,title)                    "# Graphe de la coupe"
+   set caption(sectiongraph,title)                    "Grafico della sezione"
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "O"
@@ -1229,7 +1229,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figura"
 
-   set caption(sectiongraph,title)                    "# Graphe de la coupe"
+   set caption(sectiongraph,title)                    "Gráfica de la sección"
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HC"
@@ -1331,7 +1331,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analyse"
    set caption(audace,menu,histo)                     "Historische Kurve"
-   set caption(audace,menu,coupe)                     "# Coupe"
+   set caption(audace,menu,coupe)                     "Abschnitt"
    set caption(audace,menu,statwin)                   "Statistiken in das Fenster"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Eine Gauss Kurve einstellen"
@@ -1540,7 +1540,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figur"
 
-   set caption(sectiongraph,title)                    "# Graphe de la coupe"
+   set caption(sectiongraph,title)                    "Abschnitt Grafik"
 
    set caption(audace,temps_universel)                "WZ"
    set caption(audace,temps_heurelegale)              "UZ"

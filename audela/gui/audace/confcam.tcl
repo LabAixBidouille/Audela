@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 11 mars 2006
+# Date de mise a jour : 19 mars 2006
 #
 
 global confCam
@@ -3713,9 +3713,9 @@ namespace eval ::confCam {
                      #--- J'arrete le service WIA de Windows
                      cam$confCam(camera,$cam_item,camNo) systemservice 0
                      #--- Parametrage des longues poses 
-                     cam$confCam(camera,$cam_item,camNo) longuepose $conf(dsc,longue_pose)
                      if { $conf(dsc,longue_pose) == "1" } {
                         if { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_quickremote)" } {
+                           cam$confCam(camera,$cam_item,camNo) longuepose 1
                            #--- Liaison par QuickRemote index=0 (je fixe les valeurs en dur en attendant que ce soit saisi dans la boite de configuration)
                            set conf(dsc,longueposelinktype)  "quickremote"
                            set conf(dsc,longueposelinkindex) "0"
@@ -3727,8 +3727,10 @@ namespace eval ::confCam {
                            cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dsc,longueposestartvalue)
                            cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dsc,longueposestopvalue)
                         } elseif { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_externe)" } {
-                           
+                           cam$confCam(camera,$cam_item,camNo) longuepose 2
                         }
+                     } else {
+                        cam$confCam(camera,$cam_item,camNo) longuepose 0
                      }
                      #--- Parametrage du telechargement des images
                      switch -exact -- $conf(dsc,telecharge_mode) {

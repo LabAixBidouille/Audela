@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# $Id: polydraw.tcl,v 1.2 2006-03-18 08:12:13 robertdelmas Exp $
+# $Id: polydraw.tcl,v 1.3 2006-03-19 19:26:48 robertdelmas Exp $
 #
 
 namespace eval ::polydraw {
@@ -69,13 +69,9 @@ proc ::polydraw::close { visuNo } {
    $w delete node
    $w delete line
    $w delete poly
-
-   #--- je recupere le numero du tag
-   ##set item [ $w find withtag line ]
-
-   #--- j'efface la ligne et ses extremites
-   ##$w delete $item "li:$item"
-   ##$w delete $item "of:$item"
+   
+   #--- je supprime les variables associees a la visu      
+   array unset private $visuNo,*
 }
 
 #------------------------------------------------------------
@@ -447,7 +443,7 @@ proc ::polydraw::removeMoveItemListener { visuNo item cmd } {
    variable private
 
    trace remove variable "::polydraw::private($visuNo,item$item)" write $cmd
-   unset private($visuNo,item$item)
+   unset ::polydraw::private($visuNo,item$item)
 }
 
 
