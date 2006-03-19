@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Date de mise a jour : 22 decembre 2005
+# Date de mise a jour : 20 mars 2006
 #
 
 package provide guide 1.0
@@ -10,15 +10,15 @@ package provide guide 1.0
 #
 # Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,...)
 #     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : retourne le nom affichable du driver 
+#     getLabel          : retourne le nom affichable du driver
 #     getHelp           : retourne la documentation htm associee
 #     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
 #     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver
 #     confToWidget      : copie le tableau conf() dans les variables des widgets
 #     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver 
-#     stopDriver        : arrete le driver 
+#     configureDriver   : configure le driver
+#     stopDriver        : arrete le driver
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
@@ -26,21 +26,21 @@ package provide guide 1.0
 #     launch            : lance GUIDE
 #    
 namespace eval guide {
-   global audace                     
+   global audace
 
    #==============================================================
    # Fonctions generiques de gestion des drivers
    #==============================================================
 
    #------------------------------------------------------------
-   #  init 
-   #     initialise le driver 
+   #  init
+   #     initialise le driver
    #  
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
       global audace
-      
+
       if { $::tcl_platform(os) == "Linux" } {
          #--- guide ne fonctionne pas sous Linux
          #--- Je retourne une chaine vide pour que ce driver n'apparaisse pas dans le fenetre de configuration
@@ -49,7 +49,7 @@ namespace eval guide {
          #--- Je charge les variables d'environnement
          initConf   
          #--- Charge le fichier caption
-         uplevel #0 "source \"[ file join $audace(rep_plugin) chart guide guide.cap ]\" " 
+         uplevel #0 "source \"[ file join $audace(rep_plugin) chart guide guide.cap ]\" "
          return [ namespace current ]
       }
    }
@@ -104,7 +104,7 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  Recherche_Fichier 
+   #  Recherche_Fichier
    #     lancement de la recherche du fichier executable de guide
    #  
    #  return rien
@@ -144,7 +144,7 @@ namespace eval guide {
             ::guide::Recherche_Fichier
          } else {
             #--- Gestion du bouton de recherche
-            $widget(frm).recherche configure -relief raised -state normal     
+            $widget(frm).recherche configure -relief raised -state normal
             update
             return
          }
@@ -152,13 +152,13 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  confToWidget 
+   #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
    #  
    #  return rien
    #------------------------------------------------------------
-   proc confToWidget { } {  
-      variable widget  
+   proc confToWidget { } {
+      variable widget
       global conf
 
       set widget(fichier_recherche) "$conf(guide,exec)"
@@ -172,8 +172,8 @@ namespace eval guide {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc widgetToConf { } {   
-      variable widget  
+   proc widgetToConf { } {
+      variable widget
       global conf
 
       set conf(guide,exec)       "$widget(fichier_recherche)"
@@ -182,7 +182,7 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  fillConfigPage 
+   #  fillConfigPage
    #     fenetre de configuration du driver
    #  
    #  return rien
@@ -268,7 +268,7 @@ namespace eval guide {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } { 
+   proc configureDriver { } {
 
       #--- Chargement de la librairie guide pour Windows seulement
       if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
@@ -283,29 +283,29 @@ namespace eval guide {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } { 
+   proc stopDriver { } {
 
       #--- Rien a faire pour guide
-      return 
+      return
    }
 
    #------------------------------------------------------------
-   #  isReady 
+   #  isReady
    #     informe de l'etat de fonctionnement du driver
    #  
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
-   proc isReady { } {   
+   proc isReady { } {
 
       #--- Je teste si la librairie libgs.dll est chargee
       set erreur [ catch { gs_version } result ]
-      if { $erreur != "0"  || $result == "" } { 					 
+      if { $erreur != "0"  || $result == "" } {
          #--- La librairie libgs.dll est chargee
-         set ready 1  
-      } else {          
+         set ready 1
+      } else {
          set ready 0
       }
-      return  $ready
+      return $ready
    }
 
    #==============================================================
@@ -315,12 +315,12 @@ namespace eval guide {
    #------------------------------------------------------------
    # gotoObject
    # Affiche la carte de champ de l'objet choisi avec GUIDE sous Window seulement
-   #  parametres : 
-   #     nom_objet :    nom de l'objet     (ex: "NGC7000" )
+   #  parametres :
+   #     nom_objet :    nom de l'objet     (ex: "NGC7000")
    #     ad :           ascension droite   (ex: "16h41m42s")
    #     dec :          declinaison        (ex: "+36d28m00s")
-   #     zoom_objet :   champ 1 à 10 
-   #     avant_plan :   1=mettre la carte au premier plan 0=ne pas mettre au premier plan 
+   #     zoom_objet :   champ 1 à 10
+   #     avant_plan :   1=mettre la carte au premier plan 0=ne pas mettre au premier plan
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       global caption
@@ -329,21 +329,21 @@ namespace eval guide {
       
       #--- Je mets en forme dec pour GUIDE
       #--- Je remplace les unites d, m, s par \° \' \"
-      set dec [ string map { m "\'" s "\"" } $dec ] 
-                        
-      #console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"        
-      
-      set num [ catch { 
-         if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide }  
-            gs_guide refresh 
-            gs_guide zoom $zoom_objet  
-            if { $nom_objet != "#etoile#" && $nom_objet != "" } { 
+      set dec [ string map { m "\'" s "\"" } $dec ]
+
+      #console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
+
+      set num [ catch {
+         if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide }
+            gs_guide refresh
+            gs_guide zoom $zoom_objet
+            if { $nom_objet != "#etoile#" && $nom_objet != "" } {
                gs_guide objet $nom_objet
-            } else { 
-               gs_guide coord $ad $dec { J2000 } 
-            } 
+            } else {
+               gs_guide coord $ad $dec { J2000 }
+            }
          } msg ]
-         
+
       if { $msg == "1" } {
          set choix [ tk_messageBox -type yesno -icon warning -title "$caption(guide,attention)" \
             -message "$caption(guide,option) $caption(guide,creation)\n\n$caption(guide,non)\n\n$caption(guide,lance)" ]
@@ -351,15 +351,15 @@ namespace eval guide {
             set erreur [ launch ]
             if { $erreur != "1" } {
                after 2000
-               set num [ catch { 
-               if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide } ; 
-                  gs_guide refresh ; 
-                  gs_guide zoom $zoom_objet ; 
-                  if { $nom_objet != "#etoile#" } { 
-                     gs_guide objet $nom_objet 
-                  } else { 
-                     gs_guide coord $ad $dec { J2000 } 
-                  }  
+               set num [ catch {
+               if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide } ;
+                  gs_guide refresh ;
+                  gs_guide zoom $zoom_objet ;
+                  if { $nom_objet != "#etoile#" } {
+                     gs_guide objet $nom_objet
+                  } else {
+                     gs_guide coord $ad $dec { J2000 }
+                  }
                } msg ]
                   
                if { $msg == "1" } {
@@ -386,8 +386,8 @@ namespace eval guide {
       global conf
       global caption
 
-      console::disp "::guide::launch debut \n"        
-      
+      console::disp "::guide::launch debut \n"
+
       #--- Initialisation
       #--- Recherche l'absence de l'entry conf(guide,binarypath)
       if { [ info exists conf(guide,binarypath) ] == "0" } {
