@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'catalog'
 # Auteur : Michel PUJOL
-# Date de mise a jour : 08 janvier 2006
+# Date de mise a jour : 19 mars 2006
 #
 
 namespace eval ::confCat {
@@ -10,21 +10,21 @@ namespace eval ::confCat {
    #--- variables locales de ce namespace
    array set private {
       namespace      "confCat"
-      frm            ""              
-      driverType     "catalog"               
-      driverPattern  ""   
-      namespacelist  ""     
+      frm            ""
+      driverType     "catalog"
+      driverPattern  ""
+      namespacelist  ""
       driverlist     ""
    }
 
    #------------------------------------------------------------
    # init  (est lance automatiquement au chargement de ce fichier tcl)
-   # initialise les variable conf(..) et caption(..) 
+   # initialise les variable conf(..) et caption(..)
    # demarrer le driver selectionne par defaut
    #------------------------------------------------------------
    proc init { } {
       variable private
-      global audace   
+      global audace
       global conf
  
       #---
@@ -37,12 +37,12 @@ namespace eval ::confCat {
       if { ! [ info exists conf(confCat,position) ] } { set conf(confCat,position) "+130+60" }
 
       #--- charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_caption) confcat.cap ]\"" 
+      uplevel #0  "source \"[ file join $audace(rep_caption) confcat.cap ]\""
 
       findDriver
 
       #--- configure le driver selectionne par defaut
-      #if { $conf(confCat,start) == "1" } {  
+      #if { $conf(confCat,start) == "1" } {
       #   configureDriver
       #}
 
@@ -62,7 +62,7 @@ namespace eval ::confCat {
 
    #------------------------------------------------------------
    # run
-   # Affiche la fenetre de choix et de configuration 
+   # Affiche la fenetre de choix et de configuration
    # 
    #------------------------------------------------------------
    proc run { } {
@@ -78,7 +78,7 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    # ok
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-   # la configuration, et fermer la fenetre de reglage 
+   # la configuration, et fermer la fenetre de reglage
    #------------------------------------------------------------
    proc ok { } {
       variable private
@@ -105,14 +105,14 @@ namespace eval ::confCat {
       $private(frm).cmd.fermer configure -state disabled
       $private(frm).cmd.aide configure -state disabled
 
-      #--- j'arrete le driver precedent   
+      #--- j'arrete le driver precedent
       stopDriver
 
       #--- je recupere le label de l'onglet selectionne
-      set conf(confCat) [Rnotebook:currentName $private(frm).usr.book ] 
+      set conf(confCat) [Rnotebook:currentName $private(frm).usr.book ]
       #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ] 
+      set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
          set conf(confCat) [lindex $private(namespacelist) $index]
       } else {
@@ -121,11 +121,11 @@ namespace eval ::confCat {
 
       #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
       foreach name $private(namespacelist) {
-         set drivername [ $name\:\:widgetToConf ]    
+         set drivername [ $name\:\:widgetToConf ]
       }
-      
+
       #--- je demarre le driver selectionne
-      configureDriver    
+      configureDriver
 
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -148,10 +148,10 @@ namespace eval ::confCat {
       $private(frm).cmd.aide configure -relief groove -state disabled
 
       #--- je recupere le label de l'onglet selectionne
-      set private(conf_confCat) [Rnotebook:currentName $private(frm).usr.book ] 
+      set private(conf_confCat) [Rnotebook:currentName $private(frm).usr.book ]
       #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ] 
+      set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
          set private(conf_confCat) [lindex $private(namespacelist) $index]
       } else {
@@ -184,7 +184,7 @@ namespace eval ::confCat {
 
    #------------------------------------------------------------
    # confCat::recup_position
-   # Permet de recuperer et de sauvegarder la position de la 
+   # Permet de recuperer et de sauvegarder la position de la
    # fenetre de configuration de la carte
    #------------------------------------------------------------
    proc recup_position { } {
@@ -218,7 +218,7 @@ namespace eval ::confCat {
       }
 
       #--- je mets a jour la liste des drivers
-      if { [findDriver] == 1 } { 
+      if { [findDriver] == 1 } {
          return 1
       }
 
@@ -248,15 +248,15 @@ namespace eval ::confCat {
       frame $private(frm).usr -borderwidth 0 -relief raised
 
       #--- creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book   
+      set mainFrame $private(frm).usr.book
 
       #--- j'affiche les onglets dans la fenetre
       Rnotebook:create $mainFrame -tabs "$private(driverlist)" -borderwidth 1
 
       #--- je demande a chaque driver d'afficher sa page de config 
       set indexOnglet 1
-      foreach name $private(namespacelist) {      
-         set drivername [ $name\:\:fillConfigPage [Rnotebook:frame $mainFrame $indexOnglet] ]    
+      foreach name $private(namespacelist) {
+         set drivername [ $name\:\:fillConfigPage [Rnotebook:frame $mainFrame $indexOnglet] ]
          incr indexOnglet
       }
 
@@ -286,7 +286,7 @@ namespace eval ::confCat {
       button $private(frm).cmd.aide -text "$caption(confcat,aide)" -relief raised -state normal -width 8 \
          -command " ::confCat::afficheAide "
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $private(frm).cmd -side top -fill x  
+      pack $private(frm).cmd -side top -fill x
 
       #---
       focus $private(frm)
@@ -308,10 +308,10 @@ namespace eval ::confCat {
    proc select { { name "" } } {
       variable private
 
-      #--- je recupere le label correspondant au namespace  
-      set index [lsearch -exact $private(namespacelist) "$name" ] 
+      #--- je recupere le label correspondant au namespace
+      set index [lsearch -exact $private(namespacelist) "$name" ]
       if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [lindex  $private(driverlist)  $index] 
+         Rnotebook:select $private(frm).usr.book [lindex  $private(driverlist)  $index]
       }
    }
 
@@ -319,7 +319,7 @@ namespace eval ::confCat {
    # configureDriver
    # configure le driver selectionne
    #------------------------------------------------------------
-   proc configureDriver {  } {
+   proc configureDriver { } {
       variable private
       global conf
       global audace
@@ -331,24 +331,24 @@ namespace eval ::confCat {
 
       #--- je charge les drivers si ce n'est pas deja fait
       if { [llength $private(namespacelist)] <1 } {
-         findDriver   
-      } 
-  
+         findDriver
+      }
+
       #--- je configure le driver 
-      catch { 
-         $conf(confCat)\:\:configureDriver 
-         $audace(console)::affiche_prompt "# $fichier\n" 
+      catch {
+         $conf(confCat)\:\:configureDriver
+         $audace(console)::affiche_prompt "# $fichier\n"
       }
 
    }
 
    #------------------------------------------------------------
    #  stopDriver
-   #     arrete le driver selectionne 
+   #     arrete le driver selectionne
    #  
    #  return rien
    #------------------------------------------------------------
-   proc stopDriver {  } {
+   proc stopDriver { } {
       global conf
 
       if { "$conf(confCat)" != "" } {
@@ -358,16 +358,16 @@ namespace eval ::confCat {
 
    #------------------------------------------------------------
    # findDriver
-   # recherche les fichiers .tcl presents dans driverPattern 
+   # recherche les fichiers .tcl presents dans driverPattern
    #
-   # conditions : 
+   # conditions :
    #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
    #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
    #  - le driver doit avoir une procedure getlabel
    # 
-   # si le driver remplit les conditions 
+   # si le driver remplit les conditions
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
-   # sinon le fichier tcl est ignore car ce n'est pas un driver 
+   # sinon le fichier tcl est ignore car ce n'est pas un driver
    #
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
@@ -381,27 +381,27 @@ namespace eval ::confCat {
       set private(driverlist)    ""
 
       #--- chargement des differentes fenetres de configuration des drivers
-      set error [catch { glob -nocomplain $private(driverPattern) } filelist ]  
+      set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
       
-      if { "$filelist" == "" } { 
-         #--- aucun fichier correct 
+      if { "$filelist" == "" } {
+         #--- aucun fichier correct
          return 1
       }
 
       #--- je recherche les drivers repondant au filtre driverPattern
       foreach fichier [glob $private(driverPattern)] {
          uplevel #0 "source $fichier"
-         catch { 
+         catch {
             set catname [ file tail [ file dirname "$fichier" ] ]
             package require $catname
             if { [$catname\:\:getDriverType] == $private(driverType) } {
-               set driverlabel "[$catname\:\:getLabel]" 
+               set driverlabel "[$catname\:\:getLabel]"
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $catname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#$caption(confcat,carte) $driverlabel v[package present $catname]\n"                 
+               $audace(console)::affiche_prompt "#$caption(confcat,carte) $driverlabel v[package present $catname]\n"
             }
-         }        
+         }
       }
       $audace(console)::affiche_prompt "\n"
 
@@ -410,7 +410,7 @@ namespace eval ::confCat {
          return 1
       } else {
          #--- tout est ok
-         return 0       
+         return 0
       }
    }
 
