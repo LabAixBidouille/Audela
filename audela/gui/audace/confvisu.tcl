@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.13 2006-03-18 08:12:11 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.14 2006-03-20 00:21:25 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -60,7 +60,7 @@ namespace eval ::confVisu {
          set private($visuNo,This) $base
          #--- pas besoin de creer de toplevel
       } else {
-         #--- creation de la fenetre toplevel 
+         #--- creation de la fenetre toplevel
          set private($visuNo,This) ".visu$visuNo"
          ::confVisu::createToplevel $visuNo $private($visuNo,This)
       }
@@ -146,7 +146,8 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc close { visuNo } {
       variable private
-      global conf 
+      global audace
+      global conf
       global caption
 
       set bufNo [visu$visuNo buf]
@@ -176,8 +177,10 @@ namespace eval ::confVisu {
 
       #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
       if { $visuNo > "1" } {
-         ::AcqFC::deletePanel $visuNo
-         ::Autoguider::deletePanel $visuNo
+         if { ! [ winfo exists $audace(base).select ] } {
+            ::AcqFC::deletePanel $visuNo
+            ::Autoguider::deletePanel $visuNo
+         }
       }
 
       #--- je supprime l'image associee à la visu
@@ -867,7 +870,7 @@ namespace eval ::confVisu {
    proc createToplevel { visuNo This } {
       global conf
       global audace
-      global caption 
+      global caption
 
       toplevel $This -class $visuNo
       wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
