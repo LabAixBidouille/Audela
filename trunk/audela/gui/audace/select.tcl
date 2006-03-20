@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 20 mars 2006
 #
 
 namespace eval ::selectWindow {
@@ -99,7 +99,7 @@ namespace eval ::selectWindow {
       set selectWindow(visuNo) [::confVisu::create $This]
 
       #--- Creation des variables audace dependant de la visu
-      set selectWindow(buffer)  [visu$selectWindow(visuNo) buf]
+      set selectWindow(buffer) [visu$selectWindow(visuNo) buf]
       set selectWindow(canvas) $::confVisu::private($selectWindow(visuNo),hCanvas)
       
       #--- La fenetre est active
@@ -292,11 +292,9 @@ namespace eval ::selectWindow {
    }
 
    proc end { } {
-      variable This
       global selectWindow
 
       ::confVisu::close $selectWindow(visuNo)
-      destroy $This
    }
 
 }
