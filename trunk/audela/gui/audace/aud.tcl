@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 11 mars 2006
+# Date de mise a jour : 21 mars 2006
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -484,17 +484,17 @@ namespace eval ::audace {
       update
 
       #--- Creation des variables audace dependant de la visu
-      set audace(visuNo) $visuNo
-      set audace(bufNo)  [visu$visuNo buf]
+      set audace(visuNo)  $visuNo
+      set audace(bufNo)   [visu$visuNo buf]
       set audace(imageNo) [visu$visuNo image]
       set audace(hCanvas) $::confVisu::private($visuNo,hCanvas)
-      
+
       #--- Chargement des differents outils
       foreach fichier [ glob [ file join audace plugin tool * pkgIndex.tcl ] ] {
-              uplevel #0 "source $fichier"
-              set nom [ file tail [ file dirname "$fichier" ] ]
-              package require $nom
-              $audace(console)::affiche_prompt "# $fichier [ package present $nom ] \n"
+         uplevel #0 "source $fichier"
+         set nom [ file tail [ file dirname "$fichier" ] ]
+         package require $nom
+         $audace(console)::affiche_prompt "# $fichier [ package present $nom ] \n"
       }
       $audace(console)::disp "\n"
 
@@ -1046,12 +1046,11 @@ namespace eval ::audace {
 
    #
    # ::audace::pas_Outil
-   # Efface l'interface de l'outil si elle est affichee
+   # Efface l'interface de l'outil si elle est affichee dans la visu principale
    #
    proc pas_Outil { } {
-
-
       global audace
+
       ::confVisu::stopTool $audace(visuNo)
    }
 

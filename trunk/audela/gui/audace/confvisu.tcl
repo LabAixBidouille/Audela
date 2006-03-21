@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.14 2006-03-20 00:21:25 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.15 2006-03-21 22:28:13 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -1233,6 +1233,8 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" "scar $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,outils)"
+      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,outils)"
       #--- Affichage de l'outil Acquisition
       set liste ""
       foreach m [array names panneau menu_name,*] {
