@@ -180,7 +180,7 @@ int Cmd_aktcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
 int Cmd_aktcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_aktcl_radecinrefzmgmes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
-/*int Cmd_aktcl_photometric_parallax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);*/
+int Cmd_aktcl_photometric_parallax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_aktcl_photometric_parallax_avmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 int Cmd_aktcl_cour_finalbis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
