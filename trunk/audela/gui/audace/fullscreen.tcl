@@ -125,7 +125,7 @@ namespace eval ::FullScreen {
       #--- je supprime le titre et les bordures de la fenetre
       wm overrideredirect $private(toplevel) 1
 
-      #--- je deplace l'image au centre du canvas 
+      #--- je deplace l'image au centre du canvas
       $private(hCanvas) itemconfigure display -anchor center
       $private(hCanvas) move display [expr [lindex $maxsize 0]/2] [expr [lindex $maxsize 1]/2]
       set private(bgcolor) [ $private(hCanvas) cget -bg ]
@@ -137,7 +137,7 @@ namespace eval ::FullScreen {
    }
 
    #------------------------------------------------------------------------------
-   # loadItem 
+   # loadItem
    #
    #  charge le fichier ou le buffer
    #------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ namespace eval ::FullScreen {
          #--- je recupere le nom du fichier selectionne
          set index $private(currentItemIndex)
          set name [lindex [lindex $private(files) $index] 0 ]
-         set type [lindex [lindex $private(files) $index] 1 ] 
+         set type [lindex [lindex $private(files) $index] 1 ]
          set filename [file join "$private(directory)" "$name"]
 
          if { [string first "$private(fileImage)" "$type" ] != -1 } {
@@ -240,7 +240,7 @@ namespace eval ::FullScreen {
       destroy  $private(popupmenu)
       set ::confVisu::private($visuNo,fullscreen) "0"
 
-      #--- je restaure les bind par defaut 
+      #--- je restaure les bind par defaut
       ::confVisu::createBindDialog $visuNo
       set private(image)          ""
       set private(visuNo)         ""
@@ -350,13 +350,13 @@ namespace eval ::FullScreen {
       set yc [expr [lindex $maxsize 1] /2 ]
 
       #--- j'affiche le film
-      ::Movie::open $filename $private(visuNo,hCanvas) $private(zoom) $xc $yc "center" 
+      ::Movie::open $filename $private(visuNo,hCanvas) $private(zoom) $xc $yc "center"
    }
 
    #------------------------------------------------------------------------------
    # setAnimationState
    #    active/desactive les boutons de commande de l'animation
-   #    
+   #
    #------------------------------------------------------------------------------
    proc setAnimationState { state } {
       variable private
@@ -376,7 +376,7 @@ namespace eval ::FullScreen {
 
    #------------------------------------------------------------------------------
    # toggleAnimation
-   # 
+   #
    #------------------------------------------------------------------------------
    proc toggleAnimation { } {
       variable private
@@ -482,6 +482,11 @@ namespace eval ::FullScreen {
          -value "2" \
          -variable ::FullScreen::private(zoom) \
          -command { ::FullScreen::changeZoom "2" }
+      $menu.zoom add radiobutton -label "$caption(fullscreen,zoom_4)" \
+         -indicatoron "1" \
+         -value "4" \
+         -variable ::FullScreen::private(zoom) \
+         -command { ::FullScreen::changeZoom "4" }
       #$menu.zoom add radiobutton -label "$caption(fullscreen,zoom_auto)" \
       #   -indicatoron "1" \
       #   -value "auto" \
@@ -495,7 +500,7 @@ namespace eval ::FullScreen {
 
       $menu add command -label $caption(fullscreen,configure) \
          -command { ::FullScreen::configure }
-         
+
       $menu add command -label $caption(fullscreen,help) \
          -command {
             ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "fullscreen"
@@ -510,11 +515,11 @@ namespace eval ::FullScreen {
       bind $private(hCanvas) <Key-S>      { ::FullScreen::loadNextItem }
       bind $private(hCanvas) <Key-s>      { ::FullScreen::loadNextItem }
       bind $private(hCanvas) <Key-Down>   { ::FullScreen::loadNextItem }
-       
+
       bind $private(hCanvas) <Key-P>      { ::FullScreen::loadPreviousItem }
       bind $private(hCanvas) <Key-p>      { ::FullScreen::loadPreviousItem }
       bind $private(hCanvas) <Key-Up>     { ::FullScreen::loadPreviousItem }
-      
+
       bind $private(hCanvas) <MouseWheel> {
          if { %D > 0 } {
             ::FullScreen::loadNextItem
@@ -585,7 +590,7 @@ namespace eval ::FullScreen::config {
 
    #------------------------------------------------------------
    #  ::FullScreen::config::showHelp
-   #  affiche l'aide de cette fenetre de configuration 
+   #  affiche l'aide de cette fenetre de configuration
    #------------------------------------------------------------
    proc showHelp { } {
       global help
@@ -626,7 +631,7 @@ namespace eval ::FullScreen::config {
    #------------------------------------------------------------
    #  ::FullScreen::config::fillConfigPage
    #     fenetre de configuration du panneau
-   #  
+   #
    #  return rien
    #
    #------------------------------------------------------------
@@ -660,7 +665,7 @@ namespace eval ::FullScreen::config {
       button $frm.frameColor.butColor_color_invariant -relief raised -width 6 -bg $widget(color)\
          -command {
             set temp [ tk_chooseColor -initialcolor ${FullScreen::config::widget(color)} \
-               -parent ${FullScreen::config::widget(frm)} -title ${caption(fullscreen,title)} ] 
+               -parent ${FullScreen::config::widget(frm)} -title ${caption(fullscreen,title)} ]
             if  { "$temp" != "" } {
                set FullScreen::config::widget(color) "$temp"
                ${FullScreen::config::widget(frm)}.frameColor.butColor_color_invariant configure \
