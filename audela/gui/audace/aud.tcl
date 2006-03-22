@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 21 mars 2006
+# Date de mise a jour : 22 mars 2006
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -431,10 +431,19 @@ namespace eval ::audace {
 
       #--- Initialisation de variables de configuration
       if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
-      if { ! [ info exists conf(visu_palette) ] }              { set conf(visu_palette)              "1" }
       if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
       if { ! [ info exists conf(fonction_transfert,param3) ] } { set conf(fonction_transfert,param3) "1" }
       if { ! [ info exists conf(fonction_transfert,param4) ] } { set conf(fonction_transfert,param4) "1" }
+
+      #--- Initialisation de variables relatives aux palettes
+      if { ! [ info exists conf(visu_palette,visu$visuNo,mode) ] } \
+         { set conf(visu_palette,visu$visuNo,mode)           "1" }
+
+      #--- Initialisation de variables relatives aux fonctions de transfert
+      if { ! [ info exists conf(fonction_transfert,visu$visuNo,position) ] } \
+         { set conf(fonction_transfert,visu$visuNo,position) "+0+0" }
+      if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } \
+         { set conf(fonction_transfert,visu$visuNo,mode)     "1" }
 
       #--- Initialisation des executables
       ::audace::Default_exeutils
@@ -535,13 +544,13 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
-              "1" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+              "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_inverse)" \
-              "2" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+              "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_iris)" \
-              "3" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+              "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
-              "5" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
+              "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)"
       Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,lin)" "1" \
@@ -828,9 +837,6 @@ namespace eval ::audace {
             }
          }
       }
-
-      #--- Prise en compte de la palette prealablement choisie
-      ::audace::MAJ_palette $visuNo
 
       #--- Configure PortTalk
       if { $::tcl_platform(os) == "Windows NT" } {
@@ -1222,13 +1228,6 @@ namespace eval ::audace {
       set base $::confVisu::private($visuNo,This)
 
       #---
-      if { ! [ info exists conf(fonction_transfert,visu$visuNo,position) ] } \
-         { set conf(fonction_transfert,visu$visuNo,position) "+0+0" }
-      #---
-      if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } \
-         { set conf(fonction_transfert,visu$visuNo,mode) "1" }
-
-      #---
       if { [ winfo exists $base.fonction_transfert ] == "0" } {
          #--- Création de la fenêtre
          toplevel $base.fonction_transfert
@@ -1239,9 +1238,9 @@ namespace eval ::audace {
 
          #--- Enregistrement des réglages courants
          set tmp(fonction_transfert,visu$visuNo,mode) $conf(fonction_transfert,visu$visuNo,mode)
-         set tmp(fonction_transfert,param2) $conf(fonction_transfert,param2)
-         set tmp(fonction_transfert,param3) $conf(fonction_transfert,param3)
-         set tmp(fonction_transfert,param4) $conf(fonction_transfert,param4)
+         set tmp(fonction_transfert,param2)           $conf(fonction_transfert,param2)
+         set tmp(fonction_transfert,param3)           $conf(fonction_transfert,param3)
+         set tmp(fonction_transfert,param4)           $conf(fonction_transfert,param4)
 
          #--- Sous-trame réglage fonction de transfert
          frame $base.fonction_transfert.regl
@@ -1325,9 +1324,9 @@ namespace eval ::audace {
 
       #--- On récupère les anciens paramètres
       set conf(fonction_transfert,visu$visuNo,mode) $tmp(fonction_transfert,visu$visuNo,mode)
-      set conf(fonction_transfert,param2) $tmp(fonction_transfert,param2)
-      set conf(fonction_transfert,param3) $tmp(fonction_transfert,param3)
-      set conf(fonction_transfert,param4) $tmp(fonction_transfert,param4)
+      set conf(fonction_transfert,param2)           $tmp(fonction_transfert,param2)
+      set conf(fonction_transfert,param3)           $tmp(fonction_transfert,param3)
+      set conf(fonction_transfert,param4)           $tmp(fonction_transfert,param4)
       fonction_transfertok $visuNo
    }
 
@@ -1356,18 +1355,19 @@ namespace eval ::audace {
       global audace conf tmp
 
       #--- On récupère le nom du fichier palette "de base"
-      switch $conf(visu_palette) {
+      switch $conf(visu_palette,visu$visuNo,mode) {
          1 { set fichier_palette_in [ file join $audace(rep_audela) audace palette gray ] }
          2 { set fichier_palette_in [ file join $audace(rep_audela) audace palette inv ] }
          3 { set fichier_palette_in [ file join $audace(rep_audela) audace palette iris ] }
-         5 { set fichier_palette_in [ file join $audace(rep_audela) audace palette rainbow ] }
+         4 { set fichier_palette_in [ file join $audace(rep_audela) audace palette rainbow ] }
       }
 
       switch $conf(fonction_transfert,visu$visuNo,mode) {
          1 {
             #--- Fonction de transfert linéaire : pas besoin de créer une palette
             visu$visuNo paldir [file dirname $fichier_palette_in]
-            visu$visuNo pal [file tail $fichier_palette_in]         }
+            visu$visuNo pal [file tail $fichier_palette_in]
+         }
          2 {
             #--- Fonction de transfert log
             if { $conf(fonction_transfert,param2) == 0 } {
