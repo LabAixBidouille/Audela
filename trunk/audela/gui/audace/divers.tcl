@@ -396,7 +396,9 @@ proc sauve_jpeg {args} {
         # - si la palette est monochrome, on enregistre en jpeg N&B.
         # - si la palette est polychrome, on enregistre en jpeg couleurs
 
-        if {$conf(visu_palette)<=2} {
+#--- Debut modif Robert
+        if {$conf(visu_palette,visu$audace(visuNo),mode)<=2} {
+#--- Fin modif Robert
           # Sauvegarde en jpeg monochrome
 
           # On récupère la fonction de transfert

@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.16 2006-03-22 09:17:38 alainklotz Exp $
+# $Id: confvisu.tcl,v 1.17 2006-03-22 22:46:52 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -56,6 +56,16 @@ namespace eval ::confVisu {
       if { ! [ info exists conf(visu,crosshairstate) ] } {
          set conf(visu,crosshairstate) "0"
       }
+      if { ! [ info exists conf(visu_palette,visu$visuNo,mode) ] } {
+         set conf(visu_palette,visu$visuNo,mode) "1"
+      }
+      if { ! [ info exists conf(fonction_transfert,visu$visuNo,position) ] } {
+         set conf(fonction_transfert,visu$visuNo,position) "+0+0"
+      }
+      if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } {
+         set conf(fonction_transfert,visu$visuNo,mode) "1"
+      }
+
       if { $base != "" } {
          set private($visuNo,This) $base
          #--- pas besoin de creer de toplevel
@@ -236,9 +246,9 @@ namespace eval ::confVisu {
          set private($visuNo,picture_h) 0
       }
 
-      set width  $private($visuNo,picture_w)
-      set height $private($visuNo,picture_h)
-      set zoom   $private($visuNo,zoom)
+      set width   $private($visuNo,picture_w)
+      set height  $private($visuNo,picture_h)
+      set zoom    $private($visuNo,zoom)
       set imageNo [visu$visuNo image]
 
 
@@ -288,7 +298,7 @@ namespace eval ::confVisu {
                }
             }
          } else {
-            #--- nettoyage de l'affichage  s'il n'y a pas d'image
+            #--- nettoyage de l'affichage s'il n'y a pas d'image
             visu $visuNo current
          }
       }
@@ -333,6 +343,9 @@ namespace eval ::confVisu {
       set height $private($visuNo,picture_h)
       set zoom   $private($visuNo,zoom)
       $private($visuNo,hCanvas) configure -scrollregion [ list 0 0 [ expr int(${zoom}*$private($visuNo,picture_w)) ] [ expr int(${zoom}*$private($visuNo,picture_h)) ] ]
+
+      # prise en compte de la palette prealablement choisie
+      ::audace::MAJ_palette $visuNo
 
       # rafraichissement de l'affichage
       visu$visuNo disp
@@ -1157,13 +1170,13 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
-               "1" "conf(visu_palette)" " ::audace::MAJ_palette $visuNo "
+              "1" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_inverse)" \
-              "2" "conf(visu_palette)" " ::audace::MAJ_palette $visuNo "
+              "2" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_iris)" \
-              "3" "conf(visu_palette)" " ::audace::MAJ_palette $visuNo "
+              "3" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
-              "5" "conf(visu_palette)" " ::audace::MAJ_palette $visuNo "
+              "4" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)"
       Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,lin)" "1" \
