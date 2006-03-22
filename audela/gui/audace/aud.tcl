@@ -58,16 +58,16 @@ namespace eval ::audace {
 
       initEnv
       set visuNo [ createDialog ]
-      createMenu 
+      createMenu
       initLastEnv $visuNo
       dispClock1
       affiche_Outil_F2
 
-      #::console::disp "::confVisu::create \n"      
+      #::console::disp "::confVisu::create \n"
       #loadima $audace(rep_images)/m57.fit
       #::confVisu::create
       #loadima $audace(rep_images)/aaa.jpg 2
-      
+
    }
 
    proc initEnv { } {
@@ -157,12 +157,12 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_caption) confeditscript.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) astrometry.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) bifsconv.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) compute_stellaire.cap ]\"" 
-      uplevel #0 "source \"[ file join $audace(rep_caption) divers.cap ]\"" 
-      uplevel #0 "source \"[ file join $audace(rep_caption) iris.cap ]\"" 
-      uplevel #0 "source \"[ file join $audace(rep_caption) newscript.cap ]\"" 
-      uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\"" 
-      uplevel #0 "source \"[ file join $audace(rep_caption) filtrage.cap ]\"" 
+      uplevel #0 "source \"[ file join $audace(rep_caption) compute_stellaire.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) divers.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) iris.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) newscript.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) filtrage.cap ]\""
 
       #--- Creation de la console
       $audace(console)::create
@@ -295,8 +295,8 @@ namespace eval ::audace {
 
    #
    # ::audace::repertPresent { repertoire }
-   # Recherche des repertoires existants 
-   #  
+   # Recherche des repertoires existants
+   #
    proc repertPresent { repertoire } {
       set listrepertPresent [ lsort [ glob -nocomplain -type d -dir $repertoire * ] ]
       set nbre_repert [ llength $listrepertPresent ]
@@ -306,7 +306,7 @@ namespace eval ::audace {
    #
    # ::audace::fichierPresent { fichier repertoire }
    # Recherche d'un fichier dans un repertoire donnee
-   #  
+   #
    proc fichierPresent { fichier repertoire } {
       set repertCourant [pwd]
       if { [ catch { cd $repertoire } erreur ] } {
@@ -326,7 +326,7 @@ namespace eval ::audace {
    #
    # ::audace::fichier_partPresent { fichier_recherche repertoire }
    # Recherche d'un fichier particulier sur le disque dur dans une arborescence de 5 niveaux maxi
-   #  
+   #
    proc fichier_partPresent { fichier_recherche repertoire } {
       set a [ ::audace::fichierPresent "$fichier_recherche" "$repertoire" ]
       if { $a == "1" } {
@@ -477,7 +477,7 @@ namespace eval ::audace {
 
       #--- Je cree la visu de la fenetre principale
       set visuNo [::confVisu::create $audace(base)]
-        
+
       #---
       wm title $This "$caption(audace,titre) (visu$visuNo)"
       wm protocol $This WM_DELETE_WINDOW " ::audace::quitter "
@@ -543,7 +543,7 @@ namespace eval ::audace {
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
               "5" "conf(visu_palette)" "::audace::MAJ_palette $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)" 
+      Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)"
       Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,lin)" "1" \
               "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,log)" "2" \
@@ -570,6 +570,9 @@ namespace eval ::audace {
               "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
               "$caption(audace,menu,zoom) $caption(audace,menu,zoom_2)" "2" \
+              "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
+              "$caption(audace,menu,zoom) $caption(audace,menu,zoom_4)" "4" \
               "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Check $visuNo "$caption(audace,menu,affichage)" \
@@ -783,7 +786,7 @@ namespace eval ::audace {
       global caption
       global confgene
       global tmp
-      
+
       #--- Mise a jour des couleurs des interfaces
       ::confColor::applyColor $audace(base)
       ::confColor::applyColor $audace(Console)
@@ -840,7 +843,7 @@ namespace eval ::audace {
                $audace(console)::affiche_erreur "$msg\n"
             }
             set base ".allowio"
-            toplevel $base 
+            toplevel $base
             wm geometry $base +50+100
             wm resizable $base 0 0
             wm deiconify $base
@@ -967,7 +970,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::affiche_Outil 
+   # ::audace::affiche_Outil
    # Fonction qui permet d'afficher les outils dans le menu Outils
    #
    proc affiche_Outil { visuNo } {
@@ -1231,7 +1234,7 @@ namespace eval ::audace {
          toplevel $base.fonction_transfert
          wm geometry $base.fonction_transfert $conf(fonction_transfert,visu$visuNo,position)
          wm title $base.fonction_transfert "$caption(fcttransfert,titre) (visu$visuNo)"
-         wm transient $base.fonction_transfert [ winfo parent $base.fonction_transfert ] 
+         wm transient $base.fonction_transfert [ winfo parent $base.fonction_transfert ]
          wm protocol $base.fonction_transfert WM_DELETE_WINDOW " ::audace::fonction_transfertquit $visuNo "
 
          #--- Enregistrement des réglages courants
@@ -1250,7 +1253,7 @@ namespace eval ::audace {
             -text $caption(fcttransfert,lin) -value 1
          pack $base.fonction_transfert.regl.1.but -side left
          frame $base.fonction_transfert.regl.2
-         pack $base.fonction_transfert.regl.2 -fill x      
+         pack $base.fonction_transfert.regl.2 -fill x
          radiobutton $base.fonction_transfert.regl.2.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,log) -value 2
          pack $base.fonction_transfert.regl.2.but -side left
@@ -1261,7 +1264,7 @@ namespace eval ::audace {
          pack $base.fonction_transfert.regl.3 -fill x
          radiobutton $base.fonction_transfert.regl.3.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,exp) -value 3
-         pack $base.fonction_transfert.regl.3.but -side left      
+         pack $base.fonction_transfert.regl.3.but -side left
          entry $base.fonction_transfert.regl.3.ent -textvariable conf(fonction_transfert,param3) \
             -font $audace(font,arial_8_b) -width 4 -justify center
          pack $base.fonction_transfert.regl.3.ent -side right
@@ -1269,7 +1272,7 @@ namespace eval ::audace {
          pack $base.fonction_transfert.regl.4 -fill x
          radiobutton $base.fonction_transfert.regl.4.but -variable conf(fonction_transfert,visu$visuNo,mode) \
             -text $caption(fcttransfert,arc) -value 4
-         pack $base.fonction_transfert.regl.4.but -side left      
+         pack $base.fonction_transfert.regl.4.but -side left
          entry $base.fonction_transfert.regl.4.ent -textvariable conf(fonction_transfert,param4) \
             -font $audace(font,arial_8_b) -width 4 -justify center
          pack $base.fonction_transfert.regl.4.ent -side right
@@ -1518,7 +1521,7 @@ namespace eval ::audace {
                visu$visuNo paldir [file dirname $tmp(fichier_palette)]
                visu$visuNo pal [file tail $tmp(fichier_palette)]
             }
-         }    
+         }
          4 {
             #--- Fonction de transfert arctangente / sigmoïde
             if {$conf(fonction_transfert,param4)==0} {
@@ -1774,7 +1777,7 @@ namespace eval ::audace {
       #--- Ouvre la fenetre de choix des pages html
       set filename [ ::tkutil::box_load_html $fenetre $rep_init $audace(bufNo) "1" ]
       #---
-      if { $filename != "file:" } {      
+      if { $filename != "file:" } {
          ::audace::Lance_Site_htm "$filename"
       }
    }
@@ -2071,7 +2074,7 @@ namespace eval ::audace {
 
    proc menustate { state } {
       global audace
-      
+
       foreach menu [winfo children $audace(base).menubar] {
          set imax [$menu index end]
          for {set i 0} {$i <= $imax} {incr i} {
@@ -2098,7 +2101,7 @@ namespace eval ::audace {
    #
    proc screen2Canvas { coord } {
       global audace
-      
+
       return [ ::confVisu::screen2Canvas $audace(visuNo) $coord ]
    }
 
@@ -2111,7 +2114,7 @@ namespace eval ::audace {
    #
    proc canvas2Picture { coord { stick left } } {
       global audace
-      
+
       return [ ::confVisu::canvas2Picture $audace(visuNo) $coord $stick ]
    }
 
@@ -2122,7 +2125,7 @@ namespace eval ::audace {
    #
    proc picture2Canvas { coord } {
       global audace
-      
+
       return [ ::confVisu::picture2Canvas $audace(visuNo) $coord ]
    }
 
@@ -2321,20 +2324,20 @@ namespace eval ::audace {
          $audace(console)::affiche_resultat "caption(sur,enregistrer,config5)\n\n"
       }
    }
-   
+
    #------------------------------------------------------------
    #  visuDynamix
-   #      appelle ::confVisu::visuDynamix 
-   #      avec la visu par defaut numero 1 
+   #      appelle ::confVisu::visuDynamix
+   #      avec la visu par defaut numero 1
    #
    #    procedure a supprimer quand plus aucun programme de l'utilisera
    #------------------------------------------------------------
    proc visuDynamix { max min } {
       variable private
       global audace
-      
-      ::confVisu::visuDynamix $audace(visuNo) $max $min 
-   }      
+
+      ::confVisu::visuDynamix $audace(visuNo) $max $min
+   }
 
 }
 ############# fin du namespace audace #############################################
@@ -2405,14 +2408,14 @@ proc save_cursor { } {
    while {$window_list != ""} {
       set next {}
       foreach w $window_list {
-         catch { 
-            #--- Le catch permet de traiter le cas des fenetres qui n'ont pas l'option -cursor 
+         catch {
+            #--- Le catch permet de traiter le cas des fenetres qui n'ont pas l'option -cursor
             #--- en les ignorant (exemple BWidget)
             set cursor [lindex [$w configure -cursor] 4]
             if {[winfo toplevel $w] == $w || $cursor != ""} {
                lappend busy [list $w $cursor]
             }
-         }         
+         }
          set next [concat $next [winfo children $w]]
       }
       set window_list $next
@@ -2439,13 +2442,13 @@ proc restore_cursor { } {
 
 #------------------------------------------------------------
 #  getVisuNo
-#     retourne le numero de visu associe un element tk 
+#     retourne le numero de visu associe un element tk
 #
-#    le numero de visu se trouve dans l'attribut "class" 
+#    le numero de visu se trouve dans l'attribut "class"
 #    de la toplevel .audace ou .visu
 #  exemple :
-#    [getVisuNo  .audace.menubar.menu.windowseuil] 
-#      => retourne "1"  
+#    [getVisuNo  .audace.menubar.menu.windowseuil]
+#      => retourne "1"
 #------------------------------------------------------------
 proc getVisuNo { tkpath } {
    return [winfo class [winfo toplevel $tkpath ]]
@@ -2459,8 +2462,8 @@ proc getVisuNo { tkpath } {
 #      audace/lib/RamDebugger
 #------------------------------------------------------------
 proc ramdebugger { } {
-   global audace 
-   
+   global audace
+
    if { [info exists audace(rep_install) ] } {
       lappend ::auto_path "$audace(rep_install)/lib/RamDebugger/addons"
    } else {

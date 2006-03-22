@@ -49,6 +49,7 @@ set caption(audace,menu,zoom_0.25)                    "x 0.25"
 set caption(audace,menu,zoom_0.5)                     "x 0.5"
 set caption(audace,menu,zoom_1)                       "x 1"
 set caption(audace,menu,zoom_2)                       "x 2"
+set caption(audace,menu,zoom_4)                       "x 4"
 set caption(audace,menu,plein_ecran)                  "Full Screen"
 set caption(audace,menu,miroir_y)                     "Horizontal Mirror"
 set caption(audace,menu,miroir_x)                     "Vertical Mirror"
@@ -360,6 +361,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,zoom_0.5)                  "x 0.5"
    set caption(audace,menu,zoom_1)                    "x 1"
    set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
    set caption(audace,menu,plein_ecran)               "Plein écran"
    set caption(audace,menu,miroir_y)                  "Miroir horizontal"
    set caption(audace,menu,miroir_x)                  "Miroir vertical"
@@ -368,7 +370,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,vision_nocturne)           "Vision nocturne"
    set caption(audace,menu,entete)                    "En-tête FITS"
    set caption(audace,menu,select)                    "Sélection d'images"
-   
+
    set caption(audace,menu,pretraite)                 "Prétraitement"
    set caption(audace,menu,offset)                    "Ajouter une constante"
    set caption(audace,menu,mult_cte)                  "Multiplier par une constante"
@@ -629,7 +631,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(couleur,rouge)                         "R:"
    set caption(couleur,vert)                          "V:"
    set caption(couleur,bleu)                          "B:"
-   
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -671,6 +673,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,zoom_0.5)                  "x 0.5"
    set caption(audace,menu,zoom_1)                    "x 1"
    set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
    set caption(audace,menu,plein_ecran)               "Tutto schermo"
    set caption(audace,menu,miroir_y)                  "Specchio orizzontale"
    set caption(audace,menu,miroir_x)                  "Specchio verticale"
@@ -940,7 +943,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(couleur,rouge)                         "R:"
    set caption(couleur,vert)                          "V:"
    set caption(couleur,bleu)                          "B:"
-   
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -982,6 +985,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,zoom_0.5)                  "x 0.5"
    set caption(audace,menu,zoom_1)                    "x 1"
    set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
    set caption(audace,menu,plein_ecran)               "Pantalla completa"
    set caption(audace,menu,miroir_y)                  "Espejo horizontal"
    set caption(audace,menu,miroir_x)                  "Espejo vertical"
@@ -1251,7 +1255,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(couleur,rouge)                         "R:"
    set caption(couleur,vert)                          "V:"
    set caption(couleur,bleu)                          "A:"
-   
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
@@ -1293,6 +1297,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,zoom_0.5)                  "x 0.5"
    set caption(audace,menu,zoom_1)                    "x 1"
    set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
    set caption(audace,menu,plein_ecran)               "Vollschirm"
    set caption(audace,menu,miroir_y)                  "Horizontale Spiegel"
    set caption(audace,menu,miroir_x)                  "Verticale Spiegel"
@@ -1558,11 +1563,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(caractere,I)                           "I"
    set caption(caractere,X)                           "X"
    set caption(caractere,Y)                           "Y"
-   
+
    set caption(couleur,rouge)                         "R:"
    set caption(couleur,vert)                          "G:"
    set caption(couleur,bleu)                          "B:"
-   
+
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -1604,6 +1609,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,zoom_0.5)                  "x 0.5"
    set caption(audace,menu,zoom_1)                    "x 1"
    set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
    set caption(audace,menu,plein_ecran)               "Fuld skærm"
    set caption(audace,menu,miroir_y)                  "Horisontal spejl"
    set caption(audace,menu,miroir_x)                  "Vertikal spejl"
@@ -1869,7 +1875,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(caractere,I)                           "I"
    set caption(caractere,X)                           "X"
    set caption(caractere,Y)                           "Y"
-   
+
    set caption(couleur,rouge)                         "R:"
    set caption(couleur,vert)                          "G:"
    set caption(couleur,bleu)                          "B:"
