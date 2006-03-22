@@ -1,6 +1,6 @@
 #
 # Fichier : fullscreen.cap
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 22 mars 2006
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(fullscreen,zoom_0.25)           "x 0.25"
 set caption(fullscreen,zoom_0.5)            "x 0.5"
 set caption(fullscreen,zoom_1)              "x 1"
 set caption(fullscreen,zoom_2)              "x 2"
+set caption(fullscreen,zoom_4)              "x 4"
 set caption(fullscreen,help)                "Help..."
 
 #--- Interface de configuration
@@ -49,6 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_0.5)         "x 0.5"
    set caption(fullscreen,zoom_1)           "x 1"
    set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
    set caption(fullscreen,help)             "Aide..."
 
    #--- Interface de configuration
@@ -73,6 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_0.5)         "x 0.5"
    set caption(fullscreen,zoom_1)           "x 1"
    set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
    set caption(fullscreen,help)             "Aiuto..."
 
    #--- Interface de configuration
@@ -97,6 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_0.5)         "x 0.5"
    set caption(fullscreen,zoom_1)           "x 1"
    set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
    set caption(fullscreen,help)             "Ayuda..."
 
    #--- Interface de configuration
@@ -121,6 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_0.5)         "x 0.5"
    set caption(fullscreen,zoom_1)           "x 1"
    set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
    set caption(fullscreen,help)             "Hilfe..."
 
    #--- Interface de configuration
@@ -145,6 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_0.5)         "x 0.5"
    set caption(fullscreen,zoom_1)           "x 1"
    set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
    set caption(fullscreen,help)             "Hjælp..."
 
    #--- Interface de configuration

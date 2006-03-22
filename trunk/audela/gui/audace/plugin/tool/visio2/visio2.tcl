@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# Date de mise a jour : 13 fevrier 2006
+# Date de mise a jour : 22 mars 2006
 #
 
 package provide visio2 1.0
@@ -1243,10 +1243,10 @@ namespace eval ::Visio2::localTable {
       visu$audace(visuNo) zoom $conf(visu_zoom)
 
       #--- je rafraichis l'affichage du canvas
-      cmdButton1Click $private(tbl)       
+      cmdButton1Click $private(tbl)
 
       #--- je rafraichis l'affichage du reticule
-      ::confVisu::redrawCrosshair $audace(visuNo)      
+      ::confVisu::redrawCrosshair $audace(visuNo)
    }
 
    #------------------------------------------------------------------------------
@@ -1592,8 +1592,13 @@ namespace eval ::Visio2::localTable {
       $menu.zoom add radiobutton -label "$caption(visio2,zoom_2)" \
          -indicatoron "1" \
          -value "2" \
-         -variable  conf(visu_zoom) \
+         -variable conf(visu_zoom) \
          -command { ::Visio2::localTable::changeZoom "2" }
+      $menu.zoom add radiobutton -label "$caption(visio2,zoom_4)" \
+         -indicatoron "1" \
+         -value "4" \
+         -variable conf(visu_zoom) \
+         -command { ::Visio2::localTable::changeZoom "4" }
 
       $menu add checkbutton -label $caption(visio2,full_screen) \
          -variable audace(fullscreen)       \

@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Date de mise a jour : 08 janvier 2006
+# Date de mise a jour : 22 mars 2006
 #
 
 #=========================================================================
@@ -38,6 +38,7 @@ set caption(visio2,zoom_0.25)                "x 0.25"
 set caption(visio2,zoom_0.5)                 "x 0.5"
 set caption(visio2,zoom_1)                   "x 1"
 set caption(visio2,zoom_2)                   "x 2"
+set caption(visio2,zoom_4)                   "x 4"
 set caption(visio2,full_screen)              "Full Screen"
 set caption(visio2,config)                   "Set up..."
 set caption(visio2,slideshow)                "Slideshow"
@@ -97,6 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,zoom_0.5)              "x 0.5"
    set caption(visio2,zoom_1)                "x 1"
    set caption(visio2,zoom_2)                "x 2"
+   set caption(visio2,zoom_4)                "x 4"
    set caption(visio2,full_screen)           "Plein écran"
    set caption(visio2,config)                "Configurer..."
    set caption(visio2,slideshow)             "Diaporama"
@@ -156,6 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,zoom_0.5)              "x 0.5"
    set caption(visio2,zoom_1)                "x 1"
    set caption(visio2,zoom_2)                "x 2"
+   set caption(visio2,zoom_4)                "x 4"
    set caption(visio2,full_screen)           "Tutto schermo"
    set caption(visio2,config)                "Configurare..."
    set caption(visio2,slideshow)             "Mostra"
@@ -215,6 +218,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,zoom_0.5)              "x 0.5"
    set caption(visio2,zoom_1)                "x 1"
    set caption(visio2,zoom_2)                "x 2"
+   set caption(visio2,zoom_4)                "x 4"
    set caption(visio2,full_screen)           "Pantalla completa"
    set caption(visio2,config)                "Configurar..."
    set caption(visio2,slideshow)             "Presentación"
@@ -274,6 +278,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,zoom_0.5)              "x 0.5"
    set caption(visio2,zoom_1)                "x 1"
    set caption(visio2,zoom_2)                "x 2"
+   set caption(visio2,zoom_4)                "x 4"
    set caption(visio2,full_screen)           "Voll Bildschirm"
    set caption(visio2,config)                "Einrichten..."
    set caption(visio2,slideshow)             "Diashow"
@@ -333,6 +338,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,zoom_0.5)              "x 0.5"
    set caption(visio2,zoom_1)                "x 1"
    set caption(visio2,zoom_2)                "x 2"
+   set caption(visio2,zoom_4)                "x 4"
    set caption(visio2,full_screen)           "Fuld skærm"
    set caption(visio2,config)                "Set up..."
    set caption(visio2,slideshow)             "Slideshow"
