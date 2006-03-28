@@ -3,7 +3,7 @@
 DIR = jpeg-6b
 
 build:
-	( cd $(DIR) ; ./configure --prefix=`pwd`/../.. )
+	( cd $(DIR) ; chmod +x configure ; ./configure --prefix=`pwd`/../.. )
 	make -C $(DIR)
 
 install:
