@@ -3,7 +3,7 @@
 DIR = cfitsio2510
 
 build:
-	( cd $(DIR) ; ./configure --prefix=`pwd`/../.. )
+	( cd $(DIR) ; chmod +x configure ; ./configure --prefix=`pwd`/../.. )
 	make -C $(DIR)
 
 install: build
