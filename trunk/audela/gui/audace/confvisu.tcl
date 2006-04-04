@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.17 2006-03-22 22:46:52 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.18 2006-04-04 21:59:51 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -262,6 +262,8 @@ namespace eval ::confVisu {
          ::confVisu::redrawCrosshair $visuNo
 
       } else {
+         #--- je supprime l'item video s'il existe
+         Movie::deleteMovieWindow $private($visuNo,hCanvas)
          #--- mise à jour des scrollbar
          $private($visuNo,hCanvas) configure \
             -scrollregion [list 0 0 [expr int(${zoom} * $width)] [expr int(${zoom} * $height)]]
