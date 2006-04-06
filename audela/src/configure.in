@@ -130,7 +130,7 @@ dnl
 dnl Configure the modules to be compiled.
 dnl
 
-EXTERNAL="andor cfitsio gzip jpeg6b porttalk sbig sextractor tcl"
+EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw porttalk sbig sextractor tcl"
 if test x"$TARGET" = x"Linux" ; then
 	EXTERNAL="$EXTERNAL fli"
 fi
