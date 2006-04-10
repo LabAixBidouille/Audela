@@ -49,6 +49,7 @@ int cmdImageReady(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdLoad3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdRestoreInitialCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -121,6 +122,7 @@ static struct cmditem cmdlist[] = {
    {"compress", (Tcl_CmdProc *)cmdCompress},
    {"copykwd", (Tcl_CmdProc *)cmdCopyKwd},
    {"copyto", (Tcl_CmdProc *)cmdCopyTo},
+   {"create3d", (Tcl_CmdProc *)cmdCreate3d},
    {"div", (Tcl_CmdProc *)cmdTtDiv},
    {"delkwd",(Tcl_CmdProc *)cmdDelKwd},
    {"delkwds",(Tcl_CmdProc *)cmdDelKwds},
@@ -826,7 +828,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             }     
             
             if(strcmp(argv[1],"save")==0) {
-               //--- Save standard format image (BMP, JPEG, GIF, PNG, PS, TIFF, XPN, XBN)
+               //--- SAVE standard format image (BMP, JPEG, GIF, PNG, PS, TIFF, XPN, XBN)
                Tk_PhotoImageBlock pib;
                char tkImgfileFormat[10];
                Tk_PhotoHandle ph ;
@@ -874,7 +876,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   throw CError("Error when saving %s (%s)",nom_fichier, interp->result );
                retour = TCL_OK;               
             } else {
-               //--- load standard format image (BMP, JPEG, GIF, PNG, PS, TIFF, XPN, XBN)
+               //--- LOAD standard format image (BMP, JPEG, GIF, PNG, PS, TIFF, XPN, XBN)
                Tk_PhotoImageBlock pib;
                Tk_PhotoHandle ph ;
 
@@ -914,12 +916,13 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                     || strcmp(ext, ".cr2")== 0   // nikon raw image
                     || strcmp(ext, ".dng")== 0   // nikon raw image
                   ) {  
-            //--- load FITS file (fit, fits, fts, or other extension)
+            //--- RAW file (crw, nef, cr2 , dng )
             if(strcmp(argv[1],"save")==0) {
-               //--- save RAW file
-               throw CError("Save Raw file file not implemented");
+               //--- SAVE RAW file
+               Buffer->SaveRawFile(nom_fichier);
+               retour = TCL_OK;
             } else {
-               //--- Load RAW file
+               //--- LOAD RAW file
                Buffer->LoadRawFile(nom_fichier);
                retour = TCL_OK;
             }
@@ -1036,6 +1039,96 @@ int cmdLoad3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 }
 
 //==============================================================================
+// buf$i create3d listfilename --
+//   Chargement d'images FITS a partir du disque. Le contenu du buffer est
+//   ecrase s'il etait non vide.
+//
+int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char *name, *ext, *path2, *nom_fichier;
+   char *ligne;
+   int retour;
+   CBuffer *Buffer;
+   char **argvv=NULL;
+   int argcc,naxis3,k,init,errcode;
+   int naxis1,naxis2,naxis10=0,naxis20=0;
+
+   ligne = new char[1000];
+
+   if(argc<=2) {
+      sprintf(ligne,"Usage: %s %s listfilename",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      // Decodage de la liste des fichiers
+      if (Tcl_SplitList(interp,argv[2],&argcc,&argvv)==TCL_ERROR) {
+         sprintf(ligne,"Problem when decoding listfilename %s",argv[2]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+
+      naxis3=argcc;
+
+      for (k=0;k<naxis3;k++) {
+
+         name = (char*)calloc(512,sizeof(char));
+         ext = (char*)calloc(128,sizeof(char));
+         path2 = (char*)calloc(256,sizeof(char));
+         nom_fichier = (char*)calloc(1000,sizeof(char));
+         Buffer = (CBuffer*)clientData;
+
+         // Decodage du nom de fichier : chemin, nom du fichier, etc.
+         sprintf(ligne,"file dirname {%s}",argvv[k]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
+         sprintf(ligne,"file tail {%s}",argvv[k]); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
+         sprintf(ligne,"file extension \"%s\"",argvv[k]); Tcl_Eval(interp,ligne);
+         if(strcmp(interp->result,"")==0) strcpy(ext,Buffer->GetExtension()); else strcpy(ext,"");
+         sprintf(ligne,"file join {%s} {%s%s}",path2,name,ext); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
+
+         try {
+            if (k==0) {
+               init=1;
+               naxis1=0;
+               naxis2=0;
+            } else {
+               init=0;
+            }
+            Buffer->Create3d(nom_fichier,init,naxis3,k,&naxis1,&naxis2,&errcode);
+            if (errcode>0) {
+               sprintf(ligne,"Error code %d ",errcode);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+               free(name);
+               free(ext);
+               free(path2);
+               free(nom_fichier);
+               break;
+            } else {
+               retour = TCL_OK;
+            }
+         } catch(const CError& e) {
+            sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+            free(name);
+            free(ext);
+            free(path2);
+            free(nom_fichier);
+            break;
+         }
+
+         free(name);
+         free(ext);
+         free(path2);
+         free(nom_fichier);
+      }
+   }
+   Tcl_Free((char *) argvv);
+
+   delete ligne;
+   return retour;
+}
+
+//==============================================================================
 // buf$i save3d filename ?naxis3? ?iaxis3_beg iaxis3_end? --
 //   Enregistrement d'une image FITS sur disque. Le contenu du buffer est
 //   decoupe en trois axes.
@@ -1068,17 +1161,17 @@ int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       if(strcmp(interp->result,"")==0) strcpy(ext,Buffer->GetExtension()); else strcpy(ext,"");
       sprintf(ligne,"file join {%s} {%s%s}",path2,name,ext); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
 
-      naxis3=0;
+      naxis3=1;
       if (argc>=4) {
          naxis3=(int)atoi(argv[3]);
-         if (naxis3<0) { naxis3=0; }
+         if (naxis3<0) { naxis3=1; }
       }
       iaxis3_beg=1;
       iaxis3_end=naxis3;
       if ((argc>=6)&&(naxis3>0)) {
          iaxis3_beg=(int)atoi(argv[4]);
          iaxis3_end=(int)atoi(argv[5]);
-         if (iaxis3_end<iaxis3_beg) { dummy=iaxis3_beg; iaxis3_beg=iaxis3_end; iaxis3_end=iaxis3_beg;}
+         if (iaxis3_end<iaxis3_beg) { dummy=iaxis3_beg; iaxis3_beg=iaxis3_end; iaxis3_end=dummy;}
          if (iaxis3_beg<1) { iaxis3_beg=1; }
          if (iaxis3_end>naxis3) { iaxis3_end=naxis3; }
       }
