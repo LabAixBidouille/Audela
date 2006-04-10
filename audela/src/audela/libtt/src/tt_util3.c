@@ -873,7 +873,7 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 							b_ellipse=(liste+k)->b_ellipse;
 							theta=(liste+k)->theta;
 							fwhm=(liste+k)->fwhm;
-							flag_sext=(liste+k)->flag_sext;
+							flag_sext=(int)(liste+k)->flag_sext;
 							classstar=(liste+k)->classstar;
 							flag1=(liste+k)->flag;
 							if ((flag1==1)&&(x1==x)&&(y1==y)&&(mag<99.))
@@ -966,7 +966,7 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 							b_ellipse=(liste+k)->b_ellipse;
 							theta=(liste+k)->theta;
 							fwhm=(liste+k)->fwhm;
-							flag_sext=(liste+k)->flag_sext;
+							flag_sext=(int)(liste+k)->flag_sext;
 							classstar=(liste+k)->classstar;
 							flag1=(liste+k)->flag;
 							if ((flag1==3)&&(x1==x)&&(y1==y)&&(mag<99.))

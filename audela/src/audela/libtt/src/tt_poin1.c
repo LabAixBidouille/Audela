@@ -78,6 +78,9 @@ int tt_ptr_loadima(void *args)
 
    /* --- remplit les arguments de retour ---*/
    p_in.naxis3=0;
+   if (p_in.naxis2==0) {
+      p_in.naxis2=1;
+   }
    nelem=(int)(p_in.naxis1*p_in.naxis2);
    array=(void**)(argu[3]);
    if ((msg=tt_util_calloc_ptr_datatype(array,&nelem,&datatype))!=OK_DLL) {
@@ -1017,6 +1020,7 @@ int tt_ptr_loadima3d(void *args)
       return(msg);
    }
    if (p_in.naxis3==0) { p_in.naxis3=1; }
+   if (p_in.naxis2==0) { p_in.naxis2=1; }
 
    /* --- remplit les arguments de retour  ---*/
    if (iaxis3>p_in.naxis3) {
