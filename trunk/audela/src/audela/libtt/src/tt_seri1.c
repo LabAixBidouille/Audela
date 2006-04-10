@@ -378,6 +378,9 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_SLIDE) {
       msg=tt_ima_series_slide_1(pseries);
       fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_RADIAL) {
+      msg=tt_ima_series_radial_1(pseries);
+      fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_DELETE) {
       msg=OK_DLL;
       fct_found=TT_YES;
@@ -474,6 +477,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"UNTRAIL")==0) { pseries->numfct=TT_IMASERIES_UNTRAIL; }
    else if (strcmp(keys[10],"GEOSTAT")==0) { pseries->numfct=TT_IMASERIES_GEOSTAT; }
    else if (strcmp(keys[10],"SLIDE")==0) { pseries->numfct=TT_IMASERIES_SLIDE; }
+   else if (strcmp(keys[10],"RADIAL")==0) { pseries->numfct=TT_IMASERIES_RADIAL; }
 
 
    tt_user1_ima_series_builder1(keys[10],pseries);
@@ -531,6 +535,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->jpegfile_chart2_make=TT_NO;
    pseries->coef_unsmearing=0.;
    pseries->detect_kappa=3.;
+   pseries->power=2.;
    pseries->bordure=0.;
    pseries->invert_flip=TT_NO;
    pseries->invert_mirror=TT_NO;
@@ -833,6 +838,9 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       }
       else if (strcmp(mot,"DETECT_KAPPA")==0) {
 	 pseries->detect_kappa=(double)(atof(argu));
+      }
+      else if (strcmp(mot,"POWER")==0) {
+	 pseries->power=(double)(atof(argu));
       }
       else if (strcmp(mot,"BORDER")==0) {
 	 pseries->bordure=(double)(atof(argu));

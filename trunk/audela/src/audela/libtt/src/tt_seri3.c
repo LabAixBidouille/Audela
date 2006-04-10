@@ -1511,6 +1511,74 @@ int tt_ima_series_rgradient_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+int tt_ima_series_radial_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Gradient radial lorentzien                                              */
+/***************************************************************************/
+/* Realise une gradient radial et circulaire                               */
+/* En coordonnees polaires :                                               */
+/*   x'(r,a) = (x(r,a) - x(r-dr,a-da)) + (x(r,a) - x(x-dr,a+da))           */
+/* (voir Astron. J. 89 (4) P571 1984)                                      */
+/***************************************************************************/
+/* - mots optionels utilisables et valeur par defaut :                     */
+/* radius=0                                                                */
+/* sigma=10                                                                */
+/* power=2                                                                */
+/* xcenter=0                                                               */
+/* ycenter=0                                                               */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out;
+   int index,naxis1,naxis2;
+   int i,j,imax,jmax;
+   double v,v1;
+   double x1,y1,k1,r,ic,jc;
+   double radius;
+   double sigma,power;
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   index=pseries->index;
+   naxis1=p_in->naxis1;
+   naxis2=p_in->naxis2;
+
+   /* --- in -> out ---*/
+   /*tt_imabuilder(p_out);*/
+   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+
+   /* --- algo de Qm32 ---*/
+   imax=naxis1;
+   jmax=naxis2;
+   ic=pseries->xcenter-1;
+   jc=pseries->ycenter-1;
+   radius=pseries->radius;
+   power=pseries->power;
+   sigma=pseries->sigma_value;
+
+   for (j=0;j<jmax;j++) {
+      y1=(double)(j-jc);
+      k1=y1*y1;
+      for (i=0;i<imax;i++) {
+         x1=(double)(i-ic);
+         r=(double)sqrt(k1+x1*x1);
+         v1=p_in->p[(int)i+(int)j*imax];
+         if (r > radius) {
+            v=v1*(1-1/(1+pow(r/sigma,power)));
+         } else {
+            v=0.;
+         }
+         *(p_out->p+((int)i+(int)j*imax))=(TT_PTYPE)v;
+      }
+   }
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(OK_DLL);
+}
+
 int tt_ima_series_back_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* Modelisation du fond d'une image                                        */

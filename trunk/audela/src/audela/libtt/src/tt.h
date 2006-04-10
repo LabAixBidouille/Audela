@@ -148,6 +148,7 @@
 #define TT_IMASERIES_UNTRAIL 31
 #define TT_IMASERIES_GEOSTAT 32
 #define TT_IMASERIES_SLIDE 33
+#define TT_IMASERIES_RADIAL 34
 
 #define TT_KERNELTYPE_FH 0
 #define TT_KERNELTYPE_FB 1
@@ -811,6 +812,7 @@ typedef struct {
    double locut;
    double contrast;
    int nbstars;
+   double power;
    double fwhm;
    double d_fwhm;
    TT_COEFA *coefa;
@@ -907,6 +909,7 @@ int tt_ima_series_hough_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_back_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_test_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_resample_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_radial_1(TT_IMA_SERIES *pseries);
 
 int tt_ima_series_slide_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_register_1(TT_IMA_SERIES *pseries);
