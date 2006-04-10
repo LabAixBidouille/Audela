@@ -102,6 +102,7 @@ protected:
    float          initialMipsLo;
    float          initialMipsHi;
    static char    *FileFormatName [];
+   char           temporaryRawFileName[255];
 
 
 public:
@@ -132,6 +133,7 @@ public:
    void CopyTo(CBuffer*dest);
    void CopyFrom(CFitsKeywords*hdr, TColorPlane plane, TYPE_PIXELS*pix);
    void CopyKwdFrom(CBuffer*org);
+   void Create3d(char *filename,int init, int nbtot, int index,int *naxis10, int *naxis20, int *errcode);
    void Div(char *filename, float constante);
    void FillAstromParams();
    void FreeBuffer(int keep_keywords);
@@ -187,6 +189,7 @@ public:
    void Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end);
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);
    void SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, int *height, unsigned char **pixelPtr);
+   void SaveRawFile(char *filename);
    void SetCompressType(int st);
    void SetExtension(char *ext);
    void SetKeyword(char *nom, char *data, char *datatype, char *comment, char *unit);

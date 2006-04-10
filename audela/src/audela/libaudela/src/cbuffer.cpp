@@ -45,7 +45,7 @@ CBuffer::CBuffer() : CDevice()
    p_ast = NULL;
    compress_type = BUFCOMPRESS_NONE;
    fitsextension = new char[CHAREXTENSION];
-
+   
    strcpy(fitsextension,".fit");
 
    // On fait de la place avant de recreer le contenu du buffer
@@ -172,6 +172,12 @@ void CBuffer::FreeBuffer(int keep_keywords)
    	p_ast = (mc_ASTROM*)calloc(1,sizeof(mc_ASTROM));
 	}
 
+   // j'efface le fichier temporaire 
+   if( strlen(temporaryRawFileName) > 0 ) {
+      remove(temporaryRawFileName);
+      strcpy(temporaryRawFileName, "");
+   }
+
    // je cree un tableau de dimension nulle
    SetPixels(PLANE_GREY,0,0,FORMAT_FLOAT,COMPRESS_NONE,  NULL, 0, 0, 0);
 }
@@ -246,7 +252,7 @@ void CBuffer::LoadFits(char *filename)
          keywords->Add("NAXIS3",&naxis3,TINT,"","");
 
       } else {
-         throw CError("LoadFits error: plane number is not 1 or 3");
+         throw CError("LoadFits error: plane number is not 1 or 3.");
       }
 
       
@@ -428,6 +434,100 @@ void CBuffer::LoadRawFile(char * filename)
    p_ast->valid = 0;
 }
 
+/**
+ *  lecture d'un fichier qui n'est pas au format FIT
+ * 
+ *   @param filename : nom du fichier
+ *   @param init     : =1 initialiser le buffer la premiere fois ou bien =0 pour compléter
+ *   @param nbtot    : nombre d'images 
+ *   @param index    : index de l'image
+ *   @param *naxis10 : valeur de naxis1 de l'image initiale (retourné si init=0, sinon a passer en parametre d'entrée)
+ *   @param *naxis20 : valeur de naxis2 de l'image initiale (retourné si init=0, sinon a passer en parametre d'entrée)
+ *   @param errcode  : code erreur (=0 si pas d'erreur)
+ *
+ */
+void CBuffer::Create3d(char *filename,int init, int nbtot, int index,int *naxis10, int *naxis20, int *errcode)
+{
+   int msg;                         // Code erreur de libtt
+   int datatype;                    // Type du pointeur de l'image
+   int naxis1,naxis2,naxis3;
+   int nb_keys;
+   char **keynames=NULL;
+   char **values=NULL;
+   char **comments=NULL;
+   char **units=NULL;
+   int *datatypes=NULL;
+   CFitsKeyword *k;
+   TYPE_PIXELS *ppix=NULL;
+   int iaxis3=0,kx,ky;
+
+   if (init==1) {
+      FreeBuffer(DONT_KEEP_KEYWORDS);
+   }
+
+   // Chargement proprement dit de l'image.
+   *errcode=0;
+   datatype = TFLOAT;
+   msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
+   	&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+   if(msg) throw CErrorLibtt(msg);
+
+   // Recopie de pixels dans le buffer
+   try {
+      if (init==1) {
+         pix = new CPixelsGray(naxis1, naxis2*nbtot, FORMAT_FLOAT, NULL, 0, 0);
+         *naxis10=naxis1;
+         *naxis20=naxis2;
+      }
+      if (*naxis10!=naxis1) {
+         msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
+         msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+         *errcode=1;
+         return;
+      }
+      if (*naxis20!=naxis2) {
+         msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
+         msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+         *errcode=2;
+         return;
+      }
+      for (kx=0;kx<naxis1;kx++) {
+         for (ky=0;ky<naxis2;ky++) {
+            pix->SetPix(ppix[naxis1*ky+kx],kx,ky+index*naxis2);
+         }
+      }
+   } catch (const CError& e) {
+      // Liberation de la memoire allouée par libtt
+      Libtt_main(TT_PTR_FREEPTR,1,&ppix);
+      Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      // je transmet l'erreur
+      throw e;
+   }
+   // On recupere les mots cles
+   if (init==1) {
+      keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+   }
+
+   // On reinitialise les parametres astrometriques
+   if (init==1) {
+      p_ast->valid = 0;
+      saving_type = keywords->FindKeyword("BITPIX")->GetIntValue();
+      if(saving_type==16) {
+         k = keywords->FindKeyword("BZERO");
+         if((k)&&(k->GetIntValue()==32768)) {
+            saving_type = USHORT_IMG;
+         }
+      } else if(saving_type==32) {
+         k = keywords->FindKeyword("BZERO");
+         if((k)&&(k->GetIntValue()==-(2^31))) {
+            saving_type = ULONG_IMG;
+         }
+      }
+   }
+   // Liberation de la memoire allouee par libtt
+   msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
+   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+}
 
 
 /**
@@ -461,7 +561,7 @@ void CBuffer::Load3d(char *filename,int iaxis3)
 
    // Recopie de pixels dans le buffer
    try {
-      SetPixels(PLANE_RGB, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
+      SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
    } catch (const CError& e) {
       // Liberation de la memoire allouée par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
@@ -683,10 +783,22 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    datatype=TFLOAT;
    bitpix = saving_type;
 
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
-   ppix1 = (TYPE_PIXELS *) malloc(naxis1* naxis2 * naxis3 * sizeof(float));
-   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_RGB, (int) ppix1);
+   naxis1  = pix->GetWidth();
+   naxis2  = pix->GetHeight();
+   if (pix->getPixelClass()==CLASS_GRAY) {
+      nnaxis2 = naxis2/(iaxis3_end-iaxis3_beg+1);
+   } else {
+      nnaxis2 = naxis2;
+   }
+   naxis3  = (iaxis3_end-iaxis3_beg+1);
+   ppix1 = (TYPE_PIXELS *) malloc(naxis1* nnaxis2 * naxis3 * sizeof(float));
+   if (pix->getPixelClass()==CLASS_GRAY) {
+      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_RGB, (int) ppix1);
+   } else {
+      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_R, (int) ppix1);
+      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_G, (int) ppix1+naxis1*naxis2*sizeof(float));
+      pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_B, (int) ppix1+2*naxis1*naxis2*sizeof(float));
+   }
 
    // Collecte de renseignements pour la suite
    nb_keys = keywords->GetKeywordNb();
@@ -699,9 +811,6 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
 
    // Enregistrement proprement dit de l'image.
-   //nnaxis2=(int)floor(1.*naxis2/naxis3);
-   nnaxis2= naxis2;
-
    if ((naxis3<=0)||(nnaxis2<1)) {
       msg = Libtt_main(TT_PTR_SAVEIMA,12,filename,ppix1,&datatype,&naxis1,&naxis2,
          &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
@@ -823,6 +932,37 @@ void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
    msg = Libtt_main(TT_PTR_SAVEJPG,8,filename,ppix,&datatype,&naxis1,&naxis2,
    		&sb,&sh,&quality);
    free(ppix);
+}
+
+void CBuffer::SaveRawFile(char *filename)
+{
+
+   size_t sizeWritten;
+   FILE * ifp;
+   FILE * ofp;
+   char data[65535];
+   int dataSize;
+   
+   if( strlen(temporaryRawFileName) > 0 ) {
+      ifp = fopen (temporaryRawFileName, "rb");
+      if ( ifp ) {
+         ofp = fopen (filename, "wb");
+         if (ofp) {
+            while ( (dataSize = fread( data, 1, 65535, ifp)) != 0  ) {
+               sizeWritten = fwrite (data, 1, dataSize, ofp);
+            }
+            fclose(ofp);
+         } else {
+            throw CError("Can not open file %s",filename);
+         }
+         fclose(ifp);
+      } else {
+         throw CError("Can not open file %s",temporaryRawFileName);
+      }
+   } else {
+      CError("no raw file");
+   }
+
 }
 
 
@@ -1363,6 +1503,12 @@ void CBuffer::SetPix(TYPE_PIXELS val,int x, int y)
 void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, void * pixels, long pixelSize, int reverseX, int reverseY) {
    CPixels  * pixTemp;   
 
+   // j'efface le fichier temporaire de l'image précedente
+   if( strlen(temporaryRawFileName) > 0 ) {
+      remove(temporaryRawFileName);
+      strcpy(temporaryRawFileName, "");
+   }
+
    if( plane == PLANE_GREY) {
       // cas d'une image grise
       pixTemp = new CPixelsGray(width, height, pixelFormat, pixels, reverseX, reverseY);
@@ -1397,12 +1543,24 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             int result = -1;
             char * decodedData;
             
-            //  ATTENTION : libdcraw_decodeBuffer peut réduire les dimensions de quelques pixels en largeur et hauteur
-            //  Exemple: dans le cas de certains fichiers .CRW  width et height ont deux pixels de moins.
+            
             result = libdcraw_decodeBuffer ((char*) pixels, pixelSize, &width, &height, &decodedData);
             if (result == 0 )  {
-                pixTemp = new CPixelsRgb(plane, width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
-                libdcraw_freeBuffer(decodedData);
+               pixTemp = new CPixelsRgb(plane, width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
+               libdcraw_freeBuffer(decodedData);
+               
+               // j'enregistre l'image dans un fichier temporaire
+               {
+                  FILE * ofp;
+                  size_t sizeWritten;
+                  sprintf(temporaryRawFileName,"rawFileBuf%ld.dat",this);
+                  ofp = fopen (temporaryRawFileName, "wb");
+                  if (ofp) {
+                     sizeWritten = fwrite ( pixels, pixelSize, 1, ofp);
+                     fclose(ofp);
+                  }
+               }
+
             } else {
                throw CError("libdcraw_decodeBuffer error=%d", result);
             }
