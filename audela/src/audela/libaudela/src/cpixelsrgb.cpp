@@ -1462,30 +1462,12 @@ void CPixelsRgb::SetPix(TYPE_PIXELS val,int x, int y)
 
 void CPixelsRgb::Sub(char *filename, float offset)
 {
-   throw CError(ELIBSTD_NOT_IMPLEMENTED);
-   /*
-   int msg, naxis1, naxis2, datatype;
-   char *s;
-
-   if(pix==NULL) {return ELIBSTD_BUF_EMPTY;}
-
-   datatype = TFLOAT;
-   s = new char[512];
-   sprintf(s,"SUB \"file=%s\" offset=%f",filename,offset);
-   msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-
-   delete s;
-   return msg;
-   */
-
-   /*
-       TYPE_PIXELS_RGB *pixelsR = NULL;
-   TYPE_PIXELS_RGB *pixelsG = NULL;
-   TYPE_PIXELS_RGB *pixelsB = NULL;
+   
+   TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
    TYPE_PIXELS_RGB *pixCurR, *pixCurG, *pixCurB;
    TYPE_PIXELS_RGB *pixCur;
    int msg, datatype;
-   char s[32];
+   char s[512];
    int t;
    
 
@@ -1497,9 +1479,10 @@ void CPixelsRgb::Sub(char *filename, float offset)
       // je recupere l'image a traiter en séparant les 3 plans
       GetPixels( pixelsR, pixelsG, pixelsB); 
             
-      // mirroir
-      datatype = TFLOAT;
-      strcpy(s,"SUB \"file=%s\" offset=%f");
+      //datatype = TFLOAT;
+      datatype = TSHORT;
+      sprintf(s,"SUB \"file=%s\" offset=%f",filename,offset);
+
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsR,&datatype,&naxis1,&naxis2,&pixelsR,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsG,&datatype,&naxis1,&naxis2,&pixelsG,&datatype,s);
@@ -1530,7 +1513,6 @@ void CPixelsRgb::Sub(char *filename, float offset)
       // je transmets l'exception
       throw e;
    }
-   */
 }
 
 CPixels * CPixelsRgb::TtImaSeries(char *s,int *nb_keys,char ***pkeynames,char ***pkeyvalues,
