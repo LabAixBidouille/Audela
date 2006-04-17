@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Date de mise a jour : 07 janvier 2006
+# Date de mise a jour : 17 avril 2006
 #
 
 namespace eval ::traiteWindow {
@@ -2137,7 +2137,7 @@ namespace eval ::seuilWindow {
       set seuilWindow(seuils,$visuNo,geometry) [ wm geometry $seuilWindow($visuNo,This) ]
       set deb [ expr 1 + [ string first + $seuilWindow(seuils,$visuNo,geometry) ] ]
       set fin [ string length $seuilWindow(seuils,$visuNo,geometry) ]
-      set conf(seuils,visu$visuNo,position) "+[string range $seuilWindow(seuils,$visuNo,geometry) $deb $fin]"       
+      set conf(seuils,visu$visuNo,position) "+[string range $seuilWindow(seuils,$visuNo,geometry) $deb $fin]"
    }
 
 }
