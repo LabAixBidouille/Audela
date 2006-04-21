@@ -38,9 +38,9 @@ clean:
 	-@echo ' '
 
 install :
-	cp libdcraw.so       ../../../../../bin
-	cp libdcraw.so       ../../../lib
-	cp ../src/libdcraw.h ../../../include
+	cp libdcraw.so       ../../../../bin
+	cp libdcraw.so       ../../lib
+	cp ../src/libdcraw.h ../../include
 	-@echo ' '
 
 
