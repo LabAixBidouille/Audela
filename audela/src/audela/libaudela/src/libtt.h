@@ -117,12 +117,6 @@ extern int libtt_main(...);
 typedef int LIBTT(int,...);
 #endif
 
-#ifdef OS_MACOS
-#define OS_UNIX
-#include <dlfcn.h>
-typedef int LIBTT(int,...);
-#endif
-
 #ifdef OS_UNIX_GCC_DEC_SO
 #define OS_UNIX
 #include <dlfcn.h>
@@ -213,6 +207,7 @@ int libtt_main(int service, ...);
 #define TT_PTR_CUTSIMA                  212
 #define TT_PTR_SAVEIMA3D                213
 #define TT_PTR_LOADIMA3D                214
+#define TT_PTR_SAVEIMA1D                215
 
 #define TT_PTR_IMASERIES                210
 

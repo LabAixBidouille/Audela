@@ -166,6 +166,7 @@ int libtt_main(int service, ...)
    else if (service==TT_PTR_SAVETBL) { status=tt_ptr_savetbl(argu); }
    else if (service==TT_PTR_SAVEIMA3D) { status=tt_ptr_saveima3d(argu); }
    else if (service==TT_PTR_LOADIMA3D) { status=tt_ptr_loadima3d(argu); }
+   else if (service==TT_PTR_SAVEIMA1D) { status=tt_ptr_saveima1d(argu); }
 
    /* --- fonction non reconnue ---*/
 

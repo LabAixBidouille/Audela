@@ -851,6 +851,7 @@ int tt_ptr_allokeys(void *args);
 int tt_ptr_loadkeys(void *args);
 int tt_ptr_saveima3d(void *args);
 int tt_ptr_loadima3d(void *args);
+int tt_ptr_saveima1d(void *args);
 
 int tt_ptr_imaseries(void *args);
 
@@ -1014,6 +1015,7 @@ int tt_imalistallkeys(TT_IMA *p,int *nkeys,void ***pkeynames,void ***pvalues,voi
 int tt_imadelnewkey(TT_IMA *p,char *keyname);
 int tt_imareturnkeyvalue(TT_IMA *p,char *keyname,char *value,int *datatype,char *comment,char *unit);
 int tt_imacreater3d(TT_IMA *p,int naxis1,int naxis2,int naxis3);
+int tt_imacreater1d(TT_IMA *p,int naxis1);
 
 int tt_tblobjloader(TT_IMA *p_ima,char *fullname);
 int tt_tblobjbuilder(TT_TBL_OBJELIST *p);

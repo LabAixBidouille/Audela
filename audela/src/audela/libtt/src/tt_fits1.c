@@ -1287,7 +1287,7 @@ int tt_imacreater3d(TT_IMA *p,int naxis1,int naxis2,int naxis3)
    nombre=3;
    taille=sizeof(long);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p->naxes,&nombre,&taille,"p->naxes"))!=0) {
-      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imacreater for pointer naxes");
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imacreater3d for pointer naxes");
       return(TT_ERR_PB_MALLOC);
    }
    p->naxes[0]=(long)(naxis1);
@@ -1296,12 +1296,48 @@ int tt_imacreater3d(TT_IMA *p,int naxis1,int naxis2,int naxis3)
    nombre=naxis1*naxis2*naxis3;
    taille=sizeof(TT_PTYPE);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p->p,&nombre,&taille,"p->p"))!=0) {
-      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imacreater for pointer p");
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imacreater3d for pointer p");
       tt_free2((void**)&p->naxes,"p->naxes");
       return(TT_ERR_PB_MALLOC);
    }
    p->firstelem=(long)(0);
    p->nelements=(long)(naxis1*naxis2*naxis3);
+   return(OK_DLL);
+}
+
+int tt_imacreater1d(TT_IMA *p,int naxis1)
+/***************************************************************************/
+/***************************************************************************/
+/***************************************************************************/
+{
+   int taille,nombre,msg;
+   if ((&p->naxes==NULL)||(&p->p==NULL)) {
+      /* code-erreur sur pointeurs deja alloues ---*/
+      tt_errlog(TT_ERR_PTR_ALREADY_ALLOC,"Pointers naxes or p already allocated");
+      return(TT_ERR_PTR_ALREADY_ALLOC);
+   }
+   p->naxis=1;
+   p->naxis1=(int)(naxis1);
+   p->naxis2=(int)(1);
+   p->naxis3=(int)(1);
+   nombre=3;
+   taille=sizeof(long);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p->naxes,&nombre,&taille,"p->naxes"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imacreater1d for pointer naxes");
+      return(TT_ERR_PB_MALLOC);
+   }
+   p->naxes[0]=(long)(naxis1);
+   p->naxes[1]=(long)(1);
+   p->naxes[2]=(long)(1);
+   nombre=naxis1;
+   taille=sizeof(TT_PTYPE);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p->p,&nombre,&taille,"p->p"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imacreater1d for pointer p");
+      tt_free2((void**)&p->naxes,"p->naxes");
+      return(TT_ERR_PB_MALLOC);
+   }
+   p->firstelem=(long)(0);
+   p->nelements=(long)(naxis1);
    return(OK_DLL);
 }
 

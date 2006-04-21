@@ -1090,3 +1090,84 @@ int tt_ptr_loadima3d(void *args)
 
    return(OK_DLL);
 }
+
+int tt_ptr_saveima1d(void *args)
+/**************************************************************************/
+/* Fonction d'interface pour sauver les vecteurs images (naxis=1)         */
+/**************************************************************************/
+/* ------ entrees obligatoires                                            */
+/* arg1 : *fullname (char*)                                               */
+/* arg2 : *p (void*)                                                      */
+/* arg3 : *datatype (int*)                                                */
+/* arg4 : *naxis1 (int*)                                                  */
+/* arg5 : *bitpix (int*)                                                  */
+/* ------ entrees facultatives                                            */
+/* arg6 : *nbkeys (int*)                                                  */
+/* arg7 : **keynames (char**)                                             */
+/* arg8  : **values (char**)                                              */
+/* arg9  : **comments (char**)                                            */
+/* arg10 : **units (char**)                                               */
+/* arg11 : *datatype (int*)                                               */
+/**************************************************************************/
+{
+   TT_IMA p_out;
+   int nbkeys,datatype;
+   void **argu;
+   int msg;
+   int naxis1,bitpix,k;
+   void *p=NULL;
+   char *fullname=NULL;
+   char **keynames=NULL;
+   char **values=NULL;
+   char **comments=NULL;
+   char **units=NULL;
+   int *datatypes=NULL;
+
+   /* --- verification des arguments ---*/
+   argu=(void**)(args);
+   if (argu[1]==NULL) { return(PB_DLL); }
+   fullname=(char*)(argu[1]);
+   if (argu[2]==NULL) { return(PB_DLL); }
+   p=(void*)(argu[2]);
+   if (argu[3]==NULL) { return(PB_DLL); }
+   datatype=*(int*)(argu[3]);
+   if (argu[4]==NULL) { return(PB_DLL); }
+   naxis1=*(int*)(argu[4]);
+   if (argu[5]==NULL) { return(PB_DLL); }
+   bitpix=*(int*)(argu[5]);
+
+   /* --- construit et remplit l'image p_out ---*/
+   if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
+      return(msg);
+   }
+   if ((msg=tt_imacreater1d(&p_out,naxis1))!=OK_DLL) {
+      return(msg);
+   }
+   if ((msg=tt_util_ptr2ttima(p,datatype,&p_out))!=OK_DLL) {
+      return(msg);
+   }
+
+   /* --- remplit le header avec les nouveaux mots cle eventuels ---*/
+   if ((argu[6]!=NULL)&&(argu[7]!=NULL)&&(argu[8]!=NULL)&&(argu[9]!=NULL)&&(argu[10]!=NULL)&&(argu[11]!=NULL)) {
+      nbkeys=*(int*)(argu[6]);
+      keynames=(char**)(argu[7]);
+      values=(char**)(argu[8]);
+      comments=(char**)(argu[9]);
+      units=(char**)(argu[10]);
+      datatypes=(int*)(argu[11]);
+      for (k=0;k<nbkeys;k++) {
+	 tt_imanewkeychar(&p_out,keynames[k],values[k],datatypes[k],comments[k],units[k]);
+      }
+   }
+
+   /* --- sauve l'image ---*/
+   if ((msg=tt_imasaver(&p_out,fullname,bitpix))!=0) {
+      return(msg);
+   }
+
+   /* --- destruction de l'objet image ---*/
+   if ((msg=tt_imadestroyer(&p_out))!=OK_DLL) {
+      return(msg);
+   }
+   return(OK_DLL);
+}
