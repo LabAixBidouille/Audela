@@ -45,6 +45,7 @@
 
 #ifdef LIBRARY_SO
 # include <tcl.h>
+# include <errno.h>
 #endif
 
 /* fonctions mc propres a libmc pour Tcl */
