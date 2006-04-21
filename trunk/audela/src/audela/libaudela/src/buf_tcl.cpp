@@ -51,6 +51,7 @@ int cmdLoad3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 int cmdRestoreInitialCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdSave1d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -158,6 +159,7 @@ static struct cmditem cmdlist[] = {
    {"radec2xy", (Tcl_CmdProc *)cmdRadec2xy},
    {"rot", (Tcl_CmdProc *)cmdTtRot},
    {"save", (Tcl_CmdProc *)cmdLoadSave},
+   {"save1d", (Tcl_CmdProc *)cmdSave1d},
    {"save3d", (Tcl_CmdProc *)cmdSave3d},
    {"savefitsrgb", (Tcl_CmdProc *)cmdSaveFitsRGB},
    {"savejpeg", (Tcl_CmdProc *)cmdSaveJpg},
@@ -1123,6 +1125,69 @@ int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       }
    }
    Tcl_Free((char *) argvv);
+
+   delete ligne;
+   return retour;
+}
+
+//==============================================================================
+// buf$i save1d filename ?iaxis2? --
+//   Enregistrement d'une image FITS sur disque. Le contenu du buffer est
+//   decoupe en un seul axe.
+//
+int cmdSave1d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char *name, *ext, *path2, *nom_fichier;
+   char *ligne;
+   int retour;
+   CBuffer *Buffer;
+   int iaxis2;
+
+   ligne = new char[1000];
+
+   if(argc<=2) {
+      sprintf(ligne,"Usage: %s %s filename ?iaxis2?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      name = (char*)calloc(512,sizeof(char));
+      ext = (char*)calloc(128,sizeof(char));
+      path2 = (char*)calloc(256,sizeof(char));
+      nom_fichier = (char*)calloc(1000,sizeof(char));
+      Buffer = (CBuffer*)clientData;
+
+      // Decodage du nom de fichier : chemin, nom du fichier, etc.
+      sprintf(ligne,"file dirname {%s}",argv[2]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
+      sprintf(ligne,"file tail {%s}",argv[2]); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
+      sprintf(ligne,"file extension \"%s\"",argv[2]); Tcl_Eval(interp,ligne);
+      if(strcmp(interp->result,"")==0) strcpy(ext,Buffer->GetExtension()); else strcpy(ext,"");
+      sprintf(ligne,"file join {%s} {%s%s}",path2,name,ext); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
+
+      iaxis2=0;
+      if (argc>=4) {
+         iaxis2=(int)atoi(argv[3])-1;
+         if (iaxis2<0) { iaxis2=0; }
+      }
+      try {
+         Buffer->Save1d(nom_fichier,iaxis2);
+         retour = TCL_OK;
+      } catch(const CError& e) {
+         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+
+        // compression eventuelle du fichier
+        if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
+            sprintf(ligne,"catch {file delete %s.gz}",nom_fichier); Tcl_Eval(interp,ligne);
+            sprintf(ligne,"catch {gzip %s}",nom_fichier); Tcl_Eval(interp,ligne);
+       	}
+
+      free(name);
+      free(ext);
+      free(path2);
+      free(nom_fichier);
+   }
 
    delete ligne;
    return retour;

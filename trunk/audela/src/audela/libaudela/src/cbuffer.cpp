@@ -763,6 +763,84 @@ void CBuffer::SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, i
 }
 
 
+void CBuffer::Save1d(char *filename,int iaxis2)
+{
+   int msg;                         // Code erreur de libtt
+   int datatype;                    // Type du pointeur de l'image
+   int bitpix;
+   int naxis1,naxis2,nnaxis1;
+   int nb_keys;
+   int x1,x2,y1,y2;
+   char **keynames=NULL;
+   char **values=NULL;
+   char **comments=NULL;
+   char **units=NULL;
+   int *datatypes=NULL;
+   TYPE_PIXELS *ppix=NULL;
+   TYPE_PIXELS *ppix1=NULL;
+
+   datatype=TFLOAT;
+   bitpix = saving_type;
+
+   naxis1  = pix->GetWidth();
+   naxis2  = pix->GetHeight();
+   if (iaxis2<0) {
+      iaxis2=0;
+   }
+   nnaxis1=naxis1;
+   if (pix->getPixelClass()==CLASS_GRAY) {
+      if (naxis1==1) {
+         x1=0;
+         x2=0;
+         y1=0;
+         y2=naxis2-2;
+         nnaxis1=naxis2;
+      } else if (naxis1==1) {
+         y1=0;
+         y2=0;
+         x1=0;
+         x2=naxis1-1;
+         nnaxis1=naxis1;
+      } else {
+         if (iaxis2>=naxis2) {
+            iaxis2=naxis2-1;
+         }
+         y1=iaxis2;
+         y2=iaxis2;
+         x1=0;
+         x2=naxis1-1;
+         nnaxis1=naxis1;
+      }
+   }
+   ppix1 = (TYPE_PIXELS *) malloc(nnaxis1 * sizeof(float));
+   if (pix->getPixelClass()==CLASS_GRAY) {
+      pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_RGB, (int) ppix1);
+   }
+
+   // Collecte de renseignements pour la suite
+   nb_keys = keywords->GetKeywordNb();
+
+   // Allocation de l'espace memoire pour les tableaux de mots-cles
+   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+   if(msg) throw CErrorLibtt(msg);
+
+   // Conversion keywords vers tableaux 'Made in Klotz'
+   keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
+
+   // Enregistrement proprement dit de l'image.
+   msg = Libtt_main(TT_PTR_SAVEIMA1D,11,filename,ppix1,&datatype,&naxis1,
+      &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
+   if(msg) {
+      Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      throw CErrorLibtt(msg);
+   }
+
+   // Liberation de la memoire allouee par libtt
+   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+
+   free(ppix1);
+
+}
 
 void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
 {
@@ -835,7 +913,6 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    free(ppix1);
 
 }
-
 
 void CBuffer::SaveFitsRGB(char *filename)
 {

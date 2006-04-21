@@ -186,6 +186,7 @@ public:
    void Rot(float x0, float y0, float angle);
    void SaveFits(char *filename);
    void SaveFitsRGB(char *filename);
+   void Save1d(char *filename,int iaxis2);
    void Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end);
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);
    void SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, int *height, unsigned char **pixelPtr);
