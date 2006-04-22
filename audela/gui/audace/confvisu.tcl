@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.18 2006-04-04 21:59:51 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.19 2006-04-22 14:15:38 denismarchais Exp $
 
 namespace eval ::confVisu {
 
@@ -1319,6 +1319,13 @@ namespace eval ::confVisu {
          set y0 [lindex $window 1]
       }
 
+      if { $private($visuNo,mirror_x) == 1 } {
+         lset coord 0 [ expr $private($visuNo,picture_w)*$zoom - 1 - [lindex $coord 0] ]
+      }
+      if { $private($visuNo,mirror_y) == 1 } {
+         lset coord 1 [ expr $private($visuNo,picture_h)*$zoom - 1 - [lindex $coord 1] ]
+      }
+      
       if {$zoom >= 1} {
          set xx [expr [lindex $coord 0] / $zoom - $private($visuNo,picture_orgx) + 1 + $x0]
          set yy [expr $height + $private($visuNo,picture_orgy) - ([lindex $coord 1]/$zoom) - $y0]
