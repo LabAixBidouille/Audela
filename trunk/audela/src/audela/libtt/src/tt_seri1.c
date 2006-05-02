@@ -436,8 +436,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    int k,valint,k1,k2;
    int pos,msg,taille,nombre;
    char *car;
-   char mot[80];
-   char argu[80];
+   char mot[1000];
+   char argu[1000];
    double valsat=(double)(TT_MAX_DOUBLE);
    pseries->nbima=nbima;
    pseries->numfct=0;
