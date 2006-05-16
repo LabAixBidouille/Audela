@@ -271,16 +271,13 @@ namespace eval ::mapWindow {
          set field [ list BUFFER $audace(bufNo) ]
       }
       #--- Liste des objets
-      switch [ $This.usr.1.cata get ] {
-         MICROCAT {
+      set choix [ $This.usr.1.cata get ]
+      if { ! [ string compare $choix $caption(catalogue,microcat) ] } {
             set objects [ list * ASTROMMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
-         }
-         MICROCAT-TYCHO {
+      } elseif { ! [ string compare $choix $caption(catalogue,tycho) ] } {
             set objects [ list * TYCHOMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
-         }
-         MICROCAT-LONEOS {
+      } elseif { ! [ string compare $choix $caption(catalogue,loneos) ] } {
             set objects [ list * LONEOSMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
-         }
       }
       set result [ list LIST ]
       set magmax [ $This.usr.1.magmax get ]
