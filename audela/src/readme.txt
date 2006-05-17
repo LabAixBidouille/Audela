@@ -58,7 +58,6 @@ AudeLA est capable de piloter les montures suivantes :
 - Ouranos (codeurs absolus),
 - AudeCom (ex-carte Kauffmann),
 - Temma (monture Takahashi avec module Temma),
-- MCMT,
 - N'importe quel telescope repondant au protocole LX200.
 
 AudeLA est capable de piloter les equipements suivants :
