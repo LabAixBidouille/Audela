@@ -1,8 +1,8 @@
 #
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
-#    
-# Date de mise a jour : 08 fevrier 2006
+# Auteur : Michel PUJOL
+# Date de mise a jour : 18 mai 2006
 #
 
 namespace eval ::telescope {
@@ -690,11 +690,11 @@ global audace
    proc possedeGoto { } {
    
       # The telescope mounts have Goto function
-      # yes = 1 (onglet LX200, AudeCom, Temma, MCMT )
+      # yes = 1 (onglet LX200, AudeCom, Temma )
       # no  = 0 (onglet Ouranos)
       global conf
 
-      if { [ regexp (lx200|audecom|temma|mcmt) $conf(telescope) ] } {
+      if { [ regexp (lx200|audecom|temma) $conf(telescope) ] } {
          set result "1"
       } else {
          set result "0"
@@ -711,11 +711,11 @@ global audace
    proc fourniCoord { } {
    
       # The telescope mounts send coordinates
-      # yes = 1 (onglet LX200, Ouranos, AudeCom, Temma, MCMT )
+      # yes = 1 (onglet LX200, Ouranos, AudeCom, Temma )
       # no  = 0 (onglet )
       global conf
 
-      if { [ regexp (lx200|ouranos|audecom|temma|mcmt) $conf(telescope) ] } {
+      if { [ regexp (lx200|ouranos|audecom|temma) $conf(telescope) ] } {
          set result "1"
       } else {
          set result "0"

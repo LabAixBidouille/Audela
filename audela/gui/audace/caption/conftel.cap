@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 18 mai 2006
 #
 
 #=========================================================================
@@ -89,9 +89,6 @@ set caption(conftel,change_position_telescope)        "Change the Telescope Init
 set caption(conftel,temma_init_zenith)                "Zenith Initialization"
 set caption(conftel,temma_ctl_mobile)                 "Tracking Speed Control"
 
-set caption(conftel,mcmt_nbre_dents_roue_ad)          "Number of Teeth for the Right Ascension Gear:"
-set caption(conftel,mcmt_nbre_dents_roue_dec)         "Number of Teeth for the Declination Gear:"
-
 set caption(conftel,ra)                               "RA"
 set caption(conftel,dec)                              "Dec."
 set caption(conftel,et)                               "and"
@@ -114,7 +111,6 @@ set caption(conftel,port_audecom)                     "AudeCom Port"
 set caption(conftel,port_ouranos)                     "Ouranos Port"
 set caption(conftel,port_lx200)                       "LX200 Port"
 set caption(conftel,port_temma)                       "Temma Port"
-set caption(conftel,port_mcmt)                        "MCMT Port"
 
 set caption(conftel,site_web_ref)                     "Reference Web Site:"
 set caption(conftel,document_ref)                     "Reference Document:"
@@ -123,7 +119,6 @@ set caption(conftel,site_ouranos)                     "http://www.microtec.net/~
 set caption(conftel,doc_audecom)                      "AudeCom-V41.pdf"
 set caption(conftel,site_lxnet)                       "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
 set caption(conftel,site_temma)                       "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-set caption(conftel,site_mcmt)                        "http://astrosurf.com/mcmtii/"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -206,9 +201,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_init_zenith)             "Initialisation au zénith"
    set caption(conftel,temma_ctl_mobile)              "Contrôle de la vitesse de suivi"
 
-   set caption(conftel,mcmt_nbre_dents_roue_ad)       "Nombre de dents de la roue de l'Ascension Droite :"
-   set caption(conftel,mcmt_nbre_dents_roue_dec)      "Nombre de dents de la roue de la Déclinaison :"
-
    set caption(conftel,ra)                            "AD"
    set caption(conftel,dec)                           "Déc."
    set caption(conftel,et)                            "et"
@@ -231,7 +223,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_ouranos)                  "Port Ouranos"
    set caption(conftel,port_lx200)                    "Port LX200"
    set caption(conftel,port_temma)                    "Port Temma"
-   set caption(conftel,port_mcmt)                     "Port MCMT"
 
    set caption(conftel,site_web_ref)                  "Site Web de référence :"
    set caption(conftel,document_ref)                  "Document de référence :"
@@ -240,7 +231,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -323,9 +313,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_init_zenith)             "Inizializzazione allo Zenit"
    set caption(conftel,temma_ctl_mobile)              "Controllo velocita` di inseguimento"
 
-   set caption(conftel,mcmt_nbre_dents_roue_ad)       "Numero denti della vite senza fine di Ascensione Retta:"
-   set caption(conftel,mcmt_nbre_dents_roue_dec)      "Numero denti della vite senza fine della Declinazione:"
-
    set caption(conftel,ra)                            "AR"
    set caption(conftel,dec)                           "Dec."
    set caption(conftel,et)                            "e"
@@ -348,7 +335,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_ouranos)                  "Porta Ouranos"
    set caption(conftel,port_lx200)                    "Porta LX200"
    set caption(conftel,port_temma)                    "Porta Temma"
-   set caption(conftel,port_mcmt)                     "Porta MCMT"
 
    set caption(conftel,site_web_ref)                  "Sito Web di riferimento:"
    set caption(conftel,document_ref)                  "Documentazione di riferimento:"
@@ -357,7 +343,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -440,9 +425,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_init_zenith)             "Inicialización de Zenit"
    set caption(conftel,temma_ctl_mobile)              "Ctrl. de la velocidad de seguimiento"
 
-   set caption(conftel,mcmt_nbre_dents_roue_ad)       "Número de dientes de la corona dentada de Ascensión Recta:"
-   set caption(conftel,mcmt_nbre_dents_roue_dec)      "Número de dientes de la corona dentada de Declinación:"
-
    set caption(conftel,ra)                            "AR"
    set caption(conftel,dec)                           "Dec."
    set caption(conftel,et)                            "y"
@@ -465,7 +447,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_ouranos)                  "Puerto Ouranos"
    set caption(conftel,port_lx200)                    "Puerto LX200"
    set caption(conftel,port_temma)                    "Puerto Temma"
-   set caption(conftel,port_mcmt)                     "Puerto MCMT"
 
    set caption(conftel,site_web_ref)                  "Sitio Web de referencia:"
    set caption(conftel,document_ref)                  "Documento de referencia:"
@@ -474,7 +455,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -557,9 +537,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_init_zenith)             "Am Zenit Initialisieren"
    set caption(conftel,temma_ctl_mobile)              "Folgung Tempo Kontrolle"
 
-   set caption(conftel,mcmt_nbre_dents_roue_ad)       "Zahne Zahl der Rektascension Zahnrad:"
-   set caption(conftel,mcmt_nbre_dents_roue_dec)      "Zahne Zahl der Deklination Zahnrad:"
-
    set caption(conftel,ra)                            "RA"
    set caption(conftel,dec)                           "Dek."
    set caption(conftel,et)                            "und"
@@ -582,7 +559,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_ouranos)                  "Ouranos Port"
    set caption(conftel,port_lx200)                    "LX200 Port"
    set caption(conftel,port_temma)                    "Temma Port"
-   set caption(conftel,port_mcmt)                     "MCMT Port"
 
    set caption(conftel,site_web_ref)                  "Referenz Webseite:"
    set caption(conftel,document_ref)                  "Referenz Dokument:"
@@ -591,7 +567,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -674,9 +649,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_init_zenith)             "Zenith Initialization"
    set caption(conftel,temma_ctl_mobile)              "Tracking Speed Control"
 
-   set caption(conftel,mcmt_nbre_dents_roue_ad)       "Number of Teeth for the Right Ascension Gear:"
-   set caption(conftel,mcmt_nbre_dents_roue_dec)      "Number of Teeth for the Declination Gear:"
-
    set caption(conftel,ra)                            "RA"
    set caption(conftel,dec)                           "Dec."
    set caption(conftel,et)                            "and"
@@ -699,7 +671,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_ouranos)                  "Ouranos Port"
    set caption(conftel,port_lx200)                    "LX200 Port"
    set caption(conftel,port_temma)                    "Temma Port"
-   set caption(conftel,port_mcmt)                     "MCMT Port"
 
    set caption(conftel,site_web_ref)                  "Reference Web Site:"
    set caption(conftel,document_ref)                  "Reference Document:"
@@ -708,7 +679,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
 
 }
 
