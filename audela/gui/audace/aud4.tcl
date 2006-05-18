@@ -1,19 +1,20 @@
 #
 # Fichier : aud4.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
-# Date de mise a jour : 20 novembre 2004
-#           
+# Auteur : Denis MARCHAIS
+# Date de mise a jour : 18 mai 2006
+#
 
 namespace eval ::mapWindow {
    variable This
 
    proc initConf { } {
       global caption conf
-      
+
       if { ! [ info exists conf(mapWindow,position) ] }     { set conf(mapWindow,position)  "+350+75" }
       if { ! [ info exists conf(mapWindow,catalogue) ] }    { set conf(mapWindow,catalogue) "$caption(catalogue,microcat)" }
       if { ! [ info exists conf(mapWindow,magmax) ] }       { set conf(mapWindow,magmax)    "14" }
-	if { $::tcl_platform(os) == "Linux" } {
+      if { $::tcl_platform(os) == "Linux" } {
          if { ! [ info exists conf(mapWindow,path_cata) ] } { set conf(mapWindow,path_cata) "/cdrom/" }
       } else {
          if { ! [ info exists conf(mapWindow,path_cata) ] } { set conf(mapWindow,path_cata) "d:/" }
@@ -22,7 +23,7 @@ namespace eval ::mapWindow {
       return
    }
 
-   proc confToWidget { } {  
+   proc confToWidget { } {
       variable widget
       global conf
 
@@ -32,7 +33,7 @@ namespace eval ::mapWindow {
       set widget(mapWindow,path_cata) "$conf(mapWindow,path_cata)"
    }
 
-   proc widgetToConf { } {   
+   proc widgetToConf { } {
       variable widget
       global conf
 
@@ -53,7 +54,7 @@ namespace eval ::mapWindow {
       set widget(mapWindow,position) "+[string range $mapWindow(geometry) $deb $fin]"
       #---
       ::mapWindow::widgetToConf
-   }	
+   }
 
    proc run { this } {
       variable This
@@ -73,7 +74,7 @@ namespace eval ::mapWindow {
          if { [ info exists mapWindow(geometry) ] } {
             set deb [ expr 1 + [ string first + $mapWindow(geometry) ] ]
             set fin [ string length $mapWindow(geometry) ]
-            set widget(mapWindow,position) "+[string range $mapWindow(geometry) $deb $fin]"     
+            set widget(mapWindow,position) "+[string range $mapWindow(geometry) $deb $fin]"
          }
          createDialog
       }
@@ -262,6 +263,8 @@ namespace eval ::mapWindow {
 
       set unit "e-6"
 
+      #--- Efface la carte de champ precedante
+      ::mapWindow::cmdDelete
       #--- Definition des parametres optiques
       if { $mapWindow(FieldFromImage) == "0" } {
          set field [ list OPTIC NAXIS1 $mapWindow(PictureWidth) NAXIS2 $mapWindow(PictureHeight) ]
@@ -284,12 +287,12 @@ namespace eval ::mapWindow {
 
       ::console::affiche_resultat "$field\n"
       ::console::affiche_resultat "$objects\n"
-      ::console::affiche_resultat "$result\n"
+      ::console::affiche_resultat "$result\n\n"
 
       set a_executer { mc_readcat $field $objects $result -magb< $magmax -magr< $magmax }
 
       set msg [ eval $a_executer ]
- 
+
       if { [ llength $msg ] == "1" } {
          set etoiles $msg
          set msg [ lindex $msg 0 ]
@@ -361,13 +364,10 @@ namespace eval ::mapWindow {
 
    proc parcourir { } {
       variable This
-      global audace
-      global mapWindow
-
-	global caption
+      global audace caption mapWindow
 
       set dirname [ tk_chooseDirectory -title "$caption(catalogue,recherche)" \
-	   -initialdir $audace(rep_catalogues) -parent $This ]
+         -initialdir $audace(rep_catalogues) -parent $This ]
       set len [ string length $dirname ]
       set folder "$dirname"
       if { $len > "0" } {
@@ -377,7 +377,7 @@ namespace eval ::mapWindow {
          }
          set dirname $folder
       }
-	return $dirname
+      return $dirname
    }
 
 }

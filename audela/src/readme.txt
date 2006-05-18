@@ -51,7 +51,9 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 - EthernAude (interface Ethernet pour cameras CCD),
 - QuickAudine (interface USB pour cameras Audine),
 - QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
-  mise au point, etc.).
+  mise au point, etc.),
+- Port parallele,
+- Port serie.
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
