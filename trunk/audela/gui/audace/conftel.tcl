@@ -1,15 +1,14 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Date de mise a jour : 11 mars 2006
+# Date de mise a jour : 18 mai 2006
 #
 
-#--- Initialisation des variables confTel(conf_lx200,connect), (conf_temma,connect), (conf_mcmt,connect) et confTel(...)
+#--- Initialisation des variables confTel(conf_lx200,connect), (conf_temma,connect) et confTel(...)
 global confTel
 
 set confTel(conf_lx200,connect)     "0"
 set confTel(conf_temma,connect)     "0"
-set confTel(conf_mcmt,connect)      "0"
 set confTel(fenetre,mobile,valider) "0"
 
 namespace eval ::confTel {
@@ -22,7 +21,7 @@ namespace eval ::confTel {
 
    #
    # confTel::init (est lance automatiquement au chargement de ce fichier tcl)
-   # Initialise les variables conf(...) et caption(...) 
+   # Initialise les variables conf(...) et caption(...)
    # Demarre le driver selectionne par defaut
    #
    proc init { } {
@@ -50,7 +49,7 @@ namespace eval ::confTel {
    # confTel::run
    # Cree la fenetre de choix et de configuration des telescopes
    # This = chemin de la fenetre
-   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma, mcmt)
+   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma)
    #
    proc run { } {
       variable This
@@ -592,12 +591,11 @@ namespace eval ::confTel {
       frame $This.usr -borderwidth 0 -relief raised
          #--- Creation de la fenetre a onglets
          set nn $This.usr.book
-         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma MCMT } -borderwidth 1
+         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma } -borderwidth 1
          fillPage1 $nn
          fillPage2 $nn
          fillPage3 $nn
          fillPage4 $nn
-         fillPage5 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       frame $This.start -borderwidth 1 -relief raised
@@ -1712,145 +1710,6 @@ namespace eval ::confTel {
    }
 
    #
-   # Onglet de configuration de MCMT
-   #
-   proc fillPage5 { nn } {
-      global audace caption color conf confTel frmm
-
-      #--- initConf
-      if { ! [ info exists conf(mcmt,nbr_dent_ad) ] }  { set conf(mcmt,nbr_dent_ad)  "360" }
-      if { ! [ info exists conf(mcmt,nbr_dent_dec) ] } { set conf(mcmt,nbr_dent_dec) "359" }
-      if { ! [ info exists conf(mcmt,port) ] }         { set conf(mcmt,port)         [ lindex $audace(list_com) 0 ] }
-
-      #--- confToWidget
-      set confTel(conf_mcmt,nbr_dent_ad)  $conf(mcmt,nbr_dent_ad)
-      set confTel(conf_mcmt,nbr_dent_dec) $conf(mcmt,nbr_dent_dec)
-      set confTel(conf_mcmt,port)         $conf(mcmt,port)
-
-      set confTel(raquette)          $conf(raquette)
-
-      #--- Initialisation
-      set frmm(Telscp5) [ Rnotebook:frame $nn 5 ]
-      set frm $frmm(Telscp5)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill x
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side bottom -fill x -pady 2
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -in $frm.frame2 -anchor n -side left -fill x
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame2 -anchor n -side left -fill x -expand 1
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame4 -fill x
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame4 -fill x
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame5 -anchor w -side top -fill x -expand 1
-
-      frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -in $frm.frame5 -anchor w -side top -fill x -expand 1
-
-      frame $frm.frame10 -borderwidth 0 -relief raised
-      pack $frm.frame10 -anchor nw -side top -fill x -expand 1
-
-      #--- Definition du port
-      label $frm.lab1 -text "$caption(conftel,port)"
-      pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
-
-      ComboBox $frm.port \
-         -width 14         \
-         -height [ llength $audace(list_com) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -textvariable confTel(conf_mcmt,port) \
-         -editable 0       \
-         -values $audace(list_com)
-      pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
-
-      #--- Label pour la roue AD
-      label $frm.lab_nbr_dent_ad -text "$caption(conftel,mcmt_nbre_dents_roue_ad)"
-      pack $frm.lab_nbr_dent_ad -in $frm.frame6 -anchor center -side left -padx 10 -pady 5
-
-      #--- Valeur du nombre de dents de la roue AD
-      entry $frm.nbr_dent_ad -textvariable confTel(conf_mcmt,nbr_dent_ad) -justify center -width 5
-      pack $frm.nbr_dent_ad -in $frm.frame8 -anchor center -side left -padx 10 -pady 5
-
-      #--- Label pour la roue Dec
-      label $frm.lab_nbr_dent_dec -text "$caption(conftel,mcmt_nbre_dents_roue_dec)"
-      pack $frm.lab_nbr_dent_dec -in $frm.frame7 -anchor center -side left -padx 10 -pady 5
-
-      #--- Valeur du nombre de dents de la roue Dec
-      entry $frm.nbr_dent_dec -textvariable confTel(conf_mcmt,nbr_dent_dec) -justify center -width 5
-      pack $frm.nbr_dent_dec -in $frm.frame9 -anchor center -side left -padx 10 -pady 5
-
-      #--- Le checkbutton pour la visibilite de la raquette a l'ecran
-      checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
-         -highlightthickness 0 -variable confTel(raquette)
-      pack $frm.raquette -in $frm.frame10 -anchor nw -side left -padx 10 -pady 10
-      ComboBox $frm.nom_raquette \
-         -width 10         \
-         -height [ llength $::confPad::private(driverlist) ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -modifycmd {
-            set label $audace(nom_raquette)
-            set index [lsearch -exact $::confPad::private(driverlist) $label ]
-            if { $index != -1 } {
-               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
-            } else {
-               set ::confPad::private(conf_confPad) ""
-            }
-            set conf(confPad) $::confPad::private(conf_confPad)
-
-            ::confPad::run
-         } \
-         -textvariable audace(nom_raquette) \
-         -editable 0       \
-         -values $::confPad::private(driverlist)
-      pack $frm.nom_raquette -in $frm.frame10 -anchor center -side left -padx 0 -pady 10
-
-      #--- Choix de la raquette
-      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame10 -anchor center -side top -padx 10 -pady 5 -ipadx 20 -ipady 5 -expand true
-
-      #--- Site web officiel de MCMT
-      label $frm.lab103 -text "$caption(conftel,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
-
-      label $frm.labURL -text "$caption(conftel,site_mcmt)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame3 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(conftel,site_mcmt)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp5)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp5)
-         $frm.labURL configure -fg $color(blue)
-      }
-
-      bind [ Rnotebook:button $nn 5 ] <Button-1> { global confTel ; set confTel(tel) "mcmt" }
-   }
-
-   #
    # confTel::Format_Match_AD
    # Definit le format en entree de l'AD pour MATCH d'Ouranos
    #
@@ -1977,7 +1836,6 @@ namespace eval ::confTel {
       set nn $This.usr.book
       set confTel(tel) $tel
       switch -exact -- $tel {
-         mcmt    { Rnotebook:raise $nn 5 }
          temma   { Rnotebook:raise $nn 4 }
          audecom { Rnotebook:raise $nn 3 }
          ouranos { Rnotebook:raise $nn 2 }
@@ -2013,7 +1871,6 @@ namespace eval ::confTel {
                set confTel(ouranos,connect)    "0"
                set confTel(audecom,connect)    "1"
                set confTel(conf_temma,connect) "0"
-               set confTel(conf_mcmt,connect)  "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create audecom $conf(audecom,port) } msg ]
                if { $erreur == "1" } {
@@ -2094,7 +1951,6 @@ namespace eval ::confTel {
                set confTel(ouranos,connect)    "1"
                set confTel(audecom,connect)    "0"
                set confTel(conf_temma,connect) "0"
-               set confTel(conf_mcmt,connect)  "0"
                #--- Arrete la lecture des coordonnees
                set ouranoscom(lecture) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
@@ -2133,7 +1989,6 @@ namespace eval ::confTel {
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
                   set confTel(conf_temma,connect) "0"
-                  set confTel(conf_mcmt,connect)  "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                   set erreur [ catch { set audace(telNo) [ tel::create lxnet "" -name lxnet \
                         -host $conf(audinet,host) \
@@ -2162,7 +2017,6 @@ namespace eval ::confTel {
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
                   set confTel(conf_temma,connect) "0"
-                  set confTel(conf_mcmt,connect)  "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                   set erreur [ catch { tel::create lx200 $conf(lx200,port) } msg ]
                   if { $erreur == "1" } {
@@ -2192,7 +2046,6 @@ namespace eval ::confTel {
                set confTel(ouranos,connect)    "0"
                set confTel(audecom,connect)    "0"
                set confTel(conf_temma,connect) "1"
-               set confTel(conf_mcmt,connect)  "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create temma $conf(temma,port) } msg ]
                if { $erreur == "1" } {
@@ -2264,27 +2117,6 @@ namespace eval ::confTel {
                #--- Gestion des boutons actifs/inactifs
                ::confTel::config_correc_Temma
             }
-         mcmt {
-               set confTel(conf_lx200,connect) "0"
-               set confTel(ouranos,connect)    "0"
-               set confTel(audecom,connect)    "0"
-               set confTel(conf_temma,connect) "0"
-               set confTel(conf_mcmt,connect)  "1"
-               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create mcmt $conf(mcmt,port) } msg ]
-               if { $erreur == "1" } {
-                  if { $audace(list_com) == "" } {
-                     #--- Commentaire uniquement en anglais (donc pas de caption)
-                     append msg "\nNo Port COM."
-                  }
-                  tk_messageBox -message "$msg" -icon error
-               } else {
-                  console::affiche_saut "\n"
-                  console::affiche_erreur "$caption(conftel,port_mcmt) $caption(conftel,2points)\
-                     $conf(mcmt,port)\n"
-                  set audace(telNo) $msg
-               }
-            }
       }
 
       #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
@@ -2316,7 +2148,6 @@ namespace eval ::confTel {
          set confTel(ouranos,connect)    "0"
          set confTel(audecom,connect)    "0"
          set confTel(conf_temma,connect) "0"
-         set confTel(conf_mcmt,connect)  "0"
          $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,tiret)" -fg $color(blue)
       } else {
          $audace(base).fra1.labTel_name_labURL configure -text "$conf(telescope)" -fg $color(blue)
@@ -2420,11 +2251,6 @@ namespace eval ::confTel {
       set conf(temma,suivi_ad)        $confTel(conf_temma,suivi_ad)
       set conf(temma,suivi_dec)       $confTel(conf_temma,suivi_dec)
       set conf(temma,type)            $confTel(conf_temma,type)
-      #--- Memorise la configuration du MCMT dans le tableau conf(mcmt,...)
-      set frm [ Rnotebook:frame $nn 5 ]
-      set conf(mcmt,nbr_dent_ad)      $confTel(conf_mcmt,nbr_dent_ad)
-      set conf(mcmt,nbr_dent_dec)     $confTel(conf_mcmt,nbr_dent_dec)
-      set conf(mcmt,port)             $confTel(conf_mcmt,port)
    }
 }
 
