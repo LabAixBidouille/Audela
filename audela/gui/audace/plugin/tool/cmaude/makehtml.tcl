@@ -2,13 +2,24 @@
 # Fichier : makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Date de mise a jour : 14 avril 2005
+# Date de mise a jour : 19 mai 2006
 #
 
+variable cmconf
+global compteur
+
+#--- Initialisation de l'heure TU ou TL
+set now now
+catch {
+   set now [::audace::date_sys2ut now]
+}
+#--- Acquisition of an image
+set actuel [mc_date2jd $now]
+#---
 set namehtml [string range [mc_date2iso8601 $actuel] 0 9].html
 ::console::affiche_erreur "Creation/Update of the HTML file $namehtml\n"
 set existence [file exists $cmconf(folder)$namehtml]
-if {$existence == 0} then {
+if { $existence == "0" } then {
    #--- Here is made the html page header
    set texte "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">\n"
    append texte "<html>\n"
@@ -32,18 +43,20 @@ if {$existence == 0} then {
    append texte "<b>MASCOT</b> stands for <b>M</b>ini <b>A</b>ll-<b>S</b>ky <b>C</b>loud <b>O</b>bservation <b>T</b>ool. <br>"
    append texte "Its purpose is to make images of the whole night sky over ESO Paranal Observatory  "
    append texte "in order to permit to evaluate the night sky quality. <br>\n"
-   append texte "The observations are made automatically and are available in FITS format as well as\n "
-   append texte "in JPEG format. This page is an observation log of the night and makes a link\n "
-   append texte "to both formats, allowing the user to browse easily the images of the night\n "
+   append texte "The observations are made automatically and are available in FITS format as well as\n"
+   append texte "in JPEG format. This page is an observation log of the night and makes a link\n"
+   append texte "to both formats, allowing the user to browse easily the images of the night\n"
    append texte "by visualising the JPEG version on a web browser.<br>\n"
    append texte "It requires to have the images in the same directory as this HTML document.\n"
    append texte "\n" 	      append texte "<h2>\n"
-   append texte "2. Local ephemeris</h2>\n"
-   append texte "Here are some local ephemeris for the current night at Paranal: <br>\n "
-   append texte "$resultb<br>\n "
-   append texte "$resulte<br>\n" 	#  set phaslun [string range [lindex [mc_ephem moon [list [mc_date2tt now]] {phase} -topo $localite] 0] 0 4]
+   append texte "2. Local Ephemeris</h2>\n"
+   append texte "Here are some local ephemeris for the current night at Paranal: <br>\n"
+   append texte "$resultb<br>\n"
+   append texte "$resulte<br>\n"
+   set localite "$cmconf(localite)"
+  # set phaslun [string range [lindex [mc_ephem moon [list [mc_date2tt now]] {phase} -topo $localite] 0] 0 4]
   # set illufrac [string range [expr 100 * (0.5 + 0.5 * cos ($phaslun / 180. * 3.1415))] 0 4]
-   append texte "Lunar phase at the beginning of the night: $phaslun<br>\n "
+   append texte "Lunar phase at the beginning of the night: $phaslun<br>\n"
    append texte "Illuminated fraction of the Moon at the beginning of the night: $illufrac<br>\n"
    append texte "<h2>\n"
    append texte "3. List of images</h2>\n"
@@ -53,7 +66,7 @@ if {$existence == 0} then {
    close $fileId
 }
 
-if {$endofhtml == 0} then {
+if { $endofhtml == "0" } then {
    set texte "Image <b>$nameima</b> done the [string range [mc_date2iso8601 $actuel] 0 9] "
    append texte "at <b>[string range [mc_date2iso8601 $actuel] 11 18] UT</b> "
    append texte "(Local Sideral Time $sidertime) - "
@@ -61,7 +74,7 @@ if {$endofhtml == 0} then {
    append texte " <a href=\"$nameima\">| FITS |</a> <br>"
 }
 
-if {$endofhtml == 1} then {
+if { $endofhtml == "1" } then {
    append texte "<p>End of observations the [string range [mc_date2iso8601 $actuel] 0 9] at "
    append texte "[string range [mc_date2iso8601 $actuel] 11 20]UT <br>"
    set nbtotimages [expr $compteur-1]
@@ -85,10 +98,10 @@ if {$endofhtml == 1} then {
 
    append texte "// All images in same dir, same size\n"
    append texte "var imgz = new imageArray("
-   for {set k 1 } {$k<=[expr $compteur-2] } {incr k} {
-      append texte "\"[string range [mc_date2jd now] 0 6]-$compteur.fit.jpg\","
+   for { set k 1 } { $k <= [expr $compteur-2] } { incr k } {
+      append texte "\"[string range [mc_date2jd now] 0 6]-$compteur$cmconf(extension).jpg\","
    }
-   append texte "\"[string range [mc_date2jd now] 0 6]-[expr $compteur-1].fit.jpg\");\n"
+   append texte "\"[string range [mc_date2jd now] 0 6]-[expr $compteur-1]$cmconf(extension).jpg\");\n"
    append texte "document.write('<img name=\"myImages\" border=\"3\" src=\"'+imgz[0]+'\">');\n"
    append texte "function getPosition(val) {\n"
    append texte "    var goodnum = current+val;\n"
