@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.20 2006-05-24 20:42:59 michelpujol Exp $
+# $Id: confvisu.tcl,v 1.21 2006-05-24 22:21:58 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -181,13 +181,13 @@ namespace eval ::confVisu {
       }
 
       #--- je ferme l'outil courant
-      if { [getTool $visuNo] != "" } {
-         ::[getTool $visuNo]::deletePanel $visuNo
-      }
-
-      #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
-      if { $visuNo > "1" } {
-         if { ! [ winfo exists $audace(base).select ] } {
+      if { $visuNo == "1" } {
+         if { [getTool $visuNo] != "" } {
+            ::[getTool $visuNo]::deletePanel $visuNo
+         }
+      } else {
+         #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
+         if { "$private($visuNo,This)" != "$audace(base).select" } {
             ::AcqFC::deletePanel $visuNo
             ::Autoguider::deletePanel $visuNo
          }
@@ -207,6 +207,7 @@ namespace eval ::confVisu {
 
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
+      
    }
 
    #------------------------------------------------------------
