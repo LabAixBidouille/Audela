@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.15 2006-03-19 19:25:51 robertdelmas Exp $
+# $Id: acqfc.tcl,v 1.16 2006-05-24 20:49:06 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -335,7 +335,8 @@ namespace eval ::AcqFC {
       }
       #---
       $panneau(AcqFC,$visuNo,This).bin.but.menu delete 0 20
-      foreach valbin $audace(list_binning) {
+      set list_binning [confCam::getBinningList $camNo]
+      foreach valbin $list_binning {
          $panneau(AcqFC,$visuNo,This).bin.but.menu add radiobutton -label "$valbin" \
             -indicatoron "1" \
             -value "$valbin" \
@@ -343,11 +344,11 @@ namespace eval ::AcqFC {
             -command " "
       }
       #---
-      if { [ lsearch $audace(list_binning) $panneau(AcqFC,$visuNo,bin) ] == "-1" } {
-         if { [ llength $audace(list_binning) ] >= "2" } {
-            set panneau(AcqFC,$visuNo,bin) [ lindex $audace(list_binning) 1 ]
+      if { [ lsearch $list_binning $panneau(AcqFC,$visuNo,bin) ] == "-1" } {
+         if { [ llength $list_binning ] >= "2" } {
+            set panneau(AcqFC,$visuNo,bin) [ lindex $list_binning 1 ]
          } else {
-            set panneau(AcqFC,$visuNo,bin) [ lindex $audace(list_binning) 0 ]
+            set panneau(AcqFC,$visuNo,bin) [ lindex $list_binning 0 ]
          }
       }
    }
@@ -1810,8 +1811,13 @@ namespace eval ::AcqFC {
       #--- La commande exptime permet de fixer le temps de pose de l'image
       cam$camNo exptime $exptime
 
-      #--- La commande bin permet de fixer le binning
-      cam$camNo bin [list [string range $binning 0 0] [string range $binning 2 2]]
+      if { [cam$camNo product] != "dsc" } {
+         #--- je selectionne le binning
+         cam$camNo bin [list [string range $binning 0 0] [string range $binning 2 2]]
+      } else {
+         #--- je selectionne la qualite
+         cam$camNo quality $binning
+      }
 
       if { $exptime <= "1" } {
         $panneau(AcqFC,$visuNo,This).status.lab configure -text $caption(acqfc,lect)
@@ -2875,7 +2881,7 @@ proc AcqFCBuildIF { visuNo } {
          -menu $panneau(AcqFC,$visuNo,This).bin.but.menu -relief raised
       pack $panneau(AcqFC,$visuNo,This).bin.but -side left -fill x -expand true -ipady 1
       set m [ menu $panneau(AcqFC,$visuNo,This).bin.but.menu -tearoff 0 ]
-      foreach valbin $audace(list_binning) {
+      foreach valbin [confCam::getBinningList [ ::confVisu::getCamNo $visuNo ]] {
         $m add radiobutton -label "$valbin" \
            -indicatoron "1" \
            -value "$valbin" \
