@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel Pujol
-# Date de mise a jour : 19 fevrier 2006
+# $Id: autoguider.tcl,v 1.4 2006-05-24 22:20:58 michelpujol Exp $
 #
 
 package provide autoguider 1.0
@@ -219,10 +219,11 @@ proc ::Autoguider::createPanel { visuNo } {
 proc ::Autoguider::deletePanel { visuNo } {
    variable private
 
-   destroy $private($visuNo,This)
 
    #--- je desactive l'adaptation de l'affichage
    ::confVisu::removeCameraListener $visuNo "::Autoguider::adaptPanel $visuNo"
+
+   destroy $private($visuNo,This)
 
 }
 
@@ -233,25 +234,45 @@ proc ::Autoguider::deletePanel { visuNo } {
 #------------------------------------------------------------
 proc ::Autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2 "" } } {
    variable private
+   global conf
 
    set This $private($visuNo,This)
    set camNo [::confVisu::getCamNo $visuNo ] 
-
-   if { [::confCam::hasVideo $camNo] == 0 } {
-      pack $This.pose.lab1 -anchor center -side left -padx 5
-      pack $This.pose.combo -anchor center -side left -fill x -expand 1
-      pack $This.binning.lab1 -anchor center -side left -padx 0
-      pack $This.binning.combo -anchor center -side left -fill x -expand true
-      pack forget $This.pose.confwebcam
-      pack forget $This.binning.selectFormat
-   } else {
-      pack forget $This.pose.lab1
-      pack forget $This.pose.combo
-      pack forget $This.binning.lab1
-      pack forget $This.binning.combo
-      pack $This.pose.confwebcam -anchor center -side left -fill x -expand 1
-      pack $This.binning.selectFormat  -anchor center -side left -fill x -expand 1
+   set panelFormat "0"
+   
+   set camNo [ ::confVisu::getCamNo $visuNo ] 
+   if { $camNo == "0" } {
+      #--- La camera n'a pas ete encore selectionnee 
+      set camProduct ""
+   } else { 
+      set camProduct [ cam$camNo product ]
    }
+
+   if { "$camProduct" == "webcam" } {
+      if { $conf(webcam,longuepose) == "0" } {
+         set panelFormat "1"
+      }
+   }
+         
+   switch $panelFormat {
+      0 {
+         pack $This.pose.lab1 -anchor center -side left -padx 5
+         pack $This.pose.combo -anchor center -side left -fill x -expand 1
+         pack $This.binning.lab1 -anchor center -side left -padx 0
+         pack $This.binning.combo -anchor center -side left -fill x -expand true
+         pack forget $This.pose.confwebcam
+         pack forget $This.binning.selectFormat
+      } 
+      1 {
+         pack forget $This.pose.lab1
+         pack forget $This.pose.combo
+         pack forget $This.binning.lab1
+         pack forget $This.binning.combo
+         pack $This.pose.confwebcam -anchor center -side left -fill x -expand 1
+         pack $This.binning.selectFormat  -anchor center -side left -fill x -expand 1
+      }
+   }
+   
 }
 
 #------------------------------------------------------------
@@ -359,10 +380,6 @@ proc ::Autoguider::acq { visuNo } {
       #--- Attente de la fin de la pose
       vwait status_cam$camNo
 
-      #--- Appel du timer
-      if { $private($visuNo,intervalle) > 0 } {
-         after [expr int($private($visuNo,intervalle) * 1000) ]
-      }
       #--- j'affiche l'image
       if { $private($visuNo,showImage) == "1" } {
          ::confVisu::autovisu $visuNo
@@ -401,7 +418,14 @@ proc ::Autoguider::acq { visuNo } {
       update
 
       if { $private($visuNo,monture_ok) == 1 } {
+         set private($visuNo,status) "Maj suivi"
          ::agUNIV::suivi $private($visuNo,dx) $private($visuNo,dy)
+      }
+      
+      #--- Appel du timer
+      set private($visuNo,status) ""
+      if { $private($visuNo,intervalle) > 0 } {
+         after [expr int($private($visuNo,intervalle) * 1000) ]
       }
 
    }
