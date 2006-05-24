@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.19 2006-04-22 14:15:38 denismarchais Exp $
+# $Id: confvisu.tcl,v 1.20 2006-05-24 20:42:59 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -272,7 +272,7 @@ namespace eval ::confVisu {
          #--- Je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
 
-         #--- Si le buffer est vide, on n'essaie pas de mettre à jour en fonction des seuils
+         #--- Si le buffer contient une image on met a jour les seuils
          if { [ buf$bufNo imageready ] == "1" } {
             switch -exact -- $conf(seuils,visu$visuNo,mode) {
                disable {
@@ -326,12 +326,16 @@ namespace eval ::confVisu {
       if { [llength $cuts] == 1 } {
          if { $cuts == "autocuts"} {
             set cuts [ lrange [ buf$bufNo autocuts ] 0 1 ]
-         } else {
+         } elseif { $cuts == "current" } {
             # autre choix = on garde les seuils actuels
-            set cuts [visu$visuNo cut ]
-            set sh [ expr [ lindex $cuts 0 ] ]
-            set sb [ expr [ lindex $cuts 1 ] ]
-            set cuts [ list $sh $sb ]
+            #set cuts [visu$visuNo cut ]
+            #set sh [ expr [ lindex $cuts 0 ] ]
+            #set sb [ expr [ lindex $cuts 1 ] ]
+            
+            set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
+            visu$visuNo cut $cuts
+         } else {
+            console::affiche_erreur "confVisu::visu inexptected value cuts=$cuts \n"
          }
       } elseif { [llength $cuts] == 2 } {
          visu$visuNo cut $cuts
@@ -444,6 +448,30 @@ namespace eval ::confVisu {
       set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
 
       set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
+   }
+
+   #------------------------------------------------------------
+   #  getHiCutDisplay
+   #     retourne le valeur du seuil haut 
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getHiCutDisplay { visuNo } {
+      variable private
+
+      return [$private($visuNo,This).fra1.sca1 get]
+   }
+
+   #------------------------------------------------------------
+   #  getLoCutDisplay
+   #     retourne le valeur du seuil bas 
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getLoCutDisplay { visuNo } {
+      variable private
+
+      return [$private($visuNo,This).fra1.sca2 get]
    }
 
    #------------------------------------------------------------
