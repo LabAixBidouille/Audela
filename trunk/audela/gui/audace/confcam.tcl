@@ -3010,6 +3010,35 @@ namespace eval ::confCam {
    }
 
    #
+   # confCam::getBinningList
+   #    retourne la list des binning possibles de la camera
+   # 
+   #  parametres :
+   #     camNo : numero de la camera
+   #    
+   proc getBinningList { camNo } {
+      global confCam
+      
+      #--- Je verifie si la camera est capable fournir son nom
+      set result [ catch  { cam$camNo product } product] 
+      
+      if  { $result == 0 } {
+         #---
+         switch  $product {
+            dsc { 
+               set binningList [cam$camNo quality list]
+            }         
+            default {
+               set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
+            }
+         }
+      } else {
+         set binningList { }
+      }
+      return $binningList
+   }
+
+   #
    # confCam::getName
    #    retourne le nom de la camera si la camera est demarree, sinon retourne "0"
    # 
@@ -3151,6 +3180,12 @@ namespace eval ::confCam {
             set confCam(camera,$cam_item,visuName) visu$visuNo
          } else {
             scan $confCam(camera,$cam_item,visuName) "visu%d" visuNo
+            # je verifie que la visu existe
+            if { [lsearch -exact [visu::list] $visuNo]  } {
+               #--- si la visu n'existe plus , je la recree
+               set visuNo [::confVisu::create]
+               set confCam(camera,$cam_item,visuName) visu$visuNo
+            }            
          }
          set confCam(camera,$cam_item,visuNo) $visuNo
       } else {
@@ -3192,7 +3227,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(hisis,mirh)
                      cam$confCam(camera,$cam_item,camNo) mirrorv $conf(hisis,mirv)
@@ -3207,7 +3241,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele) ($conf(hisis,res))\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3235,7 +3268,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3262,7 +3294,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3289,7 +3320,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3316,7 +3346,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3343,7 +3372,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3370,7 +3398,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3397,7 +3424,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3424,7 +3450,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                         $caption(confcam,2points) $conf(hisis,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      set foncobtu $conf(hisis,foncobtu)
                      switch -exact -- $foncobtu {
                         0 {
@@ -3451,7 +3476,6 @@ namespace eval ::confCam {
                   tk_messageBox -message "$camNo" -icon error
                } else {
                   set confCam(camera,$cam_item,camNo) $camNo
-                  set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_sbig) ([ cam$confCam(camera,$cam_item,camNo) name ]) \
                      $caption(confcam,2points) $conf(sbig,port)\n"
@@ -3490,7 +3514,6 @@ namespace eval ::confCam {
                   console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_cookbook) $caption(confcam,2points) $conf(cookbook,port)\n"
                   set confCam(camera,$cam_item,camNo) $camNo
-                  set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   cam$confCam(camera,$cam_item,camNo) buf $bufNo
                   cam$confCam(camera,$cam_item,camNo) mirrorh $conf(cookbook,mirh)
                   cam$confCam(camera,$cam_item,camNo) mirrorv $conf(cookbook,mirv)
@@ -3508,7 +3531,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                         $caption(confcam,2points) $conf(starlight,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) accelerator $starlight_accelerator
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(starlight,mirh)
@@ -3524,7 +3546,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                         $caption(confcam,2points) $conf(starlight,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) accelerator $starlight_accelerator
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(starlight,mirh)
@@ -3540,7 +3561,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                         $caption(confcam,2points) $conf(starlight,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) accelerator $starlight_accelerator
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(starlight,mirh)
@@ -3560,7 +3580,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
                         $caption(confcam,2points) $conf(kitty,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) canbits [ lindex $conf(kitty,res) 0 ]
                      if { $conf(kitty,captemp) == "0" } {
                         cam$confCam(camera,$cam_item,camNo) AD7893 AN2
@@ -3582,7 +3601,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
                         $caption(confcam,2points) $conf(kitty,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) canbits [ lindex $conf(kitty,res) 0 ]
                      if { $conf(kitty,captemp) == "0" } {
                         cam$confCam(camera,$cam_item,camNo) AD7893 AN2
@@ -3603,7 +3621,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele)\
                         $caption(confcam,2points) $conf(kitty,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(kitty,mirh)
                      cam$confCam(camera,$cam_item,camNo) mirrorv $conf(kitty,mirv)
@@ -3672,7 +3689,6 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_th7852a) $caption(confcam,2points)\
                      $conf(th7852a,port)\n"
                   set confCam(camera,$cam_item,camNo) $camNo
-                  set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   cam$confCam(camera,$cam_item,camNo) buf $bufNo
                   cam$confCam(camera,$cam_item,camNo) mirrorh $conf(th7852a,mirh)
                   cam$confCam(camera,$cam_item,camNo) mirrorv $conf(th7852a,mirv)
@@ -3689,7 +3705,6 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_scr1300xtc) $caption(confcam,2points)\
                      $conf(scr1300xtc,port)\n"
                   set confCam(camera,$cam_item,camNo) $camNo
-                  set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   cam$confCam(camera,$cam_item,camNo) buf $bufNo
                   cam$confCam(camera,$cam_item,camNo) mirrorh $conf(scr1300xtc,mirh)
                   cam$confCam(camera,$cam_item,camNo) mirrorv $conf(scr1300xtc,mirv)
@@ -3709,7 +3724,7 @@ namespace eval ::confCam {
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(dsc,mirh)
                      cam$confCam(camera,$cam_item,camNo) mirrorv $conf(dsc,mirv)
-                     set audace(list_binning) { 1x1 }
+                     
                      #--- J'arrete le service WIA de Windows
                      cam$confCam(camera,$cam_item,camNo) systemservice 0
                      #--- Parametrage des longues poses 
@@ -3768,7 +3783,6 @@ namespace eval ::confCam {
                   tk_messageBox -message "$camNo" -icon error
                } else {
                   set confCam(camera,$cam_item,camNo) $camNo
-                  set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_andor) ([ cam$confCam(camera,$cam_item,camNo) name ]) \
                      $caption(confcam,2points) $conf(andor,config)\n"
@@ -3834,7 +3848,6 @@ namespace eval ::confCam {
                      tk_messageBox -message "$camNo" -icon error
                   } else {
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      console::affiche_saut "\n"
                      console::affiche_erreur "$caption(confcam,ethernaude) $caption(confcam,plus)\
                         [ string range [ cam$confCam(camera,$cam_item,camNo) name ] 0 5 ] ([ cam$confCam(camera,$cam_item,camNo) ccd])\n"
@@ -3873,7 +3886,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,audinet) ($conf(audinet,protocole)) $caption(confcam,audine)\
                         ($conf(audine,ccd))\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
                      cam$confCam(camera,$cam_item,camNo) mirrorh $conf(audine,mirh)
                      cam$confCam(camera,$cam_item,camNo) mirrorv $conf(audine,mirv)
@@ -3915,7 +3927,6 @@ namespace eval ::confCam {
                      console::affiche_erreur "$caption(confcam,port_audine) ($conf(audine,ccd))\
                         $caption(confcam,2points) $conf(audine,port)\n"
                      set confCam(camera,$cam_item,camNo) $camNo
-                     set audace(list_binning) { 1x1 2x2 3x3 4x4 5x5 6x6 }
                      catch { cam$confCam(camera,$cam_item,camNo) cantype $conf(audine,can) }
                      set ampli_ccd $conf(audine,ampli_ccd)
                      switch -exact -- $ampli_ccd {
