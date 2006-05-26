@@ -72,6 +72,7 @@ struct cmditem {
    {"close", (Tcl_CmdProc *)cmdCamClose}, \
    {"mirrorh", (Tcl_CmdProc *)cmdCamMirrorH},\
    {"mirrorv", (Tcl_CmdProc *)cmdCamMirrorV},\
+   {"capabilities", (Tcl_CmdProc *)cmdCamCapabilities},\
 
 
 
