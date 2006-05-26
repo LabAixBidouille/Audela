@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.4 2006-02-05 10:13:12 michelpujol Exp $
+ * $Id: libcam.c,v 1.5 2006-05-26 12:13:29 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -120,6 +120,8 @@ static int cmdCamReadnoise(ClientData clientData, Tcl_Interp * interp, int argc,
 static int cmdCamTemperature(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamCapabilities(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+
 
 /* --- Action commands ---*/
 static int cmdCamName(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -290,6 +292,10 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
          camm->next = cam;
       }
       Tcl_CreateCommand(interp, argv[1], (Tcl_CmdProc *) cmdCam, (ClientData) cam, NULL);
+      
+      // set TCL global status_camNo
+      sprintf(s, "status_cam%d", cam->camno);
+      Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
       
       libcam_log(LOG_DEBUG, "cmdCamCreate: create camera data at %p\n", cam);
       
@@ -688,11 +694,6 @@ static void AcqRead(ClientData clientData)
    libcam_GetCurrentFITSDate(interp, cam->date_end);
    libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
    
-   
-   // set TCL global status_read_camNo
-   sprintf(s, "status_read_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, "read", TCL_GLOBAL_ONLY);
-   
    // reset message
    strcpy(cam->msg,"");
    
@@ -701,11 +702,6 @@ static void AcqRead(ClientData clientData)
    // CAM_DRV.read_ccd(cam, &p); 
    // mais il faut modifier toutes les camera !! ( michel pujol)
    CAM_DRV.read_ccd(cam, (unsigned short *) p);
-   
-   
-   // unset TCL global status_read_camNo
-   sprintf(s, "status_read_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
    
    
    // si la taille alloue par defaut a p ne convient pas, la camera crée un nouveau buffer adressé par cam->pixels
@@ -913,6 +909,21 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
    
    return retour;
 }
+
+static int cmdCamCapabilities(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   sprintf(ligne, "expTimeCommand %d expTimeList %d videoMode %d", 
+      cam->capabilities.expTimeCommand,
+      cam->capabilities.expTimeList,
+      cam->capabilities.videoMode
+      );
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   return TCL_OK;
+}
+
 
 static int cmdCamDrivername(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
@@ -1415,10 +1426,17 @@ static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, c
 static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    struct camprop *cam;
+   char s[256];
+   
    cam = (struct camprop *) clientData;
    if (CAM_DRV.close != NULL) {
       CAM_DRV.close(cam);
    }
+
+   // je supprime la variable globale contenant le staus de la camera
+   sprintf(s, "status_cam%d", cam->camno);
+   Tcl_UnsetVar(interp, s, TCL_GLOBAL_ONLY);
+
    Tcl_ResetResult(interp);
    return TCL_OK;
 }
@@ -1515,6 +1533,9 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    }
    cam->check_temperature = CAM_INI[cam->index_cam].check_temperature;
    cam->timerExpiration = NULL;
-   
+   //---  valeurs par defaut des capacites offertes par la camera
+   cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
+   cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
+   cam->capabilities.videoMode      = 0;  // existance du mode video
    return 0;
 }
