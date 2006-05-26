@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.4 2006-02-05 10:22:33 michelpujol Exp $
+ * $Id: libstruc.h,v 1.5 2006-05-26 12:15:49 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -50,6 +50,14 @@ struct TimerExpirationStruct {
     Tcl_Interp *interp;
     Tcl_TimerToken TimerToken;
 };
+
+
+struct Capabilities {
+   int expTimeCommand;     // existance de la commande de choix du temps de pose 
+   int expTimeList;        // existance d'une liste prédefinie des temps de pose
+   int videoMode;          // existance du mode video
+};
+
 
 
 #define COMMON_CAMSTRUCT \
@@ -96,6 +104,7 @@ struct TimerExpirationStruct {
    char pixels_reverse_y; \
    char *pixel_data; \
    unsigned long pixel_size; \
+   struct Capabilities capabilities; \
    struct camprop *next
 
 
