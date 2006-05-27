@@ -3,7 +3,7 @@
 # Ce script regroupe diverses petites fonctions.
 # Auteur : Benoît Maugis
 # Version : 1.18.3 ---> 1.18.4
-# Date de mise a jour : 10 avril 2005 ---> 17 fevrier 2006
+# Date de mise a jour : 10 avril 2005 ---> 27 mai 2006
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
@@ -114,7 +114,7 @@ proc charge {args} {
 #--- Fin Modif Robert
         "Linux" {
           # Sous Linux, on copie le fichier dans un sous-répertoire de /tmp/.audela
-          # on le décompresse et on essaie de le recharger à partir de là.
+          # on le décompresse et on essaie de le recharger à partir de là
           set dossier_tmp [cree_sousrep -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
           set fichier_tmp [file join $dossier_tmp [file tail $nom_complet]]
           file copy $nom_complet $fichier_tmp

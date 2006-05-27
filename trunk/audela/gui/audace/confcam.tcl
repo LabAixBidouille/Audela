@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 19 mars 2006
+# Date de mise a jour : 26 mai 2006
 #
 
 global confCam
