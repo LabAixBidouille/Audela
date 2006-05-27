@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Date de mise a jour : 17 fevrier 2006
+# Date de mise a jour : 27 mai 2006
 #
 
 #
@@ -55,12 +55,12 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    if { [ string compare $filename "" ] != "0" } {
       set result [ buf$bufNo load $filename ]
       if { $result == "" } {
-         ::confVisu::autovisu $visuNo "-no" "$filename" 
+         ::confVisu::autovisu $visuNo "-no" "$filename"
       } else {
-         #--- echec du chargement
-         ::confVisu::autovisu $visuNo "-novisu"  ""
+         #--- Echec du chargement
+         ::confVisu::autovisu $visuNo "-novisu" ""
       }
-      
+      #---
       set calib 1
       if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
          set calib 0

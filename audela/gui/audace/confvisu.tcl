@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.21 2006-05-24 22:21:58 michelpujol Exp $
+# $Id: confvisu.tcl,v 1.22 2006-05-27 16:28:32 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -494,7 +494,7 @@ namespace eval ::confVisu {
       visu$visuNo zoom $private($visuNo,zoom)
 
       #--- Je mets a jour la taille du reticule
-      #::confVisu::redrawCrosshair $visuNo
+      ::confVisu::redrawCrosshair $visuNo
 
       visu$visuNo clear
 
@@ -665,6 +665,8 @@ namespace eval ::confVisu {
                set private($visuNo,box) ""
                $private($visuNo,hCanvas) delete $private($visuNo,hBox)
                ::confVisu::autovisu $visuNo
+               #--- Je masque le reticule
+               hideCrosshair $visuNo
             } else {
                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
                set private($visuNo,window) "0"
@@ -1752,9 +1754,9 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  toggleCrosshair
-   #  toggle drawing/hiding Crosshair
-   #  as check button state indicate
+   #  getCrosshair
+   #  
+   #  
    #------------------------------------------------------------
    proc getCrosshair { visuNo } {
       variable private
@@ -1795,11 +1797,11 @@ namespace eval ::confVisu {
       update
    }
 
-   #------------------------------------------------------------
+   #--------------------------------------------------------------
    #  displayCrosshair
-   #  draw Crosshair lines ( 1 horizontal line , 1 vertical line)
+   #  draw Crosshair lines ( 1 horizontal line , 1 vertical line )
    #
-   #------------------------------------------------------------
+   #--------------------------------------------------------------
    proc displayCrosshair { visuNo } {
       variable private
       global conf

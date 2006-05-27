@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Date de mise a jour : 07 janvier 2005
+# Date de mise a jour : 27 mai 2005
 #
 
 namespace eval ::Crosshair {
@@ -18,7 +18,6 @@ namespace eval ::Crosshair {
    proc init {} {
       variable private
       global audace
-      global conf
 
       uplevel #0 "source \"[file join $audace(rep_caption) crosshair.cap]\""
       
@@ -60,13 +59,12 @@ namespace eval ::Crosshair {
 
       return "$caption(crosshair,titre)"
    }
-    
+
    #------------------------------------------------------------
    #  confToWidget { }
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
    proc confToWidget { visuNo } {
-      variable private
       variable widget
       global conf
 
@@ -80,7 +78,6 @@ namespace eval ::Crosshair {
    #     copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
    proc widgetToConf { visuNo } {
-      variable private
       variable widget
       global conf
 
