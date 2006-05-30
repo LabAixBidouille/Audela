@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.22 2006-05-27 16:28:32 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.23 2006-05-30 19:26:26 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -646,7 +646,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setWindow
-   #     affiche une partie de l'image
+   #     affiche une partie de l'image delimitee par private(visuNo,box)
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -666,7 +666,8 @@ namespace eval ::confVisu {
                $private($visuNo,hCanvas) delete $private($visuNo,hBox)
                ::confVisu::autovisu $visuNo
                #--- Je masque le reticule
-               hideCrosshair $visuNo
+               ##hideCrosshair $visuNo
+               redrawCrosshair $visuNo
             } else {
                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
                set private($visuNo,window) "0"
@@ -1823,15 +1824,25 @@ namespace eval ::confVisu {
       $private($visuNo,hCrosshairH) configure -bg $conf(crosshair,color)
       $private($visuNo,hCrosshairV) configure -bg $conf(crosshair,color)
 
-      #--- calcul des dimensions en fonction du zoom
+      #--- calcul des dimensions en fonction du zoom et du fenetrage
       set zoom $private($visuNo,zoom)
-      set w [expr int($zoom*$private($visuNo,picture_w))]
-      set h [expr int($zoom*$private($visuNo,picture_h))]
+      set w $private($visuNo,picture_w)
+      set h $private($visuNo,picture_h)
 
-      #--- coordonnees du centre
-      set xc [expr $w / 2]
-      set yc [expr $h / 2]
+      set box [visu$visuNo window] 
+      if { $box == "full" } {
+         set xc [expr int( $w / 2 ) * $zoom ]
+         set yc [expr int( $h / 2 ) * $zoom ]
+         set w [expr int($zoom*$w)]
+         set h [expr int($zoom*$h)]
+      } else {
+         set xc [expr  int($w  / 2 - [lindex $box 0] ) * $zoom ]
+         set yc [expr  int($h  / 2 - [lindex $box 1] ) * $zoom ]
+         set w [expr int($zoom * ([lindex $box 2] - [lindex $box 0]))]
+         set h [expr int($zoom * ([lindex $box 3] - [lindex $box 1]))]
+      }
 
+      
       #--- draw horizontal line
       $hCanvas create window 1 1 -tag lineh -anchor nw -window $private($visuNo,hCrosshairH) -height 1
       $hCanvas coords lineh 0 $yc
