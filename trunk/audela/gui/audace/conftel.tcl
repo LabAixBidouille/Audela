@@ -691,7 +691,9 @@ namespace eval ::confTel {
 
       #--- Prise en compte des liaisons
       set list_connexion [list ]
-      lappend list_connexion "$audace(list_com)"
+      foreach item $audace(list_com) {
+         lappend list_connexion "$item"
+      }
       lappend list_connexion "$caption(conftel,audinet)"
 
       ComboBox $frm.port \
