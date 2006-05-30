@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 13 fevrier 2006
+# Date de mise a jour : 22 mai 2006
 #
 
 namespace eval skybot_Statut {
@@ -103,7 +103,8 @@ namespace eval skybot_Statut {
       if { $erreur == "0" } {
 
          #--- Mise en forme du resultat
-         regsub -all "\'" [lindex $statut 1] "" statut
+         set statut [lindex [split $statut ";"] 1]
+         regsub -all "\'" $statut "" statut
          set statut [split $statut "|"]
 
            #--- Date du debut
