@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 27 fevrier 2006
+# Date de mise a jour : 22 mai 2006
 #
 
 namespace eval skybot_Resolver {
@@ -162,8 +162,7 @@ namespace eval skybot_Resolver {
          }
       }
       if { $ok(name) && $ok(ra) && $ok(de) } {
-         set response [ list {# Num, Name, RA(h), DE(deg), Class, Mv, Err(arcsec), dRA(arcsec/h), dDEC(arcsec/h), Dg(ua), Dh(ua)} \
-                             [concat "-|$sesame(name)|[expr $sesame(radeg)/15.0]|$sesame(dedeg)|$sesame(type)|||||| " ] ]
+         set response [concat "# Num, Name, RA(h), DE(deg), Class, Mv, Err(arcsec), dRA(arcsec/h), dDEC(arcsec/h), Dg(ua), Dh(ua) ; -|$sesame(name)|[expr $sesame(radeg)/15.0]|$sesame(dedeg)|$sesame(type)|||||| " ]
       } else {
          set response "1"
       }
@@ -752,7 +751,8 @@ namespace eval skybot_Resolver {
       #---
       if { $erreur == "0" } {
          #--- Mise en forme du resultat
-         regsub -all "\'" [lindex $statut 1] "" statut
+         set statut [lindex [split $statut ";"] 1]
+         regsub -all "\'" $statut "" statut
          set statut [split $statut "|"]
          #--- Date du debut
          set date_debut_jd [lindex $statut 1]
@@ -768,7 +768,7 @@ namespace eval skybot_Resolver {
          if { $date_calcul < $date_debut_jd } {
             tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_min) $date_debut"
             set voconf(date_ephemerides) ""
-            focus $This.frame5.entry_date_ephemerides
+            focus $This.frame2.param.input.epoch.ep
             $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
             if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
             $::skybot_Resolver::This configure -cursor arrow
@@ -778,7 +778,7 @@ namespace eval skybot_Resolver {
          if { $date_calcul > $date_fin_jd } {
             tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_max) $date_fin"
             set voconf(date_ephemerides) ""
-            focus $This.frame5.entry_date_ephemerides
+            focus $This.frame2.param.input.epoch.ep
             $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
             if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
             $::skybot_Resolver::This configure -cursor arrow
@@ -863,7 +863,7 @@ namespace eval skybot_Resolver {
       if { $voconf(but_skybot) } {
          set erreur [ catch { vo_skybotresolver $date_calcul $voconf(nom_objet) text basic $voconf(iau_code_obs) } voconf(skybot) ]
          if { $erreur == "0" } {
-            if { [ lindex [ lindex $voconf(skybot) 0 ] 0 ] != "item" } {
+            if { [ lindex $voconf(skybot) 0 ] != "SKYBOTResolver" } {
                set ok(skybot) 1
                set voconf(type) "OSS"
             } else {
@@ -915,6 +915,9 @@ namespace eval skybot_Resolver {
 
       #--- Affichage des resultats
       if { $erreur == "0" } {
+         #--- Les resultats se presentent sous la forme d'une chaine de caractere, chaque ligne
+	 #--- etant separees par un ';' et chaque donnees par un '|'
+	  set voconf(liste) [split $voconf(liste) ";"]
 
          #--- Extraction, suppression des virgules et creation des colonnes du tableau
          set liste_titres [ lindex $voconf(liste) 0 ]
@@ -928,18 +931,16 @@ namespace eval skybot_Resolver {
             $::skybot_Resolver::This.frame5.tbl columnconfigure 1 -sortmode dictionary
          }
          #--- Extraction du resultat
-         for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } {
-            set vo_objet($i) [ split [ lindex $voconf(liste) $i ] "|" ]
-            #--- Initialisation de RA et DEC pour la Recherche dans le FOV
-            set voconf(ad_objet) [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
-            set voconf(dec_objet) [ lindex $vo_objet($i) 3 ]
-            #--- Mise en forme de l'ascension droite
-            set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
-            #--- Mise en forme de la declinaison
-            set dec [ lindex $vo_objet($i) 3 ]
-            #--- Insertion des objets dans la table
-            $::skybot_Resolver::This.frame5.tbl insert end [ string trim $vo_objet($i) ]
-         }
+         set vo_objet(1) [ split [ lindex $voconf(liste) 1 ] "|" ]
+         #--- Initialisation de RA et DEC pour la Recherche dans le FOV
+         set voconf(ad_objet) [ expr 15.0 * [ lindex $vo_objet(1) 2 ] ]
+         set voconf(dec_objet) [ lindex $vo_objet(1) 3 ]
+         #--- Mise en forme de l'ascension droite
+         set ad [ expr 15.0 * [ lindex $vo_objet(1) 2 ] ]
+         #--- Mise en forme de la declinaison
+         set dec [ lindex $vo_objet(1) 3 ]
+         #--- Insertion des objets dans la table
+         $::skybot_Resolver::This.frame5.tbl insert end [ string trim $vo_objet(1) ]
          #---
          if { [ $::skybot_Resolver::This.frame5.tbl columncount ] != "0" } {
             #--- Trie par ordre alphabetique de la premiere colonne
@@ -1079,7 +1080,7 @@ namespace eval skybot_Resolver {
       set erreur [ catch { vo_skybot $date_calcul $voconf(ad_objet) $voconf(dec_objet) $voconf(taille_champ) \
                                      text basic $voconf(iau_code_obs) $voconf(filter) } voconf(skybot) ]
       if { $erreur == "0" } {
-         if { [ lindex [ lindex $voconf(skybot) 0 ] 0 ] != "item" } {
+         if { [ lindex $voconf(skybot) 0 ] != "SKYBOT" } {
             set ok(skybot) 1
          } else {
             set ok(skybot) 2
@@ -1102,8 +1103,11 @@ namespace eval skybot_Resolver {
 
       #--- Affichage des resultats
       if { $erreur == "0" } {
+         #--- Les resultats se presentent sous la forme d'une chaine de caractere, chaque ligne
+	 #--- etant separees par un ';' et chaque donnees par un '|'
+	 set voconf(liste) [ lrange [ split $voconf(liste) ";" ] 0 end-1 ]
 
-         #--- Extraction, suppression des virgules et creation des colonnes du tableau
+	 #--- Extraction, suppression des virgules et creation des colonnes du tableau
          set liste_titres [ lindex $voconf(liste) 0 ]
          regsub -all "," $liste_titres "" liste_titres
          for { set i 1 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
