@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Date de mise a jour : 25 novembre 2004
+# Date de mise a jour : 02 juin 2006
 #
 
 ##############################################################################
@@ -11,7 +11,7 @@
 #   ::Image::startGifAnimation {filename delay }  demarre une animation GIF
 #   ::Image::stopGifAnimation                     arrete une animation GIF
 #############################################################################
-   
+
 namespace eval ::Image {
 
    #------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ namespace eval ::Image {
    proc loadmovie { filename } {
       global audace
       global conf
-      
+
       #--- je masque la fenetre des images 
       $audace(hCanvas) itemconfigure display -state hidden
 
@@ -36,89 +36,84 @@ namespace eval ::Image {
       $audace(hCanvas) configure -scrollregion [list 0 0 $w_zoomed $h_zoomed ]
 
       #--- je raffraichis l'affichage du reticule
-      ::confVisu::redrawCrosshair $audace(visuNo)  
-   }      
-   
-
-   array set private {      
-      animationState      "0"
-      animationAfterId    ""
-      animationDelay      ".5"   
+      ::confVisu::redrawCrosshair $audace(visuNo)
    }
 
- 
-   
+   array set private {
+      animationState      "0"
+      animationAfterId    ""
+      animationDelay      ".5"
+   }
+
    #------------------------------------------------------------
-   #  Image::isAnimatedGIF { } 
-   #     
-   #  retourne 1 si c'est un fichier GIF contenant au moins 2 images
-   #  retourne 0 sinon   
+   #  Image::isAnimatedGIF { }
+   #   retourne 1 si c'est un fichier GIF contenant au moins 2 images
+   #   retourne 0 sinon
    #------------------------------------------------------------
    proc isAnimatedGIF { filename } {
-      if { [ string tolower [ file extension  "$filename" ]] == ".gif" } {
+      if { [ string tolower [ file extension "$filename" ]] == ".gif" } {
          #--- je tente de charger la deuxieme image (index=1)
-         set error [ catch { 
-            set result [image create photo image_test  -file "$filename"  -format {gif 1}] 
+         set error [ catch {
+               set result [image create photo image_test -file "$filename" -format {gif 1}]
             } msg ]
-         if { $error == 0 } {            
+         if { $error == 0 } {
             if { "$result" == "image_test" } {
                #--- il existe au moins deux images dans le fichier
-               image delete image_test 
+               image delete image_test
                return 1
             } else {
-               return 0 
+               return 0
             }
          } else {
-            return 0 
+            return 0
          }
       } else {
-         return 0 
+         return 0
       }
    }
 
    #------------------------------------------------------------
-   #  Image::startGifAnimation { } 
-   #     lance une animation si le fichier est au GIF et contient plusieurs images   
-   #  parametres : 
+   #  Image::startGifAnimation { }
+   #     lance une animation si le fichier est au GIF et contient plusieurs images
+   #  parametres :
    #    filename    nom du fichier gif
-   #    delay       delai entre deux images (en secondes) 
+   #    delay       delai entre deux images (en secondes)
    #------------------------------------------------------------
    proc startGifAnimation { hImage zoom filename {delay "0.2"} } {
       variable private
 
       array set imgPriv { }
-      
-      set private(hImage)     $hImage
-      set private(zoom)       $zoom
-      set private(filename)   "$filename"
+
+      set private(hImage)         $hImage
+      set private(zoom)           $zoom
+      set private(filename)       "$filename"
       set private(animationDelay) $delay
-      set private(nbimage) 0
+      set private(nbimage)        0
       set private(animationState) 1
-      
+
       #--- je lance l'affichage de la premiere image en differe
-      set private(animationAfterId) [after 10 ::Image::nextStep  "0" "file" ]
+      set private(animationAfterId) [after 10 ::Image::nextStep "0" "file" ]
    }
-   
-   
+
    #------------------------------------------------------------
-   #  Image::nextStep { } 
-   #     
+   #  Image::nextStep { }
+   #    
    #------------------------------------------------------------
    proc nextStep { index option} {
       variable private
       global audace
       variable imgPriv
-      
+
       set filename "$private(filename)"
-      
+
       #--- si une demande d'arret a deja ete faite, je ne fais plus rien
-      if { $private(animationState) == 0  } {
+      if { $private(animationState) == 0 } {
          return
       }
-  
+
       #--- j'affiche l'image
-      if { $option == "file" } { 
-         set result [catch "image create photo \"gif$index\" -file \"$filename\" -format \{gif -index $index\} " msg]      
+      if { $option == "file" } {
+         set result [catch "image create photo \"gif$index\" -file \"$filename\" -format \{gif -index $index\} " msg]
          if { $result == 1 } {
             if { "$msg" == "no image data for this index" } {
                #--- toute les images sont chargees
@@ -128,60 +123,59 @@ namespace eval ::Image {
                console::affiche_erreur "Animation GIF : $msg \n"
                stopGifAnimation
                return
-	         }
+            }
          } else {
             #--- chargement ok, j'ajoute le nom de l'image dans le tableau
             set imgPriv(image$index) "gif$index"
             incr private(nbimage)
-         }   
-      } 
+         }
+      }
 
-      #--- je remets a zero l'index s'il a depasse le nombre d'image existantes      
+      #--- je remets a zero l'index s'il a depasse le nombre d'image existantes
       if { ![info exists imgPriv(image$index)] } {
          set index 0
       }
-      
-      #--- j'affiche l'image      
+
+      #--- j'affiche l'image
       if { $private(zoom) >= 1 } {
           $private(hImage) copy $imgPriv(image$index) -zoom $private(zoom)
       } elseif { $private(zoom)< 1 } {
-          $private(hImage) copy $imgPriv(image$index) -subsample [expr round(1/$private(zoom))] 
-      }               
+          $private(hImage) copy $imgPriv(image$index) -subsample [expr round(1/$private(zoom))]
+      }
 
-      #--- j'incremente l'index pour pointer l'image suivante 
+      #--- j'incremente l'index pour pointer l'image suivante
       incr index
-            
+
       #--- je lance l'iteration suivante en differe
-      if { $private(animationState) == 1  } {
+      if { $private(animationState) == 1 } {
          set result [ catch { set delay [expr round($private(animationDelay) * 1000) ] } ]
          if { $result != 0 } {
             #--- remplace le delai incorrect
             set delay "500"
          }
-         set private(animationAfterId) [after $delay ::Image::nextStep  "$index" $option]
+         set private(animationAfterId) [after $delay ::Image::nextStep "$index" $option]
       }
    }
-   
+
    #------------------------------------------------------------------------------
    # Image::stopGifAnimation
-   #
-   #  arrete l'animation
+   #   arrete l'animation
    #------------------------------------------------------------------------------
-   proc stopGifAnimation {  } {
+   proc stopGifAnimation { } {
       variable private
       variable imgPriv
-      
+
       set private(animationState) "0"
       if { "$private(animationAfterId)" != "" } {
-         after cancel $private(animationAfterId)  
+         after cancel $private(animationAfterId)
          set private(animationAfterId) ""
       }
 
       #--- je supprime les images de la memoire
       foreach im [array names imgPriv *] {
-	      image delete $imgPriv($im)
-	      unset imgPriv($im)
-	   }
+         image delete $imgPriv($im)
+         unset imgPriv($im)
+      }
    }
 }
 

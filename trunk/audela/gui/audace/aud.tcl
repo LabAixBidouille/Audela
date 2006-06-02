@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 22 mars 2006
+# Date de mise a jour : 02 juin 2006
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -1962,7 +1962,7 @@ namespace eval ::audace {
       menustate disabled
       wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
       wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::rien
-      #--- Positions des fenetres
+      #--- Positions et tailles des fenetres
       set conf(audace,visu1,wmgeometry) "[wm geometry $audace(base)]"
       set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
       if {[winfo exists $audace(base).tjrsvisible]==1} {

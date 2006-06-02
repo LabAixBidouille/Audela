@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.23 2006-05-30 19:26:26 michelpujol Exp $
+# $Id: confvisu.tcl,v 1.24 2006-06-02 23:11:59 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -682,17 +682,24 @@ namespace eval ::confVisu {
    #  setFullScreen
    #     affiche la visu en plein ecran
    #  parametres :
-   #    visuNo: numero de la visu
+   #    visuNo : numero de la visu
    #------------------------------------------------------------
    proc setFullScreen { visuNo } {
       variable private
 
+      set directory [ file dirname $private($visuNo,lastFileName) ]
+      set filename [ file tail $private($visuNo,lastFileName) ]
       set bufNo [visu$visuNo buf]
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,fullscreen) == "1" } {
-            ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
+            if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
+               #--- Ne fonctionne que pour des gif animes, pas pour des video
+               ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
+            } else {
+               ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
+            }
          } else {
-            ::FullScreen::close
+            ::FullScreen::close $visuNo
          }
       } else {
          set private($visuNo,fullscreen) "0"
