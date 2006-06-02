@@ -51,15 +51,77 @@ int tt_ima_series_test_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
-int tt_ima_series_slide_1(TT_IMA_SERIES *pseries)
+int tt_ima_series_tilt_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
-/* Translation de 'trans_y' pixels par colonne à partir de 'xcenter'       */
+/* Translation de 'trans_y' pixels par colonne                             */
+/* Translation de 'trans_x' pixels par ligne                               */
+/* loadima vega-1 ; buf2 imaseries "TILT trans_y=-0.022 trans_y=0"        */
+/* loadima vega-2 ; buf2 imaseries "TILT trans_y=0 trans_x=0.1" */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out,*p_tmp1;
+   int naxis1,naxis2,x,y,y1,y2,x1,x2,index;
+   double xcenter,ycenter,dx,dy,ddx,ddy;
+   double alpha,beta;
+
+   /* --- fin pour assurer la compatibilite avec IMA/SERIES ---*/
+   index=pseries->index;
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   p_tmp1=pseries->p_tmp1;
+   naxis1=p_in->naxis1;
+   naxis2=p_in->naxis2;
+   xcenter=naxis1/2;
+   ycenter=naxis2/2;
+   dx=pseries->trans_x;
+   dy=pseries->trans_y;
+   tt_imacreater(p_tmp1,naxis1,naxis2);
+   tt_imacreater(p_out,naxis1,naxis2);
+   for(x=0;x<naxis1;x++) {
+      ddx=x-xcenter;
+      for(y=0;y<naxis2;y++) {
+         ddy=ddx*dy;
+         alpha=ddy-floor(ddy);
+         beta=1.-alpha;
+         y1=(int)floor(ddy+y);
+         y2=y1+1;
+         if ((y1<0)||(y2>=naxis2)) {
+            continue;
+         }
+         p_tmp1->p[y*naxis1+x]=(TT_PTYPE)(beta*p_in->p[y1*naxis1+x]+alpha*p_in->p[y2*naxis1+x]);
+      }
+   }
+   for(y=0;y<naxis2;y++) {
+      ddy=y-ycenter;
+      for(x=0;x<naxis1;x++) {
+         ddx=ddy*dx;
+         alpha=ddx-floor(ddx);
+         beta=1.-alpha;
+         x1=(int)floor(ddx+x);
+         x2=x1+1;
+         if ((x1<0)||(x2>=naxis1)) {
+            continue;
+         }
+         p_out->p[y*naxis1+x]=(TT_PTYPE)(beta*p_tmp1->p[y*naxis1+x1]+alpha*p_tmp1->p[y*naxis1+x2]);
+      }
+   }
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+   return(OK_DLL);
+}
+
+int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Unsmile centré sur la ligne ycenter */
+/* loadima vega-2 ; buf2 imaseries "SMILEX ycenter=100 coef_smile2=0.0003 coef_smile4=0.0"        */
 /***************************************************************************/
 {
    TT_IMA *p_in,*p_out;
-   int naxis1,naxis2,x,y,y1,y2,index;
-   double xcenter,dy,ddx,ddy;
+   int naxis1,naxis2,x,y,x1,x2,index;
+   double ycenter,ddx,ddy,ddy2,ddy4;
    double alpha,beta;
+   double a2,a4;
 
    /* --- fin pour assurer la compatibilite avec IMA/SERIES ---*/
    index=pseries->index;
@@ -67,21 +129,68 @@ int tt_ima_series_slide_1(TT_IMA_SERIES *pseries)
    p_out=pseries->p_out;
    naxis1=p_in->naxis1;
    naxis2=p_in->naxis2;
-   xcenter=pseries->xcenter-1;
-   dy=pseries->trans_y;
+   ycenter=pseries->ycenter;
+   a2=pseries->coef_smile2;
+   a4=pseries->coef_smile4;
    tt_imacreater(p_out,naxis1,naxis2);
-   alpha=dy-floor(dy);
-   beta=1.-alpha;
+   for(y=0;y<naxis2;y++) {
+      ddy=y-ycenter;
+      ddy2=ddy*ddy;
+      ddy4=ddy2*ddy2;
+      ddx=a2*ddy2+a4*ddy4;
+      alpha=ddx-floor(ddx);
+      beta=1.-alpha;
+      for(x=0;x<naxis1;x++) {
+         x1=(int)floor(ddx)+x;
+         x2=x1+1;
+         if ((x1<0)||(x2>=naxis1)) {
+            continue;
+         }
+         p_out->p[y*naxis1+x]=(TT_PTYPE)(beta*p_in->p[y*naxis1+x1]+alpha*p_in->p[y*naxis1+x2]);
+      }
+   }
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+   return(OK_DLL);
+}
+
+int tt_ima_series_smiley_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Unsmile centré sur la colonne xcenter */
+/* loadima vega-1 ; buf2 imaseries "SMILEY xcenter=100 coef_smile2=0.0003 coef_smile4=0.0"        */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out;
+   int naxis1,naxis2,x,y,y1,y2,index;
+   double xcenter,ddx,ddy,ddx2,ddx4;
+   double alpha,beta;
+   double a2,a4;
+
+   /* --- fin pour assurer la compatibilite avec IMA/SERIES ---*/
+   index=pseries->index;
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   naxis1=p_in->naxis1;
+   naxis2=p_in->naxis2;
+   xcenter=pseries->xcenter;
+   a2=pseries->coef_smile2;
+   a4=pseries->coef_smile4;
+   tt_imacreater(p_out,naxis1,naxis2);
    for(x=0;x<naxis1;x++) {
       ddx=x-xcenter;
+      ddx2=ddx*ddx;
+      ddx4=ddx2*ddx2;
+      ddy=a2*ddx2+a4*ddx4;
+      alpha=ddy-floor(ddy);
+      beta=1.-alpha;
       for(y=0;y<naxis2;y++) {
-         ddy=ddx*dy;
-         y1=(int)floor(ddy+y);
+         y1=(int)floor(ddy)+y;
          y2=y1+1;
          if ((y1<0)||(y2>=naxis2)) {
             continue;
          }
-         p_out->p[y*naxis1+x]=(TT_PTYPE)(alpha*p_in->p[y1*naxis1+x]+beta*p_in->p[y2*naxis1+x]);
+         p_out->p[y*naxis1+x]=(TT_PTYPE)(beta*p_in->p[y1*naxis1+x]+alpha*p_in->p[y2*naxis1+x]);
       }
    }
    /* --- calcul des temps ---*/
