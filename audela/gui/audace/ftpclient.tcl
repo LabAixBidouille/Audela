@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Date de mise a jour : 12 fevrier 2006
+# Date de mise a jour : 01 juin 2006
 #
 
 ##############################################################################
@@ -459,7 +459,7 @@ namespace eval ::ftpclient {
    #  copie les variables des widgets dans le tableau conf() ou private()
    #  et ouvre la connexion ftp
    #------------------------------------------------------------
-   proc widgetToConf { $visuNo } {
+   proc widgetToConf { visuNo } {
       variable private
       variable widget
       global conf

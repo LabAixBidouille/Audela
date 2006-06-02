@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis Marchais d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Date de mise a jour : 14 decembre 2005
+# Date de mise a jour : 02 juin 2006
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -114,6 +114,16 @@ proc Menu_Bind { visuNo what sequence menuName label seqText } {
    set command [$menuId entrycget $index -command]
    bind $what $sequence $command
    $menuId entryconfigure $index -accelerator "$seqText"
+}
+
+proc Menu_Configure { visuNo menuName label optionName optionValue } {
+   global menu
+
+   set menuId [MenuGet $visuNo "$menuName"]
+   if [catch {$menuId index "$label"} index] {
+      error "$label not in menu $menuName"
+   }
+   $menuId entryconfigure $index $optionName $optionValue
 }
 
 #------------------------------------------------------------
