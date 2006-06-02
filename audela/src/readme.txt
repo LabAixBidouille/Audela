@@ -226,6 +226,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
 
   - Repertoire src\external\libusb
     lancer make.bat puis install.bat
+    telecharger libusb-win32-filter-bin-0.1.10.1.exe depuis le site web de sourceforge
     puis lancer libusb-win32-filter-bin-0.1.10.1.exe
 
   - Repertoire src\external\porttalk,
@@ -242,7 +243,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
     lancer make.bat puis install.bat
 
   - Repertoire src\external\utils,
-    lancer make.bat puis uinstall.bat
+    lancer make.bat puis install.bat
 
 5.1.2 Compilation de AudeLA pour Windows
 ----------------------------------------
@@ -261,6 +262,7 @@ cibles que vous voulez compiler, et effectuez la compilation.
 
    télécharger D10620.zip  pour quickremote
    URL:   http://www.ftdichip.com/Drivers/FT232-FT245/D2XX/Win/D10620.zip
+   ou URL:   http://www.ftdichip.com/Drivers/D2XX/Win2000/D30104.zip
    dezipper le fichier dans un repertoire temporaire 
    brancher un quickremote, lorsque Windows demande où est le repertoire du driver, 
    pointer le repertoire temporaire où vient d'etre dézippe le fichier .
