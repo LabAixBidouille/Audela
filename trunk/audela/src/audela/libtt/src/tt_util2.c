@@ -2604,19 +2604,36 @@ int tt_util_bgk(TT_IMA *p,double *bgmean,double *bgsigma)
 	    continue;
 	 }
 	 if (methode==1) {
-	    nl2=1;
-	    intens[1]=p->p[(int)((nl2-1)*imax)+(x-1)];
-	    intens[2]=p->p[(int)((nl2  )*imax)+(x-1)];
-	    intens[4]=p->p[(int)((nl2-1)*imax)+(x  )];
-	    intens[5]=p->p[(int)((nl2  )*imax)+(x  )];
-	    intens[7]=p->p[(int)((nl2-1)*imax)+(x+1)];
-	    intens[8]=p->p[(int)((nl2  )*imax)+(x+1)];
+       if (jmax>1) {
+   	   nl2=1;
+	      intens[1]=p->p[(int)((nl2-1)*imax)+(x-1)];
+	      intens[2]=p->p[(int)((nl2  )*imax)+(x-1)];
+	      intens[4]=p->p[(int)((nl2-1)*imax)+(x  )];
+	      intens[5]=p->p[(int)((nl2  )*imax)+(x  )];
+	      intens[7]=p->p[(int)((nl2-1)*imax)+(x+1)];
+	      intens[8]=p->p[(int)((nl2  )*imax)+(x+1)];
+       } else {
+   	   nl2=1;
+	      intens[1]=p->p[(int)((nl2-1)*imax)+(x-1)];
+	      intens[2]=intens[1];
+	      intens[4]=p->p[(int)((nl2-1)*imax)+(x  )];
+	      intens[5]=intens[4];
+	      intens[7]=p->p[(int)((nl2-1)*imax)+(x+1)];
+	      intens[8]=intens[7];
+       }
 	 }
-	 for (nb=0,y=1;y<jmax-1;y++) {
+	 //for (nb=0,y=1;y<jmax-1;y++) {
+	 for (nb=0,y=0;y<jmax-2;y++) {
 	    if (methode==1) {
-	       intens[3]=p->p[(int)((y+1)*imax)+(x-1)];
-	       intens[6]=p->p[(int)((y+1)*imax)+(x  )];
-	       intens[9]=p->p[(int)((y+1)*imax)+(x+1)];
+          if (jmax>2) {
+   	       intens[3]=p->p[(int)((y+2)*imax)+(x-1)];
+	          intens[6]=p->p[(int)((y+2)*imax)+(x  )];
+	          intens[9]=p->p[(int)((y+2)*imax)+(x+1)];
+          } else {
+   	       intens[3]=p->p[(int)((y+2)*imax)+(x-1)];
+	          intens[6]=p->p[(int)((y+2)*imax)+(x  )];
+	          intens[9]=p->p[(int)((y+2)*imax)+(x+1)];
+          }
 	       mini=intens[5];
 	       indice=5;
 	       for (k=1;k<=4;k++) {if (intens[k]<=mini) {indice=k;} }
@@ -2642,7 +2659,7 @@ int tt_util_bgk(TT_IMA *p,double *bgmean,double *bgsigma)
 	       intens[8]=intens[9];
 	    }
 	    if (methode==2) {
-	       vect1_fond[++nb]=p->p[(int)((y  )*imax)+(x  )];
+	       vect1_fond[++nb]=p->p[(int)((y+1  )*imax)+(x  )];
 	    }
 	 }
 	 if ((nb!=0)&&(methode==1)) {

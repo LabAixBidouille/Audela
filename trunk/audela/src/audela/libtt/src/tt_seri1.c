@@ -375,11 +375,17 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_GEOSTAT) {
       msg=tt_ima_series_geostat_1(pseries);
       fct_found=TT_YES;
-   } else if (pseries->numfct==TT_IMASERIES_SLIDE) {
-      msg=tt_ima_series_slide_1(pseries);
+   } else if (pseries->numfct==TT_IMASERIES_TILT) {
+      msg=tt_ima_series_tilt_1(pseries);
       fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_RADIAL) {
       msg=tt_ima_series_radial_1(pseries);
+      fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_SMILEX) {
+      msg=tt_ima_series_smilex_1(pseries);
+      fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_SMILEY) {
+      msg=tt_ima_series_smiley_1(pseries);
       fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_DELETE) {
       msg=OK_DLL;
@@ -476,7 +482,9 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"SORTY")==0) { pseries->numfct=TT_IMASERIES_SORTY; }
    else if (strcmp(keys[10],"UNTRAIL")==0) { pseries->numfct=TT_IMASERIES_UNTRAIL; }
    else if (strcmp(keys[10],"GEOSTAT")==0) { pseries->numfct=TT_IMASERIES_GEOSTAT; }
-   else if (strcmp(keys[10],"SLIDE")==0) { pseries->numfct=TT_IMASERIES_SLIDE; }
+   else if (strcmp(keys[10],"TILT")==0) { pseries->numfct=TT_IMASERIES_TILT; }
+   else if (strcmp(keys[10],"SMILEX")==0) { pseries->numfct=TT_IMASERIES_SMILEX; }
+   else if (strcmp(keys[10],"SMILEY")==0) { pseries->numfct=TT_IMASERIES_SMILEY; }
    else if (strcmp(keys[10],"RADIAL")==0) { pseries->numfct=TT_IMASERIES_RADIAL; }
 
 
@@ -533,6 +541,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->jpegfile_make=TT_NO;
    pseries->jpegfile_chart_make=TT_NO;
    pseries->jpegfile_chart2_make=TT_NO;
+   pseries->coef_smile2=0.;
+   pseries->coef_smile4=0.;
    pseries->coef_unsmearing=0.;
    pseries->detect_kappa=3.;
    pseries->power=2.;
@@ -590,6 +600,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->p_ast.cdelta2=0.;
    pseries->p_ast.dec0=-100.;
    pseries->p_ast.ra0=-100.;
+   pseries->coef_smile2=0.;
+   pseries->coef_smile4=0.;
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
          pseries->p_ast.pv[k1][k2]=0.;
@@ -886,6 +898,12 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       }
       else if (strcmp(mot,"UNSMEARING")==0) {
          pseries->coef_unsmearing=atof(argu);
+      }
+      else if (strcmp(mot,"COEF_SMILE2")==0) {
+         pseries->coef_smile2=atof(argu);
+      }
+      else if (strcmp(mot,"COEF_SMILE4")==0) {
+         pseries->coef_smile4=atof(argu);
       }
       else if (strcmp(mot,"BACK_KERNEL")==0) {
          pseries->back_kernel=(int)(fabs(atof(argu)));

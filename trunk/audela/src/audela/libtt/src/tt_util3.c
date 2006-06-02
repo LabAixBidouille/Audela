@@ -503,9 +503,9 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
    double x1,y1,mag1,x2,y2,mag2,rien;
    short flag1;
    double x_ra,x_dec,x_mag1,x_mag2,x_mag;
-   char attrib[10],mise_enforme[]="%5d %2d %7.2f %7.2f %+8.3f %7.3f %11.1f %10.1f %9.5f %9.5f %+8.4f %+8.4f %7.4f %+8.4f %7.4f %3d %3d %10.1f %+10.2f %+10.2f %+10.2f %+10.2f %+10.2f %7.1f %7.2f %3d \n";
-   char           mise_enforme0[]="%5d %2d %7.2lf %7.2lf %+8.3lf %7.3lf %11.1lf %10.1lf %9.5lf %9.5lf %+8.4lf %+8.4lf %7.4lf %+8.4lf %7.4lf %3d %3d %10.1lf %+10.2lf %+10.2lf %+10.2lf %+10.2lf %+10.2lf %7.1f %7.2lf %3d \n";
-   int nl=224; /* nombres de caracteres sur une ligne (\n inclus) */
+   char attrib[10],mise_enforme[]="%6d %2d %7.2f %7.2f %+8.3f %7.3f %11.1f %10.1f %9.5f %9.5f %+8.4f %+8.4f %7.4f %+8.4f %7.4f %3d %3d %10.1f %+10.2f %+10.2f %+10.2f %+10.2f %+10.2f %7.1f %7.2f %3d \n";
+   char           mise_enforme0[]="%6d %2d %7.2lf %7.2lf %+8.3lf %7.3lf %11.1lf %10.1lf %9.5lf %9.5lf %+8.4lf %+8.4lf %7.4lf %+8.4lf %7.4lf %3d %3d %10.1lf %+10.2lf %+10.2lf %+10.2lf %+10.2lf %+10.2lf %7.1f %7.2lf %3d \n";
+   int nl=225; /* nombres de caracteres sur une ligne (\n inclus) */
    int ni; /* nombres de caracteres pour l'indice (%5d) */
    char pointzeroname[TT_LEN_SHORTFILENAME];
    int nball,nbcom,taille,nombre,k,kk,ntot;
@@ -521,6 +521,11 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
    double *ras=NULL;
    int *indexs=NULL;
    char *cars=NULL;
+   /*rajout Yassine*/
+   int *nb_carac_jus_fin_ligne=NULL;
+   int kd2;
+   int ni0;
+   /*fin*/
    int casold,n,kd;
    int matchingindex;
 
@@ -1069,9 +1074,21 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
       fclose(ficcom);
       return(msg);
    }
+   /*rajout yassine : je ne comprends pas pourquoi ntot+1*/
+   nb_carac_jus_fin_ligne=NULL;
+   nombre=ntot+1;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&nb_carac_jus_fin_ligne,&nombre,&taille,"nb_carac_jus_fin_ligne"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in util_focas0 for pointer indexs");
+      tt_free2((void**)&ras,"ras");
+      fclose(ficcom);
+      return(msg);
+   }
+   /*je deplace aussi ces 2 ligne*/
+   /*fin*/
    k=0;
    casold=1;
    n=0;kd=1;
+   kd2=0;
    do {
       if (fgets(ligne,TT_MAXLIGNE,ficcom)!=NULL) {
          strcpy(texte,"");
@@ -1082,6 +1099,10 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
                &riend,&cas,&rien,&rien,&rien,&rien,&rien,&rien,&x_ra);
             ras[k]=x_ra;
             indexs[k]=k;
+			/*rajout Yassine: +1 a cause de \n*/
+			kd2=kd2+strlen(ligne)+1;
+			nb_carac_jus_fin_ligne[k]=kd2;
+			/*fin*/
             if (cas==casold) {
                n++;
             } else {
@@ -1109,11 +1130,17 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
         sprintf(message_err,"Writing error for file %s in tt_util_fich_comdif",nomfic_ascii);
         tt_errlog(msg,message_err);
         tt_free2((void**)&indexs,"indexs");
+		/*rajout yassine*/
+		tt_free2((void**)&nb_carac_jus_fin_ligne,"nb_carac_jus_fin_ligne");
+		/*fin*/
         return(msg);
-		}
+	  }
    }
    cars=NULL;
-   nombre=ntot*nl;
+   /*Modif yassine
+   nombre=ntot*nl;*/
+   nombre=nb_carac_jus_fin_ligne[ntot];
+   /*fin*/
    taille=sizeof(char);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&cars,&nombre,&taille,"cars"))!=0) {
 		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in util_focas0 for pointer cars");
@@ -1132,19 +1159,38 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
         tt_errlog(msg,message_err);
         tt_free2((void**)&indexs,"indexs");
         tt_free2((void**)&cars,"cars");
+		/*rajout yassine*/
+		tt_free2((void**)&nb_carac_jus_fin_ligne,"nb_carac_jus_fin_ligne");
+		/*fin*/
         return(msg);
 		}
    }
    sprintf(ligne,"%c",mise_enforme[1]);
    ni=(int)(atoi(ligne));
-   sprintf(ligne,"%%%dd",ni);
+   /*modif yassine
    for (k=1;k<=n;k++) {
       sprintf(texte,ligne,k);
       fwrite(texte,sizeof(char),ni,ficcom);
-      kd=(indexs[k]-1)*nl;
+	  kd=(indexs[k]-1)*nl;
       fwrite(cars+kd+ni,sizeof(char),nl-ni,ficcom);
+	  kd= (indexs[k]-1)*nl;
+	  fwrite(cars+kd+ni,sizeof(char),nb_cara_avant_ligne[indexs[k]]-ni,ficcom);
+   }*/
+   ni0=(int)floor(log10(ntot))+1;
+   if (ni<ni0) {ni=ni0;}
+   sprintf(ligne,"%%%dd",ni);
+   for (k=1;k<=ntot;k++) {
+      sprintf(texte,ligne,k);
+      fwrite(texte,sizeof(char),ni,ficcom);
+	  kd = nb_carac_jus_fin_ligne[indexs[k]];
+	  kd2= nb_carac_jus_fin_ligne[indexs[k]-1];
+	  nombre = kd-kd2-ni;
+	  fwrite(cars+kd2+ni,sizeof(char),nombre,ficcom);
    }
    fclose(ficcom);
+   /*rajout yassine*/
+   tt_free2((void**)&nb_carac_jus_fin_ligne,"nb_carac_jus_fin_ligne");
+   /*fin*/
    tt_free2((void**)&cars,"cars");
    tt_free2((void**)&indexs,"indexs");
 	return(OK_DLL);
@@ -4827,6 +4873,3 @@ int focas_getput_tab(char *nom_fichier_ref,char *nom_fichier_in,char *nom_fichie
    tt_free2((void**)&data0,"data0");
    return(OK);
 }
-
-
-
