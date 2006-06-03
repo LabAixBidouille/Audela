@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Date de mise a jour : 02 juin 2006
+# Date de mise a jour : 03 juin 2006
 #
 
 ##############################################################################
@@ -39,6 +39,7 @@ namespace eval ::FullScreen {
       fileImage         "Image"
       fileMovie         "Film"
       animation         "0"
+      gif_anime         "1"
       SlideShowAfterId  ""
       slideShowDelay    "1"
    }
@@ -611,6 +612,9 @@ namespace eval ::FullScreen {
       $menu add checkbutton -label $caption(fullscreen,animation) \
          -variable ::FullScreen::private(animation) \
          -command "::FullScreen::toggleAnimation $visuNo"
+      if { $::confVisu::private(gif_anime) == "0" } {
+         $menu entryconfigure $caption(fullscreen,animation) -state disabled
+      }
       $menu add command -label $caption(fullscreen,configure) \
          -command "::FullScreen::configure $visuNo"
       $menu add command -label $caption(fullscreen,help) \
