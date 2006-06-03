@@ -1,6 +1,6 @@
 #
 # Fichier : fullscreen.cap
-# Date de mise a jour : 22 mars 2006
+# Date de mise a jour : 03 juin 2006
 #
 
 #=========================================================================
@@ -32,6 +32,9 @@ set caption(fullscreen,help)                "Help..."
 set caption(fullscreen,title)               "Full Screen Window Settings"
 set caption(fullscreen,color_label)         "Background Color"
 set caption(fullscreen,auto_start_anim)     "Start Animation Automatically"
+set caption(fullscreen,slide_show1)         "Slideshow:"
+set caption(fullscreen,slide_show_delai)    "Delay"
+set caption(fullscreen,seconde)             "second"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -57,6 +60,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,title)            "Configuration de la fenêtre plein écran"
    set caption(fullscreen,color_label)      "Couleur du fond"
    set caption(fullscreen,auto_start_anim)  "Démarrer les animations automatiquement"
+   set caption(fullscreen,slide_show1)      "Diaporama :"
+   set caption(fullscreen,slide_show_delai) "Délai"
+   set caption(fullscreen,seconde)          "seconde"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -82,6 +88,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,title)            "Configurazione della finestra a tutto schermo"
    set caption(fullscreen,color_label)      "Colore di fondo"
    set caption(fullscreen,auto_start_anim)  "Partenza automatica delle animazioni"
+   set caption(fullscreen,slide_show1)      "Slideshow:"
+   set caption(fullscreen,slide_show_delai) "Ritardo"
+   set caption(fullscreen,seconde)          "secondo"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -107,6 +116,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,title)            "Configuración de pantalla completa"
    set caption(fullscreen,color_label)      "Color de fondo"
    set caption(fullscreen,auto_start_anim)  "Comenzar la animación automáticamente"
+   set caption(fullscreen,slide_show1)      "Diapositivas:"
+   set caption(fullscreen,slide_show_delai) "Tiempo"
+   set caption(fullscreen,seconde)          "segundo"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -132,6 +144,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,title)            "Vollschirm Fenster Konfiguration"
    set caption(fullscreen,color_label)      "Unterfarbe"
    set caption(fullscreen,auto_start_anim)  "Die Animationen automatisch anlassen"
+   set caption(fullscreen,slide_show1)      "Diashow:"
+   set caption(fullscreen,slide_show_delai) "Abwarten"
+   set caption(fullscreen,seconde)          "Sekunde"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -157,6 +172,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(FullScreen,title)            "Windows-indstilling til fuld skærm"
    set caption(FullScreen,color_label)      "Baggrundsfarve"
    set caption(FullScreen,auto_start_anim)  "Start animation automatisk"
+   set caption(fullscreen,slide_show1)      "Slideshow:"
+   set caption(fullscreen,slide_show_delai) "Forsinkelse"
+   set caption(fullscreen,seconde)          "sekund"
 
 }
 

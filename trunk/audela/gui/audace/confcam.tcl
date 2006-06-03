@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 26 mai 2006
+# Date de mise a jour : 03 juin 2006
 #
 
 global confCam
@@ -598,7 +598,7 @@ namespace eval ::confCam {
 
       #--- confToWidget
       set confCam(conf_audine,ampli_ccd) [ lindex "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" $conf(audine,ampli_ccd) ]
-      set confCam(conf_audine,can)       $conf(audine,can)      
+      set confCam(conf_audine,can)       $conf(audine,can)
       set confCam(conf_audine,ccd)       $conf(audine,ccd)
       set confCam(conf_audine,foncobtu)  [ lindex "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" $conf(audine,foncobtu) ]
       set confCam(conf_audine,mirh)      $conf(audine,mirh)

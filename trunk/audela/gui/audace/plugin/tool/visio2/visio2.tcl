@@ -540,15 +540,15 @@ proc Visio2BuildIF { This } {
       pack $This.locallist -fill both -expand 1 -anchor n -side top
 
       #--- Frame SlideShow
-      frame $This.slideShow  -borderwidth 1 -relief groove
+      frame $This.slideShow -borderwidth 1 -relief groove
 
       checkbutton $This.slideShow.check -pady 0 -text "$caption(visio2,slideshow)" \
                -variable ::Visio2::localTable::private(slideShowState) \
                -command {
                    if { $::Visio2::localTable::private(slideShowState) == 1} {
-                       ::Visio2::localTable::startSlideShow 
+                       ::Visio2::localTable::startSlideShow
                    } else {
-                       ::Visio2::localTable::stopSlideShow 
+                       ::Visio2::localTable::stopSlideShow
                    }
                 }
       pack $This.slideShow.check -in $This.slideShow -anchor center -expand 0 -fill none -side left
@@ -568,9 +568,9 @@ proc Visio2BuildIF { This } {
 
       label $This.slideShow.labdelay -borderwidth 1 -text "s."
       pack $This.slideShow.labdelay -in $This.slideShow -anchor center -expand 0 -fill none -side left
-      pack $This.slideShow -fill x -anchor n 
+      pack $This.slideShow -fill x -anchor n
 
-      #--- frame ftp      
+      #--- frame ftp
       frame $This.ftp -borderwidth 1 -relief groove
 
       checkbutton $This.ftp.check -pady 0 -text $caption(visio2,ftp_connection_title) \
@@ -889,7 +889,7 @@ namespace eval ::Visio2::localTable {
    
    array set private { 
       localtbl             ""
-      directory            "" 
+      directory            ""
       previousType         ""
       previousFileNameType ""
       currentItemIndex     0
@@ -911,7 +911,7 @@ namespace eval ::Visio2::localTable {
       set private(folder)              $::Visio2::private(folder)
       set private(fileImage)           $::Visio2::private(fileImage)
       set private(fileMovie)           $::Visio2::private(fileMovie)
-      set private(file)                $::Visio2::private(file) 
+      set private(file)                $::Visio2::private(file)
       set private(volume)              $::Visio2::private(volume)
 
       set private(directory) "$directory"
@@ -944,7 +944,8 @@ namespace eval ::Visio2::localTable {
       ::Visio2::fillTable $private(tbl) [::Visio2::getFileList $private(directory)]
       #--- j'affiche le nom du repertoire courant
       configureLabelDirectory $private(labelDirectory)
-      #--- je place le focus sur le contenu de la table pour permettre les deplacements avec les touches de direction du clavier
+      #--- je place le focus sur le contenu de la table pour permettre les deplacements
+      #--- avec les touches de direction du clavier
       focus  [$private(tbl) bodypath]
    }
 
@@ -999,11 +1000,11 @@ namespace eval ::Visio2::localTable {
 
    #------------------------------------------------------------------------------
    # localTable::loadItem
-   #   si simple click
+   #   si simple click :
    #    si image : affiche l'image
    #    si film  : charge le film et affiche la premiere image
    #    si sous-repertoire : efface l'image affichee precedemment
-   #   sinon double click
+   #   sinon double click :
    #    si image : affiche l'image
    #    si film  : charge le film et affiche la premiere image
    #    si sous-repertoire : va dans le repertoire et affiche le contenu (appelle fillTable)
@@ -1029,11 +1030,13 @@ namespace eval ::Visio2::localTable {
          #--- j'affiche l'image
          loadima $filename
          if { [::Image::isAnimatedGIF "$filename"] == 1 } {
+            set ::confVisu::private(gif_anime) "1"
             setAnimationState "1"
             if { $doubleClick == 1 } {
                startAnimation
             }
          } else {
+            set ::confVisu::private(gif_anime) "0"
             setAnimationState "0"
          }
       } elseif { "$type" == "$private(fileMovie)" } {
@@ -1058,7 +1061,7 @@ namespace eval ::Visio2::localTable {
             if { "[file tail $private(directory)]" != "" } {
                #--- si on n'est pas à la racine du disque, on monte d'un repertoire
                set private(directory) [ file dirname "$private(directory)"  ]
-               fillTable 
+               fillTable
             } else {
                #--- si on est a la racine d'un disque, j'affiche la liste des disques
                ::Visio2::fillVolumeTable $private(tbl)
@@ -1114,7 +1117,7 @@ namespace eval ::Visio2::localTable {
    #------------------------------------------------------------------------------
    proc selectAll { } {
       variable private
-      
+
       $private(tbl) selection set 0 end
    }
 
@@ -1125,7 +1128,7 @@ namespace eval ::Visio2::localTable {
    #------------------------------------------------------------------------------
    proc saveFile { } {
       variable private
-      
+
       #TODO
 
    }
