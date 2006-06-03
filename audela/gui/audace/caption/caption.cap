@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Date de mise a jour : 19 mars 2006
+# Date de mise a jour : 03 juin 2006
 #
 
 #=========================================================================
@@ -1648,7 +1648,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analyse)                   "Analyse"
    set caption(audace,menu,histo)                     "Histogram"
-   set caption(audace,menu,coupe)                     "# Coupe"
+   set caption(audace,menu,coupe)                     "Udsnit"
    set caption(audace,menu,statwin)                   "Statistik in Vindue"
    set caption(audace,menu,fwhm)                      "Halvværdibredde (Fwhm)"
    set caption(audace,menu,fitgauss)                  "Tilpas en Gausskurve"
@@ -1857,7 +1857,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figur"
 
-   set caption(sectiongraph,title)                    "# Graphe de la coupe"
+   set caption(sectiongraph,title)                    "Graf af udsnittet"
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
