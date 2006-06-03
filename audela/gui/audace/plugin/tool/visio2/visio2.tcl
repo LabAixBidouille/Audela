@@ -910,7 +910,7 @@ namespace eval ::Visio2::localTable {
       set private(parentFolder)        $::Visio2::private(parentFolder)
       set private(folder)              $::Visio2::private(folder)
       set private(fileImage)           $::Visio2::private(fileImage)
-      set private(fileMovie)           $::Visio2::private(fileMovie) 
+      set private(fileMovie)           $::Visio2::private(fileMovie)
       set private(file)                $::Visio2::private(file) 
       set private(volume)              $::Visio2::private(volume)
 
@@ -1115,7 +1115,7 @@ namespace eval ::Visio2::localTable {
    proc selectAll { } {
       variable private
       
-      $private(tbl) selection set   0 end
+      $private(tbl) selection set 0 end
    }
 
    #------------------------------------------------------------------------------
@@ -1147,7 +1147,7 @@ namespace eval ::Visio2::localTable {
       ::Movie::close $audace(hCanvas)
 
       set tbl $private(tbl)
-      set selection [$tbl curselection]      
+      set selection [$tbl curselection]
       #--- je retourne immediatemment si aucun item n'est selectionne
       if { "$selection" == "" } {
          set message "$caption(visio2,delete_file_error)"
@@ -1159,7 +1159,7 @@ namespace eval ::Visio2::localTable {
       set confirm 1
 
       foreach index $selection { 
-         set name [string trimleft  [$tbl cellcget $index,0 -text]]
+         set name [string trimleft [$tbl cellcget $index,0 -text]]
          set type [$tbl cellcget $index,1 -text]
 
          if { $type == "$private(folder)" } {
@@ -1237,7 +1237,7 @@ namespace eval ::Visio2::localTable {
       global audace
 
       if { $audace(fullscreen) == "1" } {
-         #--- je ferme les films 
+         #--- je ferme les films
          ::Movie::close $audace(hCanvas)
 
          #--- je recupere la selection courante
@@ -1278,9 +1278,9 @@ namespace eval ::Visio2::localTable {
       variable private
       global caption
 
-      set menu $private(popupmenu)               
+      set menu $private(popupmenu)
       #--- je configure le popup menu
-      if { $state == 1 }  {
+      if { $state == 1 } {
          #--- j'active les commandes d'animation
          $menu entryconfigure $caption(visio2,play_movie) -state normal
       } else {
@@ -1452,7 +1452,7 @@ namespace eval ::Visio2::localTable {
       variable private
 
       #--- quelques raccourcis utiles
-      set tbl $frame.tbl      
+      set tbl $frame.tbl
       set private(tbl) "$tbl"
       set private(labelDirectory) "$frame.directory"
       set menu $frame.menu
@@ -1466,10 +1466,10 @@ namespace eval ::Visio2::localTable {
       #--- table des fichiers
       tablelist::tablelist $tbl \
          -columns [ list \
-            12 $caption(visio2,column_name)   left \
-            10 $caption(visio2,column_type)   left \
-            10 $caption(visio2,column_series) left \
-            17 $caption(visio2,column_date)   left \
+            12 $caption(visio2,column_name)   left  \
+            10 $caption(visio2,column_type)   left  \
+            10 $caption(visio2,column_series) left  \
+            17 $caption(visio2,column_date)   left  \
             10 $caption(visio2,column_size)   right \
             ] \
          -labelcommand ::Visio2::cmdSortColumn  \
@@ -1480,7 +1480,7 @@ namespace eval ::Visio2::localTable {
       #--- je fixe la largeur des colonnes
       $tbl columnconfigure 0 -width $conf(Visio2,width_column_name) 
       $tbl columnconfigure 1 -width $conf(Visio2,width_column_type) 
-      $tbl columnconfigure 2 -width $conf(Visio2,width_column_series) 
+      $tbl columnconfigure 2 -width $conf(Visio2,width_column_series)
       $tbl columnconfigure 3 -width $conf(Visio2,width_column_date) 
       $tbl columnconfigure 4 -width $conf(Visio2,width_column_size) 
 
@@ -1576,7 +1576,7 @@ namespace eval ::Visio2::localTable {
          -command "::Visio2::localTable::changeZoom 4"
 
       $menu add checkbutton -label $caption(visio2,full_screen) \
-         -variable audace(fullscreen)       \
+         -variable audace(fullscreen) \
          -command "::Visio2::localTable::toggleFullScreen"
 
       $menu add command -label $caption(visio2,config) -command "::Visio2::configure"
@@ -1620,7 +1620,7 @@ namespace eval ::Visio2::localTable {
             }
          }
          #--- affiche "..." suivi de la fin de private(directory)
-         $label configure -text ...$tt
+         $label configure -text .$tt
       }
    }
 

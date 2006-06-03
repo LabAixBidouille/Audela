@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.24 2006-06-02 23:11:59 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.25 2006-06-03 07:49:13 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -693,9 +693,11 @@ namespace eval ::confVisu {
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,fullscreen) == "1" } {
             if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
-               #--- Ne fonctionne que pour des gif animes, pas pour des video
+               #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des video
+               set private(gif_anime) "1"
                ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
             } else {
+               set private(gif_anime) "0"
                ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
             }
          } else {
