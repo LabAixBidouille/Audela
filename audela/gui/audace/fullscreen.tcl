@@ -199,8 +199,10 @@ namespace eval ::FullScreen {
          }
 
          #--- si une animation est en cours, je relance l'animation
-         if { $conf(FullScreen,autoStartAnim) == "1" } {
-            startAnimation $visuNo
+         if { [::Image::isAnimatedGIF "$filename"] == "1" || "$type" == "$private(fileMovie)" } {
+            if { $conf(FullScreen,autoStartAnim) == "1" } {
+               startAnimation $visuNo
+            }
          }
       } else {
          ::confVisu::autovisu $visuNo
@@ -359,6 +361,7 @@ namespace eval ::FullScreen {
    #------------------------------------------------------------------------------
    proc showNextSlide { visuNo } {
       variable private
+      variable widget
 
       loadItem $visuNo
 
@@ -371,7 +374,7 @@ namespace eval ::FullScreen {
 
       #--- je lance l'iteration suivante
       if { $private(slideShow) == "1" } {
-         set result [ catch { set delay [expr round($private(SlideShowDelay) * 1000) ] } ]
+         set result [ catch { set delay [expr round($::FullScreen::config::widget(slideShowDelay) * 1000) ] } ]
          if { $result != 0 } {
             #--- remplace le delai incorrect
             set delay "1000"
@@ -652,8 +655,9 @@ namespace eval ::FullScreen {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(FullScreen,color) ] }         { set conf(FullScreen,color)         "#000000" }
-      if { ! [ info exists conf(FullScreen,autoStartAnim) ] } { set conf(FullScreen,autoStartAnim) "0" }
+      if { ! [ info exists conf(FullScreen,slideShowDelay) ] } { set conf(FullScreen,slideShowDelay) "2" }
+      if { ! [ info exists conf(FullScreen,autoStartAnim) ] }  { set conf(FullScreen,autoStartAnim)  "0" }
+      if { ! [ info exists conf(FullScreen,color) ] }          { set conf(FullScreen,color)          "#000000" }
    }
 
    #------------------------------------------------------------------------------
@@ -716,8 +720,9 @@ namespace eval ::FullScreen::config {
       variable widget
       global conf
 
-      set widget(color)         "$conf(FullScreen,color)"
-      set widget(autoStartAnim) "$conf(FullScreen,autoStartAnim)"
+      set widget(slideShowDelay) "$conf(FullScreen,slideShowDelay)"
+      set widget(autoStartAnim)  "$conf(FullScreen,autoStartAnim)"
+      set widget(color)          "$conf(FullScreen,color)"
    }
 
    #------------------------------------------------------------
@@ -730,8 +735,9 @@ namespace eval ::FullScreen::config {
       global conf
 
       #--- j'enregistre la nouvelle configuration dans conf(...)
-      set conf(FullScreen,color)         $widget(color)
-      set conf(FullScreen,autoStartAnim) $widget(autoStartAnim)
+      set conf(FullScreen,slideShowDelay) $widget(slideShowDelay)
+      set conf(FullScreen,autoStartAnim)  $widget(autoStartAnim)
+      set conf(FullScreen,color)          $widget(color)
 
       #--- j'applique la nouvelle configuration
       $::FullScreen::private(hCanvas) configure -bg $conf(FullScreen,color)
@@ -744,9 +750,7 @@ namespace eval ::FullScreen::config {
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
       variable widget
-      variable widgetEnableExtension
       global caption
-      global conf
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
@@ -754,20 +758,45 @@ namespace eval ::FullScreen::config {
       #--- j'initialise les variables des widgets
       confToWidget $visuNo
 
+      #--- frame choix du delai pour le diaporama
+      frame $frm.slideShow -borderwidth 1 -relief raised
+      pack $frm.slideShow -side top -fill both -expand 1
+
+      label $frm.slideShow.label -text "$caption(fullscreen,slide_show1)"
+      pack $frm.slideShow.label -in $frm.slideShow -anchor center -side left -padx 10 -pady 10
+
+      label $frm.slideShow.label_delay -text "$caption(fullscreen,slide_show_delai)"
+      pack $frm.slideShow.label_delay -in $frm.slideShow -anchor center -side left -padx 0 -pady 10
+
+      set list_combobox [ list "0.5" "1" "2" "3" "5" "10" ]
+      ComboBox $frm.slideShow.delay \
+         -width 3          \
+         -height [llength $list_combobox] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -takefocus 1      \
+         -textvariable FullScreen::config::widget(slideShowDelay) \
+         -values $list_combobox
+      pack $frm.slideShow.delay -in $frm.slideShow -anchor center -expand 0 -fill none -side left
+
+      label $frm.slideShow.labdelay -borderwidth 1 -text "$caption(fullscreen,seconde)"
+      pack $frm.slideShow.labdelay -in $frm.slideShow -anchor center -expand 0 -fill none -side left
+
+      #--- demarrage automatique des animations
       frame $frm.frameAnim -borderwidth 1 -relief raised
       pack $frm.frameAnim -side top -fill both -expand 1
 
-      #--- demarrage automatique des animations
       checkbutton $frm.frameAnim.animation -text "$caption(fullscreen,auto_start_anim)" \
          -highlightthickness 0 -variable FullScreen::config::widget(autoStartAnim)
-            pack $frm.frameAnim.animation -anchor center -side left -padx 10 -pady 5
+      pack $frm.frameAnim.animation -anchor center -side left -padx 10 -pady 10
 
       #--- frame choix couleur de fond
       frame $frm.frameColor -borderwidth 1 -relief raised
       pack $frm.frameColor -side top -fill both -expand 1
 
       label $frm.frameColor.labColor -text "$caption(fullscreen,color_label)"
-           pack $frm.frameColor.labColor -in $frm.frameColor -anchor center -side left -padx 10 -pady 10
+      pack $frm.frameColor.labColor -in $frm.frameColor -anchor center -side left -padx 10 -pady 10
 
       button $frm.frameColor.butColor_color_invariant -relief raised -width 6 -bg $widget(color)\
          -command {
@@ -780,6 +809,7 @@ namespace eval ::FullScreen::config {
             }
          }
       pack $frm.frameColor.butColor_color_invariant -in $frm.frameColor -anchor center -side left -padx 10 -pady 5 -ipady 5
+
    }
 
 }
