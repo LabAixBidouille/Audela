@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Date de mise a jour : 27 mai 2005
+# Date de mise a jour : 04 juin 2005
 #
 
 namespace eval ::Crosshair {
@@ -15,12 +15,12 @@ namespace eval ::Crosshair {
    #  
    #  return namespace name
    #------------------------------------------------------------
-   proc init {} {
+   proc init { } {
       variable private
       global audace
 
       uplevel #0 "source \"[file join $audace(rep_caption) crosshair.cap]\""
-      
+
       initConf
       set private(imageSize) " "
 
@@ -90,7 +90,7 @@ namespace eval ::Crosshair {
    #------------------------------------------------------------
    #  fillConfigPage { }
    #     fenetre de configuration du driver
-   #  
+   #
    #  return rien
    #
    #------------------------------------------------------------
@@ -142,7 +142,7 @@ namespace eval ::Crosshair {
    #------------------------------------------------------------
    proc showHelp { } {
       global help
- 
+
       ::audace::showHelpItem "$help(dir,affichage)" "1100crosshair.htm"
    }
 

@@ -2,10 +2,10 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Date de mise a jour : 14 janvier 2006
+# Date de mise a jour : 04 juin 2006
 #
 
-namespace eval ::confOptic {  
+namespace eval ::confOptic {
 
    #------------------------------------------------------------
    #  init 
@@ -95,7 +95,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le nom et le label du driver
-   #  
+   #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"]
    #
    #------------------------------------------------------------
