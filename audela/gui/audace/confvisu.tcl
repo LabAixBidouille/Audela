@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.25 2006-06-03 07:49:13 robertdelmas Exp $
+# $Id: confvisu.tcl,v 1.26 2006-06-06 22:35:15 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -76,8 +76,6 @@ namespace eval ::confVisu {
       }
 
       #--- Position de l'image dans la fenetre principale
-      set private($visuNo,picture_orgx)    "0"
-      set private($visuNo,picture_orgy)    "0"
       set private($visuNo,labcoord_type)   "xy"
       set private($visuNo,picture_w)       "0"
       set private($visuNo,picture_h)       "0"
@@ -95,7 +93,10 @@ namespace eval ::confVisu {
       set private($visuNo,fullscreen)      "0"
       set private($visuNo,zoom)            "1"
       set private($visuNo,toolNameSpace)   ""
-      set private($visuNo,box)             ""
+      
+      #--- Initialisation de variables pour le trace de repere
+      set private($visuNo,boxSize)         ""
+      set private($visuNo,hBox)            ""
 
       set private($visuNo,camNo)           "0"
       set private($visuNo,camName)         ""
@@ -258,20 +259,24 @@ namespace eval ::confVisu {
          image$imageNo configure -scale "$zoom"
 
          #--- Je mets a jour la taille les scrollbars
-         $private($visuNo,hCanvas) configure -scrollregion [list 0 0 $width $height ]
+         setScrollbarSize $visuNo
          #--- Je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
 
       } else {
          #--- je supprime l'item video s'il existe
          Movie::deleteMovieWindow $private($visuNo,hCanvas)
-         #--- mise à jour des scrollbar
-         $private($visuNo,hCanvas) configure \
-            -scrollregion [list 0 0 [expr int(${zoom} * $width)] [expr int(${zoom} * $height)]]
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
-         #--- Je mets a jour la taille du reticule
-         ::confVisu::redrawCrosshair $visuNo
+         #--- je supprime le fenetrage si la fenetre déborde de l'image
+         set windowBox [visu$visuNo window]
+      
+         if { [lindex $windowBox 2] > $width 
+            || [lindex $windowBox 3] > $height } {
+            set private($visuNo,window) "0"
+            setWindow $visuNo
+         } 
+      
 
          #--- Si le buffer contient une image on met a jour les seuils
          if { [ buf$bufNo imageready ] == "1" } {
@@ -304,6 +309,12 @@ namespace eval ::confVisu {
             #--- nettoyage de l'affichage s'il n'y a pas d'image
             visu $visuNo current
          }
+
+         #--- mise à jour des scrollbar
+         setScrollbarSize $visuNo
+         
+         #--- Je mets a jour la taille du reticule
+         ::confVisu::redrawCrosshair $visuNo
       }
 
       #--- je mets a jour le nom du fichier (cette variable est surveillee par un listener)
@@ -346,10 +357,6 @@ namespace eval ::confVisu {
       ::confVisu::ComputeScaleRange $visuNo
       ::confVisu::ChangeHiCutDisplay $visuNo [lindex $cuts 0]
       ::confVisu::ChangeLoCutDisplay $visuNo [lindex $cuts 1]
-      set width  $private($visuNo,picture_w)
-      set height $private($visuNo,picture_h)
-      set zoom   $private($visuNo,zoom)
-      $private($visuNo,hCanvas) configure -scrollregion [ list 0 0 [ expr int(${zoom}*$private($visuNo,picture_w)) ] [ expr int(${zoom}*$private($visuNo,picture_h)) ] ]
 
       # prise en compte de la palette prealablement choisie
       ::audace::MAJ_palette $visuNo
@@ -374,10 +381,7 @@ namespace eval ::confVisu {
       catch { ::AcqFC::stopPreview }
 
       #--- Suppression de la fenetre a l'ecran
-      if { $private($visuNo,box) != "" } {
-         set private($visuNo,box) ""
-         $private($visuNo,hCanvas) delete $private($visuNo,box)
-      }
+      deleteBox $visuNo
 
       #--- je reinitialise l'image
       visu$visuNo clear
@@ -477,34 +481,32 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setZoom
-   #     change le zoom  et rafraichit l'affichage
+   #     change le zoom et rafraichit l'affichage
+   #     conserve le centre de l'image au centre du canvas si possible
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc setZoom { visuNo } {
       variable private
 
+      #--- je recupere les coordonnées du centre du canvas 
       set box [grid bbox .audace.can1 0 0]
       set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]
       set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
 
+      #--- je convertis les dimensions du canvas en coordonnées image
       set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
       set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
 
       visu$visuNo zoom $private($visuNo,zoom)
 
-      #--- Je mets a jour la taille du reticule
-      ::confVisu::redrawCrosshair $visuNo
+      # rafraichissement de l'image avec le nouveau zoom
+      ###if { [ buf[getBufNo $visuNo] imageready ] == "1" } {
+         visu$visuNo clear
+         visu$visuNo disp
+      ###} 
 
-      visu$visuNo clear
-
-      #--- mise à jour des scrollbar
-      $private($visuNo,hCanvas) configure \
-         -scrollregion [list 0 0 [expr int($private($visuNo,zoom) * $private($visuNo,picture_w))] [expr int($private($visuNo,zoom) * $private($visuNo,picture_h))]]
-
-      # rafraichissement de l'image
-      visu$visuNo disp
-
+      #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
       set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
 
       set xFactor [.audace.can1.canvas xview]
@@ -515,18 +517,27 @@ namespace eval ::confVisu {
       set ymin [expr  [lindex $yFactor 0] * [lindex $scrollRegion 3] ]
       set xmax [expr  [lindex $xFactor 1] * [lindex $scrollRegion 2] ]
       set ymax [expr  [lindex $yFactor 1] * [lindex $scrollRegion 3] ]
+      set deltax [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ]
+      set deltay [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ]
+      
+      #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible 
+      if { $deltax < 0 } { set deltax 0 }
+      if { $deltay < 0 } { set deltay 0 }
 
-      set x [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ]
-      set y [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ]
-      if { $x < 0 } { set x 0 }
-      if { $y < 0 } { set y 0 }
-
+      #--- je centre le canvas  
       if { [lindex $scrollRegion 2] != "0" } {
-         .audace.can1.canvas xview moveto [expr 1.0*$x / [lindex $scrollRegion 2] ]
+         .audace.can1.canvas xview moveto [expr 1.0*$deltax / [lindex $scrollRegion 2] ]
       }
       if { [lindex $scrollRegion 3] != "0" } {
-         .audace.can1.canvas yview moveto [expr 1.0*$y / [lindex $scrollRegion 3] ]
+         .audace.can1.canvas yview moveto [expr 1.0*$deltay / [lindex $scrollRegion 3] ]
       }
+
+      #--- mise à jour des scrollbar
+      setScrollbarSize $visuNo
+
+      #--- Je mets a jour la taille du reticule
+      ::confVisu::redrawCrosshair $visuNo
+
 
    }
 
@@ -576,7 +587,7 @@ namespace eval ::confVisu {
    #    camNo : numero de la camera
    #    model : libelle de la camera a afficher dans la visu
    #  exemple : setCamera 2 3 "EOS 300D" cree l'association entre visu2 et cam3
-   #            setCamera 2 "" ""        supprime l'association
+   #            setCamera 2 0            supprime l'association
    #------------------------------------------------------------
    proc setCamera { visuNo camNo { model "" } } {
       variable private
@@ -634,7 +645,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getBufNo
-   #     retourne le nom de camera associee à la visu
+   #     retourne le numero du buffer associe a la visu
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -646,7 +657,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setWindow
-   #     affiche une partie de l'image delimitee par private(visuNo,box)
+   #     affiche une partie de l'image delimitee par private(visuNo,boxSize)
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -660,13 +671,11 @@ namespace eval ::confVisu {
             visu$visuNo window full
             ::confVisu::autovisu $visuNo
          } else {
-            if { $private($visuNo,box) != "" } {
-               visu$visuNo window $private($visuNo,box)
-               set private($visuNo,box) ""
-               $private($visuNo,hCanvas) delete $private($visuNo,hBox)
+            if { $private($visuNo,boxSize) != "" } {
+               visu$visuNo window $private($visuNo,boxSize)
+               deleteBox $visuNo
                ::confVisu::autovisu $visuNo
-               #--- Je masque le reticule
-               ##hideCrosshair $visuNo
+               #--- Je redessine le reticule
                redrawCrosshair $visuNo
             } else {
                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
@@ -693,7 +702,7 @@ namespace eval ::confVisu {
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,fullscreen) == "1" } {
             if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
-               #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des video
+               #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des videos
                set private(gif_anime) "1"
                ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
             } else {
@@ -707,6 +716,50 @@ namespace eval ::confVisu {
          set private($visuNo,fullscreen) "0"
       }
    }
+
+   #------------------------------------------------------------
+   #  setScrollbarSize
+   #     met a jour la taille des scrollbar
+   #     si le parametre box n'est pas founi , la taille des scrollbar est determine
+   #     a partir de l'image deja affichée
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    box   : coordonnee mini et maxi dans le repere image (facultatif)
+   #------------------------------------------------------------
+   proc setScrollbarSize { visuNo { box "" } } {
+      variable private
+
+      if { "$box" == "" } {
+         set windowBox [visu$visuNo window] 
+         if {$windowBox=="full"} {
+            set x0 1
+            set y0 1
+            set x1 $private($visuNo,picture_w)
+            set y1 $private($visuNo,picture_h)
+         } else {
+            set x0 [lindex $windowBox 0]
+            set y0 [lindex $windowBox 1]
+            set x1 [lindex $windowBox 2]
+            set y1 [lindex $windowBox 3]
+         }
+      } else {
+            set x0 [lindex $box 0]
+            set y0 [lindex $box 1]
+            set x1 [lindex $box 2]
+            set y1 [lindex $box 3]
+      }         
+      #--- j'ajoute une unite en largeur et en hauteur pour que les scollbars 
+      #--- permettent de voir l'ensemble de l'image
+      set x1 [expr $x1 + 1 ]
+      set y0 [expr $y0 - 1 ]
+      set coord0 [ picture2Canvas $visuNo [list $x0 $y0 ] ]
+      set coord1 [ picture2Canvas $visuNo [list $x1 $y1 ] ]
+
+      #--- attention : il faut inverser y0 et y1 car l'origine de l'axe y est en haut dans le repere canvas
+      $private($visuNo,hCanvas) configure \
+         -scrollregion [list [lindex $coord0 0] [lindex $coord1 1] [lindex $coord1 0] [lindex $coord0 1]]
+   }
+
 
    #------------------------------------------------------------
    #  setVideo
@@ -1159,16 +1212,16 @@ namespace eval ::confVisu {
       if { "$command" == "default" } {
          switch -exact $sequence     {
             <ButtonPress-1> {
-               bind $private($visuNo,hCanvas) <ButtonPress-1>   "::confVisu::pressButton1 $visuNo %x %y"
+               bind $private($visuNo,hCanvas) <ButtonPress-1>   "::confVisu::onPressButton1 $visuNo %x %y"
             }
             <ButtonRelease-1> {
-               bind $private($visuNo,hCanvas) <ButtonRelease-1> "::confVisu::releaseButton1 $visuNo %x %y"
+               bind $private($visuNo,hCanvas) <ButtonRelease-1> "::confVisu::onReleaseButton1 $visuNo %x %y"
             }
             <B1-Motion> {
-               bind $private($visuNo,hCanvas) <B1-Motion>       "::confVisu::motionButton1 $visuNo %x %y"
+               bind $private($visuNo,hCanvas) <B1-Motion>       "::confVisu::onMotionButton1 $visuNo %x %y"
             }
             <Motion> {
-               bind $private($visuNo,hCanvas) <Motion>          "::confVisu::motionMouse $visuNo %x %y"
+               bind $private($visuNo,hCanvas) <Motion>          "::confVisu::onMotionMouse $visuNo %x %y"
             }
             <ButtonPress-3> {
                bind $private($visuNo,hCanvas) <ButtonPress-3>   "::confVisu::showPopupMenu $visuNo %X %Y"
@@ -1353,11 +1406,15 @@ namespace eval ::confVisu {
       set height $private($visuNo,picture_h)
 
       if {$window=="full"} {
-         set x0 0
-         set y0 0
+         set x0 1
+         set y0 1
+         set x1 $private($visuNo,picture_w)
+         set y1 $private($visuNo,picture_h)
       } else {
          set x0 [lindex $window 0]
          set y0 [lindex $window 1]
+         set x1 [lindex $window 2]
+         set y1 [lindex $window 3]
       }
 
       if { $private($visuNo,mirror_x) == 1 } {
@@ -1368,17 +1425,17 @@ namespace eval ::confVisu {
       }
       
       if {$zoom >= 1} {
-         set xx [expr [lindex $coord 0] / $zoom - $private($visuNo,picture_orgx) + 1 + $x0]
-         set yy [expr $height + $private($visuNo,picture_orgy) - ([lindex $coord 1]/$zoom) - $y0]
+         set xx [expr [lindex $coord 0] / $zoom + $x0]
+         set yy [expr $y1 - [lindex $coord 1] / $zoom ]
       } else {
          if {$stick == "left"} {
             #--- Ce calcul sert a obtenir la borne inferieure en cas de sous-echantillonnage
-            set xx [expr int([lindex $coord 0] / $zoom - $private($visuNo,picture_orgx) + 1 + $x0)]
-            set yy [expr int($height + $private($visuNo,picture_orgy) - ([lindex $coord 1] + 1) / $zoom + 1 - $y0)]
+            set xx [expr int([lindex $coord 0] / $zoom  + 1 + $x0)]
+            set yy [expr int($y1 - ([lindex $coord 1] + 1) / $zoom + 1 )]
          } else {
             #--- Alors que ce calcul sert a obtenir la borne superieure en cas de sous-echantillonnage
-            set xx [expr int(([lindex $coord 0] + 1) / $zoom - $private($visuNo,picture_orgx) + $x0)]
-            set yy [expr int($height + $private($visuNo,picture_orgy) - [lindex $coord 1] / $zoom - $y0)]
+            set xx [expr int(([lindex $coord 0] + 1) / $zoom  + $x0)]
+            set yy [expr int($y1 - [lindex $coord 1] / $zoom )]
          }
       }
       return [list $xx $yy]
@@ -1393,21 +1450,25 @@ namespace eval ::confVisu {
       variable private
 
       set zoom    $private($visuNo,zoom)
-      set window  [visu$visuNo window]
+      set windowBox  [visu$visuNo window]
       set height $private($visuNo,picture_h)
-      if {$window=="full"} {
-         set x0 0
-         set y0 0
+      if {$windowBox=="full"} {
+         set x0 1
+         set y0 1
+         set x1 $private($visuNo,picture_w)
+         set y1 $private($visuNo,picture_h)
       } else {
-         set x0 [lindex $window 0]
-         set y0 [lindex $window 1]
+         set x0 [lindex $windowBox 0]
+         set y0 [lindex $windowBox 1]
+         set x1 [lindex $windowBox 2]
+         set y1 [lindex $windowBox 3]
       }
-      set xx [ expr int(( [lindex $coord 0] + $private($visuNo,picture_orgx) - 1 - $x0)*$zoom) ]
-      set yy [ expr int(( $height  -[lindex $coord 1] + $private($visuNo,picture_orgy) + $y0)*$zoom) ]
+      set xx [ expr int(( [lindex $coord 0] - $x0)*$zoom) ]
+      set yy [ expr int(( $y1 -[lindex $coord 1] )*$zoom) ]
       return [list $xx $yy]
    }
 
-   proc pressButton1 { visuNo x y } {
+   proc onPressButton1 { visuNo x y } {
       variable private
       global caption
 
@@ -1423,7 +1484,6 @@ namespace eval ::confVisu {
             if {[lindex $liste 0]<$wz && [lindex $liste 1]<$hz} {
                ::confVisu::boxBegin $visuNo [list $x $y]
                set ::confVisu::private($visuNo,MouseState) dragging
-               ###set audace(clickxy) [::confVisu::canvas2Picture $visuNo [::confVisu::screen2Canvas $visuNo [list $x $y] ] ]
             }
          }
       } else {
@@ -1434,7 +1494,7 @@ namespace eval ::confVisu {
       }
    }
 
-   proc motionButton1 { visuNo x y } {
+   proc onMotionButton1 { visuNo x y } {
       variable private
 
       if { [string compare $::confVisu::private($visuNo,MouseState) dragging] == 0 } {
@@ -1445,7 +1505,7 @@ namespace eval ::confVisu {
       }
    }
 
-   proc releaseButton1 { visuNo x y } {
+   proc onReleaseButton1 { visuNo x y } {
       variable private
       if { [string compare $private($visuNo,MouseState) dragging] == 0 } {
          set private($visuNo,MouseState) rien
@@ -1475,7 +1535,7 @@ namespace eval ::confVisu {
       }
    }
 
-   proc motionMouse { visuNo x y } {
+   proc onMotionMouse { visuNo x y } {
       #--- Affichage des coordonnees
       ::confVisu::displayCursorCoord $visuNo [list $x $y]
    }
@@ -1484,13 +1544,33 @@ namespace eval ::confVisu {
       variable private
       global caption
 
-      catch {
-         #--- Transformation des coordonnees ecran en coordonnees image (pour tenir compte du retournement de l'image)
-         set coord [ ::confVisu::canvas2Picture $visuNo [ ::confVisu::screen2Canvas $visuNo $coord ] ]
+      #--- Transformation des coordonnees ecran en coordonnees image (pour tenir compte du retournement de l'image)
+      set coord [ ::confVisu::canvas2Picture $visuNo [ ::confVisu::screen2Canvas $visuNo $coord ] ]
+      set xc [lindex $coord 0 ] 
+      set yc [lindex $coord 1 ] 
+     
+      set windowBox [visu$visuNo window]
+      if {$windowBox=="full"} {
+         set x0 1
+         set y0 1
+         set x1 $private($visuNo,picture_w)
+         set y1 $private($visuNo,picture_h)
+      } else {
+         set x0 [lindex $windowBox 0]
+         set y0 [lindex $windowBox 1]
+         set x1 [lindex $windowBox 2]
+         set y1 [lindex $windowBox 3]
+      }
 
-         set This $private($visuNo,This)
-         set bufNo [visu$visuNo buf]
+      set This $private($visuNo,This)
+      set bufNo [visu$visuNo buf]
 
+      #--- j'affiche les coordonnees si le curseur de la souris est a l'interieur de la fenetre
+      if { $xc < $x0 || $xc > $x1 || $yc < $y0 || $yc >$y1  } {
+         set xi "-"
+         set yi "-"
+         set intensite "$caption(caractere,I) $caption(caractere,egale) -"
+      } else {
          #--- xi et yi sont des 'coordonnees-image'
          set xi [ lindex $coord 0 ]
          set yi [ lindex $coord 1 ]
@@ -1512,31 +1592,42 @@ namespace eval ::confVisu {
                   $caption(couleur,bleu)[ string trimleft [ format "%8.0f" [ lindex $ii 3 ] ] " " ]"
             }
          }
-
-         #--- Affichage a l'ecran
-         if { $private($visuNo,labcoord_type) == "xy" } {
-            $This.fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $xi"
-            $This.fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $yi"
-            $This.fra1.labI configure -text "$intensite"
-         } else {
-            set temp [ buf$bufNo xy2radec [ list $xi $yi ] ]
+      }
+      
+      #--- Affichage a l'ecran
+      if { $private($visuNo,labcoord_type) == "xy" } {
+         $This.fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $xi"
+         $This.fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $yi"
+         $This.fra1.labI configure -text "$intensite"
+      } else {
+         if { $xi != "-" } {
+            set result [catch { set temp [ buf$bufNo xy2radec [ list $xi $yi ] ] } ]
+            if { $result == 1 } {
+               #--- en cas d'erreur de conversion, je reviens encoordonnees xy
+               set private($visuNo,labcoord_type) "xy"
+               return
+            }
+               
             $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) [ mc_angle2hms [ lindex $temp 0 ] 360 zero 1 auto string ]"
             $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) [ mc_angle2dms [ lindex $temp 1 ] 90 zero 0 + string ]"
-            $This.fra1.labI configure -text "$intensite"
+         } else {
+            $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) -"
+            $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) -"         
          }
+         $This.fra1.labI configure -text "$intensite"
       }
    }
 
    #------------------------------------------------------------
    #  getBox
-   #     retourne
+   #     retourne les coordonnées de la boite (coordonnees image)
    #  parametres :
    #     visuNo : numero de la visu
    #------------------------------------------------------------
    proc getBox { { visuNo "1" } } {
       variable private
 
-      return $private($visuNo,box)
+      return $private($visuNo,boxSize)
    }
 
    #------------------------------------------------------------
@@ -1556,8 +1647,8 @@ namespace eval ::confVisu {
    proc boxBegin { visuNo coord } {
       variable private
 
-      set private($visuNo,box) ""
       set private($visuNo,box_1) [ screen2Canvas $visuNo $coord ]
+      deleteBox $visuNo
    }
 
    #
@@ -1569,8 +1660,7 @@ namespace eval ::confVisu {
 
       ::confVisu::boxDrag $visuNo $coord
       if { $private($visuNo,box_1) == $private($visuNo,box_2) } {
-         set private($visuNo,box) ""
-         $private($visuNo,hCanvas) delete $private($visuNo,hBox)
+         deleteBox $visuNo
       } else {
          if {[lindex $private($visuNo,box_1) 0] > [lindex $private($visuNo,box_2) 0]} {
             set x1 [lindex $private($visuNo,box_2) 0]
@@ -1593,8 +1683,7 @@ namespace eval ::confVisu {
          set y1 [lindex $coord1 1]
          set x2 [lindex $coord2 0]
          set y2 [lindex $coord2 1]
-         set private($visuNo,box) ""
-         set private($visuNo,box) [list $x1 $y1 $x2 $y2]
+         set private($visuNo,boxSize) [list $x1 $y1 $x2 $y2]
       }
    }
 
@@ -1613,7 +1702,9 @@ namespace eval ::confVisu {
       set wz [expr $width * $zoom]
       set hz [expr $height * $zoom]
 
-      catch {$private($visuNo,hCanvas) delete $private($visuNo,hBox)}
+      if { $private($visuNo,hBox) != "" } {
+         $private($visuNo,hCanvas) delete $private($visuNo,hBox)
+      }
       set x [lindex $coord 0]
       if {$x<0} {set coord [lreplace $coord 0 0 0]}
       if {$x>=$wz} {
@@ -1632,8 +1723,8 @@ namespace eval ::confVisu {
    proc deleteBox { { visuNo "1" } } {
       variable private
 
-      if { $private($visuNo,box) != "" } {
-         set private($visuNo,box) ""
+      if { $private($visuNo,boxSize) != "" } {
+         set private($visuNo,boxSize) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
       }
    }
@@ -1753,7 +1844,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setCrosshair
-   #  set Crosshair  state
+   #  set Crosshair state
    #   state = 0 or 1
    #------------------------------------------------------------
    proc setCrosshair { visuNo state } {
@@ -1765,7 +1856,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getCrosshair
-   #  
+   #  returns crosshair state 1=shown 0=hidden
    #  
    #------------------------------------------------------------
    proc getCrosshair { visuNo } {
@@ -1829,42 +1920,50 @@ namespace eval ::confVisu {
          label $private($visuNo,hCrosshairV) -bg $conf(crosshair,color)
       }
 
-      #--- j'applique la couleur
-      $private($visuNo,hCrosshairH) configure -bg $conf(crosshair,color)
-      $private($visuNo,hCrosshairV) configure -bg $conf(crosshair,color)
-
-      #--- calcul des dimensions en fonction du zoom et du fenetrage
-      set zoom $private($visuNo,zoom)
-      set w $private($visuNo,picture_w)
-      set h $private($visuNo,picture_h)
-
-      set box [visu$visuNo window] 
-      if { $box == "full" } {
-         set xc [expr int( $w / 2 ) * $zoom ]
-         set yc [expr int( $h / 2 ) * $zoom ]
-         set w [expr int($zoom*$w)]
-         set h [expr int($zoom*$h)]
+      #--- coordonnees du centre du reticule dans le repere canvas
+      #--- attention : le reticule est centré sur l'image (pas sur le canvas)
+      set xc [expr int($private($visuNo,picture_w) / 2) ]
+      set yc [expr int($private($visuNo,picture_h) / 2) ]
+      set centerCoord [ picture2Canvas $visuNo [list $xc $yc ] ]
+      set xcCanvas [lindex $centerCoord 0]
+      set ycCanvas [lindex $centerCoord 1]
+      
+      #--- longueur des traits du reticule dans le repere canvas
+      #--- en fonction de la fenetre et du zoom
+      set windowBox [visu$visuNo window] 
+      if {$windowBox=="full"} {
+         set x0 1
+         set y0 1
+         set x1 $private($visuNo,picture_w)
+         set y1 $private($visuNo,picture_h)
       } else {
-         set xc [expr  int($w  / 2 - [lindex $box 0] ) * $zoom ]
-         set yc [expr  int($h  / 2 - [lindex $box 1] ) * $zoom ]
-         set w [expr int($zoom * ([lindex $box 2] - [lindex $box 0]))]
-         set h [expr int($zoom * ([lindex $box 3] - [lindex $box 1]))]
+         set x0 [lindex $windowBox 0]
+         set y0 [lindex $windowBox 1]
+         set x1 [lindex $windowBox 2]
+         set y1 [lindex $windowBox 3]
+      }
+      set coord0Canvas [ picture2Canvas $visuNo [list $x0 $y0 ] ]
+      set coord1Canvas [ picture2Canvas $visuNo [list $x1 $y1 ] ]
+      set widthCanvas [expr [lindex $coord1Canvas 0] - [lindex $coord0Canvas 0] + 1]
+      set heightCanvas [expr [lindex $coord0Canvas 1] - [lindex $coord1Canvas 1] + 1]
+
+      #--- j'affiche le trait horizontal du reticule s'il est a l'interieur de la fenetre
+      if { $yc >= $y0 && $yc <= $y1  } {
+         $hCanvas create window 1 1 -tag lineh -anchor nw -window $private($visuNo,hCrosshairH) -height 1
+         $hCanvas coords lineh 0 $ycCanvas
+         $hCanvas itemconfigure lineh -width $widthCanvas
+         $hCanvas itemconfigure lineh -state normal
+         raise $private($visuNo,hCrosshairH)
       }
 
-      
-      #--- draw horizontal line
-      $hCanvas create window 1 1 -tag lineh -anchor nw -window $private($visuNo,hCrosshairH) -height 1
-      $hCanvas coords lineh 0 $yc
-      $hCanvas itemconfigure lineh -width $w
-      $hCanvas itemconfigure lineh -state normal
-      raise $private($visuNo,hCrosshairH)
-
-      #--- draw vertical line
-      $hCanvas create window 1 1 -tag linev -anchor nw -window $private($visuNo,hCrosshairV) -width 1
-      $hCanvas coords linev $xc 0
-      $hCanvas itemconfigure linev -height $h
-      $hCanvas itemconfigure linev -state normal
-      raise $private($visuNo,hCrosshairV)
+      #--- j'affiche le trait vertical du reticule s'il est a l'interieur de la fenetre
+      if { $xc >= $x0 && $xc <= $x1  } {
+         $hCanvas create window 1 1 -tag linev -anchor nw -window $private($visuNo,hCrosshairV) -width 1
+         $hCanvas coords linev $xcCanvas 0
+         $hCanvas itemconfigure linev -height $heightCanvas
+         $hCanvas itemconfigure linev -state normal
+         raise $private($visuNo,hCrosshairV)
+      }
    }
 
    #------------------------------------------------------------
@@ -1880,7 +1979,7 @@ namespace eval ::confVisu {
    }
 
 }
-####  namespace end
+#---  namespace end
 
 ::confVisu::init
 
