@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Date de mise a jour : 03 juin 2006
+# Date de mise a jour : 06 juin 2006
 #
 
 ##############################################################################
@@ -88,6 +88,7 @@ namespace eval ::FullScreen {
    #------------------------------------------------------------------------------
    proc createFullscreen { visuNo hCanvas } {
       variable private
+      global audace
       global conf
 
       #--- je verifie que les variables de cette fenetre existent dans $conf(...)
@@ -121,6 +122,9 @@ namespace eval ::FullScreen {
 
       #--- je cree le popup menu
       createPopupMenu $visuNo
+
+      #--- j'iconifie la fenetre Console
+      wm iconify $audace(Console)
 
       #--- j'affiche la fenetre en plein ecran
       set maxsize [wm maxsize $private(toplevel)]
@@ -227,6 +231,9 @@ namespace eval ::FullScreen {
       catch {
          ::Movie::close $::confVisu::private($visuNo,hCanvas)
       }
+
+      #--- je deconifie la fenetre Console
+      wm deiconify $audace(Console)
 
       #--- je place l'image dans le coin en haut a gauche et je restitue la couleur du canvas de la fenetre principale
       $private(hCanvas) itemconfigure display -anchor nw
