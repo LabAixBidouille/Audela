@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 12 mars 2006
+# Date de mise a jour : 06 juin 2006
 #
 
 #!/bin/sh
@@ -98,9 +98,18 @@ caption_def $langage
 # ========================================
 # === Setting the astronomical devices ===
 # ========================================
-#--- definition of global variables
-global lpt       # name of the audine port
-set lpt "lpt1"
+
+#--- si la fenetre secondaire existe deja, je la detruis
+if { [winfo exists .second] } {
+   destroy .second
+}
+
+#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+if { [winfo exists .main] } {
+   wm deiconify .main
+   focus .main
+   return
+}
 
 #--- declare a new buffer in memory to place images
 set num(buf1) [buf::create]
@@ -380,6 +389,7 @@ bind .main <Destroy> {
 proc tuto_exit { } {
    global audace
    global num
+   ::buf::delete $num(buf1)
    ::visu::delete $num(visu1)
    catch {
       image delete image21
