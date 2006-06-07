@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# $Id: confvisu.tcl,v 1.26 2006-06-06 22:35:15 michelpujol Exp $
+# $Id: confvisu.tcl,v 1.27 2006-06-07 17:29:56 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -405,13 +405,13 @@ namespace eval ::confVisu {
       if { $scales == "xy_radec" } {
          $private($visuNo,This).fra1.labURLX configure -fg $color(blue)
          $private($visuNo,This).fra1.labURLY configure -fg $color(blue)
-         set private($visuNo,labcoord_type) xy
+        ### set private($visuNo,labcoord_type) "xy"
          bind $private($visuNo,This).fra1.labURLX <Button-1> "::confVisu::toogleCoordType $visuNo"
          bind $private($visuNo,This).fra1.labURLY <Button-1> "::confVisu::toogleCoordType $visuNo"
       } else {
          $private($visuNo,This).fra1.labURLX configure -fg $audace(color,textColor)
          $private($visuNo,This).fra1.labURLY configure -fg $audace(color,textColor)
-         set private($visuNo,labcoord_type)  xy
+         set private($visuNo,labcoord_type) "xy"
          #--- Annulation des bindings
          bind $private($visuNo,This).fra1.labURLX <Button-1> {}
          bind $private($visuNo,This).fra1.labURLY <Button-1> {}
@@ -429,11 +429,11 @@ namespace eval ::confVisu {
       variable private
 
        if { $private($visuNo,labcoord_type) == "xy" } {
-         set private($visuNo,labcoord_type) radec
+         set private($visuNo,labcoord_type) "radec"
          $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
          $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
        } else {
-         set private($visuNo,labcoord_type) xy
+         set private($visuNo,labcoord_type) "xy"
          $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
          $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
        }
@@ -1546,9 +1546,9 @@ namespace eval ::confVisu {
 
       #--- Transformation des coordonnees ecran en coordonnees image (pour tenir compte du retournement de l'image)
       set coord [ ::confVisu::canvas2Picture $visuNo [ ::confVisu::screen2Canvas $visuNo $coord ] ]
-      set xc [lindex $coord 0 ] 
-      set yc [lindex $coord 1 ] 
-     
+      set xc [lindex $coord 0 ]
+      set yc [lindex $coord 1 ]
+
       set windowBox [visu$visuNo window]
       if {$windowBox=="full"} {
          set x0 1
@@ -1566,10 +1566,10 @@ namespace eval ::confVisu {
       set bufNo [visu$visuNo buf]
 
       #--- j'affiche les coordonnees si le curseur de la souris est a l'interieur de la fenetre
-      if { $xc < $x0 || $xc > $x1 || $yc < $y0 || $yc >$y1  } {
-         set xi "-"
-         set yi "-"
-         set intensite "$caption(caractere,I) $caption(caractere,egale) -"
+      if { $xc < $x0 || $xc > $x1 || $yc < $y0 || $yc >$y1 } {
+         set xi "$caption(caractere,tiret)"
+         set yi "$caption(caractere,tiret)"
+         set intensite "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
       } else {
          #--- xi et yi sont des 'coordonnees-image'
          set xi [ lindex $coord 0 ]
@@ -1593,26 +1593,26 @@ namespace eval ::confVisu {
             }
          }
       }
-      
+
       #--- Affichage a l'ecran
       if { $private($visuNo,labcoord_type) == "xy" } {
          $This.fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $xi"
          $This.fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $yi"
          $This.fra1.labI configure -text "$intensite"
       } else {
-         if { $xi != "-" } {
+         if { $xi != "$caption(caractere,tiret)" } {
             set result [catch { set temp [ buf$bufNo xy2radec [ list $xi $yi ] ] } ]
             if { $result == 1 } {
                #--- en cas d'erreur de conversion, je reviens encoordonnees xy
                set private($visuNo,labcoord_type) "xy"
                return
             }
-               
+
             $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) [ mc_angle2hms [ lindex $temp 0 ] 360 zero 1 auto string ]"
             $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) [ mc_angle2dms [ lindex $temp 1 ] 90 zero 0 + string ]"
          } else {
-            $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) -"
-            $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) -"         
+            $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
+            $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
          }
          $This.fra1.labI configure -text "$intensite"
       }
