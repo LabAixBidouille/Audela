@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.1 2006-02-25 17:08:22 michelpujol Exp $
+// $Id: camtcl.c,v 1.2 2006-06-07 18:22:41 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -52,6 +52,8 @@ int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
    if ((argc != 2) && (argc != 3)) {
       sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -76,6 +78,107 @@ int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *
 
 /*
  * -----------------------------------------------------------------------------
+ *  cmdCamDriveMode()
+ *
+ * Change or returns drive mode
+ *    driveMode = 0   : single shoot
+ *    driveMode = 1   : continuous
+ *    driveMode = 2   : self timer 
+ * -----------------------------------------------------------------------------
+ */
+int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1|2?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      strcpy(ligne, "");
+      sprintf(ligne, "%d", cam->driverMode );
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      if(argv[2][0] == '0' || argv[2][0] == '1' || argv[2][0] == '2') {
+         cam->driverMode = atoi(argv[2]);
+         result = TCL_OK;
+      } else {
+         sprintf(ligne, "Usage: %s %s ?0|1|2?\n Invalid value. Must be in  0,1 or 2", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdCamQuality()
+ *
+ * 
+ *  cam1 quality
+ *    returns quality
+ *
+ *  cam1 quality value 
+ *    set quality value
+ * 
+ *  cam1 quality list
+ *    return quality list
+ *
+ *  qualitéy list for Canon driver :
+ *    quality = "CRW"      (raw quality)
+ *    quality = "Large:Fine"
+ *    quality = "Large:Normal" 
+ *    quality = "Middle:Fine"
+ *    quality = "Middle:Normal" 
+ *    quality =  ....
+ * -----------------------------------------------------------------------------
+ */
+int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?quality?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      strcpy(ligne, "");
+      sprintf(ligne, "%s", cam->quality );
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      if ( strcmp(argv[2],"list") ==0 ) {
+         char list[1024];
+         cam_getQualityList( list );
+         sprintf(ligne, "%s", list);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_OK;
+      } else if( cam_checkQuality(argv[2]) == 0 ) {
+         strcpy(cam->quality, argv[2]);
+         result = TCL_OK;
+      } else {      
+         char list[1024];
+         cam_getQualityList( list );
+         sprintf(ligne, "Usage: %s %s ?quality?\n Invalid value. Must be list or in {%s}", argv[0], argv[1], list);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
+/*
+ * -----------------------------------------------------------------------------
  *  cmdAutoLoadFlag()
  *
  * load last image from camera
@@ -86,12 +189,13 @@ int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *
 int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]) {
    int result;
    struct camprop *cam;
-   char s[100];
-   char *p;		/* cameras de 1 a 16 bits non signes */
+   char s[1000];
    double ra, dec, exptime = 0.;
    int status;
 
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
    // reset message
    strcpy(cam->msg,"");
    
@@ -106,10 +210,7 @@ int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char 
    if( status == 0) {
       libcam_GetCurrentFITSDate(interp, cam->date_end);
       libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
-      
-      p =  cam->pixel_data;
-      
-      
+            
       // Ce test permet de savoir si le buffer existe
       sprintf(s, "buf%d bitpix", cam->bufno);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
@@ -117,9 +218,34 @@ int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char 
          Tcl_Eval(interp, s);
       }
       
-      // decompress and store pixels into the buffer
-      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu", 
-         cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,(int) p, cam->pixel_size);
+      // --- application du miroir horizontal
+      if( cam->mirrorh == 1 ) {
+         // j'inverse l'orientation de l'image par rapport à un miroir horizontal
+         if( cam->pixels_reverse_y == 1 ) {
+            cam->pixels_reverse_y = 0; 
+         } else {
+            cam->pixels_reverse_y = 1; 
+         }
+      }
+      
+      // --- application du miroir vertical
+      if( cam->mirrorv == 1 ) {
+         // j'inverse l'orientation de l'image par rapport à un miroir vertical
+         if( cam->pixels_reverse_x == 1 ) {
+            cam->pixels_reverse_x = 0; 
+         } else {
+            cam->pixels_reverse_x = 1; 
+         }
+      }
+      
+      //--- set pixels to buffer 
+      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d", 
+         cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
+         (void *) cam->pixel_data, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         strcpy(s, interp->result);
+      }
+
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          strcpy(s, interp->result);
       }
@@ -137,6 +263,15 @@ int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char 
       }   
       
       /* Add FITS keywords */
+      if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
+         sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+         Tcl_Eval(interp, s);
+      } else if ( strcmp(cam->pixels_classe, "CLASS_RGB")==0 ) {
+         sprintf(s, "buf%d setkwd {NAXIS 3 int \"\" \"\"}", cam->bufno);
+         Tcl_Eval(interp, s);
+         sprintf(s, "buf%d setkwd {NAXIS3 3 int \"\" \"\"}", cam->bufno);
+         Tcl_Eval(interp, s);
+      }
       sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
       Tcl_Eval(interp, s);
       sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
@@ -171,7 +306,7 @@ int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char 
          sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
          Tcl_Eval(interp, s);
       }
-      free(p);
+      free(cam->pixel_data);
       
 
       Tcl_SetResult(interp, "", TCL_VOLATILE);
@@ -199,6 +334,8 @@ int cmdSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char 
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
    if ((argc != 2) && (argc != 3)) {
       sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -234,22 +371,18 @@ int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc,
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
    if ((argc != 2) && (argc != 3)) {
       pb = 1;
    } else if (argc == 2) {
       pb = 0;
    } else {
-      if (strcmp(argv[2], "0") == 0) {
-         cam->longuepose = 0;
-         pb = 0;
-      } else if (strcmp(argv[2], "1") == 0) {
-         cam->longuepose = 1;
-         pb = 0;
-      } else if (strcmp(argv[2], "2") == 0) {
-         cam->longuepose = 2;
-         pb = 0;
+      int value;
+      if(Tcl_GetInt(interp,argv[2],&value)==TCL_OK) {
+         pb = cam_setLonguePose(cam, value);
       } else {
-         pb = 1;
+         pb= 1;
       }
    }
    if (pb == 1) {
@@ -275,17 +408,27 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
 
-   if (argc != 3) {
+
+   if (argc < 2  && argc > 3) {
       sprintf(ligne, "Usage: %s %s ?linkno?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
+      if ( argc == 2 ) {
+         sprintf(ligne, "%d", cam->longueposelinkno);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_OK;
+      } else {
       // je memorise le numero du link
       if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkno)!=TCL_OK) {
          sprintf(ligne,"Usage: %s %s linkno\n linkno = must be an integer > 0",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
+         } else {
+            result = TCL_OK;
+         }
       } 
    }
    return result;
@@ -303,6 +446,8 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
 
    if (argc != 3) {
       sprintf(ligne, "Usage: %s %s ?numbit", argv[0], argv[1]);
@@ -331,6 +476,8 @@ int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
    if ((argc != 2) && (argc != 3)) {
       pb = 1;
    } else if (argc == 2) {
@@ -361,6 +508,8 @@ int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp,
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
    if ((argc != 2) && (argc != 3)) {
       pb = 1;
    } else if (argc == 2) {

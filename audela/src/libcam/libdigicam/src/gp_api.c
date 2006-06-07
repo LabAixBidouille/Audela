@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: gp_api.c,v 1.1 2006-02-25 17:08:22 michelpujol Exp $
+// $Id: gp_api.c,v 1.2 2006-06-07 18:22:41 michelpujol Exp $
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -263,7 +263,7 @@ int gpapi_close (GPParams *gpparams)
 
 
 
-int gpapi_prepareExternalRemoteCapture (GPParams *gpparams)
+int gpapi_setExternalRemoteCapture (GPParams *gpparams, int value)
 {
    CameraWidget *driverWidget = NULL;
    CameraWidget *externalRemoteWidget = NULL;
@@ -280,7 +280,7 @@ int gpapi_prepareExternalRemoteCapture (GPParams *gpparams)
    
    CR(gp_widget_get_child_by_label (gpparams->config, "Driver", &driverWidget));
    CR(gp_widget_get_child_by_label (driverWidget, "External remote", &externalRemoteWidget));
-   ivalue = 1;
+   ivalue = value;
    CR(gp_widget_set_value(externalRemoteWidget, &ivalue ));
    CR(gp_widget_get_child_by_label (driverWidget, "Transfert Mode", &transfertModeWidget));
    ivalue = 8;
@@ -403,10 +403,10 @@ int gpapi_loadPreview (GPParams *gpparams,  char * cameraFolder, char * destinat
 
 /**
   * deleteImage
- *     delete image 
- *  parameters : 
- *     cameraFolder (IN) :  folder  in camera memory card
- *     fileName (IN)     :  file name  in camera memory card
+  *     delete image 
+  *  parameters : 
+  *     cameraFolder (IN) :  folder  in camera memory card
+  *     fileName (IN)     :  file name  in camera memory card
   */
 int gpapi_deleteImage (GPParams *gpparams,  char * cameraFolder, char *fileName)
 {
@@ -415,7 +415,75 @@ int gpapi_deleteImage (GPParams *gpparams,  char * cameraFolder, char *fileName)
     return (GPAPI_OK);
 }
 
+/**
+  * gpapi_getTimeValue
+  *     get release time value  ( 
+  *  parameters : 
+  *     timeValue (OUT) :  exposure  time ( "1/1000", "1/500" , ... "0.1", "1", ... )
+  */
+int gpapi_getTimeValue (GPParams *gpparams, float * timeValue, int *driveMode, char *quality)
+{
+   CameraWidget *releaseWidget = NULL;
+   CameraWidget *timeValueWidget = NULL;
+   CameraWidget *driveModeWidget = NULL;
+   CameraWidget *qualityWidget = NULL;
+   char *qualityPtr;
 
+   if ( gpparams->config == NULL)  {
+      CR (gp_camera_get_config( gpparams->camera, &gpparams->config, gpparams->context));      
+   }
+   
+   CR(gp_widget_get_child_by_label (gpparams->config, "Release", &releaseWidget));
+   CR(gp_widget_get_child_by_label (releaseWidget, "Time value", &timeValueWidget));
+   CR(gp_camera_get_config( gpparams->camera, &timeValueWidget, gpparams->context)); 
+   CR(gp_widget_get_value(timeValueWidget, &timeValue));
+   
+   CR(gp_widget_get_child_by_label (releaseWidget, "Drive mode", &driveModeWidget));
+   CR (gp_camera_get_config( gpparams->camera, &driveModeWidget, gpparams->context)); 
+   CR(gp_widget_get_value(driveModeWidget, &driveMode));
+
+   CR(gp_widget_get_child_by_label (releaseWidget, "Quality", &qualityWidget));
+   CR (gp_camera_get_config( gpparams->camera, &qualityWidget, gpparams->context)); 
+   CR(gp_widget_get_value(qualityWidget, &qualityPtr));
+   strcpy(quality,qualityPtr);
+
+   return GPAPI_OK;
+}
+
+
+/**
+  * gpapi_setTimeValue
+  *     set release time value 
+  *  parameters : 
+  *     timeValue (IN) :  exposure  time ( "1/1000", "1/500" , ... "0.1", "1", ... )
+  */
+
+int gpapi_setTimeValue (GPParams *gpparams, float timeValue, int driveMode, char *quality)
+{
+   CameraWidget *releaseWidget = NULL;
+   CameraWidget *timeValueWidget = NULL;
+   CameraWidget *driveModeWidget = NULL;
+   CameraWidget *qualityWidget = NULL;
+   
+   if ( gpparams->config == NULL)  {
+      CR (gp_camera_get_config( gpparams->camera, &gpparams->config, gpparams->context));      
+   }
+   
+   CR(gp_widget_get_child_by_label (gpparams->config, "Release", &releaseWidget));
+
+   CR(gp_widget_get_child_by_label (releaseWidget, "Time value", &timeValueWidget));
+   CR(gp_widget_set_value(timeValueWidget, &timeValue));
+   CR(gp_camera_set_config( gpparams->camera, timeValueWidget, gpparams->context)); 
+
+   CR(gp_widget_get_child_by_label (releaseWidget, "Drive mode", &driveModeWidget));
+   CR(gp_widget_set_value(driveModeWidget, &driveMode));
+   CR(gp_camera_set_config( gpparams->camera, driveModeWidget, gpparams->context)); 
+
+   CR(gp_widget_get_child_by_label (releaseWidget, "Quality", &qualityWidget));
+   CR(gp_widget_set_value(qualityWidget, quality));
+   CR(gp_camera_set_config( gpparams->camera, qualityWidget, gpparams->context)); 
+   return GPAPI_OK;
+}
 
 
 

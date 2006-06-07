@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.1 2006-02-25 17:08:22 michelpujol Exp $
+// $Id: camera.c,v 1.2 2006-06-07 18:22:41 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -57,8 +57,8 @@
 */
 
 struct camini CAM_INI[] = {
-   {"DSC",			/* camera name */
-    "dsc",			/* camera product */
+   {"DSLR",			/* camera name */
+    "dslr",			/* camera product */
      "cmos",		/* ccd name */
       1536, 1024,			/* maxx maxy */
       23, 14,			/* overscans x */
@@ -83,6 +83,14 @@ struct camini CAM_INI[] = {
    CAM_INI_NULL
 };
 
+enum  {
+   REMOTE_INTERNAL = 0,
+   REMOTE_LINK     = 1,
+   REMOTE_MANUEL   = 2
+};
+
+
+
 static int cam_init(struct camprop *cam, int argc, char **argv);
 static int cam_close(struct camprop *cam);
 static void cam_start_exp(struct camprop *cam, char *amplionoff);
@@ -102,35 +110,41 @@ int cam_setLongExposureDevice(struct camprop *cam, unsigned char value);
 
 struct cam_drv_t CAM_DRV = {
    cam_init,
-      cam_close,
-      cam_set_binning,
-      cam_update_window,
-      cam_start_exp,
-      cam_stop_exp,
-      cam_read_ccd,
-      cam_shutter_on,
-      cam_shutter_off,
-      cam_ampli_on,
-      cam_ampli_off,
-      cam_measure_temperature,
-      cam_cooler_on,
-      cam_cooler_off,
-      cam_cooler_check
+   cam_close,
+   cam_set_binning,
+   cam_update_window,
+   cam_start_exp,
+   cam_stop_exp,
+   cam_read_ccd,
+   cam_shutter_on,
+   cam_shutter_off,
+   cam_ampli_on,
+   cam_ampli_off,
+   cam_measure_temperature,
+   cam_cooler_on,
+   cam_cooler_off,
+   cam_cooler_check
 };
 
-#define GPAPI_OK 0
+#define GPAPI_OK     0
 #define GPAPI_ERROR -1
-
-enum  {
-   REMOTE_INTERNAL = 0,
-   REMOTE_LINK = 1,
-   REMOTE_MANUEL = 2
-};
 
 struct _PrivateParams {
    GPParams *gpparams;                // parametres internes libgphoto2
    char gphotoWinDllDir[1024];        // repertoire des DDL gphoto2 pour windows
 
+};
+
+char *canonQuality[] =
+{
+      { "Large:Fine"    },
+      { "Large:Normal"  },
+      { "Middle:Fine"   },
+      { "Middle:Normal" },
+      { "Small:Fine"    },
+      { "Small:Normal"  },
+      { "CRW"  },
+      { "" }
 };
 
 
@@ -180,37 +194,24 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    
    cam->params = malloc(sizeof(PrivateParams));
    
-   cam->longuepose = REMOTE_INTERNAL;
    cam->authorized = 1;
    cam->autoLoadFlag = 1;
    strcpy(cam->params->gphotoWinDllDir, "../bin");            // default DLL directory
 
    // je traite les parametres
    for (i = 3; i < argc - 1; i++) {
-      if (strcmp(argv[i], "-capture_command") == 0) {
-         switch (atoi(argv[i + 1])) {
-         case 1 : 
-            cam->longuepose = REMOTE_LINK;
-            break;
-         case 2 : 
-            cam->longuepose = REMOTE_MANUEL;
-            break;
-         case 0 : 
-         default :
-            cam->longuepose = REMOTE_INTERNAL;
-            break;
-         }
-      }
       if (strcmp(argv[i], "-gphoto2_win_dll_dir") == 0) {
          strncpy(cam->params->gphotoWinDllDir , argv[i + 1], 1024);
       }
    }
-      
+
+
    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
    
 #ifdef WIN32
    // je verifie le repertoire des DLL de gphoto2 
-   // ce parametre n'est pas utilise sous Linux
+   // ce parametre n'est pas utilise sous Linux car gphoto2 est installe 
+   // dans les repertoires systeme /usr/...
    if( strlen(cam->params->gphotoWinDllDir) == 0 ) {
       sprintf(cam->msg, "gphoto2_win_dll_dir is empty");
       return -1;
@@ -231,11 +232,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       return -1;
    }
 
-
    // je connecte la camera
    result = gpapi_open(cam->params->gpparams, cameraModel, cameraPath);
    if ( result != GPAPI_OK ) {
       strcpy(cam->msg, gpapi_getLastErrorMessage(cam->params->gpparams));
+      return -1;
+   }
+
+   // je configure le mode de declenchement de la pose par defaut
+   result = cam_setLonguePose(cam, REMOTE_INTERNAL);
+   if ( result != 0 ) {
+      return -1;
+   }
+
+   // je verifie si on peut selectionner le temps de pose (depend du modele d'APN)
+   result = gpapi_getTimeValue(cam->params->gpparams, &cam->exptime, &cam->driverMode, cam->quality); 
+   if ( result != 0 ) {
       return -1;
    }
 
@@ -256,6 +268,40 @@ static int cam_close(struct camprop *cam) {
    }
    
    return 0;
+}
+
+int cam_setLonguePose(struct camprop *cam, int value) {   
+   int result;
+
+   switch (value) {
+         case 1 : 
+            cam->longuepose = REMOTE_LINK;
+            cam->capabilities.expTimeCommand = 1;
+            // je programme le temps de pose  a "bulb"
+            if( cam->capabilities.expTimeCommand == 1 ) {
+               result = gpapi_setTimeValue(cam->params->gpparams, -1.0 , cam->driverMode, cam->quality);         
+            }
+
+            result = 0;
+            break;
+         case 2 : 
+            cam->longuepose = REMOTE_MANUEL;
+            cam->capabilities.expTimeCommand = 1;
+            result = 0;
+            break;
+         case 0 : 
+            {
+               cam->longuepose = REMOTE_INTERNAL;
+               cam->capabilities.expTimeCommand = 1;
+               result = 0;
+               break;
+            }
+         default :
+            result = -1;
+
+         }
+
+   return result;
 }
 
 void cam_update_window(struct camprop *cam)
@@ -291,29 +337,48 @@ void cam_update_window(struct camprop *cam)
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
    int result;
+
    if (cam->authorized == 1) {
       switch (cam->longuepose) {
       case REMOTE_INTERNAL : 
+
+         if( cam->capabilities.expTimeCommand == 1 ) {
+            // je programme le temps de pose 
+            result = gpapi_setTimeValue(cam->params->gpparams, cam->exptime, cam->driverMode, cam->quality);         
+         }
+         
          // je lance l'acquisition 
          result = gpapi_captureImage(cam->params->gpparams, cam->cameraFolder, cam->fileName);         
          if (result != GPAPI_OK) {
             strcpy(cam->cameraFolder, "");
             strcpy(cam->fileName, "");
          }
+         // Comme gpapi_captureImage est bloquant, on pourra lancer cam_read_ccd  
+         // immediatement apres la fin de cam_start_exp
+         cam->exptimeTimer = 0.0;
+
          break;
       case REMOTE_LINK : 
+         if( cam->capabilities.expTimeCommand == 1 ) {
+            // je programme le temps de pose 
+            result = gpapi_setTimeValue(cam->params->gpparams, -1, cam->driverMode, cam->quality);         
+         }
          // je prepare l'appareil photo 
-         result = gpapi_prepareExternalRemoteCapture(cam->params->gpparams);
+         result = gpapi_setExternalRemoteCapture(cam->params->gpparams,1);
          if (result == GPAPI_OK ) {
             // je lance une acquisition
-            //quickremote_write( (char) 1 );        
             cam_setLongExposureDevice(cam, cam->longueposestart );
          }
          
          break;
       case REMOTE_MANUEL :
+         if( cam->capabilities.expTimeCommand == 1 ) {
+            // je programme le temps de pose 
+            result = gpapi_setTimeValue(cam->params->gpparams, -1, cam->driverMode, cam->quality);         
+         }
          // je prepare l'appareil photo
-         gpapi_prepareExternalRemoteCapture(cam->params->gpparams);
+         gpapi_setExternalRemoteCapture(cam->params->gpparams,1);
+         cam->exptime = 0;
          break;
       default : 
          break;
@@ -325,7 +390,6 @@ void cam_stop_exp(struct camprop *cam)
 {
    // j'arrete l'acquisition
    if ( cam->longuepose == REMOTE_LINK ) {
-      //quickremote_write( (char) 0 );
       cam_setLongExposureDevice(cam, cam->longueposestop );
 
    } else if ( cam->longuepose == REMOTE_MANUEL) {
@@ -354,14 +418,15 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          break;
       case REMOTE_LINK : 
          // j'arrete l'acquisition
-         // quickremote_write( (char) 0 );
          cam_setLongExposureDevice(cam, cam->longueposestop );
          // je recupere le nom de l'image dans la carte memoire de l'appareil photo
          result = gpapi_captureImage(cam->params->gpparams, cam->cameraFolder, cam->fileName);
+         gpapi_setExternalRemoteCapture(cam->params->gpparams,0);
          break;
       case REMOTE_MANUEL :
          // je recupere le nom de l'image dans la carte memoire de l'appareil photo
          result = gpapi_captureImage(cam->params->gpparams, cam->cameraFolder, cam->fileName);
+         gpapi_setExternalRemoteCapture(cam->params->gpparams,0);
          break;
       default : 
          result = GPAPI_ERROR;
@@ -379,7 +444,6 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       }
    }
    
-   printf("cam_read_ccd msg=%s\n", cam->msg);   
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -419,7 +483,6 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
 }
 
-
 int cam_loadLastImage(struct camprop *cam)
 {
    int result;
@@ -438,8 +501,12 @@ int cam_loadLastImage(struct camprop *cam)
          strcpy(cam->pixels_format, "FORMAT_SHORT");
          if (strcmp(mimeType, "image/x-canon-raw" ) == 0 ) {
             strcpy(cam->pixels_compression, "COMPRESS_RAW");
+            cam->pixels_reverse_x = 0;
+            cam->pixels_reverse_y = 1;
          } else if ( strcmp(mimeType, "image/jpeg") == 0 ) {
             strcpy(cam->pixels_compression, "COMPRESS_JPEG");
+            cam->pixels_reverse_x = 0;
+            cam->pixels_reverse_y = 0;
          }
          
          // je supprime l'image sur la carte memoire de l'appareil
@@ -593,5 +660,54 @@ int cam_setLongExposureDevice(struct camprop *cam, unsigned char value)
    }
 
    return result;
+}
+
+/**
+ * cam_checkQuality 
+ *    check quality exits
+ * 
+ * Returns value:
+ * - 0 when success.
+ * - 0 if quality not found
+*/
+int  cam_checkQuality(char *quality)
+{
+   int result;
+
+   int i = 0;
+   while ( canonQuality[i][0] != 0 ) {
+      if( strcmp(canonQuality[i], quality) == 0  ) {
+         result = 0;
+         break;
+      }
+      i++;
+   }
+   if( canonQuality[i][0] == 0 ) {
+        result = 1;
+   }
+
+   return result;
+}
+
+/**
+ * cam_getQualityList 
+ *    returns quality list values
+ * 
+ * Returns value:
+ *  0 
+ *  
+*/
+int  cam_getQualityList(char *list)
+{
+
+   int i = 0;
+   strcpy(list, "");
+   while ( canonQuality[i][0] != 0 ) {
+      strcat( list, canonQuality[i]);
+      strcat( list, " ");
+      i++;
+   }
+
+   return 0;
 }
 
