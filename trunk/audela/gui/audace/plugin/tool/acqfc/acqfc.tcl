@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.16 2006-05-24 20:49:06 michelpujol Exp $
+# $Id: acqfc.tcl,v 1.17 2006-06-07 16:58:54 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -204,11 +204,11 @@ namespace eval ::AcqFC {
 
       AcqFCBuildIF $visuNo 
 
-      #--- Traitement du bouton Configuration pour la camera DSC (APN)
+      #--- Traitement du bouton Configuration pour la camera APN (DSLR)
       if { ( $panneau(AcqFC,$visuNo,mode) == "6" ) || ( $panneau(AcqFC,$visuNo,mode) == "7" ) } {
-        $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
+        $panneau(AcqFC,$visuNo,This).obt.dslr configure -state disabled
       } else {
-        $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
+        $panneau(AcqFC,$visuNo,This).obt.dslr configure -state normal
       }
 
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
@@ -268,7 +268,7 @@ namespace eval ::AcqFC {
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
             pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
-            pack forget $panneau(AcqFC,$visuNo,This).obt.dsc
+            pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
          } else {
             #--- Cas d'une WebCam Longue Pose
             pack $panneau(AcqFC,$visuNo,This).pose.but -side left
@@ -281,10 +281,10 @@ namespace eval ::AcqFC {
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
             pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
-            pack forget $panneau(AcqFC,$visuNo,This).obt.dsc
+            pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
          }
-      } elseif { "$camProduct" == "dsc" } {
-         #--- C'est une DSC (APN)
+      } elseif { "$camProduct" == "dslr" } {
+         #--- C'est une APN (DSLR)
          pack $panneau(AcqFC,$visuNo,This).pose.but -side left
          pack $panneau(AcqFC,$visuNo,This).pose.lab -side right
          pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
@@ -295,9 +295,9 @@ namespace eval ::AcqFC {
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
          pack forget $panneau(AcqFC,$visuNo,This).obt.format
-         pack $panneau(AcqFC,$visuNo,This).obt.dsc -fill x -expand true -ipady 3
+         pack $panneau(AcqFC,$visuNo,This).obt.dslr -fill x -expand true -ipady 3
       } else {
-         #--- Ce n'est pas une WebCam, ni une DSC (APN)
+         #--- Ce n'est pas une WebCam, ni une APN (DSLR)
          pack $panneau(AcqFC,$visuNo,This).pose.but -side left
          pack $panneau(AcqFC,$visuNo,This).pose.lab -side right
          pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
@@ -308,7 +308,7 @@ namespace eval ::AcqFC {
          pack $panneau(AcqFC,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
          pack forget $panneau(AcqFC,$visuNo,This).obt.format
-         pack forget $panneau(AcqFC,$visuNo,This).obt.dsc
+         pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
       }
 
       if { [ ::confCam::hasShutter $camNo ] } {
@@ -329,7 +329,7 @@ namespace eval ::AcqFC {
       } else {
          pack forget $panneau(AcqFC,$visuNo,This).obt.but
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
-         if { ( "$camProduct" != "webcam" ) && ( "$camProduct" != "dsc" ) } {
+         if { ( "$camProduct" != "webcam" ) && ( "$camProduct" != "dslr" ) } {
             pack $panneau(AcqFC,$visuNo,This).obt.lab1 -side top -ipady 3
          }
       }
@@ -458,27 +458,27 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,mode) [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
       if { $panneau(AcqFC,$visuNo,mode) == "1" } {
          ::AcqFC::recup_position $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "2" } {
          ::AcqFC::recup_position $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "3" } {
          ::AcqFC::recup_position $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "4" } {
          ::AcqFC::Intervalle_continu_1 $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
          ::AcqFC::Intervalle_continu_2 $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state normal
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(AcqFC,$visuNo,mode) == "6" } {
          set panneau(AcqFC,$visuNo,fenetre) "0"
          ::AcqFC::selectVideoMode $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state disabled
       } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
          set panneau(AcqFC,$visuNo,fenetre) "0"
          ::AcqFC::selectVideoMode $visuNo
-         $panneau(AcqFC,$visuNo,This).obt.dsc configure -state disabled
+         $panneau(AcqFC,$visuNo,This).obt.dslr configure -state disabled
       }
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
    }
@@ -1253,8 +1253,8 @@ namespace eval ::AcqFC {
                        set panneau(AcqFC,$visuNo,intervalle) [ expr $panneau(AcqFC,$visuNo,fin) - $panneau(AcqFC,$visuNo,debut) ]
                        Message $visuNo consolog $caption(acqfc,fin_simu)
                     } 
-                    #--- Cas particulier des cameras DSC (APN)
-                    if { $conf(dsc,telecharge_mode) == "3" } {
+                    #--- Cas particulier des cameras APN (DSLR)
+                    if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1323,8 +1323,8 @@ namespace eval ::AcqFC {
                        #--- Deplacement du telescope
                        ::DlgShift::Decalage_Telescope
                     }
-                    #--- Cas particulier des cameras DSC (APN)
-                    if { $conf(dsc,telecharge_mode) == "3" } {
+                    #--- Cas particulier des cameras APN (DSLR)
+                    if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1396,8 +1396,8 @@ namespace eval ::AcqFC {
                        }
                        set panneau(AcqFC,$visuNo,attente_pose) "0"
                     }
-                    #--- Cas particulier des cameras DSC (APN)
-                    if { $conf(dsc,telecharge_mode) == "3" } {
+                    #--- Cas particulier des cameras APN (DSLR)
+                    if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1486,8 +1486,8 @@ namespace eval ::AcqFC {
                        Message $visuNo consolog $caption(acqfc,dersauve) [append nom $panneau(AcqFC,$visuNo,index)]
                        set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) + 1 ]
                     }
-                    #--- Cas particulier des cameras DSC (APN)
-                    if { $conf(dsc,telecharge_mode) == "3" } {
+                    #--- Cas particulier des cameras APN (DSLR)
+                    if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
@@ -1811,7 +1811,7 @@ namespace eval ::AcqFC {
       #--- La commande exptime permet de fixer le temps de pose de l'image
       cam$camNo exptime $exptime
 
-      if { [cam$camNo product] != "dsc" } {
+      if { [cam$camNo product] != "dslr" } {
          #--- je selectionne le binning
          cam$camNo bin [list [string range $binning 0 0] [string range $binning 2 2]]
       } else {
@@ -1838,7 +1838,7 @@ namespace eval ::AcqFC {
         }
       }
       #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
-      if { $conf(dsc,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
+      if { $conf(dslr,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
          after 10 ::AcqFC::loadLastImage $visuNo $camNo
       }
       #--- J'attends la fin de l'acquisition
@@ -1871,8 +1871,8 @@ namespace eval ::AcqFC {
       update
 
       #--- Visualisation de l'image si on n'est pas en chargement differe
-      if { $conf(dsc,telecharge_mode) != "3" || [ cam$camNo product ] != "dsc" } {
-         if { $conf(dsc,telecharge_mode) == "1" && [ cam$camNo product ] == "dsc" } {
+      if { $conf(dslr,telecharge_mode) != "3" || [ cam$camNo product ] != "dslr" } {
+         if { $conf(dslr,telecharge_mode) == "1" && [ cam$camNo product ] == "dslr" } {
             #-- raz du buffer si le telechargement est desactive
             $buffer clear
          }
@@ -1886,7 +1886,7 @@ namespace eval ::AcqFC {
    }
 #***** Fin de la procedure de lancement d'acquisition **********
 
-#***** Procedure chargement differe d'image pour DSC ************************
+#***** Procedure chargement differe d'image pour APN (DSLR) ****
    proc loadLastImage { visuNo camNo } {
       set result [ catch { cam$camNo loadlastimage } msg ]
       if { $result == "1" } {
@@ -1896,6 +1896,7 @@ namespace eval ::AcqFC {
          ::confVisu::autovisu $visuNo
       }
    }
+#***** Fin de la procedure chargement differe d'image **********
 
 #***** Procedure d'apercu en mode video ************************
    proc changerVideoPreview { visuNo } {
@@ -2828,7 +2829,7 @@ namespace eval ::AcqFC {
       if { ( $panneau(AcqFC,$visuNo,mode) == "1" ) || ( $panneau(AcqFC,$visuNo,mode) == "2" ) || \
          ( $panneau(AcqFC,$visuNo,mode) == "3" ) || ( $panneau(AcqFC,$visuNo,mode) == "4" ) || \
          ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
-         ::cameraDSC::Telecharge_image
+         ::cameraDSLR::Telecharge_image
       }
    }
 #***** Fin de la configuration du telechargement *********************
@@ -2870,7 +2871,7 @@ proc AcqFCBuildIF { visuNo } {
       }
       label $panneau(AcqFC,$visuNo,This).pose.lab -text $caption(acqfc,sec)
       pack $panneau(AcqFC,$visuNo,This).pose.lab -side right -fill x -expand true
-      entry $panneau(AcqFC,$visuNo,This).pose.entr -width 6 -font $audace(font,arial_10_b)  -relief groove \
+      entry $panneau(AcqFC,$visuNo,This).pose.entr -width 6 -font $audace(font,arial_10_b) -relief groove \
         -textvariable panneau(AcqFC,$visuNo,pose) -justify center
       pack $panneau(AcqFC,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(AcqFC,$visuNo,This).pose -side top -fill x
@@ -2879,7 +2880,7 @@ proc AcqFCBuildIF { visuNo } {
    frame $panneau(AcqFC,$visuNo,This).bin -borderwidth 2 -relief ridge
       menubutton $panneau(AcqFC,$visuNo,This).bin.but -text $caption(acqfc,bin) \
          -menu $panneau(AcqFC,$visuNo,This).bin.but.menu -relief raised
-      pack $panneau(AcqFC,$visuNo,This).bin.but -side left -fill x -expand true -ipady 1
+      pack $panneau(AcqFC,$visuNo,This).bin.but -side left -fill y -expand true -ipady 1
       set m [ menu $panneau(AcqFC,$visuNo,This).bin.but.menu -tearoff 0 ]
       foreach valbin [confCam::getBinningList [ ::confVisu::getCamNo $visuNo ]] {
         $m add radiobutton -label "$valbin" \
@@ -2888,7 +2889,7 @@ proc AcqFCBuildIF { visuNo } {
            -variable panneau(AcqFC,$visuNo,bin) \
            -command " "
       }
-      entry $panneau(AcqFC,$visuNo,This).bin.lab -width 6 -font $audace(font,arial_10_b) -relief groove \
+      entry $panneau(AcqFC,$visuNo,This).bin.lab -width 10 -font $audace(font,arial_10_b) -relief groove \
         -textvariable panneau(AcqFC,$visuNo,bin) -justify center -state disabled
       pack $panneau(AcqFC,$visuNo,This).bin.lab -side left -fill both -expand true
    pack $panneau(AcqFC,$visuNo,This).bin -side top -fill x
@@ -2917,9 +2918,9 @@ proc AcqFCBuildIF { visuNo } {
    pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
 
    #--- Bouton du choix du telechargement de l'image de l'APN en lieu et place du widget obturateur
-   button $panneau(AcqFC,$visuNo,This).obt.dsc -text $caption(acqfc,config) -state normal \
+   button $panneau(AcqFC,$visuNo,This).obt.dslr -text $caption(acqfc,config) -state normal \
       -command "::AcqFC::choixTelechargement $visuNo"
-   pack $panneau(AcqFC,$visuNo,This).obt.dsc -fill x -expand true
+   pack $panneau(AcqFC,$visuNo,This).obt.dslr -fill x -expand true
 
    #--- Trame du Status
    frame $panneau(AcqFC,$visuNo,This).status -borderwidth 2 -relief ridge

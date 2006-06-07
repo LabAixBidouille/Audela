@@ -1,21 +1,21 @@
 #
-# Fichier : dsc.tcl
-# Description : Gestion du telechargement des images d'un APN
+# Fichier : dslr.tcl
+# Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 11 mars 2006
+# Date de mise a jour : 07 juin 2006
 #
 
-namespace eval cameraDSC {
+namespace eval cameraDSLR {
 
    proc init { } {
       global audace
       global conf
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dsc dsc.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.cap ]\""
 
       #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(dsc,telecharge_mode) ] } { set conf(dsc,telecharge_mode)     "2" }
+      if { ! [ info exists conf(dslr,telecharge_mode) ] } { set conf(dslr,telecharge_mode) "2" }
 
    }
 
@@ -38,7 +38,7 @@ namespace eval cameraDSC {
       #--- Creation de la fenetre
       toplevel $audace(base).telecharge_image
       wm resizable $audace(base).telecharge_image 0 0
-      wm title $audace(base).telecharge_image "$caption(dsc,telecharger)"
+      wm title $audace(base).telecharge_image "$caption(dslr,telecharger)"
       if { [ winfo exists $audace(base).confCam ] } {
          wm deiconify $audace(base).confCam
          wm transient $audace(base).telecharge_image $audace(base).confCam
@@ -53,18 +53,18 @@ namespace eval cameraDSC {
       }
       foreach visuNo [ ::visu::list ] {
          radiobutton $audace(base).telecharge_image.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-           -text "$caption(dsc,pas_telecharger)" -value 1 -variable conf(dsc,telecharge_mode) -state normal \
-           -command "::cameraDSC::ChangerSelectionTelechargementAPN $visuNo" 
+           -text "$caption(dslr,pas_telecharger)" -value 1 -variable conf(dslr,telecharge_mode) -state normal \
+           -command "::cameraDSLR::ChangerSelectionTelechargementAPN $visuNo" 
          pack $audace(base).telecharge_image.rad1 -anchor w -expand 1 -fill none \
            -side top -padx 30 -pady 5
          radiobutton $audace(base).telecharge_image.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-           -text "$caption(dsc,immediat)" -value 2 -variable conf(dsc,telecharge_mode) -state normal \
-           -command "::cameraDSC::ChangerSelectionTelechargementAPN $visuNo"
+           -text "$caption(dslr,immediat)" -value 2 -variable conf(dslr,telecharge_mode) -state normal \
+           -command "::cameraDSLR::ChangerSelectionTelechargementAPN $visuNo"
          pack $audace(base).telecharge_image.rad2 -anchor w -expand 1 -fill none \
            -side top -padx 30 -pady 5
          radiobutton $audace(base).telecharge_image.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-           -text "$caption(dsc,acq_suivante)" -value 3 -variable conf(dsc,telecharge_mode) -state normal \
-           -command "::cameraDSC::ChangerSelectionTelechargementAPN $visuNo"
+           -text "$caption(dslr,acq_suivante)" -value 3 -variable conf(dslr,telecharge_mode) -state normal \
+           -command "::cameraDSLR::ChangerSelectionTelechargementAPN $visuNo"
          pack $audace(base).telecharge_image.rad3 -anchor w -expand 1 -fill none \
             -side top -padx 30 -pady 5
       }
@@ -79,7 +79,7 @@ namespace eval cameraDSC {
    proc ChangerSelectionTelechargementAPN { visuNo} {
       global conf
 
-      switch -exact -- $conf(dsc,telecharge_mode) {
+      switch -exact -- $conf(dslr,telecharge_mode) {
          1  {
             #--- Ne pas telecharger
             cam[ ::confVisu::getCamNo $visuNo ] autoload 0
@@ -94,11 +94,11 @@ namespace eval cameraDSC {
          }
       }
       ::console::affiche_saut "\n"
-      ::console::disp "conf(dsc,telecharge_mode) = $conf(dsc,telecharge_mode) cam[ ::confVisu::getCamNo $visuNo ] autoload=[ cam[ ::confVisu::getCamNo $visuNo ] autoload ] \n"
+      ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) cam[ ::confVisu::getCamNo $visuNo ] autoload=[ cam[ ::confVisu::getCamNo $visuNo ] autoload ] \n"
    }
 
 }
 
 #--- Initialisation au demarrage
-::cameraDSC::init
+::cameraDSLR::init
 

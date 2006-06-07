@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 03 juin 2006
+# Date de mise a jour : 07 juin 2006
 #
 
 global confCam
@@ -43,7 +43,7 @@ namespace eval ::confCam {
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dsc dsc.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.tcl ]\""
 
       #--- Intialise les variables de chaque camera
       
@@ -122,17 +122,17 @@ namespace eval ::confCam {
       if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
 
       #--- initConf 10
-      if { ! [ info exists conf(dsc,link) ] }                 { set conf(dsc,link)                 "$caption(confcam,dsc_gphoto2)" }
-      if { ! [ info exists conf(dsc,longue_pose) ] }          { set conf(dsc,longue_pose)          "0" }
-      if { ! [ info exists conf(dsc,link_longue_pose) ] }     { set conf(dsc,link_longue_pose)     "$caption(confcam,dsc_quickremote)" }
-      if { ! [ info exists conf(dsc,longueposelinkbit) ] }    { set conf(dsc,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(dsc,longueposestartvalue) ] } { set conf(dsc,longueposestartvalue) "1" }
-      if { ! [ info exists conf(dsc,longueposestopvalue) ] }  { set conf(dsc,longueposestopvalue)  "0" }
-      if { ! [ info exists conf(dsc,statut_service) ] }       { set conf(dsc,statut_service)       "1" }
-      if { ! [ info exists conf(dsc,mirh) ] }                 { set conf(dsc,mirh)                 "0" }
-      if { ! [ info exists conf(dsc,mirv) ] }                 { set conf(dsc,mirv)                 "0" }
-      if { ! [ info exists conf(apn,baud) ] }                 { set conf(apn,baud)                 "115200" }
-     ### if { ! [ info exists conf(apn,serial_port) ] }          { set conf(apn,serial_port)          [ lindex "$audace(list_com)" 0 ] }
+      if { ! [ info exists conf(dslr,link) ] }                 { set conf(dslr,link)                 "$caption(confcam,dslr_gphoto2)" }
+      if { ! [ info exists conf(dslr,longue_pose) ] }          { set conf(dslr,longue_pose)          "0" }
+      if { ! [ info exists conf(dslr,link_longue_pose) ] }     { set conf(dslr,link_longue_pose)     "$caption(confcam,dslr_quickremote)" }
+      if { ! [ info exists conf(dslr,longueposelinkbit) ] }    { set conf(dslr,longueposelinkbit)    "0" }
+      if { ! [ info exists conf(dslr,longueposestartvalue) ] } { set conf(dslr,longueposestartvalue) "1" }
+      if { ! [ info exists conf(dslr,longueposestopvalue) ] }  { set conf(dslr,longueposestopvalue)  "0" }
+      if { ! [ info exists conf(dslr,statut_service) ] }       { set conf(dslr,statut_service)       "1" }
+      if { ! [ info exists conf(dslr,mirh) ] }                 { set conf(dslr,mirh)                 "0" }
+      if { ! [ info exists conf(dslr,mirv) ] }                 { set conf(dslr,mirv)                 "0" }
+      if { ! [ info exists conf(apn,baud) ] }                  { set conf(apn,baud)                 "115200" }
+     ### if { ! [ info exists conf(apn,serial_port) ] }           { set conf(apn,serial_port)          [ lindex "$audace(list_com)" 0 ] }
 
       #--- initConf 11
       if { ! [ info exists conf(andor,cool) ] }        { set conf(andor,cool)        "0" }
@@ -169,7 +169,7 @@ namespace eval ::confCam {
    # Cree la fenetre de choix et de configuration des cameras
    # This = chemin de la fenetre
    # confCam(camera,A,camName) = nom de la camera (audine hisis sbig cookbook starlight kitty webcam \
-   # th7852a scr1300xtc dsc andor)
+   # th7852a scr1300xtc dslr andor)
    #
    proc run { } {
       variable This
@@ -377,10 +377,10 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::ConfDSC
-   # Permet d'activer ou de desactiver le bouton de configuration des APN (DSC)
+   # confCam::ConfDSLR
+   # Permet d'activer ou de desactiver le bouton de configuration des APN (DSLR)
    #
-   proc ConfDSC { } {
+   proc ConfDSLR { } {
       variable This
       global confCam
       global frmm
@@ -390,11 +390,11 @@ namespace eval ::confCam {
       if { [ info exists This ] } {
          set frm $frmm(Camera10)
          if { [ winfo exists $frm.config_telechargement ] } {
-            if { [::confCam::getProduct $confCam(camera,$cam_item,camNo)] == "dsc" } {
-               #--- Bouton de configuration des APN (DSC)
+            if { [::confCam::getProduct $confCam(camera,$cam_item,camNo)] == "dslr" } {
+               #--- Bouton de configuration des APN (DSLR)
                $frm.config_telechargement configure -state normal
             } else {
-               #--- Bouton de configuration des APN (DSC)
+               #--- Bouton de configuration des APN (DSLR)
                $frm.config_telechargement configure -state disabled
             }
          }
@@ -457,7 +457,7 @@ namespace eval ::confCam {
          #--- Creation de la fenetre a onglets
          set nn $This.usr.book
          Rnotebook:create $nn -tabs "[ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-            TH7852A SCR1300XTC $caption(confcam,dsc) Andor ]" -borderwidth 1
+            TH7852A SCR1300XTC $caption(confcam,dslr) Andor ]" -borderwidth 1
          fillPage1  $nn
          fillPage2  $nn
          fillPage3  $nn
@@ -2403,7 +2403,7 @@ namespace eval ::confCam {
    }
 
    #
-   # Fenetre de configuration des APN (DSC)
+   # Fenetre de configuration des APN (DSLR)
    #
    proc fillPage10 { nn } {
       global audace
@@ -2414,17 +2414,17 @@ namespace eval ::confCam {
       global frmm
 
       #--- confToWidget
-      set confCam(conf_dsc,link)                 $conf(dsc,link)
-      set confCam(conf_dsc,longue_pose)          $conf(dsc,longue_pose)
-      set confCam(conf_dsc,link_longue_pose)     $conf(dsc,link_longue_pose)
-      set confCam(conf_dsc,longueposelinkbit)    $conf(dsc,longueposelinkbit)
-      set confCam(conf_dsc,longueposestartvalue) $conf(dsc,longueposestartvalue)
-      set confCam(conf_dsc,longueposestopvalue)  $conf(dsc,longueposestopvalue)
-      set confCam(conf_dsc,statut_service)       $conf(dsc,statut_service)
-      set confCam(conf_dsc,mirh)                 $conf(dsc,mirh)
-      set confCam(conf_dsc,mirv)                 $conf(dsc,mirv)
-      set confCam(conf_apn,baud)                 $conf(apn,baud)
-     ### set confCam(conf_apn,serial_port)          $conf(apn,serial_port)
+      set confCam(conf_dslr,link)                 $conf(dslr,link)
+      set confCam(conf_dslr,longue_pose)          $conf(dslr,longue_pose)
+      set confCam(conf_dslr,link_longue_pose)     $conf(dslr,link_longue_pose)
+      set confCam(conf_dslr,longueposelinkbit)    $conf(dslr,longueposelinkbit)
+      set confCam(conf_dslr,longueposestartvalue) $conf(dslr,longueposestartvalue)
+      set confCam(conf_dslr,longueposestopvalue)  $conf(dslr,longueposestopvalue)
+      set confCam(conf_dslr,statut_service)       $conf(dslr,statut_service)
+      set confCam(conf_dslr,mirh)                 $conf(dslr,mirh)
+      set confCam(conf_dslr,mirv)                 $conf(dslr,mirv)
+      set confCam(conf_apn,baud)                  $conf(apn,baud)
+     ### set confCam(conf_apn,serial_port)           $conf(apn,serial_port)
 
       #--- Initialisation
       set frmm(Camera10) [ Rnotebook:frame $nn 10 ]
@@ -2471,7 +2471,7 @@ namespace eval ::confCam {
       pack $frm.frame13 -side bottom -fill x -pady 2
 
       #--- Label de la liaison
-      label $frm.lab1 -text "$caption(confcam,dsc_liaison)"
+      label $frm.lab1 -text "$caption(confcam,dslr_liaison)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton de configuration des liaisons
@@ -2479,20 +2479,20 @@ namespace eval ::confCam {
       pack $frm.configure -in $frm.frame1 -side left -pady 10 -ipadx 10 -ipady 1
 
       #--- Selection de la liaison
-      set list_combobox [ list $caption(confcam,dsc_photopc) $caption(confcam,dsc_gphoto2) ]
+      set list_combobox [ list $caption(confcam,dslr_photopc) $caption(confcam,dslr_gphoto2) ]
       ComboBox $frm.port \
          -width 11         \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable confCam(conf_dsc,link) \
+         -textvariable confCam(conf_dslr,link) \
          -values $list_combobox \
          -modifycmd {
             global frmm
             set frm $frmm(Camera10)
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            if { $confCam(conf_dsc,link) == "$caption(confcam,dsc_photopc)" } {
+            if { $confCam(conf_dslr,link) == "$caption(confcam,dslr_photopc)" } {
                set conf(confLink) "photopc"
                ::confLink::run
                pack $frm.frame2 -side top -fill x
@@ -2507,7 +2507,7 @@ namespace eval ::confCam {
                pack forget $frm.frame11
                pack $frm.frame12 -side bottom -fill x -pady 2
                pack forget $frm.frame13
-            } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
+            } elseif { $confCam(conf_dslr,link) == "$caption(confcam,dslr_gphoto2)" } {
                set conf(confLink) "gphoto2"
                ::confLink::run
                pack forget $frm.frame2
@@ -2556,23 +2556,23 @@ namespace eval ::confCam {
       pack $frm.liste1 -in $frm.frame3 -anchor e -side left -padx 5 -pady 10
 
       #--- Selection de la liaison pour la longue pose
-      set list_combobox [ list $caption(confcam,dsc_quickremote) $caption(confcam,dsc_externe) ]
+      set list_combobox [ list $caption(confcam,dslr_quickremote) $caption(confcam,dslr_externe) ]
       ComboBox $frm.moyen_longue_pose \
          -width 13         \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable confCam(conf_dsc,link_longue_pose) \
+         -textvariable confCam(conf_dslr,link_longue_pose) \
          -values $list_combobox \
          -modifycmd {
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            if { $confCam(conf_dsc,link_longue_pose) == "$caption(confcam,dsc_quickremote)" } {
-               set confCam(conf_dsc,longueposestartvalue) "1"
-               set confCam(conf_dsc,longueposestopvalue)  "0"
+            if { $confCam(conf_dslr,link_longue_pose) == "$caption(confcam,dslr_quickremote)" } {
+               set confCam(conf_dslr,longueposestartvalue) "1"
+               set confCam(conf_dslr,longueposestopvalue)  "0"
                set conf(confLink) "quickremote"
                ::confLink::run
-            } elseif { $confCam(conf_dsc,link_longue_pose) == "$caption(confcam,dsc_externe)" } {
+            } elseif { $confCam(conf_dslr,link_longue_pose) == "$caption(confcam,dslr_externe)" } {
                
             }
          }
@@ -2583,12 +2583,12 @@ namespace eval ::confCam {
       pack $frm.configure_longue_pose -in $frm.frame8 -side right -pady 10 -ipadx 10 -ipady 1
 
       #--- Utilisation de la longue pose
-      checkbutton $frm.longue_pose -text "$caption(confcam,dsc_longue_pose)" -highlightthickness 0 \
-         -variable confCam(conf_dsc,longue_pose)
+      checkbutton $frm.longue_pose -text "$caption(confcam,dslr_longue_pose)" -highlightthickness 0 \
+         -variable confCam(conf_dslr,longue_pose)
       pack $frm.longue_pose -in $frm.frame8 -anchor w -side right -padx 10 -pady 10
 
       #--- Choix du numero du bit pour la commande de la longue pose
-      label $frm.lab4 -text "$caption(confcam,dsc_longueposebit)"
+      label $frm.lab4 -text "$caption(confcam,dslr_longueposebit)"
       pack $frm.lab4 -in $frm.frame9 -anchor center -side left -padx 3 -pady 5
 
       set list_combobox [ list 0 1 2 3 4 5 6 7 ]
@@ -2597,27 +2597,27 @@ namespace eval ::confCam {
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confCam(conf_dsc,longueposelinkbit) \
+         -textvariable confCam(conf_dslr,longueposelinkbit) \
          -editable 0       \
          -values $list_combobox
       pack $frm.longueposelinkbit -in $frm.frame9 -anchor center -side right -padx 20 -pady 5
 
       #--- Choix du niveau de depart pour la commande de la longue pose
-      label $frm.lab5 -text "$caption(confcam,dsc_longueposestart)"
+      label $frm.lab5 -text "$caption(confcam,dslr_longueposestart)"
       pack $frm.lab5 -in $frm.frame10 -anchor center -side left -padx 3 -pady 5
 
-      entry $frm.longueposestartvalue -width 4 -textvariable confCam(conf_dsc,longueposestartvalue) -justify center
+      entry $frm.longueposestartvalue -width 4 -textvariable confCam(conf_dslr,longueposestartvalue) -justify center
       pack $frm.longueposestartvalue -in $frm.frame10 -anchor center -side right -padx 20 -pady 5
 
-      #--- Gestion du Service Windows de detection automatique des APN (DSC)
+      #--- Gestion du Service Windows de detection automatique des APN (DSLR)
       if { $::tcl_platform(platform) == "windows" } {
-         checkbutton $frm.detect_service -text "$caption(confcam,dsc_detect_service)" -highlightthickness 0 \
-            -variable confCam(conf_dsc,statut_service)
+         checkbutton $frm.detect_service -text "$caption(confcam,dslr_detect_service)" -highlightthickness 0 \
+            -variable confCam(conf_dslr,statut_service)
          pack $frm.detect_service -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
       }
 
-      #--- Gestion des 2 types de liaisons suivant les APN (DSC) utilisés
-      if { $confCam(conf_dsc,link) == "$caption(confcam,dsc_photopc)" } {
+      #--- Gestion des 2 types de liaisons suivant les APN (DSLR) utilisés
+      if { $confCam(conf_dslr,link) == "$caption(confcam,dslr_photopc)" } {
          pack $frm.frame2 -side top -fill x
          pack $frm.frame3 -side top -fill x
          pack forget $frm.frame4
@@ -2630,7 +2630,7 @@ namespace eval ::confCam {
          pack forget $frm.frame11
          pack $frm.frame12 -side bottom -fill x -pady 2
          pack forget $frm.frame13
-      } elseif { $confCam(conf_dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
+      } elseif { $confCam(conf_dslr,link) == "$caption(confcam,dslr_gphoto2)" } {
          pack forget $frm.frame2
          pack forget $frm.frame3
          pack $frm.frame4 -side top -fill x
@@ -2647,20 +2647,20 @@ namespace eval ::confCam {
 
       #--- Miroir en x et en y
       checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(conf_dsc,mirh)
+         -variable confCam(conf_dslr,mirh)
       pack $frm.mirx -in $frm.frame6 -anchor w -side top -padx 20 -pady 10
 
       checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(conf_dsc,mirv)
+         -variable confCam(conf_dslr,mirv)
       pack $frm.miry -in $frm.frame6 -anchor w -side top -padx 20 -pady 10
 
       #--- Bouton du choix du telechargement de l'image de l'APN
-      button $frm.config_telechargement -text $caption(confcam,dsc_telecharger) -state normal \
-         -command "::cameraDSC::Telecharge_image"
+      button $frm.config_telechargement -text $caption(confcam,dslr_telecharger) -state normal \
+         -command "::cameraDSLR::Telecharge_image"
       pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
-      ::confCam::ConfDSC
+      ::confCam::ConfDSLR
 
       #--- Site web officiel de PhotoPC GPhoto2
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
@@ -2672,7 +2672,7 @@ namespace eval ::confCam {
       label $frm.lab104 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab104 -in $frm.frame13 -side top -fill x -pady 2
 
-      label $frm.labURLa -text "$caption(confcam,site_dsc)" -font $audace(font,url) -fg $color(blue)
+      label $frm.labURLa -text "$caption(confcam,site_dslr)" -font $audace(font,url) -fg $color(blue)
       pack $frm.labURLa -in $frm.frame13 -side top -fill x -pady 2
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
@@ -2692,7 +2692,7 @@ namespace eval ::confCam {
       }
 
       bind $frm.labURLa <ButtonPress-1> {
-         set filename "$caption(confcam,site_dsc)"
+         set filename "$caption(confcam,site_dslr)"
          ::audace::Lance_Site_htm $filename
       }
       bind $frm.labURLa <Enter> {
@@ -2706,7 +2706,7 @@ namespace eval ::confCam {
          $frm.labURLa configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 10 ] <Button-1> { global confCam ; set confCam(camName) "dsc" }
+      bind [ Rnotebook:button $nn 10 ] <Button-1> { global confCam ; set confCam(camName) "dslr" }
    }
 
    #
@@ -2930,7 +2930,7 @@ namespace eval ::confCam {
          webcam     { Rnotebook:raise $nn 7 }
          th7852a    { Rnotebook:raise $nn 8 }
          scr1300xtc { Rnotebook:raise $nn 9 }
-         dsc        { Rnotebook:raise $nn 10 }
+         dslr       { Rnotebook:raise $nn 10 }
          andor      { Rnotebook:raise $nn 11 }
       }
    }
@@ -2965,9 +2965,9 @@ namespace eval ::confCam {
       set camNo $confCam(camera,$cam_item,camNo)
       if { $camNo != 0 } {
          #--- Restitue si necessaire l'etat du service WIA sous Windows
-         if { ( $::tcl_platform(platform) == "windows" ) && ( $confCam(camera,$cam_item,camName) == "dsc" ) } {
-            if { [ cam$camNo systemservice ] != "$conf(dsc,statut_service)" } {
-               cam$camNo systemservice $conf(dsc,statut_service)
+         if { ( $::tcl_platform(platform) == "windows" ) && ( $confCam(camera,$cam_item,camName) == "dslr" ) } {
+            if { [ cam$camNo systemservice ] != "$conf(dslr,statut_service)" } {
+               cam$camNo systemservice $conf(dslr,statut_service)
             }
          }
          #--- Je desassocie la camera de la visu
@@ -3025,7 +3025,7 @@ namespace eval ::confCam {
       if  { $result == 0 } {
          #---
          switch  $product {
-            dsc { 
+            dslr { 
                set binningList [cam$camNo quality list]
             }         
             default {
@@ -3711,44 +3711,44 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 4096 -4096
                }
             }
-         dsc {
-               if { $conf(dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
-                  set erreur [ catch { cam::create digicam -name DSC } camNo ]
+         dslr {
+               if { $conf(dslr,link) == "$caption(confcam,dslr_gphoto2)" } {
+                  set erreur [ catch { cam::create digicam -name DSLR } camNo ]
                   if { $erreur == "1" } {
                      tk_messageBox -message "$camNo" -icon error
                   } else {
                      set confCam(camera,$cam_item,camNo) $camNo
                      console::affiche_saut "\n"
-                     console::affiche_erreur "$caption(confcam,dsc_name) $caption(confcam,2points)\
+                     console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$confCam(camera,$cam_item,camNo) name ]\n"
                      cam$confCam(camera,$cam_item,camNo) buf $bufNo
-                     cam$confCam(camera,$cam_item,camNo) mirrorh $conf(dsc,mirh)
-                     cam$confCam(camera,$cam_item,camNo) mirrorv $conf(dsc,mirv)
+                     cam$confCam(camera,$cam_item,camNo) mirrorh $conf(dslr,mirh)
+                     cam$confCam(camera,$cam_item,camNo) mirrorv $conf(dslr,mirv)
                      
                      #--- J'arrete le service WIA de Windows
                      cam$confCam(camera,$cam_item,camNo) systemservice 0
                      #--- Parametrage des longues poses 
-                     if { $conf(dsc,longue_pose) == "1" } {
-                        if { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_quickremote)" } {
+                     if { $conf(dslr,longue_pose) == "1" } {
+                        if { $conf(dslr,link_longue_pose) == "$caption(confcam,dslr_quickremote)" } {
                            cam$confCam(camera,$cam_item,camNo) longuepose 1
                            #--- Liaison par QuickRemote index=0 (je fixe les valeurs en dur en attendant que ce soit saisi dans la boite de configuration)
-                           set conf(dsc,longueposelinktype)  "quickremote"
-                           set conf(dsc,longueposelinkindex) "0"
+                           set conf(dslr,longueposelinktype)  "quickremote"
+                           set conf(dslr,longueposelinkindex) "0"
                            #--- Je cree la liaison
-                           set linkno [::link::create $conf(dsc,longueposelinktype) $conf(dsc,longueposelinkindex)]
+                           set linkno [::link::create $conf(dslr,longueposelinktype) $conf(dslr,longueposelinkindex)]
                            #---
                            cam$confCam(camera,$cam_item,camNo) longueposelinkno $linkno
-                           cam$confCam(camera,$cam_item,camNo) longueposelinkbit $conf(dsc,longueposelinkbit)
-                           cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dsc,longueposestartvalue)
-                           cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dsc,longueposestopvalue)
-                        } elseif { $conf(dsc,link_longue_pose) == "$caption(confcam,dsc_externe)" } {
+                           cam$confCam(camera,$cam_item,camNo) longueposelinkbit $conf(dslr,longueposelinkbit)
+                           cam$confCam(camera,$cam_item,camNo) longueposestartvalue $conf(dslr,longueposestartvalue)
+                           cam$confCam(camera,$cam_item,camNo) longueposestopvalue  $conf(dslr,longueposestopvalue)
+                        } elseif { $conf(dslr,link_longue_pose) == "$caption(confcam,dslr_externe)" } {
                            cam$confCam(camera,$cam_item,camNo) longuepose 2
                         }
                      } else {
                         cam$confCam(camera,$cam_item,camNo) longuepose 0
                      }
                      #--- Parametrage du telechargement des images
-                     switch -exact -- $conf(dsc,telecharge_mode) {
+                     switch -exact -- $conf(dslr,telecharge_mode) {
                         1  {
                            #--- Ne pas telecharger
                            cam$confCam(camera,$cam_item,camNo) autoload 0
@@ -3765,7 +3765,7 @@ namespace eval ::confCam {
                      #---
                      ::confVisu::visuDynamix $visuNo 512 -255
                   }
-               } elseif { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
+               } elseif { $conf(dslr,link) == "$caption(confcam,dslr_photopc)" } {
                   set camNo ""
                   set erreur [ catch { ::AcqAPN::Off ; ::AcqAPN::Query } camNo ]
                   if { $camNo=="" } {
@@ -3981,10 +3981,10 @@ namespace eval ::confCam {
          set confCam(camera,$cam_item,visuNo)  "0"
       } else {
          #--- Affectation de la visu
-         if { $confCam(camera,$cam_item,camName) == "dsc" } {
-            if { $conf(dsc,link) == "$caption(confcam,dsc_photopc)" } {
+         if { $confCam(camera,$cam_item,camName) == "dslr" } {
+            if { $conf(dslr,link) == "$caption(confcam,dslr_photopc)" } {
                ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) $confCam(camera,$cam_item,camNo) $conf(apn,model)
-            } elseif { $conf(dsc,link) == "$caption(confcam,dsc_gphoto2)" } {
+            } elseif { $conf(dslr,link) == "$caption(confcam,dslr_gphoto2)" } {
                ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) $confCam(camera,$cam_item,camNo)
             }
          } else {
@@ -4001,7 +4001,7 @@ namespace eval ::confCam {
       ::confCam::ConfAudine
       ::confCam::ConfKitty
       ::confCam::ConfWebCam
-      ::confCam::ConfDSC
+      ::confCam::ConfDSLR
       if { [ winfo exists "$audace(base).conflink" ] } {
          ::ethernaude::ConfEthernAude
       }
@@ -4111,17 +4111,17 @@ namespace eval ::confCam {
       set conf(scr1300xtc,mirh)             $confCam(conf_scr1300xtc,mirh)
       set conf(scr1300xtc,mirv)             $confCam(conf_scr1300xtc,mirv)
       set conf(scr1300xtc,port)             $confCam(conf_scr1300xtc,port)
-      #--- Memorise la configuration de l'APN (DSC) dans le tableau conf(dsc,...) et conf(apn,...)
+      #--- Memorise la configuration de l'APN (DSLR) dans le tableau conf(dslr,...) et conf(apn,...)
       set frm [ Rnotebook:frame $nn 10 ]
-      set conf(dsc,link)                    $confCam(conf_dsc,link)
-      set conf(dsc,longue_pose)             $confCam(conf_dsc,longue_pose)
-      set conf(dsc,link_longue_pose)        $confCam(conf_dsc,link_longue_pose)
-      set conf(dsc,longueposelinkbit)       $confCam(conf_dsc,longueposelinkbit)
-      set conf(dsc,longueposestartvalue)    $confCam(conf_dsc,longueposestartvalue)
-      set conf(dsc,longueposestopvalue)     $confCam(conf_dsc,longueposestopvalue)
-      set conf(dsc,statut_service)          $confCam(conf_dsc,statut_service)
-      set conf(dsc,mirh)                    $confCam(conf_dsc,mirh)
-      set conf(dsc,mirv)                    $confCam(conf_dsc,mirv)
+      set conf(dslr,link)                   $confCam(conf_dslr,link)
+      set conf(dslr,longue_pose)            $confCam(conf_dslr,longue_pose)
+      set conf(dslr,link_longue_pose)       $confCam(conf_dslr,link_longue_pose)
+      set conf(dslr,longueposelinkbit)      $confCam(conf_dslr,longueposelinkbit)
+      set conf(dslr,longueposestartvalue)   $confCam(conf_dslr,longueposestartvalue)
+      set conf(dslr,longueposestopvalue)    $confCam(conf_dslr,longueposestopvalue)
+      set conf(dslr,statut_service)         $confCam(conf_dslr,statut_service)
+      set conf(dslr,mirh)                   $confCam(conf_dslr,mirh)
+      set conf(dslr,mirv)                   $confCam(conf_dslr,mirv)
       set conf(apn,baud)                    $confCam(conf_apn,baud)
      ### set conf(apn,serial_port)             $confCam(conf_apn,serial_port)
       if { [ info exists confCam(apn,model) ] } {
