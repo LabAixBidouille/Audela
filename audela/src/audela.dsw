@@ -51,6 +51,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "libascom"=".\libtel\libascom\vc60\libascom.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libaudecom"=".\libtel\libaudecom\vc60\libaudecom.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -160,6 +172,30 @@ Package=<4>
 ###############################################################################
 
 Project: "libcookbook"=".\libcam\libcookbook\vc60\libcookbook.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libdcjpeg"=".\external\libdcjpeg\vc60\libdcjpeg.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libdcraw"=".\external\libdcraw\vc60\libdcraw.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -292,18 +328,6 @@ Package=<4>
 ###############################################################################
 
 Project: "liblx200"=".\libtel\liblx200\vc60\liblx200.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "libascom"=".\libtel\libascom\vc60\libascom.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
