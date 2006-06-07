@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 05 fevrier 2006
+# Date de mise a jour : 06 fevrier 2006
 #
 
 #!/bin/sh

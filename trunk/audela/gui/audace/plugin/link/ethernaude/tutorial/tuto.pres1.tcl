@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 05 fevrier 2006
+# Date de mise a jour : 06 juin 2006
 #
 
 #!/bin/sh
@@ -90,10 +90,6 @@ http://www.mecastronic.com\
 global num       # index for devices
 global caption   # texts of captions
 global zone      # window name of usefull screen parts
-
-#--- definition of global variables
-global lpt       # name of the audine port
-set lpt "lpt1"
 
 #--- selection of langage
 caption_def_plugcam $langage
