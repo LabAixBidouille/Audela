@@ -61,6 +61,8 @@ struct camprop {
    char cameraFolder[1024];        // repertoire courant dans la memoire de la camera
    char fileName[1024];            // nom du fichier en cours de traitement ( entre startExp et read_ccd) 
    int autoLoadFlag;
+   int driverMode;
+   char quality[20];
    
    char longuepose;              // 0=interne, 1=link (quickremote or parallel, ..)  , 2= manual remote
    int  longueposelinkno;
@@ -73,6 +75,9 @@ struct camprop {
 
 int  cam_loadLastImage(struct camprop *cam);
 int  cam_getSystemServiceState(struct camprop *cam);
+int  cam_setLonguePose(struct camprop *cam, int value);
 void cam_setSystemServiceState(struct camprop *cam, int state);
+int  cam_checkQuality(char *quality);
+int  cam_getQualityList(char *list);
 
 #endif
