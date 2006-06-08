@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Date de mise a jour : 18 mai 2006
+# Date de mise a jour : 08 juin 2006
 #
 
 #--- Initialisation des variables confTel(conf_lx200,connect), (conf_temma,connect) et confTel(...)
@@ -2103,14 +2103,14 @@ namespace eval ::confTel {
                   #--- Correction de la vitesse de suivi en ad et en dec
                   if { $conf(temma,type) == "0" } {
                      tel$audace(telNo) driftspeed 0 0
-                     ::console::affiche_resultat "$caption(temma,para_mobile_etoile)\n\n"
+                     ::console::affiche_resultat "$caption(conftel,temma_mobile_etoile)\n\n"
                   } elseif { $conf(temma,type) == "1" } {
                      tel$audace(telNo) driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
                      set correction_suivi [ tel$audace(telNo) driftspeed ]
-                     ::console::affiche_resultat "$caption(temma,para_ctl_mobile)\n"
-                     ::console::affiche_resultat "$caption(temma,para_mobile_ad) $caption(temma,2points)\
+                     ::console::affiche_resultat "$caption(conftel,temma_ctl_mobile:)\n"
+                     ::console::affiche_resultat "$caption(conftel,temma_mobile_ad) $caption(conftel,2points)\
                         [ lindex $correction_suivi 0 ]\n"
-                     ::console::affiche_resultat "$caption(temma,para_mobile_dec) $caption(temma,2points)\
+                     ::console::affiche_resultat "$caption(conftel,temma_mobile_dec) $caption(conftel,2points)\
                         [ lindex $correction_suivi 1 ]\n\n"
                   }
                   #--- Affichage de la position du telescope
