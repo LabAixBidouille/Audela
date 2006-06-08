@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Date de mise a jour : 29 janvier 2006
+# Date de mise a jour : 08 juin 2006
 #
 
 #=========================================================================
@@ -18,7 +18,7 @@ set caption(autoguider,pb)                       "Problem"
 set caption(autoguider,selcam)                   "You must select a camera first\n(Setup/Camera)."
 
 set caption(autoguider,ctrl_monture)             "Tracking on"
-set caption(autoguider,config_guidage)           "Setup ..."
+set caption(autoguider,config_guidage)           "Setup..."
 set caption(autoguider,init_position)            "Reset"
 set caption(autoguider,coord_origine)            "Origin"
 set caption(autoguider,coord_etoile)             "Star"
@@ -44,7 +44,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
 
    set caption(autoguider,ctrl_monture)          "Suivi actif"
-   set caption(autoguider,config_guidage)        "Configuration ..."
+   set caption(autoguider,config_guidage)        "Configuration..."
    set caption(autoguider,init_position)         "Initialiser"
    set caption(autoguider,coord_origine)         "Origine"
    set caption(autoguider,coord_etoile)          "Etoile"
@@ -70,7 +70,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Occorre selezionare preventivamente una\ncamera CCD (menu Configurazione/Camera)."
 
    set caption(autoguider,ctrl_monture)          "Inseg. on"
-   set caption(autoguider,config_guidage)        "Settagio ..."
+   set caption(autoguider,config_guidage)        "Settagio..."
    set caption(autoguider,init_position)         "Inizializzare"
    set caption(autoguider,coord_origine)         "Origine"
    set caption(autoguider,coord_etoile)          "Stella"
@@ -96,7 +96,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Debe seleccionar primero una cámara\n(menú Configuración/Cámara)."
 
    set caption(autoguider,ctrl_monture)          "Seg. on"
-   set caption(autoguider,config_guidage)        "Configuración ..."
+   set caption(autoguider,config_guidage)        "Configuración..."
    set caption(autoguider,init_position)         "Inicializar"
    set caption(autoguider,coord_origine)         "Origen"
    set caption(autoguider,coord_etoile)          "Estrella"
@@ -122,7 +122,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
 
    set caption(autoguider,ctrl_monture)          "Folgung an"
-   set caption(autoguider,config_guidage)        "Konfiguration ..."
+   set caption(autoguider,config_guidage)        "Konfiguration..."
    set caption(autoguider,init_position)         "Initialisieren"
    set caption(autoguider,coord_origine)         "Abstammung"
    set caption(autoguider,coord_etoile)          "Stern"
@@ -148,7 +148,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "You must select a camera first\n(Setup/Camera)."
 
    set caption(autoguider,ctrl_monture)          "Tracking on"
-   set caption(autoguider,config_guidage)        "Setup ..."
+   set caption(autoguider,config_guidage)        "Setup..."
    set caption(autoguider,init_position)         "Reset"
    set caption(autoguider,coord_origine)         "Origin"
    set caption(autoguider,coord_etoile)          "Star"
