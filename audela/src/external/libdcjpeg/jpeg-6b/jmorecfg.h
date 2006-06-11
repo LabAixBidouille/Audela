@@ -187,7 +187,24 @@ typedef unsigned int JDIMENSION;
 /* a function referenced thru EXTERNs: */
 #define GLOBAL(type)		type
 /* a reference to a GLOBAL function: */
+
+/* Compile with -DJPEG_DLL for Windows DLL support */
+#if defined(__WIN32__) && defined(JPEG_DLL)
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#  undef WIN32_LEAN_AND_MEAN
+#  if defined(_MSC_VER)
+#    define EXTERN(type) extern __declspec(dllexport) type
+#  else
+#    if defined(__BORLANDC__)
+#	define EXTERN(type) extern type _export
+#    endif
+#  endif
+#endif
+
+#if !defined(EXTERN)
 #define EXTERN(type)		extern type
+#endif
 
 
 /* This macro is used to declare a "method", that is, a function pointer.
@@ -209,10 +226,12 @@ typedef unsigned int JDIMENSION;
  * explicit coding is needed; see uses of the NEED_FAR_POINTERS symbol.
  */
 
+#ifndef FAR
 #ifdef NEED_FAR_POINTERS
 #define FAR  far
 #else
 #define FAR
+#endif
 #endif
 
 
@@ -223,9 +242,24 @@ typedef unsigned int JDIMENSION;
  * Defining HAVE_BOOLEAN before including jpeglib.h should make it work.
  */
 
+/* On windows use the boolean definition from its headers to prevent
+ * any conflicts should a user of this header use "windows.h". Without
+ * this we will have/get conflicting definitions of 'boolean' ('int'
+ * here, 'unsigned' char for windows)
+ */
+
+#if !defined(__WIN32__) && (defined(_WIN32) || defined(WIN32))
+#define __WIN32__
+#endif
+
+#if defined(_WINDOWS) || defined(__WIN32__) || defined(_Windows)
+typedef unsigned char boolean;
+#else
 #ifndef HAVE_BOOLEAN
 typedef int boolean;
 #endif
+#endif
+
 #ifndef FALSE			/* in case these macros already exist */
 #define FALSE	0		/* values of boolean */
 #endif
