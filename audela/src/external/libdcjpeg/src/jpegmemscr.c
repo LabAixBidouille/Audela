@@ -25,7 +25,6 @@
 /* Expanded data source object for stdio input */
 typedef struct {
   struct jpeg_source_mgr pub;   /* public fields */
-
   unsigned char* membuff;       /* The input buffer */
   int location;                 /* Current location in buffer */ 
   int membufflength;            /* The length of the input buffer */
@@ -38,8 +37,7 @@ typedef mem_source_mgr* mem_src_ptr;
 #define INPUT_BUF_SIZE  4096    /* choose an efficiently fread'able size */
 
 
-METHODDEF(void)
-mem_init_source (j_decompress_ptr cinfo)
+void mem_init_source (j_decompress_ptr cinfo)
 {
   mem_src_ptr src;
 
@@ -54,8 +52,7 @@ mem_init_source (j_decompress_ptr cinfo)
 }
 
 
-METHODDEF(boolean)
-mem_fill_input_buffer (j_decompress_ptr cinfo)
+boolean mem_fill_input_buffer (j_decompress_ptr cinfo)
 {
   mem_src_ptr src;
   size_t bytes_to_read;
@@ -90,8 +87,7 @@ mem_fill_input_buffer (j_decompress_ptr cinfo)
 }
 
 
-METHODDEF(void)
-mem_skip_input_data (j_decompress_ptr cinfo, long num_bytes)
+void mem_skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 {
   mem_src_ptr src;
 
@@ -115,15 +111,13 @@ mem_skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 }
 
 
-METHODDEF(void)
-mem_term_source (j_decompress_ptr cinfo)
+void mem_term_source (j_decompress_ptr cinfo)
 {
   /* no work necessary here */
 }
 
 
-GLOBAL(void)
-jpeg_mem_src (j_decompress_ptr cinfo, unsigned char *mbuff, int mbufflen)
+void jpeg_mem_src (j_decompress_ptr cinfo, unsigned char *mbuff, int mbufflen)
 {
   mem_src_ptr src;
 
