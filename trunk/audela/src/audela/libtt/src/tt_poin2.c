@@ -73,6 +73,9 @@ int tt_ptr_imaseries(void *args)
    if (argu[6]==NULL) { return(PB_DLL); }
    datatype_out=*(int*)(argu[6]);
    if (argu[7]==NULL) { return(PB_DLL); }
+   if ((naxis1==0)||(naxis2==0)) {
+      return(TT_ERR_NAXIS12_NULL);
+   }
 
    /* --- variable globale pour le nom de fichiers temporaires ---*/   
    strcpy(tt_tmpfile_ext,"");
