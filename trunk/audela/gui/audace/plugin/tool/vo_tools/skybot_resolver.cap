@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Date de mise a jour : 27 fevrier 2006
+# Date de mise a jour : 15 juin 2006
 #
 
 #=========================================================================
@@ -12,8 +12,8 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(resolver,main_title)            "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-set caption(resolver,nom_objet)             "# Nom de l'objet cible :"
-
+set caption(resolver,titre_objet)           "# Choix du corps céleste"
+set caption(resolver,nom_objet)             "# Nom de la cible :"
 set caption(resolver,titre_param)           "# Paramètres de calcul"
 set caption(resolver,epoch)                 "# Epoque de calcul de l'éphéméride :"
 set caption(resolver,loc)                   "# Localisation de l'observateur :"
@@ -80,8 +80,8 @@ set caption(resolver,goto)                  "Goto"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(resolver,main_title)         "SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-   set caption(resolver,nom_objet)          "Nom de l'objet cible :"
-
+   set caption(resolver,titre_objet)        "Choix du corps céleste"
+   set caption(resolver,nom_objet)          "Nom de la cible :"
    set caption(resolver,titre_param)        "Paramètres de calcul"
    set caption(resolver,epoch)              "Epoque de calcul de l'éphéméride :"
    set caption(resolver,loc)                "Localisation de l'observateur :"
@@ -148,8 +148,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-   set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
-
+   set caption(resolver,titre_objet)        "# Choix du corps céleste"
+   set caption(resolver,nom_objet)          "# Nom de la cible :"
    set caption(resolver,titre_param)        "# Paramètres de calcul"
    set caption(resolver,epoch)              "# Epoque de calcul de l'éphéméride :"
    set caption(resolver,loc)                "# Localisation de l'observateur :"
@@ -216,8 +216,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-   set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
-
+   set caption(resolver,titre_objet)        "# Choix du corps céleste"
+   set caption(resolver,nom_objet)          "# Nom de la cible :"
    set caption(resolver,titre_param)        "# Paramètres de calcul"
    set caption(resolver,epoch)              "# Epoque de calcul de l'éphéméride :"
    set caption(resolver,loc)                "# Localisation de l'observateur :"
@@ -284,8 +284,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-   set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
-
+   set caption(resolver,titre_objet)        "# Choix du corps céleste"
+   set caption(resolver,nom_objet)          "# Nom de la cible :"
    set caption(resolver,titre_param)        "# Paramètres de calcul"
    set caption(resolver,epoch)              "# Epoque de calcul de l'éphéméride :"
    set caption(resolver,loc)                "# Localisation de l'observateur :"
@@ -352,8 +352,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(resolver,main_title)         "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-   set caption(resolver,nom_objet)          "# Nom de l'objet cible :"
-
+   set caption(resolver,titre_objet)        "# Choix du corps céleste"
+   set caption(resolver,nom_objet)          "# Nom de la cible :"
    set caption(resolver,titre_param)        "# Paramètres de calcul"
    set caption(resolver,epoch)              "# Epoque de calcul de l'éphéméride :"
    set caption(resolver,loc)                "# Localisation de l'observateur :"
