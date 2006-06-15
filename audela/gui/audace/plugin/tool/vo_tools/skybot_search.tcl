@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 11 juin 2006
+# Date de mise a jour : 15 juin 2006
 #
 
 namespace eval skybot_Search {
@@ -133,7 +133,7 @@ namespace eval skybot_Search {
    #
    proc save_session { } {
       variable This
-      global audace voconf
+      global audace caption voconf
 
       #--- si aucun fichier n'est en memoire, on demande un nom
       if { $voconf(session_filename) == "?" } { ::skybot_Search::save_as_session }
