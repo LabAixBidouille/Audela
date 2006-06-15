@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 22 mai 2006
+# Date de mise a jour : 11 juin 2006
 #
 
 namespace eval skybot_Resolver {
@@ -225,32 +225,44 @@ namespace eval skybot_Resolver {
       wm title $This $caption(resolver,main_title)
       wm protocol $This WM_DELETE_WINDOW { ::skybot_Resolver::fermer }
 
-      #--- Cree un frame pour la saisie de l'objet cible
-      frame $This.frame1 \
-         -borderwidth 1 -relief raised
+
+      #--- Cree un frame pour les parametres de calcul
+      frame $This.frame1 -borderwidth 0
       pack $This.frame1 \
          -in $This -anchor s -side top -expand 0 -fill x \
-         -padx 10 -pady 2
+         -pady 6
 
-        #--- Cree un label
-        label $This.frame1.lab -text "$caption(resolver,nom_objet)"
-        pack $This.frame1.lab \
-           -in $This.frame1 -side left -anchor center \
-           -padx 3 -pady 3
-        #--- Cree une ligne d'entree
-        entry $This.frame1.ent -textvariable voconf(nom_objet) \
-           -borderwidth 1 -relief groove -width 25 -justify left
-        pack $This.frame1.ent \
-           -in $This.frame1 -side left -anchor center \
-           -padx 3 -pady 3
-        #--- Cree un bouton pour une info sur la saisie de l'epoque
-        button $This.frame1.help -state active \
-           -borderwidth 0 -relief flat -anchor c \
-           -text "$caption(resolver,info)" \
-           -command { ::skybot_Resolver::GetInfo "target" }
-        pack $This.frame1.help \
-           -in $This.frame1 -side left -anchor c \
-           -padx 3 -pady 3
+        #--- Cree un label pour le titre objet celeste
+        label $This.frame1.titre -text "$caption(resolver,titre_objet)" \
+          -borderwidth 0 -relief flat
+        pack $This.frame1.titre \
+          -in $This.frame1 -side top -anchor w \
+          -padx 3 -pady 3
+
+        #--- Cree un frame pour la saisie du corps celeste
+        set objet [frame $This.frame1.param -borderwidth 1 -relief solid]
+        pack $objet \
+          -in $This.frame1 -anchor w -side top -expand 0 -fill x -padx 10
+
+           #--- Cree un label
+           label $objet.lab -text "$caption(resolver,nom_objet)"
+           pack $objet.lab \
+              -in $objet -side left -anchor center \
+              -padx 3 -pady 3
+           #--- Cree une ligne d'entree
+           entry $objet.ent -textvariable voconf(nom_objet) \
+              -borderwidth 1 -relief groove -width 50 -justify center
+           pack $objet.ent \
+              -in $objet -side left -anchor center -fill x -expand 1 \
+              -padx 3 -pady 3
+           #--- Cree un bouton pour une info sur la saisie de l'epoque
+           button $objet.help -state active \
+              -borderwidth 0 -relief flat -anchor c \
+              -text "$caption(resolver,info)" \
+              -command { ::skybot_Resolver::GetInfo "target" }
+           pack $objet.help \
+              -in $objet -side right -anchor c \
+              -padx 6 -pady 3
 
       #--- Cree un frame pour les parametres de calcul
       frame $This.frame2 -borderwidth 0
@@ -295,40 +307,36 @@ namespace eval skybot_Resolver {
           pack $param.input \
              -in $param -side left -anchor w -expand 0 -fill x \
              -padx 3 -pady 3
-            #--- Cree un frame pour la saisie de l'epoque
-            frame $param.input.epoch -borderwidth 0
+            #--- Cree une ligne d'entree pour la saisie de l'epoque
+            entry $param.input.epoch \
+               -textvariable voconf(date_ephemerides) \
+               -borderwidth 1 -relief groove -width 23 -justify center
             pack $param.input.epoch \
-               -in $param.input -side top -anchor w \
-               -padx 3 -pady 1
-              #--- Cree une ligne d'entree pour la saisie de l'epoque
-              entry $param.input.epoch.ep \
-                 -textvariable voconf(date_ephemerides) \
-                 -borderwidth 1 -relief groove -width 25 -justify center
-              pack $param.input.epoch.ep \
-                 -in $param.input.epoch -side left
-              #--- Cree un bouton pour inserer la date courante
-              button $param.input.epoch.crt \
-                 -text "$caption(resolver,date_crte)" -borderwidth 1 \
-                 -command { set voconf(date_ephemerides) [ mc_date2iso8601 now ] }
-              pack $param.input.epoch.crt \
-                 -in $param.input.epoch -side left -padx 5
-            #--- Cree un frame pour la saisie de la localisation de l'observateur
-            frame $param.input.loc -borderwidth 0
+               -in $param.input -side top
+            #--- Cree une ligne d'entree pour la loc de l'observateur
+            entry $param.input.loc \
+               -textvariable voconf(iau_code_obs) \
+               -borderwidth 1 -relief groove -width 23 -justify center
             pack $param.input.loc \
-               -in $param.input -side top -anchor w \
-               -padx 3 -pady 1
-              #--- Cree une ligne d'entree pour la loc de l'observateur
-              entry $param.input.loc.in \
-                 -textvariable voconf(iau_code_obs) \
-                 -borderwidth 1 -relief groove -width 5 -justify center
-              pack $param.input.loc.in \
-                 -in $param.input.loc -side left
-              #--- Cree un bouton pour afficher la liste des code UAI
-              button $param.input.loc.liste \
-                 -text "$caption(resolver,liste_code_uai)" -borderwidth 1 \
-                 -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
-              pack $param.input.loc.liste \
-                 -in $param.input.loc -side left -padx 5
+               -in $param.input -side top
+
+          #--- Cree un frame pour les boutons associes
+          frame $param.but -borderwidth 0
+          pack $param.but \
+             -in $param -side left -anchor w -expand 0 -fill x \
+             -padx 3 -pady 3
+            #--- Cree un bouton pour inserer la date courante
+            button $param.but.epoch \
+               -text "$caption(resolver,date_crte)" -borderwidth 1 \
+               -command { set voconf(date_ephemerides) [ mc_date2iso8601 now ] }
+            pack $param.but.epoch \
+               -in $param.but -side top -fill x
+            #--- Cree un bouton pour afficher la liste des code UAI
+            button $param.but.loc \
+               -text "$caption(resolver,liste_code_uai)" -borderwidth 1 \
+               -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
+            pack $param.but.loc \
+               -in $param.but -side top -fill x
 
           #--- Cree un frame pour l'aide
           frame $param.help -borderwidth 0
@@ -748,8 +756,9 @@ namespace eval skybot_Resolver {
 
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus } statut ]
+
       #---
-      if { $erreur == "0" } {
+      if { $erreur == "0" && $statut != "failed" } {
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
          regsub -all "\'" $statut "" statut
@@ -772,7 +781,7 @@ namespace eval skybot_Resolver {
             $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
             if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
             $::skybot_Resolver::This configure -cursor arrow
-            return
+            return "failed"
          }
          #---
          if { $date_calcul > $date_fin_jd } {
@@ -782,8 +791,14 @@ namespace eval skybot_Resolver {
             $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
             if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
             $::skybot_Resolver::This configure -cursor arrow
-            return
+            return "failed"
          }
+	 return 0
+
+      } else {
+
+         return $caption(resolver,msg_internet)
+
       }
 
    }
@@ -813,7 +828,7 @@ namespace eval skybot_Resolver {
       #--- Traitement de la presence du nom de l'objet
       if { $voconf(nom_objet) == "" } {
          tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_notarget)"
-         focus $This.frame1.lab
+         focus $This.frame1.param.lab
          $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
          $::skybot_Resolver::This configure -cursor arrow
          return
@@ -831,7 +846,13 @@ namespace eval skybot_Resolver {
 
       #--- Conversion de la date en JD
       set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
-      valideDate $date_calcul 0
+      set erreur [ valideDate $date_calcul 0 ]
+      if { $erreur != "0" } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $erreur
+         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
+         return
+      }
 
       #--- Traitement du nom des objets
       set voconf(nom_objet) [ suppr_accents $voconf(nom_objet) ]
@@ -848,12 +869,12 @@ namespace eval skybot_Resolver {
                set voconf(type) "SIMBAD"
             } else {
                set ok(sesame) 2
-               set voconf(sesame) [ list "item" [ concat "SESAME -> The celestial object '$voconf(nom_objet)' was not resolved by Sesame@$voconf(sesame_server)" ] ]
+               set voconf(sesame) [ concat "SESAME -> The celestial object '$voconf(nom_objet)' was not resolved by Sesame@$voconf(sesame_server)" ]
                set voconf(type) "?"
             }
          } else {
             set ok(sesame) 3
-            set voconf(sesame) [ list "item" [concat "SESAME -> $erreur"] ]
+            set voconf(sesame) [concat "SESAME -> $erreur"]
             set voconf(type) "?"
          }
       }
@@ -872,7 +893,7 @@ namespace eval skybot_Resolver {
             }
          } else {
             set ok(skybot) 3
-            set voconf(skybot) [ list "item" [concat "SKYBOT -> $erreur"] ]
+            set voconf(skybot) [concat "SKYBOTResolver -> $erreur"]
             set voconf(type) "?"
          }
       }
@@ -891,13 +912,13 @@ namespace eval skybot_Resolver {
          if { $ok(sesame) == "0" && $ok(skybot) == "0" } {
             #--- aucun des resolvers n'a ete invoque
             set erreur -1
-            set voconf(liste) [ list item $caption(resolver,msg_noresolver) ]
+            set voconf(liste) $caption(resolver,msg_noresolver)
          } else {
             #--- au moins un resolver a ete invoque mais:
             if { $ok(sesame) == "2" && $ok(skybot) == "2" } { 
                #--- les 2 resolvers n'ont pas trouve
                set erreur -2
-               set voconf(liste) [ list item [ concat "$caption(resolver,msg_objnotfound)$voconf(sesame_server)" ] ]
+               set voconf(liste) [ concat "$caption(resolver,msg_objnotfound)$voconf(sesame_server)" ]
             } else {
                #--- l'un des resolver invoque n'a rien trouve ou a genere une erreur
                set erreur -3
@@ -967,7 +988,7 @@ namespace eval skybot_Resolver {
 
          #--- cas ou les 2 resolvers n'ont pas trouve l'objet ou cas d'erreur
          $::skybot_Resolver::This.frame5.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
-         $::skybot_Resolver::This.frame5.tbl insert end [ list [ lindex $voconf(liste) 1 ] ]
+         $::skybot_Resolver::This.frame5.tbl insert end [ list $voconf(liste) ]
          $::skybot_Resolver::This.frame5.tbl cellconfigure 0,0 -fg $color(red)
          set voconf(ad_objet)        ""
          set voconf(dec_objet)       ""
@@ -1073,7 +1094,13 @@ namespace eval skybot_Resolver {
 
       #--- Conversion de la date en JD
       set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
-      valideDate $date_calcul 1
+      set erreur [ valideDate $date_calcul 1 ]
+      if { $erreur != "0" } {
+         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $erreur
+         $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
+         $::skybot_Resolver::This configure -cursor arrow
+         return
+      }
 
       #--- Invocation du web service skybot
       set ok(skybot) 0
@@ -1087,7 +1114,7 @@ namespace eval skybot_Resolver {
          }
       } else {
          set ok(skybot) 3
-         set voconf(skybot) [ list "item" [concat "SKYBOT -> $erreur"] ]
+         set voconf(skybot) [concat "SKYBOT -> $erreur"]
       }
 
       #--- Gestion des erreurs
@@ -1177,7 +1204,7 @@ namespace eval skybot_Resolver {
 
          #--- cas sans reponse ou cas d'erreur
          $::skybot_Resolver::This.frame5.tbl insertcolumns end 100 "$caption(resolver,msg_erreur)" left
-         $::skybot_Resolver::This.frame5.tbl insert end [ list [ lindex $voconf(liste) 1 ] ]
+         $::skybot_Resolver::This.frame5.tbl insert end [ list $voconf(liste) ]
          $::skybot_Resolver::This.frame5.tbl cellconfigure 0,0 -fg $color(red)
 
       }

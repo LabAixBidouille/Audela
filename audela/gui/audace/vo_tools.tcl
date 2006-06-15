@@ -2,7 +2,7 @@
 # File : vo_tools.tcl
 # Description : Virtual Observatory Tools
 # Auteur : Alain KLOTZ & Jerome BERTHIER
-# Update : 24 mai 2006
+# Update : 15 juin 2006
 #
 
 # ------------------------------------------------------------------------------------
@@ -188,8 +188,8 @@ proc vo_entityEncode {text} {
 # Update      : 21 may 2006
 # 
 # Generic skybot XML generation procedure to wrap up the method parameters for 
-# transport to the server. The procedure returns the generated XML data for the RPC
-# call
+# transport to the server. The procedure returns the generated XML data for the
+# RPC call
 # ------------------------------------------------------------------------------------
 proc vo_skybotXML {procVarName args} {
    variable skybot_xml
@@ -212,7 +212,7 @@ proc vo_skybotXML {procVarName args} {
 #
 # Description : Skybot webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 may 2006
+# Update      : 11 juin 2006
 #
 # Ce script interroge la base SkyBoT afin de fournir la liste et les coordonnees
 # de tous les corps du systeme solaire contenus dans le FOV a l'epoque et aux
@@ -264,9 +264,9 @@ proc vo_skybot { args } {
  <SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <ns1:skybot>
    <inputArray>
-   <epoch>${epoch}</epoch>
-   <alpha>${RA}</alpha>
-   <delta>${DEC}</delta>
+    <epoch>${epoch}</epoch>
+    <alpha>${RA}</alpha>
+    <delta>${DEC}</delta>
     <radius>$radius</radius>
     <mime>$mime</mime>
     <output>$out</output>
@@ -284,11 +284,18 @@ proc vo_skybot { args } {
          -wrapProc vo_skybotXML \
          -params { epoch double alpha double delta double radius string mime string out string observer string filter string }
 
-      return [ skybot epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter ]
+      set erreur [ catch { skybot epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter } response ]
+
+      if { $erreur == "0" } {
+         return $response
+      } else {
+         tk_messageBox -title "error" -type ok -message $response
+         return "failed"
+      }
 
    } else {
 
-      error "Usage: vo_skybot Date ra_J2000.0 dec_J2000.0 radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec)"
+      error "Usage: vo_skybot Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec)"
 
    }
 }
@@ -303,7 +310,7 @@ proc vo_skybot { args } {
 #
 # Description : SkybotResolver webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 may 2006
+# Update      : 11 juin 2006
 #
 # Ce script interroge la base SkyBoT afin de resoudre le nom d'un corps
 # du systeme solaire en ses coordonnees a l'epoque consideree.
@@ -370,13 +377,20 @@ proc vo_skybotresolver { args } {
          -wrapProc vo_skybotXML \
          -params { epoch double target string mime string out string observer string }
 
-      return [ skybotresolver epoch $jd target $target mime $mime out $out observer $observer ] 
+      set erreur [ catch { skybotresolver epoch $jd target $target mime $mime out $out observer $observer } response ]
+
+      if { $erreur == "0" } {
+         return $response
+      } else {
+         tk_messageBox -title "error" -type ok -message $response
+         return "failed"
+      }
 
    } else {
 
       error "Usage: vo_skybotresolver Epoch Target ?text|votable|html? ?object|basic|all? Observer"
 
-  }
+   }
 }
 
 # ------------------------------------------------------------------------------------
@@ -385,7 +399,7 @@ proc vo_skybotresolver { args } {
 #
 # Description : SkybotStatus webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 22 january 2006
+# Update      : 11 juin 2006
 #
 # Ce script interroge la base SkyBoT afin d'en connaitre le statut
 #
@@ -422,7 +436,14 @@ proc vo_skybotstatus { args } {
          -name "skybotstatus" \
          -params { "mime" "string" }
 
-      return [ skybotstatus $mime ]
+      set erreur [ catch { skybotstatus $mime } response ]
+
+      if { $erreur == "0" } {
+         return $response
+      } else {
+         tk_messageBox -title "error" -type ok -message $response
+         return "failed"
+      }
 
    } else {
 
@@ -437,7 +458,7 @@ proc vo_skybotstatus { args } {
 #
 # Description : Sesame: astronomical object name Resolver
 # Auteur      : Jerome BERTHIER
-# Update      : 31 january 2006
+# Update      : 11 juin 2006
 #
 # Ce script interroge le webservice SESAME (CDS) pour resoudre les noms des corps
 # celestes (hors objets du systeme solaire) reconnus de Simbad
@@ -459,6 +480,7 @@ proc vo_sesame { args } {
 
    set argc [llength $args]
    if {$argc >=1 } {
+
       set name [lindex $args 0]
       set resultType "ui"
       if {$argc >= 2} { set resultType [lindex $args 1] }
@@ -471,7 +493,14 @@ proc vo_sesame { args } {
          -action "urn:sesame" \
          -params { "name" "string"  "resultType" "string"}
 
-      return [ sesame $name $resultType ]
+      set erreur [ catch { sesame $name $resultType } response ]
+
+      if { $erreur == "0" } {
+         return $response
+      } else {
+         tk_messageBox -title "error" -type ok -message $response
+         return "failed"
+      }
 
    } else {
 

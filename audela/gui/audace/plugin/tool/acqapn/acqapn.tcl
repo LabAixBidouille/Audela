@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond Zachantke
-# Date de mise a jour : 03 fevrier 2006
+# Date de mise a jour : 15 juin 2006
 #
 
 	package provide acqapn 1.0
@@ -77,7 +77,7 @@
 
       	#--- Texte du bouton 'Video'
       	set panneau(AcqAPN,showvideo) 			"0"
-      	if { [::confCam::hasVideo $audace(camNo)] == 1 } { set panneau(AcqAPN,showvideo) "1" }
+      	if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { set panneau(AcqAPN,showvideo) "1" }
       	set panneau(AcqAPN,initstate) 			"0"
 
       	#--- Initialisation des radio et checkbutton
@@ -194,7 +194,7 @@
          		} 
 
          		#--- Message si ce n'est pas un apn ou une webcam
-         		if {  [::confCam::hasVideo $audace(camNo)] == 0 } {
+         		if { [ ::confCam::hasVideo $audace(camNo) ] == "0" } {
             		::AcqAPN::ErrComm 8
             		$This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal 
          		} else {
@@ -265,7 +265,7 @@
 		global confCam 
 		global audace
 		
-		if {  [::confCam::hasVideo $audace(camNo)] == 1 }  { 
+		if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { 
 			::AcqAPN::StopPreview
 			::AcqAPN::ShowVideo 
 		}
@@ -280,7 +280,7 @@
       	variable This 
       
       	#--- On stoppe la video
-   		if {  ::confCam::hasVideo $audace(camNo)] == 1 } { ::AcqAPN::StopPreview }
+   		if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { ::AcqAPN::StopPreview }
 
       	#--- Désactivation des boutons 'Connecter' et 'Vidéo'
       	$This.fra4.connect configure -text $caption(acqapn,sw,encours) -command {}

@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 22 mai 2006
+# Date de mise a jour : 11 juin 2006
 #
 
 namespace eval skybot_Statut {
@@ -93,14 +93,13 @@ namespace eval skybot_Statut {
 
       #---
       toplevel $This -class Toplevel
-#      wm geometry $This 480x230$voconf(position_statut)
       wm geometry $This $voconf(position_statut)
       wm resizable $This 1 1
       wm title $This $caption(statut,main_title)
       wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
 
       #--- Gestion des erreurs
-      if { $erreur == "0" } {
+      if { $erreur == "0" && $statut != "failed"} {
 
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
