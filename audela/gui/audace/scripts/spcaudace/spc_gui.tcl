@@ -155,12 +155,12 @@ proc spc_winini { } {
       #--- Menu Profil de raies ---#
       .spc.menuBar add cascade -menu .spc.menuBar.profil -label $captionspc(spc_profil) -underline 0
       menu .spc.menuBar.profil -tearoff 0
-      .spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
+      #.spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
       .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
       .spc configure -menu .spc.menuBar
-      bind .spc <Control-N> spc_open_fitfile
-      bind .spc <Control-n> spc_open_fitfile
+      #bind .spc <Control-N> spc_open_fitfile
+      #bind .spc <Control-n> spc_open_fitfile
 
 
       #--- Menu Mesures ---#
@@ -192,18 +192,18 @@ proc spc_winini { } {
       #--- Menu Analyse ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0
       menu .spc.menuBar.analyse -tearoff 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-E"
+      .spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-A"
       .spc.menuBar.analyse add command -label $captionspc(spc_vradiale_w) -command "spc_vradiale" -underline 0
       .spc.menuBar.analyse add command -label $captionspc(spc_vexp_w) -command "spc_vexp" -underline 0
       .spc.menuBar.analyse add command -label $captionspc(spc_vrot_w) -command "spc_vrot" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_npte_w) -command "spc_npte" -underline 0 -accelerator "Ctrl-T"
+      .spc.menuBar.analyse add command -label $captionspc(spc_npte_w) -command "spc_npte" -underline 0 -accelerator "Ctrl-E"
       .spc.menuBar.analyse add command -label $captionspc(spc_npne_w) -command "spc_npne" -underline 0 -accelerator "Ctrl-D"
       .spc.menuBar.analyse add command -label $captionspc(spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
       .spc configure -menu .spc.menuBar
       bind .spc <Control-A> mes_especes
       bind .spc <Control-a> mes_especes
-      bind .spc <Control-T> spc_npte_w
-      bind .spc <Control-t> spc_npte_w
+      bind .spc <Control-E> spc_npte_w
+      bind .spc <Control-e> spc_npte_w
       bind .spc <Control-D> spc_npne_w
       bind .spc <Control-d> spc_npne_w
 
@@ -235,6 +235,9 @@ proc pvisutools {} {
    global profilspc
    global captionspc
    global colorspc
+
+   #- 060317
+   #set profilspc(initialfile) $profilspc(object)
 
    .spc.g element create line1 -symbol none -xdata {0 1} -ydata {0 1} -smooth natural
    .spc.g axis configure x2 y2 -hide no
