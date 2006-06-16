@@ -435,3 +435,482 @@ proc spc_crop { args } {
 
 
 
+####################################################################
+# Procédure de correction de raies courbées (lampe de calibration) par rapport à l'axe vertical : smile selon l'axe x.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 28-05-2006
+# Date modification : 06-06-2006
+# Arguments : fichier fits 2D d'une lampe de calibration
+####################################################################
+
+proc spc_smilex { args } {
+
+    global audace
+    global conf
+    global flag_ok
+    set pourcentimg 0.01
+
+    if {[llength $args] == 1} {
+	set filenamespc [ lindex $args 0 ]
+	#set xdeb [ lindex $args 1 ]
+	#set ydeb [ lindex $args 2 ]
+	#set xfin [ lindex $args 3 ]
+	#set yfin [ lindex $args 4 ]
+
+	#--- Initialisation de variables liées aux dimensions du spectre de la lampe de calibration
+	#buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	loadima "$audace(rep_images)/$filenamespc"
+	set naxis2i [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+	# set pas [ expr $naxis2i/200 ]
+	set pas [ expr int($pourcentimg*$naxis2i) ]
+
+	#--- Selection d'une raie à la sourie
+	::console::affiche_resultat "Sélectionnez un cadre autour d'une raie...\n"
+	set flag_ok 0
+	# Création de la fenêtre
+	if { [ winfo exists .benji ] } {
+	    destroy .benji
+	}
+	toplevel .benji
+	wm geometry .benji
+	wm title .benji "Get zone"
+	wm transient .benji .audace
+	#-- Textes d'avertissement
+	label .benji.lab -text "Sélectionnez un cadre autour d'une raie..."
+	pack .benji.lab -expand true -expand true -fill both
+	#-- Sous-trame pour boutons
+	frame .benji.but
+	pack .benji.but -expand true -fill both
+	#-- Bouton "Ok"
+	button .benji.but.1  -command {set flag_ok 1} -text "OK"
+	pack .benji.but.1 -side left -expand true -fill both
+	#-- Bouton "Annuler"
+	button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+	pack .benji.but.2 -side right -expand true -fill both
+	#-- Attend que la variable $flag_ok change
+	vwait flag_ok
+	if { $flag_ok == "1" } {
+	    ::console::affiche_resultat "Zone : \n"
+	    set wincoords $audace(box)
+	    set flag_ok 2
+	    destroy .benji
+	} elseif { $flag_ok == "2" } {
+	    set flag_ok 2
+	    destroy .benji
+            return 0
+	}
+	#-- Découpage de la zone
+	if { [info exists audace(box)] == 1 } {
+	    #--- Détermination du rayon et du centre de courbure du raie verticale
+	    ##  -----------B
+	    ##  |          |
+	    ##  A-----------
+	    ##set wincoords [ list $xdeb 1 $xfin $naxis2 ]
+	    #set wincoords [ list $xdeb $ydeb $xfin $yfin ]
+	    buf$audace(bufNo) window $wincoords
+	    #-- Suppression de la zone selectionnee avec la souris
+	    catch {
+		unset audace(box)
+		$audace(hCanvas) delete $audace(hBox)
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: Select zone with mouse\n\n"
+	}
+
+	#-- Détermination des dimensions de la zone sélectionnée
+	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+	#-- Calcul de points présents sur la raie courbée par centrage gaussien sur une ligne
+	::console::affiche_resultat "Traitement de [expr $naxis2/$pas] lignes.\n"
+	set yline 1
+	while {$yline<=$naxis2} {
+	    set listcoords [list 1 $yline $naxis1 $yline]
+	    lappend ycoords $yline
+	    #::console::affiche_resultat "Fit gaussien de la ligne $yline.\n"
+	    lappend xcoords [lindex [ buf$audace(bufNo) fitgauss $listcoords ] 1]
+	    set yline [ expr $yline+$pas-1 ]
+	}
+
+	#-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee
+	set coefssmilex [ lindex [ spc_ajustdeg2 $ycoords $xcoords 1 ] 0 ]
+	set a [ lindex $coefssmilex 2 ]
+	set b [ lindex $coefssmilex 1 ]
+	set deltay [ expr 0.5*($naxis2i-$naxis2) ]
+	set ycenter [ expr -$b/(2*$a)+$deltay ]
+
+	#--- Correction du smile selon l'axe horizontal X
+	if { $a == 0 } {
+	    ::console::affiche_resultat "Le spectre n'est pas affecté par un smile selon l'axe X.\n"
+	    return 0
+	} else {
+	    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
+	}
+
+	#--- Sauvegarde
+	set filespc [ file rootname $filenamespc ]
+	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slx$conf(extension,defaut)"
+	loadima "$audace(rep_images)/${filespc}_slx$conf(extension,defaut)"
+	::console::affiche_resultat "Image sauvée sous ${filespc}_slx$conf(extension,defaut). Coéfficents du smilex : $ycenter, $a.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+	set results [ list ${filespc}_slx $a $b [lindex $coefssmilex 0] $ycenter  ]
+	return $results
+    } else {
+	# ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration xdeb ydeb xfin yfin\n\n"
+	::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration\n\n"
+    }
+}
+#****************************************************************************
+
+
+
+####################################################################
+# Procédure de correction des spectres courbés (stellaire) par rapport à l'axe horizontal : smile selon l'axe y.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 06-06-2006
+# Date modification : 06-06-2006
+# Arguments : spectre 2D fits
+####################################################################
+
+proc spc_smiley { args } {
+
+    global audace
+    global conf
+    set pourcentimg 0.01
+
+    if {[llength $args] == 1} {
+	set filenamespc [ lindex $args 0 ]
+
+	#--- Initialisation de varaibles relatives aux dimentions de l'image
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+	set pas [ expr int($pourcentimg*$naxis1) ]
+
+	#--- Détermination des paramètres de courbure du spectre
+	::console::affiche_resultat "Traitement de [expr $naxis1/$pas] colonnes.\n"
+	set xline 1
+	while {$xline<=$naxis1} {
+	    ##  -----------B
+	    ##  |          |
+	    ##  A-----------
+	    set listcoords [list $xline 1 $xline $naxis2 ]
+	    lappend xcoords $xline
+	    lappend ycoords [lindex [ buf$audace(bufNo) fitgauss $listcoords ] 5]
+	    set xline [ expr $xline+$pas-1 ]
+	}
+
+	#-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee
+	set coefssmiley [ lindex [ spc_ajustdeg2 $xcoords $ycoords 1 ] 0 ]
+	set a [ lindex $coefssmiley 2 ]
+	set b [ lindex $coefssmiley 1 ]
+	#set deltay [ expr 0.5*($naxis2i-$naxis2) ]
+	#set xcenter [ expr -$b/(2*$a)+$deltay ]
+	set xcenter [ expr -$b/(2*$a) ]
+
+	#--- Correction du smile selon l'axe vertical Y
+	if { $a == 0 } {
+	    ::console::affiche_resultat "Le spectre n'est pas affecté par un smile selon l'axe Y.\n"
+	    return 0
+	} else {
+	    buf$audace(bufNo) imaseries "SMILEY xcenter=$xcenter coef_smile2=$a"
+	}
+
+	#--- Sauvegarde
+	set filespc [ file rootname $filenamespc ]
+	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_sly$conf(extension,defaut)"
+	loadima "$audace(rep_images)/${filespc}_sly$conf(extension,defaut)"
+	::console::affiche_resultat "Image sauvée sous ${filespc}_sly$conf(extension,defaut).\n"
+	set results [ list ${filespc}_sly $a $b [lindex $coefssmiley 0] $xcenter ]
+	return $results
+    } else {
+	::console::affiche_erreur "Usage: spc_smiley spectre_2D_fits\n\n"
+    }
+}
+#****************************************************************************
+
+
+
+####################################################################
+# Procédure de correction du raies inclinées dans le spectre : translations de lignes.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 08-06-2006
+# Date modification : 08-06-2008
+# Arguments : spectre 2D fits, type de raies a/e (absorption/émission)
+# Remarque : cette commande pourrait s'appeler aussi "spc_tiltx"
+####################################################################
+
+proc spc_slant { args } {
+
+    global audace
+    global conf
+    global flag_ok
+
+    if {[llength $args] == 2} {
+	set filenamespc [ lindex $args 0 ]
+	set type [ lindex $args 1 ]
+
+	#--- Chargement du spectre et inversion si nécessaire
+	loadima $filenamespc
+	if { [string compare $type "a"] == 0 } {
+	    buf$audace(bufNo) mult -1.0
+	}
+
+	#--- Repérage de la partie supérieure de la raie  ----
+	set flag_ok 0
+	#-- Création de la fenêtre
+	if { [ winfo exists .benji ] } {
+	    destroy .benji
+	}
+	toplevel .benji
+	wm geometry .benji
+	wm title .benji "Get zone"
+	wm transient .benji .audace
+	#-- Textes d'avertissement
+	label .benji.lab -text "Faites un cadre sur la partie supérieure d'une raie brillante (boîte petite)"
+	pack .benji.lab -expand true -expand true -fill both
+	#-- Sous-trame pour boutons
+	frame .benji.but
+	pack .benji.but -expand true -fill both
+	#-- Bouton "Ok"
+	button .benji.but.1  -command {set flag_ok 1} -text "OK"
+	pack .benji.but.1 -side left -expand true -fill both
+	#-- Bouton "Annuler"
+	button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+	pack .benji.but.2 -side right -expand true -fill both
+	#-- Attend que la variable $flag_ok change
+	vwait flag_ok
+	if { $flag_ok == "1" } {
+	    set coords_zone $audace(box)
+	    set flag_ok 2
+	    destroy .benji
+	} elseif { $flag_ok == "2" } {
+	    set flag_ok 2
+	    destroy .benji
+            return 0
+	}
+	#-- Determine le photocentre de la zone sélectionée
+	set stats [ buf$audace(bufNo) stat ]
+	#set point_depart [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ]
+	set point_depart [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
+	::console::affiche_resultat "Partir supérieure de la raie : $point_depart\n"
+
+
+	#---------------------------------------------------------#
+	#--- Repérage de la partie inférieure de la raie  ----
+	set flag_ok 0
+	#-- Création de la fenêtre
+	if { [ winfo exists .benji ] } {
+	    destroy .benji
+	}
+	toplevel .benji
+	wm geometry .benji
+	wm title .benji "Get zone"
+	wm transient .benji .audace
+	#-- Textes d'avertissement
+	label .benji.lab -text "Faites un cadre sur la partie inférieure de cette même raie (boîte petite)"
+	pack .benji.lab -expand true -expand true -fill both
+	#-- Sous-trame pour boutons
+	frame .benji.but
+	pack .benji.but -expand true -fill both
+	#-- Bouton "Ok"
+	button .benji.but.1  -command {set flag_ok 1} -text "OK"
+	pack .benji.but.1 -side left -expand true -fill both
+	#-- Bouton "Annuler"
+	button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+	pack .benji.but.2 -side right -expand true -fill both
+	#-- Attend que la variable $flag_ok change
+	vwait flag_ok
+	if { $flag_ok == "1" } {
+	    set coords_zone $audace(box)
+	    set flag_ok 2
+	    destroy .benji
+	} elseif { $flag_ok == "2" } {
+	    set flag_ok 2
+	    destroy .benji
+            return 0
+	}
+	#-- Determine le photocentre de la zone sélectionée
+	set stats [ buf$audace(bufNo) stat ]
+	set point_final [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
+	::console::affiche_resultat "Extrémité inférieure de la raie : $point_final\n"
+
+	#--- Correction du slant
+	set erra [ lindex $point_depart 2 ]
+	#set erra 0.1
+	if { $erra >=0.3 } {
+	    set x_depart [expr [lindex $point_depart 0]+$erra ]
+	    set y_depart [expr [lindex $point_depart 1]+$erra ]
+	} else {
+	    set x_depart [ lindex $point_depart 0 ]
+	    set y_depart [ lindex $point_depart 1 ]
+	}
+	set errb [ lindex $point_final 2 ]
+	if { $erra >=0.3 } {
+	    set x_final [expr [lindex $point_final 0]+$errb ]
+	    set y_final [expr [lindex $point_final 1]+$errb ]
+	} else {
+	    set x_final [ lindex $point_final 0 ]
+	    set y_final [ lindex $point_final 1 ]
+	}
+	set deltax [expr $x_final-$x_depart ]
+	set deltay [expr $y_final-$y_depart ]
+	#set deltax [ expr [ lindex $point_final 0 ]-[ lindex $point_depart 0 ] ]
+	#set deltay [ expr [ lindex $point_final 1 ]-[ lindex $point_depart 1 ] ]
+	# set cd [ expr $deltay/$deltax ]
+	set cd [ expr $deltax/$deltay ]
+	::console::affiche_resultat "Pente d'inclinaison de la raie : $cd pixels y/pixels x.\n"
+	buf$audace(bufNo) imaseries "TILT trans_x=$cd trans_y=0"
+
+	#--- Sauvegarde
+	if { [string compare $type "a"] == 0 } {
+	    buf$audace(bufNo) mult -1.0
+	}
+	set filespc [ file rootname $filenamespc ]
+	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slant$conf(extension,defaut)"
+	::console::affiche_resultat "Image sauvée sous ${filespc}_slant$conf(extension,defaut).\n"
+	set results [ list ${filespc}_slant $cd ]
+	return $results
+    } else {
+	::console::affiche_erreur "Usage: spc_slant spectre_2D_fits type_raie (a/e)\n\n"
+    }
+}
+#****************************************************************************
+
+
+
+####################################################################
+# Procédure de correction du raies inclinées dans le spectre : translations de lignes et l'applique au spectre déformé.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 08-06-2006
+# Date modification : 08-06-2008
+# Arguments : spectre 2D fits
+# Remarque : cette commande pourrait s'appeler aussi "spc_tiltx"
+####################################################################
+
+proc spc_slant2img { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 2} {
+	set spectrelampe [ lindex $args 0 ]
+	set spectre [ lindex $args 1 ]
+
+	#--- Détermine les coéfficients du slant
+	set cd [ lindex [ spc_slant $spectrelamp ] 1 ]
+
+	#--- Applique le smile au spectre incriminé
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+	buf$audace(bufNo) imaseries "TILT trans_x=$cd trans_y=0"
+
+	#--- Sauvegarde
+	set filespc [ file rootname $spectre ]
+	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_slant$conf(extension,defaut)"
+	::console::affiche_resultat "Image sauvée sous ${filespc}_slant$conf(extension,defaut).\n"
+	return ${spectre}_slant
+    } else {
+	::console::affiche_erreur "Usage: spc_slant2img spectre_lampe_calibration spectre_2D_a_corriger\n\n"
+    }
+}
+#****************************************************************************
+
+
+
+####################################################################
+# Procédure de correction du raies courbées (lampe de calibration) : smile selon l'axe x et l'applique au spectre 2D à traiter avec ces paramètres.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 28-05-2006
+# Date modification : 28-05-2006
+# Arguments : spectre_lampe_calibration, spectre_a_traiter
+####################################################################
+
+proc spc_smilex2img { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 2} {
+	set spectrelampe [ lindex $args 0 ]
+	set spectre [ lindex $args 1 ]
+
+	#--- Détermine les coéfficients du smilex
+	set results [ spc_smilex $spectrelampe ]
+	#-- results : ${filespc}_slx $a $b [lindex $coefssmilex 0] $ycenter
+	set ycenter [ lindex $results 4 ]
+	set a [ lindex $results 1 ]
+
+	#--- Applique le smile au spectre incriminé
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+	buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
+
+	#--- Sauvegarde
+	set filespc [ file rootname $spectre ]
+	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_slx$conf(extension,defaut)"
+	::console::affiche_resultat "Spectre corrige du smile en x sauvé sous ${spectre}_slx$conf(extension,defaut).\n"
+	return ${spectre}_slx
+    } else {
+	::console::affiche_erreur "Usage: spc_smilex2img spectre_2D_a_corriger spectre_lampe_calibration\n\n"
+    }
+}
+#********************************************************************************#
+
+
+
+####################################################################
+# Procédure de correction du raies courbées (lampe de calibration) : smile selon l'axe x et l'applique au spectre 2D à traiter avec ces paramètres.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 13-06-2006
+# Date modification : 14-06-2006
+# Arguments : spectre_lampe_calibration, spectre_a_traiter ou nom générique des pectres à traiter
+####################################################################
+
+proc spc_smilex2imgs { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 2} {
+	set spectrelampe [ lindex $args 0 ]
+	set filename [ file rootname [ lindex $args 1 ] ]
+
+	#--- Détermine les coéfficients du smilex
+	set results [ spc_smilex $spectrelampe ]
+	#-- results : ${filespc}_slx $a $b [lindex $coefssmilex 0] $ycenter
+	set ycenter [ lindex $results 4 ]
+	set a [ lindex $results 1 ]
+
+	#--- Applique le smile au(x) spectre(s) incriminé(s)
+	set liste_images [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ]
+	set nbsp [ llength $liste_images ]
+	if { $nbsp ==  1 } {
+	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
+	    buf$audace(bufNo) save "$audace(rep_images)/${filename}-slx$conf(extension,defaut)"
+	    ::console::affiche_resultat "Spectre corrigé su smile en x souvé sous ${filename}-slx$conf(extension,defaut)\n"
+	    return ${filename}-slx
+	} else {  
+	    set i 1
+	    ::console::affiche_resultat "$nbsp spectres à traiter...\n"
+	    foreach lefichier $liste_images {
+		set fichier [ file tail $lefichier ]
+		buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+		buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
+		#--- Sauvegarde
+		buf$audace(bufNo) save "$audace(rep_images)/${filename}slx-$i$conf(extension,defaut)"
+		incr i
+	    }
+	    #--- Messages d'information
+	    ::console::affiche_resultat "Spectres corrigés du smile en x sauvés sous ${filename}slx-\*$conf(extension,defaut).\n"
+	    return ${filename}slx-
+	}
+    } else {
+	::console::affiche_erreur "Usage: spc_smilex2imgs spectre_2D_a_corriger spectre_lampe_calibration\n\n"
+    }
+}
+#********************************************************************************#

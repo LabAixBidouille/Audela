@@ -87,7 +87,7 @@ proc spc_npne { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 04-08-2005
-# Date de mise à jour : 04-08-2005
+# Date de mise à jour : 10-05-2006
 # Arguments : nom générique des profils de raies normalisés à 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
 ##########################################################
 
@@ -95,64 +95,73 @@ proc spc_ewcourbe { args } {
 
     global audace
     global conf
+	global tcl_platform
+    set ewfile "ewcourbe"
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
+	set ext ".dat"
 
     if {[llength $args] == 4} {
 	set nom_generic [ lindex $args 0 ]
 	set lambda [lindex $args 1 ]
-	set largeur [lindex $args 2 ]
+	set largeur_raie [lindex $args 2 ]
 	set type_raie [lindex $args 3 ]
 
 	set ldates ""
 	set list_ew ""
 	set intensite_raie 1
-	set fileliste [ glob ${nom_generic}*$conf(extension,defaut) ]
+	set fileliste [ glob -dir $audace(rep_images) ${nom_generic}*$conf(extension,defaut) ]
 
 	foreach fichier $fileliste {
-	    buf$audace(bufNo) load $fichier
+	    set fichier [ file tail $fichier ]
+	    ::console::affiche_resultat "\nTraitement de $fichier\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
 	    # Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
-	    lappend $ldates [ expr int($date*10000)/10000-50000 ]
+	    lappend ldates [ expr int($date*10000.)/10000.-50000. ]
+	    # lappend ldates [ expr $date-50000. ]
 	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
 	    set ldeb [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
 	    set disp [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
 
 	    set ldeb [ expr $lambda-0.5*$largeur_raie ]
 	    set lfin [ expr $lambda+0.5*$largeur_raie ]
-	    lappend $list_ew [ spc_ew $fichier $ldeb $lfin $type_raie ]
+	    lappend list_ew [ spc_ew $fichier $ldeb $lfin $type_raie ]
 	}
 
-	# Création du fichier de données
-	set file_id [open "$audace(rep_images)/$filename" w+]
-	#for {set k 0} {$k<$len} {incr k}
+	#--- Création du fichier de données
+	# ::console::affiche_resultat "$ldates \n $list_ew\n"
+	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
 	foreach sdate $ldates ew $list_ew {
-	    puts $file_id "$sdate\t$ew"
+	    puts $file_id1 "$sdate\t$ew"
 	}
-	close $file_id
+	close $file_id1
 
-	# Création du script de tracage avec gnuplot
-	set titre "Évolution de la largeur équivalente au cours du temps"
-	set legendey "Largeur équivalente (A)"
-	set legendex "Date (jours juliens-50000)"
+	#--- Création du script de tracage avec gnuplot
+	set titre "Evolution de la largeur equivalente au cours du temps"
+	set legendey "Largeur equivalente (A)"
+	set legendex "Date (JD-50000)"
 	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	#exec echo "call \"${repertoire_gp}/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
-	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	puts $file_id "call \"${repertoire_gp}/gp_points.cfg\" \"${largeurs_equivalentes}.dat\" \"$titre\" * * * * * \"largeurs_equivalentes.png\" \"$legendex\" \"$legendey\" "
-	close $file_id
-	set file_id [open "$audace(rep_images)/trace_gp.bat" w+]
-	puts $file_id "gnuplot \"${spcfile}.gp\" "
-	close $file_id
-	# exec gnuplot $repertoire_gp/run_gp
-	::console::affiche_resultat "Exécuter dans un terminal : trace_gp.bat\n"
+	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
+	puts $file_id2 "call \"${repertoire_gp}/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+	close $file_id2
+	if { $tcl_platform(os)=="Linux" } {	
+	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	} else {
+	    #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
+	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	}
+	#set file_id3 [open "$audace(rep_images)/trace_gp.bat" w+]
+	#puts $file_id3 "gnuplot \"${ewfile}.gp\" "
+	#close $file_id3
+	## exec gnuplot $repertoire_gp/run_gp
+	#::console::affiche_resultat "\nExécuter dans un terminal : trace_gp.bat\n"
 
     } else {
-	::console::affiche_erreur "Usage: centerg nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
+	::console::affiche_erreur "Usage: spc_ewcourbe nom_générique_profils_normalisés_fits lambda_raie largeur_raie a/e (absorption/émission)\n\n"
     }
 }
 #****************************************************************#
-
-
-
-
-
-
 

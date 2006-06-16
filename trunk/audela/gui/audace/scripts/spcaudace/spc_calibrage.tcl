@@ -57,11 +57,14 @@ proc spc_calibre2 { args } {
     #-- Modif faite le 26/12/2005
     set spectre [ spc_fits2data "$filespc" ]
     set intensites [lindex $spectre 0]
-    set naxis1 [lindex $spectre 1]
+    buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+    set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+    set binning [ lindex [buf$audace(bufNo) getkwd "BIN1"] 1 ]
 
     #--- Calcul des parametres spectraux
     set deltax [expr 1.0*($pixel2-$pixel1)]
     set dispersion [expr 1.0*($lambda2-$lambda1)/$deltax]
+    #set dispersion [expr 1.0*$binning*($lambda2-$lambda1)/$deltax]
     ::console::affiche_resultat "La dispersion vaut : $dispersion Angstroms/pixel\n"
     set lambda0 [expr 1.0*($lambda1-$dispersion*$pixel1)]
     #set xcentre [expr int($lambda0+0.5*($dispersion*$naxis1)-1)]
@@ -69,17 +72,19 @@ proc spc_calibre2 { args } {
     #--- Initialisation des mots clefs du fichier fits de sortie
     # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
+    buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
     #-- Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" "$lambda0" float "" "Angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "Angstrom"]
     #-- Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" float "" "Angstrom/pixel"]
-    #-- Longueur d'onde centrale FAUX
-    #buf$audace(bufNo) setkwd [list "CRPIX1" "$xcentre" int "" "Angstrom"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CUNIT1" "Angstrom" string "Wavelength unit" ""]
     #-- Corrdonnée représentée sur l'axe 1 (ie X)
     buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 
-    buf$audace(bufNo) save $audace(rep_images)/l${filespc}
-    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}.\n"
+    buf$audace(bufNo) bitpix float
+    buf$audace(bufNo) save "$audace(rep_images)/l${filespc}"
+    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}\n"
+    return l${filespc}
   } else {
     ::console::affiche_erreur "Usage: spc_calibre2 fichier_fits_du_profil x1 lambda1 x2 lambda2\n\n"
   }
@@ -93,72 +98,91 @@ proc spc_calibre2 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 29-01-2005
-# Date modification : 29-01-05 / 09-12-05 / 26-12-05
-# Arguments : fichier .fit du profil de raie spatial pixel1 lambda1 pixel2 lambda2
+# Date modification : 29-01-05/09-12-05/26-12-05/26-03-06
+# Arguments : fichier .fit du profil de raie x1a x2a lambda_a type_raie (a/e) x1b x2b lambda_b type_raie (a/e)
 ####################################################################
 
-proc spc_calibre2c { args } {
+proc spc_calibre2sauto { args } {
 
   global conf
   global audace
   global profilspc
   global captionspc
 
-  if {[llength $args] == 8} {
+  if {[llength $args] == 9} {
     set filespc [ lindex $args 0 ]
-    set pixel1a [ lindex $args 1 ]
-    set pixel1b [ lindex $args 2 ]
+    set pixel1a [ expr int([ lindex $args 1 ]) ]
+    set pixel1b [ expr int([ lindex $args 2 ]) ]
     set lambda1 [ lindex $args 3 ]
-    set pixel2a [ lindex $args 4 ]
-    set pixel2b [ lindex $args 5 ]
-    set lambda2 [ lindex $args 6 ]
-    set typeraie [ lindex $args 7 ]
+    set linetype1 [ lindex $args 4 ]
+    set pixel2a [ expr int([ lindex $args 5 ]) ]
+    set pixel2b [ expr int([ lindex $args 6 ]) ]
+    set lambda2 [ lindex $args 7 ]
+    set linetype2 [ lindex $args 8 ]
     
     #--- Récupère la liste "spectre" contenant 2 listes : pixels et intensites
     #set spectre [ openspcncal "$filespc" ]
     #-- Modif faite le 26/12/2005
-    set spectre [ spc_fits2data "$filespc" ]
-    set intensites [lindex $spectre 0]
-    set naxis1 [lindex $spectre 1]
+    #set spectre [ spc_fits2data "$filespc" ]
+    #set intensites [lindex $spectre 0]
+    ##set naxis1 [lindex $spectre 1]
 
-    #-- Détermine le centre gaussien de la raie 1 et 2
-    buf$audace(bufNo) load "$audace(rep_images)/${filespc}"
-      if { $typeraie == "a" } {
+    buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+    set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+    set binning [ lindex [buf$audace(bufNo) getkwd "BIN1"] 1 ]
+
+
+    #--- Détermine le centre gaussien de la raie 1 et 2
+    #-- Raie 1
+    if { $linetype1 == "a" } {
 	  buf$audace(bufNo) mult -1
-      }
+    }
     set listcoords [list $pixel1a 1 $pixel1b 1]
     set pixel1 [lindex [ buf$audace(bufNo) fitgauss $listcoords ] 1]
+    #-- Redresse le spectre a l'endroit s'il avait ete inversé précédement
+    if { $linetype1 == "a" } {
+	  buf$audace(bufNo) mult -1
+    }
+    #-- Raie 2
+    if { $linetype2 == "a" } {
+	  buf$audace(bufNo) mult -1
+    }
     set listcoords [list $pixel2a 1 $pixel2b 1]
     set pixel2 [lindex [ buf$audace(bufNo) fitgauss $listcoords ] 1] 
-      ::console::affiche_resultat "Centre des raies 1 : $pixel1 et raie 2 : $pixel2\n"
-      #-- Redresse le spectre a l'endroit s'il avait ete inversé précédement
-      if { $typeraie == "a" } {
+    #-- Redresse le spectre a l'endroit s'il avait ete inversé précédement
+    if { $linetype2 == "a" } {
 	  buf$audace(bufNo) mult -1
-      }
+    }
+    ::console::affiche_resultat "Centre des raies 1 : $pixel1 et raie 2 : $pixel2\n"
 
     #--- Calcul des parametres spectraux
+    #-- Dispersion :
     set deltax [expr 1.0*($pixel2-$pixel1)]
     set dispersion [expr 1.0*($lambda2-$lambda1)/$deltax]
+    #set dispersion [expr 1.0*$binning*($lambda2-$lambda1)/$deltax]
     ::console::affiche_resultat "La dispersion vaut : $dispersion Angstroms/pixel\n"
+    #-- Longueur d'onde de départ :
     set lambda0 [expr 1.0*($lambda1-$dispersion*$pixel1)]
-    #set xcentre [expr int($lambda0+0.5*($dispersion*$naxis1)-1)]
+    # set lambda0 [expr 1.0*($lambda1-$dispersion*$pixel1/$binning)] # FAUX
 
     #--- Initialisation des mots clefs du fichier fits de sortie
     # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
+    buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
     #-- Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" "$lambda0" float "" "Angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "Angstrom"]
     #-- Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" float "" "Angstrom/pixel"]
-    #-- Longueur d'onde centrale FAUX
-    #buf$audace(bufNo) setkwd [list "CRPIX1" "$xcentre" int "" "Angstrom"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CUNIT1" "Angstrom" string "Wavelength unit" ""]
     #-- Corrdonnée représentée sur l'axe 1 (ie X)
     buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 
+    buf$audace(bufNo) bitpix float
     buf$audace(bufNo) save $audace(rep_images)/l${filespc}
-    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}.\n"
+    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}\n"
+    return l${filespc}
   } else {
-    ::console::affiche_erreur "Usage: spc_calibre2 fichier_fits_du_profil x1 lambda1 x2 lambda2\n\n"
+    ::console::affiche_erreur "Usage: spc_calibre2sauto fichier_fits_du_profil x1a x2a lambda_a type_raie (a/e) x1b x2b lambda_b type_raie (a/e)\n\n"
   }
 }
 #****************************************************************#
@@ -193,11 +217,14 @@ proc spc_calibre3 { args } {
     #-- Modif faite le 26/12/2005
     set spectre [ spc_fits2data "$filespc" ]
     set intensites [lindex $spectre 0]
-    set naxis1 [lindex $spectre 1]
+    buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+    set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+    set binning [ lindex [buf$audace(bufNo) getkwd "BIN1"] 1 ]
 
     # Calcul des parametres spectraux
     set deltax [expr $x2-$x1]
-    set dispersion [expr ($lambda2-$lambda1)/$deltax]
+    #set dispersion [expr 1.0*$binning*($lambda2-$lambda1)/$deltax]
+    set dispersion [expr 1.0*($lambda2-$lambda1)/$deltax]
     ::console::affiche_resultat "La dispersion linéaire vaut : $dispersion Angstroms/Pixel.\n"
     set lambda_0 [expr $lambda1-$dispersion*$x1]
 
@@ -239,17 +266,19 @@ proc spc_calibre3 { args } {
     # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
     # Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" "$lambda0" float "" "Angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "Angstrom"]
     # Dispersion
     #buf$audace(bufNo) setkwd [list "CDELT1" "$dispersionm" float "" "Angtrom/pixel"]
-    buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" float "" "Angtrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angtrom/pixel"]
     # Longueur d'onde centrale
-    buf$audace(bufNo) setkwd [list "CRPIX1" "$lcentre" int "" "Angstrom"]
+    #buf$audace(bufNo) setkwd [list "CRPIX1" "$lcentre" int "" "Angstrom"]
     # Type de dispersion : LINEAR...
-    buf$audace(bufNo) setkwd [list "CTYPE1" "NONLINEAR" string "" ""]
+    #buf$audace(bufNo) setkwd [list "CTYPE1" "NONLINEAR" string "" ""]
 
+    buf$audace(bufNo) bitpix float
     buf$audace(bufNo) save $audace(rep_images)/l${filespc}
-    ::console::affiche_resultat "Spectre étalonné souvé sous l${filespc}.\n"
+    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}\n"
+    return l${filespc}
   } else {
     ::console::affiche_erreur "Usage: spc_calibre2 fichier_fits_du_profil x1 lambda1 x2 lambda2 x3 lambda3\n\n"
   }
@@ -266,7 +295,7 @@ proc spc_calibre3 { args } {
 # Arguments : profil de raie.fit, pixel, lambda, dispersion
 ####################################################################
 
-proc spc_calibred { args } {
+proc spc_calibre2rd { args } {
 
   global conf
   global audace
@@ -279,38 +308,133 @@ proc spc_calibred { args } {
     set lambda1 [ lindex $args 2 ]
     set dispersion [ lindex $args 3 ]
 
-    # Récupère la liste "spectre" contenant 2 listes : pixels et intensites
-    set spectre [ openspcncal $filespc ]
-    set intensites [lindex $spectre 0]
-    #set naxis1 [lindex $spectre 1]
-    buf$audace(bufNo) load $audace(rep_images)/$filespc
+    buf$audace(bufNo) load "$audace(rep_images)/$filespc"
     set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-      ::console::affiche_resultat "$naxis1\n"
+    ::console::affiche_resultat "$naxis1\n"
       
-    # Calcul des parametres spectraux
-    set lambda0 [expr $lambda1-$dispersion*$pixel1]
+    #--- Calcul des parametres spectraux
+    set lambda0 [expr 1.0*($lambda1-$dispersion*$pixel1)]
     set xcentre [expr int($lambda0+0.5*($dispersion*$naxis1)-1.0)]
 
-    # Initialisation des mots clefs du fichier fits de sortie
+    #--- Initialisation des mots clefs du fichier fits de sortie
     # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
-    # Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" "$lambda0" int "" "Angstrom"]
-    # Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" float "" "Angtrom/pixel"]
-    # Longueur d'onde centrale
-    buf$audace(bufNo) setkwd [list "CRPIX1" "$xcentre" int "" "Angstrom"]
-    # Type de dispersion : LINEAR...
-    buf$audace(bufNo) setkwd [list "CTYPE1" "LINEAR" string "" ""]
+    buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
+    #-- Longueur d'onde de départ
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "Angstrom"]
+    #-- Dispersion
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CUNIT1" "Angstrom" string "Wavelength unit" ""]
+    #-- Corrdonnée représentée sur l'axe 1 (ie X)
+    buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 
-    #buf$audace(bufNo) save $audace(rep_images)/l${filespc}
-    buf$audace(bufNo) save l${filespc}
-    ::console::affiche_resultat "Spectre étalonné souvé sous l${filespc}\n"
+    #--- Sauvegarde du profil calibré
+    buf$audace(bufNo) bitpix float
+    buf$audace(bufNo) save "$audace(rep_images)/l${filespc}"
+    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}\n"
+    return l${filespc}
   } else {
-    ::console::affiche_erreur "Usage: spc_calibre2 fichier_fits_du_profil x1 lambda1 dispersion\n\n"
+    ::console::affiche_erreur "Usage: spc_calibre2rd fichier_fits_du_profil x1 lambda1 dispersion\n\n"
   }
 }
 #****************************************************************#
+
+
+####################################################################
+# Procedure d'étalonnage en longueur d'onde à partir de la loi de dispersion
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 17-04-2006
+# Date modification : 17-04-2006
+# Arguments : profil de raie.fit, lambda_debut, dispersion
+####################################################################
+
+proc spc_calibre2loi { args } {
+
+  global conf
+  global audace
+  global profilspc
+  global captionspc
+
+  if {[llength $args] == 3} {
+    set filespc [ lindex $args 0 ]
+    set lambda0 [ lindex $args 1 ]
+    set dispersion [ lindex $args 2 ]
+
+    buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+    #--- Initialisation des mots clefs du fichier fits de sortie
+    # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
+    #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
+    buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
+    #-- Longueur d'onde de départ
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "Angstrom"]
+    #-- Dispersion
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CUNIT1" "Angstrom" string "Wavelength unit" ""]
+    #-- Corrdonnée représentée sur l'axe 1 (ie X)
+    buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
+
+    #--- Sauvegarde du profil calibré
+    buf$audace(bufNo) bitpix float
+    buf$audace(bufNo) save "$audace(rep_images)/l${filespc}"
+    ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}\n"
+    return l${filespc}
+  } else {
+    ::console::affiche_erreur "Usage: spc_calibre2loi fichier_fits_du_profil lambda_debut dispersion\n\n"
+  }
+}
+#****************************************************************#
+
+
+####################################################################
+# Procedure d'étalonnage en longueur d'onde à partir de la loi de dispersion
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 17-04-2006
+# Date modification : 17-04-2006
+# Arguments : profil de raie.fit, lambda_debut, dispersion
+####################################################################
+
+proc spc_calibre2loifile { args } {
+
+  global conf
+  global audace
+  global profilspc
+  global captionspc
+
+  if {[llength $args] == 2} {
+      set fileref [ lindex $args 0 ]
+      set filespc [ lindex $args 1 ]
+
+      buf$audace(bufNo) load "$audace(rep_images)/$fileref"
+      set lambda0 [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+      set dispersion [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+
+      buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+      #--- Initialisation des mots clefs du fichier fits de sortie
+      # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
+      #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
+      buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
+      #-- Longueur d'onde de départ
+      buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "Angstrom"]
+      #-- Dispersion
+      buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angstrom/pixel"]
+      buf$audace(bufNo) setkwd [list "CUNIT1" "Angstrom" string "Wavelength unit" ""]
+      #-- Corrdonnée représentée sur l'axe 1 (ie X)
+      buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
+      
+      #--- Sauvegarde du profil calibré
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/l${filespc}"
+      ::console::affiche_resultat "Spectre étalonné sauvé sous l${filespc}\n"
+      return l${filespc}
+  } else {
+      ::console::affiche_erreur "Usage: spc_calibre2loifile profil_de_reference_fits profil_a_etalonner_fits\n\n"
+  }
+}
+#****************************************************************#
+
+
 
 
 ##########################################################
@@ -318,12 +442,85 @@ proc spc_calibred { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 02-09-2005
-# Date de mise à jour : 02-09-2005
+# Date de mise à jour : 20-03-2006
 # Arguments : fichier .fit du profil de raie, profil de raie de référence
 # Remarque : effectue le découpage, rééchantillonnage puis la division 
 ##########################################################
 
 proc spc_rinstrum { args } {
+
+   global audace
+   global conf
+   set precision 0.0001
+
+   if {[llength $args] == 2} {
+       set fichier_mes [ file rootname [ lindex $args 0 ] ]
+       set fichier_ref [ file rootname [ lindex $args 1 ] ]
+
+       #--- Vérifie s'il faut rééchantilonner ou non
+       if { [ spc_compare $fichier_mes $fichier_ref ] == 0 } {
+	   #-- Détermine le spectre de dispersion la plus précise
+	   set carac1 [ spc_infos $fichier_mes ]
+	   set carac2 [ spc_infos $fichier_ref ]
+	   set disp1 [ lindex $carac1 5 ]
+	   set ldeb1 [ lindex $carac1 3 ]
+	   set lfin1 [ lindex $carac1 4 ]
+	   set disp2 [ lindex $carac2 5 ]
+	   set ldeb2 [ lindex $carac2 3 ]
+	   set lfin2 [ lindex $carac2 4 ]
+	   if { { $disp1<$disp2 } && { $ldeb2<=$ldeb1 } && { $lfin1<=$lfin2 } } {
+	       #-- Rééchantillonnage et crop du spectre de référence fichier_ref
+	       ::console::affiche_resultat "Rééchantillonnage et crop du spectre de référence fichier_ref...\n"
+	       set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       set fref_sel_ech [ spc_echant $fref_sel $fichier_mes ]
+	       set fref_sortie $fref_sel_ech
+	       set fmes_sortie $fichier_mes
+	   } elseif { { $disp2<$disp1 } && { $ldeb2<=$ldeb1 } && { $lfin1<=$lfin2 } } {
+	       #-- Rééchantillonnage du spectre mesuré fichier_mes et crop du spectre de référence
+	       ::console::affiche_resultat "Rééchantillonnage du spectre mesuré fichier_mes et crop du spectre de référence...\n"
+	       set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       set fmes_ech [ spc_echant $fichier_mes $fref_sel ]
+	       set fref_sortie $fref_sel
+	       set fmes_sortie $fmes_ech
+	   } elseif { { [expr abs($disp2-$disp1)]<=$precision } && { $ldeb2<=$ldeb1 } && { $lfin1<=$lfin2 } } {
+	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence
+	       ::console::affiche_resultat "Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence.\n"
+	       set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       set fref_sortie $fref_sel
+	       set fmes_sortie $fichier_mes
+	   } else {
+	       #-- Le spectre de référence ne recouvre pas les longueurs d'onde du spectre mesuré
+	       ::console::affiche_resultat "Le spectre de référence ne recouvre pas les longueurs d'onde du spectre mesuré.\n"
+	   }
+       } else {
+	   #-- Aucun rééchantillonnage ni redécoupage nécessaire
+	   ::console::affiche_resultat "Aucun rééchantillonnage ni redécoupage nécessaire.\n"
+	   set fref_sortie $fichier_ref
+	   set fmes_sortie $fichier_mes
+       }
+
+       #--- Linéarisation des deux profils de raies
+       ::console::affiche_resultat "Linéarisation des deux profils de raies...\n"
+       set fref_ready [ spc_bigsmooth $fref_sortie ]
+       set fmes_ready [ spc_bigsmooth $fmes_sortie ]
+       file delete "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       file delete "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
+
+       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale
+       ::console::affiche_resultat "Divison des deux profils de raies pour obtention de la réponse intrumentale...\n"
+       set rinstrum [ spc_div $fmes_ready $fref_ready ]
+       ::console::affiche_resultat "Sélection sauvée sous ${fichier}_sel$conf(extension,defaut)\n"
+       file delete "$audace(rep_images)/${fref_ready}$conf(extension,defaut)"
+       file delete "$audace(rep_images)/${fmes_ready}$conf(extension,defaut)"
+       return ${fichier}_cont
+   } else {
+       ::console::affiche_erreur "Usage: spc_rinstrum fichier .fit du profil de raie, profil de raie de référence\n\n"
+   }
+}
+#****************************************************************#
+
+
+proc spc_rinstrum_020905 { args } {
 
    global audace
    global conf
@@ -364,175 +561,6 @@ proc spc_rinstrum { args } {
        ::console::affiche_erreur "Usage: spc_rinstrum fichier .fit du profil de raie, profil de raie de référence\n\n"
    }
 }
-##########################################################
+#****************************************************************#
 
-
-##########################################################
-# Procedure de normalisation de profil de raie
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date de création : 15-08-2005
-# Date de mise à jour : 15-08-2005
-# Arguments : fichier .fit du profil de raie, largeur de raie (optionnelle)
-##########################################################
-
-proc spc_norma1 { args } {
-
-   global audace
-   global conf
-   set pourcent 0.95
-
-   if {[llength $args] == 2} {
-     set infichier [ lindex $args 0 ]
-     set lraie [lindex $args 1 ]
-     set fichier [ file rootname $infichier ]
-     # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_norm$conf(extension,defaut)
-     ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
-   } elseif {[llength $args] == 1} {
-     set fichier [ lindex $args 0 ]
-     set lraie 20
-     # buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) load $fichier
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent div"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save ${fichier}_norm$conf(extension,defaut)
-     ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
-   } else {
-     ::console::affiche_erreur "Usage : spc_norma nom_fichier ?largeur de raie?\n\n"
-   }
-}
-#*****************************************************************#
-
-
-####################################################################
-# Procedure de normalisation de profil de raie
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 15-12-2005
-# Date modification : 15-12-2005
-# Arguments : fichier .fit du profil de raie normalisé
-####################################################################
-
-proc spc_autonorma_051215b { args } {
-
-    global audace
-    global conf
-    set extsp ".dat"
-
-    if {[llength $args] == 1} {
-	set fichier [ lindex $args 0 ]
-	set nom_fichier [ file rootname $fichier ]
-	#--- Ajustement de degré 2 pour déterùiner un continuum
-	set coordonnees [spc_ajust $fichier 1]
-	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees ]
-
-	#set nx [llength [lindex $coordonnees 0]]
-	#set ny [llength [lindex $coordonnees 1]]
-	#::console::affiche_resultat "Nb points x : $nx ; y : $ny\n"
-	
-	#--- Normalisation par division
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
-	#buf$audace(bufNo) bitpix float
-	#buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
-
-	#-- Effacement des fichiers temporaires
-	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
-    } else {
-	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
-    }
-}
-
-#proc spc_autonorma_151205 { args } 
-proc spc_autonorma { args } {
-
-    global audace
-    global conf
-    set extsp ".dat"
-
-    if {[llength $args] == 1} {
-	set fichier [ lindex $args 0 ]
-	set nom_fichier [ file rootname $fichier ]
-	#::console::affiche_resultat "F : $fichier ; NF : $nom_fichier\n"
-	#--- Ajustement de degré 2 pour déterùiner un continuum
-	set coordonnees [spc_ajust $fichier 1]
-	#-- vspc_data2fits retourne juste le nom de fichier créé
-	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees "double" ]
-
-	#--- Retablissemnt d'une dispersion identique entre continuum et le profil aà normaliser
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	set liste_dispersion [buf$audace(bufNo) getkwd "CDELT1"]
-	set dispersion [lindex $liste_dispersion 1]
-	set nbunit [lindex $liste_dispersion 2]
-	#set unite [lindex $liste_dispersion 3]
-	buf$audace(bufNo) load $audace(rep_images)/$nom_continuum
-	buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" $nbunit "" "Angstrom/pixel"]
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save $audace(rep_images)/$nom_continuum
-
-	#--- Normalisation par division
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
-
-	#-- Effacement des fichiers temporaires
-	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
-    } else {
-	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
-    }
-}
-#*****************************************************************#
-
-proc spc_autonorma_131205 { args } {
-
-    global audace
-    global conf
-    set extsp ".dat"
-
-    if {[llength $args] == 1} {
-	set fichier [ lindex $args 0 ]
-
-	# Ajustement de degré 2 pour déterùiner un continuum
-	set coordonnees [spc_ajust $fichier 1]
-	set lambdas [lindex $coordonnees 0]
-	set intensites [lindex $coordonnees 1]
-	set len [llength $lambdas]
-
-	#--- Enregistrement du continuum au format fits
-	set filename [ file rootname $fichier ]
-	##set filename ${fileetalonnespc}_dat$extsp
-	set fichier_conti ${filename}_conti$extsp
-	set file_id [open "$audace(rep_images)/$fichier_conti" w+]
-	for {set k 0} {$k<$len} {incr k} {
-	    set lambda [lindex $lambdas $k]
-	    set intensite [lindex $intensites $k]
-	    #--- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
-	    puts $file_id "$lambda\t$intensite"
-	}
-	close $file_id
-	#--- Conversion en fits
-	spc_dat2fits $fichier_conti
-	#-- Bisarrerie : le continuum fits est inverse gauche-droite
-	buf$audace(bufNo) load $audace(rep_images)/${filename}_conti_fit
-	buf$audace(bufNo) mirrorx
-	buf$audace(bufNo) save $audace(rep_images)/${filename}_conti_fit
-
-	#--- Normalisation par division
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	buf$audace(bufNo) div $audace(rep_images)/${filename}_conti_fit 1
-	buf$audace(bufNo) save $audace(rep_images)/${filename}_norm
-
-	#-- Effacement des fichiers temporaires
-	file delete $audace(rep_images)/$fichier_conti$extsp
-	file delete $audace(rep_images)/${filename}_conti_fit$conf(extension,defaut)
-    } else {
-	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
-    }
-}
-#*****************************************************************#
 
