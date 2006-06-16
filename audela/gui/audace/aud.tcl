@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 02 juin 2006
+# $Id: aud.tcl,v 1.15 2006-06-16 23:54:13 michelpujol Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -51,7 +51,7 @@ namespace eval ::audace {
       global audace
 
       #--- Active le debugger
-     ### ramdebugger
+      ###ramdebugger
 
       set This $this
       set audace(base) $This
@@ -59,14 +59,10 @@ namespace eval ::audace {
       initEnv
       set visuNo [ createDialog ]
       createMenu
+
       initLastEnv $visuNo
       dispClock1
       affiche_Outil_F2
-
-      #::console::disp "::confVisu::create \n"
-      #loadima $audace(rep_images)/m57.fit
-      #::confVisu::create
-      #loadima $audace(rep_images)/aaa.jpg 2
 
    }
 
@@ -886,18 +882,7 @@ namespace eval ::audace {
       }
 
       #--- Connexion au demarrage des cameras
-      if { $conf(camera,A,start) == "1" } {
-         if { $conf(confLink,start) == "1" } {
-            ::confLink::configureDriver
-         }
-         ::confCam::configureCamera "A"
-      }
-      if { $conf(camera,B,start) == "1" } {
-         ::confCam::configureCamera "B"
-      }
-      if { $conf(camera,C,start) == "1" } {
-         ::confCam::configureCamera "C"
-      }
+      confCam::startDriver 
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {

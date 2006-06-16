@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.17 2006-06-07 16:58:54 robertdelmas Exp $
+# $Id: acqfc.tcl,v 1.18 2006-06-16 23:54:13 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -1231,7 +1231,7 @@ namespace eval ::AcqFC {
                              }
                           }
                           #--- Sauvegarde de l'image
-                          saveima [append nom $panneau(AcqFC,$visuNo,index)]
+                          saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
                           set heure $audace(tu,format,hmsint)
                           Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                        }
@@ -1309,7 +1309,7 @@ namespace eval ::AcqFC {
                                 }
                              }
                              #--- Sauvegarde de l'image
-                             saveima [append nom $panneau(AcqFC,$visuNo,index)]
+                             saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
                           } else {
                              set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) - 1 ]
                           }
@@ -1376,7 +1376,7 @@ namespace eval ::AcqFC {
                              }
                           }
                           #--- Sauvegarde de l'image
-                          saveima [append nom $panneau(AcqFC,$visuNo,index)]
+                          saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
                           incr panneau(AcqFC,$visuNo,index)
                           $panneau(AcqFC,$visuNo,This).status.lab configure -text ""
                           set heure $audace(tu,format,hmsint)
@@ -1454,7 +1454,7 @@ namespace eval ::AcqFC {
                                 }
                              }
                              #--- Sauvegarde de l'image
-                             saveima [append nom $panneau(AcqFC,$visuNo,index)]
+                             saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
                           } else {
                              set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) - 1 ]
                           }
@@ -2228,7 +2228,7 @@ namespace eval ::AcqFC {
       Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $ext
 
       #--- Sauvegarde de l'image
-      saveima $nom
+      saveima $nom $visuNo
 
       #--- Effacement du status
       $panneau(AcqFC,$visuNo,This).status.lab configure -text ""

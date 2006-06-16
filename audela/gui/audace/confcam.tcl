@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Date de mise a jour : 07 juin 2006
+# $Id: confcam.tcl,v 1.18 2006-06-16 23:54:13 michelpujol Exp $
 #
 
 global confCam
@@ -157,11 +157,17 @@ namespace eval ::confCam {
       set confCam(camera,A,visuNo)   "0"
       set confCam(camera,B,visuNo)   "0"
       set confCam(camera,C,visuNo)   "0"
-      set confCam(camera,A,camName)  $conf(camera,A,camName)
-      set confCam(camera,B,camName)  $conf(camera,B,camName)
-      set confCam(camera,C,camName)  $conf(camera,C,camName)
-      set confCam(camName)           $conf(camera,$confCam(cam_item),camName)
+      set confCam(camera,A,camName)  ""
+      set confCam(camera,B,camName)  ""
+      set confCam(camera,C,camName)  ""
       set confCam(camera,position)   $conf(camera,position)
+      
+      #--- Initalise les listes de cameras
+      set confCam(camera,labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
+            TH7852A SCR1300XTC $caption(confcam,dslr) Andor ]
+      set confCam(camera,names) [ list audine hisis sbig cookbook starlight kitty webcam \
+            th7852a src1300xtc dslr andor ]
+      
    }
 
    #
@@ -175,7 +181,6 @@ namespace eval ::confCam {
       variable This
       global audace
       global confCam
-      global conf
 
       set This "$audace(base).confCam"
       createDialog
@@ -195,6 +200,32 @@ namespace eval ::confCam {
       catch { tkwait visibility $This }
    }
 
+
+   #
+   # confCam::startDriver
+   # Ouvre les cameras  
+   #
+   proc startDriver { } {
+      global conf
+      global confCam
+      
+      if { $conf(camera,A,start) == "1" } {
+         if { $conf(confLink,start) == "1" } {
+            ::confLink::configureDriver
+         }
+         set confCam(camera,A,camName)  $conf(camera,A,camName)
+         ::confCam::configureCamera "A"
+      }
+      if { $conf(camera,B,start) == "1" } {
+         set confCam(camera,B,camName)  $conf(camera,B,camName)
+         ::confCam::configureCamera "B"
+      }
+      if { $conf(camera,C,start) == "1" } {
+         set confCam(camera,C,camName)  $conf(camera,C,camName)
+         ::confCam::configureCamera "C"
+      }
+   }
+
    #
    # confCam::stopDriver
    # Ferme toutes les cameras ouvertes
@@ -203,10 +234,6 @@ namespace eval ::confCam {
       global conf
       global confCam
 
-      #---
-      set conf(camera,A,camName) $confCam(camera,A,camName)
-      set conf(camera,B,camName) $confCam(camera,B,camName)
-      set conf(camera,C,camName) $confCam(camera,C,camName)
       #---
       ::confCam::stopItem A
       ::confCam::stopItem B
@@ -265,7 +292,8 @@ namespace eval ::confCam {
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -relief groove -state disabled
       $This.cmd.fermer configure -state disabled
-      ::audace::showHelpPlugin camera $confCam(camName) "$confCam(camName).htm"
+      set camName [lindex $confCam(camera,names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
+      ::audace::showHelpPlugin camera $camName "$camName.htm"
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -state normal
       $This.cmd.aide configure -relief raised -state normal
@@ -456,8 +484,7 @@ namespace eval ::confCam {
       frame $This.usr -borderwidth 0 -relief raised
          #--- Creation de la fenetre a onglets
          set nn $This.usr.book
-         Rnotebook:create $nn -tabs "[ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-            TH7852A SCR1300XTC $caption(confcam,dslr) Andor ]" -borderwidth 1
+         Rnotebook:create $nn -tabs "$confCam(camera,labels)" -borderwidth 1
          fillPage1  $nn
          fillPage2  $nn
          fillPage3  $nn
@@ -819,7 +846,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 1 ] <Button-1> { global confCam ; set confCam(camName) "audine" }
    }
 
    #
@@ -1313,7 +1339,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 2 ] <Button-1> { global confCam ; set confCam(camName) "hisis" }
    }
 
    #
@@ -1463,7 +1488,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 3 ] <Button-1> { global confCam ; set confCam(camName) "sbig" }
    }
 
    #
@@ -1552,7 +1576,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 4 ] <Button-1> { global confCam ; set confCam(camName) "cookbook" }
    }
 
    #
@@ -1679,7 +1702,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 5 ] <Button-1> { global confCam ; set confCam(camName) "starlight" }
    }
 
    #
@@ -1981,7 +2003,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 6 ] <Button-1> { global confCam ; set confCam(camName) "kitty" }
    }
 
    #
@@ -2209,7 +2230,6 @@ namespace eval ::confCam {
          $frm.labURL_a configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 7 ] <Button-1> { global confCam ; set confCam(camName) "webcam" }
    }
 
    #
@@ -2310,7 +2330,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 8 ] <Button-1> { global confCam ; set confCam(camName) "th7852a" }
    }
 
    #
@@ -2399,7 +2418,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 9 ] <Button-1> { global confCam ; set confCam(camName) "scr1300xtc" }
    }
 
    #
@@ -2706,7 +2724,6 @@ namespace eval ::confCam {
          $frm.labURLa configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 10 ] <Button-1> { global confCam ; set confCam(camName) "dslr" }
    }
 
    #
@@ -2865,7 +2882,6 @@ namespace eval ::confCam {
          $frm.labURL configure -fg $color(blue)
       }
 
-      bind [ Rnotebook:button $nn 11 ] <Button-1> { global confCam ; set confCam(camName) "andor" }
    }
 
    #
@@ -2919,8 +2935,7 @@ namespace eval ::confCam {
       global confCam
 
       set nn $This.usr.book
-      set confCam(camName) $camName
-      switch -exact -- $confCam(camName) {
+      switch -exact -- $camName {
          audine     { Rnotebook:raise $nn 1 }
          hisis      { Rnotebook:raise $nn 2 }
          sbig       { Rnotebook:raise $nn 3 }
@@ -3181,7 +3196,7 @@ namespace eval ::confCam {
          } else {
             scan $confCam(camera,$cam_item,visuName) "visu%d" visuNo
             # je verifie que la visu existe
-            if { [lsearch -exact [visu::list] $visuNo]  } {
+            if { [lsearch -exact [visu::list] $visuNo] == -1 } {
                #--- si la visu n'existe plus , je la recree
                set visuNo [::confVisu::create]
                set confCam(camera,$cam_item,visuName) visu$visuNo
@@ -4034,9 +4049,12 @@ namespace eval ::confCam {
       global confCam
       global caption
 
-      set confCam(camera,$cam_item,camName) $confCam(camName)
-
       set nn $This.usr.book
+
+      set index  [expr [Rnotebook:currentIndex $nn ] - 1 ]
+      set confCam(camera,$cam_item,camName) [lindex $confCam(camera,names) $index]
+      set conf(camera,$cam_item,camName) [lindex $confCam(camera,names) $index]
+
       #--- Memorise la configuration de Audine dans le tableau conf(audine,...)
       set frm [ Rnotebook:frame $nn 1 ]
       set conf(audine,ampli_ccd)            [ lsearch "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" "$confCam(conf_audine,ampli_ccd)" ]
