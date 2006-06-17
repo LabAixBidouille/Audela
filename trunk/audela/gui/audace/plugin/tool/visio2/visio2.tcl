@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# Date de mise a jour : 03 juin 2006
+# $Id: visio2.tcl,v 1.9 2006-06-17 00:20:34 michelpujol Exp $
 #
 
 package provide visio2 1.0
@@ -1532,16 +1532,16 @@ namespace eval ::Visio2::localTable {
       $menu add separator
       $menu add checkbutton -label $caption(visio2,column_type)   \
          -variable conf(Visio2,show_column_type)       \
-         -command "::Visio2::showColumn $::Visio2::localTable::private(tbl) 1 $conf(Visio2,show_column_type)"
+         -command {::Visio2::showColumn $::Visio2::localTable::private(tbl) 1 $::conf(Visio2,show_column_type)}
       $menu add checkbutton -label $caption(visio2,column_series) \
          -variable conf(Visio2,show_column_series)     \
-         -command "::Visio2::showColumn $::Visio2::localTable::private(tbl) 2 $conf(Visio2,show_column_series)"
+         -command {::Visio2::showColumn $::Visio2::localTable::private(tbl) 2 $::conf(Visio2,show_column_series)}
       $menu add checkbutton -label $caption(visio2,column_date)   \
          -variable conf(Visio2,show_column_date)       \
-         -command "::Visio2::showColumn $::Visio2::localTable::private(tbl) 3 $conf(Visio2,show_column_date)"
+         -command {::Visio2::showColumn $::Visio2::localTable::private(tbl) 3 $::conf(Visio2,show_column_date) }
       $menu add checkbutton -label $caption(visio2,column_size)   \
          -variable conf(Visio2,show_column_size)       \
-         -command "::Visio2::showColumn $::Visio2::localTable::private(tbl) 4 $conf(Visio2,show_column_size)"
+         -command { ::Visio2::showColumn $::Visio2::localTable::private(tbl) 4 $conf(Visio2,show_column_size) }
 
       $menu add separator
       $menu add cascade -label $caption(visio2,zoom) -menu $menu.zoom
