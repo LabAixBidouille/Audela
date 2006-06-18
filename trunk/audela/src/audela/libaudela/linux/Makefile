@@ -10,7 +10,8 @@ SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/cpixelsgray.cpp $(SRCDIR)/cpixelsrgb.cpp $(SRCDIR)/link_tcl.cpp
 
 OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
-A_LIBS = $(EXTLIB)/libdcraw.so $(EXTLIB)/libdcjpeg.so
+A_LIBS = $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
+
 
 
 include ../../../Makefile1
