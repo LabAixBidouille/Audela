@@ -633,8 +633,6 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                int naxis1 = buffer->GetW();
                int naxis2 = buffer->GetH();
 
-               y1 = naxis2 -y1;
-               y2 = naxis2 -y2;
                if(y1>y2) {
                   i = y2;
                   y2 = y1;

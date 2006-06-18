@@ -155,6 +155,7 @@ int CVisu::CreateBuffer(int num)
 {
    char *ligne;
 
+
    if(buf_pool->Chercher(num)==NULL) {
       ligne = new char[256];
       sprintf(ligne,"::buf::create %d",num);
@@ -166,7 +167,6 @@ int CVisu::CreateBuffer(int num)
       // Creer ici le buffer.
    }
    bufnum = num;
-
    return 0;
 }
 
@@ -560,11 +560,11 @@ int CVisu::SetWindow(int xx1, int yy1, int xx2, int yy2)
    }
 
    if (mirrorY == 0) {
-      y1 = buffer->GetH() - yy2 -1;
-      y2 = buffer->GetH() - yy1 -1;
-   } else {      
       y1 = yy1;
       y2 = yy2;
+   } else {      
+      y1 = buffer->GetH() - yy2 -1 ;
+      y2 = buffer->GetH() - yy1 -1;
    }
 
    full = 0;
