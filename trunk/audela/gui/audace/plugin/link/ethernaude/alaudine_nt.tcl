@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Date de mise a jour : 25 mai 2006
+# Date de mise a jour : 18 juin 2006
 #
 
 namespace eval AlAudine_NT {
@@ -18,7 +18,7 @@ namespace eval AlAudine_NT {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       ::AlAudine_NT::AlAudine_NTDispTemp
       tkwait visibility $This
    }
@@ -49,7 +49,7 @@ namespace eval AlAudine_NT {
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficherAide { } {
-      ::audace::showHelpPlugin link ethernaude "ethernaude.htm"
+      ::audace::showHelpPlugin link ethernaude "alaudine.htm"
    }
 
    #
@@ -83,6 +83,7 @@ namespace eval AlAudine_NT {
    proc createDialog { } {
       variable This
       global audace
+      global color
       global conf
       global confCam
       global caption
@@ -148,6 +149,9 @@ namespace eval AlAudine_NT {
       frame $This.frame7 -borderwidth 0 -relief raised
       pack $This.frame7 -in $This.frame1 -side top -fill both -expand 1
 
+      frame $This.frame8 -borderwidth 0 -relief raised
+      pack $This.frame8 -in $This.frame1 -side top -fill both -expand 1
+
       #--- Evaluation de la temperature ambiante de la camera CCD
       label $This.lab1 -text "$caption(alaudine_nt,evaluation)"
       pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
@@ -191,6 +195,25 @@ namespace eval AlAudine_NT {
       #--- Temperature du CCD mesurée
       label $This.lab7 -text "$caption(alaudine_nt,temp_ccd_mesure)"
       pack $This.lab7 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
+
+      #--- Site web officiel de l'AlAudine
+      label $This.lab103 -text "$caption(alaudine_nt,site_web_ref)"
+      pack $This.lab103 -in $This.frame8 -side top -fill x -pady 2
+
+      label $This.labURL -text "$caption(alaudine_nt,site_alaudine_nt)" -font $audace(font,url) -fg $color(blue)
+      pack $This.labURL -in $This.frame8 -side top -fill x -pady 2
+
+      #--- Creation du lien avec le navigateur web et changement de sa couleur
+      bind $This.labURL <ButtonPress-1> {
+         set filename "$caption(alaudine_nt,site_alaudine_nt)"
+         ::audace::Lance_Site_htm $filename
+      }
+      bind $This.labURL <Enter> {
+         $::AlAudine_NT::This.labURL configure -fg $color(purple)
+      }
+      bind $This.labURL <Leave> {
+         $::AlAudine_NT::This.labURL configure -fg $color(blue)
+      }
 
       #--- Cree le bouton 'OK'
       button $This.frame2.ok -text "$caption(alaudine_nt,ok)" -width 7 -command { ::AlAudine_NT::ok }

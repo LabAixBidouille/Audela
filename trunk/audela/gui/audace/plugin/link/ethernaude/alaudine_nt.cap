@@ -1,6 +1,6 @@
 #
 # Fichier : alaudine_nt.cap
-# Date de mise a jour : 08 janvier 2006
+# Date de mise a jour : 18 juin 2006
 #
 
 #=========================================================================
@@ -22,6 +22,9 @@ set caption(alaudine_nt,appliquer)              "Apply"
 set caption(alaudine_nt,fermer)                 "Close"
 set caption(alaudine_nt,aide)                   "Help"
 
+set caption(alaudine_nt,site_web_ref)           "Reference Web Site:"
+set caption(alaudine_nt,site_alaudine_nt)       "http://www.astrosurf.com/soubie/alaudine.htm"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -35,6 +38,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,appliquer)           "Appliquer"
    set caption(alaudine_nt,fermer)              "Fermer"
    set caption(alaudine_nt,aide)                "Aide"
+
+   set caption(alaudine_nt,site_web_ref)        "Site Web de référence :"
+   set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -50,6 +56,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,fermer)              "Chiudi"
    set caption(alaudine_nt,aide)                "Aiuto"
 
+   set caption(alaudine_nt,site_web_ref)        "Sito Web di riferimento:"
+   set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -63,6 +72,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,appliquer)           "Aplicar"
    set caption(alaudine_nt,fermer)              "Cerrar"
    set caption(alaudine_nt,aide)                "Ayuda"
+
+   set caption(alaudine_nt,site_web_ref)        "Sitio Web de referencia:"
+   set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -78,6 +90,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,fermer)              "Schließen"
    set caption(alaudine_nt,aide)                "Hilfe"
 
+   set caption(alaudine_nt,site_web_ref)        "Referenz Webseite:"
+   set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -91,6 +106,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,appliquer)           "Apply"
    set caption(alaudine_nt,fermer)              "Close"
    set caption(alaudine_nt,aide)                "Help"
+
+   set caption(alaudine_nt,site_web_ref)        "Reference Web Site:"
+   set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
 
 }
 
