@@ -1,7 +1,9 @@
 LIBRARY libdcraw
 EXPORTS 
-    libdcraw_decodeBuffer
-    libdcraw_decodeFile
-    libdcraw_getTypeFromBuffer
-    libdcraw_getTypeFromFile
+    libdcraw_fileRaw2Cfa
+    libdcraw_fileRaw2Rgb
+    libdcraw_bufferRaw2Cfa
+    libdcraw_bufferRaw2Rgb
+    libdcraw_bufferCfa2Rgb
     libdcraw_freeBuffer
+    
