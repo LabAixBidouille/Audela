@@ -79,4 +79,3 @@
 #define TIOCMGET        0x06E
 
 #endif
-
