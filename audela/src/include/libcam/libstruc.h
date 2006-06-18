@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.5 2006-05-26 12:15:49 michelpujol Exp $
+ * $Id: libstruc.h,v 1.6 2006-06-18 21:41:10 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -65,6 +65,7 @@ struct Capabilities {
    int authorized;\
    double foclen;\
    float exptime;\
+   float exptimeTimer;\
    int binx, biny;\
    int x1, y1, x2, y2;\
    int w, h;\
