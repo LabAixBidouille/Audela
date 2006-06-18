@@ -285,9 +285,13 @@ void CBuffer::LoadFits(char *filename)
       
       k = keywords->FindKeyword("MIPS-LO");
       if(k) {
-          // je convertis le seuil en float
-         initialMipsLo = k->GetFloatValue();
-         keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
+         if( k->GetDatatype() == TINT ) {
+            // je convertis le seuil en float
+            initialMipsLo = k->GetFloatValue();
+            keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
+         } else {
+            initialMipsLo = (float) k->GetFloatValue();
+         }         
       }
       
    } catch (const CError& e) {
@@ -307,7 +311,7 @@ void CBuffer::LoadFits(char *filename)
  *  lecture d'un fichier qui n'est pas au format FIT
  * 
  *   @param pixelSize : taille du pixel en octet ( 1 octet = 256 couleurs, 3 octets = RGB)  
- *   @param pitch  :
+ *   @param pitch     :
  *
  */
 void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, int height, unsigned char *pixelPtr)
@@ -316,7 +320,6 @@ void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, in
    double level;
    int x, y;
    int base;
-   CFitsKeyword *k;
    int naxis;
    
    
@@ -362,17 +365,11 @@ void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, in
          keywords->Add("NAXIS3",&naxis3,TINT,"","");
       }
 
-      // je sauvegarde les seuils initiaux 
-      if(keywords) {
-         k = keywords->FindKeyword("MIPS-LO");
-         if(k) {
-            initialMipsLo = k->GetFloatValue();
-         }
-         k = keywords->FindKeyword("MIPS-HI");
-         if(k) {
-            initialMipsHi = k->GetFloatValue();
-         }
-      }
+      initialMipsLo = 0.0 ;
+      initialMipsHi = 255.0;
+
+      keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
+      keywords->Add("MIPS-HI",&initialMipsHi,TFLOAT,"Hight cut","ADU");
       
       // On reinitialise les parametres astrometriques
       p_ast->valid = 0;
@@ -395,43 +392,59 @@ void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, in
  */
 void CBuffer::LoadRawFile(char * filename)
 {
+
    int result;
 
-   CFitsKeyword *k;
    int width, height, planes, naxis;
-   char * pixels;
+   unsigned short * pixels;
+   struct DataInfo  dataInfo;
+   struct tm *tmtime;
+   char  chaine[256];
 
-
+   // je nettoie le buffer
    FreeBuffer(DONT_KEEP_KEYWORDS);
-   result = libdcraw_decodeFile (filename, &width, &height, &pixels);
+
+   // je charge l'image RAW
+   result = libdcraw_fileRaw2Cfa (filename, &dataInfo, &pixels);
    if( result == 0 ) {
-      SetPixels(PLANE_RGB, width, height, FORMAT_SHORT, COMPRESS_NONE, pixels, 0, 0, 1);
+      width  = dataInfo.width;
+      height = dataInfo.height;
+
+      // je copie les pixels
+      SetPixels(PLANE_GREY, width, height, FORMAT_SHORT, COMPRESS_NONE, pixels, 0, 0, 0);
       libdcraw_freeBuffer(pixels);
+
+      naxis = 2;
+      planes = 3;
+      keywords->Add("NAXIS", &naxis,TINT,"","");
+      keywords->Add("NAXIS1",&width,TINT,"","");
+      keywords->Add("NAXIS2",&height,TINT,"","");
+      
+      // je copie les seuils dans les mots cle
+      initialMipsLo = (float)dataInfo.black ;
+      initialMipsHi = (float)dataInfo.maximum;
+      keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
+      keywords->Add("MIPS-HI",&initialMipsHi,TFLOAT,"Hight cut","ADU");
+
+      // je recupere la date en temps GMT
+      tmtime = gmtime( &dataInfo.timestamp);
+      // je transforme la date en chaine de caractere
+      strftime( chaine, 256, "%d/%m/%Y %H:%M:%S", tmtime );
+      // je copie la date dans un mot cle
+      SetKeyword("DATE-OBS", chaine, "string", "", "UT");
+
+      // je copie le temps de pose dans un mot cle
+      keywords->Add("EXPOSURE",&dataInfo.shutter,TFLOAT,"","s");
+      
+      // je copie le nom de la camera dans un mot cle
+      sprintf(chaine, "%s %s",dataInfo.make,dataInfo.model);
+      SetKeyword("CAMERA", chaine, "string", "" , "");
+
+      // On reinitialise les parametres astrometriques
+      p_ast->valid = 0;
    } else {
       throw CError("LoadRawFile: libjpeg_decodeBuffer error=%d", result);
-   }
-   
-   naxis = 3;
-   planes = 3;
-   keywords->Add("NAXIS", &naxis,TINT,"","");
-   keywords->Add("NAXIS1",&width,TINT,"","");
-   keywords->Add("NAXIS2",&height,TINT,"","");
-   keywords->Add("NAXIS3",&planes,TINT,"","");
-
-   // je sauvegarde les seuils initiaux 
-   if(keywords) {
-      k = keywords->FindKeyword("MIPS-LO");
-      if(k) {
-         initialMipsLo = k->GetFloatValue();
-      }
-      k = keywords->FindKeyword("MIPS-HI");
-      if(k) {
-         initialMipsHi = k->GetFloatValue();
-      }
-   }
-
-   // On reinitialise les parametres astrometriques
-   p_ast->valid = 0;
+   } 
 }
 
 /**
@@ -1618,12 +1631,15 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
          {
             int width, height;
             int result = -1;
-            char * decodedData;
+            unsigned short * decodedData;
+            struct DataInfo dataInfo;
+
             
-            
-            result = libdcraw_decodeBuffer ((char*) pixels, pixelSize, &width, &height, &decodedData);
+            result = libdcraw_bufferRaw2Cfa ( (unsigned short *)pixels, pixelSize, &dataInfo, &decodedData);
             if (result == 0 )  {
-               pixTemp = new CPixelsRgb(plane, width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
+               width  = dataInfo.width;
+               height = dataInfo.height;
+               pixTemp = new CPixelsGray( width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
                libdcraw_freeBuffer(decodedData);
                
                // j'enregistre l'image dans un fichier temporaire
