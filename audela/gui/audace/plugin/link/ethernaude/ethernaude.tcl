@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 01 fevrier 2006
+# Date de mise a jour : 18 juin 2006
 #
 
 package provide ethernaude 1.0
@@ -25,7 +25,6 @@ package provide ethernaude 1.0
 # Procedures specifiques a ce driver :
 #     testping          : teste la connexion d'un appareil
 #     ConfEthernAude    : gestion des boutons
-#.....coord_GPS         : coordonnees GPS de l'observateur
 #.....
 
 namespace eval ethernaude {
@@ -53,6 +52,7 @@ namespace eval ethernaude {
 
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) link ethernaude alaudine_nt.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) link ethernaude eventaude_gps.tcl ]\""
 
       #--- J'initialise les variables widget(..)
       confToWidget
@@ -202,7 +202,7 @@ namespace eval ethernaude {
 
       #--- Coordonnees GPS de l'observateur
       button $frm.coord_gps -text "$caption(ethernaude,coord_gps)" -relief raised -state normal \
-         -command "::ethernaude::coord_GPS"
+         -command "::eventAude_GPS::run $audace(base).eventAude_GPS"
       pack $frm.coord_gps -in $frm.frame4 -anchor center -side left -padx 10 -pady 2 -ipadx 10 -ipady 5 -expand true
 
       #--- Alimentation AlAudine NT avec port I2C
@@ -325,25 +325,6 @@ namespace eval ethernaude {
          #--- Boutons inactifs
          $frm.coord_gps configure -state disabled
          $frm.alaudine_nt configure -state disabled
-      }
-   }
-
-   #------------------------------------------------------------
-   # coord_GPS
-   #    Permet d'obtenir les coordonnees GPS de l'observateur
-   #------------------------------------------------------------
-   proc coord_GPS { } {
-      global confCam
-      global caption
-
-      catch {
-         set coord_GPS_Observateur [ cam$confCam(camera,$confCam(cam_item),camNo) gps ]
-         ::console::disp "$coord_GPS_Observateur \n\n"
-         set long_GPS_Observateur [ mc_angle2dms [ lindex $coord_GPS_Observateur 1 ] 180 ]
-         ::console::disp "$caption(ethernaude,longitude) [ lindex $coord_GPS_Observateur 2 ] [ format "%2d° %2d' %4.2f''" [ lindex $long_GPS_Observateur 0 ] [ lindex $long_GPS_Observateur 1 ] [ lindex $long_GPS_Observateur 2 ] ] \n"
-         set lat_GPS_Observateur [ mc_angle2dms [ lindex $coord_GPS_Observateur 3 ] 90 ]
-         ::console::disp "$caption(ethernaude,latitude) [ format "%2d° %2d' %4.2f''" [ lindex $lat_GPS_Observateur 0 ] [ lindex $lat_GPS_Observateur 1 ] [ lindex $lat_GPS_Observateur 2 ] ] \n"
-         ::console::disp "$caption(ethernaude,altitude) [ format "%5.0f m" [ lindex $coord_GPS_Observateur 4 ] ] \n\n"
       }
    }
 
