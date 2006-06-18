@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.5 2006-05-26 12:13:29 michelpujol Exp $
+ * $Id: libcam.c,v 1.6 2006-06-18 21:40:47 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -659,7 +659,6 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
    return result;
 }
 
-
 /*
  * AcqRead
  * Commande de lecture du CCD.
@@ -676,7 +675,6 @@ static void AcqRead(ClientData clientData)
    
    cam = (struct camprop *) clientData;
    interp = cam->interp;
-   
    
    // Information par defaut concernant l'image 
    // ATTENTION : la camera peut mettre a jour ces valeurs pendant l'execution de read_ccd()
@@ -702,7 +700,6 @@ static void AcqRead(ClientData clientData)
    // CAM_DRV.read_ccd(cam, &p); 
    // mais il faut modifier toutes les camera !! ( michel pujol)
    CAM_DRV.read_ccd(cam, (unsigned short *) p);
-   
    
    // si la taille alloue par defaut a p ne convient pas, la camera crée un nouveau buffer adressé par cam->pixels
    if(cam->pixel_data != NULL) {
@@ -808,6 +805,10 @@ static void AcqRead(ClientData clientData)
          sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
          Tcl_Eval(interp, s);
       }    
+   } else { 
+      // erreur d'acquisition, on enregistre une image vide 
+      sprintf(s, "buf%d clear", cam->bufno );
+      Tcl_Eval(interp, s);
    } 
    
    free(p);
@@ -849,24 +850,30 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          /* Pour avertir les gens du status de la camera. */
          sprintf(ligne, "status_cam%d", cam->camno);
          Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
-         
-         i = (int) (1000 * cam->exptime);
+         // 
+         cam->exptimeTimer = cam->exptime;
          cam->timerExpiration = (struct TimerExpirationStruct *) calloc(1, sizeof(struct TimerExpirationStruct));
          cam->timerExpiration->clientData = clientData;
          cam->timerExpiration->interp = interp;
          cam->timerExpiration->dateobs = (char *) calloc(32, sizeof(char));
-         CAM_DRV.start_exp(cam, "amplioff");
+         
          Tcl_Eval(interp, "clock seconds");
          cam->clockbegin = (unsigned long) atoi(interp->result);
-         /*
-         cam->timerExpiration->datebegin=(int)atoi(interp->result);
-         Tcl_Eval(interp,"clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.00\"");
-         strcpy(cam->timerExpiration->dateobs,interp->result);
-         */
+         
+         CAM_DRV.start_exp(cam, "amplioff");
+         
+         // je teste cam->timerExpiration car il peut être nul si cmdCamStop a ete appele entre temps 
+         if( cam->timerExpiration != NULL ) {
          libcam_GetCurrentFITSDate(interp, cam->timerExpiration->dateobs);
          libcam_GetCurrentFITSDate_function(interp, cam->timerExpiration->dateobs, "::audace::date_sys2ut");
          /* Creation du timer pour realiser le temps de pose. */
+            i = (int) (1000 * cam->exptimeTimer);
          cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
+      } else {
+            Tcl_SetResult(interp, "", TCL_VOLATILE);
+            result = TCL_OK;
+         }
+
       } else {
          sprintf(ligne, "Camera already in use");
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -1433,7 +1440,7 @@ static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, cha
       CAM_DRV.close(cam);
    }
 
-   // je supprime la variable globale contenant le staus de la camera
+   // je supprime la variable globale contenant le status de la camera
    sprintf(s, "status_cam%d", cam->camno);
    Tcl_UnsetVar(interp, s, TCL_GLOBAL_ONLY);
 
