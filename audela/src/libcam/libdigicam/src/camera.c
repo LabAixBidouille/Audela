@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.2 2006-06-07 18:22:41 michelpujol Exp $
+// $Id: camera.c,v 1.3 2006-06-18 21:37:47 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -502,7 +502,7 @@ int cam_loadLastImage(struct camprop *cam)
          if (strcmp(mimeType, "image/x-canon-raw" ) == 0 ) {
             strcpy(cam->pixels_compression, "COMPRESS_RAW");
             cam->pixels_reverse_x = 0;
-            cam->pixels_reverse_y = 1;
+            cam->pixels_reverse_y = 0;
          } else if ( strcmp(mimeType, "image/jpeg") == 0 ) {
             strcpy(cam->pixels_compression, "COMPRESS_JPEG");
             cam->pixels_reverse_x = 0;

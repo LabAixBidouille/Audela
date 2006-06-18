@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.2 2006-06-07 18:22:41 michelpujol Exp $
+// $Id: camtcl.c,v 1.3 2006-06-18 21:37:47 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -179,7 +179,7 @@ int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 
 /*
  * -----------------------------------------------------------------------------
- *  cmdAutoLoadFlag()
+ *  cmdLoadLastImage()
  *
  * load last image from camera
  *   
