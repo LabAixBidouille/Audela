@@ -52,13 +52,16 @@ struct _GPPortOperations {
                                 char *bytes, int size);
         int (*msg_read)   (GPPort * dev, int request, int value, int index,
                                 char *bytes, int size);
-
+        int (*msg_interface_write)  (GPPort * dev, int request, 
+                                int value, int index, char *bytes, int size);
+        int (*msg_interface_read)  (GPPort * dev, int request, 
+                                int value, int index, char *bytes, int size);
 };
 
 typedef GPPortType (* GPPortLibraryType) (void);
-typedef GPPortOperations *(* GPPortLibraryOperations) (void);
 typedef int (* GPPortLibraryList)       (GPPortInfoList *list);
 
+typedef GPPortOperations *(* GPPortLibraryOperations) (void);
 
 /*
  * If you want to write an io library, you need to implement the following

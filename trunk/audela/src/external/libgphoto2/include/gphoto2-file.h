@@ -1,4 +1,4 @@
-/* gphoto2-file.h
+/** \file gphoto2-file.h
  *
  * Copyright © 2000 Scott Fritzinger
  *
@@ -41,16 +41,26 @@ extern "C" {
 #define GP_MIME_CRW       "image/x-canon-raw"
 #define GP_MIME_UNKNOWN   "application/octet-stream"
 #define GP_MIME_EXIF      "application/x-exif"
+#define GP_MIME_MP3       "audio/mpeg"
+#define GP_MIME_OGG       "application/ogg"
+#define GP_MIME_WMA       "audio/x-wma"
+#define GP_MIME_ASF       "audio/x-asf"
+#define GP_MIME_MPEG      "video/mpeg"
 
 typedef enum {
 	GP_FILE_TYPE_PREVIEW,
 	GP_FILE_TYPE_NORMAL,
 	GP_FILE_TYPE_RAW,
 	GP_FILE_TYPE_AUDIO,
-	GP_FILE_TYPE_EXIF
+	GP_FILE_TYPE_EXIF,
+	GP_FILE_TYPE_METADATA
 } CameraFileType;
 
-/* Internals are private */
+/**
+ * \class CameraFile
+ *
+ * The internals of the \ref CameraFile struct are private.
+ */
 typedef struct _CameraFile CameraFile;
 
 int gp_file_new            (CameraFile **file);
@@ -58,7 +68,30 @@ int gp_file_ref            (CameraFile *file);
 int gp_file_unref          (CameraFile *file);
 int gp_file_free           (CameraFile *file);
 
-/* Do not use those */
+/* "Do not use those"
+ *
+ * These functions probably were originally intended for internal use only.
+ * However, due to
+ *   - the lack of good documentation
+ *   - this being the obvious way to save a file
+ *   - the fact that libgphoto2 has been exporting all its internal
+ *     symbols for years (until 2005-06)
+ *   - our in-house frontends gphoto2 and gtkam using them
+ * a number of external frontends started to use these functions, as
+ * of 2005-06:
+ *    - digikam
+ *    - f-spot
+ *    - gthumb
+ * But a few frontends can live without it (and thus are likely to
+ * use the correct API):
+ *    - flphoto
+ *    - kamera
+ *
+ * So we're going to phase these functions out over the next year or
+ * so, going the GTK way of keeping the ABI but breaking the API. So
+ * we'll continue to export functionally equivalent functions, but the
+ * header files will not contain definitions for you to use any more.
+ */
 int gp_file_open           (CameraFile *file, const char *filename);
 int gp_file_save           (CameraFile *file, const char *filename);
 int gp_file_clean          (CameraFile *file);

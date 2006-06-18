@@ -5,6 +5,7 @@
 #define __BYTEORDER_H
 
 /* ntohl and relatives live here */
+//modif michel
 #ifdef WIN32 
 #include <winsock.h>
 #else
@@ -12,6 +13,7 @@
 #endif
 
 /* Define generic byte swapping functions */
+//modif michel
 #ifdef WIN32 
 
 #else

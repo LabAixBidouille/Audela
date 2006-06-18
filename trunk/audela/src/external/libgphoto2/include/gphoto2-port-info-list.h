@@ -24,7 +24,9 @@
 typedef enum { 
 	GP_PORT_NONE        =      0,
 	GP_PORT_SERIAL      = 1 << 0,
-	GP_PORT_USB         = 1 << 2
+	GP_PORT_USB         = 1 << 2,
+	GP_PORT_DISK        = 1 << 3,
+	GP_PORT_PTPIP       = 1 << 4
 } GPPortType;
 
 typedef struct _GPPortInfo GPPortInfo;
@@ -60,6 +62,8 @@ int gp_port_info_list_lookup_path (GPPortInfoList *list, const char *path);
 int gp_port_info_list_lookup_name (GPPortInfoList *list, const char *name);
 
 int gp_port_info_list_get_info (GPPortInfoList *list, int n, GPPortInfo *info);
+
+const char *gp_port_message_codeset (const char*);
 
 /* DEPRECATED */
 typedef GPPortInfo gp_port_info;
