@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 08 janvier 2006
+# $Id: astrometry.tcl,v 1.3 2006-06-19 21:39:47 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -52,6 +52,12 @@ namespace eval ::astrometry {
       variable astrom
       global audace
       global caption
+
+      #---
+      if { [ buf$audace(bufNo) imageready ] == "0" } {
+         tk_messageBox -message "$caption(astrometry,error_no_image)" -title "$caption(astrometry,title)" -icon error
+         return
+      }
 
       #---
       set astrom(This)     "$audace(base).astrometry"

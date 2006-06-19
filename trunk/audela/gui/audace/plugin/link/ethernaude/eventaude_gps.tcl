@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Date de mise a jour : 18 juin 2006
+# Date de mise a jour : 19 juin 2006
 #
 
 namespace eval eventAude_GPS {
@@ -89,11 +89,18 @@ namespace eval eventAude_GPS {
       #--- initConf
       if { ! [ info exists conf(eventaude_gps,position) ] } { set conf(eventaude_gps,position) "+600+490" }
 
+      #--- Initialisation de variables
+      set confCam(coord_GPS_Observateur) ""
+      set confCam(longi_GPS_Observateur) ""
+      set confCam(lati_GPS_Observateur)  ""
+      set confCam(alti_GPS_Observateur)  ""
+
       #---
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
          focus $This
+         ::eventAude_GPS::coord_GPS
          return
       }
 
@@ -108,9 +115,6 @@ namespace eval eventAude_GPS {
 
       #--- Chargement des captions
       uplevel #0 "source \"[ file join $audace(rep_plugin) link ethernaude eventaude_gps.cap ]\""
-
-      #--- Recuperation des coordonnees GPS par l'EventAude
-      ::eventAude_GPS::coord_GPS
 
       #--- Cree la fenetre $This de niveau le plus haut 
       toplevel $This -class Toplevel
@@ -144,28 +148,32 @@ namespace eval eventAude_GPS {
       frame $This.frame8 -borderwidth 0 -relief raised
       pack $This.frame8 -in $This.frame1 -side top -fill both -expand 1
 
+      #--- Rafraichissement des coordonnes GPS
+      button $This.rafraichir -text "$caption(eventaude_gps,rafraichir)" -command { ::eventAude_GPS::coord_GPS }
+      pack $This.rafraichir -in $This.frame3 -side top -padx 3 -pady 3 -ipadx 5 -ipady 5
+
       #--- Coordonnees du lieu au format GPS
       label $This.lab1 -text "$caption(eventaude_gps,position_gps)"
       pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
-      label $This.lab2 -text "$confCam(coord_GPS_Observateur)"
+      label $This.lab2 -textvariable "confCam(coord_GPS_Observateur)"
       pack $This.lab2 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
 
       #--- Longitude
       label $This.lab3 -text "$caption(eventaude_gps,longitude)"
       pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 5 -pady 5
-      label $This.lab4 -text "$confCam(longi_GPS_Observateur)"
+      label $This.lab4 -textvariable "confCam(longi_GPS_Observateur)"
       pack $This.lab4 -in $This.frame4 -anchor center -side left -padx 5 -pady 5
 
       #--- Latitude
       label $This.lab5 -text "$caption(eventaude_gps,latitude)"
       pack $This.lab5 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
-      label $This.lab6 -text "$confCam(lati_GPS_Observateur)"
+      label $This.lab6 -textvariable "confCam(lati_GPS_Observateur)"
       pack $This.lab6 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
 
       #--- Altitude
       label $This.lab7 -text "$caption(eventaude_gps,altitude)"
       pack $This.lab7 -in $This.frame6 -anchor center -side left -padx 5 -pady 5
-      label $This.lab8 -text "$confCam(alti_GPS_Observateur)"
+      label $This.lab8 -textvariable "confCam(alti_GPS_Observateur)"
       pack $This.lab8 -in $This.frame6 -anchor center -side left -padx 5 -pady 5
 
       #--- Mise a jour de la longitude et de la latitude
@@ -176,6 +184,8 @@ namespace eval eventAude_GPS {
       button $This.maj_alt -text "$caption(eventaude_gps,maj_alt)" -command { }
       pack $This.maj_alt -in $This.frame7 -side top -padx 3 -pady 3 -ipadx 5 -ipady 5
 
+      #--- Recuperation des coordonnees GPS par l'EventAude
+      ::eventAude_GPS::coord_GPS
 
       #--- Site web officiel de l'EventAude
       label $This.lab103 -text "$caption(eventaude_gps,site_web_ref)"

@@ -2,7 +2,7 @@
 # Fichier : aud4.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# $Id: aud4.tcl,v 1.4 2006-06-19 16:44:32 robertdelmas Exp $
+# $Id: aud4.tcl,v 1.5 2006-06-19 21:40:02 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -210,15 +210,13 @@ namespace eval ::mapWindow {
       frame $This.cmd -borderwidth 1 -relief raised
 
          button $This.cmd.ok -text "$caption(conf,ok)" -width 7 \
-             -command { \
-                if { [ buf$audace(bufNo) imageready ] == "1" } { ::mapWindow::cmdOk } else { ::mapWindow::cmdClose } \
-             }
+             -command { ::mapWindow::cmdOk }
          if { $conf(ok+appliquer) == "1" } {
             pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
 
          button $This.cmd.appliquer -text "$caption(creer,dialogue,appliquer)" -width 8 \
-            -command { if { [ buf$audace(bufNo) imageready ] == "1" } { ::mapWindow::cmdApply } }
+            -command { ::mapWindow::cmdApply }
          pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
 
          button $This.cmd.effacer -text "$caption(audace,image,effacer)" -width 10 \
@@ -265,63 +263,62 @@ namespace eval ::mapWindow {
 
       set unit "e-6"
 
-      #--- Efface la carte de champ precedante
-      ::mapWindow::cmdDelete
-      #--- Definition des parametres optiques
-      if { $mapWindow(FieldFromImage) == "0" } {
-         if { $mapWindow(PictureWidth) != "" && $mapWindow(PictureHeight) != "" && $mapWindow(CentreRA) != "" && \
-              $mapWindow(CentreDec) != "" && $mapWindow(Inclin) != "" && $mapWindow(FocLen) != "" && \
-              $mapWindow(PixSize1) != "" && $mapWindow(PixSize2) != "" } {
-            set field [ list OPTIC NAXIS1 $mapWindow(PictureWidth) NAXIS2 $mapWindow(PictureHeight) ]
-            lappend field FOCLEN $mapWindow(FocLen) PIXSIZE1 $mapWindow(PixSize1)$unit PIXSIZE2 $mapWindow(PixSize2)$unit
-            lappend field CROTA2 $mapWindow(Inclin) RA $mapWindow(CentreRA) DEC $mapWindow(CentreDec)
+      if { [ buf$audace(bufNo) imageready ] == "1" } {
+         #--- Efface la carte de champ precedante
+         ::mapWindow::cmdDelete
+         #--- Definition des parametres optiques
+         if { $mapWindow(FieldFromImage) == "0" } {
+            if { $mapWindow(PictureWidth) != "" && $mapWindow(PictureHeight) != "" && $mapWindow(CentreRA) != "" && \
+                 $mapWindow(CentreDec) != "" && $mapWindow(Inclin) != "" && $mapWindow(FocLen) != "" && \
+                 $mapWindow(PixSize1) != "" && $mapWindow(PixSize2) != "" } {
+               set field [ list OPTIC NAXIS1 $mapWindow(PictureWidth) NAXIS2 $mapWindow(PictureHeight) ]
+               lappend field FOCLEN $mapWindow(FocLen) PIXSIZE1 $mapWindow(PixSize1)$unit PIXSIZE2 $mapWindow(PixSize2)$unit
+               lappend field CROTA2 $mapWindow(Inclin) RA $mapWindow(CentreRA) DEC $mapWindow(CentreDec)
+            } else {
+               return
+            }
          } else {
-            return
+            set field [ list BUFFER $audace(bufNo) ]
          }
-      } else {
-         set field [ list BUFFER $audace(bufNo) ]
-      }
-      #--- Liste des objets
-      set choix [ $This.usr.1.cata get ]
-      if { ! [ string compare $choix $caption(catalogue,microcat) ] } {
-            set objects [ list * ASTROMMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
-      } elseif { ! [ string compare $choix $caption(catalogue,tycho) ] } {
-            set objects [ list * TYCHOMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
-      } elseif { ! [ string compare $choix $caption(catalogue,loneos) ] } {
-            set objects [ list * LONEOSMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
-      }
-      set result [ list LIST ]
-      set magmax [ $This.usr.1.magmax get ]
 
-      ::console::affiche_resultat "$field\n"
-      ::console::affiche_resultat "$objects\n"
-      ::console::affiche_resultat "$result\n\n"
+         #--- Liste des objets
+         set choix [ $This.usr.1.cata get ]
+         if { ! [ string compare $choix $caption(catalogue,microcat) ] } {
+               set objects [ list * ASTROMMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
+         } elseif { ! [ string compare $choix $caption(catalogue,tycho) ] } {
+               set objects [ list * TYCHOMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
+         } elseif { ! [ string compare $choix $caption(catalogue,loneos) ] } {
+               set objects [ list * LONEOSMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
+         }
+         set result [ list LIST ]
+         set magmax [ $This.usr.1.magmax get ]
 
-      set a_executer { mc_readcat $field $objects $result -magb< $magmax -magr< $magmax }
+         set a_executer { mc_readcat $field $objects $result -magb< $magmax -magr< $magmax }
 
-      set msg [ eval $a_executer ]
+         set msg [ eval $a_executer ]
 
-      if { [ llength $msg ] == "1" } {
-         set etoiles $msg
-         set msg [ lindex $msg 0 ]
-         if { [ lindex $msg 0 ] == "Pb" } {
-            tk_messageBox -message "[ lindex $msg 1 ]" -icon error -title "$caption(audace,boite,erreur)"
+         if { [ llength $msg ] == "1" } {
+            set etoiles $msg
+            set msg [ lindex $msg 0 ]
+            if { [ lindex $msg 0 ] == "Pb" } {
+               tk_messageBox -message "[ lindex $msg 1 ]" -icon error -title "$caption(audace,boite,erreur)"
+            } else {
+               tk_messageBox -message "$caption(pas,etoile,champ)" -icon warning -title "$caption(audace,boite,attention)"
+            }
          } else {
-            tk_messageBox -message "$caption(pas,etoile,champ)" -icon warning -title "$caption(audace,boite,attention)"
-         }
-      } else {
-         set etoiles $msg
-         foreach star $etoiles {
-            if { [ llength $star ] == "7" } {
-               set coord [ lrange $star 4 5 ]
-               set coord [ ::audace::picture2Canvas $coord ]
-               set x [ lindex $coord 0 ]
-               set y [ lindex $coord 1 ]
-               set x1 [ expr $x-2 ]
-               set y1 [ expr $y-2 ]
-               set x2 [ expr $x+2 ]
-               set y2 [ expr $y+2 ]
-               $audace(hCanvas) create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 -tag chart
+            set etoiles $msg
+            foreach star $etoiles {
+               if { [ llength $star ] == "7" } {
+                  set coord [ lrange $star 4 5 ]
+                  set coord [ ::audace::picture2Canvas $coord ]
+                  set x [ lindex $coord 0 ]
+                  set y [ lindex $coord 1 ]
+                  set x1 [ expr $x-2 ]
+                  set y1 [ expr $y-2 ]
+                  set x2 [ expr $x+2 ]
+                  set y2 [ expr $y+2 ]
+                  $audace(hCanvas) create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 -tag chart
+               }
             }
          }
       }

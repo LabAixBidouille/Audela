@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Date de mise a jour : 08 janvier 2006
+# Date de mise a jour : 19 juin 2006
 #
 
 #=========================================================================
@@ -40,6 +40,7 @@ set caption(astrometry,start,9)           "Calibrated with the Keywords from the
 set caption(astrometry,start,10)          "Calibration Check"
 set caption(astrometry,start,11)          "WCS Keywords deleted"
 set caption(astrometry,help)              "Help"
+set caption(astrometry,error_no_image)    "Please display an image first."
 
 set caption(astrometry,comment)           "Astrometric calibration is successful when each star is overlapped by a red dot."
 set caption(astrometry,erreur_catalog)    "Check if selected catalog is available."
@@ -84,6 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Vérification de la calibration"
    set caption(astrometry,start,11)       "Mots-clés WCS effacés"
    set caption(astrometry,help)           "Aide"
+   set caption(astrometry,error_no_image) "Veuillez d'abord afficher une image."
 
    set caption(astrometry,comment)        "La calibration astrométrique est réussie si tous les points rouges recouvrent des étoiles."
    set caption(astrometry,erreur_catalog) "Vérifier que le catalogue choisi est disponible."
@@ -128,6 +130,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Verifica della calibrazione"
    set caption(astrometry,start,11)       "Keyword WCS eliminate"
    set caption(astrometry,help)           "Aiuto"
+   set caption(astrometry,error_no_image) "Prima visualizzare un'immagine."
 
    set caption(astrometry,comment)        "La calibrazione astrometrica e' riuscita se tutti i punti rossi si sovrappongono a delle stelle."
    set caption(astrometry,erreur_catalog) "Verificare che il catalogo scelto sia disponibile."
@@ -172,6 +175,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Test de Calibración "
    set caption(astrometry,start,11)       "Claves WCS borradas"
    set caption(astrometry,help)           "Ayuda"
+   set caption(astrometry,error_no_image) "Por favor, muestre una imagen primero."
 
    set caption(astrometry,comment)        "La calibración astrométrica ha tenido éxito cuando se superpone a cada estrella un punto rojo."
    set caption(astrometry,erreur_catalog) "Compruebe que el catálogo seleccionado está disponible."
@@ -216,6 +220,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Kalibrierung Nachprüfung"
    set caption(astrometry,start,11)       "Die Schlüsselbegriffen sind gelöscht"
    set caption(astrometry,help)           "Hilfe"
+   set caption(astrometry,error_no_image) "Bitte ein Bild erst anzeigen."
 
    set caption(astrometry,comment)        "Die astromethische Kalibrierung ist erfolgreich wenn alle Rote Punkte sich mit Sterne überschneiden."
    set caption(astrometry,erreur_catalog) "Ob der ausgewählten Katalog erhältlich ist kontrollieren."
@@ -260,6 +265,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Calibration Check"
    set caption(astrometry,start,11)       "WCS Keywords deleted"
    set caption(astrometry,help)           "Help"
+   set caption(astrometry,error_no_image) "Please display an image first."
 
    set caption(astrometry,comment)        "Astrometric calibration is successful when each star is overlapped by a red dot."
    set caption(astrometry,erreur_catalog) "Check if selected catalog is available."
