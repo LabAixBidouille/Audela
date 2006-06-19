@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 12 mars 2006
+# $Id: confgene.tcl,v 1.6 2006-06-19 15:51:20 robertdelmas Exp $
 #
 
 #
@@ -1016,6 +1016,9 @@ namespace eval confFichierIma {
       if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut)   ".fit" }
       if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)    "0" }
       if { ! [ info exists conf(jpegquality,defaut) ] } { set conf(jpegquality,defaut) "80" }
+      #---
+      set conf(extension,new)   $conf(extension,defaut)
+      set conf(jpegquality,new) $conf(jpegquality,defaut)
    }
 
    proc createDialog { } {
