@@ -2,7 +2,7 @@
 # Fichier : aud4.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Date de mise a jour : 18 mai 2006
+# $Id: aud4.tcl,v 1.4 2006-06-19 16:44:32 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -210,13 +210,15 @@ namespace eval ::mapWindow {
       frame $This.cmd -borderwidth 1 -relief raised
 
          button $This.cmd.ok -text "$caption(conf,ok)" -width 7 \
-             -command { ::mapWindow::cmdOk }
+             -command { \
+                if { [ buf$audace(bufNo) imageready ] == "1" } { ::mapWindow::cmdOk } else { ::mapWindow::cmdClose } \
+             }
          if { $conf(ok+appliquer) == "1" } {
             pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
 
          button $This.cmd.appliquer -text "$caption(creer,dialogue,appliquer)" -width 8 \
-            -command { ::mapWindow::cmdApply }
+            -command { if { [ buf$audace(bufNo) imageready ] == "1" } { ::mapWindow::cmdApply } }
          pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
 
          button $This.cmd.effacer -text "$caption(audace,image,effacer)" -width 10 \
@@ -267,9 +269,15 @@ namespace eval ::mapWindow {
       ::mapWindow::cmdDelete
       #--- Definition des parametres optiques
       if { $mapWindow(FieldFromImage) == "0" } {
-         set field [ list OPTIC NAXIS1 $mapWindow(PictureWidth) NAXIS2 $mapWindow(PictureHeight) ]
-         lappend field FOCLEN $mapWindow(FocLen) PIXSIZE1 $mapWindow(PixSize1)$unit PIXSIZE2 $mapWindow(PixSize2)$unit
-         lappend field CROTA2 $mapWindow(Inclin) RA $mapWindow(CentreRA) DEC $mapWindow(CentreDec)
+         if { $mapWindow(PictureWidth) != "" && $mapWindow(PictureHeight) != "" && $mapWindow(CentreRA) != "" && \
+              $mapWindow(CentreDec) != "" && $mapWindow(Inclin) != "" && $mapWindow(FocLen) != "" && \
+              $mapWindow(PixSize1) != "" && $mapWindow(PixSize2) != "" } {
+            set field [ list OPTIC NAXIS1 $mapWindow(PictureWidth) NAXIS2 $mapWindow(PictureHeight) ]
+            lappend field FOCLEN $mapWindow(FocLen) PIXSIZE1 $mapWindow(PixSize1)$unit PIXSIZE2 $mapWindow(PixSize2)$unit
+            lappend field CROTA2 $mapWindow(Inclin) RA $mapWindow(CentreRA) DEC $mapWindow(CentreDec)
+         } else {
+            return
+         }
       } else {
          set field [ list BUFFER $audace(bufNo) ]
       }
