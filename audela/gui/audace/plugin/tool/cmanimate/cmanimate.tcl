@@ -1,10 +1,8 @@
 #
-# File : cmanimate.tcl
+# Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
-# Author : Sylvain Rondi
-# Release Date : April 2002
-#
-# Date de mise a jour : 14 janvier 2006
+# Auteur : Sylvain RONDI
+# Mise a jour $Id: cmanimate.tcl,v 1.3 2006-06-20 20:51:38 robertdelmas Exp $
 #
 #****************************************************************
 #

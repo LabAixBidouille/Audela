@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 13 janvier 2006
+# Mise a jour $Id: modpoi_go.tcl,v 1.3 2006-06-20 21:05:11 robertdelmas Exp $
 #
 
 package provide modpoi 1.0

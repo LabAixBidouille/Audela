@@ -1,12 +1,8 @@
 #
 # Fichier : acqfen.tcl
-# Description : Outil d'acquisition d'images fenêtrées
-# Auteur : Benoît Maugis
-# Avec les contributions de :
-# - François Cochard pour la partie "modes d'acquisitions" directement issue de acqfc.tcl
-# - Robert Delmas pour sa relecture attentive du script et ses corrections de bugs
-# Date de mise à jour : 10 avril 2005 ---> 18 juin 2005 ---> 11 aout 2005 ---> 18 janvier 2006
-# Version : 1.2.1 ---> 1.2.2 ---> 1.2.3 ---> 1.2.4
+# Description : Outil d'acquisition d'images fenetrees
+# Auteur : Benoit MAUGIS
+# Mise a jour $Id: acqfen.tcl,v 1.3 2006-06-20 20:44:30 robertdelmas Exp $
 #
 
 package provide acqfen 1.2.1
@@ -31,7 +27,7 @@ namespace eval ::acqfen {
 
    # chargement du fichier d'internationalisation
    source [ file join $audace(rep_plugin) tool acqfen acqfen.cap ]
-   
+
    proc init {{in ""}} {
       createPanel $in.acqfen
    }

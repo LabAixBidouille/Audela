@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune 
 # Auteur : Robert DELMAS
-# Date de mise a jour : 23 fevrier 2006
+# Mise a jour $Id: obj_lune_2.tcl,v 1.4 2006-06-20 21:10:07 robertdelmas Exp $
 #
 
 namespace eval obj_Lune_2 {

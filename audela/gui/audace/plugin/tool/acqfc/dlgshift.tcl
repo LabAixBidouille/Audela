@@ -1,15 +1,8 @@
 #
+# Fichier : dlgshift.tcl
 # Description : Fenetre dialog pour saisir les parametres de deplacement entre 2 images
-#
-# $Log : dlgshift.tcl,v $
-# Revision 1.1  2003-01-26 15:17:45+01 Michel PUJOL
-# correction bug cmdCancel
-# normalise init(), run(), closeDialog(), fileName
-#
-# Revision 1.0  2001-07-07 13:58:00+02 Michel PUJOL
-# Initial revision
-#
-# Date de mise a jour : 11 decembre 2005
+# Auteur : Michel PUJOL
+# Mise a jour $Id: dlgshift.tcl,v 1.3 2006-06-20 20:41:56 robertdelmas Exp $
 #
 
 namespace eval DlgShift {

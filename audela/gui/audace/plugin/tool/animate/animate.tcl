@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 13 janvier 2006
+# Mise a jour $Id: animate.tcl,v 1.3 2006-06-20 20:45:50 robertdelmas Exp $
 #
 
 package provide animate 1.0

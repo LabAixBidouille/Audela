@@ -1,10 +1,8 @@
 #
-# File : cmaude.tcl
+# Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
-# Author : Sylvain RONDI
-# Date of release : April 2002
-#
-# Date de mise a jour : 14 janvier 2006
+# Auteur : Sylvain RONDI
+# Mise a jour $Id: cmaude.tcl,v 1.3 2006-06-20 20:54:05 robertdelmas Exp $
 #
 # REMARKS :
 # The definition of some variables (binning, exp. time, rythm...)

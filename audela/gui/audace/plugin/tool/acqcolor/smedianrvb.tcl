@@ -2,7 +2,7 @@
 # Fichier : smedianrvb.tcl
 # Description : Outil pour calculer la mediane d'une pile d'images
 # Auteur : Pierre THIERRY
-# Date de mise a jour : 11 decembre 2005
+# Mise a jour $Id: smedianrvb.tcl,v 1.3 2006-06-20 20:37:22 robertdelmas Exp $
 #
 
 global audace caption conf infos

@@ -2,7 +2,7 @@
 # Fichier : seprvb.tcl
 # Description : Outil pour la separation des plans couleur
 # Auteur : Pierre THIERRY
-# Date de mise a jour : 11 decembre 2005
+# Mise a jour $Id: seprvb.tcl,v 1.3 2006-06-20 20:36:58 robertdelmas Exp $
 #
 
 global audace caption conf infos

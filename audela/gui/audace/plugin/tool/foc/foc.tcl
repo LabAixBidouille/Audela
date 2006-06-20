@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Date de mise a jour : 13 janvier 2006
+# Mise a jour $Id: foc.tcl,v 1.3 2006-06-20 20:55:32 robertdelmas Exp $
 #
 
 package provide foc 1.0

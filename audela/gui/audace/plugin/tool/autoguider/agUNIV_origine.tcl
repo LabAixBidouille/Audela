@@ -2,7 +2,7 @@
 # Fichier : agjaz.tcl
 # Description : Panneau pour executer l'autoguidage d'un telescope
 # Auteur : Pierre THIERRY
-# Date de MAJ : 28 fevrier 2005
+# Mise a jour $Id: agUNIV_origine.tcl,v 1.2 2006-06-20 20:47:54 robertdelmas Exp $
 # tension d'alimentation des moteurs 5V
 # VITESSE 1 im sec en binning 2x2 webcam longue pose à 0.5 sec de pose
 # Le pc d'acquisition du ciel profond envoie au pc d'autoguidage 

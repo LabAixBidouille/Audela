@@ -2,7 +2,7 @@
 # Fichier : trichro.tcl
 # Description : Outil pour importer une trichromie
 # Auteur : Pierre THIERRY
-# Date de mise a jour : 11 decembre 2005
+# Mise a jour $Id: trichro.tcl,v 1.3 2006-06-20 20:37:46 robertdelmas Exp $
 #
 
 global audace caption conf infos
