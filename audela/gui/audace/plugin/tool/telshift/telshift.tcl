@@ -8,7 +8,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Date de mise a jour : 24 decembre 2005
+# Mise a jour $Id: telshift.tcl,v 1.3 2006-06-20 21:32:16 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish

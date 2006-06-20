@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 14 janvier 2006
+# Mise a jour $Id: scan.tcl,v 1.3 2006-06-20 21:22:33 robertdelmas Exp $
 #
 
 package provide scan 1.0
