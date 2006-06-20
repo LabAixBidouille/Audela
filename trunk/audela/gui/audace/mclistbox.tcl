@@ -1,3 +1,8 @@
+#
+# Mise a jour $Id: mclistbox.tcl,v 1.2 2006-06-20 17:32:16 robertdelmas Exp $
+#
+
+#
 # Copyright (c) 1999, Bryan Oakley
 # All Rights Reservered
 #

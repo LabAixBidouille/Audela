@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Date de mise a jour : 04 juin 2006
+# Mise a jour $Id: confoptic.tcl,v 1.4 2006-06-20 17:26:32 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {

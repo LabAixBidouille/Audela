@@ -1,9 +1,8 @@
 #
 # Fichier divers.tcl
-# Ce script regroupe diverses petites fonctions.
-# Auteur : Benoît Maugis
-# Version : 1.18.3 ---> 1.18.4
-# Date de mise a jour : 10 avril 2005 ---> 27 mai 2006
+# Description : Ce script regroupe diverses petites fonctions
+# Auteur : Benoit MAUGIS
+# Mise a jour $Id: divers.tcl,v 1.6 2006-06-20 17:28:21 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.

@@ -2,10 +2,10 @@
 # Fichier : aud2.tcl
 # Description : Interfaces graphiques pour les fonctions de traitement d'images :
 #                 - scaleWindow
-#                 - offsetWindow	- multcteWindow	- noffsetWindow
-#                 - ngainWindow	- addWindow		- subWindow
-#                 - divWindow		- subskyWindow	- clipWindow
-# Date de mise a jour : 07 janvier 2006
+#                 - offsetWindow  - multcteWindow  - noffsetWindow
+#                 - ngainWindow   - addWindow      - subWindow
+#                 - divWindow     - subskyWindow   - clipWindow
+# Mise a jour $Id: aud2.tcl,v 1.3 2006-06-20 17:19:37 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {

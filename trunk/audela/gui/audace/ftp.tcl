@@ -1,9 +1,10 @@
-# ftp.tcl
-# Tool functions for an FTP Client access
 #
-# Author : Alain Klotz
-# MAJ    : 2003 Sept 7
+# Fichier : ftp.tcl
+# Description : Tool functions for an FTP Client access
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: ftp.tcl,v 1.2 2006-06-20 17:30:14 robertdelmas Exp $
 #
+
 # ==============================================================
 # to get the list of file names in ftptoto.free.fr
 # with user=tata and password=tutu
@@ -26,53 +27,52 @@
 # ftpdirdecode [ftpscript ftptoto.free.fr "dir" tata tutu] dirs
 # ==============================================================
 
-
 proc ftpdirdecode { var {mode files} {size no} } {
-	# input : var is a string returned by a DIR from ftpscript.
-	# ftpdirdecode return a Tcl list of the filenames.
-	# mode=files to return only the list of the file names
-	# mode=dirs  to return only the list of the directory names
-	# size=no|yes  adds size (in byte) for names
-	set var [split "$var" \n"]
-	set filenames ""
+   # input : var is a string returned by a DIR from ftpscript.
+   # ftpdirdecode return a Tcl list of the filenames.
+   # mode=files to return only the list of the file names
+   # mode=dirs  to return only the list of the directory names
+   # size=no|yes  adds size (in byte) for names
+   set var [split "$var" \n"]
+   set filenames ""
    set id0 "-r"
-	if {$mode=="dirs"} {
-		set id0 "dr"
+   if {$mode=="dirs"} {
+      set id0 "dr"
    }
-	foreach ligne $var {
-   	set n [string length $ligne]
-		if {$n>10} {
-   		set id [string range $ligne 0 1]
+   foreach ligne $var {
+      set n [string length $ligne]
+      if {$n>10} {
+         set id [string range $ligne 0 1]
          if {$id==$id0} {
-	         set lig "$ligne"
-	         set p2 -1
-	         for {set k 1} {$k<=8} {incr k} {
+            set lig "$ligne"
+            set p2 -1
+            for {set k 1} {$k<=8} {incr k} {
                set p1 [expr $p2+1]
-	            set lig [string range $lig $p1 end]
+               set lig [string range $lig $p1 end]
                set lig [string trimleft "$lig"]
-	            set p2 [string first " " $lig]
-	            set decode($k) [string range $lig 0 [expr $p2-1]]
+               set p2 [string first " " $lig]
+               set decode($k) [string range $lig 0 [expr $p2-1]]
             }
             set p1 [expr $p2+1]
-	         set lig [string range $lig $p1 end]
+            set lig [string range $lig $p1 end]
             set lig [string trimleft "$lig"]
-	         set name [string range $lig 0 end]
-	         if {$size=="no"} {
-   	         lappend filenames "$name"
-   	      } else {
-   	         lappend filenames [list "$name" "$decode(5)"]
-   	      }
+            set name [string range $lig 0 end]
+            if {$size=="no"} {
+               lappend filenames "$name"
+            } else {
+               lappend filenames [list "$name" "$decode(5)"]
+            }
          }
       }
-	}
-	return $filenames
+   }
+   return $filenames
 }
 
 proc ftpscript { hostname script {user anonymous} {passw software.audela@free.fr} } {
    # THIS FUNTION USE THE exec TCL FUNTION TO CALL FTP
    # IT CAN BLOCK THE TCL INTERPRETER IN CASE OF NET BREAKING.
    #
-	# hostname : IP or ascii address
+   # hostname : IP or ascii address
    # script : some FTP functions separated by \n
    # user : login username
    # passw : login password
@@ -82,36 +82,36 @@ proc ftpscript { hostname script {user anonymous} {passw software.audela@free.fr
    # --- test the hostname connection
    set res [ping $hostname]
    if {[lindex $res 0]==0} {
-	   set result "address $hostname does not respond"
-	   return $result
+      set result "address $hostname does not respond"
+      return $result
    }
    # --- generate the script file
    set texte ""
    if {$os=="Linux"} {
-   	append texte "ftp -n -i $hostname <<LAPIN\n"
-   	append texte "user $user $passw\n"
+      append texte "ftp -n -i $hostname <<LAPIN\n"
+      append texte "user $user $passw\n"
    } elseif {$win=="Windows"} {
-	   append texte "open $hostname\n"
-   	append texte "$user\n"
-   	append texte "$passw\n"
+      append texte "open $hostname\n"
+      append texte "$user\n"
+      append texte "$passw\n"
    }
-	append texte "$script\n"
-	append texte "quit\n"
+   append texte "$script\n"
+   append texte "quit\n"
    if {$os=="Linux"} {
-   	append texte "LAPIN\n"
+      append texte "LAPIN\n"
    }
    set filename "[clock seconds]_[clock clicks].ftp"
-	set f [open $filename w]
-	puts $f "$texte"
-	close $f
+   set f [open $filename w]
+   puts $f "$texte"
+   close $f
    # --- execute FTP
    if {$os=="Linux"} {
       set errnum [catch {exec sh $filename} result]
    } elseif {$win=="Windows"} {
       set errnum [catch {exec ftp.exe -s:$filename} result]
    } else {
-	   set errnum 1
-	   set result "ftpscript not supported for operating system $os"
+      set errnum 1
+      set result "ftpscript not supported for operating system $os"
    }
    catch {file delete $filename}
    return $result
@@ -121,14 +121,14 @@ proc ftpglob { filtre {hostname none} {user anonymous} {passw software.audela@fr
    # THIS FUNTION USE THE exec TCL FUNTION TO CALL FTP
    # IT CAN BLOCK THE TCL INTERPRETER IN CASE OF NET BREAKING.
    #
-	# ex: set filtre "cd d/toto\n dir *.gz"
-	#
-	# outputs :
-	# {1} { {file1 bytes1} {file2 bytes2} ...}
-	# {0} { error_message }
-	if {$hostname=="none"} {
-		set errnum [catch {glob $filtre} result]
-	} else {
+   # ex: set filtre "cd d/toto\n dir *.gz"
+   #
+   # outputs :
+   # {1} { {file1 bytes1} {file2 bytes2} ...}
+   # {0} { error_message }
+   if {$hostname=="none"} {
+      set errnum [catch {glob $filtre} result]
+   } else {
       set result [ftpscript $hostname $filtre $user $passw]
       set res [ftpdirdecode $result files yes]
       set result [list [llength $res] $res ]
@@ -137,19 +137,18 @@ proc ftpglob { filtre {hostname none} {user anonymous} {passw software.audela@fr
    return $result
 }
 
-
 proc ftpfileopen { path filtre timeoutmax {hostname none} {user anonymous} {passw software.audela@free.fr} } {
    # THIS FUNTION USE THE open TCL FUNTION TO CALL FTP
    # TO PREVENT BLOCKAGES OF THE TCL INTERPRETER IN CASE OF NET BREAKING.
    #
-	# ex: set path c/toto
-	#     set filtre dir ; # or delete tutu.txt
+   # ex: set path c/toto
+   #     set filtre dir ; # or delete tutu.txt
    #     set timeoutmax 30 ; # en secondes
-	#     ftpfileopen $path $filtre ...
-	#
-	# outputs :
-	# {1} { {file1 bytes1} {file2 bytes2} ...}
-	# {0} { error_message }
+   #     ftpfileopen $path $filtre ...
+   #
+   # outputs :
+   # {1} { {file1 bytes1} {file2 bytes2} ...}
+   # {0} { error_message }
    set win "" ; set os $::tcl_platform(os) ; catch {set win [string range $os 0 6]}
    set result ""
    if {$hostname=="none"} {
@@ -158,32 +157,32 @@ proc ftpfileopen { path filtre timeoutmax {hostname none} {user anonymous} {pass
       # --- generate the script file
       set texte ""
       if {$os=="Linux"} {
-   	   append texte "ftp -n -i $hostname <<LAPIN\n"
-   	   append texte "user $user $passw\n"
+         append texte "ftp -n -i $hostname <<LAPIN\n"
+         append texte "user $user $passw\n"
       } elseif {$win=="Windows"} {
-   	   append texte "open $hostname\n"
-   	   append texte "$user\n"
-   	   append texte "$passw\n"
+         append texte "open $hostname\n"
+         append texte "$user\n"
+         append texte "$passw\n"
       }
       if {$path!="."} {
          append texte "cd $path\n"
       }
-	   append texte "$filtre\n"
-	   append texte "quit\n"
+      append texte "$filtre\n"
+      append texte "quit\n"
       if {$os=="Linux"} {
-      	append texte "LAPIN\n"
+         append texte "LAPIN\n"
       }
       set filename "[clock seconds]_[clock clicks].ftp"
-   	set f [open $filename w]
-	   puts $f "$texte"
-	   close $f
+      set f [open $filename w]
+      puts $f "$texte"
+      close $f
       # --- execute FTP
       if {$os=="Linux"} {
          set f [open "|sh $filename" w+]
       } elseif {$win=="Windows"} {
          set f [open "|ftp.exe -s:$filename" w+]
       } else {
-	      set result "ftp not supported for operating system $os"
+         set result "ftp not supported for operating system $os"
       }
       #
       catch {
@@ -195,7 +194,7 @@ proc ftpfileopen { path filtre timeoutmax {hostname none} {user anonymous} {pass
          set timeout0 [clock seconds]
          #::console::affiche_resultat "entree dans boucle\n"
          while {$sortie=="no"} {
-	         catch {update}
+            catch {update}
             set res [read $f 1000]
             if {$res==""} {
                incr loopout
@@ -240,13 +239,13 @@ proc ftpscriptopen { script timeoutmax {hostname none} {user anonymous} {passw s
    # THIS FUNTION USE THE open TCL FUNTION TO CALL FTP
    # TO PREVENT BLOCKAGES OF THE TCL INTERPRETER IN CASE OF NET BREAKING.
    #
-	# ex: set script "cd c/toto\ndelete tutu.txt"
+   # ex: set script "cd c/toto\ndelete tutu.txt"
    #     set timeoutmax 30 ; # en secondes
-	#     ftpscriptopen "$script" $filtre ...
-	#
-	# outputs :
-	# {1} { returned_message }
-	# {0} { error_message }
+   #     ftpscriptopen "$script" $filtre ...
+   #
+   # outputs :
+   # {1} { returned_message }
+   # {0} { error_message }
    set win "" ; set os $::tcl_platform(os) ; catch {set win [string range $os 0 6]}
    set result ""
    if {$hostname=="none"} {
@@ -255,29 +254,29 @@ proc ftpscriptopen { script timeoutmax {hostname none} {user anonymous} {passw s
       # --- generate the script file
       set texte ""
       if {$os=="Linux"} {
-   	   append texte "ftp -n -i $hostname <<LAPIN\n"
-   	   append texte "user $user $passw\n"
+         append texte "ftp -n -i $hostname <<LAPIN\n"
+         append texte "user $user $passw\n"
       } elseif {$win=="Windows"} {
-   	   append texte "open $hostname\n"
-   	   append texte "$user\n"
-   	   append texte "$passw\n"
+         append texte "open $hostname\n"
+         append texte "$user\n"
+         append texte "$passw\n"
       }
-	   append texte "$script\n"
-	   append texte "quit\n"
+      append texte "$script\n"
+      append texte "quit\n"
       if {$os=="Linux"} {
-      	append texte "LAPIN\n"
+         append texte "LAPIN\n"
       }
       set filename "[clock seconds]_[clock clicks].ftp"
-   	set f [open $filename w]
-	   puts $f "$texte"
-	   close $f
+      set f [open $filename w]
+      puts $f "$texte"
+      close $f
       # --- execute FTP
       if {$os=="Linux"} {
          set f [open "|sh $filename" w+]
       } elseif {$win=="Windows"} {
          set f [open "|ftp.exe -s:$filename" w+]
       } else {
-	      set result "ftp not supported for operating system $os"
+         set result "ftp not supported for operating system $os"
       }
       #
       catch {
@@ -289,7 +288,7 @@ proc ftpscriptopen { script timeoutmax {hostname none} {user anonymous} {passw s
          set timeout0 [clock seconds]
          #::console::affiche_resultat "entree dans boucle\n"
          while {$sortie=="no"} {
-	         catch {update}
+            catch {update}
             set res [read $f 1000]
             if {$res==""} {
                incr loopout
@@ -336,7 +335,7 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
    set res [ftpfileopen "$path" "dir $fname" 5 $hostname $user $passw]
    set n [lindex $res 0]
    if {$n<=0} {
-	   return ""
+      return ""
    }
    set res [lindex $res 1]
    #::console::affiche_resultat "   => res=$res\n"
@@ -347,12 +346,12 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
    # --- generate the script file
    set texte ""
    if {$os=="Linux"} {
-	   append texte "ftp -n -i $hostname <<LAPIN\n"
- 	   append texte "user $user $passw\n"
+      append texte "ftp -n -i $hostname <<LAPIN\n"
+      append texte "user $user $passw\n"
    } elseif {$win=="Windows"} {
-  	   append texte "open $hostname\n"
-  	   append texte "$user\n"
-  	   append texte "$passw\n"
+      append texte "open $hostname\n"
+      append texte "$user\n"
+      append texte "$passw\n"
    }
    if {$path!="."} {
       append texte "cd $path\n"
@@ -361,10 +360,10 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
    append texte "get $fname\n"
    append texte "quit\n"
    if {$os=="Linux"} {
-    	append texte "LAPIN\n"
+      append texte "LAPIN\n"
    }
    set filename "[clock seconds]_[clock clicks].ftp"
-  	set f [open $filename w]
+   set f [open $filename w]
    puts $f "$texte"
    close $f
    #
@@ -377,7 +376,7 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
    } elseif {$win=="Windows"} {
       set f [open "|ftp.exe -s:$filename" w+]
    } else {
-	   set result "ftp not supported for operating system $os"
+      set result "ftp not supported for operating system $os"
    }
    #
    catch {
@@ -390,15 +389,15 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
       #::console::affiche_resultat "entree dans boucle\n"
       set result ""
       while {$sortie=="no"} {
-	      catch {update}
-	      set res [read $f 100]
+         catch {update}
+         set res [read $f 100]
          if {$res==""} {
             after 1
          } else {
             append result "$res"
          }
-	      #
-	      set size $size0
+         #
+         set size $size0
          catch {set size [file size $fname]}
          #
          set ff [open ftp.log a]
@@ -411,13 +410,13 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
          }
          set dsize [expr $size-$size0]
          #::console::affiche_resultat "size=$size dsize=$dsize\n"
-	      after 1000
+         after 1000
          set timeout [expr [clock seconds]-$timeout0]
          if {($timeout>$timeoutmax)&&($dsize==0)} {
             set sortie timeout
             break
          }
-	      set size0 $size
+         set size0 $size
       }
    }
    #::console::affiche_resultat "result=$result\n"
@@ -429,10 +428,11 @@ proc ftpgetopen { path fname timeoutmax {hostname none} {user anonymous} {passw 
    #::console::affiche_resultat "size=$size\n"
    #
    if {($sortie=="timeout")||($size==0)||($sizemax=="")} {
-	   set result [list 0 $sizemax]
+      set result [list 0 $sizemax]
    } else {
       set result [list $size $sizemax]
    }
    catch {file delete $filename}
    return $result
 }
+

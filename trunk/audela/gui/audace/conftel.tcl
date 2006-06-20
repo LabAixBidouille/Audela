@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Date de mise a jour : 08 juin 2006
+# Mise a jour $Id: conftel.tcl,v 1.8 2006-06-20 17:27:07 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel(conf_lx200,connect), (conf_temma,connect) et confTel(...)

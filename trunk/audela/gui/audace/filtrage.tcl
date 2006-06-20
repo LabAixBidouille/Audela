@@ -1,9 +1,9 @@
 #-----------------------------------------------------------------------------#
 #
 # Fichier : filtrage.tcl
-# Description : Scripts pour un usage aise des fonctions d'audela
+# Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Date de mise a jour : 28 janvier 2006
+# Mise a jour $Id: filtrage.tcl,v 1.3 2006-06-20 17:28:40 robertdelmas Exp $
 #
 #-----------------------------------------------------------------------------#
 

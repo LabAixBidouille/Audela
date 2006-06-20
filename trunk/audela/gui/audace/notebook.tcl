@@ -1,9 +1,10 @@
 #
-# Date de mise a jour : 19 fevrier 2006
+# Mise a jour $Id: notebook.tcl,v 1.5 2006-06-20 17:33:24 robertdelmas Exp $
 #
 
+#
 # A Resizable Notebook widget for Tcl/Tk
-# $Revision: 1.4 $
+# $Revision: 1.5 $
 #
 # Copyright (C) 1998 Daniel Roche
 #

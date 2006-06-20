@@ -2,7 +2,7 @@
 # Fichier : aud5.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Date de mise a jour : 19 mars 2005
+# Mise a jour $Id: aud5.tcl,v 1.2 2006-06-20 17:20:17 robertdelmas Exp $
 #
 
 ###########################################################################################

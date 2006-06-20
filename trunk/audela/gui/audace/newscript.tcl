@@ -1,6 +1,7 @@
 #
 # Fichier : newscript.tcl
-# Date de mise a jour : 20 novembre 2004
+# Description : Creation d'un script nouveau
+# Mise a jour $Id: newscript.tcl,v 1.2 2006-06-20 17:33:07 robertdelmas Exp $
 #
 
 namespace eval ::newScript {

@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Date de mise a jour : 13 fevrier 2006
+# Mise a jour $Id: conffont.tcl,v 1.3 2006-06-20 17:25:40 robertdelmas Exp $
 #
 
 namespace eval confFont {

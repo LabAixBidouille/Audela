@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Date de mise a jour : 04 juin 2005
+# Mise a jour $Id: crosshair.tcl,v 1.5 2006-06-20 17:27:58 robertdelmas Exp $
 #
 
 namespace eval ::Crosshair {

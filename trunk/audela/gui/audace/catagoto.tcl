@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Date de mise a jour : 13 fevrier 2006
+# Mise a jour $Id: catagoto.tcl,v 1.3 2006-06-20 17:21:48 robertdelmas Exp $
 #
 
 namespace eval cataGoto {

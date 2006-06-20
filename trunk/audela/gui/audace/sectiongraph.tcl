@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# $Id 16 mars 2006 $
+# Mise a jour $Id: sectiongraph.tcl,v 1.5 2006-06-20 17:35:46 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {

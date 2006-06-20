@@ -1,9 +1,8 @@
 #
-# Fichier poly.tcl
-# Ce script regroupe des fonctions pour gérer des images FITS polychromes.
-# Auteur : Benoît Maugis
-# Version : 1.2 ---> 1.3
-# Date de mise a jour : 27 mars 2005 ---> 17 fevrier 2006
+# Fichier : poly.tcl
+# Description : Ce script regroupe des fonctions pour gérer des images FITS polychromes
+# Auteur : Benoit MAUGIS
+# Mise a jour $Id: poly.tcl,v 1.3 2006-06-20 17:35:18 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier poly.htm dans le dossier doc_html.

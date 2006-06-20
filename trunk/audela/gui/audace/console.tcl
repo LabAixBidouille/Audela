@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Date de mise a jour : 09 decembre 2005
+# Mise a jour $Id: console.tcl,v 1.3 2006-06-20 17:27:44 robertdelmas Exp $
 #
 
 namespace eval ::console {
