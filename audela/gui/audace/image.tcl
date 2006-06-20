@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Date de mise a jour : 02 juin 2006
+# Mise a jour $Id: image.tcl,v 1.4 2006-06-20 17:31:23 robertdelmas Exp $
 #
 
 ##############################################################################

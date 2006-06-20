@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# $Id: confgene.tcl,v 1.6 2006-06-19 15:51:20 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.7 2006-06-20 17:25:59 robertdelmas Exp $
 #
 
 #

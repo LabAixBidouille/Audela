@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# $Id: polydraw.tcl,v 1.3 2006-03-19 19:26:48 robertdelmas Exp $
+# Mise a jour $Id: polydraw.tcl,v 1.4 2006-06-20 17:35:33 robertdelmas Exp $
 #
 
 namespace eval ::polydraw {

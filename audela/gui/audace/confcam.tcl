@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# $Id: confcam.tcl,v 1.18 2006-06-16 23:54:13 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.19 2006-06-20 17:24:14 robertdelmas Exp $
 #
 
 global confCam

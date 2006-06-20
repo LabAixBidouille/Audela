@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Date de mise a jour : 17 avril 2006
+# Mise a jour $Id: aud3.tcl,v 1.4 2006-06-20 17:19:59 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {

@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# $Id: astrometry.tcl,v 1.3 2006-06-19 21:39:47 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.4 2006-06-20 17:19:18 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {

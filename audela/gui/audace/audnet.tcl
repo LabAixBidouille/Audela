@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 13 janvier 2006
+# Mise a jour $Id: audnet.tcl,v 1.3 2006-06-20 17:20:34 robertdelmas Exp $
 #
 
 # ====================================================================

@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Date de mise a jour : 08 janvier 2006
+# Mise a jour $Id: confpad.tcl,v 1.3 2006-06-20 17:26:47 robertdelmas Exp $
 #
 
 namespace eval ::confPad {

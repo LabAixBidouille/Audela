@@ -1,9 +1,8 @@
 #
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
-# Auteur : Benoît MAUGIS
-# Date de mise a jour : 17 fevrier 2006
-# Version 1.05
+# Auteur : Benoit MAUGIS
+# Mise a jour $Id: iris.tcl,v 1.3 2006-06-20 17:31:39 robertdelmas Exp $
 #
 
 #

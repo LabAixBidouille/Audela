@@ -1,7 +1,7 @@
 #
 # Fichier : confeditscript.tcl
 # Description : Fenetre de configuration pour parametrer les differents editeurs
-# Date de mise a jour : 16 novembre 2005
+# Mise a jour $Id: confeditscript.tcl,v 1.2 2006-06-20 17:25:11 robertdelmas Exp $
 #
 
 namespace eval ::confEditScript {

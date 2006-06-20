@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'catalog'
 # Auteur : Michel PUJOL
-# Date de mise a jour : 19 mars 2006
+# Mise a jour $Id: confcat.tcl,v 1.4 2006-06-20 17:24:39 robertdelmas Exp $
 #
 
 namespace eval ::confCat {

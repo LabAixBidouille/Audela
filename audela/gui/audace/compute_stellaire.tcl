@@ -1,10 +1,9 @@
 #
 # Fichier : compute_stellaire.tcl
 # Description : Fonction de prétraitement automatique
-# Auteur : Benoît Maugis
-# Date de mise a jour : 06 mars 2006
-# Version : 1.4.2
-
+# Auteur : Benoit MAUGIS
+# Mise a jour $Id: compute_stellaire.tcl,v 1.4 2006-06-20 17:23:43 robertdelmas Exp $
+#
 
 # Documentation : Voir le fichier compute_stellaire.htm dans le dossier doc_html
 

@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 28 janvier 2006
+# Mise a jour $Id: confeqt.tcl,v 1.5 2006-06-20 17:25:25 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {

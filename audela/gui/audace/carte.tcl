@@ -3,7 +3,7 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Date de mise a jour : 19 mars 2006
+# Mise a jour $Id: carte.tcl,v 1.3 2006-06-20 17:21:17 robertdelmas Exp $
 #
 
 namespace eval ::carte {

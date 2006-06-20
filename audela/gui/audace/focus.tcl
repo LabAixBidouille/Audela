@@ -1,14 +1,8 @@
 #
 # Fichier : focus.tcl
 # Description : Centralise les commandes du focus du telescope
-#
-#    Gere les variables :
-#       audace(focus,speed) 
-#       audace(focus,labelspeed) 
-#       audace(focus,nbpas1) 
-#       audace(focus,nbpas2)
-#    
-# Date de mise a jour : 08 fevrier 2006
+# Auteur : Michel PUJOL
+# Mise a jour $Id: focus.tcl,v 1.3 2006-06-20 17:28:54 robertdelmas Exp $
 #
 
 namespace eval ::focus {

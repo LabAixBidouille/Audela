@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Date de mise a jour : 20 mars 2006
+# Mise a jour $Id: select.tcl,v 1.5 2006-06-20 17:36:02 robertdelmas Exp $
 #
 
 namespace eval ::selectWindow {

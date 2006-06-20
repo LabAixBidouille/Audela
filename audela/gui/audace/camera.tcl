@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Date de mise a jour : 05 mars 2006
+# Mise a jour $Id: camera.tcl,v 1.4 2006-06-20 17:21:01 robertdelmas Exp $
 #
 
 namespace eval camera {

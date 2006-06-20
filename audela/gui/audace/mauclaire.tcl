@@ -1,9 +1,9 @@
 #-----------------------------------------------------------------------------#
 #
 # Fichier : mauclaire.tcl
-# Description : Scripts pour un usage aise des fonctions d'audela
+# Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Date de mise a jour : 15 janvier 2006
+# Mise a jour $Id: mauclaire.tcl,v 1.3 2006-06-20 17:31:57 robertdelmas Exp $
 #
 #-----------------------------------------------------------------------------#
 
