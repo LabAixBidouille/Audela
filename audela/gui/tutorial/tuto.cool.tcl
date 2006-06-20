@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 17 novembre 2005
+# Mise a jour $Id: tuto.cool.tcl,v 1.3 2006-06-20 18:15:12 robertdelmas Exp $
 #
 
 #!/bin/sh
