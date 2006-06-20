@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle 
 # Auteur : Michel PUJOL
-# Date de mise a jour : 23 decembre 2005
+# Mise a jour $Id: superpad.tcl,v 1.3 2006-06-20 19:45:48 robertdelmas Exp $
 #
 
 package provide superpad 1.0

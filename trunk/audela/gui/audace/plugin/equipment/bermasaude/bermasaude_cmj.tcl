@@ -2,7 +2,7 @@
 # Fichier : bermasaude_cmj.tcl
 # Description : Configuration des filtres de la roue pour une combinaison CMJ
 # Auteur : Robert DELMAS
-# Date de mise a jour : 07 janvier 2006
+# Mise a jour $Id: bermasaude_cmj.tcl,v 1.3 2006-06-20 19:21:51 robertdelmas Exp $
 #
 
 global color

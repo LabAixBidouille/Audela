@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 06 juin 2006
+# Mise a jour $Id: tuto.ipport.tcl,v 1.6 2006-06-20 19:35:11 robertdelmas Exp $
 #
 
 #!/bin/sh

@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 06 juin 2006
+# Mise a jour $Id: tuto.kaf.tcl,v 1.6 2006-06-20 19:35:23 robertdelmas Exp $
 #
 
 #!/bin/sh

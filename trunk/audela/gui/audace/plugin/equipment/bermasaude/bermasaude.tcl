@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 08 janvier 2006
+# Mise a jour $Id: bermasaude.tcl,v 1.3 2006-06-20 19:21:28 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0

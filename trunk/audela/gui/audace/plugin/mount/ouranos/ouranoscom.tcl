@@ -2,7 +2,7 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Date de mise a jour : 20 novembre 2004
+# Mise a jour $Id: ouranoscom.tcl,v 1.2 2006-06-20 19:41:52 robertdelmas Exp $
 #
 
 global confTel

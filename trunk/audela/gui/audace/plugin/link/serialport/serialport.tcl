@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 12 fevrier 2006
+# Mise a jour $Id: serialport.tcl,v 1.2 2006-06-20 19:30:13 robertdelmas Exp $
 #
 
 package provide serialport 1.0
