@@ -1,4 +1,10 @@
 #
+# Fichier : tkutil.tcl
+# Description : Regroupement de procedures
+# Mise a jour $Id: tkutil.tcl,v 1.3 2006-06-20 18:08:23 robertdelmas Exp $
+#
+
+#
 # Scrolled_Canvas --
 #   Cree un canvas scrollable, ainsi que les deux scrollbars
 #   pour le deplacer.
