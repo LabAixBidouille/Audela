@@ -1,5 +1,7 @@
 #
-# Date de mise a jour : 16 juin 2006
+# Fichier : test.tcl
+# Description : Script pour lancer une application de test a partir d'AudeLA
+# Mise a jour $Id: test.tcl,v 1.4 2006-06-20 18:08:12 robertdelmas Exp $
 #
 
 #--- definition des variables globales (arrays)
