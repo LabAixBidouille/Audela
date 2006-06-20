@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 06 fevrier 2006
+# Mise a jour $Id: tuto.firstlight.tcl,v 1.7 2006-06-20 19:34:43 robertdelmas Exp $
 #
 
 #!/bin/sh

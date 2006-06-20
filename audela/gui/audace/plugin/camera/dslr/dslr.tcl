@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Date de mise a jour : 07 juin 2006
+# Mise a jour $Id: dslr.tcl,v 1.2 2006-06-20 19:18:59 robertdelmas Exp $
 #
 
 namespace eval cameraDSLR {

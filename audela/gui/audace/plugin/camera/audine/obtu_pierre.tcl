@@ -2,7 +2,7 @@
 # Fichier : obtu_pierre.tcl
 # Description : Permet le parametrage de l'obturateur a base de servo pour modelisme
 # Auteurs : Pierre Thierry et Robert DELMAS
-# Date de mise a jour : 11 mars 2006
+# Mise a jour $Id: obtu_pierre.tcl,v 1.3 2006-06-20 19:19:28 robertdelmas Exp $
 #
 
 namespace eval Obtu_Pierre {

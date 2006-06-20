@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Date de mise a jour : 16 novembre 2005
+# Mise a jour $Id: audecom.tcl,v 1.2 2006-06-20 19:41:26 robertdelmas Exp $
 #
 
 #

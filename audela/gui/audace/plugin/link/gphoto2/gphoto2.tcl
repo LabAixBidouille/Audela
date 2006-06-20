@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 01 fevrier 2006
+# Mise a jour $Id: gphoto2.tcl,v 1.2 2006-06-20 19:27:58 robertdelmas Exp $
 #
 
 package provide gphoto2 1.0

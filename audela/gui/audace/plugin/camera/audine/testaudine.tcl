@@ -2,7 +2,7 @@
 # Fichier : testaudine.tcl
 # Description : Permet de faire les tests lors de la fabrication d'une Audine
 # Auteur : Robert DELMAS
-# Date de mise a jour : 11 mars 2006
+# Mise a jour $Id: testaudine.tcl,v 1.3 2006-06-20 19:19:59 robertdelmas Exp $
 #
 
 namespace eval testAudine {

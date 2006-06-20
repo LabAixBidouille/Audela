@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 06 juin 2006
+# Mise a jour $Id: tuto.db9.tcl,v 1.6 2006-06-20 19:34:29 robertdelmas Exp $
 #
 
 #!/bin/sh

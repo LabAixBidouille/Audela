@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 28 janvier 2006
+# Mise a jour $Id: quickaudine.tcl,v 1.2 2006-06-20 19:29:17 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0

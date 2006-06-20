@@ -2,7 +2,7 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Date de mise a jour : 01 fevrier 2006
+# Mise a jour $Id: photopc.tcl,v 1.2 2006-06-20 19:28:50 robertdelmas Exp $
 #
 
 package provide photopc 1.0
