@@ -1,5 +1,5 @@
 #
-# Update: 2005 March 11
+# Mise a jour $Id: audela.tcl,v 1.5 2006-06-20 18:02:13 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -20,14 +20,14 @@
 
 set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
 if {$nameofexecutable!="audela"} {
-	catch {source roc.tcl}
+   catch {source roc.tcl}
 }
 
 source "version.tcl"
 
 if {[file exists audace.txt]==1} {
-	set langage english
-	catch {source langage.tcl}
+   set langage english
+   catch {source langage.tcl}
    cd ../gui/audace; source aud.tcl
    return
 }
