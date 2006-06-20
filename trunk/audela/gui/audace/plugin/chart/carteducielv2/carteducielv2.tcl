@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Date de mise a jour : 20 mars 2006
+# Mise a jour $Id: carteducielv2.tcl,v 1.4 2006-06-20 18:30:33 robertdelmas Exp $
 #
 
 package provide carteducielv2 1.0

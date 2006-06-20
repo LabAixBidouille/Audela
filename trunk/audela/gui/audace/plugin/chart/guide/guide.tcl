@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Date de mise a jour : 20 mars 2006
+# Mise a jour $Id: guide.tcl,v 1.4 2006-06-20 18:31:54 robertdelmas Exp $
 #
 
 package provide guide 1.0
