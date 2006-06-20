@@ -2,8 +2,8 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 11 decembre 2005
-#  
+# Mise a jour $Id: snvisu.tcl,v 1.3 2006-06-20 21:27:53 robertdelmas Exp $
+#
 
 global audace
 

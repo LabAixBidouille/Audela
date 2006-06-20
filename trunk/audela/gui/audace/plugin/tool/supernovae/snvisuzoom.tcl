@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 03 aout 2005
+# Mise a jour $Id: snvisuzoom.tcl,v 1.2 2006-06-20 21:28:21 robertdelmas Exp $
 #
 
 #--- Chargement des captions

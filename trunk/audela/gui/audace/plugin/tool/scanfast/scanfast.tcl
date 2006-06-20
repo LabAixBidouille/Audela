@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 02 fevrier 2006
+# Mise a jour $Id: scanfast.tcl,v 1.4 2006-06-20 21:23:48 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
