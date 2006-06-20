@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# $Id: aud1.tcl,v 1.6 2006-06-19 16:44:17 robertdelmas Exp $
+# Mise a jour $Id: aud1.tcl,v 1.7 2006-06-20 16:46:39 robertdelmas Exp $
 #
 
 #
@@ -40,7 +40,9 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    }
 
    #--- Suppression des etoiles rouges de la carte de champ si elles existent (script aud4.tcl)
-   ::mapWindow::cmdDelete
+   if { $conf(mapWindow,existe) == "1" } {
+      ::mapWindow::cmdDelete
+   }
 
    #--- Fenetre parent
    set fenetre [::confVisu::getBase $visuNo]

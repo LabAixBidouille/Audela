@@ -2,11 +2,18 @@
 # Fichier : aud4.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# $Id: aud4.tcl,v 1.5 2006-06-19 21:40:02 robertdelmas Exp $
+# Mise a jour $Id: aud4.tcl,v 1.6 2006-06-20 16:46:52 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
    variable This
+
+   proc init { } {
+      global  conf
+
+      #--- Variable attachee a l'existence des etoiles rouges visualisant la carte de champ
+      if { ! [ info exists conf(mapWindow,existe) ] }       { set conf(mapWindow,existe)    "0" }
+   }
 
    proc initConf { } {
       global caption conf
@@ -19,8 +26,6 @@ namespace eval ::mapWindow {
       } else {
          if { ! [ info exists conf(mapWindow,path_cata) ] } { set conf(mapWindow,path_cata) "d:/" }
       }
-
-      return
    }
 
    proc confToWidget { } {
@@ -259,7 +264,7 @@ namespace eval ::mapWindow {
    proc cmdApply { } {
       variable This
       variable widget
-      global audace caption color etoiles mapWindow
+      global audace caption color conf etoiles mapWindow
 
       set unit "e-6"
 
@@ -317,9 +322,12 @@ namespace eval ::mapWindow {
                   set y1 [ expr $y-2 ]
                   set x2 [ expr $x+2 ]
                   set y2 [ expr $y+2 ]
+                  #--- Dessin des etoiles rouges visualisant la carte de champ
                   $audace(hCanvas) create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 -tag chart
                }
             }
+            #--- Toutes les etoiles rouges sont dessinees
+            set conf(mapWindow,existe) "1"
          }
       }
       ::mapWindow::recup_position
@@ -339,7 +347,10 @@ namespace eval ::mapWindow {
    proc cmdDelete { } {
       global audace
 
+      #--- Effacement des etoiles rouges visualisant la carte de champ
       $audace(hCanvas) delete chart
+      #--- Toutes les etoiles rouges sont effacees
+      set conf(mapWindow,existe) "0"
    }
 
    proc cmdTakeWHFromPicture { } {

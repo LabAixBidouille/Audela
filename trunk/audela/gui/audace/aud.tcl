@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# $Id: aud.tcl,v 1.15 2006-06-16 23:54:13 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.16 2006-06-20 16:46:21 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -424,6 +424,7 @@ namespace eval ::audace {
       ::confTemps::initConf
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
+      ::mapWindow::init
 
       #--- Initialisation de variables de configuration
       if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
