@@ -1,8 +1,8 @@
 #
 # Fichier : gps.tcl
 # Description : Panneau de synchronisation GPS
-# Auteur : Jacques Michelet
-# Date de mise a jour : 11 decembre 2005
+# Auteur : Jacques MICHELET
+# Mise a jour $Id: gps.tcl,v 1.3 2006-06-20 21:00:55 robertdelmas Exp $
 #
 
 package provide gps 3.3

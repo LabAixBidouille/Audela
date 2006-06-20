@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# $Id: acqfc.tcl,v 1.18 2006-06-16 23:54:13 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.19 2006-06-20 20:41:04 robertdelmas Exp $
 #
 
 package provide acqfc 2.1

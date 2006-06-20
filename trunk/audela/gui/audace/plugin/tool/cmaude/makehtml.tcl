@@ -2,7 +2,7 @@
 # Fichier : makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Date de mise a jour : 19 mai 2006
+# Mise a jour $Id: makehtml.tcl,v 1.3 2006-06-20 20:54:18 robertdelmas Exp $
 #
 
 variable cmconf

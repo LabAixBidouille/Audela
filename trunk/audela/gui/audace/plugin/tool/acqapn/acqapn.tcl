@@ -1,101 +1,101 @@
 #
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
-# Auteur : Raymond Zachantke
-# Date de mise a jour : 15 juin 2006
+# Auteur : Raymond ZACHANTKE
+# Mise a jour $Id: acqapn.tcl,v 1.5 2006-06-20 20:32:38 robertdelmas Exp $
 #
 
-	package provide acqapn 1.0
+   package provide acqapn 1.0
 
-	namespace eval ::AcqAPN {
-   	global audace
-   
-   	source [ file join $audace(rep_plugin) tool acqapn acqapn.cap ]
- 
-   	proc Init { { in "" } } {
+   namespace eval ::AcqAPN {
+      global audace
+
+      source [ file join $audace(rep_plugin) tool acqapn acqapn.cap ]
+
+      proc Init { { in "" } } {
          createPanel $in.acqapn
       }
 
-   	proc createPanel { this } {
-      	global audace conf confCam caption panneau apn_base
-      	variable This 
-     		variable compteur_erreur
+      proc createPanel { this } {
+         global audace conf confCam caption panneau apn_base
+         variable This 
+         variable compteur_erreur
 
-      	set This $this
-          	set compteur_erreur "1"
+         set This $this
+         set compteur_erreur "1"
 
-		#--- Les répertoires spécifiques
-      	set panneau(AcqAPN,saveconf) [ file join $audace(rep_plugin) tool acqapn saveconf.log ]
-      	set panneau(AcqAPN,saverep)  [ file join $audace(rep_plugin) tool acqapn saverep.log ]
-      	set panneau(AcqAPN,savecmd)  [ file join $audace(rep_plugin) tool acqapn savecmd.log ]
-      	set panneau(AcqAPN,photopc)  [ file join $audace(rep_install) bin photopc.exe ]
+         #--- Les répertoires spécifiques
+         set panneau(AcqAPN,saveconf) [ file join $audace(rep_plugin) tool acqapn saveconf.log ]
+         set panneau(AcqAPN,saverep)  [ file join $audace(rep_plugin) tool acqapn saverep.log ]
+         set panneau(AcqAPN,savecmd)  [ file join $audace(rep_plugin) tool acqapn savecmd.log ]
+         set panneau(AcqAPN,photopc)  [ file join $audace(rep_install) bin photopc.exe ]
 
- 		#--- Chargement de la base de données des apn
-		set fichier [ file join $audace(rep_plugin) tool acqapn apnbase.tcl ]
-     		if { [ file exists $fichier ] } { source $fichier }
-		set fichier [ file join $audace(rep_plugin) tool acqapn apncode.tcl ]
-		if { [ file exists $fichier ] } { source $fichier }
+         #--- Chargement de la base de données des apn
+         set fichier [ file join $audace(rep_plugin) tool acqapn apnbase.tcl ]
+         if { [ file exists $fichier ] } { source $fichier }
+         set fichier [ file join $audace(rep_plugin) tool acqapn apncode.tcl ]
+         if { [ file exists $fichier ] } { source $fichier }
 
-		#--- Création des infos de configuration (config.ini) si elles n'existent pas
-      	if {![info exists conf(apn,adjust)]}            {set conf(apn,adjust) "Standard"}
-      	if {![info exists conf(apn,baud)]}              {set conf(apn,baud) "115200"}
-      	if {![info exists conf(apn,compression)]}   	{set conf(apn,compression) "Basic"}
-      	#--- dzoom multiplié par 10 ??????
-      	if {![info exists conf(apn,dzoom)]}             {set conf(apn,dzoom) "8"}
-      	if {![info exists conf(apn,exposure)]}          {set conf(apn,exposure) "0.0"}
-      	if {![info exists conf(apn,flash)]}             {set conf(apn,flash) "Off"}
-      	if {![info exists conf(apn,focus)]}             {set conf(apn,focus) "Infinity"}
-      	if {![info exists conf(apn,format)]}       	{set conf(apn,format) "VGA"}
-      	if {![info exists conf(apn,lens)]}       		{set conf(apn,lens) "Telephoto"}
-      	if {![info exists conf(apn,metering)]}          {set conf(apn,metering) "Center"}
-      	if {![info exists conf(apn,mode)]}             	{set conf(apn,mode) "Off"}
-      	if {![info exists conf(apn,model)]}             {set conf(apn,model) "Coolpix-5700"}
-      	if {![info exists conf(apn,video_scale)]}       {set conf(apn,video_scale) "2.0"}
-      	if {![info exists conf(apn,whitebalance)]}      {set conf(apn,whitebalance) "Auto"}
-      	    
-		#--- Initialisation des variables affichées dans la fenêtre d'info sur l'apn
-		foreach var { camera_id serial_number version battery memory_free } { set confCam(apn_init,$var) "-" }
-		set confCam(apn,nb_images) "-"
-		
-      	#--- Recupération de la dernière configuration pour la mise à jour des panneaux 'acqapn' et 'infos'
-      	::AcqAPN::SetOptions
-      	
-		#--- Initialisation des variables concernant les poses et les images
-		::AcqAPN::InitVar	
+         #--- Création des infos de configuration (config.ini) si elles n'existent pas
+         if {![info exists conf(apn,adjust)]}            {set conf(apn,adjust)       "Standard"}
+         if {![info exists conf(apn,baud)]}              {set conf(apn,baud)         "115200"}
+         if {![info exists conf(apn,compression)]}       {set conf(apn,compression)  "Basic"}
+         #--- dzoom multiplié par 10 ??????
+         if {![info exists conf(apn,dzoom)]}             {set conf(apn,dzoom)        "8"}
+         if {![info exists conf(apn,exposure)]}          {set conf(apn,exposure)     "0.0"}
+         if {![info exists conf(apn,flash)]}             {set conf(apn,flash)        "Off"}
+         if {![info exists conf(apn,focus)]}             {set conf(apn,focus)        "Infinity"}
+         if {![info exists conf(apn,format)]}            {set conf(apn,format)       "VGA"}
+         if {![info exists conf(apn,lens)]}              {set conf(apn,lens)         "Telephoto"}
+         if {![info exists conf(apn,metering)]}          {set conf(apn,metering)     "Center"}
+         if {![info exists conf(apn,mode)]}              {set conf(apn,mode)         "Off"}
+         if {![info exists conf(apn,model)]}             {set conf(apn,model)        "Coolpix-5700"}
+         if {![info exists conf(apn,video_scale)]}       {set conf(apn,video_scale)  "2.0"}
+         if {![info exists conf(apn,whitebalance)]}      {set conf(apn,whitebalance) "Auto"}
 
-      	#--- Caractéristiques du panneau
-      	set panneau(menu_name,AcqAPN) "$caption(acqapn,titre,panneau)"
-            #--- Largeur de l'outil en fonction de l'OS
-            if { $::tcl_platform(os) == "Linux" } {
-               set panneau(AcqAPN,largeur_outil) "130"
-            } elseif { $::tcl_platform(os) == "Darwin" } {
-               set panneau(AcqAPN,largeur_outil) "130"
-            } else {
-               set panneau(AcqAPN,largeur_outil) "108"
-            }
-      	set panneau(AcqAPN,large) [ expr $panneau(AcqAPN,largeur_outil) - 8 ]
+         #--- Initialisation des variables affichées dans la fenêtre d'info sur l'apn
+         foreach var { camera_id serial_number version battery memory_free } { set confCam(apn_init,$var) "-" }
+         set confCam(apn,nb_images) "-"
 
-      	#--- Texte du bouton 'Video'
-      	set panneau(AcqAPN,showvideo) 			"0"
-      	if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { set panneau(AcqAPN,showvideo) "1" }
-      	set panneau(AcqAPN,initstate) 			"0"
+         #--- Recupération de la dernière configuration pour la mise à jour des panneaux 'acqapn' et 'infos'
+         ::AcqAPN::SetOptions
 
-      	#--- Initialisation des radio et checkbutton
-      	set panneau(AcqAPN,intervalle_mini) 		"20"
-      	set panneau(AcqAPN,affichage)				"0"
-      	set panneau(AcqAPN,mini)				"image"
-      	set panneau(AcqAPN,a_effacer)				"last"
-            
-      	#--- Les variables du panneau déduites du modèle d'apn
-      	::AcqAPN::ConfigPanneau
+         #--- Initialisation des variables concernant les poses et les images
+         ::AcqAPN::InitVar	
 
-      	#--- Chargement du package tkimgvideo (video pour les webcams sous Windows uniquement)
-      	if { $::tcl_platform(os) != "Linux" } {
-         		set result [ catch { package require tkimgvideo } msg ]
-         		if { $result == "1" } { console::affiche_erreur "$caption(acqapn,no_package)\n" }
-      	}
-      	AcqAPNBuildIF $This
-   	}
+         #--- Caractéristiques du panneau
+         set panneau(menu_name,AcqAPN) "$caption(acqapn,titre,panneau)"
+         #--- Largeur de l'outil en fonction de l'OS
+         if { $::tcl_platform(os) == "Linux" } {
+            set panneau(AcqAPN,largeur_outil) "130"
+         } elseif { $::tcl_platform(os) == "Darwin" } {
+            set panneau(AcqAPN,largeur_outil) "130"
+         } else {
+            set panneau(AcqAPN,largeur_outil) "108"
+         }
+         set panneau(AcqAPN,large) [ expr $panneau(AcqAPN,largeur_outil) - 8 ]
+
+         #--- Texte du bouton 'Video'
+         set panneau(AcqAPN,showvideo)         "0"
+         if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { set panneau(AcqAPN,showvideo) "1" }
+         set panneau(AcqAPN,initstate)         "0"
+
+         #--- Initialisation des radio et checkbutton
+         set panneau(AcqAPN,intervalle_mini)   "20"
+         set panneau(AcqAPN,affichage)         "0"
+         set panneau(AcqAPN,mini)              "image"
+         set panneau(AcqAPN,a_effacer)         "last"
+
+         #--- Les variables du panneau déduites du modèle d'apn
+         ::AcqAPN::ConfigPanneau
+
+         #--- Chargement du package tkimgvideo (video pour les webcams sous Windows uniquement)
+         if { $::tcl_platform(os) != "Linux" } {
+            set result [ catch { package require tkimgvideo } msg ]
+            if { $result == "1" } { console::affiche_erreur "$caption(acqapn,no_package)\n" }
+         }
+         AcqAPNBuildIF $This
+      }
 
       proc startTool { visuNo } {
          variable This
@@ -109,492 +109,489 @@
          pack forget $This
       }
 
-  	#
-   	# ::AcqAPN::SetOptions
-   	#--- Fonction appelée au démarrage et par le bouton 'Réinitialiser'
-   	#--- Spécifie les variables confCam(apn,...) en rappellant les valeurs mémorisées dans config.ini
-   	#
-   	proc SetOptions { } {
-      	global conf confCam 
-      	
-		foreach var { baud } { set confCam(conf_apn,$var) $conf(apn,$var) }
-		### foreach var { baud video_port } { set confCam(conf_apn,$var) $conf(apn,$var) }
-		set confCam(conf_webcam,port) $conf(webcam,port)
-		foreach var { video_scale model adjust compression flash focus format lens\
-						metering whitebalance exposure mode dzoom } { 
-			set confCam(apn,$var) $conf(apn,$var) 
-		}		
-      	#--- La combinaison format+compression est établie et vérifiée
-      	::AcqAPN::Resolution
-   	}
+      #
+      # ::AcqAPN::SetOptions
+      #--- Fonction appelée au démarrage et par le bouton 'Réinitialiser'
+      #--- Spécifie les variables confCam(apn,...) en rappellant les valeurs mémorisées dans config.ini
+      #
+      proc SetOptions { } {
+         global conf confCam 
 
-   	#
-   	#::AcqAPN::SaveOptions
-   	#--- Fonction appelée par le bouton 'Mémoriser'
-   	#--- Mémorise les valeurs de confCam(apn) dans config.ini
-   	#
-   	proc SaveOptions { } {
-      	global conf confCam
-      
-      	#--- Vérification de la validité de la résolution avant la sauvegarde
-      	::AcqAPN::Resolution
-      	#--- Sauvegarde si résolution valide
-      	if { $confCam(apn,resolution) > "0" } {
-      		#---Les seules variables de configuration sauvegardées
-      		foreach var { baud } { set conf(apn,$var) $confCam(conf_apn,$var) }
-      		### foreach var { baud video_port } { set conf(apn,$var) $confCam(conf_apn,$var) }
-      		set conf(webcam,port) $confCam(conf_webcam,port)
-      		foreach var { video_scale model adjust format compression flash focus format lens\
-      			metering whitebalance exposure mode dzoom} { 
-      			set conf(apn,$var) $confCam(apn,$var)	
-      		}
-      	} else {
-          		::AcqAPN::ErrComm 7
-      	}
-   	}
+         foreach var { baud } { set confCam(conf_apn,$var) $conf(apn,$var) }
+        ### foreach var { baud video_port } { set confCam(conf_apn,$var) $conf(apn,$var) }
+         set confCam(conf_webcam,port) $conf(webcam,port)
+         foreach var { video_scale model adjust compression flash focus format lens\
+            metering whitebalance exposure mode dzoom } { 
+            set confCam(apn,$var) $conf(apn,$var) 
+         }
+         #--- La combinaison format+compression est établie et vérifiée
+         ::AcqAPN::Resolution
+      }
 
-   	#
-   	# ::AcqAPN::EditOptions
-   	#--- Fonction appelée notamment par le bouton 'Editer'
-   	#
-   	proc EditOptions { reglages } {
-      	global confCam caption
+      #
+      #::AcqAPN::SaveOptions
+      #--- Fonction appelée par le bouton 'Mémoriser'
+      #--- Mémorise les valeurs de confCam(apn) dans config.ini
+      #
+      proc SaveOptions { } {
+         global conf confCam
 
-      	if { $reglages=="" } {
-      		console::affiche_saut "\n$caption(acqapn,msg,edition_selection)\n"      			
-      	} elseif { $reglages=="_init" } { 
-      		console::affiche_saut "\n$caption(acqapn,msg,edition_init)\n"
-      	}
-      	#---Les variables de configuration confCam // conf
-      	foreach var { lens flash zoom mode format compression\
-      			focus metering whitebalance adjust exposure } {
-           		console::affiche_saut "$var : $confCam(apn$reglages,$var)\n"
-      	}
-   	}
+         #--- Vérification de la validité de la résolution avant la sauvegarde
+         ::AcqAPN::Resolution
+         #--- Sauvegarde si résolution valide
+         if { $confCam(apn,resolution) > "0" } {
+            #---Les seules variables de configuration sauvegardées
+            foreach var { baud } { set conf(apn,$var) $confCam(conf_apn,$var) }
+            ### foreach var { baud video_port } { set conf(apn,$var) $confCam(conf_apn,$var) }
+            set conf(webcam,port) $confCam(conf_webcam,port)
+            foreach var { video_scale model adjust format compression flash focus format lens\
+               metering whitebalance exposure mode dzoom} {
+               set conf(apn,$var) $confCam(apn,$var)
+            }
+         } else {
+               ::AcqAPN::ErrComm 7
+         }
+      }
 
-   	#
-   	#::AcqAPN::ShowVideo
-   	#--- Procedure d'apercu en mode video associée au bouton 'Video'
-   	#--- Au lancement du panneau le bouton affiche "Video Connecte"
-   	#--- Lorsque la connexion est établie le bouton affiche "Video on" (resultat d'un nouvel appui sur le bouton)
-   	#--- Lorsque l'image est affichée, le bouton affiche "Video off" (resultat d'un nouvel appui sur le bouton)
-   	#pas vérifié
-   	proc ShowVideo { } {
-      	global audace conf panneau caption confCam
-      	variable This
+      #
+      # ::AcqAPN::EditOptions
+      #--- Fonction appelée notamment par le bouton 'Editer'
+      #
+      proc EditOptions { reglages } {
+         global confCam caption
 
-      	if { $panneau(AcqAPN,showvideo) == "0" } {
+         if { $reglages=="" } {
+            console::affiche_saut "\n$caption(acqapn,msg,edition_selection)\n"
+         } elseif { $reglages=="_init" } { 
+            console::affiche_saut "\n$caption(acqapn,msg,edition_init)\n"
+         }
+         #---Les variables de configuration confCam // conf
+         foreach var { lens flash zoom mode format compression focus metering whitebalance adjust exposure } {
+            console::affiche_saut "$var : $confCam(apn$reglages,$var)\n"
+         }
+      }
 
-         		$This.fra5.video configure -text $caption(acqapn,sw_video,no) -state disabled
-         
-      		#--- Si aucune caméra n'est connectée, appelle le panneau confcam    	
-	   		if { [ ::cam::list ] == "" } {
-            	::confCam::run 
-            	tkwait window $audace(base).confCam
-         		} 
+      #
+      #::AcqAPN::ShowVideo
+      #--- Procedure d'apercu en mode video associée au bouton 'Video'
+      #--- Au lancement du panneau le bouton affiche "Video Connecte"
+      #--- Lorsque la connexion est établie le bouton affiche "Video on" (resultat d'un nouvel appui sur le bouton)
+      #--- Lorsque l'image est affichée, le bouton affiche "Video off" (resultat d'un nouvel appui sur le bouton)
+      #pas vérifié
+      proc ShowVideo { } {
+         global audace conf panneau caption confCam
+         variable This
 
-         		#--- Message si ce n'est pas un apn ou une webcam
-         		if { [ ::confCam::hasVideo $audace(camNo) ] == "0" } {
-            		::AcqAPN::ErrComm 8
-            		$This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal 
-         		} else {
-         			set panneau(AcqAPN,showvideo) "1"
-         			$This.fra5.video configure -text $caption(acqapn,sw_video,on) -state normal
-			}
- 
-      	} elseif { $panneau(AcqAPN,showvideo) == "1" } {
+         if { $panneau(AcqAPN,showvideo) == "0" } {
 
-### debut modif michel     
-###         		#--- Je supprime l'image precedente
-###         		image delete image0   
-###         		buf$audace(bufNo) clear
+            $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state disabled
+
+            #--- Si aucune caméra n'est connectée, appelle le panneau confcam
+            if { [ ::cam::list ] == "" } {
+               ::confCam::run 
+               tkwait window $audace(base).confCam
+            }
+
+            #--- Message si ce n'est pas un apn ou une webcam
+            if { [ ::confCam::hasVideo $audace(camNo) ] == "0" } {
+               ::AcqAPN::ErrComm 8
+               $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
+            } else {
+               set panneau(AcqAPN,showvideo) "1"
+               $This.fra5.video configure -text $caption(acqapn,sw_video,on) -state normal
+            }
+
+         } elseif { $panneau(AcqAPN,showvideo) == "1" } {
+
+###--- Debut modif Michel
+###               #--- Je supprime l'image precedente
+###               image delete image0
+###               buf$audace(bufNo) clear
 ###
-###         		#--- Je cree une image de type video
-###         		image create video image0
+###               #--- Je cree une image de type video
+###               image create video image0
 ###
-###         		#--- Je connecte la sortie de la camera a l'image            
-###         		set result [ catch { cam$audace(camNo) startvideoview 0 } msg ]
-###         		if { $result == "1" } {
-###            		tk_messageBox -title $caption(acqapn,titre,pb) -type ok \
-###               			-message "$caption(acqapn,error) $msg"
-###            		set panneau(AcqAPN,showvideo) "0"
+###               #--- Je connecte la sortie de la camera a l'image
+###               set result [ catch { cam$audace(camNo) startvideoview 0 } msg ]
+###               if { $result == "1" } {
+###                  tk_messageBox -title $caption(acqapn,titre,pb) -type ok \
+###                     -message "$caption(acqapn,error) $msg"
+###                  set panneau(AcqAPN,showvideo) "0"
 ###
-###            		#--- Configuration du bouton 'Video'
-###            		$This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
-###            		return
-###         		}
+###                  #--- Configuration du bouton 'Video'
+###                  $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
+###                  return
+###               }
 ###         
-###         		#--- On grandit l'image
-###         		image0 configure -scale $confCam(apn,video_scale)
+###               #--- On grandit l'image
+###               image0 configure -scale $confCam(apn,video_scale)
 
             ::confVisu::setVideo $audace(visuNo) "1"
-### fin modif michel     
+###--- Fin modif Michel
 
-         		#--- On prépare l'action suivante
-         		set panneau(AcqAPN,showvideo) "2"
-         		$This.fra5.video configure -text $caption(acqapn,sw_video,off) -state normal	 
+            #--- On prépare l'action suivante
+            set panneau(AcqAPN,showvideo) "2"
+            $This.fra5.video configure -text $caption(acqapn,sw_video,off) -state normal   
 
+         } elseif { $panneau(AcqAPN,showvideo) == "2" } {
+            ::AcqAPN::StopPreview
+         }
+   }
 
-      	} elseif { $panneau(AcqAPN,showvideo) == "2" } {
-         		::AcqAPN::StopPreview
-      	}     
- 	 }
+      #
+      #::AcqAPN::StopPreview
+      #--- Procédure pour arrêter la video associée au bouton 'Video'
+      #
+      proc StopPreview { } {
+         global audace panneau caption
+         variable This
 
-   	#
-   	#::AcqAPN::StopPreview
-   	#--- Procédure pour arrêter la video associée au bouton 'Video'
-   	#
-   	proc StopPreview { } {
-      	global audace panneau caption
-      	variable This
-      
-      	#--- Arret de la visualisation video
-### debut modif michel     
-###      	cam$audace(camNo) stopvideoview               
-###      	image delete image0   
-### fin modif michel     
-      	set panneau(AcqAPN,showvideo) "1"
-      	$This.fra5.video configure -text $caption(acqapn,sw_video,on)
-   	}
+         #--- Arret de la visualisation video
+###--- Debut modif Michel
+###         cam$audace(camNo) stopvideoview
+###         image delete image0
+###--- Fin modif Michel
+         set panneau(AcqAPN,showvideo) "1"
+         $This.fra5.video configure -text $caption(acqapn,sw_video,on)
+      }
 
-	#
-   	#::AcqAPN::MajVideo
-   	#--- Fonction appelée pour modifier le taux de grossissement de l'image video
-   	#
-   	proc MajVideo { g } {
-		global confCam 
-		global audace
-		
-		if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { 
-			::AcqAPN::StopPreview
-			::AcqAPN::ShowVideo 
-		}
-     	}
-   
-   	#
-   	# ::AcqAPN::Query
-   	#--- Fonction appelée lors de l'appui sur le bouton 'Connecter'
-   	#pas vérifié
-   	proc Query { } {
-      	global audace confCam caption panneau
-      	variable This 
-      
-      	#--- On stoppe la video
-   		if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { ::AcqAPN::StopPreview }
+      #
+      #::AcqAPN::MajVideo
+      #--- Fonction appelée pour modifier le taux de grossissement de l'image video
+      #
+      proc MajVideo { g } {
+         global confCam 
+         global audace
 
-      	#--- Désactivation des boutons 'Connecter' et 'Vidéo'
-      	$This.fra4.connect configure -text $caption(acqapn,sw,encours) -command {}
-      	::AcqAPN::ConfigEtat disabled
-         	
-		#--- Recherche du port série sur lequel la caméra répond	
-		set port [::AcqAPN::IdCom]
-		 if { $port!="no port" && $port!="not found" } {
-			set confCam(conf_apn,serial_port) $port	        
-		    	set panneau(AcqAPN,cmd_usb)  	"-l$port:"
-		    	console::affiche_saut "\n"
-		    	console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,connect) $confCam(conf_apn,serial_port)\n"
-		    	console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(conf_apn,baud)\n"
-                  ::confVisu::setCamera $audace(visuNo) $audace(camNo) "$confCam(apn,model)"
+         if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } {
+            ::AcqAPN::StopPreview
+            ::AcqAPN::ShowVideo
+         }
+      }
 
-		} else {
-			$This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::AcqAPN::Query }
-			if { $port=="not found" } { set msg 1 } else { set msg 2 }	
-			::AcqAPN::ErrComm $msg
-      		return
-		}		
-		
-		#--- Commandes secretes
-      	#id  "DIAG RAW" ou "NIKON DIGITAL CAMERA"
-      	 
-      	#--- Créé le fichier audace\audace\plugin\tool\acqapn\saveconf.log
-      	catch { set reponse [exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) clock -t -f 3\
-      		-s $confCam(conf_apn,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg		
-		if {![info exists reponse] || ( [info exists reponse] && $msg!="$reponse" ) } {
-      		::AcqAPN::ErrComm $msg
-      		$This.fra4.connect configure -text $caption(acqapn,sw_connect,on)
-      		return $msg
-      	} 
+      #
+      # ::AcqAPN::Query
+      #--- Fonction appelée lors de l'appui sur le bouton 'Connecter'
+      #pas vérifié
+      proc Query { } {
+         global audace confCam caption panneau
+         variable This 
 
-      	set fd [open $panneau(AcqAPN,saveconf) w]
-      	puts $fd $reponse
-      	close $fd
-        
-      	#--- Lit le contenu du fichier et isole les valeurs intéressantes
-      	set fd [open $panneau(AcqAPN,saveconf) r]
-      	while { [eof $fd] !="1" } {
-          		gets $fd file
-          		::AcqAPN::IdentifyParameter $file "Resolution" resolution 0
-           		::AcqAPN::IdentifyParameter $file "Camera I.D." camera_id 0
-          		::AcqAPN::IdentifyParameter $file "Version" version 0
-          		::AcqAPN::IdentifyParameter $file "Serial No." serial_number 0
-         		::AcqAPN::IdentifyParameter $file "Battery" battery 0
-          		::AcqAPN::IdentifyParameter $file "Free memory" memory_free 0
-          		::AcqAPN::IdentifyParameter $file "Operation mode" mode 2
-          		::AcqAPN::IdentifyParameter $file "Flash" flash 2
-          		::AcqAPN::IdentifyParameter $file "Focus mode" focus 2
-          		::AcqAPN::IdentifyParameter $file "Image adjust" adjust 2
-          		::AcqAPN::IdentifyParameter $file "White balance" whitebalance 2
-          		::AcqAPN::IdentifyParameter $file "Metering mode" metering 2
-       		::AcqAPN::IdentifyParameter $file "Digital zoom mode" dzoom 0
-          		::AcqAPN::IdentifyParameter $file "Shutter adjustment" exposure 0
-          		::AcqAPN::IdentifyParameter $file "Effective zoom" zoom 0
-      	}
-      	close $fd
+         #--- On stoppe la video
+         if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { ::AcqAPN::StopPreview }
 
-      	#--- L'apn est connecté et les infos sont disponibles dans le panneau
-      	set panneau(AcqAPN,initstate) "1"
-      	
-      	#--- Liste des paramètres sur la console
-      	::AcqAPN::EditOptions "_init"
-            
-      	#--- Nouvelle configuration du panneau
-      	::AcqAPN::Photo
-      	$This.fra4.connect configure -text $caption(acqapn,sw_connect,off) -command { ::AcqAPN::Off }
-      	$This.fra2.info configure -font $audace(font,arial_8_b)
-		::AcqAPN::ConfigEtat normal
-   	}
-  
-   	#
-   	# ::AcqAPN::Off
-   	#--- Fonction appelée quitter et mettre l'APN en mode Off
-   	#
-   	proc Off { } {
-      	global audace confCam caption panneau
-      	variable This 
-            variable compteur_erreur
+         #--- Désactivation des boutons 'Connecter' et 'Vidéo'
+         $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command {}
+         ::AcqAPN::ConfigEtat disabled
 
-            #--- Connexion par configuration de la camera si deja connecte
-            if { [ $This.fra4.connect cget -text ] == "$caption(acqapn,sw_connect,on)" } {
-            	return
+         #--- Recherche du port série sur lequel la caméra répond 
+         set port [::AcqAPN::IdCom]
+         if { $port!="no port" && $port!="not found" } {
+            set confCam(conf_apn,serial_port) $port
+            set panneau(AcqAPN,cmd_usb)   "-l$port:"
+            console::affiche_saut "\n"
+            console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,connect) $confCam(conf_apn,serial_port)\n"
+            console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(conf_apn,baud)\n"
+            ::confVisu::setCamera $audace(visuNo) $audace(camNo) "$confCam(apn,model)"
+         } else {
+            $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::AcqAPN::Query }
+            if { $port=="not found" } { set msg 1 } else { set msg 2 }
+            ::AcqAPN::ErrComm $msg
+            return
+         }
+
+         #--- Commandes secretes
+         #id  "DIAG RAW" ou "NIKON DIGITAL CAMERA"
+
+         #--- Créé le fichier audace\audace\plugin\tool\acqapn\saveconf.log
+         catch { set reponse [exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) clock -t -f 3\
+            -s $confCam(conf_apn,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
+         if {![info exists reponse] || ( [info exists reponse] && $msg!="$reponse" ) } {
+            ::AcqAPN::ErrComm $msg
+            $This.fra4.connect configure -text $caption(acqapn,sw_connect,on)
+            return $msg
+         }
+
+         set fd [open $panneau(AcqAPN,saveconf) w]
+         puts $fd $reponse
+         close $fd
+
+         #--- Lit le contenu du fichier et isole les valeurs intéressantes
+         set fd [open $panneau(AcqAPN,saveconf) r]
+         while { [eof $fd] !="1" } {
+            gets $fd file
+            ::AcqAPN::IdentifyParameter $file "Resolution" resolution 0
+            ::AcqAPN::IdentifyParameter $file "Camera I.D." camera_id 0
+            ::AcqAPN::IdentifyParameter $file "Version" version 0
+            ::AcqAPN::IdentifyParameter $file "Serial No." serial_number 0
+            ::AcqAPN::IdentifyParameter $file "Battery" battery 0
+            ::AcqAPN::IdentifyParameter $file "Free memory" memory_free 0
+            ::AcqAPN::IdentifyParameter $file "Operation mode" mode 2
+            ::AcqAPN::IdentifyParameter $file "Flash" flash 2
+            ::AcqAPN::IdentifyParameter $file "Focus mode" focus 2
+            ::AcqAPN::IdentifyParameter $file "Image adjust" adjust 2
+            ::AcqAPN::IdentifyParameter $file "White balance" whitebalance 2
+            ::AcqAPN::IdentifyParameter $file "Metering mode" metering 2
+            ::AcqAPN::IdentifyParameter $file "Digital zoom mode" dzoom 0
+            ::AcqAPN::IdentifyParameter $file "Shutter adjustment" exposure 0
+            ::AcqAPN::IdentifyParameter $file "Effective zoom" zoom 0
+         }
+         close $fd
+
+         #--- L'apn est connecté et les infos sont disponibles dans le panneau
+         set panneau(AcqAPN,initstate) "1"
+
+         #--- Liste des paramètres sur la console
+         ::AcqAPN::EditOptions "_init"
+
+         #--- Nouvelle configuration du panneau
+         ::AcqAPN::Photo
+         $This.fra4.connect configure -text $caption(acqapn,sw_connect,off) -command { ::AcqAPN::Off }
+         $This.fra2.info configure -font $audace(font,arial_8_b)
+         ::AcqAPN::ConfigEtat normal
+      }
+
+      #
+      # ::AcqAPN::Off
+      #--- Fonction appelée quitter et mettre l'APN en mode Off
+      #
+      proc Off { } {
+         global audace confCam caption panneau
+         variable This 
+         variable compteur_erreur
+
+         #--- Connexion par configuration de la camera si deja connecte
+         if { [ $This.fra4.connect cget -text ] == "$caption(acqapn,sw_connect,on)" } {
+            return
+         }
+
+         #--- Modification du bouton 'Connecter' et désactivation du panneau
+         $This.fra4.connect configure -text $caption(acqapn,sw,encours)
+         ::AcqAPN::ConfigEtat disabled
+
+         #--- Remise en état des paramètres 
+         catch { exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) \
+            flash $confCam(apn_init,flash)\
+            dzoom $confCam(apn_init,dzoom)\
+            resolution $confCam(apn_init,resolution)\
+            focus $confCam(apn_init,focus)\
+            adjust $confCam(apn_init,adjust)\
+            whitebalance $confCam(apn_init,whitebalance)\
+            metering $confCam(apn_init,code_metering)\
+            $panneau(apn_init,exposurecmd) $confCam(apn_init,code_exposure)\
+            mode Off
+         } msg
+
+         if { $msg!="" } {
+            if { $compteur_erreur == "1" } {
+               incr compteur_erreur "1"
+               ::AcqAPN::Off
+            } else {
+               ::AcqAPN::ErrComm $msg
+               $This.fra4.connect configure -text $caption(acqapn,sw_connect,off)
+               set compteur_erreur "1"
+               return
             }
-      
-      	#--- Modification du bouton 'Connecter' et désactivation du panneau
-      	$This.fra4.connect configure -text $caption(acqapn,sw,encours)
-      	::AcqAPN::ConfigEtat disabled
-		
-		#--- Remise en état des paramètres 
-      	catch { exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) \
-      		flash $confCam(apn_init,flash)\
-      		dzoom $confCam(apn_init,dzoom)\
-      		resolution $confCam(apn_init,resolution)\
-      		focus $confCam(apn_init,focus)\
-      		adjust $confCam(apn_init,adjust)\
-      		whitebalance $confCam(apn_init,whitebalance)\
-      		metering $confCam(apn_init,code_metering)\
-      		$panneau(apn_init,exposurecmd) $confCam(apn_init,code_exposure)\
-      		mode Off
-   		} msg
+         } else {
+            set compteur_erreur "1"
+         }
 
-      	if { $msg!="" } {
-         		if { $compteur_erreur == "1" } {
-            		incr compteur_erreur "1"
-         			::AcqAPN::Off
-           		} else {
-         			::AcqAPN::ErrComm $msg
-         			$This.fra4.connect configure -text $caption(acqapn,sw_connect,off)
-               		set compteur_erreur "1"
-      		   	return
-          		}
-      	} else {
-         		set compteur_erreur "1"
+         #--- Destruction de la fenêtre 'Images' et de la la liste des vues
+         if [winfo exists $This.avance] { global audace ; destroy $This.avance }
+         destroy $This.fra4.expose
+         if [winfo exists $This.fra4.vues] { destroy $This.fra4.vues }
+         if [winfo exists $This.fra4.memory] { destroy $This.fra4.memory }
+         destroy $This.fra7
+         place $This.fra4 -x 4 -y 426 -height 50 -width $panneau(AcqAPN,large) -anchor nw -bordermode ignore
+
+         #--- Modification du flag de la liaison série et réinitialisation de variables ilées aux images et poses
+         set panneau(AcqAPN,initstate) "0"
+         ::AcqAPN::InitVar
+
+         #--- Mise à jour des variables et reconfiguration du bouton de la fenêtre '+Infos'
+         foreach var { camera_id serial_number version battery memory_free } { set confCam(apn_init,$var) "-" }
+         set confCam(apn,nb_images) "-"
+         $This.fra2.info configure -font $audace(font,arial_8_n)
+         $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::AcqAPN::Query } 
+         ::AcqAPN::ConfigEtat normal
+
+         #--- Impression d'un message
+         console::affiche_saut "\n"
+         console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,deconnect)\n"
+      }
+
+      #
+      #--- ::AcqAPN::Expose
+      # Fonction appelée pour connecter ou déconnecter l'apn
+      #
+      proc Expose { } {
+         global panneau caption confCam
+         variable This
+         variable compteur_erreur
+
+         #--- Mofification du texte du bouton 'Go' et désactivation du panneau
+         $This.fra4.expose configure -text $caption(acqapn,sw,encours)
+         ::AcqAPN::ConfigEtat disabled
+
+         #--- Les champs "temps de pose", "nombre de poses", "délai"
+         #--- et "intervalle" ont été vérifiés à la saisie
+         #--- on affine les autres paramètres
+         set confCam(apn,code_metering) [::AcqAPN::Metering $confCam(apn,metering)]
+         set confCam(apn,dzoom) [::AcqAPN::Dzoom $confCam(apn,lens)]
+         ::AcqAPN::Resolution
+         if { $confCam(apn,resolution) < "0" } {
+            $This.fra4.expose configure -text $caption(acqapn,sw,exposer)
+            ::AcqAPN::ConfigEtat normal
+            return 
+         }
+
+         #--- Si la pose est différée on attend le temps nécessaire     
+         while { $panneau(AcqAPN,delai)!=0 } {
+            after 1000
+            incr panneau(AcqAPN,delai) -1
+            update
+         }
+         update
+
+         #if { $panneau(AcqAPN,duree_pose)!="auto" } { set confCam(apn,duree_pose) "Auto" }
+
+         set time_next "ns"
+         set intervalle $panneau(AcqAPN,intervalle) 
+
+         while { $panneau(AcqAPN,nb_poses) > 0 } {
+            set msg ""
+            catch {
+               exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
+               flash $confCam(apn,flash)\
+               dzoom $confCam(apn,dzoom)\
+               resolution $confCam(apn,resolution)\
+               focus $confCam(apn,focus)\
+               adjust $confCam(apn,adjust)\
+               whitebalance $confCam(apn,whitebalance)\
+               metering $confCam(apn,code_metering)\
+                  $panneau(AcqAPN,exposurecmd) $confCam(apn,code_exposure)\
+               dzoom 1.0X\
+               snapshot mode $confCam(apn,mode)
+            } msg
+            #--- le temps après la prise de vue
+            set time_now [clock seconds]
+            #--- le temps estimé de la prise de vue
+            incr time_now -2
+            #--- le temps de la prochaine - 10 secondes semblent un temps mini
+            set time_next [ expr (1000000*$intervalle+[clock clicks]-11200000) ]
+
+            if { $msg!="" } {
+               if { $compteur_erreur == "1" } {
+                  incr compteur_erreur "1"
+                  ::AcqAPN::Expose
+               } else {
+                  ::AcqAPN::ErrComm $msg
+                  $This.fra4.expose configure -text $caption(acqapn,sw,exposer)
+                  set compteur_erreur "1"
+                  return
+               }
+            } else {
+               set compteur_erreur "1"
             }
 
-      	#--- Destruction de la fenêtre 'Images' et de la la liste des vues      
-      	if [winfo exists $This.avance] { global audace ; destroy $This.avance }
-      	destroy $This.fra4.expose
-      	if [winfo exists $This.fra4.vues] { destroy $This.fra4.vues }
-      	if [winfo exists $This.fra4.memory] { destroy $This.fra4.memory }
-      	destroy $This.fra7
-      	place $This.fra4 -x 4 -y 426 -height 50 -width $panneau(AcqAPN,large) -anchor nw -bordermode ignore
-            
-      	#--- Modification du flag de la liaison série et réinitialisation de variables ilées aux images et poses
-      	set panneau(AcqAPN,initstate) 	   "0"   
-      	::AcqAPN::InitVar
-      
-      	#--- Mise à jour des variables et reconfiguration du bouton de la fenêtre '+Infos'
-      	foreach var { camera_id serial_number version battery memory_free } { set confCam(apn_init,$var) "-" }
-      	set confCam(apn,nb_images) "-"
-      	$This.fra2.info configure -font $audace(font,arial_8_n)
-      	$This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::AcqAPN::Query } 
-		   ::AcqAPN::ConfigEtat normal
- 
-      	#--- Impression d'un message
-      	console::affiche_saut "\n"
-      	console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,deconnect)\n"     	
-   	}
+            #--- Si le LCD de l'APN n'est pas déjà éteint, 
+            #--- on l'éteint après un délai de 1 secondes
+            if { $confCam(apn,mode)!="Off" } {
+               after 1000 
+               exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) mode Off
+            }
 
-   	#
-   	#--- ::AcqAPN::Expose
-   	# Fonction appelée pour connecter ou déconnecter l'apn
-   	#
-   	proc Expose { } {
-      	global panneau caption confCam
-      	variable This
-            variable compteur_erreur
-		
-      	#--- Mofification du texte du bouton 'Go' et désactivation du panneau
-      	$This.fra4.expose configure -text $caption(acqapn,sw,encours)
-      	::AcqAPN::ConfigEtat disabled
+            #--- Les paramètres avec des erreurs : shutter aperture color zoom
 
-      	#--- Les champs "temps de pose", "nombre de poses", "délai"
-      	#--- et "intervalle" ont été vérifiés à la saisie
-      	#--- on affine les autres paramètres
-		set confCam(apn,code_metering) [::AcqAPN::Metering $confCam(apn,metering)]
-		set confCam(apn,dzoom) [::AcqAPN::Dzoom $confCam(apn,lens)]
-		::AcqAPN::Resolution
-      	if { $confCam(apn,resolution) < "0" } {
-      		$This.fra4.expose configure -text $caption(acqapn,sw,exposer)
-      		::AcqAPN::ConfigEtat normal
-      		return 
-      	}
-        
- 		#--- Si la pose est différée on attend le temps nécessaire     
-      	while { $panneau(AcqAPN,delai)!=0 } {
-      		after 1000	
-      		incr panneau(AcqAPN,delai) -1
-          		update
-      	}
-      	update
-      	
-       	#if { $panneau(AcqAPN,duree_pose)!="auto" } { set confCam(apn,duree_pose) "Auto" }
-		
-		set time_next "ns"
-        	set intervalle $panneau(AcqAPN,intervalle) 
-     	
-      	while { $panneau(AcqAPN,nb_poses) > 0 } {
-			set msg ""
-        		catch { 
-          			exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
-          				flash $confCam(apn,flash)\
-          				dzoom $confCam(apn,dzoom)\
-          				resolution $confCam(apn,resolution)\
-					focus $confCam(apn,focus)\
-					adjust $confCam(apn,adjust)\
-               			whitebalance $confCam(apn,whitebalance)\
-               			metering $confCam(apn,code_metering)\
-               			$panneau(AcqAPN,exposurecmd) $confCam(apn,code_exposure)\
-               			dzoom 1.0X\
-              			snapshot mode $confCam(apn,mode)
-          		} msg
-          		#--- le temps après la prise de vue
-          		set time_now [clock seconds]
-          		#--- le temps estimé de la prise de vue
-          		incr time_now -2
-          		#--- le temps de la prochaine - 10 secondes semblent un temps mini
-          		set time_next [ expr (1000000*$intervalle+[clock clicks]-11200000) ]
-		
-      		if { $msg!="" } {
-                  	if { $compteur_erreur == "1" } {
-                     		incr compteur_erreur "1"
-         		   		::AcqAPN::Expose
-                  	} else {
-         		 		::AcqAPN::ErrComm $msg
-         		   		$This.fra4.expose configure -text $caption(acqapn,sw,exposer)
-                     		set compteur_erreur "1"
-      		   		return
-                  	}
-      		} else {
-               		set compteur_erreur "1"
-      		}
+            #--- On décrémente le nombre de poses qui reste à prendre
+            incr panneau(AcqAPN,nb_poses) -1
+            update
 
-          		#--- Si le LCD de l'APN n'est pas déjà éteint, 
-          		#--- on l'éteint après un délai de 1 secondes
-			if { $confCam(apn,mode)!="Off" } {
-				after 1000 
-				exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) mode Off
-			}
-                
-          		#--- Les paramètres avec des erreurs : shutter aperture color zoom
+            #--- S'il reste au moins une pose à prendre, on reprogramme l'intervalle
+            if { $panneau(AcqAPN,nb_poses)> "0"} {
+               set panneau(AcqAPN,intervalle) [expr ($time_next - [clock clicks])/1000000]
+               while { $panneau(AcqAPN,intervalle) > "0" } {
+                  after 1000
+                  incr panneau(AcqAPN,intervalle) -1
+                  update
+               }
+            }
+            set panneau(AcqAPN,intervalle) $intervalle
 
-          		#--- On décrémente le nombre de poses qui reste à prendre
-     	    		incr panneau(AcqAPN,nb_poses) -1
-     	    		update
-               
-          		#--- S'il reste au moins une pose à prendre, on reprogramme l'intervalle
-          		if { $panneau(AcqAPN,nb_poses)> "0"} {
-          			set panneau(AcqAPN,intervalle) [expr ($time_next - [clock clicks])/1000000]
-              		while { $panneau(AcqAPN,intervalle) > "0" } {
-             	  		after 1000	
-             	  		incr panneau(AcqAPN,intervalle) -1
-             	  		update
-             		}
-          		}
-            	set panneau(AcqAPN,intervalle) $intervalle
+            #--- Réinitialisation des variables spécifiques aux images
+            set panneau(AcqAPN,imagelist)    ""
+            set confCam(apn,nb_images)    "0"
+            #--- MAJ de la liste des images
+            ::AcqAPN::MajList
+            ::AcqAPN::ConfigListeVues
+            console::affiche_saut "\n# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
+            [clock format $time_now -format "%H:%M:%S" -gmt 1 ]\n"
+            update
+         }
 
-            	#--- Réinitialisation des variables spécifiques aux images
-          		set panneau(AcqAPN,imagelist) 	""
-      		set confCam(apn,nb_images) 	"0"
-      		#--- MAJ de la liste des images
-          		::AcqAPN::MajList
-          		::AcqAPN::ConfigListeVues
-          		console::affiche_saut "\n# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
-          		[clock format $time_now -format "%H:%M:%S" -gmt 1 ]\n"
-          		update
- 		}
+         #--- Affichage du bouton 'Mémoire'
+         if {[winfo exists $This.fra4.memory]=="0" } { 
+            Button $This.fra4.memory -borderwidth 4 -text $caption(acqapn,label,avance) -command { ::AcqAPN::Avance }
+            pack $audace(base).acqapn.fra4.memory  -in $audace(base).acqapn.fra4 -anchor center -side bottom -fill x
+         }
 
-        	#--- Affichage du bouton 'Mémoire'
-        	if {[winfo exists $This.fra4.memory]=="0" } { 
-      	 	Button $This.fra4.memory -borderwidth 4 -text $caption(acqapn,label,avance) -command { ::AcqAPN::Avance }
-          		pack $audace(base).acqapn.fra4.memory	-in $audace(base).acqapn.fra4 -anchor center -side bottom -fill x
-        	}
+         #--- Reconfiguration du bouton 'Go' et réactivation du panneau
+         $This.fra4.expose configure -text $caption(acqapn,sw,exposer)
+         place $This.fra4 -x 4 -y 426 -height 130 -width $panneau(AcqAPN,large) -anchor nw -bordermode ignore
+         set panneau(AcqAPN,nb_poses) "1"
+         ::AcqAPN::ConfigEtat normal
+      }
 
-      	#--- Reconfiguration du bouton 'Go' et réactivation du panneau
-      	$This.fra4.expose configure -text $caption(acqapn,sw,exposer)
-      	place $This.fra4 -x 4 -y 426 -height 130 -width $panneau(AcqAPN,large) -anchor nw -bordermode ignore
-      	set panneau(AcqAPN,nb_poses) "1"
-       	::AcqAPN::ConfigEtat normal
-   	}            
+      #
+      # ::AcqAPN::EraseCard
+      #--- Fonction appelée pour effacer une ou plusieurs photos sur la carte mémoire
+      #
+      proc EraseCard { } {
+         global confCam caption panneau
+         variable This
 
-   	#
-   	# ::AcqAPN::EraseCard
-   	#--- Fonction appelée pour effacer une ou plusieurs photos sur la carte mémoire
-   	#
-   	proc EraseCard { } {
-      	global confCam caption panneau
-      	variable This     
-      
-      	#--- Inactivation des panneaux
-		$This.avance.efface.erase configure -text $caption(acqapn,sw,encours)
-		::AcqAPN::ConfigEtat disabled
-	
-		catch { exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
-				erase$panneau(AcqAPN,a_effacer) } msg
+         #--- Inactivation des panneaux
+         $This.avance.efface.erase configure -text $caption(acqapn,sw,encours)
+         ::AcqAPN::ConfigEtat disabled
 
-   		if { $msg!="eph_open failed" } {	
-      		if { $panneau(AcqAPN,a_effacer)=="all" || ($panneau(AcqAPN,a_effacer)=="last" && $confCam(apn,nb_images)=="1") } {
-         
-        			#--- Message sur la console
-         			console::affiche_saut "\n# $caption(acqapn,msg,carte) $caption(acqapn,msg,effacee)\n"
-         	
- 	   			#--- Destruction du panneau annexe
-         			destroy $This.avance
-         			destroy $This.fra4.vues
-         			place $This.fra4 -x 4 -y 426 -height 78 -width $panneau(AcqAPN,large) -anchor nw -bordermode ignore
+         catch { exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
+            erase$panneau(AcqAPN,a_effacer) } msg
 
- 	   			#--- Réinitialisation des variables spécifiques aux images
- 	   			set confCam(apn,nb_images)			"0"
-      			set panneau(AcqAPN,imagelist)			""
-      			set panneau(AcqAPN,imagename)			""
-      			set panneau(AcqAPN,selection)			""
-         
-			} elseif { $panneau(AcqAPN,a_effacer)=="last" && $confCam(apn,nb_images)>"1" } {
-         
-         			#--- Affichage sur la console de la référence de l'image effacée
-         			console::affiche_saut "\n# $panneau(AcqAPN,imagename) $caption(acqapn,msg,effacee)\n"
-         	
-         			#--- Mise à jour de la liste des poses
-         			incr confCam(apn,nb_images) -1
-         			set panneau(AcqAPN,imagelist) [lrange $panneau(AcqAPN,imagelist) 0 [expr $confCam(apn,nb_images)-1]]
-         			::AcqAPN::ConfigListeVues
-      		}
-      	} else {
-      		::AcqAPN::ErrComm $msg
-		}
-	
-      	#--- Activation des commandes du panneau principal
-      	if [winfo exists $This.avance.efface.erase] { $This.avance.efface.erase configure -text $caption(acqapn,but,effacer) }
-      	::AcqAPN::ConfigEtat normal
-   	} 
+         if { $msg!="eph_open failed" } { 
+            if { $panneau(AcqAPN,a_effacer)=="all" || ($panneau(AcqAPN,a_effacer)=="last" && $confCam(apn,nb_images)=="1") } {
+
+               #--- Message sur la console
+               console::affiche_saut "\n# $caption(acqapn,msg,carte) $caption(acqapn,msg,effacee)\n"
+
+               #--- Destruction du panneau annexe
+               destroy $This.avance
+               destroy $This.fra4.vues
+               place $This.fra4 -x 4 -y 426 -height 78 -width $panneau(AcqAPN,large) -anchor nw -bordermode ignore
+
+               #--- Réinitialisation des variables spécifiques aux images
+               set confCam(apn,nb_images)       "0"
+               set panneau(AcqAPN,imagelist)    ""
+               set panneau(AcqAPN,imagename)    ""
+               set panneau(AcqAPN,selection)    ""
+
+            } elseif { $panneau(AcqAPN,a_effacer)=="last" && $confCam(apn,nb_images)>"1" } {
+
+               #--- Affichage sur la console de la référence de l'image effacée
+               console::affiche_saut "\n# $panneau(AcqAPN,imagename) $caption(acqapn,msg,effacee)\n"
+
+               #--- Mise à jour de la liste des poses
+               incr confCam(apn,nb_images) -1
+               set panneau(AcqAPN,imagelist) [lrange $panneau(AcqAPN,imagelist) 0 [expr $confCam(apn,nb_images)-1]]
+               ::AcqAPN::ConfigListeVues
+            }
+         } else {
+            ::AcqAPN::ErrComm $msg
+         }
+
+         #--- Activation des commandes du panneau principal
+         if [winfo exists $This.avance.efface.erase] { $This.avance.efface.erase configure -text $caption(acqapn,but,effacer) }
+         ::AcqAPN::ConfigEtat normal
+      }
 
    	#
    	# ::AcqAPN::DownloadCard
