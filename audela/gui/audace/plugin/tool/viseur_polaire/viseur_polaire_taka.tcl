@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Date de mise a jour : 11 decembre 2005
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.3 2006-06-20 22:03:47 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireTaka {

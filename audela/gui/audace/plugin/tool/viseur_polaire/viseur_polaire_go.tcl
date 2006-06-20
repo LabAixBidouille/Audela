@@ -4,7 +4,7 @@
 # Type Takahashi : Viseur polaire à niveau
 # Type EQ6 : Viseur polaire à constellations
 # Auteur : Robert DELMAS
-# Date de mise a jour : 13 janvier 2006
+# Mise a jour $Id: viseur_polaire_go.tcl,v 1.3 2006-06-20 22:03:22 robertdelmas Exp $
 #
 
 package provide viseur_polaire 1.0
