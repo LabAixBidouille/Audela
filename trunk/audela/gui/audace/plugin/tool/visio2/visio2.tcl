@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# $Id: visio2.tcl,v 1.9 2006-06-17 00:20:34 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.10 2006-06-20 22:04:49 robertdelmas Exp $
 #
 
 package provide visio2 1.0

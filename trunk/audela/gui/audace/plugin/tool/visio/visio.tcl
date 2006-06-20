@@ -1,9 +1,8 @@
 #
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des séries d'images
-# Auteur : Benoît Maugis
-# Date de mise a jour : 10 avril 2005 ---> 17 fevrier 2006
-# Version : 2.6.2 ---> 2.6.4
+# Auteur : Benoit MAUGIS
+# Mise a jour $Id: visio.tcl,v 1.4 2006-06-20 22:04:15 robertdelmas Exp $
 #
 
 package provide visio 2.6.2
