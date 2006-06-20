@@ -1,5 +1,5 @@
 #
-# Date de mise a jour : 17 novembre 2005
+# Mise a jour $Id: tuto.tcl,v 1.3 2006-06-20 18:16:56 robertdelmas Exp $
 #
 
 #!/bin/sh
