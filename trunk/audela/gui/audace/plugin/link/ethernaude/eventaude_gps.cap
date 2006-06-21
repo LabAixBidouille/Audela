@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.3 2006-06-20 19:27:20 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.4 2006-06-21 17:36:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,7 @@ global caption
 
 set caption(eventaude_gps,titre)                      "GPS Coordinates of the Observer"
 
-set caption(eventaude_gps,rafraichir)                 "Rafraîchir les coordonnées GPS"
+set caption(eventaude_gps,rafraichir)                 "# Rafraîchir les coordonnées GPS"
 set caption(eventaude_gps,position_gps)               "GPS Format (WGS84):"
 set caption(eventaude_gps,longitude)                  "Longitude:"
 set caption(eventaude_gps,latitude)                   "Latitude:"
