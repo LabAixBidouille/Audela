@@ -1,2 +1,0 @@
-LIBRARY libcombit
-EXPORTS Combit_Init @1

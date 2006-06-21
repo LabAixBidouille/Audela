@@ -1,4 +1,0 @@
-LIBRARY libdcjpeg
-EXPORTS 
-    libdcjpeg_decodeBuffer
-    libdcjpeg_freeBuffer

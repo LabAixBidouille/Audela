@@ -1,2 +1,0 @@
-LIBRARY libethernaude
-EXPORTS Ethernaude_Init @1

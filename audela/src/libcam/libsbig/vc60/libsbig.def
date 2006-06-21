@@ -1,2 +1,0 @@
-LIBRARY libsbig
-EXPORTS Sbig_Init @1

@@ -1,2 +1,0 @@
-LIBRARY libtemma
-EXPORTS Temma_Init @1

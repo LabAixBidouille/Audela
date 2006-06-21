@@ -1,9 +1,0 @@
-# Microsoft Developer Studio Generated Dependency File, included by takepic.mak
-
-.\StdAfx.cpp : \
-	".\StdAfx.h"\
-	
-
-.\takepic.cpp : \
-	".\StdAfx.h"\
-	
