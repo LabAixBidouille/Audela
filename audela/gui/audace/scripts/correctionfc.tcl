@@ -1,10 +1,11 @@
-# Fonction pour nettoyer mes images
-# (Portions de lignes verticales mauvaises)
-# 26 aout 2001
-# Modifié le 6 janvier 2002, pour prendre en compte la nouvelle lecture
-# de Audine par A. Klotz (décalage d'un pixel).
-# Attention: Je n'ai fait la modif que pour le binning 2...
-# Modification du 8 mars, pour integration de la fonction dans le panneau de pretraitement.
+#
+# Fichier : correctionfc.tcl
+# Description : Fonction pour nettoyer mes images (portions de lignes verticales mauvaises)
+# Auteur : Francois COCHARD
+# Mise a jour $Id: correctionfc.tcl,v 1.2 2006-06-21 18:50:27 robertdelmas Exp $
+#
+# Attention : Je n'ai fait la modif que pour le binning 2
+#
 
 #--------------------------------------------------
 proc corrigefc {} {
