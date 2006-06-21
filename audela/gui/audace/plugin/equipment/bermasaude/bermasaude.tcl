@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.3 2006-06-20 19:21:28 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.4 2006-06-21 17:35:59 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
@@ -279,12 +279,11 @@ namespace eval bermasaude {
    #    Representation graphique de la roue a filtres
    #------------------------------------------------------------
    proc Representation_roue_a_filtres { } {
-      variable widget
       global audace
       global zone
 
       #--- Affichage de la representation
-      if { [ info exists widget(frm) ] } {
+      if { [ winfo exists $audace(base).confeqt ] } {
          $zone(image2a) create arc 10 10 170 170 -outline $audace(color,textColor) -tags cadres -width 2.0 \
             -start 90 -extent -270 -style arc
          $zone(image2a) create line 10 10 90 10 -fill $audace(color,textColor) -tags cadres -width 2.0
