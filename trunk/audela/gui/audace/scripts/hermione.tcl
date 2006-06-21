@@ -1,7 +1,7 @@
 #
 # Fichier : hermione.tcl
-# Description : Script a placer dans le repertoire scripts, optimise pour une Audine Kaf-0400
-# Date de mise a jour : 24 decembre 2005
+# Description : Observation d'une occultation en automatique, optimise pour une Audine Kaf-0400
+# Mise a jour $Id: hermione.tcl,v 1.3 2006-06-21 18:50:39 robertdelmas Exp $
 #
 
 global audace

@@ -1,5 +1,6 @@
 #
-#  cfgcgi.tcl
+# Fichier : cfgcgi.tcl
+# Mise a jour $Id: cfgcgi.tcl,v 1.2 2006-06-21 18:50:15 robertdelmas Exp $
 #
 
 # --- repertoire de depot des requetes

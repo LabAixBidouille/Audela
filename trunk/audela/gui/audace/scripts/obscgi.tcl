@@ -1,6 +1,7 @@
-#  
-# obscgi.tcl 
-# 
+#
+# Fichier : obscgi.tcl
+# Mise a jour $Id: obscgi.tcl,v 1.2 2006-06-21 18:51:00 robertdelmas Exp $
+#
 
 # - variables communes a tous les scripts
 source scripts/cfgcgi.tcl

@@ -1,7 +1,8 @@
 #
-# Occultation de HD205829 par Titania (satellite d'Uranus)
-# Le 08 Septembre 2001 a 2h TU environ
+# Fichier : titania.tcl
+# Description : Occultation de HD205829 par Titania (satellite d'Uranus) le 08 septembre 2001 a 2h TU environ
 # Auteur : Alain KLOTZ
+# Mise a jour $Id: titania.tcl,v 1.2 2006-06-21 18:51:12 robertdelmas Exp $
 #
 
 global audace

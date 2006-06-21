@@ -2,7 +2,7 @@
 # Fichier : horloge_asro.tcl
 # Description : Horloge de l'astronome
 # Auteur : Alain KLOTZ
-# Date de mise a jour : 09 octobre 2004
+# Mise a jour $Id: horloge_astro.tcl,v 1.2 2006-06-21 18:50:49 robertdelmas Exp $
 #
 
 #---
