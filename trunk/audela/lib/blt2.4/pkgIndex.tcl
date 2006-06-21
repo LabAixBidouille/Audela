@@ -14,15 +14,16 @@ proc Blt_MakePkgIndex { dir } {
     } else {
         set library BLTlite${version_no_dots}${suffix}
     }
-    global tcl_platform
-    if { $tcl_platform(platform) == "unix" } {
-	set library [file join [file dirname $dir] lib${library}]
-    }
+    set library [file join $dir ${library}]
+    #global tcl_platform
+    #if { $tcl_platform(platform) == "unix" } {
+    #	set library [file join [file dirname $dir] lib${library}]
+    #}
     package ifneeded BLT ${version} [list load $library BLT]
 }
 
-#Blt_MakePkgIndex $dir
-#rename Blt_MakePkgIndex ""
+Blt_MakePkgIndex $dir
+rename Blt_MakePkgIndex ""
 
-set suffix [info sharedlibextension]
-package ifneeded BLT 2.4 [list load [file join $dir BLT24${suffix}]]
+#set suffix [info sharedlibextension]
+#package ifneeded BLT 2.4 [list load [file join $dir BLT24${suffix}]]
