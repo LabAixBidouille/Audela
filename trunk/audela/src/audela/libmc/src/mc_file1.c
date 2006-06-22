@@ -628,7 +628,7 @@ void mc_readelem(char *nom_fichier_in,struct elemorb *elem)
    fgets(ligne,254,fichier_in);
    fgets(ligne,254,fichier_in);
    fgets(ligne,254,fichier_in);
-   fgets(ligne,254,fichier_in);col2=strlen(lign  e);strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   fgets(ligne,254,fichier_in);col2=strlen(ligne);strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    elem->nbjours=atoi(texte);
    fgets(ligne,254,fichier_in);col2=strlen(ligne);strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    elem->nbobs=atoi(texte);
