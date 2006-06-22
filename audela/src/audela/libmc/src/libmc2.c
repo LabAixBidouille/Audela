@@ -2139,6 +2139,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
       else if (msg==11) { Tcl_DStringAppend(&dsptr,"Did not found the database file",-1); }
       else if (msg==12) { Tcl_DStringAppend(&dsptr,"Did not found *.acc of Loneos microcat",-1); }
       else if (msg==13) { Tcl_DStringAppend(&dsptr,"Did not found *.cat of Loneos microcat",-1); }
+      else if (msg==14) { Tcl_DStringAppend(&dsptr,"Invalid astrnometric parameters",-1); }
       else {Tcl_DStringAppend(&dsptr,"Unidentified error",-1); }
       Tcl_DStringAppend(&dsptr,"}}",-1);
    }
@@ -3720,7 +3721,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 /****************************************************************************/
 {
    int planetnum;
-   FILE *fid;
    char s[65000];
    char objename[100],orbitformat[15],orbitstring[300],orbitfile[1024],filename_relief[1024],filename_albedo[1024];
    double asd,dec,delta;
