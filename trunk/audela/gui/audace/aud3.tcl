@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.5 2006-06-22 19:37:01 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.6 2006-06-22 20:57:13 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -250,9 +250,9 @@ namespace eval ::traiteWindow {
       global traiteWindow
 
       #---
-      set in $traiteWindow(in)
+      set in  $traiteWindow(in)
       set out $traiteWindow(out)
-      set nb $traiteWindow(nb)
+      set nb  $traiteWindow(nb)
       #---
       if { $traiteWindow(in) == "" } {
           tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_image_entree)
@@ -288,7 +288,7 @@ namespace eval ::traiteWindow {
       if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
        switch $traiteWindow(operation) \
           "$caption(audace,run,median)" {
-             if { $out == "" } { set out "\#mediane" }
+             ::console::affiche_resultat "smedian $in $out $nb\n\n"
              catch { smedian $in $out $nb } m
              if { $m == "" } {
                 if { $traiteWindow(4,disp) == 1 } {
@@ -301,7 +301,7 @@ namespace eval ::traiteWindow {
              }
           } \
           "$caption(audace,image,somme)" {
-             if { $out == "" } { set out "\#somme" }
+             ::console::affiche_resultat "sadd $in $out $nb\n\n"
              catch { sadd $in $out $nb } m
              if { $m == "" } {
                 if { $traiteWindow(4,disp) == 1 } {
@@ -314,7 +314,7 @@ namespace eval ::traiteWindow {
              }
           } \
           "$caption(audace,image,moyenne)" {
-             if { $out == "" } { set out "\#moyenne" }
+             ::console::affiche_resultat "smean $in $out $nb\n\n"
              catch { smean $in $out $nb } m
              if { $m == "" } {
                 if { $traiteWindow(4,disp) == 1 } {
@@ -327,7 +327,7 @@ namespace eval ::traiteWindow {
              }
           } \
           "$caption(audace,image,ecart_type)" {
-             if { $out == "" } { set out "\#sigma" }
+             ::console::affiche_resultat "ssigma $in $out $nb bitpix=-32\n\n"
              catch { ssigma $in $out $nb "bitpix=-32" } m
              if { $m == "" } {
                 if { $traiteWindow(4,disp) == 1 } {
@@ -1077,11 +1077,11 @@ namespace eval ::faireImageRef {
 
       #---
       if { $faireImageRef(operation) == $caption(audace,menu,faire_offset) } {
-         set faireImageRef(page_web) "1120serie_mediane"
+         set faireImageRef(page_web) "1113faire_offset"
       } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_dark) } {
-         set faireImageRef(page_web) "1190serie_addition"
+         set faireImageRef(page_web) "1114faire_dark"
       } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_flat_field) } {
-         set faireImageRef(page_web) "1200serie_soustraction"
+         set faireImageRef(page_web) "1115faire_flat_field"
       }
 
       #---
