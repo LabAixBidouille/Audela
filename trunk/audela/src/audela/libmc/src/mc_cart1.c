@@ -50,6 +50,7 @@ int mc_ima_series_catchart_2(mc_ASTROM p,int *nbobjs, int nbobjmax, objetype *ob
 /* 10 : pb ligne non ecrite dans usno.lst                                  */
 /* 12 : pb lecture fichier .acc du Loneos microcat.                        */
 /* 13 : pb lecture fichier .cat du Loneos microcat.                        */
+/* 14 : pb parametres astrometriques (dalpha=0 ddelta=0)                             */
 /***************************************************************************/
 {
    char *path_astromcatalog=NULL;
@@ -92,9 +93,9 @@ int mc_ima_series_catchart_2(mc_ASTROM p,int *nbobjs, int nbobjmax, objetype *ob
    char slash[2];
    short smu,smb,smv,smr,smi,smj,smh,smk;
    double mag_i=0.,mag_green=0.;
-/*FILE *ff;*/
-
-/*/////////////// debut N E W ////////////////////////////////*/
+   /*FILE *ff;*/
+   
+   /*/////////////// debut N E W ////////////////////////////////*/
    /* --- intialisations ---*/
 #ifdef FILE_DOS
    strcpy(slash,"\\");
@@ -105,7 +106,7 @@ int mc_ima_series_catchart_2(mc_ASTROM p,int *nbobjs, int nbobjmax, objetype *ob
    p.bordure=0.;
    typecat=p.astromcatalog;
    path_astromcatalog=p.path_astromcatalog;
-
+   
    mc_util_astrom_xy2radec(&p,0.5*p.naxis1,0.5*p.naxis2,&a0,&d0);
    a0=a0*180./PI;
    d0=d0*180./PI;
@@ -116,32 +117,32 @@ int mc_ima_series_catchart_2(mc_ASTROM p,int *nbobjs, int nbobjmax, objetype *ob
    }
    /* conversion en mm */
    focale=p.foclen*1e3;   
-
-/*/////////////// fin N E W ////////////////////////////////*/
-
-
+   
+   /*/////////////// fin N E W ////////////////////////////////*/
+   
+   
    dim_pixel_x=p.px*1e3;
    dim_pixel_y=p.py*1e3;
-
+   
    nb_pixel_x=p.naxis1;
    nb_pixel_y=p.naxis2;
-
+   
    /*=== alpha en heures ===*/
    a0=a0/15.0;
    if (a0>24) {a0=23.999999;}
    if (a0<0) {a0=0.;}
-
+   
    /* On calcul les bornes en alpha du champ
    Les bornes de recherches dependent du lieu dans le ciel ainsi que
    le rayon du champ */
    if (d0>=90.0) d0=89.9999;
    if (d0<=-90.0) d0=-89.9999;
-
+   
    lx=(double)nb_pixel_x*dim_pixel_x;
    ly=(double)nb_pixel_y*dim_pixel_y;
    l_alpha=2.0*atan(lx/focale/2.0)*Tdeg;
    l_delta=2.0*atan(ly/focale/2.0)*Tdeg;
-
+   
    r=l_alpha/2.0;
    v=sin(r*Trad)/cos(d0*Trad);
    if (v>=1.0) {
@@ -157,210 +158,214 @@ int mc_ima_series_catchart_2(mc_ASTROM p,int *nbobjs, int nbobjmax, objetype *ob
       if (alpha1<0.0) alpha1+=24.0;
       if (alpha2>24.0) alpha2-=24.0;
    }
-
+   
    r=l_delta/2.0;
    delta2=d0+r;
    delta1=d0-r;
    if (delta2>90.0) delta2=90.0;
    if (delta1<-90.0) delta1=-90.0;
-/*
-ff=fopen("a.txt","wt");
-fprintf(ff,"p.crval1=%lf a0=%lf H p.crval2=%lf d0=%lf degrees r=%lf\n",p.crval1,a0,p.crval2,d0,r);
-fprintf(ff,"dim_pixel_x=%lf nb_pixel_x=%ld lx=%lf focale=%lf alpha1=%lf alpha2=%lf \n",dim_pixel_x,nb_pixel_x,lx,focale,alpha1,alpha2);
-fprintf(ff,"ly=%lf focale=%lf delta1=%lf delta2=%lf \n",ly,focale,delta1,delta2);
-fclose(ff);
-*/
+   /*
+   ff=fopen("a.txt","wt");
+   fprintf(ff,"p.crval1=%lf a0=%lf H p.crval2=%lf d0=%lf degrees r=%lf\n",p.crval1,a0,p.crval2,d0,r);
+   fprintf(ff,"dim_pixel_x=%lf nb_pixel_x=%ld lx=%lf focale=%lf alpha1=%lf alpha2=%lf \n",dim_pixel_x,nb_pixel_x,lx,focale,alpha1,alpha2);
+   fprintf(ff,"ly=%lf focale=%lf delta1=%lf delta2=%lf \n",ly,focale,delta1,delta2);
+   fclose(ff);
+   */
    /*=== recherche les differentes zones presentes dans l'image ===*/
    /* on est a cheval sur 0 heure */
    if (alpha1>alpha2)
-      {
+   {
       dalpha=(23.99999999-alpha1)/97.0;
       ddelta=(delta2-delta1)/25.0;
       j=0;
       for (ra=alpha1;ra<=23.99999999;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    j++;
-	    }
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            j++;
+         }
+      }
       dalpha2=alpha2/97.0;
       for (ra=0;ra<=alpha2;ra+=dalpha2)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    j++;
-	    }
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            j++;
+         }
+      }
       nombre=j+5;
       taille=sizeof(mc_USNO_INDEX);
       p_index=NULL;
-	  if ((p_index=(mc_USNO_INDEX*)calloc(nombre,taille))==NULL) {
-	     return(1);
-	  }
+      if ((p_index=(mc_USNO_INDEX*)calloc(nombre,taille))==NULL) {
+         return(1);
+      }
       i=0;
       for (ra=alpha1;ra<=23.99999999;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    p_index[i++].flag=-1;
-	    }
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            p_index[i++].flag=-1;
+         }
+      }
       for (ra=0;ra<=alpha2;ra+=dalpha2)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    p_index[i++].flag=-1;
-	    }
-	 }
-
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            p_index[i++].flag=-1;
+         }
+      }
+      
       p_index[i++].flag=-1;  // on complete pour bien borner la table
       p_index[i++].flag=-1;
-
+      
       k=0;
       first=1;
       for (ra=alpha1;ra<=23.99999999;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    mc_ComputeUsnoIndexs(mc_D2R(15.0*ra),mc_D2R(de),&indexSPD,&indexRA);
-	    if (first==1)
-	       {
-	       p_index[k].flag=1;
-	       p_index[k].indexRA=indexRA;
-	       p_index[k].indexSPD=indexSPD;
-	       first=0;
-	       }
-	    else
-	       {
-	       i=0;
-	       flag=0;
-	       while (p_index[i].flag!=-1)
-		  {
-		  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
-		     {
-		     flag=1;
-		     break;
-		     }
-		  i++;
-		  }
-	       if (flag==0)
-		  {
-		  k++;
-		  p_index[k].flag=1;
-		  p_index[k].indexRA=indexRA;
-		  p_index[k].indexSPD=indexSPD;
-		  }
-	       }
-	    }
-	 }
-      for (ra=0;ra<=alpha2;ra+=dalpha2)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    mc_ComputeUsnoIndexs(mc_D2R(15.0*ra),mc_D2R(de),&indexSPD,&indexRA);
-	    if (first==1)
-	       {
-	       p_index[k].flag=1;
-	       p_index[k].indexRA=indexRA;
-	       p_index[k].indexSPD=indexSPD;
-	       first=0;
-	       }
-	    else
-	       {
-	       i=0;
-	       flag=0;
-	       while (p_index[i].flag!=-1)
-		  {
-		  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
-		     {
-		     flag=1;
-		     break;
-		     }
-		  i++;
-		  }
-	       if (flag==0)
-		  {
-		  k++;
-		  p_index[k].flag=1;
-		  p_index[k].indexRA=indexRA;
-		  p_index[k].indexSPD=indexSPD;
-		  }
-	       }
-	    }
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            mc_ComputeUsnoIndexs(mc_D2R(15.0*ra),mc_D2R(de),&indexSPD,&indexRA);
+            if (first==1)
+            {
+               p_index[k].flag=1;
+               p_index[k].indexRA=indexRA;
+               p_index[k].indexSPD=indexSPD;
+               first=0;
+            }
+            else
+            {
+               i=0;
+               flag=0;
+               while (p_index[i].flag!=-1)
+               {
+                  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
+                  {
+                     flag=1;
+                     break;
+                  }
+                  i++;
+               }
+               if (flag==0)
+               {
+                  k++;
+                  p_index[k].flag=1;
+                  p_index[k].indexRA=indexRA;
+                  p_index[k].indexSPD=indexSPD;
+               }
+            }
+         }
       }
+      for (ra=0;ra<=alpha2;ra+=dalpha2)
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            mc_ComputeUsnoIndexs(mc_D2R(15.0*ra),mc_D2R(de),&indexSPD,&indexRA);
+            if (first==1)
+            {
+               p_index[k].flag=1;
+               p_index[k].indexRA=indexRA;
+               p_index[k].indexSPD=indexSPD;
+               first=0;
+            }
+            else
+            {
+               i=0;
+               flag=0;
+               while (p_index[i].flag!=-1)
+               {
+                  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
+                  {
+                     flag=1;
+                     break;
+                  }
+                  i++;
+               }
+               if (flag==0)
+               {
+                  k++;
+                  p_index[k].flag=1;
+                  p_index[k].indexRA=indexRA;
+                  p_index[k].indexSPD=indexSPD;
+               }
+            }
+         }
+      }
+   }
    /*=== recherche les differentes zones presentes dans l'image ===*/
    /* on n'est pas a cheval sur 0 heure */
-   else
-      {
+   else if (alpha1 < alpha2 )
+   {
       dalpha=(alpha2-alpha1)/97.0;
       ddelta=(delta2-delta1)/25.0;
       j=0;
       for (ra=alpha1;ra<=alpha2;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    j++;
-	    }
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            j++;
+         }
+      }
       nombre=j+5;
       taille=sizeof(mc_USNO_INDEX);
       p_index=NULL;
-	  if ((p_index=(mc_USNO_INDEX*)calloc(nombre,taille))==NULL) {
-	     return(1);
-	  }
+      if ((p_index=(mc_USNO_INDEX*)calloc(nombre,taille))==NULL) {
+         return(1);
+      }
       i=0;
       for (ra=alpha1;ra<=alpha2;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    p_index[i++].flag=-1;
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            p_index[i++].flag=-1;
+         }
       }
-
+      
       p_index[i++].flag=-1;  // on complete pour bien borner la table
       p_index[i++].flag=-1;
-
+      
       k=0;
       first=1;
       for (ra=alpha1;ra<=alpha2;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    mc_ComputeUsnoIndexs(mc_D2R(15.0*ra),mc_D2R(de),&indexSPD,&indexRA);
-	    if (first==1)
-	       {
-	       p_index[k].flag=1;
-	       p_index[k].indexRA=indexRA;
-	       p_index[k].indexSPD=indexSPD;
-	       first=0;
-	       }
-	    else
-	       {
-	       i=0;
-	       flag=0;
-	       while (p_index[i].flag!=-1)
-		  {
-		  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
-		     {
-		     flag=1;
-		     break;
-		     }
-		  i++;
-		  }
-	       if (flag==0)
-		  {
-		  k++;
-		  p_index[k].flag=1;
-		  p_index[k].indexRA=indexRA;
-		  p_index[k].indexSPD=indexSPD;
-		  }
-	       }
-	    }
-	 }
+      {
+         for (de=delta1;de<=delta2;de+=ddelta)
+         {
+            mc_ComputeUsnoIndexs(mc_D2R(15.0*ra),mc_D2R(de),&indexSPD,&indexRA);
+            if (first==1)
+            {
+               p_index[k].flag=1;
+               p_index[k].indexRA=indexRA;
+               p_index[k].indexSPD=indexSPD;
+               first=0;
+            }
+            else
+            {
+               i=0;
+               flag=0;
+               while (p_index[i].flag!=-1)
+               {
+                  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
+                  {
+                     flag=1;
+                     break;
+                  }
+                  i++;
+               }
+               if (flag==0)
+               {
+                  k++;
+                  p_index[k].flag=1;
+                  p_index[k].indexRA=indexRA;
+                  p_index[k].indexSPD=indexSPD;
+               }
+            }
+         }
+      }
+   } else {
+      // alpha1 = alpha2
+      return 14;
+      
    }
-
+   
    /* --- bordure est la zone d'exclusion au bord de l'image ---*/
    /* --- pseries->bordure s'exprime en pourcents ---*/
    if (p.bordure<0.) {p.bordure=0.; }
@@ -371,7 +376,7 @@ fclose(ff);
    XXXmax=nb_pixel_x-bordurex;
    YYYmin=bordurey;
    YYYmax=nb_pixel_y-bordurey;
-
+   
    /*==== ouverture d'un fichier liste ====*/
    if (outfilename!=NULL) {
       strcpy(name,outfilename);
@@ -380,15 +385,15 @@ fclose(ff);
          return(2);
       }
    }
-
+   
    /*==== balayage des fichiers des catalogues .CAT ====*/
-
+   
    a0*=15.0*Trad;
    d0*=Trad;
    j=0;
    compteur=0;
    compteur_tyc=0;
-
+   
    /* ===================================================== */
    /* = On effectue ici le balayage sur le TYCHO et GSC   = */
    /* ===================================================== */
@@ -397,19 +402,19 @@ fclose(ff);
       /*=== balayage des zones trouvees .ACC ===*/
       k=0;
       while (p_index[k].flag!=-1) {
-   	   sprintf(nom,"%styc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
+         sprintf(nom,"%styc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
          if ((acc=fopen(nom,"r"))==NULL) {
             free(p_index);
             return(3);
          }
          /*=== on lit 30 caracteres dans le fichier .acc ===*/
          for (i=0;i<=p_index[k].indexRA;i++) {
-	         if (fread(buf_acc,1,30,acc)!=30) break;
+            if (fread(buf_acc,1,30,acc)!=30) break;
          }
 #ifdef OS_LINUX_GCC_SO
-	      sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
+         sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
 #else
-	      sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
+         sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
 #endif
          if (typecat==mc_USNO) { offset=(offset-1)*12; }
          else { offset=(offset-1)*10; }
@@ -424,7 +429,7 @@ fclose(ff);
          sprintf(nom,"%styc%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
          if ((cat=fopen(nom,"rb"))==NULL) {
             free(p_index);
-    	      if (outfilename!=NULL) {fclose(out_file);}
+            if (outfilename!=NULL) {fclose(out_file);}
             return(4);
          }
          /* deplacement sur la premiere etoile */
@@ -432,206 +437,90 @@ fclose(ff);
          nbObjects=p_index[k].nbObjects;
          /* lecture de toute les etoiles de la zone */
          for (i=0;i<nbObjects;i++) {
-	         if (fread(&raL,1,4,cat)!=4) break;
-	         if (fread(&deL,1,4,cat)!=4) break;
-	         if (fread(&tmr,1,1,cat)!=1) break;
-	         if (fread(&tmb,1,1,cat)!=1) break;
-	         ra=(double)raL/360000.0;
-	         de=(double)deL/360000.0-90.0;
-	         mag_red=((double)tmr)/10.0-3.0;
-	         mag_bleue=((double)tmb)/10.0-3.0;
-  	         mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
-	         if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
-            if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
-	            /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-	            ppx=(double)XXX;
-	            ppy=(double)YYY;
-	            compteur=compteur+1;
-	            compteur_tyc=compteur_tyc+1;
-               if (outfilename!=NULL) {
-  	               if ((fprintf(out_file,"%f %f %2.1f %2.1f %.2f %.2f 1 \n",
-			                   ra,de,mag_bleue,mag_red,ppx,ppy))<0) {
-	                  fclose(cat);
-     	               if (outfilename!=NULL) {fclose(out_file);}
-	                  free(p_index);
-	                  return(10);
+            if (fread(&raL,1,4,cat)!=4) break;
+            if (fread(&deL,1,4,cat)!=4) break;
+            if (fread(&tmr,1,1,cat)!=1) break;
+            if (fread(&tmb,1,1,cat)!=1) break;
+            ra=(double)raL/360000.0;
+            de=(double)deL/360000.0-90.0;
+            mag_red=((double)tmr)/10.0-3.0;
+            mag_bleue=((double)tmb)/10.0-3.0;
+            mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
+            if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
+               if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
+                  /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+                  ppx=(double)XXX;
+                  ppy=(double)YYY;
+                  compteur=compteur+1;
+                  compteur_tyc=compteur_tyc+1;
+                  if (outfilename!=NULL) {
+                     if ((fprintf(out_file,"%f %f %2.1f %2.1f %.2f %.2f 1 \n",
+                        ra,de,mag_bleue,mag_red,ppx,ppy))<0) {
+                        fclose(cat);
+                        if (outfilename!=NULL) {fclose(out_file);}
+                        free(p_index);
+                        return(10);
+                     }
                   }
+                  if (objs!=NULL) {
+                     (objs+nbtot)->ra=(float)ra;
+                     (objs+nbtot)->dec=(float)de;
+                     (objs+nbtot)->magb=(short)(mag_bleue*100);
+                     (objs+nbtot)->magr=(short)(mag_red*100);
+                     (objs+nbtot)->x=(float)(ppx);
+                     (objs+nbtot)->y=(float)(ppy);
+                     (objs+nbtot)->origin='1';
+                  }
+                  j++;
+                  nbtot++;
                }
-               if (objs!=NULL) {
-                  (objs+nbtot)->ra=(float)ra;
-                  (objs+nbtot)->dec=(float)de;
-                  (objs+nbtot)->magb=(short)(mag_bleue*100);
-                  (objs+nbtot)->magr=(short)(mag_red*100);
-                  (objs+nbtot)->x=(float)(ppx);
-                  (objs+nbtot)->y=(float)(ppy);
-                  (objs+nbtot)->origin='1';
-               }
-	            j++;
-               nbtot++;
             }
-            }
-	      }
+         }
          fclose(cat);
          k++;
       }
-
+      
       /* GSC */
       /*=== balayage des zones trouvees .ACC ===*/
       k=0;
       if (p.tycho_only==0) {
-      while (p_index[k].flag!=-1) {
-   	   sprintf(nom,"%sgsc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
-         if ((acc=fopen(nom,"r"))==NULL) {
-            free(p_index);
-            if (outfilename!=NULL) {fclose(out_file);}
-            return(5);
-         }
-         /*=== on lit 30 caracteres dans le fichier .acc ===*/
-         for (i=0;i<=p_index[k].indexRA;i++) {
-	         if (fread(buf_acc,1,30,acc)!=30) break;
-         }
-#ifdef OS_LINUX_GCC_SO
-	      sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
-#else
-	      sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
-#endif
-         if (typecat==mc_USNO) { offset=(offset-1)*12; }
-         else { offset=(offset-1)*10; }
-         p_index[k].offset=offset;
-         p_index[k].nbObjects=nbObjects;
-         fclose(acc);
-         k++;
-      }
-      /*==== balayage des fichiers de catalogue .CAT ====*/
-      k=0;
-      while (p_index[k].flag!=-1) {
-         sprintf(nom,"%sgsc%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
-         if ((cat=fopen(nom,"rb"))==NULL) {
-            free(p_index);
-            if (outfilename!=NULL) {fclose(out_file);}
-            return(6);
-         }
-         /* deplacement sur la premiere etoile */
-         fseek(cat,p_index[k].offset,SEEK_SET);
-         nbObjects=p_index[k].nbObjects;
-         /* lecture de toute les etoiles de la zone */
-         for (i=0;i<nbObjects;i++) {
-	         if (fread(&raL,1,4,cat)!=4) break;
-	         if (fread(&deL,1,4,cat)!=4) break;
-	         if (fread(&tmr,1,1,cat)!=1) break;
-	         if (fread(&tmb,1,1,cat)!=1) break;
-	         ra=(double)raL/360000.0;
-	         de=(double)deL/360000.0-90.0;
-	         mag_red=((double)tmr)/10.0-3.0;
-	         mag_bleue=((double)tmb)/10.0-3.0;
-  	         mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
-	         if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
-            if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
-	            /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-	            ppx=(double)XXX;
-	            ppy=(double)YYY;
-	            compteur=compteur+1;
-               if (outfilename!=NULL) {
-  	               if ((fprintf(out_file,"%f %f %2.1f %2.1f %.2f %.2f 2 \n",
-			                   ra,de,mag_bleue,mag_red,ppx,ppy))<0) {
-	                 fclose(cat);
-	                 if (outfilename!=NULL) {fclose(out_file);}
-                    free(p_index);
-	                 return(10);
-                 }
-               }
-               if (objs!=NULL) {
-                  (objs+nbtot)->ra=(float)ra;
-                  (objs+nbtot)->dec=(float)de;
-                  (objs+nbtot)->magb=(short)(mag_bleue*100);
-                  (objs+nbtot)->magr=(short)(mag_red*100);
-                  (objs+nbtot)->x=(float)(ppx);
-                  (objs+nbtot)->y=(float)(ppy);
-                  (objs+nbtot)->origin='2';
-               }
-               j++;
-               nbtot++;
-	         }
+         while (p_index[k].flag!=-1) {
+            sprintf(nom,"%sgsc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
+            if ((acc=fopen(nom,"r"))==NULL) {
+               free(p_index);
+               if (outfilename!=NULL) {fclose(out_file);}
+               return(5);
             }
-         }
-         fclose(cat);
-         k++;
-      }
-      }
-   }
-
-   /* ============================================== */
-   /* = On effectue ici le balayage sur le USNO    = */
-   /* ============================================== */
-   k=0;
-   if ((typecat==mc_USNOCOMP)||(typecat==mc_USNO)) {   
-   if (p.tycho_only==0) {
-   while (p_index[k].flag!=-1) {
-      /* --- ne lit pas l'USNO si le compteur de Tycho est > 200 ---*/
-      /* --- (grand champ) ---*/
-      if (compteur_tyc>200) { break; }
-
-      /*=== balayage des zones trouvees .ACC ===*/
-      k=0;
-      while (p_index[k].flag!=-1) {
-         if (typecat==mc_USNO) {
-            sprintf(nom,"%sZONE%04d.ACC",path_astromcatalog,p_index[k].indexSPD*75);
-         } else {
-            sprintf(nom,"%susno%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
-         }
-         if ((acc=fopen(nom,"r"))==NULL) {
-            free(p_index);
-            if (outfilename!=NULL) {fclose(out_file);}
-           return(7);
-         }
-         /*=== on lit 30 caracteres dans le fichier .acc ===*/
-         for (i=0;i<=p_index[k].indexRA;i++) {
-            if (fread(buf_acc,1,30,acc)!=30) break;
-         }
+            /*=== on lit 30 caracteres dans le fichier .acc ===*/
+            for (i=0;i<=p_index[k].indexRA;i++) {
+               if (fread(buf_acc,1,30,acc)!=30) break;
+            }
 #ifdef OS_LINUX_GCC_SO
-         sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
+            sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
 #else
-         sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
+            sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
 #endif
-         if (typecat==mc_USNO) { offset=(offset-1)*12; }
-         else { offset=(offset-1)*10; }
-         p_index[k].offset=offset;
-         p_index[k].nbObjects=nbObjects;
-         fclose(acc);
-         k++;
-      }
-
-      /*=== balayage des zones trouvees .CAT ===*/
-      k=0;
-      while (p_index[k].flag!=-1) {
-
-         if (typecat==mc_USNO) {
-            sprintf(nom,"%sZONE%04d.CAT",path_astromcatalog,p_index[k].indexSPD*75);
-         } else {
-            sprintf(nom,"%susno%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
+            if (typecat==mc_USNO) { offset=(offset-1)*12; }
+            else { offset=(offset-1)*10; }
+            p_index[k].offset=offset;
+            p_index[k].nbObjects=nbObjects;
+            fclose(acc);
+            k++;
          }
-         if ((cat=fopen(nom,"rb"))==NULL) {
-            free(p_index);
-            if (outfilename!=NULL) {fclose(out_file);}
-           return(8);
-         }
-         /* deplacement sur la premiere etoile */
-         fseek(cat,p_index[k].offset,SEEK_SET);
-         nbObjects=p_index[k].nbObjects;
-         /* lecture de toute les etoiles de la zone */
-         for (i=0;i<nbObjects;i++) {
-            if (typecat==mc_USNO) {
-               if (fread(&raL,1,4,cat)!=4) break;
-               if (fread(&deL,1,4,cat)!=4) break;
-               if (fread(&magL,1,4,cat)!=4) break;
-               raL=mc_Big2LittleEndianLong(raL);
-               deL=mc_Big2LittleEndianLong(deL);
-               magL=mc_Big2LittleEndianLong(magL);
-               ra=(double)raL/360000.0;
-               de=(double)deL/360000.0-90.0;
-               mag_red=mc_GetUsnoRedMagnitude(magL);
-               mag_bleue=mc_GetUsnoBleueMagnitude(magL);
-            } else {
+         /*==== balayage des fichiers de catalogue .CAT ====*/
+         k=0;
+         while (p_index[k].flag!=-1) {
+            sprintf(nom,"%sgsc%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
+            if ((cat=fopen(nom,"rb"))==NULL) {
+               free(p_index);
+               if (outfilename!=NULL) {fclose(out_file);}
+               return(6);
+            }
+            /* deplacement sur la premiere etoile */
+            fseek(cat,p_index[k].offset,SEEK_SET);
+            nbObjects=p_index[k].nbObjects;
+            /* lecture de toute les etoiles de la zone */
+            for (i=0;i<nbObjects;i++) {
                if (fread(&raL,1,4,cat)!=4) break;
                if (fread(&deL,1,4,cat)!=4) break;
                if (fread(&tmr,1,1,cat)!=1) break;
@@ -640,159 +529,275 @@ fclose(ff);
                de=(double)deL/360000.0-90.0;
                mag_red=((double)tmr)/10.0-3.0;
                mag_bleue=((double)tmb)/10.0-3.0;
-            }
-            mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
-	         if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
-            if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
-            /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
-               /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-               ppx=(double)XXX;
-               ppy=(double)YYY;
-               compteur=compteur+1;
-               if (outfilename!=NULL) {
-  	               if ((fprintf(out_file,"%f %f %2.1f %2.1f %.2f %.2f 3 \n",
-			                   ra,de,mag_bleue,mag_red,ppx,ppy))<0) {
-                     fclose(cat);
-                     if (outfilename!=NULL) {fclose(out_file);}
-                     free(p_index);
-                     return(10);
+               mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
+               if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
+                  if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
+                     /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+                     ppx=(double)XXX;
+                     ppy=(double)YYY;
+                     compteur=compteur+1;
+                     if (outfilename!=NULL) {
+                        if ((fprintf(out_file,"%f %f %2.1f %2.1f %.2f %.2f 2 \n",
+                           ra,de,mag_bleue,mag_red,ppx,ppy))<0) {
+                           fclose(cat);
+                           if (outfilename!=NULL) {fclose(out_file);}
+                           free(p_index);
+                           return(10);
+                        }
+                     }
+                     if (objs!=NULL) {
+                        (objs+nbtot)->ra=(float)ra;
+                        (objs+nbtot)->dec=(float)de;
+                        (objs+nbtot)->magb=(short)(mag_bleue*100);
+                        (objs+nbtot)->magr=(short)(mag_red*100);
+                        (objs+nbtot)->x=(float)(ppx);
+                        (objs+nbtot)->y=(float)(ppy);
+                        (objs+nbtot)->origin='2';
+                     }
+                     j++;
+                     nbtot++;
                   }
                }
-               if (objs!=NULL) {
-                  (objs+nbtot)->ra=ra;
-                  (objs+nbtot)->dec=de;
-                  (objs+nbtot)->magb=(short)(mag_bleue*100);
-                  (objs+nbtot)->magr=(short)(mag_red*100);
-                  (objs+nbtot)->x=(float)(ppx);
-                  (objs+nbtot)->y=(float)(ppy);
-                  (objs+nbtot)->origin='3';
-               }
-               j++;
-               nbtot++;
             }
-            }
+            fclose(cat);
+            k++;
          }
-         fclose(cat);
-         k++;
       }
    }
+   
+   /* ============================================== */
+   /* = On effectue ici le balayage sur le USNO    = */
+   /* ============================================== */
+   k=0;
+   if ((typecat==mc_USNOCOMP)||(typecat==mc_USNO)) {   
+      if (p.tycho_only==0) {
+         while (p_index[k].flag!=-1) {
+            /* --- ne lit pas l'USNO si le compteur de Tycho est > 200 ---*/
+            /* --- (grand champ) ---*/
+            if (compteur_tyc>200) { break; }
+            
+            /*=== balayage des zones trouvees .ACC ===*/
+            k=0;
+            while (p_index[k].flag!=-1) {
+               if (typecat==mc_USNO) {
+                  sprintf(nom,"%sZONE%04d.ACC",path_astromcatalog,p_index[k].indexSPD*75);
+               } else {
+                  sprintf(nom,"%susno%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
+               }
+               if ((acc=fopen(nom,"r"))==NULL) {
+                  free(p_index);
+                  if (outfilename!=NULL) {fclose(out_file);}
+                  return(7);
+               }
+               /*=== on lit 30 caracteres dans le fichier .acc ===*/
+               for (i=0;i<=p_index[k].indexRA;i++) {
+                  if (fread(buf_acc,1,30,acc)!=30) break;
+               }
+#ifdef OS_LINUX_GCC_SO
+               sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
+#else
+               sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
+#endif
+               if (typecat==mc_USNO) { offset=(offset-1)*12; }
+               else { offset=(offset-1)*10; }
+               p_index[k].offset=offset;
+               p_index[k].nbObjects=nbObjects;
+               fclose(acc);
+               k++;
+            }
+            
+            /*=== balayage des zones trouvees .CAT ===*/
+            k=0;
+            while (p_index[k].flag!=-1) {
+               
+               if (typecat==mc_USNO) {
+                  sprintf(nom,"%sZONE%04d.CAT",path_astromcatalog,p_index[k].indexSPD*75);
+               } else {
+                  sprintf(nom,"%susno%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
+               }
+               if ((cat=fopen(nom,"rb"))==NULL) {
+                  free(p_index);
+                  if (outfilename!=NULL) {fclose(out_file);}
+                  return(8);
+               }
+               /* deplacement sur la premiere etoile */
+               fseek(cat,p_index[k].offset,SEEK_SET);
+               nbObjects=p_index[k].nbObjects;
+               /* lecture de toute les etoiles de la zone */
+               for (i=0;i<nbObjects;i++) {
+                  if (typecat==mc_USNO) {
+                     if (fread(&raL,1,4,cat)!=4) break;
+                     if (fread(&deL,1,4,cat)!=4) break;
+                     if (fread(&magL,1,4,cat)!=4) break;
+                     raL=mc_Big2LittleEndianLong(raL);
+                     deL=mc_Big2LittleEndianLong(deL);
+                     magL=mc_Big2LittleEndianLong(magL);
+                     ra=(double)raL/360000.0;
+                     de=(double)deL/360000.0-90.0;
+                     mag_red=mc_GetUsnoRedMagnitude(magL);
+                     mag_bleue=mc_GetUsnoBleueMagnitude(magL);
+                  } else {
+                     if (fread(&raL,1,4,cat)!=4) break;
+                     if (fread(&deL,1,4,cat)!=4) break;
+                     if (fread(&tmr,1,1,cat)!=1) break;
+                     if (fread(&tmb,1,1,cat)!=1) break;
+                     ra=(double)raL/360000.0;
+                     de=(double)deL/360000.0-90.0;
+                     mag_red=((double)tmr)/10.0-3.0;
+                     mag_bleue=((double)tmb)/10.0-3.0;
+                  }
+                  mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
+                  if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
+                     if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
+                        /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
+                        /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+                        ppx=(double)XXX;
+                        ppy=(double)YYY;
+                        compteur=compteur+1;
+                        if (outfilename!=NULL) {
+                           if ((fprintf(out_file,"%f %f %2.1f %2.1f %.2f %.2f 3 \n",
+                              ra,de,mag_bleue,mag_red,ppx,ppy))<0) {
+                              fclose(cat);
+                              if (outfilename!=NULL) {fclose(out_file);}
+                              free(p_index);
+                              return(10);
+                           }
+                        }
+                        if (objs!=NULL) {
+                           (objs+nbtot)->ra=ra;
+                           (objs+nbtot)->dec=de;
+                           (objs+nbtot)->magb=(short)(mag_bleue*100);
+                           (objs+nbtot)->magr=(short)(mag_red*100);
+                           (objs+nbtot)->x=(float)(ppx);
+                           (objs+nbtot)->y=(float)(ppy);
+                           (objs+nbtot)->origin='3';
+                        }
+                        j++;
+                        nbtot++;
+                     }
+                  }
+               }
+               fclose(cat);
+               k++;
+            }
+         }
+      }
    }
-   }
-
-
+   
+   
    /* ============================================== */
    /* = On effectue ici le balayage sur le LONEOS  = */
    /* ============================================== */
    k=0;
    if (typecat==mc_LONEOSCOMP) {   
-   while (p_index[k].flag!=-1) {
-      /*=== balayage des zones trouvees .ACC ===*/
-      k=0;
       while (p_index[k].flag!=-1) {
-         if (typecat==mc_LONEOSCOMP) {
-            sprintf(nom,"%sloneos%sZONP%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
-         }
-         if ((acc=fopen(nom,"r"))==NULL) {
-            free(p_index);
-            if (outfilename!=NULL) {fclose(out_file);}
-           return(12);
-         }
-         /*=== on lit 30 caracteres dans le fichier .acc ===*/
-         for (i=0;i<=p_index[k].indexRA;i++) {
-            if (fread(buf_acc,1,30,acc)!=30) break;
-         }
-#ifdef OS_LINUX_GCC_SO
-         sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
-#else
-         sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
-#endif
-         if (typecat==mc_LONEOSCOMP) { offset=(offset-1)*24; }
-         p_index[k].offset=offset;
-         p_index[k].nbObjects=nbObjects;
-         fclose(acc);
-         k++;
-      }
-
-      /*=== balayage des zones trouvees .CAT ===*/
-      k=0;
-      while (p_index[k].flag!=-1) {
-
-         if (typecat==mc_LONEOSCOMP) {
-            sprintf(nom,"%sloneos%sZONP%04d.cat",path_astromcatalog,slash,p_index[k].indexSPD*75);
-         }
-         if ((cat=fopen(nom,"rb"))==NULL) {
-            free(p_index);
-            if (outfilename!=NULL) {fclose(out_file);}
-           return(13);
-         }
-         /* deplacement sur la premiere etoile */
-         fseek(cat,p_index[k].offset,SEEK_SET);
-         nbObjects=p_index[k].nbObjects;
-         /* lecture de toute les etoiles de la zone */
-         for (i=0;i<nbObjects;i++) {
+         /*=== balayage des zones trouvees .ACC ===*/
+         k=0;
+         while (p_index[k].flag!=-1) {
             if (typecat==mc_LONEOSCOMP) {
-               if (fread(&raL,1,4,cat)!=4) break;
-               if (fread(&deL,1,4,cat)!=4) break;
-               if (fread(&smu,1,2,cat)!=2) break;
-               if (fread(&smb,1,2,cat)!=2) break;
-               if (fread(&smv,1,2,cat)!=2) break;
-               if (fread(&smr,1,2,cat)!=2) break;
-               if (fread(&smi,1,2,cat)!=2) break;
-               if (fread(&smj,1,2,cat)!=2) break;
-               if (fread(&smh,1,2,cat)!=2) break;
-               if (fread(&smk,1,2,cat)!=2) break;
-               ra=(double)raL/360000.0;
-               de=(double)deL/360000.0-90.0;
-               mag_red=((double)smr)/1000.0;
-               mag_green=((double)smv)/1000.0;
-               mag_bleue=((double)smb)/1000.0;
-               mag_i=((double)smi)/1000.0;
+               sprintf(nom,"%sloneos%sZONP%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
             }
-            mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
-	         if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
-            if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
-            /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
-               /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-               ppx=(double)XXX;
-               ppy=(double)YYY;
-               compteur=compteur+1;
-               if (outfilename!=NULL) {
-  	               if ((fprintf(out_file,"%f %f %.3f %.3f %.3f %.3f %.2f %.2f 4 \n",
-			                   ra,de,mag_bleue,mag_green,mag_red,mag_i,ppx,ppy))<0) {
-                     fclose(cat);
-                     if (outfilename!=NULL) {fclose(out_file);}
-                     free(p_index);
-                     return(10);
+            if ((acc=fopen(nom,"r"))==NULL) {
+               free(p_index);
+               if (outfilename!=NULL) {fclose(out_file);}
+               return(12);
+            }
+            /*=== on lit 30 caracteres dans le fichier .acc ===*/
+            for (i=0;i<=p_index[k].indexRA;i++) {
+               if (fread(buf_acc,1,30,acc)!=30) break;
+            }
+#ifdef OS_LINUX_GCC_SO
+            sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
+#else
+            sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
+#endif
+            if (typecat==mc_LONEOSCOMP) { offset=(offset-1)*24; }
+            p_index[k].offset=offset;
+            p_index[k].nbObjects=nbObjects;
+            fclose(acc);
+            k++;
+         }
+         
+         /*=== balayage des zones trouvees .CAT ===*/
+         k=0;
+         while (p_index[k].flag!=-1) {
+            
+            if (typecat==mc_LONEOSCOMP) {
+               sprintf(nom,"%sloneos%sZONP%04d.cat",path_astromcatalog,slash,p_index[k].indexSPD*75);
+            }
+            if ((cat=fopen(nom,"rb"))==NULL) {
+               free(p_index);
+               if (outfilename!=NULL) {fclose(out_file);}
+               return(13);
+            }
+            /* deplacement sur la premiere etoile */
+            fseek(cat,p_index[k].offset,SEEK_SET);
+            nbObjects=p_index[k].nbObjects;
+            /* lecture de toute les etoiles de la zone */
+            for (i=0;i<nbObjects;i++) {
+               if (typecat==mc_LONEOSCOMP) {
+                  if (fread(&raL,1,4,cat)!=4) break;
+                  if (fread(&deL,1,4,cat)!=4) break;
+                  if (fread(&smu,1,2,cat)!=2) break;
+                  if (fread(&smb,1,2,cat)!=2) break;
+                  if (fread(&smv,1,2,cat)!=2) break;
+                  if (fread(&smr,1,2,cat)!=2) break;
+                  if (fread(&smi,1,2,cat)!=2) break;
+                  if (fread(&smj,1,2,cat)!=2) break;
+                  if (fread(&smh,1,2,cat)!=2) break;
+                  if (fread(&smk,1,2,cat)!=2) break;
+                  ra=(double)raL/360000.0;
+                  de=(double)deL/360000.0-90.0;
+                  mag_red=((double)smr)/1000.0;
+                  mag_green=((double)smv)/1000.0;
+                  mag_bleue=((double)smb)/1000.0;
+                  mag_i=((double)smi)/1000.0;
+               }
+               mc_util_astrom_radec2xy(&p,ra/(180/(PI)),de/(180/(PI)),&XXX,&YYY);
+               if ((XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax)&&(nbtot<nbobjmax)) {
+                  if ((mag_bleue>=p.magbinf)&&(mag_bleue<=p.magbsup)&&(mag_red>=p.magrinf)&&(mag_red<=p.magrsup)) {
+                     /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
+                     /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+                     ppx=(double)XXX;
+                     ppy=(double)YYY;
+                     compteur=compteur+1;
+                     if (outfilename!=NULL) {
+                        if ((fprintf(out_file,"%f %f %.3f %.3f %.3f %.3f %.2f %.2f 4 \n",
+                           ra,de,mag_bleue,mag_green,mag_red,mag_i,ppx,ppy))<0) {
+                           fclose(cat);
+                           if (outfilename!=NULL) {fclose(out_file);}
+                           free(p_index);
+                           return(10);
+                        }
+                     }
+                     if (objs!=NULL) {
+                        (objs+nbtot)->ra=ra;
+                        (objs+nbtot)->dec=de;
+                        (objs+nbtot)->magb=(short)(smb);
+                        (objs+nbtot)->magv=(short)(smv);
+                        (objs+nbtot)->magr=(short)(smr);
+                        (objs+nbtot)->magi=(short)(smi);
+                        (objs+nbtot)->x=(float)(ppx);
+                        (objs+nbtot)->y=(float)(ppy);
+                        (objs+nbtot)->origin='4';
+                     }
+                     j++;
+                     nbtot++;
                   }
                }
-               if (objs!=NULL) {
-                  (objs+nbtot)->ra=ra;
-                  (objs+nbtot)->dec=de;
-                  (objs+nbtot)->magb=(short)(smb);
-                  (objs+nbtot)->magv=(short)(smv);
-                  (objs+nbtot)->magr=(short)(smr);
-                  (objs+nbtot)->magi=(short)(smi);
-                  (objs+nbtot)->x=(float)(ppx);
-                  (objs+nbtot)->y=(float)(ppy);
-                  (objs+nbtot)->origin='4';
-               }
-               j++;
-               nbtot++;
             }
-            }
+            fclose(cat);
+            k++;
          }
-         fclose(cat);
-         k++;
       }
    }
-   }
-
+   
    /*==== fermeture du fichier liste ====*/
    if (outfilename!=NULL) {fclose(out_file);}
    free(p_index);
-
+   
    /* --- fin de la routine de Christian ---*/
-
+   
    *nbobjs=nbtot;
    return(0);
 }
