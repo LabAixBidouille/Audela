@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.4 2006-06-20 17:19:59 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.5 2006-06-22 19:37:01 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -16,14 +16,14 @@ namespace eval ::traiteWindow {
       return
    }
 
-   proc confToWidget { } {  
+   proc confToWidget { } {
       variable widget
       global conf
 
       set widget(traiteWindow,position) "$conf(traiteWindow,position)"
    }
 
-   proc widgetToConf { } {   
+   proc widgetToConf { } {
       variable widget
       global conf
 
@@ -41,7 +41,7 @@ namespace eval ::traiteWindow {
       set widget(traiteWindow,position) "+[string range $traiteWindow(geometry) $deb $fin]"
       #---
       ::traiteWindow::widgetToConf
-   }        
+   }
 
    proc run { type_pretraitement this } {
       variable This
@@ -61,7 +61,7 @@ namespace eval ::traiteWindow {
          if { [ info exists traiteWindow(geometry) ] } {
             set deb [ expr 1 + [ string first + $traiteWindow(geometry) ] ]
             set fin [ string length $traiteWindow(geometry) ]
-            set widget(traiteWindow,position) "+[string range $traiteWindow(geometry) $deb $fin]"     
+            set widget(traiteWindow,position) "+[string range $traiteWindow(geometry) $deb $fin]"
          }
          createDialog
       }
@@ -711,6 +711,465 @@ namespace eval ::traiteWindow {
 
 }
 
+namespace eval ::faireImageRef {
+   variable This
+   global faireImageRef
+
+   proc initConf { } {
+      global conf
+
+      if { ! [ info exists conf(faireImageRef,position) ] } { set conf(faireImageRef,position) "+350+75" }
+
+      return
+   }
+
+   proc confToWidget { } {
+      variable widget
+      global conf
+
+      set widget(faireImageRef,position) "$conf(faireImageRef,position)"
+   }
+
+   proc widgetToConf { } {
+      variable widget
+      global conf
+
+      set conf(faireImageRef,position) "$widget(faireImageRef,position)"
+   }
+
+   proc recup_position { } {
+      variable This
+      variable widget
+      global faireImageRef
+
+      set faireImageRef(geometry) [wm geometry $This]
+      set deb [ expr 1 + [ string first + $faireImageRef(geometry) ] ]
+      set fin [ string length $faireImageRef(geometry) ]
+      set widget(faireImageRef,position) "+[string range $faireImageRef(geometry) $deb $fin]"
+      #---
+      ::faireImageRef::widgetToConf
+   }
+
+   proc run { type_image_reference this } {
+      variable This
+      variable widget
+      global faireImageRef
+
+      #---
+      ::faireImageRef::initConf
+      ::faireImageRef::confToWidget
+      #---
+      if { [ info exists This ] } {
+         wm withdraw $This
+         wm deiconify $This
+         focus $This
+      } else {
+         set This $this
+         if { [ info exists faireImageRef(geometry) ] } {
+            set deb [ expr 1 + [ string first + $faireImageRef(geometry) ] ]
+            set fin [ string length $faireImageRef(geometry) ]
+            set widget(faireImageRef,position) "+[string range $faireImageRef(geometry) $deb $fin]"
+         }
+         createDialog
+      }
+      #---
+      set faireImageRef(operation) "$type_image_reference"
+   }
+
+   proc createDialog { } {
+      variable This
+      variable widget
+      global audace
+      global conf
+      global caption
+      global faireImageRef
+
+      #--- Initialisation
+      set faireImageRef(in)        ""
+      set faireImageRef(out)       ""
+      set faireImageRef(nb)        ""
+      set faireImageRef(1,offset)  ""
+      set faireImageRef(1,methode) "2"
+      set faireImageRef(1,norm)    ""
+
+      #---
+      toplevel $This
+      wm resizable $This 0 0
+      wm deiconify $This
+      wm title $This "$caption(audace,dialog,pretraitement)"
+      wm geometry $This $widget(faireImageRef,position)
+      wm transient $This $audace(base)
+      wm protocol $This WM_DELETE_WINDOW ::faireImageRef::cmdClose
+
+      #---
+      frame $This.usr -borderwidth 0 -relief raised
+         frame $This.usr.6 -borderwidth 1 -relief raised
+            frame $This.usr.6.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.6.1.che1 -text "$caption(afficher,image,fin)" -variable faireImageRef(1,disp)
+               pack $This.usr.6.1.che1 -side left -padx 10 -pady 5
+            pack $This.usr.6.1 -side top -fill both
+        # pack $This.usr.6 -side bottom -fill both
+
+         frame $This.usr.5 -borderwidth 1 -relief raised
+            frame $This.usr.5.1 -borderwidth 0 -relief flat
+               label $This.usr.5.1.lab9 -text "$caption(audace,methode)"
+               pack $This.usr.5.1.lab9 -side left -padx 10 -pady 5
+               radiobutton $This.usr.5.1.rad0 -highlightthickness 0 -padx 0 -pady 0 -state normal \
+                  -text "$caption(audace,image,somme)" -value 0 -variable faireImageRef(1,methode)
+               pack $This.usr.5.1.rad0 -side left -padx 10 -pady 5
+               radiobutton $This.usr.5.1.rad1 -highlightthickness 0 -padx 0 -pady 0 -state normal \
+                  -text "$caption(audace,image,moyenne)" -value 1 -variable faireImageRef(1,methode)
+               pack $This.usr.5.1.rad1 -side left -padx 10 -pady 5
+               radiobutton $This.usr.5.1.rad2 -highlightthickness 0 -padx 0 -pady 0 -state normal \
+                  -text "$caption(audace,run,median)" -value 2 -variable faireImageRef(1,methode)
+               pack $This.usr.5.1.rad2 -side left -padx 10 -pady 5
+            pack $This.usr.5.1 -side top -fill both
+        # pack $This.usr.5 -side bottom -fill both
+
+         frame $This.usr.4 -borderwidth 1 -relief raised
+            frame $This.usr.4.1 -borderwidth 0 -relief flat
+               button $This.usr.4.1.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 3 }
+               pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.4.1.lab6 -textvariable "faireImageRef(offset)"
+               pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.4.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.4.1.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.4.1 -side top -fill both
+            frame $This.usr.4.2 -borderwidth 0 -relief flat
+               label $This.usr.4.2.lab7 -textvariable "faireImageRef(normalisation)"
+               pack $This.usr.4.2.lab7 -side left -padx 5 -pady 5
+               entry $This.usr.4.2.ent7 -textvariable faireImageRef(1,norm) -width 7 -font $audace(font,arial_8_b)
+               pack $This.usr.4.2.ent7 -side right -padx 10 -pady 5
+            pack $This.usr.4.2 -side top -fill both
+        # pack $This.usr.4 -side bottom -fill both
+
+         frame $This.usr.3 -borderwidth 1 -relief raised
+            frame $This.usr.3.1 -borderwidth 0 -relief flat
+               button $This.usr.3.1.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 3 }
+               pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.3.1.lab6 -textvariable "faireImageRef(offset)"
+               pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.3.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.3.1.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.3.1 -side top -fill both
+        # pack $This.usr.3 -side bottom -fill both
+
+         frame $This.usr.2 -borderwidth 1 -relief raised
+            frame $This.usr.2.2 -borderwidth 0 -relief flat
+               button $This.usr.2.2.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 1 }
+               pack $This.usr.2.2.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.2.2.lab3 -textvariable "faireImageRef(image_generique)"
+               pack $This.usr.2.2.lab3 -side left -padx 5 -pady 5
+               entry $This.usr.2.2.ent3 -textvariable faireImageRef(in) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.2.2.ent3 -side right -padx 10 -pady 5
+            pack $This.usr.2.2 -side top -fill both
+            frame $This.usr.2.1 -borderwidth 0 -relief flat
+               entry $This.usr.2.1.ent2 -textvariable faireImageRef(nb) -width 7 -font $audace(font,arial_8_b)
+               pack $This.usr.2.1.ent2 -side right -padx 10 -pady 5
+               label $This.usr.2.1.lab2 -textvariable "faireImageRef(nombre)"
+               pack $This.usr.2.1.lab2 -side right -padx 5 -pady 5
+            pack $This.usr.2.1 -side top -fill both
+            frame $This.usr.2.3 -borderwidth 0 -relief flat
+               button $This.usr.2.3.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 2 }
+               pack $This.usr.2.3.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.2.3.lab4 -textvariable "faireImageRef(image_sortie)"
+               pack $This.usr.2.3.lab4 -side left -padx 5 -pady 5
+               entry $This.usr.2.3.ent4 -textvariable faireImageRef(out) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.2.3.ent4 -side right -padx 10 -pady 5
+            pack $This.usr.2.3 -side top -fill both
+         pack $This.usr.2 -side bottom -fill both
+
+         frame $This.usr.1 -borderwidth 1 -relief raised
+            #--- Liste des pretraitements disponibles
+            set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
+               $caption(audace,menu,faire_flat_field) ]
+            #---
+            menubutton $This.usr.1.but1 -textvariable faireImageRef(operation) -menu $This.usr.1.but1.menu -relief raised
+            pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
+            set m [menu $This.usr.1.but1.menu -tearoff 0]
+            foreach pretraitement $list_faireImageRef {
+               $m add radiobutton -label "$pretraitement" \
+                -indicatoron "1" \
+                -value "$pretraitement" \
+                -variable faireImageRef(operation) \
+                -command { }
+            }
+         pack $This.usr.1 -side bottom -fill both -ipady 5
+      pack $This.usr -side top -fill both -expand 1
+
+      frame $This.cmd -borderwidth 1 -relief raised
+         button $This.cmd.ok -text "$caption(conf,ok)" -width 7 \
+            -command { ::faireImageRef::cmdOk }
+         if { $conf(ok+appliquer)=="1" } {
+            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+         }
+         button $This.cmd.appliquer -text "$caption(creer,dialogue,appliquer)" -width 8 \
+            -command { ::faireImageRef::cmdApply }
+         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+         button $This.cmd.fermer -text "$caption(creer,dialogue,fermer)" -width 7 \
+            -command { ::faireImageRef::cmdClose }
+         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+         button $This.cmd.aide -text "$caption(conf,aide)" -width 7 \
+            -command { ::faireImageRef::afficheAide } 
+         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+      pack $This.cmd -side top -fill x
+
+      #---
+      uplevel #0 trace variable faireImageRef(operation) w ::faireImageRef::change
+
+      #---
+      bind $This <Key-Return> {::faireImageRef::cmdOk}
+      bind $This <Key-Escape> {::faireImageRef::cmdClose}
+
+      #--- Focus
+      focus $This
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { $audace(console)::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+
+      #---
+      ::faireImageRef::formule
+   }
+
+   proc cmdOk { } {
+      ::faireImageRef::cmdApply
+      ::faireImageRef::cmdClose
+   }
+
+   proc cmdApply { } {
+      variable This
+      global audace
+      global caption
+      global faireImageRef
+
+      #---
+      set in $faireImageRef(in)
+      set out $faireImageRef(out)
+      set nb $faireImageRef(nb)
+      #---
+      if { $faireImageRef(in) == "" } {
+          tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,entree_generique)
+          return
+      }
+      if { $faireImageRef(nb) == "" } {
+          tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_nbre_images)
+          return
+      }
+      if { $faireImageRef(out) == "" } {
+          tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_sortie)
+          return
+      }
+      #---
+      if { [ TestEntier $faireImageRef(nb) ] == "0" } {
+         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
+         return
+      }
+      #--- Switch passe au format sur une seule ligne logique : les accolades englobant la liste
+      #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
+      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- que la commande switch continue sur la ligne suivante
+      if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
+       switch $faireImageRef(operation) \
+          "$caption(audace,menu,faire_offset)" {
+             catch { smedian $in $out $nb } m
+             if { $m == "" } {
+                if { $faireImageRef(1,disp) == 1 } {
+                   loadima $out
+                   ::audace::autovisu $audace(visuNo)
+                }
+                tk_messageBox -title $caption(audace,menu,faire_offset) -type ok -message $caption(audace,fin_traitement)
+             } else {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+             }
+          } \
+          "$caption(audace,menu,faire_dark)" {
+             #--- Il faut saisir l'offset
+             if { $faireImageRef(1,offset) == "" } {
+                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                return
+             }
+             #---
+             set offset $faireImageRef(1,offset)
+             set const "0"
+             set temp "temp"
+             catch { sub2 $in $offset $temp $const $nb } m
+             if { $faireImageRef(1,methode) == "0" } {
+                #--- Somme
+                catch { sadd $temp $out $nb } m
+             } elseif { $faireImageRef(1,methode) == "1" } {
+                #--- Moyenne
+                catch { smean $temp $out $nb } m
+             } elseif { $faireImageRef(1,methode) == "2" } {
+                #--- Mediane
+                catch { smedian $temp $out $nb } m
+             }
+             catch { delete2 $temp $nb } m
+             if { $m == "" } {
+                if { $faireImageRef(1,disp) == 1 } {
+                   loadima $out
+                   ::audace::autovisu $audace(visuNo)
+                }
+                tk_messageBox -title $caption(audace,menu,faire_dark) -type ok -message $caption(audace,fin_traitement)
+             } else {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+             }
+          } \
+          "$caption(audace,menu,faire_flat_field)" {
+             #--- Il faut saisir l'offset
+             if { $faireImageRef(1,offset) == "" } {
+                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                return
+             }
+             #--- Il faut saisir la valeur de normalisation
+             if { $faireImageRef(1,norm) == "" } {
+                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                return
+             }
+             #--- Il faut tester la validite de la valeur de normalisation
+             if { [ string is double -strict $faireImageRef(1,norm) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                return
+             }
+             #---
+             set offset $faireImageRef(1,offset)
+             set norm $faireImageRef(1,norm)
+             set const "0"
+             set temp "temp"
+             set tempo "tempo"
+             catch { sub2 $in $offset $temp $const $nb } m
+             catch { noffset2 $temp $tempo $norm $nb } m
+             catch { smedian $tempo $out $nb } m
+             catch { delete2 $temp $nb } m
+             catch { delete2 $tempo $nb } m
+             if { $m == "" } {
+                if { $faireImageRef(1,disp) == 1 } {
+                   loadima $out
+                   ::audace::autovisu $audace(visuNo)
+                }
+                tk_messageBox -title $caption(audace,menu,faire_flat_field) -type ok -message $caption(audace,fin_traitement)
+             } else {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+             }
+          }
+      }
+      ::faireImageRef::recup_position
+   }
+
+   proc cmdClose { } {
+      variable This
+
+      ::faireImageRef::recup_position
+      destroy $This
+      unset This
+   }
+
+   proc afficheAide { } {
+      global caption
+      global help
+      global faireImageRef
+
+      #---
+      if { $faireImageRef(operation) == $caption(audace,menu,faire_offset) } {
+         set faireImageRef(page_web) "1120serie_mediane"
+      } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_dark) } {
+         set faireImageRef(page_web) "1190serie_addition"
+      } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_flat_field) } {
+         set faireImageRef(page_web) "1200serie_soustraction"
+      }
+
+      #---
+      ::audace::showHelpItem "$help(dir,pretrait)" "$faireImageRef(page_web).htm"
+   }
+
+   proc change { n1 n2 op } {
+      variable This
+      global caption
+      global faireImageRef
+
+      #---
+      ::faireImageRef::formule
+      #---
+      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
+      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- que la commande switch continue sur la ligne suivante
+      switch $faireImageRef(operation) \
+       "$caption(audace,menu,faire_offset)" {
+          pack $This.usr.1 -in $This.usr -side top -fill both
+          pack $This.usr.2 -in $This.usr -side top -fill both
+          pack forget $This.usr.3
+          pack forget $This.usr.4
+          pack forget $This.usr.5
+          pack $This.usr.6 -in $This.usr -side top -fill both
+       } \
+       "$caption(audace,menu,faire_dark)" {
+          pack $This.usr.1 -in $This.usr -side top -fill both
+          pack $This.usr.2 -in $This.usr -side top -fill both
+          pack $This.usr.3 -in $This.usr -side top -fill both
+          pack forget $This.usr.4
+          pack $This.usr.5 -in $This.usr -side top -fill both
+          pack $This.usr.6 -in $This.usr -side top -fill both
+       } \
+       "$caption(audace,menu,faire_flat_field)" {
+          pack $This.usr.1 -in $This.usr -side top -fill both
+          pack $This.usr.2 -in $This.usr -side top -fill both
+          pack forget $This.usr.3
+          pack $This.usr.4 -in $This.usr -side top -fill both
+          pack forget $This.usr.5
+          pack $This.usr.6 -in $This.usr -side top -fill both
+       }
+     # ::console::affiche_erreur "$n1,$n2,$op,$faireImageRef(operation)\n"
+   }
+
+   proc parcourir { In_Out } {
+      global audace
+      global faireImageRef
+
+      #--- Fenetre parent
+      set fenetre "$audace(base).faireImageRef"
+      #--- Ouvre la fenetre de choix des images
+      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Extraction du nom du fichier
+      if { $In_Out == "1" } {
+         set faireImageRef(in) [ file rootname [ file tail $filename ] ]
+      } elseif { $In_Out == "2" } {
+         set faireImageRef(out) [ file rootname [ file tail $filename ] ]
+      } elseif { $In_Out == "3" } {
+         set faireImageRef(1,offset) [ file rootname [ file tail $filename ] ]
+      }
+   }
+
+   proc formule { } {
+      global caption
+      global faireImageRef
+
+      if { $faireImageRef(operation) == "$caption(audace,menu,faire_dark)" } {
+         set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
+         set faireImageRef(nombre)          "$caption(audace,image,nombre)"
+         set faireImageRef(image_sortie)    "$caption(audace,image,sortie)"
+         set faireImageRef(offset)          "$caption(audace,image,offset)"
+      } elseif { $faireImageRef(operation) == "$caption(audace,menu,faire_flat_field)" } {
+         set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
+         set faireImageRef(nombre)          "$caption(audace,image,nombre)"
+         set faireImageRef(image_sortie)    "$caption(audace,image,sortie)"
+         set faireImageRef(offset)          "$caption(audace,image,offset)"
+         set faireImageRef(normalisation)   "$caption(audace,valeur_normalisation)"
+      } else {
+         set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
+         set faireImageRef(nombre)          "$caption(audace,image,nombre)"
+         set faireImageRef(image_sortie)    "$caption(audace,image,sortie)"
+      }
+   }
+
+}
+
 namespace eval ::traiteFilters {
    variable This
    global traiteFilters
@@ -772,7 +1231,7 @@ namespace eval ::traiteFilters {
          if { [ info exists traiteFilters(geometry) ] } {
             set deb [ expr 1 + [ string first + $traiteFilters(geometry) ] ]
             set fin [ string length $traiteFilters(geometry) ]
-            set widget(traiteFilters,position) "+[string range  $traiteFilters(geometry) $deb $fin]"     
+            set widget(traiteFilters,position) "+[string range  $traiteFilters(geometry) $deb $fin]"
          }
          createDialog
       }
