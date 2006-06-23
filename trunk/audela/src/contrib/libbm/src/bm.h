@@ -1,7 +1,7 @@
 // Projet      : AudeLA 
 // Librairie   : libbm
 // Fichier     : bm.h
-// Description : Déclaration des fonctions exportées
+// Description : Declaration des fonctions exportees
 // =================================================
 
 #include "sysexp.h"
@@ -19,7 +19,7 @@
 #define PB2 2
 
 
-// --- Déclaration des fonctions ---
+// --- Declaration des fonctions ---
 
 
 

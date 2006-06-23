@@ -57,7 +57,7 @@ int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //     /* --- recherche les infos du tampon image---*/
 //     retour = image.AudelaAImage(interp,numbuf);
 //     if(retour!=TCL_OK) return retour;
-//     /* --- récupère la valeur du pixel---*/
+//     /* --- recupère la valeur du pixel---*/
 //     double valeur = image.LectureFloat(x, y, &retour);
 //     if(retour!=TCL_OK) return retour;
 //     /* --- On met en forme le resultat dans une chaine de caracteres ---*/
@@ -118,7 +118,7 @@ int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
 int CmdBmMax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   /****************************************************************************/
-  /* Retourne la valeur du mamimum d'une image presente dans un buffer de AudeLA, et ses coordonnées.         */
+  /* Retourne la valeur du mamimum d'une image presente dans un buffer de AudeLA, et ses coordonnees.         */
   /****************************************************************************/
   /****************************************************************************/
 {
@@ -143,7 +143,7 @@ int CmdBmMax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     Tcl_DStringInit(&dsptr);
     /* --- recherche les infos du tampon image---*/ 
     image.AudelaAImage(interp,numbuf);
-    /* --- récupère la valeur du pixel---*/
+    /* --- recupère la valeur du pixel---*/
     retour = image.MaxXYFloat(&valeur, &x, &y);
     if(retour!=0) return retour;
     /* --- On met en forme le resultat dans une chaine de caracteres ---*/
@@ -194,7 +194,7 @@ int CmdBmHard2Visu(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
   char **argvv; // Liste fonction de transfert.
   int argcc; // Nombre d'elements dans la liste de fonction transfert.
 
-  // Procédure principale
+  // Procedure principale
   if(argc<5) {
     sprintf(s,"Usage: %s numbuf seuil_haut seuil_bas fonction_transfert", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -222,7 +222,7 @@ int CmdBmHard2Visu(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       return retour;
     } else {
          
-      // On attribue la mémoire nécessaire au tableau "fonction_transfert"
+      // On attribue la memoire necessaire au tableau "fonction_transfert"
       fonction_transfert.CreeVectVierge(9,256);
 
       //if ( (fonction_transfert=new double [257])==NULL) {
@@ -245,10 +245,10 @@ int CmdBmHard2Visu(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
     /* --- enregistre la valeur du pixel---*/
     //retour=image_hard2visu(image, seuil_haut, seuil_bas, fonction_transfert);
     retour=image.hard2visu(seuil_haut, seuil_bas, &fonction_transfert);
-    // On libère la mémoire nécessaire au tableau "fonction_transfert"
+    // On libère la memoire necessaire au tableau "fonction_transfert"
     //delete [] fonction_transfert;
     if(retour!=0) return retour;
-    /*-- on renvoie le résultat dans le tampon AudeLA --*/
+    /*-- on renvoie le resultat dans le tampon AudeLA --*/
     image.ImageAAudela(interp,numbuf);
   }
   return result;
@@ -266,7 +266,7 @@ int CmdBmSoustrait(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
   Image image1,image2;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -289,7 +289,7 @@ int CmdBmSoustrait(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
     if(retour!=TCL_OK) return retour;
     /* --- soustraction (image1 = image1 - image2)---*/
     if (image1.Soustrait(&image2) > 0) return(1);
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -309,7 +309,7 @@ int CmdBmAjoute(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
   double facteur;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -346,7 +346,7 @@ int CmdBmAjoute(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
     }
 
     if(retour!=0) return retour;
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -365,7 +365,7 @@ int CmdBmAbs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   Image image1;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<2) {
     sprintf(s,"Usage: %s buffer", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -387,7 +387,7 @@ int CmdBmAbs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -406,7 +406,7 @@ int CmdBmMultiplie(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
   Image image1,image2;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -432,7 +432,7 @@ int CmdBmMultiplie(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
     retour=image1.Multiplie(&image2);
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -451,7 +451,7 @@ int CmdBmMultiplie_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, c
   Image image1,image2,image3;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<4) {
     sprintf(s,"Usage: %s buffer1 buffer2 buffer3", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -482,7 +482,7 @@ int CmdBmMultiplie_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, c
     retour=image3.MultiplieAjoute(&image1, &image2);
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -501,7 +501,7 @@ int CmdBmDivise(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
   Image image1,image2;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -527,7 +527,7 @@ int CmdBmDivise(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
     retour=image1.Divise(&image2);
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -537,7 +537,7 @@ int CmdBmDivise(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 int CmdBmCarre(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   // *************************************************
-  // Carré d'une image
+  // Carre d'une image
   //
   // *************************************************
 {
@@ -546,7 +546,7 @@ int CmdBmCarre(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
   Image image1;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<2) {
     sprintf(s,"Usage: %s buffer", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -562,11 +562,11 @@ int CmdBmCarre(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
     result=image1.AudelaAImage(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
-    /* --- carré (image1 = image1 * image1)---*/
+    /* --- carre (image1 = image1 * image1)---*/
     retour=image1.Carre();
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -576,7 +576,7 @@ int CmdBmCarre(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 
 int CmdBmCarre_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   // *************************************************
-  // Carré d'une image
+  // Carre d'une image
   //
   // *************************************************
 {
@@ -585,7 +585,7 @@ int CmdBmCarre_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, char 
   Image image1,image2;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -607,12 +607,12 @@ int CmdBmCarre_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, char 
     result=image2.AudelaAImage(interp,numbuf2);
     if(retour!=TCL_OK) return retour;
 
-    /* --- carré (image2 = image1 * image1)---*/
+    /* --- carre (image2 = image1 * image1)---*/
     //retour=carre_ajoute(image1, image2);
     retour=image2.CarreAjoute(&image1);
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -622,7 +622,7 @@ int CmdBmCarre_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, char 
 
 int CmdBmRacine_carree(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   // *************************************************
-  // Racine carrée d'une image
+  // Racine carree d'une image
   //
   // *************************************************
 {
@@ -631,7 +631,7 @@ int CmdBmRacine_carree(ClientData clientData, Tcl_Interp *interp, int argc, char
   Image image1;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<2) {
     sprintf(s,"Usage: %s buffer", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -647,12 +647,12 @@ int CmdBmRacine_carree(ClientData clientData, Tcl_Interp *interp, int argc, char
     result=image1.AudelaAImage(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
-    /* --- carré (image1 = image1 * image1)---*/
+    /* --- carre (image1 = image1 * image1)---*/
     //retour=racine_carree(image1);
     retour=image1.RacineCarree();
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -671,7 +671,7 @@ int CmdBmMarche(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
   Image image1;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<2) {
     sprintf(s,"Usage: %s buffer", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -687,12 +687,12 @@ int CmdBmMarche(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
     result=image1.AudelaAImage(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
-    /* --- les pixels positifs sont mis à 1 et les négatifs à -1 ---*/
+    /* --- les pixels positifs sont mis à 1 et les negatifs à -1 ---*/
     //retour=marche(image1);
     retour=image1.Marche();
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -702,7 +702,7 @@ int CmdBmMarche(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 int CmdBmDxx(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   // *************************************************
-  // Dérivée seconde suivant l'axe x
+  // Derivee seconde suivant l'axe x
   //
   // *************************************************
 {
@@ -711,7 +711,7 @@ int CmdBmDxx(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   Image image1,image2;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -735,16 +735,16 @@ int CmdBmDxx(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     result=image2.AudelaAImage(interp,numbuf2);
     if(retour!=TCL_OK) return retour;
 
-    /* --- dérivation ---*/
+    /* --- derivation ---*/
     //retour=Dxx(image1,image2);
     retour=image2.Dxx(&image1);
     if(retour!=0) return retour;
 
-    /*-- retourne les infos vers le tampon mémoire AudeLA --*/
+    /*-- retourne les infos vers le tampon memoire AudeLA --*/
     result=image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -754,7 +754,7 @@ int CmdBmDxx(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
 int CmdBmDyy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   // *************************************************
-  // Dérivée seconde suivant l'axe y
+  // Derivee seconde suivant l'axe y
   //
   // *************************************************
 {
@@ -763,7 +763,7 @@ int CmdBmDyy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   Image image1,image2;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s buffer1 buffer2", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -787,12 +787,12 @@ int CmdBmDyy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     result=image2.AudelaAImage(interp,numbuf2);
     if(retour!=TCL_OK) return retour;
 
-    /* --- dérivation ---*/
+    /* --- derivation ---*/
     //retour=Dyy(image1,image2);
     retour=image2.Dyy(&image1);
     if(retour!=0) return retour;
 
-    /*-- renvoie le résultat dans AudeLA --*/
+    /*-- renvoie le resultat dans AudeLA --*/
     result = image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
   }
@@ -811,7 +811,7 @@ int CmdBmConvolue(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
   Image image1,image1bis,image2,image2bis;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<4) {
     sprintf(s,"Usage: %s buffer_image buffer_filtre data_type", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -927,7 +927,7 @@ int CmdBmDisque(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
   Image image1,imagetmp;
   char s[100];
 
-  // Procédure principale
+  // Procedure principale
   if(argc<2) {
     sprintf(s,"Usage: %s buffer", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -950,7 +950,7 @@ int CmdBmDisque(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
     if (imagetmp.ConvertitFloat() != 0) return(1);
     if (imagetmp.CopieVers(&image1) != 0) return(1);
 
-    /*-- on réécrit les infos dans l'image de destination  --*/
+    /*-- on reecrit les infos dans l'image de destination  --*/
     result=image1.ImageAAudela(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
@@ -1016,7 +1016,7 @@ int DecodeListeDouble(Tcl_Interp *interp, char *list, double *tableau, int *n)
 
 int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
   // *************************************************
-  // Calcule la médiane d'une série d'images
+  // Calcule la mediane d'une serie d'images
   //
   // *************************************************
 {
@@ -1025,16 +1025,16 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
   int result;
   char s[100];
   char **argvv; // Liste des buffers.
-  int argcc; // Nombre d'elements dans la liste précitée.
-  int *liste_numbuf; // Liste des numéros de buffers de la série d'images.
+  int argcc; // Nombre d'elements dans la liste precitee.
+  int *liste_numbuf; // Liste des numeros de buffers de la serie d'images.
   int numbuf_mediane;
-  Image* liste_images; // Liste des paramètres de la série d'images.
+  Image* liste_images; // Liste des paramètres de la serie d'images.
   Image image_mediane,image_tmp;
   int k;
   double *liste_pixels;
   double valeur;
 
-  // Procédure principale
+  // Procedure principale
   if(argc<3) {
     sprintf(s,"Usage: %s liste_buffers numbuf_mediane", argv[0]);
     Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -1048,7 +1048,7 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       retour = TCL_ERROR;
       return retour;
     } else {
-      // On attribue la mémoire nécessaire au tableau "liste_num_buf"
+      // On attribue la memoire necessaire au tableau "liste_num_buf"
       if ( (liste_numbuf=(int*)calloc(argcc,sizeof(int)))==NULL) {
         retour = TCL_ERROR;
         // a verifier
@@ -1065,7 +1065,7 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
     if(retour!=TCL_OK) return retour;
 
 
-    // On attribue la mémoire nécessaire au tableau "liste_images"
+    // On attribue la memoire necessaire au tableau "liste_images"
     if ( (liste_images=(Image*)calloc(argcc,sizeof(Image)))==NULL) {
       retour = TCL_ERROR;
       // a verifier
@@ -1087,8 +1087,8 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
     result=image_mediane.AudelaAImage(interp,liste_numbuf[0]);
     if(retour!=TCL_OK) return retour;
 
-    /* --- procédure principale---*/
-    /* --- création d'une liste des valeurs de pixels --- */
+    /* --- procedure principale---*/
+    /* --- creation d'une liste des valeurs de pixels --- */
     if ( (liste_pixels=(double*)calloc(argcc,sizeof(double)))==NULL) {
       retour = TCL_ERROR;
       // a verifier
@@ -1102,21 +1102,21 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
           if(retour!=0) return retour;
           liste_pixels[k]=valeur;
 	}
-        /* --- on calcule la médiane --*/
+        /* --- on calcule la mediane --*/
         gsl_sort(liste_pixels,1,argcc);
         valeur=gsl_stats_median_from_sorted_data(liste_pixels,1,argcc);
         image_mediane.EcritureDouble(x,y,valeur);
       }
     }
 
-    /*-- on réécrit le résultat dans le tampon image AudeLA --*/
+    /*-- on reecrit le resultat dans le tampon image AudeLA --*/
     image_mediane.ImageAAudela(interp,numbuf_mediane);
 
-    // On libère la mémoire utilisée par le tableau "liste_pixels"
+    // On libère la memoire utilisee par le tableau "liste_pixels"
     free(liste_pixels);
-    // On libère la mémoire utilisée par le tableau "liste_images"
+    // On libère la memoire utilisee par le tableau "liste_images"
     free(liste_images);
-    // On libère la mémoire nécessaire au tableau "liste_numbuf"
+    // On libère la memoire necessaire au tableau "liste_numbuf"
     free(liste_numbuf);
     if(retour!=0) return retour;
   }
