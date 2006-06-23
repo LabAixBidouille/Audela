@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.4 2006-06-21 17:36:14 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.5 2006-06-23 17:01:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,13 +13,13 @@ global caption
 
 set caption(eventaude_gps,titre)                      "GPS Coordinates of the Observer"
 
-set caption(eventaude_gps,rafraichir)                 "# Rafraîchir les coordonnées GPS"
+set caption(eventaude_gps,rafraichir)                 "Update GPS Coordinates"
 set caption(eventaude_gps,position_gps)               "GPS Format (WGS84):"
 set caption(eventaude_gps,longitude)                  "Longitude:"
 set caption(eventaude_gps,latitude)                   "Latitude:"
 set caption(eventaude_gps,altitude)                   "Altitude:"
-set caption(eventaude_gps,maj_long+lat)               "# Mise à jour de la position de l'observateur (longitude et latitude)"
-set caption(eventaude_gps,maj_alt)                    "# Mise à jour de la position de l'observateur (altitude)"
+set caption(eventaude_gps,maj_long+lat)               "Updating the Observer's Position (longitude and latitude)"
+set caption(eventaude_gps,maj_alt)                    "Updating the Observer's Position (altitude)"
 set caption(eventaude_gps,ok)                         "OK"
 set caption(eventaude_gps,appliquer)                  "Apply"
 set caption(eventaude_gps,fermer)                     "Close"
@@ -113,13 +113,13 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "GPS Coordinates of the Observer"
 
-   set caption(eventaude_gps,rafraichir)              "# Rafraîchir les coordonnées GPS"
+   set caption(eventaude_gps,rafraichir)              "Update GPS Coordinates"
    set caption(eventaude_gps,position_gps)            "GPS Format (WGS84):"
    set caption(eventaude_gps,longitude)               "Longitude:"
    set caption(eventaude_gps,latitude)                "Latitude:"
    set caption(eventaude_gps,altitude)                "Altitude:"
-   set caption(eventaude_gps,maj_long+lat)            "# Mise à jour de la position de l'observateur (longitude et latitude)"
-   set caption(eventaude_gps,maj_alt)                 "# Mise à jour de la position de l'observateur (altitude)"
+   set caption(eventaude_gps,maj_long+lat)            "Updating the Observer's Position (longitude and latitude)"
+   set caption(eventaude_gps,maj_alt)                 "Updating the Observer's Position (altitude)"
    set caption(eventaude_gps,ok)                      "OK"
    set caption(eventaude_gps,appliquer)               "Apply"
    set caption(eventaude_gps,fermer)                  "Close"
