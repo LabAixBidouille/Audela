@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.19 2006-06-20 17:24:14 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.20 2006-06-23 17:00:39 robertdelmas Exp $
 #
 
 global confCam
@@ -166,7 +166,7 @@ namespace eval ::confCam {
       set confCam(camera,labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
             TH7852A SCR1300XTC $caption(confcam,dslr) Andor ]
       set confCam(camera,names) [ list audine hisis sbig cookbook starlight kitty webcam \
-            th7852a src1300xtc dslr andor ]
+            th7852a scr1300xtc dslr andor ]
       
    }
 
