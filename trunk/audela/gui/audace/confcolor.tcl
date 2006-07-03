@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.4 2006-06-20 22:01:51 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.5 2006-07-03 17:30:18 michelpujol Exp $
 #
 
 namespace eval confColor {
@@ -24,12 +24,13 @@ namespace eval confColor {
       #--- Couleurs diurnes
       if { ! [ info exists conf(confcolor,day,entryBackColor) ] }    { set conf(confcolor,day,entryBackColor)    "#FFFFFF" }
       if { ! [ info exists conf(confcolor,day,entryBackColor2) ] }   { set conf(confcolor,day,entryBackColor2)   "#E9E9E9" }
-      if { ! [ info exists conf(confcolor,day,entryTextColor) ] }    { set conf(confcolor,day,entryTextColor)    "#808080" }
+      if { ! [ info exists conf(confcolor,day,entryTextColor) ] }    { set conf(confcolor,day,entryTextColor)    "#808080" }      
       if { ! [ info exists conf(confcolor,day,backColor) ] }         { set conf(confcolor,day,backColor)         "#ECE9D8" }
       if { ! [ info exists conf(confcolor,day,backColor2) ] }        { set conf(confcolor,day,backColor2)        "#ECE9D9" }
       if { ! [ info exists conf(confcolor,day,textColor) ] }         { set conf(confcolor,day,textColor)         "#000000" }
       if { ! [ info exists conf(confcolor,day,activeTextColor)] }    { set conf(confcolor,day,activeTextColor)   "#00C0C0" }
       if { ! [ info exists conf(confcolor,day,activeBackColor)] }    { set conf(confcolor,day,activeBackColor)   "#0000A0" }
+      if { ! [ info exists conf(confcolor,day,disabledTextColor) ] } { set conf(confcolor,day,disabledTextColor) "#999999" }
 
       if { ! [ info exists conf(confcolor,day,canvas) ] }            { set conf(confcolor,day,canvas)            "#006886" }
       if { ! [ info exists conf(confcolor,day,listBox) ] }           { set conf(confcolor,day,listBox)           "#DDDDFF" }
@@ -44,6 +45,7 @@ namespace eval confColor {
       if { ! [ info exists conf(confcolor,night,textColor) ] }       { set conf(confcolor,night,textColor)       "#FFFFFF" }
       if { ! [ info exists conf(confcolor,night,activeTextColor) ] } { set conf(confcolor,night,activeTextColor) "#0000A0" }
       if { ! [ info exists conf(confcolor,night,activeBackColor)] }  { set conf(confcolor,night,activeBackColor) "#00C0C0" }
+      if { ! [ info exists conf(confcolor,night,disabledTextColor) ] } { set conf(confcolor,night,disabledTextColor) "#555555" }
 
       if { ! [ info exists conf(confcolor,night,canvas) ] }          { set conf(confcolor,night,canvas)          "#004559" }
       if { ! [ info exists conf(confcolor,night,listBox) ] }         { set conf(confcolor,night,listBox)         "#C40627" }
@@ -412,7 +414,7 @@ namespace eval confColor {
          Entry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
-               -disabledforeground $audace(color,textColor)
+               -disabledforeground $audace(color,disabledTextColor)
          }
          LabelEntry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
@@ -428,13 +430,12 @@ namespace eval confColor {
          Checkbutton {
             $w configure -bg $audace(color,backColor) -activebackground $audace(color,backColor) \
                -fg $audace(color,textColor) -activeforeground $audace(color,textColor) \
-               -disabledforeground $audace(color,textColor) \
+               -disabledforeground $audace(color,disabledTextColor) \
                -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
          }
          Radiobutton {
-            $w configure -bg $audace(color,backColor) -activebackground $audace(color,backColor) \
-               -fg $audace(color,textColor) -activeforeground $audace(color,textColor) \
-               -disabledforeground $audace(color,textColor) \
+            $w configure -fg $audace(color,textColor) -bg $audace(color,backColor) \
+               -activeforeground $audace(color,textColor) -disabledforeground $audace(color,disabledTextColor) \
                -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
          }
          ArrowButton {
