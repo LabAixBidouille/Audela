@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.3 2006-06-22 19:37:59 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.4 2006-07-03 16:03:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -31,7 +31,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(serialport,titre)        "# Port série"
+   set caption(serialport,titre)        "Serielle Schnittstelle"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
