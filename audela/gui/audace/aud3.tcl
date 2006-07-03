@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.6 2006-06-22 20:57:13 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.7 2006-07-03 16:04:56 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -271,16 +271,6 @@ namespace eval ::traiteWindow {
          tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
          return
       }
-      #---
-      if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
-         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-         return
-      }
-      #---
-      if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
-         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-         return
-      }
       #--- Switch passe au format sur une seule ligne logique : les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
       #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
@@ -346,6 +336,11 @@ namespace eval ::traiteWindow {
                 return
              }
              #---
+             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                return
+             }
+             #---
              set const $traiteWindow(1,const)
              ::console::affiche_resultat "offset2 $in $out $const $nb\n\n"
              catch { offset2 $in $out $const $nb } m
@@ -362,6 +357,11 @@ namespace eval ::traiteWindow {
                 return
              }
              #---
+             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                return
+             }
+             #---
              set const $traiteWindow(1,const)
              ::console::affiche_resultat "noffset2 $in $out $const $nb\n\n"
              catch { noffset2 $in $out $const $nb } m
@@ -375,6 +375,11 @@ namespace eval ::traiteWindow {
              #--- Il faut saisir une valeur
              if { $traiteWindow(1,const) == "" } {
                 tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
+                return
+             }
+             #---
+             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                 return
              }
              #---
@@ -396,6 +401,11 @@ namespace eval ::traiteWindow {
              #--- Il faut saisir la constante
              if { $traiteWindow(2,const) == "" } {
                 tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                return
+             }
+             #---
+             if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                 return
              }
              #---
@@ -421,6 +431,11 @@ namespace eval ::traiteWindow {
                 return
              }
              #---
+             if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                return
+             }
+             #---
              set operand $traiteWindow(2,operand)
              set const $traiteWindow(2,const)
              ::console::affiche_resultat "sub2 $in $operand $out $const $nb\n\n"
@@ -440,6 +455,11 @@ namespace eval ::traiteWindow {
              #--- Il faut saisir la constante
              if { $traiteWindow(2,const) == "" } {
                 tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                return
+             }
+             #---
+             if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                 return
              }
              #---

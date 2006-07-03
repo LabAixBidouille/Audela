@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.6 2006-06-30 21:24:32 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.7 2006-07-03 16:04:07 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -93,13 +93,13 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "Beobachter GPS Koordinaten"
 
-   set caption(eventaude_gps,rafraichir)              "# Rafraîchir les coordonnées GPS"
+   set caption(eventaude_gps,rafraichir)              "GPS Koordinaten Aktualisierung"
    set caption(eventaude_gps,position_gps)            "GPS Format (WGS84):"
    set caption(eventaude_gps,longitude)               "Länge:"
    set caption(eventaude_gps,latitude)                "Breite:"
    set caption(eventaude_gps,altitude)                "Höhe:"
-   set caption(eventaude_gps,maj_long+lat)            "# Mise à jour de la position de l'observateur (longitude et latitude)"
-   set caption(eventaude_gps,maj_alt)                 "# Mise à jour de la position de l'observateur (altitude)"
+   set caption(eventaude_gps,maj_long+lat)            "Beobachter Position (Länge und Breite) Aktualisierung"
+   set caption(eventaude_gps,maj_alt)                 "Beobachter Position (Höhe) Aktualisierung"
    set caption(eventaude_gps,ok)                      "OK"
    set caption(eventaude_gps,appliquer)               "Anwenden"
    set caption(eventaude_gps,fermer)                  "Schließen"
