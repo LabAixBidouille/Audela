@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.5 2006-07-03 17:30:18 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.6 2006-07-03 17:55:50 robertdelmas Exp $
 #
 
 namespace eval confColor {
@@ -17,39 +17,39 @@ namespace eval confColor {
       global color
 
       #--- Creation des variables si elles n'exitaitent pas
-      if { ! [ info exists conf(confcolor,position) ] }              { set conf(confcolor,position)              "+150+75" }
-      if { ! [ info exists conf(confcolor,appearance) ] }            { set conf(confcolor,appearance)            "day" }
-      if { ! [ info exists conf(confcolor,menu_night_vision) ] }     { set conf(confcolor,menu_night_vision)     "0" }
+      if { ! [ info exists conf(confcolor,position) ] }                { set conf(confcolor,position)                "+150+75" }
+      if { ! [ info exists conf(confcolor,appearance) ] }              { set conf(confcolor,appearance)              "day" }
+      if { ! [ info exists conf(confcolor,menu_night_vision) ] }       { set conf(confcolor,menu_night_vision)       "0" }
 
       #--- Couleurs diurnes
-      if { ! [ info exists conf(confcolor,day,entryBackColor) ] }    { set conf(confcolor,day,entryBackColor)    "#FFFFFF" }
-      if { ! [ info exists conf(confcolor,day,entryBackColor2) ] }   { set conf(confcolor,day,entryBackColor2)   "#E9E9E9" }
-      if { ! [ info exists conf(confcolor,day,entryTextColor) ] }    { set conf(confcolor,day,entryTextColor)    "#808080" }      
-      if { ! [ info exists conf(confcolor,day,backColor) ] }         { set conf(confcolor,day,backColor)         "#ECE9D8" }
-      if { ! [ info exists conf(confcolor,day,backColor2) ] }        { set conf(confcolor,day,backColor2)        "#ECE9D9" }
-      if { ! [ info exists conf(confcolor,day,textColor) ] }         { set conf(confcolor,day,textColor)         "#000000" }
-      if { ! [ info exists conf(confcolor,day,activeTextColor)] }    { set conf(confcolor,day,activeTextColor)   "#00C0C0" }
-      if { ! [ info exists conf(confcolor,day,activeBackColor)] }    { set conf(confcolor,day,activeBackColor)   "#0000A0" }
-      if { ! [ info exists conf(confcolor,day,disabledTextColor) ] } { set conf(confcolor,day,disabledTextColor) "#999999" }
+      if { ! [ info exists conf(confcolor,day,entryBackColor) ] }      { set conf(confcolor,day,entryBackColor)      "#FFFFFF" }
+      if { ! [ info exists conf(confcolor,day,entryBackColor2) ] }     { set conf(confcolor,day,entryBackColor2)     "#E9E9E9" }
+      if { ! [ info exists conf(confcolor,day,entryTextColor) ] }      { set conf(confcolor,day,entryTextColor)      "#808080" }
+      if { ! [ info exists conf(confcolor,day,backColor) ] }           { set conf(confcolor,day,backColor)           "#ECE9D8" }
+      if { ! [ info exists conf(confcolor,day,backColor2) ] }          { set conf(confcolor,day,backColor2)          "#ECE9D9" }
+      if { ! [ info exists conf(confcolor,day,textColor) ] }           { set conf(confcolor,day,textColor)           "#000000" }
+      if { ! [ info exists conf(confcolor,day,activeTextColor)] }      { set conf(confcolor,day,activeTextColor)     "#00C0C0" }
+      if { ! [ info exists conf(confcolor,day,activeBackColor)] }      { set conf(confcolor,day,activeBackColor)     "#0000A0" }
+      if { ! [ info exists conf(confcolor,day,disabledTextColor) ] }   { set conf(confcolor,day,disabledTextColor)   "#999999" }
 
-      if { ! [ info exists conf(confcolor,day,canvas) ] }            { set conf(confcolor,day,canvas)            "#006886" }
-      if { ! [ info exists conf(confcolor,day,listBox) ] }           { set conf(confcolor,day,listBox)           "#DDDDFF" }
-      if { ! [ info exists conf(confcolor,day,drag_rectangle) ] }    { set conf(confcolor,day,drag_rectangle)    "#0000EF" }
+      if { ! [ info exists conf(confcolor,day,canvas) ] }              { set conf(confcolor,day,canvas)              "#006886" }
+      if { ! [ info exists conf(confcolor,day,listBox) ] }             { set conf(confcolor,day,listBox)             "#DDDDFF" }
+      if { ! [ info exists conf(confcolor,day,drag_rectangle) ] }      { set conf(confcolor,day,drag_rectangle)      "#0000EF" }
 
       #--- Couleurs nocturnes
-      if { ! [ info exists conf(confcolor,night,entryBackColor)] }   { set conf(confcolor,night,entryBackColor)  "#BB0923" }
-      if { ! [ info exists conf(confcolor,night,entryBackColor2) ] } { set conf(confcolor,night,entryBackColor2) "#F93956" }
-      if { ! [ info exists conf(confcolor,night,entryTextColor) ] }  { set conf(confcolor,night,entryTextColor)  "#400040" }
-      if { ! [ info exists conf(confcolor,night,backColor) ] }       { set conf(confcolor,night,backColor)       "#5E061F" }
-      if { ! [ info exists conf(confcolor,night,backColor2) ] }      { set conf(confcolor,night,backColor2)      "#8F071F" }
-      if { ! [ info exists conf(confcolor,night,textColor) ] }       { set conf(confcolor,night,textColor)       "#FFFFFF" }
-      if { ! [ info exists conf(confcolor,night,activeTextColor) ] } { set conf(confcolor,night,activeTextColor) "#0000A0" }
-      if { ! [ info exists conf(confcolor,night,activeBackColor)] }  { set conf(confcolor,night,activeBackColor) "#00C0C0" }
+      if { ! [ info exists conf(confcolor,night,entryBackColor)] }     { set conf(confcolor,night,entryBackColor)    "#BB0923" }
+      if { ! [ info exists conf(confcolor,night,entryBackColor2) ] }   { set conf(confcolor,night,entryBackColor2)   "#F93956" }
+      if { ! [ info exists conf(confcolor,night,entryTextColor) ] }    { set conf(confcolor,night,entryTextColor)    "#400040" }
+      if { ! [ info exists conf(confcolor,night,backColor) ] }         { set conf(confcolor,night,backColor)         "#5E061F" }
+      if { ! [ info exists conf(confcolor,night,backColor2) ] }        { set conf(confcolor,night,backColor2)        "#8F071F" }
+      if { ! [ info exists conf(confcolor,night,textColor) ] }         { set conf(confcolor,night,textColor)         "#FFFFFF" }
+      if { ! [ info exists conf(confcolor,night,activeTextColor) ] }   { set conf(confcolor,night,activeTextColor)   "#0000A0" }
+      if { ! [ info exists conf(confcolor,night,activeBackColor)] }    { set conf(confcolor,night,activeBackColor)   "#00C0C0" }
       if { ! [ info exists conf(confcolor,night,disabledTextColor) ] } { set conf(confcolor,night,disabledTextColor) "#555555" }
 
-      if { ! [ info exists conf(confcolor,night,canvas) ] }          { set conf(confcolor,night,canvas)          "#004559" }
-      if { ! [ info exists conf(confcolor,night,listBox) ] }         { set conf(confcolor,night,listBox)         "#C40627" }
-      if { ! [ info exists conf(confcolor,night,drag_rectangle) ] }  { set conf(confcolor,night,drag_rectangle)  "#0000EF" }
+      if { ! [ info exists conf(confcolor,night,canvas) ] }            { set conf(confcolor,night,canvas)            "#004559" }
+      if { ! [ info exists conf(confcolor,night,listBox) ] }           { set conf(confcolor,night,listBox)           "#C40627" }
+      if { ! [ info exists conf(confcolor,night,drag_rectangle) ] }    { set conf(confcolor,night,drag_rectangle)    "#0000EF" }
 
       #--- Je copie les couleurs conf() dans audace() en fonction de l'apparence choisie
       set appearance $conf(confcolor,appearance)
