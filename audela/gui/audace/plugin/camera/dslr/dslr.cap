@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.2 2006-06-20 19:18:46 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.3 2006-07-03 17:31:52 michelpujol Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,8 @@ set caption(dslr,telecharger)               "Download Image"
 set caption(dslr,pas_telecharger)           "Do Not Download"
 set caption(dslr,immediat)                  "Now"
 set caption(dslr,acq_suivante)              "During next acquisition"
+set caption(dslr,utiliser_cf)               "use CF memory of DSLR"
+set caption(dslr,supprimer_image)           "delete image from CF memory after loading"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -23,6 +25,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,pas_telecharger)        "Ne pas télécharger"
    set caption(dslr,immediat)               "Immédiatement"
    set caption(dslr,acq_suivante)           "Pendant l'acquisition suivante"
+   set caption(dslr,utiliser_cf)            "utiliser la carte CF de l'APN"
+   set caption(dslr,supprimer_image)        "supprimer l'image de la carte CF apres chargement"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -31,6 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,pas_telecharger)        "Non scaricare"
    set caption(dslr,immediat)               "Adesso"
    set caption(dslr,acq_suivante)           "Durante la successiva acquisizione"
+   set caption(dslr,utiliser_cf)            "#utiliser la carte CF de l'APN"
+   set caption(dslr,supprimer_image)        "#supprimer l'image de la carte CF apres chargement"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -39,6 +45,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,pas_telecharger)        "No descargar"
    set caption(dslr,immediat)               "Inmediatamente"
    set caption(dslr,acq_suivante)           "Durante la próxima adquisición"
+   set caption(dslr,utiliser_cf)            "#utiliser la carte CF de l'APN"
+   set caption(dslr,supprimer_image)        "#supprimer l'image de la carte CF apres chargement"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -47,6 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,pas_telecharger)        "Nicht herunterladen"
    set caption(dslr,immediat)               "Sofort"
    set caption(dslr,acq_suivante)           "Während die nächste Erwerbung"
+   set caption(dslr,utiliser_cf)            "#utiliser la carte CF de l'APN"
+   set caption(dslr,supprimer_image)        "#supprimer l'image de la carte CF apres chargement"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -55,6 +65,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,pas_telecharger)        "Do Not Download"
    set caption(dslr,immediat)               "Now"
    set caption(dslr,acq_suivante)           "During Next Acquisition"
+   set caption(dslr,utiliser_cf)            "#utiliser la carte CF de l'APN"
+   set caption(dslr,supprimer_image)        "#supprimer l'image de la carte CF apres chargement"
 
 }
 
