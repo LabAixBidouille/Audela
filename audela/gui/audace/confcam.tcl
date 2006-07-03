@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.20 2006-06-23 17:00:39 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.21 2006-07-03 17:27:03 michelpujol Exp $
 #
 
 global confCam
@@ -2674,7 +2674,7 @@ namespace eval ::confCam {
 
       #--- Bouton du choix du telechargement de l'image de l'APN
       button $frm.config_telechargement -text $caption(confcam,dslr_telecharger) -state normal \
-         -command "::cameraDSLR::Telecharge_image"
+         -command { ::cameraDSLR::setLoadParameters $confCam(camera,$confCam(cam_item),visuNo) }
       pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
@@ -3763,6 +3763,7 @@ namespace eval ::confCam {
                         cam$confCam(camera,$cam_item,camNo) longuepose 0
                      }
                      #--- Parametrage du telechargement des images
+                     cam$confCam(camera,$cam_item,camNo) usecf $conf(dslr,utiliser_cf)
                      switch -exact -- $conf(dslr,telecharge_mode) {
                         1  {
                            #--- Ne pas telecharger
@@ -3776,7 +3777,7 @@ namespace eval ::confCam {
                            #--- Telechargement pendant la pose suivante
                            cam$confCam(camera,$cam_item,camNo) autoload 0
                         }
-                     }
+                     }                     
                      #---
                      ::confVisu::visuDynamix $visuNo 512 -255
                   }
