@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.19 2006-06-20 20:41:04 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.20 2006-07-03 17:24:00 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -1826,26 +1826,30 @@ namespace eval ::AcqFC {
       #--- J'autorise le bouton "STOP"
       $panneau(AcqFC,$visuNo,This).go_stop.but configure -state normal
       #--- Declenchement l'acquisition
-      cam$camNo acq
-      #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $exptime
-      #--- Appel du timer
-      if { $exptime > "1" } {
-        ::camera::dispTime_2 cam$camNo $panneau(AcqFC,$visuNo,This).status.lab "::AcqFC::Avancement_pose" $visuNo
-      } else {
-        if { $exptime != "0" } {
-           ::AcqFC::Avancement_pose $visuNo "1"
-        }
-      }
-      #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
-      if { $conf(dslr,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
-         after 10 ::AcqFC::loadLastImage $visuNo $camNo
-      }
-      #--- J'attends la fin de l'acquisition
-      #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-      set statusVariableName "::status_cam$camNo"
-      if { [set $statusVariableName] == "exp" } {
-         vwait status_cam$camNo
+      set result [catch { cam$camNo acq } msg ]
+      if { $result == 0 } {
+         #--- Alarme sonore de fin de pose
+         ::camera::alarme_sonore $exptime
+         #--- Appel du timer
+         if { $exptime > "1" } {
+           ::camera::dispTime_2 cam$camNo $panneau(AcqFC,$visuNo,This).status.lab "::AcqFC::Avancement_pose" $visuNo
+         } else {
+           if { $exptime != "0" } {
+              ::AcqFC::Avancement_pose $visuNo "1"
+           }
+         }
+         #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
+         if { $conf(dslr,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {
+            after 10 ::AcqFC::loadLastImage $visuNo $camNo
+         }
+         #--- J'attends la fin de l'acquisition
+         #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
+         set statusVariableName "::status_cam$camNo"
+         if { [set $statusVariableName] == "exp" } {
+            vwait status_cam$camNo
+         }
+      } else { 
+         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $msg
       }
 
       #--- Je retablis le choix du fonctionnement de l'obturateur
@@ -2829,7 +2833,7 @@ namespace eval ::AcqFC {
       if { ( $panneau(AcqFC,$visuNo,mode) == "1" ) || ( $panneau(AcqFC,$visuNo,mode) == "2" ) || \
          ( $panneau(AcqFC,$visuNo,mode) == "3" ) || ( $panneau(AcqFC,$visuNo,mode) == "4" ) || \
          ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
-         ::cameraDSLR::Telecharge_image
+         ::cameraDSLR::setLoadParameters $visuNo
       }
    }
 #***** Fin de la configuration du telechargement *********************
