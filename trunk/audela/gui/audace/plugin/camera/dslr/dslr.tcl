@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.3 2006-07-03 17:33:09 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.4 2006-07-03 17:48:34 robertdelmas Exp $
 #
 
 namespace eval cameraDSLR {
@@ -16,7 +16,7 @@ namespace eval cameraDSLR {
 
       #--- Initialisation de la position de la fenetre
       if { ! [ info exists conf(dslr,telecharge_mode) ] } { set conf(dslr,telecharge_mode) "2" }
-      if { ! [ info exists conf(dslr,utiliser_cf) ] } { set conf(dslr,utiliser_cf) "0" }
+      if { ! [ info exists conf(dslr,utiliser_cf) ] }     { set conf(dslr,utiliser_cf)     "0" }
       if { ! [ info exists conf(dslr,supprimer_image) ] } { set conf(dslr,supprimer_image) "1" }
    }
 
@@ -56,12 +56,12 @@ namespace eval cameraDSLR {
       #--- utilise carte memoire CF
       checkbutton $audace(base).telecharge_image.utiliserCF -text "$caption(dslr,utiliser_cf)" -highlightthickness 0 \
          -variable conf(dslr,utiliser_cf) \
-         -command "::cameraDSLR::utiliserCF $visuNo" 
+         -command "::cameraDSLR::utiliserCF $visuNo"
       pack $audace(base).telecharge_image.utiliserCF -anchor w -side top -padx 20 -pady 10
 
       radiobutton $audace(base).telecharge_image.rad1 -anchor nw -highlightthickness 1 \
         -padx 0 -pady 0 -state normal \
-        -text "$caption(dslr,pas_telecharger)" -value 1 -variable conf(dslr,telecharge_mode)  \
+        -text "$caption(dslr,pas_telecharger)" -value 1 -variable conf(dslr,telecharge_mode) \
         -command "::cameraDSLR::changerSelectionTelechargementAPN $visuNo" 
       pack $audace(base).telecharge_image.rad1 -anchor w -expand 1 -fill none \
         -side top -padx 30 -pady 5
@@ -78,34 +78,33 @@ namespace eval cameraDSLR {
       pack $audace(base).telecharge_image.rad3 -anchor w -expand 1 -fill none \
          -side top -padx 30 -pady 5
 
-      #--- supprime l'image sur la carte memeoire apres le chargement 
+      #--- supprime l'image sur la carte memoire apres le chargement
       checkbutton $audace(base).telecharge_image.supprime_image -text "$caption(dslr,supprimer_image)" -highlightthickness 0 \
-         -variable conf(dslr,supprimer_image)  \
-         -command "::cameraDSLR::supprimerImage $visuNo" 
+         -variable conf(dslr,supprimer_image) \
+         -command "::cameraDSLR::supprimerImage $visuNo"
       pack $audace(base).telecharge_image.supprime_image -anchor w -side top -padx 20 -pady 10
-      
 
       #--- New message window is on
       focus $audace(base).telecharge_image
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).telecharge_image
-      
-      #--
+
+      #---
       if { $conf(dslr,utiliser_cf) == "0" } {
          $audace(base).telecharge_image.rad3 configure -state disabled
          $audace(base).telecharge_image.supprime_image configure -state disabled
       } else {
          $audace(base).telecharge_image.rad3 configure -state normal
          $audace(base).telecharge_image.supprime_image configure -state normal
-      }    
+      }
 
    }
 
    proc utiliserCF { visuNo } {
       global conf
       global audace
-      
+
       if { $conf(dslr,utiliser_cf) == "0" } {
          $audace(base).telecharge_image.rad3 configure -state disabled
          $audace(base).telecharge_image.supprime_image configure -state disabled
@@ -116,30 +115,30 @@ namespace eval cameraDSLR {
       } else {
          $audace(base).telecharge_image.rad3 configure -state normal
          $audace(base).telecharge_image.supprime_image configure -state normal
-      }    
-      #--- je configure la camera      
+      }
+      #--- je configure la camera
       cam[ ::confVisu::getCamNo $visuNo ] usecf $conf(dslr,utiliser_cf)
    }
-   
+
    proc supprimerImage { visuNo } {
       global conf
-      
+
       cam[ ::confVisu::getCamNo $visuNo ] delete $conf(dslr,supprimer_image)
    }
-   
+
    proc changerSelectionTelechargementAPN { visuNo} {
       global conf
 
       switch -exact -- $conf(dslr,telecharge_mode) {
-         1  {
+         1 {
             #--- Ne pas telecharger
             cam[ ::confVisu::getCamNo $visuNo ] autoload 0
          }
-         2  {
+         2 {
             #--- Telechargement immediat
             cam[ ::confVisu::getCamNo $visuNo ] autoload 1
          }
-         3  {
+         3 {
             #--- Telechargement pendant la pose suivante
             cam[ ::confVisu::getCamNo $visuNo ] autoload 0
          }
