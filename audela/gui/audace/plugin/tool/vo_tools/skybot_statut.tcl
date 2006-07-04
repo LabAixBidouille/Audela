@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 11 juin 2006
+# Mise a jour $Id: skybot_statut.tcl,v 1.5 2006-07-04 22:16:28 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -91,15 +91,15 @@ namespace eval skybot_Statut {
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus } statut ]
 
-      #---
-      toplevel $This -class Toplevel
-      wm geometry $This $voconf(position_statut)
-      wm resizable $This 1 1
-      wm title $This $caption(statut,main_title)
-      wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
-
       #--- Gestion des erreurs
       if { $erreur == "0" && $statut != "failed"} {
+
+         #---
+         toplevel $This -class Toplevel
+         wm geometry $This $voconf(position_statut)
+         wm resizable $This 1 1
+         wm title $This $caption(statut,main_title)
+         wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
 
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
@@ -199,44 +199,35 @@ namespace eval skybot_Statut {
                      -text [string trim [lindex $statut 6]] -fg $color(blue)
                pack $inparam.nc -in $inparam -side top -pady 1 -anchor w
 
+         #--- Cree un frame pour y mettre les boutons
+         frame $This.frame11 \
+            -borderwidth 0 -cursor arrow
+         pack $This.frame11 \
+            -in $This -anchor s -side bottom -expand 0 -fill x
+
+           #--- Creation du bouton fermer
+           button $This.frame11.but_fermer \
+              -text "$caption(statut,fermer)" -borderwidth 2 \
+              -command { ::skybot_Statut::fermer }
+           pack $This.frame11.but_fermer \
+              -in $This.frame11 -side right -anchor e \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+           #--- Creation du bouton aide
+           button $This.frame11.but_aide \
+              -text "$caption(statut,aide)" -borderwidth 2 \
+              -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
+           pack $This.frame11.but_aide \
+              -in $This.frame11 -side right -anchor e \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
       } else {
 
-         #--- Cree un frame pour afficher le statut de la base
-         frame $This.frame1 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame1 \
-            -in $This -anchor s -side top -expand 1 -fill both
-
-            #--- Cree un label
-            label $This.frame1.labURLRed_statut_base -font $audace(font,arial_8_b) \
-               -text "$caption(statut,msg_internet)" -fg $color(red)
-            pack $This.frame1.labURLRed_statut_base \
-               -in $This.frame1 -side left -anchor center -expand true \
-               -padx 3 -pady 3  
+         tk_messageBox -title $caption(statut,msg_erreur) -type ok -message $caption(statut,msg_internet)
+         $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal
+         return
 
       }
-
-      #--- Cree un frame pour y mettre les boutons
-      frame $This.frame11 \
-         -borderwidth 0 -cursor arrow
-      pack $This.frame11 \
-         -in $This -anchor s -side bottom -expand 0 -fill x
-
-         #--- Creation du bouton fermer
-         button $This.frame11.but_fermer \
-            -text "$caption(statut,fermer)" -borderwidth 2 \
-            -command { ::skybot_Statut::fermer }
-         pack $This.frame11.but_fermer \
-            -in $This.frame11 -side right -anchor e \
-            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-         #--- Creation du bouton aide
-         button $This.frame11.but_aide \
-            -text "$caption(statut,aide)" -borderwidth 2 \
-            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm }
-         pack $This.frame11.but_aide \
-            -in $This.frame11 -side right -anchor e \
-            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
       #--- Gestion du bouton
       $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal

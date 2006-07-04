@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_statut.cap
-# Date de mise a jour : 11 juin 2006
+# Mise a jour $Id: skybot_statut.cap,v 1.6 2006-07-04 22:16:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,22 +11,23 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(statut,main_title)        "# SkyBoT - Statut"
-set caption(statut,titre)             "# Statut de la base de données SkyBoT"
-set caption(statut,label_ok)          "# Statut .........................."
-set caption(statut,label_periode)     "# Période couverte ................"
-set caption(statut,label_aster)       "# Nombre d'astéroïdes ............."
-set caption(statut,label_planet)      "# Nombre de planètes .............."
-set caption(statut,label_satnat)      "# Nombre de satellites naturels ..."
-set caption(statut,label_comet)       "# Nombre de comètes ..............."
-set caption(statut,label_maj)         "# Dernière mise à jour ............"
+set caption(statut,main_title)        "SkyBoT - Status"
+set caption(statut,titre)             "Status of SkyBoT database"
+set caption(statut,label_ok)          "Status .........................."
+set caption(statut,label_periode)     "Time span ......................."
+set caption(statut,label_aster)       "Number of asteroids ............."
+set caption(statut,label_planet)      "Number of planets ..............."
+set caption(statut,label_satnat)      "Number of natural satellite ....."
+set caption(statut,label_comet)       "Number of comets ................"
+set caption(statut,label_maj)         "Last update ....................."
 
-set caption(statut,aide)              "# Aide"
-set caption(statut,fermer)            "# Fermer"
+set caption(statut,aide)              "Help"
+set caption(statut,fermer)            "Close"
 
-set caption(statut,msg_internet)      "# Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
+set caption(statut,msg_erreur)        "Error"
+set caption(statut,msg_internet)      "An Internet connexion is required to access SkyBoT database."
 
-# *************** Version française ***************************
+# *************** Version française **** ***********************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,main_title)     "SkyBoT - Statut"
@@ -42,6 +43,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(statut,aide)           "Aide"
    set caption(statut,fermer)         "Fermer"
 
+   set caption(statut,msg_erreur)     "Erreur"
    set caption(statut,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
 
 # *************** Version italienne ***************************
@@ -60,6 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(statut,aide)           "# Aide"
    set caption(statut,fermer)         "# Fermer"
 
+   set caption(statut,msg_erreur)     "# Erreur"
    set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
 
 # *************** Version espagnole ***************************
@@ -78,6 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(statut,aide)           "# Aide"
    set caption(statut,fermer)         "# Fermer"
 
+   set caption(statut,msg_erreur)     "# Erreur"
    set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
 
 # *************** Version allemande ***************************
@@ -96,25 +100,27 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(statut,aide)           "# Aide"
    set caption(statut,fermer)         "# Fermer"
 
+   set caption(statut,msg_erreur)     "# Erreur"
    set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(statut,main_title)     "# SkyBoT - Statut"
-   set caption(statut,titre)          "# Statut de la base de données SkyBoT"
-   set caption(statut,label_ok)       "# Statut .........................."
-   set caption(statut,label_periode)  "# Période couverte ................"
-   set caption(statut,label_aster)    "# Nombre d'astéroïdes ............."
-   set caption(statut,label_planet)   "# Nombre de planètes .............."
-   set caption(statut,label_satnat)   "# Nombre de satellites naturels ..."
-   set caption(statut,label_comet)    "# Nombre de comètes ..............."
-   set caption(statut,label_maj)      "# Dernière mise à jour ............"
+   set caption(statut,main_title)     "SkyBoT - Status"
+   set caption(statut,titre)          "Status of SkyBoT database"
+   set caption(statut,label_ok)       "Status .........................."
+   set caption(statut,label_periode)  "Time span ......................."
+   set caption(statut,label_aster)    "Number of asteroids ............."
+   set caption(statut,label_planet)   "Number of planets ..............."
+   set caption(statut,label_satnat)   "Number of natural satellite ....."
+   set caption(statut,label_comet)    "Number of comets ................"
+   set caption(statut,label_maj)      "Last update ....................."
 
-   set caption(statut,aide)           "# Aide"
-   set caption(statut,fermer)         "# Fermer"
+   set caption(statut,aide)           "Help"
+   set caption(statut,fermer)         "Close"
 
-   set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire\npour accéder à la base de données SkyBoT."
+   set caption(statut,msg_erreur)     "Error"
+   set caption(statut,msg_internet)   "An Internet connexion is required to access SkyBoT database."
 
 }
 

@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Date de mise a jour : 15 juin 2006
+# Mise a jour $Id: skybot_resolver.cap,v 1.7 2006-07-04 22:14:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -57,7 +57,8 @@ set caption(resolver,param_none)            "# Pas d'information disponible !"
 set caption(resolver,format_target)         "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
 - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
 set caption(resolver,format_epoch)          "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-set caption(resolver,format_loc)            "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+set caption(resolver,format_loc)            "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
+un des codes reconnus : Mars, Spirit, Opportunity"
 set caption(resolver,format_dim_fov)        "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
 set caption(resolver,format_filter)         "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
@@ -125,7 +126,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(resolver,format_target)      "Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-   set caption(resolver,format_loc)         "Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+   set caption(resolver,format_loc)         "Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
+un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(resolver,format_dim_fov)     "Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
    set caption(resolver,format_filter)      "Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
@@ -193,7 +195,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-   set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+   set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
+un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
@@ -261,7 +264,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-   set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+   set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
+un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
@@ -329,7 +333,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-   set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+   set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
+un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
@@ -397,7 +402,8 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
  - stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-   set caption(resolver,format_loc)         "# Saisir le code UAI de l'observatoire.\nLe code 500 correspond au géocentre"
+   set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
+un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"

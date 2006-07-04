@@ -1,8 +1,8 @@
-#
+﻿#
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 11 juin 2006
+# Mise a jour $Id: skybot_resolver.tcl,v 1.9 2006-07-04 22:15:20 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -777,7 +777,7 @@ namespace eval skybot_Resolver {
          if { $date_calcul < $date_debut_jd } {
             tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_min) $date_debut"
             set voconf(date_ephemerides) ""
-            focus $This.frame2.param.input.epoch.ep
+            focus $This.frame2.param.input.epoch
             $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
             if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
             $::skybot_Resolver::This configure -cursor arrow
@@ -787,7 +787,7 @@ namespace eval skybot_Resolver {
          if { $date_calcul > $date_fin_jd } {
             tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_max) $date_fin"
             set voconf(date_ephemerides) ""
-            focus $This.frame2.param.input.epoch.ep
+            focus $This.frame2.param.input.epoch
             $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
             if { $btn_rech } { $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal }
             $::skybot_Resolver::This configure -cursor arrow
@@ -838,7 +838,7 @@ namespace eval skybot_Resolver {
       if { $voconf(date_ephemerides) == "" } {
          tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_noepoch)
          set voconf(date_ephemerides) ""
-         focus $This.frame2.param.input.epoch.ep
+         focus $This.frame2.param.input.epoch
          $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
          $::skybot_Resolver::This configure -cursor arrow
          return
@@ -1085,7 +1085,7 @@ namespace eval skybot_Resolver {
       if { $voconf(date_ephemerides) == "" } {
          tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $caption(resolver,msg_noepoch)
          set voconf(date_ephemerides) ""
-         focus $This.frame2.param.input.epoch.ep
+         focus $This.frame2.param.input.epoch
          $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
          $::skybot_Resolver::This.frame6.but_recherche configure -relief raised -state normal
          $::skybot_Resolver::This configure -cursor arrow

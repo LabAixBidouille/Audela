@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Date de mise a jour : 15 juin 2006
+# Mise a jour $Id: skybot_search.tcl,v 1.8 2006-07-04 22:15:59 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -638,8 +638,8 @@ namespace eval skybot_Search {
           $This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command { ::audace::Lance_Site_htm $myurl(skybot_doc) }
 	  $This.frame0.aide.menu add separator
           $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
-	  $This.frame0.aide.menu add separator
-          $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
+#	  $This.frame0.aide.menu add separator
+#          $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
         pack $This.frame0.aide -side right
       #--- barre de menu
       tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
@@ -1028,6 +1028,10 @@ namespace eval skybot_Search {
       bind $This <Control-o> { ::skybot_Search::open_session }
       #--- Raccourci pour faire une sauvegarde
       bind $This <Control-s> { ::skybot_Search::save_session }
+      #--- Raccourci pour charger une image
+      bind $This <Control-l> { ::skybot_Search::charger }
+      #--- Raccourci pour voir l'entete FITS de l'image
+      bind $This <Control-f> { ::audace::header $audace(visuNo) }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
