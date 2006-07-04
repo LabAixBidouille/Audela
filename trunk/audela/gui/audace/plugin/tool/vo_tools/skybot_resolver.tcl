@@ -1,8 +1,8 @@
-﻿#
+#
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.9 2006-07-04 22:15:20 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.10 2006-07-04 22:35:55 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
