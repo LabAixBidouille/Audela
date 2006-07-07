@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.29 2006-07-07 12:48:47 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.30 2006-07-07 20:56:49 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -1632,7 +1632,7 @@ namespace eval ::confVisu {
    #  parametres :
    #     visuNo : numero de la visu
    #------------------------------------------------------------
-   proc getBox { { visuNo "1" } } {
+   proc getBox { { visuNo } } {
       variable private
 
       return $private($visuNo,boxSize)
@@ -1692,6 +1692,9 @@ namespace eval ::confVisu {
          set x2 [lindex $coord2 0]
          set y2 [lindex $coord2 1]
          set private($visuNo,boxSize) [list $x1 $y1 $x2 $y2]
+         if { $visuNo == 1 } {
+            set ::audace(box) $private($visuNo,boxSize)      
+         }
       }
    }
 
@@ -1730,10 +1733,13 @@ namespace eval ::confVisu {
 
    proc deleteBox { { visuNo "1" } } {
       variable private
-
+      
       if { $private($visuNo,boxSize) != "" } {
          set private($visuNo,boxSize) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
+         if { $visuNo == 1 } {
+            set ::audace(box) $private($visuNo,boxSize)      
+         }
       }
    }
 
