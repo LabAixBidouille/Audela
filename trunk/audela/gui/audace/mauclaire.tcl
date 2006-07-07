@@ -3,18 +3,19 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.3 2006-06-20 17:31:57 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.4 2006-07-07 22:11:30 robertdelmas Exp $
 #
 #-----------------------------------------------------------------------------#
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
+# bm_extract_radec   : extrait le RA et DEC d'une image ou l'astrometrie est realisée
 # bm_renameext       : renome l'extension de fichiers en extension par defaut d'Audela
 # bm_renumfile       : renome les fichier de numérotation collée au nom
 # bm_pregister_lin   : regsitration planetaire sur un point initial et finale : translation lineaire
 # bm_sflat           : créée un flat synthétique (image d'intensité uniforme) de nxp pixels.
 # bm_pretrait        : effectue le prétraitement d'une série d'images à l'aide du dark, plu, dark de plu.
-# bm_sadd            : effectue la somme d'une série d'images.
+# bm _sadd           : effectue la somme d'une série d'images.
 # bm_somes           : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees.
 # bm_fwhm            : calcul la largeur équivalente d'une étoile en secondes d'arc.
 #
@@ -29,16 +30,47 @@
 #
 #-----------------------------------------------------------------------------#
 
-#*****************************************************************************#
+
+###############################################################################
 #
-# Description : se met dans le répertoire de travail d'Audace pour éviter de 
-# mettre le chemin des images devant chaque image
+# Descirption : extrait le RA et DEC d'une image ou l'astrometrie est realisée
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 17-12-2005
-# Date de mise a jour : 17-12-2005
+# Date création : 24-01-2006
+# Date de mise à jour : 24-01-2006
 # Arguments : aucun
+###############################################################################
+
+proc bm_extract_radec {} {
+    global audace
+    global conf
+# Par defaut, travaille dans le rep images configuré dans Audela.
+# Ne demande aucun arguments
+set file_id [open "$audace(rep_images)/coordonnees.txt" w+]
+set liste_fichiers [ glob *.fit ]
+
+foreach fichier $liste_fichiers {
+	buf$audace(bufNo) load $audace(rep_images)/$fichier
+	#  RA of center of the image
+	set ra [lindex [buf$audace(bufNo) getkwd "OBJCTRA"] 1]
+	# DEC of center of the image
+	set dec [lindex [buf$audace(bufNo) getkwd "OBJCTDEC"] 1]
+	puts $file_id "$ra $dec"
+}
+close $file_id
+}
+#****************************************************************************#
+
+
+
+###############################################################################
 #
-#*****************************************************************************#
+# Descirption : se met dans le répertoire de travail d'Audace pour éviter de 
+#  mettre le chemin des images devant chaque image
+# Auteur : Benjamin MAUCLAIRE
+# Date création : 17-12-2005
+# Date de mise à jour : 17-12-2005
+# Arguments : aucun
+###############################################################################
 proc bm_goodrep {} {
 
     global audace
@@ -47,17 +79,17 @@ proc bm_goodrep {} {
     cd $audace(rep_images)
     return $repdflt
 }
-#-----------------------------------------------------------------------------#
+#****************************************************************************#
 
-#*****************************************************************************#
+
+###############################################################################
 #
-# Description : renome les fichier de numérotation collée au nom
+# Descirption : renome les fichier de numérotation collée au nom
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 16-12-2005
-# Date de mise a jour : 16-12-2005
+# Date création : 16-12-2005
+# Date de mise à jour : 16-12-2005
 # Arguments : nom générique
-#
-#*****************************************************************************#
+###############################################################################
 
 proc bm_renumfile { args } {
 
@@ -84,28 +116,33 @@ proc bm_renumfile { args } {
 	::console::affiche_erreur "Usage: bm_renumfile nom_générique de fichier à la numérotation collée.\n"
     }
 }
-#-----------------------------------------------------------------------------#
+#****************************************************************************#
 
-#*****************************************************************************#
+
+###############################################################################
 #
-# Description : renome l'extension de fichiers en extension par defaut d'Audela
+# Descirption : renome l'extension de fichiers en extension par defaut d'Audela
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 17-12-2005
-# Date de mise a jour : 17-12-2005
+# Date création : 17-12-2005
+# Date de mise à jour : 17-12-2005
 # Arguments : répertoire, extension actuelle des fichiers
-#
-#*****************************************************************************#
+###############################################################################
 
 proc bm_renameext { args } {
 
     global audace
     global conf
 
-    if { [llength $args] == 2 } {
-	set repertoire [lindex $args 0]
-	set old_extension [ lindex $args 1 ]
-
+    if { [llength $args] <= 2 } {
 	set repdflt [pwd]
+	if { [llength $args] == 2 } {
+	    set repertoire [lindex $args 0]
+	    set old_extension [ lindex $args 1 ]
+	} elseif { [llength $args] == 1 } {
+	    set old_extension [ lindex $args 0 ]
+	    set repertoire $audace(rep_images)
+	}
+
 	cd $repertoire
 	set liste_fichiers [ lsort -dictionary [glob *$old_extension] ]
 	set nbimg [ llength $liste_fichiers ]
@@ -113,26 +150,30 @@ proc bm_renameext { args } {
 
 	foreach fichier $liste_fichiers {
 	    #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
-	    set prefixe_nom [ file rootname $fichier ]	    
-	    ::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}$conf(extension,defaut)\n"
-	    file copy $fichier ${prefixe_nom}$conf(extension,defaut)
+	    set prefixe_nom [ file rootname $fichier ]
+	    if { [file exists ${prefixe_nom}$conf(extension,defaut)] == 0 } {
+		::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}$conf(extension,defaut)\n"
+		file copy $fichier $repertoire/${prefixe_nom}$conf(extension,defaut)
+	    }
 	}
 	cd $repdflt
     } else {
-	::console::affiche_erreur "Usage: bm_renameext répertoire extension_actuelle.\n"
+	::console::affiche_erreur "Usage: bm_renameext \[répertoire\] extension_actuelle.\n"
     }
 }
-#-----------------------------------------------------------------------------#
+#****************************************************************************#
 
-#*****************************************************************************#
+
+
+###############################################################################
 #
-# Description : regsitration planetaire sur un point initial et finale : translation lineaire
+# Descirption : regsitration planetaire sur un point initial et finale : translation lineaire
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 16-12-2005
-# Date de mise a jour : 16-12-2005
+# Date création : 16-12-2005
+# Date de mise à jour : 16-12-2005
 # Argument : nom_generique_fichier (sans extension)
-#
-#*****************************************************************************#
+###############################################################################
+
 
 proc bm_pregister_lin { args } {
 
@@ -190,6 +231,7 @@ proc bm_pregister_lin { args } {
 	#set point_depart [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ]
 	set point_depart [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
 	::console::affiche_resultat "Point A : $point_depart\n"
+
 
 	#---------------------------------------------------------#
 	#--- Reperage du point final ----
@@ -289,18 +331,19 @@ proc bm_pregister_lin { args } {
 	::console::affiche_erreur "Usage : bm_pregister_lin nom_generique_images\n\n"
     }
 }
-#-----------------------------------------------------------------------------#
+#****************************************************************************#
 
-#*****************************************************************************#
+
+###############################################################################
 #
-# Description : créée un flat synthétique (image d'intensité uniforme) de nxp pixels.
+# Descirption : créée un flat synthétique (image d'intensité uniforme) de nxp pixels.
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 08-09-2005
-# Date de mise a jour : 03-12-2005
+# Date création : 08-09-2005
+# Date de mise à jour : 03-12-2005
 # Arguments : nom de l'image de sortie, naxis1, naxis2, valeur des pixels.
-# Methode : par soustraction du noir et sans offset.
+# Méthode : par soustraction du noir et sans offset.
 #
-#*****************************************************************************#
+###############################################################################
 
 proc bm_sflat { args } {
 
@@ -327,19 +370,20 @@ proc bm_sflat { args } {
        ::console::affiche_erreur "Usage: bm_sflat nom_flat_sortie largeur hauteur valeur\n"
    }
 }
-#-----------------------------------------------------------------------------#
+#****************************************************************************#
 
-#*****************************************************************************#
+
+
+###############################################################################
 #
-# Description : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
+# Descirption : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 27-08-2005
-# Date de mise a jour : 21-12-2005
+# Date création : 27-08-2005
+# Date de mise à jour : 21-12-2005
 # Arguments : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu
-# Methode : par soustraction du noir et sans offset.
+# Méthode : par soustraction du noir et sans offset.
 # Bug : Il faut travailler dans le rep parametre d'Audela, donc revoir toutes les operations !!
-#
-#*****************************************************************************#
+###############################################################################
 
 proc bm_pretrait { args } {
 
@@ -449,17 +493,17 @@ proc bm_pretrait { args } {
        ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu\n\n"
    }
 }
-#-----------------------------------------------------------------------------#
+#****************************************************************************#
 
-#*****************************************************************************#
+
+###############################################################################
 #
-# Description : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
+# Descirption : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 06 aout 2005
-# Date de mise a jour : 27-12-05
+# Date création : 06 aout 2005
+# Date de mise à jour : 27-12-05
 # Argument : nom_generique_fichier (sans extension)
-#
-#*****************************************************************************#
+###############################################################################
 
 proc bm_sadd { args } {
 
@@ -480,17 +524,18 @@ proc bm_sadd { args } {
        ::console::affiche_erreur "Usage: bm_sadd nom_generique_fichier (sans extension)\n\n"
    }
 }
-#-----------------------------------------------------------------------------#
+#*****************************************************************************#
 
-#*****************************************************************************#
+
+
+###############################################################################
 #
-# Description : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
+# Descirption : effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 06 aout 2005
-# Date de mise a jour : 06 aout 2005
+# Date création : 06 aout 2005
+# Date de mise à jour : 06 aout 2005
 # Argument : nom_generique_fichier (sans extension)
-#
-#*****************************************************************************#
+###############################################################################
 
 proc bm_somes { args } {
 
@@ -512,16 +557,18 @@ proc bm_somes { args } {
      ::console::affiche_erreur "Usage: bm_somes nom_generique_fichier (sans extension)\n\n"
    }
 }
-#-----------------------------------------------------------------------------#
+###############################################################################
 
-#*****************************************************************************#
+
+
+###############################################################################
 #
-# Description : calcul la largeur équivalente d'une étoile en secondes d'arc
+# Descirption : calcul la largeur équivalente d'une étoile en secondes d'arc
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 20 juillet 2005
-# Date de mise a jour : 20 juillet 2005
+# Date création : 20 juillet 2005
+# Date de mise à jour : 20 juillet 2005
 #
-#*****************************************************************************#
+###############################################################################
 
 proc bm_fwhm { args } {
 # arguments : fwhm de l'étoile en pixels, taille d'un pixel en micons, focale du téléscope en mm
@@ -540,5 +587,5 @@ proc bm_fwhm { args } {
      ::console::affiche_erreur "Usage: bm_fwhm fwhm-etoile taille-pixel(um) distance-focale(mm)\n\n"
    }
 }
-#-----------------------------------------------------------------------------#
+###############################################################################
 
