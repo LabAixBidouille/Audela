@@ -892,11 +892,11 @@ proc spc_smilex2imgs { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
 	    buf$audace(bufNo) save "$audace(rep_images)/${filename}-slx$conf(extension,defaut)"
-	    ::console::affiche_resultat "Spectre corrigé su smile en x souvé sous ${filename}-slx$conf(extension,defaut)\n"
+	    ::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${filename}-slx$conf(extension,defaut)\n"
 	    return ${filename}-slx
 	} else {  
 	    set i 1
-	    ::console::affiche_resultat "$nbsp spectres à traiter...\n"
+	    ::console::affiche_resultat "$nbsp spectres à traiter...\n\n"
 	    foreach lefichier $liste_images {
 		set fichier [ file tail $lefichier ]
 		buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -911,6 +911,52 @@ proc spc_smilex2imgs { args } {
 	}
     } else {
 	::console::affiche_erreur "Usage: spc_smilex2imgs spectre_2D_a_corriger spectre_lampe_calibration\n\n"
+    }
+}
+#********************************************************************************#
+
+
+
+####################################################################
+# Procédure de correction de l'inclinaison du spectre pour une série d'images
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 16-06-2006
+# Date modification : 16-06-2006
+# Arguments : nom générique des spectres à traiter
+####################################################################
+
+proc spc_tiltautoimgs { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 1} {
+	set filename [ file rootname [ lindex $args 0 ] ]
+
+	#--- Applique le smile au(x) spectre(s) incriminé(s)
+	set liste_images [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ]
+	set nbsp [ llength $liste_images ]
+	if { $nbsp ==  1 } {
+	    set spectre_tilte [ spc_tiltauto $filename ]
+	    ::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilte$conf(extension,defaut)\n"
+	    return $spectre_tilte
+	} else {  
+	    set i 1
+	    ::console::affiche_resultat "$nbsp spectres à traiter...\n\n"
+	    foreach lefichier $liste_images {
+		set fichier [ file tail $lefichier ]
+		set spectre_tilte [ spc_tiltauto $fichier ]
+		file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+		::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		incr i
+	    }
+	    #--- Messages d'information
+	    #::console::affiche_resultat "Spectre corrigés sauvés sous ${filename}tilt-\*$conf(extension,defaut).\n"
+	    return ${filename}tilt-
+	}
+    } else {
+	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D\n\n"
     }
 }
 #********************************************************************************#

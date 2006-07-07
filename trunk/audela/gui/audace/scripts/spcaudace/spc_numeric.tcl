@@ -285,7 +285,7 @@ proc spc_ajustdeg2 { args } {
 	##}
 
 	#--- Affichage du graphe
-	::plotxy::plot $abscisses $yadj
+	#  ::plotxy::plot $abscisses $yadj
 
 	set coefs [ list $a $b $c ]
 	set adj_vals [list $coefs $abscisses $yadj]

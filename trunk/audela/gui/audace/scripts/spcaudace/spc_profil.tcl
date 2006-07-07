@@ -268,7 +268,7 @@ proc spc_profil_zone { args } {
 	set filespacialspc [ file rootname [lindex $args 0] ]
 
 	#--- Soustrait le fond de ciel
-	set sp_propre [ spc_subsky $filespacialspc ]
+	set sp_propre [ spc_subsky $filespacialspc auto moy ]
 	#--- Sélectionne la zone à étudier
 	set sp_zone [ spc_extract_zone $sp_propre ]
 	file delete $audace(rep_images)/$sp_propre$conf(extension,defaut)
@@ -317,6 +317,56 @@ proc spc_detect { {filenamespc_spacial ""} } {
 
 
 ###############################################################
+# Détermine le centre vertical et la largeur d'un spectre 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 23-06-2006
+# Date de mise a jour : 23-06-2006                               
+# Arguments : fichier fits du spectre 2D
+###############################################################
+
+proc spc_detectasym { args } {
+
+    global audace
+    global conf
+
+    if { [ llength $args ] == 1 } {
+	set fichier [ file rootname [lindex $args 0 ] ]
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
+	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
+
+	#--- Creations de profils de plusieurs colonnes
+	set xpas [ expr int($naxis1/5) ]
+	#-- n° du profil resultant
+	set i 1
+	for {set k $xpas} {$k <= $naxis1} {incr k} {
+	    set fsortie [ file rootname [ spc_profilx $fichier $k ] ]
+	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/profil-$i$conf(extension,defaut)"
+	    set k [ expr $k+$xpas-1 ]
+	    incr i
+	}
+	set nbimg [ expr $naxis1/$xpas ]
+	sadd profil- ${fichier}_spcx $nbimg ]
+	delete2 profil- $nbimg
+
+	#--- Détermination des paramètres du de l'épaisseur du spectre
+	buf$audace(bufNo) load "$audace(rep_images)/${fichier}_spcx"
+	set windowcoords [ list 1 1 $naxis2 1 ]
+	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
+	set ycenter [ lindex $gparams 1 ]
+	#-- Choix : la largeur de la gaussienne est de 1.9*FWHM
+	set largeur [ expr 1.9*[ lindex $gparams 2 ] ]
+	return [ list $ycenter $largeur ]
+    } else {
+	::console::affiche_erreur "Usage: spc_detectasym spectre_2D_fits\n\n"
+    }
+}
+###############################################################
+
+
+
+###############################################################
 # Soustrait le fond de ciel à un spectre 2D
 #
 # Auteur : Benjamin MAUCLAIRE
@@ -325,7 +375,7 @@ proc spc_detect { {filenamespc_spacial ""} } {
 # Arguments : fichier fits du spectre spatial
 ###############################################################
 
-proc spc_subsky { args } {
+proc spc_subskyfrac { args } {
 
     global audace
     global conf
@@ -338,7 +388,7 @@ proc spc_subsky { args } {
 	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_fc"
 	return ${filespacialspc}_fc
     } else {
-	::console::affiche_erreur "Usage: spc_subsky spectre_2D_fits\n\n"
+	::console::affiche_erreur "Usage: spc_subskyfrac spectre_2D_fits\n\n"
     }
 }
 ###############################################################
@@ -353,7 +403,7 @@ proc spc_subsky { args } {
 # Arguments : nom gégérique des fichiers fits du spectre spatial
 ###############################################################
 
-proc spc_subskies { args } {
+proc spc_subskiesfrac { args } {
 
     global audace
     global conf
@@ -380,200 +430,14 @@ proc spc_subskies { args } {
 
 
 
-###############################################################
-# Extraction du profil a partir du spectre x,y en mode texte et autosélection de zone 
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date de creation : 27-08-2005
-# Date de mise a jour : 29-08-2005
-# Date de mise a jour : 27-12-2005
-# Date de mise a jour : 26-02-2006 (ajout gestion des méthodes de soustraction de fond de ciel)
-# Arguments : fichier fits du spectre spatial ?méthode soustraction fond de ciel (all, sup, none, auto)?
-###############################################################
-
-proc spc_profil0 { args } {
-
-    global audace
-    global conf
-
-    # Retire l'extension .fit du nom du fichier
-    # regsub -all .fit $filespacialspc - filespatialspc
-
-    if {[llength $args] == 1} {    
-	#if {[file exist [file join $audace(rep_images)/$filespacialspc.$conf(extension,defaut)]]==1} 
-	set filespacialspc [ file rootname [lindex $args 0] ]
-	# buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
-	## 07/01/05
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-
-	## Cree une liste de nom coords contenant les coordonnes d'un rectangle scroole avec la souris (demarre a 0)
-	# 060228 : $filenamespc_spacial -> $filespacialspc
-	# set gauss_params [ spc_detect $filenamespc_spacial ]
-	set gauss_params [ spc_detect $filespacialspc ]
-
-	#buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
-	## 07/01/05
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	set ycenter [ lindex $gauss_params 0 ] 
-	set largeur [ lindex $gauss_params 1 ]
-	#set y1 [expr int($ycenter-0.5*$largeur)]
-	#set y2 [expr int($ycenter+0.5*$largeur)]
-	#::console::affiche_resultat "$y1 $y2\n"
-	set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
-
-	## coords contient : { x1 y1 x2 y2 }
-	##  -----------B
-	##  |          |
-	##  A-----------
-	## set coords { 1 50 599 24 }
-
-	## On initialise :
-	## ysup=ordonnée max. de la boîte sélectionnée
-	## yinf=aordonnée min. de la boîte sélectionnée
-	## ht_spectre="hauteur" en pixels du spectre
-	## ht_dessus=hauteur d'image au dessus du spectre
-	## ht_dessous=hauteur d'image au dessous du spectre
-	## xmax_zone=abscisse max. de la zonne sélectionnée
-	## xmin_zone=abscisse min. de la zonne sélectionnée
-	## naxis2=hauteur de l'image.
-	if {[lindex $coords_zone 1]<[lindex $coords_zone 3]} {
-	    set ysup [lindex $coords_zone 3]
-	    set yinf [lindex $coords_zone 1]
-	} else {
-	    set yinf [lindex $coords_zone 3]
-	    set ysup [lindex $coords_zone 1]
-	}
-	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-	set ht_spectre [expr $ysup-$yinf]
-	set ht_dessus [expr $naxis2-$ysup]
-	set ht_dessous [expr $yinf]
-	set xsup_zone [lindex $coords_zone 0]
-	set xinf_zone [lindex $coords_zone 2]
-
-
-	## creation d'un fichier contenant la zone selectionnee
-	buf$audace(bufNo) window $coords_zone
-	# ::console::affiche_resultat "$coords_zone ; ${filespacialspc}_zone\n"
-	# ::audace::conserve_seuils
-	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
-	
-	##--------------- Traitement de la zone selectionnee -------------------#
-	set listcoords [list $ht_spectre $yinf $ysup $xinf_zone $xsup_zone $ht_dessous $ht_dessus 7]
-	spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords
-   } else {
-	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits\n\n"
-   }
-}
-###############################################################
-
-proc spc_profil_intermediaire { args } {
-
-    global audace
-    global conf
-
-    # Retire l'extension .fit du nom du fichier
-    # regsub -all .fit $filespacialspc - filespatialspc
-
-    if { [llength $args] <= 2 } {
-	if { [llength $args] == 1 } {
-	    #if {[file exist [file join $audace(rep_images)/$filespacialspc.$conf(extension,defaut)]]==1} 
-	    #set filespacialspc [ file rootname [lindex $args 0] ]
-	    set filespacialspc [ file tail [lindex $args 0] ]
-	} elseif { [llength $args] == 2 } {
-	    set filespacialspc [ file tail [lindex $args 0] ]
-	    set methodefc [ lindex $args 1 ]
-	}
-
-	#-- 07/01/05
-	# buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-
-	## Cree une liste de nom coords contenant les coordonnes d'un rectangle scroole avec la souris (demarre a 0)	
-	# 060223 : $filenamespc_spacial n'existe pas, c'est filespacialspc
-	#set gauss_params [ spc_detect $filenamespc_spacial ]
-	set gauss_params [ spc_detect $filespacialspc ]
-	#buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
-	## 07/01/05
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	set ycenter [ lindex $gauss_params 0 ] 
-	set largeur [ lindex $gauss_params 1 ]
-	#set y1 [expr int($ycenter-0.5*$largeur)]
-	#set y2 [expr int($ycenter+0.5*$largeur)]
-	#::console::affiche_resultat "$y1 $y2\n"
-	set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
-
-	## coords contient : { x1 y1 x2 y2 }
-	##  -----------B
-	##  |          |
-	##  A-----------
-	## set coords { 1 50 599 24 }
-
-	## On initialise :
-	## ysup=ordonnée max. de la boîte sélectionnée
-	## yinf=aordonnée min. de la boîte sélectionnée
-	## ht_spectre="hauteur" en pixels du spectre
-	## ht_dessus=hauteur d'image au dessus du spectre
-	## ht_dessous=hauteur d'image au dessous du spectre
-	## xmax_zone=abscisse max. de la zonne sélectionnée
-	## xmin_zone=abscisse min. de la zonne sélectionnée
-	## naxis2=hauteur de l'image.
-	if {[lindex $coords_zone 1]<[lindex $coords_zone 3]} {
-	    set ysup [lindex $coords_zone 3]
-	    set yinf [lindex $coords_zone 1]
-	} else {
-	    set yinf [lindex $coords_zone 3]
-	    set ysup [lindex $coords_zone 1]
-	}
-	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-	set ht_spectre [expr $ysup-$yinf]
-	set ht_dessus [expr $naxis2-$ysup]
-	set ht_dessous [expr $yinf]
-	set xsup_zone [lindex $coords_zone 0]
-	set xinf_zone [lindex $coords_zone 2]
-
-	## creation d'un fichier contenant la zone selectionnee
-	buf$audace(bufNo) window $coords_zone
-	# ::console::affiche_resultat "$coords_zone ; ${filespacialspc}_zone\n"
-	# ::audace::conserve_seuils
-	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
-	set listcoords [list $ht_spectre $yinf $ysup $xinf_zone $xsup_zone $ht_dessous $ht_dessus]
-	
-	##--------------- Traitement de la zone selectionnee -------------------#
-	if { [llength $args] == 1 } {
-	    spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords
-	} elseif { [llength $args] == 2 } {
-	    if { $methodefc == "all" } {
-		spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords
-	    } elseif { $methodefc == "sup" } {
-		spc_binsup "${filespacialspc}_zone" "$filespacialspc" $listcoords
-	    } elseif { $methodefc == "none" } {
-		set ht_spectre [ lindex $listcoords 0 ]
-		spc_bins "${filespacialspc}_zone" $ht_spectre
-	    } elseif { $methodefc == "auto" } {
-		buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-		buf$audace(bufNo) imaseries "BACK back_kernek=15 back_threshold=0.2 sub"
-		buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
-		set ht_spectre [ lindex $listcoords 0 ]
-		spc_bins "${filespacialspc}_zone" $ht_spectre
-	    }
-	}
-   } else {
-	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (all, sup, none, auto)?\n\n"
-   }
-}
-###############################################################
-
 
 ###############################################################
 # Extraction du profil a partir du spectre 2D en mode texte et autosélection de zone 
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de creation : 26-02-2006
-# Arguments : fichier fits du spectre spatial ?méthode soustraction fond de ciel (all, sup, none, auto)?
+# Date de modification : 05-07-2006
+# Arguments : fichier fits du spectre spatial ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?
 ###############################################################
 
 proc spc_profil { args } {
@@ -583,143 +447,238 @@ proc spc_profil { args } {
 
     # Retire l'extension .fit du nom du fichier
     # regsub -all .fit $filespacialspc - filespatialspc
-
-    if { [llength $args] <= 2 && [llength $args] != 0 } {
+    if { [llength $args] <= 4 && [llength $args] != 0 } {
 	if { [llength $args] == 1 } {
-	    #if {[file exist [file join $audace(rep_images)/$filespacialspc.$conf(extension,defaut)]]==1} 
-	    #-- Il faut enlever l'extension fit
-	    set filespacialspc [ file rootname [lindex $args 0] ]
+	    #--- Gestion avec options par défaut :
+	    set spectre2d [ file rootname [lindex $args 0] ]
+	    set methodefc "moy"
+	    set methodedetect "serre"
+	    set methodebin "add"
 	} elseif { [llength $args] == 2 } {
-	    set filespacialspc [ file rootname [lindex $args 0] ]
+	    set spectre2d [ file rootname [lindex $args 0] ]
 	    set methodefc [ lindex $args 1 ]
+	    set methodedetect "serre"
+	    set methodebin "add"
+	} elseif { [llength $args] == 3 } {
+	    set spectre2d [ file rootname [lindex $args 0] ]
+	    set methodefc [ lindex $args 1 ]
+	    set methodedetect [ lindex $args 2 ]
+	    set methodebin "add"
+	} elseif { [llength $args] == 4} {
+	    set spectre2d [ file rootname [lindex $args 0] ]
+	    set methodefc [ lindex $args 1 ]
+	    set methodedetect [ lindex $args 2 ]
+	    set methodebin [ lindex $args 3 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, none, frac)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?\n\n"
 	}
 
-	#-- 07/01/05
-	# buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
-	if { [file exists "$audace(rep_images)/$filespacialspc$conf(extension,defaut)" ] == 1 } {
-	    buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
+	#--- Chargement du spectre :
+	if { [file exists "$audace(rep_images)/$spectre2d$conf(extension,defaut)" ] == 1 } {
+	    buf$audace(bufNo) load "$audace(rep_images)/$spectre2d"
 	} else {
-	    ::console::affiche_resultat "Le fichier $filespacialspc n'existe pas.\n"
-	    break
+	    ::console::affiche_resultat "Le fichier $spectre2d n'existe pas.\n"
+	    return 0
 	}
+
+	#--- Détection de la zone où se trouve le spectre :
+	if { $methodedetect == "large" } {
+	    set gauss_params [ spc_detect $spectre2d ]
+	} elseif { $methodedetect == "serre" } {
+	    set gauss_params [ spc_detectasym $spectre2d ]
+	} else {
+	    set gauss_params [ spc_detect $spectre2d ]
+	}
+
+	#--- Découpage de la zone à biner et retrait du fond de ciel :
+	set ycenter [ lindex $gauss_params 0 ] 
+	set hauteur [ lindex $gauss_params 1 ]
+	#-- Algo : set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
+	set spectre_zone_fc [ spc_subsky $spectre2d $ycenter $hauteur $methodefc ]
+
+	#--- Bining :
+	if { $methodebin == "add" } {
+	    set profil_fc [ spc_bins $spectre_zone_fc ]
+	} else {
+	    set profil_fc [ spc_bins $spectre_zone_fc ]
+	}
+
+	#--- Message de fin et nettoyage :
+	::console::affiche_resultat "Profil de raies sauvé sous $profil_fc\n"
+	file delete "$audace(rep_images)/${spectre2d}_zone$conf(extension,defaut)"
+	return $profil_fc
+   } else {
+	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?\n\n"
+   }
+}
+#**************************************************************************#
+
+
+
+###############################################################
+# Procédure : soustrait le fond de ciel à la zone du spectre détectée
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 05-07-2006
+# Date de modification : 05-07-2006
+# Arguments : spectre_2D_fits y_centre_spectre hauteur_spectre méthode_soustraction_fond_de_ciel (moy, moy2, med, inf, sup, none, back)
+###############################################################
+
+proc spc_subsky { args } {
+
+    global audace
+    global conf
+
+    if { [ llength $args ] == 4 } {
+	set spectre [ lindex $args 0 ]
+	set ycenter [ lindex $args 1 ]
+	set hauteur [ lindex $args 2 ]
+	set methodemoy [ lindex $args 3 ]
+
+	::console::affiche_resultat "ycenter : $ycenter ; hauteur : $hauteur\n"
+	#--- Initialisation de paramètres
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
 	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
 
-	## Cree une liste de nom coords contenant les coordonnes d'un rectangle scroole avec la souris (demarre a 0)	
-	# 060223 : $filenamespc_spacial n'existe pas, c'est filespacialspc
-	#set gauss_params [ spc_detect $filenamespc_spacial ]
-	set gauss_params [ spc_detect $filespacialspc ]
-	#buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
-	## 07/01/05
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	set ycenter [ lindex $gauss_params 0 ] 
-	set largeur [ lindex $gauss_params 1 ]
-	#set y1 [expr int($ycenter-0.5*$largeur)]
-	#set y2 [expr int($ycenter+0.5*$largeur)]
-	#::console::affiche_resultat "$y1 $y2\n"
-	set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
-	::console::affiche_resultat "Zone : $coords_zone\n"
-
-	## coords contient : { x1 y1 x2 y2 }
-	##  -----------B
-	##  |          |
-	##  A-----------
-	## set coords { 1 50 599 24 }
-
-	## On initialise :
-	## ysup=ordonnée max. de la boîte sélectionnée
-	## yinf=aordonnée min. de la boîte sélectionnée
-	## ht_spectre="hauteur" en pixels du spectre
-	## ht_dessus=hauteur d'image au dessus du spectre
-	## ht_dessous=hauteur d'image au dessous du spectre
-	## xmax_zone=abscisse max. de la zonne sélectionnée
-	## xmin_zone=abscisse min. de la zonne sélectionnée
-	## naxis2=hauteur de l'image.
-	if {[lindex $coords_zone 1]<[lindex $coords_zone 3]} {
-	    set ysup [lindex $coords_zone 3]
-	    set yinf [lindex $coords_zone 1]
+	#--- Passe en entier ycenter et hauteur pour le decoupage de zones de meme taille :
+	#[ expr $ycenter+0.5*$hauteur-(int($ycenter+0.5*$hauteur)+1) ] >= 0.5 
+	if { [ expr $ycenter-int($ycenter) ] > 0.5 } {
+	    set ycenter [ expr int($ycenter)+1 ]
 	} else {
-	    set yinf [lindex $coords_zone 3]
-	    set ysup [lindex $coords_zone 1]
+	    set ycenter [ expr int($ycenter) ]
 	}
-	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-	set ht_spectre [expr $ysup-$yinf]
-	set ht_dessus [expr $naxis2-$ysup]
-	set ht_dessous [expr $yinf]
-	set xsup_zone [lindex $coords_zone 0]
-	set xinf_zone [lindex $coords_zone 2]
-
-	## creation d'un fichier contenant la zone selectionnee
-	buf$audace(bufNo) window $coords_zone
-	# ::console::affiche_resultat "$coords_zone ; ${filespacialspc}_zone\n"
-	# ::audace::conserve_seuils
-	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
-	set listcoords [list $ht_spectre $yinf $ysup $xinf_zone $xsup_zone $ht_dessous $ht_dessus]
-	
-	##--------------- Traitement de la zone selectionnee -------------------#
-	if { [llength $args] == 1 } {
-	    #-- Gestion de la compatibilité historique : cas historique avec un seul argument : mais ici utilise spc_detect
-	    set file_out [ spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords ]
-	    return $file_out
-	} elseif { [llength $args] == 2 } {
-	    if { $methodefc == "all" } {
-		#--- EN ATTENDANT (utilise ici spc_detect)
-		set file_out [ spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords ]
-		return $file_out
-
-		#--- A TERMINER POUR SE PASSER DU CAS [llength $args] == 1  ET RECODER DEBUT spc_bin
-		set flag 0
-		if { $flag == 1 } {
-		    #-- Soustrait une moyenne d'une zone dessus et et dessous la zone sélectionnée
-		    #-- Détermine la zone du spectre 2D à binner :
-		    set gauss_params [ spc_detect $filespacialspc ]
-		    buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-		    set ycenter [ lindex $gauss_params 0 ] 
-		    set largeur [ lindex $gauss_params 1 ]
-		    set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
-		    #buf$audace(bufNo) load "$audace(rep_images)/${filespacialspc}_fc"
-		    buf$audace(bufNo) window $coords_zone
-		    buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_fc_zone"
-		    
-		    #-- Effectue le binning :
-		    set file_out [ spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords ]
-		    return $file_out
-		}
-	    } elseif { $methodefc == "sup" } {
-		set file_out [ spc_binsup "${filespacialspc}_zone" "$filespacialspc" $listcoords ]
-		return $file_out
-	    } elseif { $methodefc == "none" } {
-		set ht_spectre [ lindex $listcoords 0 ]
-		set file_out [ spc_bins "${filespacialspc}_zone" $ht_spectre ]
-		return $file_out
-	    } elseif { $methodefc == "auto" } {
-		file delete "$audace(rep_images)/${filespacialspc}_zone$conf(extension,defaut)"
-		#-- Soustrait le fond de ciel :
-		buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-		buf$audace(bufNo) imaseries "BACK back_kernek=30 back_threshold=0.2 sub"
-		buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_fc"
-		#-- Détermine la zone du spectre 2D à binner : (fonctionne mieux sur spectre avec fond de ciel)
-		set gauss_params [ spc_detect $filespacialspc ]
-		buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-		set ycenter [ lindex $gauss_params 0 ] 
-		set largeur [ lindex $gauss_params 1 ]
-		set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
-		buf$audace(bufNo) load "$audace(rep_images)/${filespacialspc}_fc"
-		buf$audace(bufNo) window $coords_zone
-		buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_fc_zone"
-		file delete "$audace(rep_images)/${filespacialspc}_fc$conf(extension,defaut)"
-		#-- Effectue le binning :
-		set ht_spectre [ lindex $listcoords 0 ]
-		set file_out [ spc_bins "${filespacialspc}_fc_zone" $ht_spectre ]
-		return $file_out
-	    }
+	if { [ expr $hauteur-int($hauteur) ] > 0.5 } {
+	    set hauteur [ expr int($hauteur)+1 ]
+	} else {
+	    set hauteur [ expr int($hauteur) ]
 	}
-   } else {
-	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (all, sup, none, auto)?\n\n"
-   }
+
+	#--- Découpage de zone où se trouve le spectre :
+	#--  -----------B
+	#--  |          |
+	#--  A-----------
+	set coords_zone_spectre [ list 1 [expr int($ycenter-0.5*$hauteur)] $naxis1 [expr int($ycenter+0.5*$hauteur)] ]
+	::console::affiche_resultat "Zone du spectre : $coords_zone_spectre\n"
+	#--- Découpage de la zone où se trouve le spectre
+	buf$audace(bufNo) window $coords_zone_spectre
+	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone"
+
+
+	#--- Découpage de la zone supérieure pour le fond de ciel :
+	set coords_zone_sup [ list 1 [expr int($ycenter+1.5*$hauteur)] $naxis1 [expr int($ycenter+2.5*$hauteur)] ]
+	::console::affiche_resultat "Zone supérieure : $coords_zone_sup\n"
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+	buf$audace(bufNo) window $coords_zone_sup
+	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zonesup"
+
+	#--- Découpage de la zone inférieure pour le fond de ciel :
+	set coords_zone_inf [ list 1 [expr int($ycenter-1.5*$hauteur)] $naxis1 [expr int($ycenter-2.5*$hauteur)] ]
+	::console::affiche_resultat "Zone inférieure : $coords_zone_inf\n"
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+	buf$audace(bufNo) window $coords_zone_inf
+	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zoneinf"
+
+	#--- Calcul de la moyenne du fond de ciel et la soustrait :
+	if { $methodemoy == "moy" } {
+
+	    #--- Somme moyenne des zones sup et inf :
+	    ::console::affiche_resultat "Soustraction du fond de ciel : moyenne des 2 zones.\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zoneinf" 0
+	    buf$audace(bufNo) mult -0.5
+	    uncosmic 0.5
+	    #-- Soustraction :
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+	} elseif { $methodemoy == "med" } {
+
+	    #--- Somme médiane des colonne pour chaque zone puis moyenne :
+	    ::console::affiche_resultat "Soustraction du fond de ciel : médiane des colonnes de chaque zone.\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
+	    set haut [ lindex [ buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+	    buf$audace(bufNo) imaseries "MEDIANY y1=1 y2=$haut height=$haut"
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zonesupmed"
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
+	    set haut [ lindex [ buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+	    buf$audace(bufNo) imaseries "MEDIANY y1=1 y2=$haut height=$haut"
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zonesupmed" 0
+	    buf$audace(bufNo) mult -0.5
+	    #-- Soustraction :
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+	    file delete "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
+	} elseif { $methodemoy == "moy2" } {
+
+	    #--- Moyenne de la valeur des fonds de ciel des 2 zones :
+	    ::console::affiche_resultat "Soustraction du fond de ciel : moyenne des 2 fonds.\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
+	    set moysup [ lindex [ buf$audace(bufNo) stat ] 6 ]
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zoneinf"
+	    set moyinf [ lindex [ buf$audace(bufNo) stat ] 6 ]
+	    set moy [ expr -0.5*($moysup+$moyinf) ]
+	    #-- Crée une image uniforme d'intensité égale à la moyenne des fonds de ciel
+	    #buf$audace(bufNo) clear
+	    set haut [ expr int($hauteur)+1 ]
+	    buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $haut FORMAT_USHORT COMPRESS_NONE 0
+	    buf$audace(bufNo) offset $moy
+	    #-- Soustraction :
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+	} elseif { $methodemoy == "back" } {
+
+	    #--- Méthode du BACK :
+	    ::console::affiche_resultat "Soustraction du fond de ciel : méthode fraction.\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+	    buf$audace(bufNo) imaseries "BACK back_kernek=30 back_threshold=0.2 sub"
+	    buf$audace(bufNo) window $coords_zone_spectre
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+	} elseif { $methodemoy == "sup" } {
+
+	    #--- Soustraction du fond de ciel d'une zone dessus le spectre :
+	    ::console::affiche_resultat "Soustraction du fond de ciel d'une zone dessus le spectre.\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
+	    set moy [expr -1.*[ lindex [ buf$audace(bufNo) stat ] 6 ] ]
+	    #-- Crée une image uniforme d'intensité égale à la moyenne des fonds de ciel
+	    set haut [ expr int($hauteur)+1 ]
+	    buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $haut FORMAT_USHORT COMPRESS_NONE 0
+	    buf$audace(bufNo) offset $moy
+	    #-- Soustraction :
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+	} elseif { $methodemoy == "inf" } {
+
+	    #--- Soustraction du fond de ciel d'une zone dessus le spectre :
+	    ::console::affiche_resultat "Soustraction du fond de ciel d'une zone dessous le spectre.\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zoneinf"
+	    set moy [expr -1.*[ lindex [ buf$audace(bufNo) stat ] 6 ] ]
+	    #-- Crée une image uniforme d'intensité égale à la moyenne des fonds de ciel
+	    set haut [ expr int($hauteur)+1 ]
+	    buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $haut FORMAT_USHORT COMPRESS_NONE 0
+	    buf$audace(bufNo) offset $moy
+	    #-- Soustraction :
+	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+	} elseif { $methodemoy == "none" } {
+
+	    #--- Aucune soustraction du fond de ciel
+	    ::console::affiche_resultat "Aucune soustraction du fond de ciel.\n"
+	    file copy "$audace(rep_images)/${spectre}_zone$conf(extension,defaut)" "$audace(rep_images)/${spectre}_zone_fc$conf(extension,defaut)"
+	} else {
+	    ::console::affiche_resultat "Mauvaise option de calcul du fond de ciel.\n"
+	}
+
+	#--- Sauvegarde et netoyages :
+	::console::affiche_resultat "Spectre 2D netoyé du fond de ciel sauvé sous ${spectre}_zone_fc.\n"
+	# file delete $audace(rep_images)/${spectre}_zone$conf(extension,defaut)
+	file delete $audace(rep_images)/${spectre}_zonesup$conf(extension,defaut)
+	file delete $audace(rep_images)/${spectre}_zoneinf$conf(extension,defaut)
+	return ${spectre}_zone_fc
+    } else {
+	::console::affiche_erreur "Usage: spc_subsky spectre_2D_fits y_centre_spectre hauteur_spectre méthode_soustraction_fond_de_ciel (moy, moy2, med, sup, inf, none, back)\n\n"
+    }
 }
-###############################################################
-
+#***************************************************************************#
 
 
 
@@ -737,7 +696,6 @@ proc spc_profil { args } {
 ###############################################################
 
 proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoords ""} } {
-# proc spc_bin { {filenamespc_zone ""} {filespacialspc ""} {ht_spectre ""} } {
 
     global audace
     global conf
@@ -829,25 +787,14 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
     #--- Suppression des fichiers intermediaires
     ## $conf(extension_default)
     ::console::affiche_resultat "Effacement des fichiers temporaires...\n"
-
-    #file delete [ file join [ file rootname $filenamespc_spatial ]_sp$conf(extension,defaut) ]
-    #file delete [ file join [ file rootname $filenamespc_spatial ]_spinf$conf(extension,defaut) ]
-    #file delete [ file join [ file rootname $filenamespc_spatial ]_spsup$conf(extension,defaut) ]
-    #file delete [ file join [ file rootname $filenamespc_spatial ]_zone$conf(extension,defaut) ]
-    #file delete [ file join [ file rootname $filenamespc_spatial ]_zonev$conf(extension,defaut) ]
-    file delete $audace(rep_images)/${filenamespc_spatial}_sp$conf(extension,defaut)
-    file delete $audace(rep_images)/${filenamespc_spatial}_spinf$conf(extension,defaut)
-    file delete $audace(rep_images)/${filenamespc_spatial}_spsup$conf(extension,defaut)
-    file delete $audace(rep_images)/${filenamespc_spatial}_zone$conf(extension,defaut)
-    file delete $audace(rep_images)/${filenamespc_spatial}_zonev$conf(extension,defaut)
+    file delete "$audace(rep_images)/${filenamespc_spatial}_sp$conf(extension,defaut)"
+    file delete "$audace(rep_images)/${filenamespc_spatial}_spinf$conf(extension,defaut)"
+    file delete "$audace(rep_images)/${filenamespc_spatial}_spsup$conf(extension,defaut)"
+    file delete "$audace(rep_images)/${filenamespc_spatial}_zone$conf(extension,defaut)"
+    file delete "$audace(rep_images)/${filenamespc_spatial}_zonev$conf(extension,defaut)"
 
     buf$audace(bufNo) bitpix short
     return ${filenamespc_spatial}_spc
-    ## Tracer du profil de raie I=f(x)
-    # trace_spec()
-    #} else {
-	#	::console::affiche_resultat "Le fichier n'existe pas.\n"
-    #}
 }
 ###############################################################
 
@@ -870,46 +817,33 @@ proc spc_bins { args } {
   global conf
   set extsp ".dat"
 
-  if { [llength $args] == 2 } {
+  if { [llength $args] == 1 } {
       set filenamespc_zone [ lindex $args 0 ]
-      set ht_spectre [ lindex $args 1 ]
 
       #--- Binning
-      ## On binne sur les colonnes dans la region de l'image correspondant au spectre et on sauvegarde le résultat dans ${filespacialspc}_sp :
       ::console::affiche_resultat "Binning des colonnes de la région sélectionnée...\n"
-      ## Exemple de binning sur la totatlite de la totalite de la hauteur de l'image initiale
-      ##set ysup2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-      ##buf$audace(bufNo) biny 1 $ysup2      
       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_zone"
-      #buf$audace(bufNo) biny 1 [expr $ysup-$yinf]
+      set ht_spectre [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
       buf$audace(bufNo) biny 1 $ht_spectre 1
-      ## Initialisation des mots-clef spectroscopie
-      ## Pondération par la hauteur en pixels
-      #buf$audace(bufNo) mult [expr 1.0/$ht_spectre]
       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
       buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_zone}_spc"
-      ::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_zone}_spc$conf(extension,defaut)\n"
+      ::console::affiche_resultat "\nProfil de raies sauvé sous ${filenamespc_zone}_spc$conf(extension,defaut)\n"
 
       #--- Export au format dat
       # ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_zone${extsp}\n"
       # spc_fits2dat ${filenamespc_zone}_spc
-
       #buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_zone}_spc"
       # buf$audace(bufNo) imaseries "PROFILE filename=${filenamespc_zone}_spc$extsp direction=x offset=1"
       # buf$audace(bufNo) imaseries "PROFILE filename=$audace(rep_images)/${filenamespc_zone}_spc$extsp direction=x offset=1"
 
       #--- Efface les fichiers temporaires :
       file delete "$audace(rep_images)/$filenamespc_zone$conf(extension,defaut)"
-      #file delete $audace(rep_images)/${filenamespc_zone}$conf(extension,defaut)
-      #file delete $audace(rep_images)/${filespatialspc}_fc$conf(extension,defaut)
-      #file delete $audace(rep_images)/${filespatialspc}_fc_zone$conf(extension,defaut)
-      
       buf$audace(bufNo) bitpix short
       return ${filenamespc_zone}_spc
    } else {
-	::console::affiche_erreur "Usage: spc_bins spectre_2D_zone hauteur du spectre\n\n"
+	::console::affiche_erreur "Usage: spc_bins spectre_2D_zone\n\n"
    }
 }
 ###############################################################
@@ -1039,13 +973,13 @@ proc spc_profily { args } {
 
     if { [llength $args] <= 3 } {
 	if { [llength $args] == 2 } {
-	    set fichier [ lindex $args 0 ]
-	    set y [ lindex $args 1 ]
+	    set fichier [ file rootname [ lindex $args 0 ] ]
+	    set y [ expr int([ lindex $args 1 ]) ]
 	    set dy 0.5
 	} elseif { [llength $args] == 3 } {
-	    set fichier [ lindex $args 0 ]
-	    set y [ lindex $args 1 ]
-	    set hauteur [ lindex $args 2 ]
+	    set fichier [ file rootname [ lindex $args 0 ] ]
+	    set y [ expr int([ lindex $args 1 ]) ]
+	    set hauteur [ expr int([ lindex $args 2 ]) ]
 	    set dy [ expr int($hauteur*.5-1)+1 ]
 	} else {
 	    ::console::affiche_erreur "Usage: spc_profily image_fits ordonnée_y_de_la_ligne ?hauteur à binner?\n\n"
@@ -1095,6 +1029,38 @@ proc spc_profily { args } {
 proc spc_profilx { args } {
     global audace
     global conf
+    set extsp ".dat"
+    set nomprofil "profil_spcx"
+
+    if { [llength $args] == 2 } {
+	set fichier [ file rootname [ lindex $args 0 ] ]
+	set x [ lindex $args 1 ]
+
+	#--- Binning
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	#- Les commandes PROFILE et PROFILE2 n'accèptent pas les noms de fichier compliqués
+	buf$audace(bufNo) imaseries "PROFILE2 filename=$audace(rep_images)/$nomprofil$extsp direction=y offset=$x"
+
+	#--- Sauvegarde du profil
+	#-- Elève la première ligne du fichier dat (label des colonnes)
+	#- J'ai modifié tt_user3 ligne 350 de la libtt.
+	set fsortie [ file rootname [ spc_dat2fits $nomprofil$extsp ] ]
+	file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
+	file delete "$audace(rep_images)/$nomprofil$extsp"
+	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcx$conf(extension,defaut)\n"
+	return ${fichier}_spcx
+    } else {
+	::console::affiche_erreur "Usage: spc_profilx image_fits abscisse_x_de_la_ligne\n\n"
+    }
+}
+###############################################################
+
+
+
+proc spc_profilx_07062006 { args } {
+    global audace
+    global conf
+    set extsp ".dat"
 
     if { [llength $args] <= 3 } {
 	if { [llength $args] == 2 } {
@@ -1111,28 +1077,50 @@ proc spc_profilx { args } {
 	    return 0
     	}
 
-	#--- Découpage de la ligne
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
-	#set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
-	## coords contient : { x1 y1 x2 y2 }
-	##  -----------B
-	##  |          |
-	##  A-----------
-	set coords_zone [ list [ expr $x-int($dx) ] 1 [ expr $x+int($dx) ] $naxis2 ]
-	buf$audace(bufNo) window $coords_zone
-	#--- Binning
-	set lgr [ expr $dx*2 ]
-	if { $dx != 0.5 } {
-	    ::console::affiche_resultat "Hauteur de binning : $lgr\n"
-	    buf$audace(bufNo) binx 1 $lgr 1
+	#*** Meth 1
+	set flag 0
+	if { $flag == 1 } {
+	    #--- Découpage de la ligne
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
+	    set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
+	    ## coords contient : { x1 y1 x2 y2 }
+	    ##  -----------B
+	    ##  |          |
+	    ##  A-----------
+	    set coords_zone [ list [ expr $x-int($dx) ] 1 [ expr $x+int($dx) ] $naxis2 ]
+	    buf$audace(bufNo) window $coords_zone
+	    #--- Binning
+	    set lgr [ expr $dx*2 ]
+	    if { $dx != 0.5 } {
+		::console::affiche_resultat "Hauteur de binning : $lgr\n"
+		buf$audace(bufNo) binx 1 $lgr 1
+	    }
+	} else {
+	    set lgr [ expr $dx*2 ]
+	    if { $dx != 0.5 } {
+		::console::affiche_resultat "Hauteur de binning : $lgr\n"
+		set x1 [ expr $x-$dx ]
+		set x2 [ expr $x+$dx ]
+		buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+		#-- L'image résultante de la somme n'est pas un fichier FITS 1D : naxis1=1 naxis2=old_naxis2 !
+		# buf$audace(bufNo) binx $x1 $x2 1
+		buf$audace(bufNo) imaseries "PROFILE filename=$audace(rep_images)/${fichier}_spcx$extsp direction=x offset=1"
+	    } else {
+		::console::affiche_resultat "Hauteur de binning : $lgr\n"
+		set x1 [ expr $x-$dx ]
+		set x2 [ expr $x+$dx ]
+		buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+		# buf$audace(bufNo) binx $x1 $x2 1
+		buf$audace(bufNo) imaseries "PROFILE filename=$audace(rep_images)/${fichier}_spcx$extsp direction=x offset=1"
+	    }
 	}
-
 	#--- Sauvegarde du profil
-	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
-	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcx"
+	set sortie [ spc_dat2fits ${fichier}_spcx$extsp ]
+	#buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	#buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+	#buf$audace(bufNo) bitpix float
+	#buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcx"
 	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcx$conf(extension,defaut)\n"
 	return ${fichier}_spcx
     } else {

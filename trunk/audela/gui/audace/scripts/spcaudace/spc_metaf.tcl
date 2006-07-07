@@ -190,4 +190,97 @@ proc spc_traiteaopt { args } {
        ::console::affiche_erreur "Usage: spc_traiteaopt nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu xinf_crop yinf_crop méthode_fond_de_ciel (no, auto) méthode régistration (reg, spc, no) méthode_tilt (no, auto, man) méthode_profil (none, auto, all, sup)\n\n"
    }
 }
+#**********************************************************************************#
+
+
+
+
 ###############################################################################
+# Procédure de traitement de spectres 2D : prétraitement, correction géométriques, régistration, sadd, spc_profil, calibration en longeur d'onde, smooth.
+# Auteur : Benjamin MAUCLAIRE
+# Date création :  27-06-2006
+# Date de mise à jour : 27-06-2006
+# Méthode : utilise bm_pretrait pour le prétraitement
+# Arguments : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu methode_sub_sky methode_bining smooth (o/n)
+###############################################################################
+
+proc spc_traitetot { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 10 } {
+       #- Peut-etre gerer l'option de registration
+       set repdflt [spc_goodrep]
+       set img [ lindex $args 0 ]
+       set dark [ lindex $args 1 ]
+       set flat [ lindex $args 2 ]
+       set dflat [ lindex $args 3 ]
+       set lampe [ file rootname [ lindex $args 4 ] ]
+       set methreg [ lindex $args 5 ]
+       set methsky [ lindex $args 6 ]
+       set methbin [ lindex $args 7 ]
+       set methsmo [ lindex $args 8 ]
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${f1}*$conf(extension,defaut) ] ]
+       #--- Prétraitement de $nbimg images :
+       ::console::affiche_resultat "\n**** Prétraitement de $nbimg images ****\n\n"
+       set fpretrait [ bm_pretrait $img $dark $flat $dflat ]
+
+       #--- Correction de la courbure des raies (smile selon l'axe x) :
+       ::console::affiche_resultat "\n**** Correction de la courbure des raies (smile selon l'axe x) ****\n\n"
+       set fsmilex [ spc_smilex2imgs $lampe $fpretrait ]
+
+       #--- Correction du l'inclinaison (tilt)
+       ::console::affiche_resultat "\n**** Correction du l'inclinaison (tilt) ****\n\n"
+       set ftilt [ spc_tiltautoimgs $fsmilex ]
+
+       #--- Appariement de $nbimg images :
+       ::console::affiche_resultat "\n**** Appariement de $nbimg images ****\n\n"
+       if { $methreg == "spc" } {
+	   set freg [ spc_register $ftilt ]
+       } elseif { $methreg == "reg" } {
+	   set freg [ bm_register $ftilt ]
+       } elseif { $methreg == "no"} {
+	   set freg "$ftilt"
+       }
+
+       #--- Addition de $nbimg images :
+       ::console::affiche_resultat "\n**** Addition de $nbimg images ****\n\n"
+       set fsadd [ bm_sadd $freg ]
+
+       ::console::affiche_resultat "\n**** Extraction du profil de raies ****\n\n"
+       set fprofil [ spc_profil $fsadd $methsky $methbin ]
+
+       #--- Etalonnage en longueur d'onde du spectre de lampe de calibration :
+       ::console::affiche_resultat "\n**** Etalonnage en longueur d'onde du spectre de lampe de calibration ****\n\n"
+       spc_loadfit ${lampe}_slx
+       tk.message "Selectionnez les corrdonnées x de cahque bords de 2 raies"
+       tk.boite1 xa1 xa2 xb1 xb2
+       tk.message "Donner la longueur d'onde et le type (a/e) des 2 raies"
+       tk.boite2 type1 lammbda1 type2 lambda2
+       set lampecalibree [ spc_calibre2sauto ${lampe}_slx $xa1 $xa2 $lambda1 $type1 $xb1 $xb2 $lambda2 $type2 ]
+
+       #--- Calibration en longueur d'onde du spectre de l'objet :
+       ::console::affiche_resultat "\n**** Calibration en longueur d'onde du spectre de l'objet $brut ****\n\n"
+       set fcal [ spc_calibre2loifile $lampecalibree $fprofil ]
+
+       #--- Doucissage du profil de raies :
+       if { $methsmo == "o" } {
+	   ::console::affiche_resultat "\n**** Adoucissement du profil de raies ****\n\n"
+	   set fsmooth [ spc_smooth $fcal ]
+       } elseif { $methsmo == "n" } {
+	   set fsmooth "$fcal"
+       }
+
+       #--- Message de fin du script :
+       ::console::affiche_resultat "\nSpectre traité, corrigé et calibré sauvé sous $fsmooth.\n"
+       tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
+       spc_loadfit $fsmooth
+       return $fsmooth
+   } else {
+       ::console::affiche_erreur "Usage: spc_traitetot nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe méthode_régistration (reg, spc) méthode_fond_de_ciel (all, auto, sup, none) méthode_bining (normal, asym) méthode_smooth (o/n)\n\n"
+   }
+}
+#**********************************************************************************#
+
+

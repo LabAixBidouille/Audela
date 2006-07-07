@@ -341,7 +341,7 @@ proc spc_dat2fits { args } {
 	}
 	
 	#--- Initialisation à blanc d'un fichier fits
-	buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
+	buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
 	
 	#--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
 	# Une liste commence à 0 ; Un vecteur fits commence à 1
@@ -428,10 +428,12 @@ proc spc_dat2fits { args } {
 	    set nom [ file rootname $filenamespc ]
 	    buf$audace(bufNo) save "$audace(rep_images)/${nom}$conf(extension,defaut)"
 	    ::console::affiche_resultat "Fichier fits sauvé sous $audace(rep_images)/${nom}$conf(extension,defaut)\n"
+	    return ${nom}
 	} elseif {[llength $args] == 2} {
 	    set nom [ file rootname $filenameout ]
 	    buf$audace(bufNo) save "$audace(rep_images)/${filenameout}$conf(extension,defaut)"
 	    ::console::affiche_resultat "Fichier fits sauvé sous $audace(rep_images)/${filenameout}$conf(extension,defaut)\n"
+	    return ${filenameout}
 	}
     } else {
 	::console::affiche_erreur "Usage: spc_dat2fits fichier_profil.dat ?fichier_sortie.fit?\n\n"
@@ -600,6 +602,9 @@ proc spc_fits2dat { args } {
      } elseif {[llength $args] == 2} {
 	 set filenamespc [ lindex $args 0 ]
 	 set filenameout [ lindex $args 1 ]
+     } else {
+	 ::console::affiche_erreur "Usage: spc_fits2dat fichier_profil.fit ?fichier_sortie.dat?\n\n"
+	 return 0
      }
 
      buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
@@ -627,6 +632,9 @@ proc spc_fits2dat { args } {
      } elseif {[llength $args] == 2} {
 	 set fileout $filenameout
 	 set file_id [open "$audace(rep_images)/$fileout" w+]
+     } else {
+	 ::console::affiche_erreur "Usage: spc_fits2dat fichier_profil.fit ?fichier_sortie.dat?\n\n"
+	 return 0
      }
 
      if { $xdepart != 1 } {
