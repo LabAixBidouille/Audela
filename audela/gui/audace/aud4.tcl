@@ -2,7 +2,7 @@
 # Fichier : aud4.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud4.tcl,v 1.6 2006-06-20 16:46:52 robertdelmas Exp $
+# Mise a jour $Id: aud4.tcl,v 1.7 2006-07-07 20:44:11 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -240,6 +240,9 @@ namespace eval ::mapWindow {
 
       #--- La fenetre est active
       focus $This
+
+      #--- Mise a jour de la fenetre
+      ::mapWindow::toggleSource
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
