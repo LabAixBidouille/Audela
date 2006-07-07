@@ -3,6 +3,11 @@
 // Date   :05/08/2005
 // Author :Michel Pujol
 
+#ifndef __LIBDCRAW_SRC_H__
+#define __LIBDCRAW_SRC_H__
+
+#include <time.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -144,3 +149,5 @@ void libdcraw_freeBuffer (unsigned short * data);
 #ifdef __cplusplus
 }
 #endif
+
+#endif 
