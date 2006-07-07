@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.3 2006-06-18 21:37:47 michelpujol Exp $
+// $Id: camtcl.c,v 1.4 2006-07-07 12:54:14 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -39,14 +39,14 @@ extern struct camini CAM_INI[];
 
 /*
  * -----------------------------------------------------------------------------
- *  cmdAutoLoadFlag()
+ *  cmdCamAutoLoadFlag()
  *
  * Change or returns autoLoadFlag value
- *   if autoLoadFlag = 0  , cam_read_ccd doesn't download image after acquisition
- *   if autoLoadFlag = 1  , cam_read_ccd download image after acquisition
+ *   if autoLoadFlag = 0  , cam_read_ccd doesn't download image after acquisition with CF
+ *   if autoLoadFlag = 1  , cam_read_ccd loads image after acquisition with CF
  * -----------------------------------------------------------------------------
  */
-int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdCamAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
    int result = TCL_OK, pb = 0;
@@ -60,12 +60,12 @@ int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *
       result = TCL_ERROR;
    } else if (argc == 2) {
       strcpy(ligne, "");
-      sprintf(ligne, "%d", cam->autoLoadFlag );
+      sprintf(ligne, "%d", cam_getAutoLoadFlag(cam) );
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_OK;
    } else {
       if(argv[2][0] == '0' || argv[2][0] == '1' ) {
-         cam->autoLoadFlag = atoi(argv[2]);
+         cam_setAutoLoadFlag(cam, atoi(argv[2]));
          result = TCL_OK;
       } else {
          sprintf(ligne, "Usage: %s %s ?0|1?\n Invalid value. Must be 0 or 1", argv[0], argv[1]);
@@ -75,6 +75,46 @@ int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *
    }
    return result;
 }
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdCamAutoDeleteFlag()
+ *
+ * Change or returns autoDeleteFlag value
+ *   if autoDeleteFlag = 0  , cam_read_ccd doesn't delete image after acquisition with CF
+ *   if autoDeleteFlag = 1  , cam_read_ccd deletes image after acquisition with CF
+ * -----------------------------------------------------------------------------
+ */
+int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      strcpy(ligne, "");
+      sprintf(ligne, "%d", cam_getAutoDeleteFlag(cam)  );
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      if(argv[2][0] == '0' || argv[2][0] == '1' ) {
+         cam_setAutoDeleteFlag(cam, atoi(argv[2]));
+         result = TCL_OK;
+      } else {
+         sprintf(ligne, "Usage: %s %s ?0|1?\n Invalid value. Must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
 
 /*
  * -----------------------------------------------------------------------------
@@ -100,12 +140,12 @@ int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *
       result = TCL_ERROR;
    } else if (argc == 2) {
       strcpy(ligne, "");
-      sprintf(ligne, "%d", cam->driverMode );
+      sprintf(ligne, "%d", cam_getDriveMode(cam) );
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_OK;
    } else {
       if(argv[2][0] == '0' || argv[2][0] == '1' || argv[2][0] == '2') {
-         cam->driverMode = atoi(argv[2]);
+         cam_setDriveMode(cam,atoi(argv[2]));
          result = TCL_OK;
       } else {
          sprintf(ligne, "Usage: %s %s ?0|1|2?\n Invalid value. Must be in  0,1 or 2", argv[0], argv[1]);
@@ -122,21 +162,14 @@ int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *
  *
  * 
  *  cam1 quality
- *    returns quality
+ *    returns current quality
  *
  *  cam1 quality value 
- *    set quality value
+ *    change current quality 
  * 
  *  cam1 quality list
  *    return quality list
- *
- *  qualitéy list for Canon driver :
- *    quality = "CRW"      (raw quality)
- *    quality = "Large:Fine"
- *    quality = "Large:Normal" 
- *    quality = "Middle:Fine"
- *    quality = "Middle:Normal" 
- *    quality =  ....
+ *    example : {"CRW" "Large:Fine" "Large:Normal" "Middle:Fine" "Middle:Normal" }
  * -----------------------------------------------------------------------------
  */
 int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
@@ -152,9 +185,9 @@ int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else if (argc == 2) {
-      strcpy(ligne, "");
-      sprintf(ligne, "%s", cam->quality );
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      char quality[DIGICAM_QUALITY_LENGTH];
+      cam_getQuality(cam , quality);
+      Tcl_SetResult(interp, quality, TCL_VOLATILE);
       result = TCL_OK;
    } else {
       if ( strcmp(argv[2],"list") ==0 ) {
@@ -164,7 +197,8 @@ int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_OK;
       } else if( cam_checkQuality(argv[2]) == 0 ) {
-         strcpy(cam->quality, argv[2]);
+         cam_setQuality(cam , argv[2]);
+         strcpy(ligne, argv[2]);
          result = TCL_OK;
       } else {      
          char list[1024];
@@ -179,14 +213,14 @@ int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 
 /*
  * -----------------------------------------------------------------------------
- *  cmdLoadLastImage()
+ *  cmdCamLoadLastImage()
  *
  * load last image from camera
  *   
  *   
  * -----------------------------------------------------------------------------
  */
-int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]) {
+int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]) {
    int result;
    struct camprop *cam;
    char s[1000];
@@ -321,7 +355,7 @@ int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char 
 
 /*
  * -----------------------------------------------------------------------------
- *  cmdDefaultService()
+ *  cmdCamSystemService()
  *
  *  start or stop  hotplug service
  *        Windows : WIA ( Windows Image Acquisition)
@@ -329,7 +363,7 @@ int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char 
  *   
  * -----------------------------------------------------------------------------
  */
-int cmdSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]) {
+int cmdCamSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]) {
     char ligne[256];
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
@@ -357,6 +391,83 @@ int cmdSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char 
    }
    return result;
 }
+
+/**
+ * cmdCamUseCf
+ * Change or returns the "use CF" state(use memory card CF of DSLR).
+ *
+ * param : 
+ *    0=ne pas utiliser la carte memoire de l'APN, 1=utiliser la carte memoire de l'APN
+ */
+int cmdCamUseCf(ClientData clientData, Tcl_Interp * interp,
+                               int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      strcpy(ligne, "");
+      sprintf(ligne, "%d", cam_getUseCf(cam) );
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      if(argv[2][0] == '0' || argv[2][0] == '1' ) {
+         result = cam_setUseCf(cam, atoi(argv[2]));
+         if( result == 0) {
+            result = TCL_OK;
+         } else {
+            Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else {
+         sprintf(ligne, "Usage: %s %s ?0|1?\n Invalid value. Must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
+/**
+ * cmdCamDebug
+ * Change debug level log.
+ *
+ * param : 
+ *    0=disable debug log, 1= enable debug log
+ */
+int cmdCamDebug(ClientData clientData, Tcl_Interp * interp,
+                               int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK, pb = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   cam->interp = interp;
+
+   if (argc != 3) {
+      sprintf(ligne, "Usage: %s %s 0|1", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      if(argv[2][0] == '0' || argv[2][0] == '1' ) {
+         cam_setDebug(cam, atoi(argv[2]));
+         result = TCL_OK;
+      } else {
+         sprintf(ligne, "Usage: %s %s ?0|1?\n Invalid value. Must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
 
 /**
  * cmdCamLonguePose - Réglage du mode longue pose.

@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.3 2006-06-18 21:37:47 michelpujol Exp $
+// $Id: camera.c,v 1.4 2006-07-07 12:54:14 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -41,7 +41,7 @@
 #include <stdlib.h>
 
 #include "camera.h"
-#include "gp_api.h"
+#include <libgphoto2.h>
 
 #ifdef WIN32
 #define SLEEP(t)  Sleep(t)
@@ -107,6 +107,7 @@ static void cam_cooler_check(struct camprop *cam);
 static void cam_set_binning(int binx, int biny, struct camprop *cam);
 static void cam_update_window(struct camprop *cam);
 int cam_setLongExposureDevice(struct camprop *cam, unsigned char value);
+int cam_copyImage(struct camprop *cam, char *imageData, unsigned long imageLength, char *imageMime);
 
 struct cam_drv_t CAM_DRV = {
    cam_init,
@@ -126,13 +127,16 @@ struct cam_drv_t CAM_DRV = {
    cam_cooler_check
 };
 
-#define GPAPI_OK     0
-#define GPAPI_ERROR -1
-
 struct _PrivateParams {
-   GPParams *gpparams;                // parametres internes libgphoto2
+   GPhotoSession *gphotoSession;                // parametres internes libgphoto2
    char gphotoWinDllDir[1024];        // repertoire des DDL gphoto2 pour windows
-
+   int autoLoadFlag;
+   int autoDeleteFlag;          // 
+   int useCf;                   // 0=ne pas utiliser la carte memoire de l'APN, 1=utiliser la carte memoire de l'APN
+   char imageFolder[1024];      // repertoire courant dans la memoire de la camera
+   char imageFile[1024];        // nom du fichier en cours de traitement ( entre startExp et read_ccd) 
+   int  driveMode;
+   char quality[DIGICAM_QUALITY_LENGTH];
 };
 
 char *canonQuality[] =
@@ -195,17 +199,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->params = malloc(sizeof(PrivateParams));
    
    cam->authorized = 1;
-   cam->autoLoadFlag = 1;
    strcpy(cam->params->gphotoWinDllDir, "../bin");            // default DLL directory
-
+   
    // je traite les parametres
    for (i = 3; i < argc - 1; i++) {
       if (strcmp(argv[i], "-gphoto2_win_dll_dir") == 0) {
          strncpy(cam->params->gphotoWinDllDir , argv[i + 1], 1024);
       }
    }
-
-
    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
    
 #ifdef WIN32
@@ -218,24 +219,24 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }   
 #endif
 
-   // j'initialise le contexte GPAPI
-   result = gpapi_init(&cam->params->gpparams, cam->params->gphotoWinDllDir);
-   if ( result != GPAPI_OK ) {
-      strcpy(cam->msg, gpapi_getLastErrorMessage(cam->params->gpparams));
+   // j'initialise la session
+   result = libgphoto_openSession(&cam->params->gphotoSession, cam->params->gphotoWinDllDir);
+   if ( result != LIBGPHOTO_OK ) {
+      strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
    }
    
    // je detecte la camera
-   result = gpapi_detect(cam->params->gpparams, cameraModel, cameraPath);
-   if ( result != GPAPI_OK ) {
-      strcpy(cam->msg, gpapi_getLastErrorMessage(cam->params->gpparams));
+   result = libgphoto_detectCamera(cam->params->gphotoSession, cameraModel, cameraPath);
+   if ( result != LIBGPHOTO_OK ) {
+      strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
    }
 
    // je connecte la camera
-   result = gpapi_open(cam->params->gpparams, cameraModel, cameraPath);
-   if ( result != GPAPI_OK ) {
-      strcpy(cam->msg, gpapi_getLastErrorMessage(cam->params->gpparams));
+   result = libgphoto_openCamera(cam->params->gphotoSession, cameraModel, cameraPath);
+   if ( result != LIBGPHOTO_OK ) {
+      strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
    }
 
@@ -246,10 +247,15 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }
 
    // je verifie si on peut selectionner le temps de pose (depend du modele d'APN)
-   result = gpapi_getTimeValue(cam->params->gpparams, &cam->exptime, &cam->driverMode, cam->quality); 
+   result = libgphoto_getTimeValue(cam->params->gphotoSession, &cam->exptime); 
    if ( result != 0 ) {
       return -1;
    }
+
+   cam_setAutoDeleteFlag(cam, 1);
+   cam_setAutoLoadFlag(cam,1);
+   cam_setDriveMode(cam, 0);
+   cam_setUseCf(cam, 0);
 
    return 0;
 }
@@ -257,10 +263,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 static int cam_close(struct camprop *cam) {   
    // je deconnecte la camera
-   gpapi_close(cam->params->gpparams);
+   libgphoto_closeCamera(cam->params->gphotoSession);
    
-   // je libere les ressources du contgexte GPAPI
-   gpapi_exit(cam->params->gpparams);
+   // je liferme la session
+   libgphoto_closeSession(cam->params->gphotoSession);
 
    if( cam->params != NULL) {
       free(cam->params);
@@ -279,7 +285,7 @@ int cam_setLonguePose(struct camprop *cam, int value) {
             cam->capabilities.expTimeCommand = 1;
             // je programme le temps de pose  a "bulb"
             if( cam->capabilities.expTimeCommand == 1 ) {
-               result = gpapi_setTimeValue(cam->params->gpparams, -1.0 , cam->driverMode, cam->quality);         
+               result = libgphoto_setTimeValue(cam->params->gphotoSession, -1.0);         
             }
 
             result = 0;
@@ -343,47 +349,75 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
       case REMOTE_INTERNAL : 
 
          if( cam->capabilities.expTimeCommand == 1 ) {
-            // je programme le temps de pose 
-            result = gpapi_setTimeValue(cam->params->gpparams, cam->exptime, cam->driverMode, cam->quality);         
+            result = libgphoto_setTimeValue(cam->params->gphotoSession, cam->exptime);  
+            if(result == LIBGPHOTO_OK) {
+               result = libgphoto_setQuality(cam->params->gphotoSession, cam->params->quality); 
+               if(result == LIBGPHOTO_OK) {
+                  result = libgphoto_setDriveMode(cam->params->gphotoSession, cam->params->driveMode);         
+               }
+            }
          }
-         
-         // je lance l'acquisition 
-         result = gpapi_captureImage(cam->params->gpparams, cam->cameraFolder, cam->fileName);         
-         if (result != GPAPI_OK) {
-            strcpy(cam->cameraFolder, "");
-            strcpy(cam->fileName, "");
+         if (result == LIBGPHOTO_OK ) {
+            // Comme libgphoto_captureImage est bloquant, on pourra lancer cam_read_ccd  
+            // immediatement apres la fin de cam_start_exp
+            cam->exptimeTimer = 0.0;
+         } else {
+            // je retourne un message d'erreur
+            strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
          }
-         // Comme gpapi_captureImage est bloquant, on pourra lancer cam_read_ccd  
-         // immediatement apres la fin de cam_start_exp
-         cam->exptimeTimer = 0.0;
+        
 
          break;
       case REMOTE_LINK : 
-         if( cam->capabilities.expTimeCommand == 1 ) {
-            // je programme le temps de pose 
-            result = gpapi_setTimeValue(cam->params->gpparams, -1, cam->driverMode, cam->quality);         
+         if( cam->exptime >= 0.1 ) {
+            if( cam->capabilities.expTimeCommand == 1 ) {
+               // je programme le temps de pose 
+               result = libgphoto_setTimeValue(cam->params->gphotoSession, cam->exptime);         
+            }
+            result = libgphoto_setQuality(cam->params->gphotoSession, cam->params->quality);         
+            result = libgphoto_setDriveMode(cam->params->gphotoSession, cam->params->driveMode);         
+            // je lance une longue pose 
+            if( cam->params->useCf == 1 ) {
+               result = libgphoto_startLongExposure(cam->params->gphotoSession, 8);
+            } else {
+               result = libgphoto_startLongExposure(cam->params->gphotoSession, 2);
+            }
+            if (result == LIBGPHOTO_OK ) {
+               // je lance une acquisition
+               cam_setLongExposureDevice(cam, cam->longueposestart );
+            } else {
+               // je retourne un message d'erreur
+               strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+            }
+         } else {
+            sprintf( cam->msg, "%f second with remote link is too short.",cam->exptime);
          }
-         // je prepare l'appareil photo 
-         result = gpapi_setExternalRemoteCapture(cam->params->gpparams,1);
-         if (result == GPAPI_OK ) {
-            // je lance une acquisition
-            cam_setLongExposureDevice(cam, cam->longueposestart );
-         }
-         
          break;
       case REMOTE_MANUEL :
          if( cam->capabilities.expTimeCommand == 1 ) {
             // je programme le temps de pose 
-            result = gpapi_setTimeValue(cam->params->gpparams, -1, cam->driverMode, cam->quality);         
+            result = libgphoto_setTimeValue(cam->params->gphotoSession, cam->exptime);         
          }
-         // je prepare l'appareil photo
-         gpapi_setExternalRemoteCapture(cam->params->gpparams,1);
-         cam->exptime = 0;
+         result = libgphoto_setQuality(cam->params->gphotoSession, cam->params->quality);         
+         result = libgphoto_setDriveMode(cam->params->gphotoSession, cam->params->driveMode);         
+         if (result == LIBGPHOTO_OK) {
+            // je demarre la longue pose
+            cam_setLongExposureDevice(cam, cam->longueposestart );
+            cam->exptime = 0;
+         } else {
+            // je retourne un message d'erreur
+            strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+         }
          break;
       default : 
          break;
       }
+
+   } else {
+      // je retourne un message d'erreur
+      strcpy(cam->msg, "Camera busy");
    }
+   
 }
 
 void cam_stop_exp(struct camprop *cam)
@@ -401,50 +435,150 @@ void cam_stop_exp(struct camprop *cam)
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
    int result;
+   char *imageData, *imageMime;
+   unsigned long imageLength;
 
-   if (p == NULL)
-      return;
    
    if (cam->authorized == 1) {
-
-      
       switch (cam->longuepose) {
       case REMOTE_INTERNAL : 
-         if ( strcmp(cam->cameraFolder, "")!=0 && strcmp(cam->fileName,"") != 0 ) {
-            result = GPAPI_OK;
-         } else {
-            result = GPAPI_ERROR;
-         }
+         // rien a faire
          break;
       case REMOTE_LINK : 
          // j'arrete l'acquisition
          cam_setLongExposureDevice(cam, cam->longueposestop );
-         // je recupere le nom de l'image dans la carte memoire de l'appareil photo
-         result = gpapi_captureImage(cam->params->gpparams, cam->cameraFolder, cam->fileName);
-         gpapi_setExternalRemoteCapture(cam->params->gpparams,0);
          break;
       case REMOTE_MANUEL :
-         // je recupere le nom de l'image dans la carte memoire de l'appareil photo
-         result = gpapi_captureImage(cam->params->gpparams, cam->cameraFolder, cam->fileName);
-         gpapi_setExternalRemoteCapture(cam->params->gpparams,0);
-         break;
-      default : 
-         result = GPAPI_ERROR;
+         // rien a faire
          break;
       }
-
-      if (result == GPAPI_OK) {
-         if( cam->autoLoadFlag == 1 ) {
-            result = cam_loadLastImage(cam);
+      
+      if( cam->params->useCf == 1 ) {
+         // si la carte CF est utilise 
+         result = libgphoto_captureImage(cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile);  
+         // je verifie s'il faut charger immediatement
+         if( cam->params->autoLoadFlag == 1 ) {
+            // je charge l'image  
+            result = libgphoto_loadImage(cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile, &imageData, &imageLength, &imageMime);
+            if (result == LIBGPHOTO_OK) {
+               result = cam_copyImage(cam, imageData, imageLength, imageMime);
+               if (result == LIBGPHOTO_OK  && cam->params->autoDeleteFlag == 1 ) {
+                  // je supprime l'image sur la carte memoire de l'appareil
+                  result = libgphoto_deleteImage (cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile);
+               }
+            } else {
+               // je retourne un message d'erreur
+               strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+            }
+            // je purge le nom du fichier
+            strcpy(cam->params->imageFile, "");
+            strcpy(cam->params->imageFolder, "");      
          }
-         
+      } else {
+         // si la carte CF n'est pas utilisee
+         if( cam->params->autoLoadFlag == 1 ) {
+            // je capture et charge l'image  
+            result = libgphoto_captureAndLoadImageWithoutCF(cam->params->gphotoSession, 
+               cam->params->imageFolder, cam->params->imageFile, 
+               &imageData, &imageLength, &imageMime);    
+            if (result == LIBGPHOTO_OK) {
+               result = cam_copyImage(cam, imageData, imageLength, imageMime);
+               if (result == LIBGPHOTO_OK ) {
+                  // je supprime l'image 
+                  result = libgphoto_deleteImage (cam->params->gphotoSession, 
+                     cam->params->imageFolder, cam->params->imageFile);
+               }
+            } 
+            // je purge le nom du fichier
+            strcpy(cam->params->imageFile, "");
+            strcpy(cam->params->imageFolder, "");      
+         } else {
+            // je capture une image sans la charger
+            result = libgphoto_captureImageWithoutCF(cam->params->gphotoSession);    
+         }
+      }
+      if (result != LIBGPHOTO_OK) {
+         // je retourne un message d'erreur
+         strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+      }
+   } else {
+      // je retourne un message d'erreur
+      strcpy(cam->msg, "Camera busy");
+   }     
+
+}
+
+
+int cam_loadLastImage(struct camprop *cam)
+{
+   int result;
+   char *imageData, *imageMime;
+   unsigned long imageLength;
+   
+   if(strcmp(cam->params->imageFile, "") != 0) { 
+      // je charge l'image   
+      result = libgphoto_loadImage(cam->params->gphotoSession, 
+         cam->params->imageFolder, cam->params->imageFile, 
+         &imageData, &imageLength, &imageMime);
+      if (result == LIBGPHOTO_OK )  {
+         result = cam_copyImage(cam, imageData, imageLength, imageMime);
+         if (result == LIBGPHOTO_OK  && cam->params->autoDeleteFlag == 1 ) {
+            // je supprime l'image sur la carte memoire de l'appareil
+            result = libgphoto_deleteImage (cam->params->gphotoSession, 
+               cam->params->imageFolder, cam->params->imageFile);
+         }
+      }
+      // je purge le nom du fichier
+      strcpy(cam->params->imageFile, "");
+      strcpy(cam->params->imageFolder, "");
+      if ( result != LIBGPHOTO_OK ) {
+         // je retourne un message d'erreur
+         sprintf(cam->msg, "Error libgphoto_loadImage : %s", libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+      }
+   } else {
+      strcpy(cam->msg, "No last image");
+   }
+
+   return result;
+}
+
+
+int cam_copyImage(struct camprop *cam, char *imageData, unsigned long imageLength, char *imageMime)
+{
+   int result;
+
+   // je copie les valeurs a retourner
+   cam->pixel_data = malloc(imageLength);
+   if( cam->pixel_data != NULL) {
+      memcpy(cam->pixel_data, imageData, imageLength);
+      cam->pixel_size  = imageLength;         
+      if (strcmp(imageMime, "image/x-canon-raw" ) == 0 ) {
+         strcpy(cam->pixels_classe, "CLASS_GRAY");
+         strcpy(cam->pixels_compression, "COMPRESS_RAW");
+         strcpy(cam->pixels_format, "FORMAT_SHORT");
+         cam->pixels_reverse_x = 0;
+         cam->pixels_reverse_y = 0;
+         result = LIBGPHOTO_OK;
+      } else if ( strcmp(imageMime, "image/jpeg") == 0 ) {
+         strcpy(cam->pixels_classe, "CLASS_RGB");
+         strcpy(cam->pixels_compression, "COMPRESS_JPEG");
+         strcpy(cam->pixels_format, "FORMAT_SHORT");
+         cam->pixels_reverse_x = 0;
+         cam->pixels_reverse_y = 0;
+         result = LIBGPHOTO_OK;
       } else {
          // je retourne un message d'erreur
-         strcpy(cam->msg, "read_ccd : gpapi_captureImage ERROR");
+         sprintf(cam->msg, "unknown format %s", imageMime);
+         result = LIBGPHOTO_ERROR;
       }
+   } else {
+      // je retourne un message d'erreur
+      sprintf(cam->msg, "cam_copyImage: Not enougt memory");
    }
-   
+ 
+   return result;
 }
+         
 
 void cam_shutter_on(struct camprop *cam)
 {
@@ -483,48 +617,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
 }
 
-int cam_loadLastImage(struct camprop *cam)
-{
-   int result;
-   char mimeType[64];
-   char *imageData;
-   unsigned long imageSize;
-   
-   if(strcmp(cam->fileName, "") != 0) { 
-      // je charge l'image   
-      result = gpapi_loadImage(cam->params->gpparams, cam->cameraFolder, cam->fileName, &imageData, &imageSize, mimeType);
-      if (result == GPAPI_OK )  {
-         // je copie les valeurs a retourner
-         cam->pixel_data  = imageData;
-         cam->pixel_size  = imageSize;         
-         strcpy(cam->pixels_classe, "CLASS_RGB");
-         strcpy(cam->pixels_format, "FORMAT_SHORT");
-         if (strcmp(mimeType, "image/x-canon-raw" ) == 0 ) {
-            strcpy(cam->pixels_compression, "COMPRESS_RAW");
-            cam->pixels_reverse_x = 0;
-            cam->pixels_reverse_y = 0;
-         } else if ( strcmp(mimeType, "image/jpeg") == 0 ) {
-            strcpy(cam->pixels_compression, "COMPRESS_JPEG");
-            cam->pixels_reverse_x = 0;
-            cam->pixels_reverse_y = 0;
-         }
-         
-         // je supprime l'image sur la carte memoire de l'appareil
-         result = gpapi_deleteImage (cam->params->gpparams, cam->cameraFolder, cam->fileName);
 
-         // je purge le nom du fichier
-         strcpy(cam->fileName, "");
-
-      } else {
-         // je retourne un message d'erreur
-         sprintf(cam->msg, "Error gpapi_loadImage : %s", gpapi_getLastErrorMessage(cam->params->gpparams));
-      }
-   } else {
-      strcpy(cam->msg, "No last image");
-   }
-
-   return result;
-}
 
 /*
  * -----------------------------------------------------------------------------
@@ -593,7 +686,7 @@ int  cam_getSystemServiceState(struct camprop *cam) {
  *    -1 erreur 
  * -----------------------------------------------------------------------------
  */
-void cam_setSystemServiceState(struct camprop *cam, int state) {
+int cam_setSystemServiceState(struct camprop *cam, int state) {
    int result = -1;
 
 #ifdef WIN32
@@ -635,6 +728,7 @@ void cam_setSystemServiceState(struct camprop *cam, int state) {
    }
 #endif
 
+return result;
 }
 
 /**
@@ -654,7 +748,7 @@ int cam_setLongExposureDevice(struct camprop *cam, unsigned char value)
    // exemple "link1 bit 0 1"
    sprintf(ligne, "link%d bit %d %d", cam->longueposelinkno, cam->longueposelinkbit, value);
    if( Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-      result = 1;
+      result = -1;
    } else {
       result = 0;
    }
@@ -668,7 +762,7 @@ int cam_setLongExposureDevice(struct camprop *cam, unsigned char value)
  * 
  * Returns value:
  * - 0 when success.
- * - 0 if quality not found
+ * - -1 if quality not found
 */
 int  cam_checkQuality(char *quality)
 {
@@ -683,7 +777,7 @@ int  cam_checkQuality(char *quality)
       i++;
    }
    if( canonQuality[i][0] == 0 ) {
-        result = 1;
+        result = -1;
    }
 
    return result;
@@ -708,6 +802,166 @@ int  cam_getQualityList(char *list)
       i++;
    }
 
+   return 0;
+}
+
+/**
+ * cam_getAutoLoadFlag 
+ *    returns "autoDeleteFlag" state
+ * 
+ * Returns value:
+ *  0 or 1 , or -1 if errror
+ *  
+*/
+int  cam_getAutoLoadFlag(struct camprop *cam) {
+   return cam->params->autoLoadFlag; 
+}
+
+/**
+ * cam_setAutoDeleteFlag 
+ *    set "autoLoadFlag" state
+ * 
+ * Returns value:
+ *  0 if OK , -1 if error
+ *  
+*/
+int  cam_setAutoLoadFlag(struct camprop *cam, int value) {
+   int result = 0;
+   cam->params->autoLoadFlag  = value;
+   return result;
+}
+
+/**
+ * cam_getAutoDeleteFlag 
+ *    returns "autoDeleteFlag" state
+ * 
+ * Returns value:
+ *  0 or 1 , or -1 if error
+ *  
+*/
+int  cam_getAutoDeleteFlag(struct camprop *cam) {
+   return cam->params->autoDeleteFlag; 
+}
+
+/**
+ * cam_setAutoDeleteFlag 
+ *    set "autoDeleteFlag" state
+ * 
+ * Returns value:
+ *  0 if OK , -1 if error
+ *  
+*/
+int  cam_setAutoDeleteFlag(struct camprop *cam, int value) {
+   int result = 0;
+   cam->params->autoDeleteFlag  = value;
+   return result;
+}
+
+/**
+ * cam_getDriverMode 
+ *    returns "driverMode" state
+ * 
+ * Returns value:
+ *  0 or 1 , or -1 if error
+ *  
+*/
+int  cam_getDriveMode(struct camprop *cam) {
+   return cam->params->driveMode; 
+}
+
+/**
+ * cam_setDriverMode 
+ *    set "driverMode" state
+ * 
+ * Returns value:
+ *  0 if OK , -1 if error
+ *  
+*/
+int  cam_setDriveMode(struct camprop *cam, int value) {
+   int result = 0;
+   cam->params->driveMode  = value;
+   return result;
+}
+
+/**
+ * cam_getQuality 
+ *    returns "driverMode" state
+ * 
+ * Returns value:
+ *  0 or 1 , or -1 if error
+ *  
+*/
+int cam_getQuality(struct camprop *cam, char * value) {
+   int result = 0;
+   strcpy(value, cam->params->quality);
+   return result; 
+}
+
+/**
+ * cam_setQuality 
+ *    set "driverMode" state
+ * 
+ * Returns value:
+ *  0 if OK , -1 if error
+ *  
+*/
+int cam_setQuality(struct camprop *cam, char * value) {
+   int result = 0;
+   strcpy(cam->params->quality, value);
+   return result;
+}
+
+
+/**
+ * cam_getUseCF 
+ *    returns "useCF" state
+ * 
+ * Returns value:
+ *  0 
+ *  
+*/
+int  cam_getUseCf(struct camprop *cam) {
+   return cam->params->useCf; 
+}
+
+/**
+ * cam_setUseCF 
+ *    returns quality list values
+ * 
+ * Returns value:
+ *  0 
+ *  
+*/
+int  cam_setUseCf(struct camprop *cam, int value) {
+   int result = -1;
+
+
+   // je verifie que le nouveau mode est applicable, en particulier dans le cas ou
+   // la carte memoire CF  est requise
+   result = libgphoto_setTransfertMode(cam->params->gphotoSession,value);
+
+   if (result == LIBGPHOTO_OK) {
+      cam->params->useCf  = value;
+   } else {
+      if( value == 1 ) {
+         sprintf(cam->msg, "Memory CF is missing. %s", libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+      }
+   }
+   return result;
+}
+
+/**
+ * cam_setUseCF 
+ *    returns quality list values
+ * 
+ * Returns value:
+ *  0 
+ *  
+*/
+int  cam_setDebug(struct camprop *cam, int value) {
+   int result = -1;
+
+   libgphoto_setDebugLog(cam->params->gphotoSession, value);
    return 0;
 }
 

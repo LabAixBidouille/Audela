@@ -28,28 +28,34 @@
 #define __CAMTCL_H__
 
 #define SPECIFIC_CMDLIST \
-   {"autoload",            (Tcl_CmdProc *)cmdAutoLoadFlag}, \
+   {"autoload",            (Tcl_CmdProc *)cmdCamAutoLoadFlag}, \
+   {"delete",              (Tcl_CmdProc *)cmdCamAutoDeleteFlag}, \
    {"drivemode",           (Tcl_CmdProc *)cmdCamDriveMode}, \
    {"quality",             (Tcl_CmdProc *)cmdCamQuality}, \
-   {"loadlastimage",       (Tcl_CmdProc *)cmdLoadLastImage}, \
-   {"systemservice",       (Tcl_CmdProc *)cmdSystemService}, \
+   {"loadlastimage",       (Tcl_CmdProc *)cmdCamLoadLastImage}, \
+   {"systemservice",       (Tcl_CmdProc *)cmdCamSystemService}, \
    {"longuepose",          (Tcl_CmdProc *)cmdCamLonguePose}, \
    {"longueposelinkno",    (Tcl_CmdProc *)cmdCamLonguePoseLinkno}, \
    {"longueposelinkbit",   (Tcl_CmdProc *)cmdCamLonguePoseLinkbit}, \
    {"longueposestartvalue",(Tcl_CmdProc *)cmdCamLonguePoseStartValue}, \
-   {"longueposestopvalue", (Tcl_CmdProc *)cmdCamLonguePoseStopValue},
+   {"longueposestopvalue", (Tcl_CmdProc *)cmdCamLonguePoseStopValue}, \
+   {"usecf",               (Tcl_CmdProc *)cmdCamUseCf},\
+   {"debug",               (Tcl_CmdProc *)cmdCamDebug},
 
  /* === Specific commands for that camera === */
-int cmdAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCamAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCamSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCamUseCf(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
  /* === Specific commands for that camera === */
 
