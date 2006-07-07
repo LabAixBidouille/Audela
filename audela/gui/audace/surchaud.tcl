@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.3 2006-06-20 17:36:17 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.4 2006-07-07 21:03:18 michelpujol Exp $
 #
 # offset  val
 # offset2  in out const nb
@@ -702,6 +702,32 @@ proc trans2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
       error "Usage : trans2 in out dx dy nb ?tt_options?"
+   }
+}
+
+proc raw2cfa {args} {
+   # in out number
+   global audace
+   global caption
+
+   if {[llength $args] == 3} {
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" RAW2CFA "
+   } else {
+      error "Usage : raw2cfa in out number"
+   }
+}
+
+proc cfa2rgb {args} {
+   # in out number
+   global audace
+   global caption
+
+   if {[llength $args] == 3} {
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CFA2RGB "
+   } else {
+      error "Usage : cfa2rgb in out number"
    }
 }
 
