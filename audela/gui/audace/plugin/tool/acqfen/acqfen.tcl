@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.3 2006-06-20 20:44:30 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.4 2006-07-07 20:55:18 michelpujol Exp $
 #
 
 package provide acqfen 1.2.1
@@ -365,7 +365,7 @@ namespace eval ::acqfen {
 
          #--- Suppression de la zone selectionnee avec la souris
 #--- Debut modif Robert
-         if { [ lindex [ list [ ::confVisu::getBox ] ] 0 ] != "" } {
+         if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
             ::confVisu::deleteBox
          }
 #--- Fin modif Robert
@@ -486,7 +486,7 @@ namespace eval ::acqfen {
 
         #--- Suppression de la zone selectionnee avec la souris
 #--- Debut modif Robert
-        if { [ lindex [ list [ ::confVisu::getBox ] ] 0 ] != "" } {
+        if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
            ::confVisu::deleteBox
         }
 #--- Fin modif Robert
