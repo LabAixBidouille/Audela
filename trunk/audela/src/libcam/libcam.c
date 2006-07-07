@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.6 2006-06-18 21:40:47 michelpujol Exp $
+ * $Id: libcam.c,v 1.7 2006-07-07 12:56:03 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -121,6 +121,7 @@ static int cmdCamTemperature(ClientData clientData, Tcl_Interp * interp, int arg
 static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamCapabilities(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamLastError(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 
 /* --- Action commands ---*/
@@ -833,13 +834,11 @@ static void AcqRead(ClientData clientData)
  */
 static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-   char *ligne;
+   char ligne[100];
    int i;
    struct camprop *cam;
    int result = TCL_OK;
    
-   
-   ligne = (char *) calloc(100, sizeof(char));
    if (argc != 2) {
       sprintf(ligne, "Usage: %s %s", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -856,24 +855,36 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          cam->timerExpiration->clientData = clientData;
          cam->timerExpiration->interp = interp;
          cam->timerExpiration->dateobs = (char *) calloc(32, sizeof(char));
-         
+         strcpy(cam->msg,"");
+
          Tcl_Eval(interp, "clock seconds");
          cam->clockbegin = (unsigned long) atoi(interp->result);
          
          CAM_DRV.start_exp(cam, "amplioff");
          
-         // je teste cam->timerExpiration car il peut être nul si cmdCamStop a ete appele entre temps 
-         if( cam->timerExpiration != NULL ) {
-         libcam_GetCurrentFITSDate(interp, cam->timerExpiration->dateobs);
-         libcam_GetCurrentFITSDate_function(interp, cam->timerExpiration->dateobs, "::audace::date_sys2ut");
-         /* Creation du timer pour realiser le temps de pose. */
-            i = (int) (1000 * cam->exptimeTimer);
-         cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
-      } else {
-            Tcl_SetResult(interp, "", TCL_VOLATILE);
-            result = TCL_OK;
-         }
-
+         if(strcmp(cam->msg,"")!= 0 ) {
+            // erreur pendant start_exp
+            if (cam->timerExpiration != NULL) {
+               Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
+               free(cam->timerExpiration->dateobs);
+               free(cam->timerExpiration);
+               cam->timerExpiration = NULL;
+            }
+            Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            // je teste cam->timerExpiration car il peut être nul si cmdCamStop a ete appele entre temps 
+            if( cam->timerExpiration != NULL ) {
+               libcam_GetCurrentFITSDate(interp, cam->timerExpiration->dateobs);
+               libcam_GetCurrentFITSDate_function(interp, cam->timerExpiration->dateobs, "::audace::date_sys2ut");
+               /* Creation du timer pour realiser le temps de pose. */
+               i = (int) (1000 * cam->exptimeTimer);
+               cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
+            } else {
+               Tcl_SetResult(interp, "", TCL_VOLATILE);
+               result = TCL_OK;
+            }
+         }      
       } else {
          sprintf(ligne, "Camera already in use");
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -1448,6 +1459,39 @@ static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, cha
    return TCL_OK;
 }
 
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdCamLastError()
+ *
+ *  retourne le dernier message d'erreur de la camera
+ *
+ *  cette commande est particulierement utile pour savoir s'il y eu une erreur
+ *  pendant une acquisition car la commande "cam1 ne retourne pas d'exception
+ *  pour signaler d'eventuelle erreur
+ *
+ *  param 
+ *     pas de parametre
+ *  return 
+ *     retourn le dernier message d'erreur, ou une chaine vide s'il n'y a pas d'erreur
+ * -----------------------------------------------------------------------------
+ */
+static int cmdCamLastError(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   int retour = TCL_OK;
+   char ligne[1024];
+   struct camprop *cam;
+   
+   if (argc != 2) {
+      sprintf(ligne, "Usage: %s %s", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%s", cam->msg);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   } 
+   return retour;
+}
 
 static int cam_init_common(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
