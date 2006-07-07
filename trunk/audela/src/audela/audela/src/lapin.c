@@ -389,15 +389,17 @@ int Tk_AppInit(Tcl_Interp *interp)
    LOGDEBUG("will load libraries\n");
 
    /* Standard libraries for AudeLA */
-   load_library(interp,"libak");      // Misc.
+   load_library(interp,"libak");      // Misc. from Alain Klotz
    load_library(interp,"libaudela");  // Acquisition, and preprocssing
    load_library(interp,"libgsltcl");  // Gnu Scientific Library extension for Tcl
    load_library(interp,"libgzip");    // Gzip compression
-   load_library(interp,"libjm");      // Misc.
-   load_library(interp,"libbm");      // Misc.
+   load_library(interp,"libjm");      // Misc. from Jacques Michelet
+   load_library(interp,"libbm");      // Misc. from Benjamin Mauclaire
    load_library(interp,"libmc");      // Celestial mechanics
    load_library(interp,"librgb");     // Extraction of tri-colored planes from a CCD image
    load_library(interp,"libsext");    // Sextractor code from Bertin
+   load_library(interp,"libyd");      // Misc. from Yassine Damerdji
+   load_library(interp,"libml");      // Misc. from Myrtille Laas
 
 #if defined(OS_WIN)
    sprintf(ligne,"set audela(hInstance) %d",&ghInstance);
