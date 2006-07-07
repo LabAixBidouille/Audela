@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.28 2006-06-20 17:27:28 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.29 2006-07-07 12:48:47 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -1576,21 +1576,29 @@ namespace eval ::confVisu {
          set yi [ lindex $coord 1 ]
 
          #--- ii contiendra l'intensite du pixel pointe
-         set ii [ buf$bufNo getpix [ list $xi $yi ] ]
-         if { $private($visuNo,intensity) == "1" } {
-            if { [ lindex $ii 0 ] == "1" } {
-               set intensite "$caption(caractere,I) $caption(caractere,egale) [ lindex $ii 1 ]"
-            } elseif { [ lindex $ii 0 ] == "3" } {
-               set intensite "$caption(couleur,rouge)[ lindex $ii 1 ] $caption(couleur,vert)[ lindex $ii 2 ] $caption(couleur,bleu)[ lindex $ii 3 ]"
+         set result [catch { set ii [ buf$bufNo getpix [ list $xi $yi ] ] } ]
+         if { $result == 0 } {
+            if { $private($visuNo,intensity) == "1" } {
+               if { [ lindex $ii 0 ] == "1" } {
+                  set intensite "$caption(caractere,I) $caption(caractere,egale) [ lindex $ii 1 ]"
+               } elseif { [ lindex $ii 0 ] == "3" } {
+                  set intensite "$caption(couleur,rouge)[ lindex $ii 1 ] $caption(couleur,vert)[ lindex $ii 2 ] $caption(couleur,bleu)[ lindex $ii 3 ]"
+               }
+            } elseif { $private($visuNo,intensity) == "0" } {
+               if { [ lindex $ii 0 ] == "1" } {
+                  set intensite "$caption(caractere,I) $caption(caractere,egale) [ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ]"
+               } elseif { [ lindex $ii 0 ] == "3" } {
+                  set intensite "$caption(couleur,rouge)[ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ] \
+                     $caption(couleur,vert)[ string trimleft [ format "%8.0f" [ lindex $ii 2 ] ] " " ] \
+                     $caption(couleur,bleu)[ string trimleft [ format "%8.0f" [ lindex $ii 3 ] ] " " ]"
+               }
             }
-         } elseif { $private($visuNo,intensity) == "0" } {
-            if { [ lindex $ii 0 ] == "1" } {
-               set intensite "$caption(caractere,I) $caption(caractere,egale) [ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ]"
-            } elseif { [ lindex $ii 0 ] == "3" } {
-               set intensite "$caption(couleur,rouge)[ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ] \
-                  $caption(couleur,vert)[ string trimleft [ format "%8.0f" [ lindex $ii 2 ] ] " " ] \
-                  $caption(couleur,bleu)[ string trimleft [ format "%8.0f" [ lindex $ii 3 ] ] " " ]"
-            }
+         } else {
+            #--- je traite le cas ou la taille de l'image a ete changee vant de mettre
+            #--- a jour les parametres confisu (par exemple acquition en cours avec une camera)
+            set xi "$caption(caractere,tiret)"
+            set yi "$caption(caractere,tiret)"
+            set intensite "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
          }
       }
 
