@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.17 2006-06-22 19:36:37 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.18 2006-07-07 20:56:03 michelpujol Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -424,8 +424,7 @@ namespace eval ::audace {
       ::confTemps::initConf
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
-      ::mapWindow::init
-
+      
       #--- Initialisation de variables de configuration
       if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
       if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
@@ -2122,14 +2121,6 @@ namespace eval ::audace {
       global audace
 
       return [ ::confVisu::picture2Canvas $audace(visuNo) $coord ]
-   }
-
-   #
-   # ::audace::getBox
-   # Retourne la boite de selection a la souris
-   #
-   proc getBox { } {
-      return [ ::confVisu::getBox 1 ]
    }
 
    proc header { visuNo } {
