@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.20 2006-07-03 17:24:00 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.21 2006-07-07 12:42:56 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -1848,6 +1848,12 @@ namespace eval ::AcqFC {
          if { [set $statusVariableName] == "exp" } {
             vwait status_cam$camNo
          }
+         
+         #--- j'affiche un message s'il y a eu une erreur pendant l'acquisition 
+         set msg [cam$camNo lasterror] 
+         if { $msg != "" } {
+            tk_messageBox -title $caption(audace,boite,attention) -icon error -message $msg
+         }      
       } else { 
          tk_messageBox -title $caption(audace,boite,attention) -icon error -message $msg
       }
