@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.20 2006-07-08 07:29:03 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.21 2006-07-08 20:44:29 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -658,8 +658,8 @@ namespace eval ::audace {
          { ::faireImageRef::run "$caption(audace,menu,faire_dark)" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_flat_field)..." \
          { ::faireImageRef::run "$caption(audace,menu,faire_flat_field)" "$audace(base).faireImageRef" }
-     ### Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,pretraite)..." \
-     ###    { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,pretraite)..." \
+         { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
      ### Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
      ###    { ::faireImageRef::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"

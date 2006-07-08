@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.9 2006-07-08 07:29:27 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.10 2006-07-08 20:44:53 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -810,6 +810,7 @@ namespace eval ::faireImageRef {
       set faireImageRef(nb)           ""
       set faireImageRef(1,offset)     ""
       set faireImageRef(1,dark)       ""
+      set faireImageRef(1,opt)        "0"
       set faireImageRef(1,flat-field) ""
       set faireImageRef(1,methode)    "2"
       set faireImageRef(1,norm)       ""
@@ -846,14 +847,18 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.2.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.2 -side top -fill both
             frame $This.usr.7.3 -borderwidth 0 -relief flat
-               button $This.usr.7.3.explore -text "$caption(script,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 5 }
-               pack $This.usr.7.3.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.7.3.lab6 -textvariable "faireImageRef(flat-field)"
-               pack $This.usr.7.3.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.3.ent6 -textvariable faireImageRef(1,flat-field) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.7.3.ent6 -side right -padx 10 -pady 5
+               checkbutton $This.usr.7.3.opt -text "$caption(audace,optimisation,noir)" -variable faireImageRef(1,opt)
+               pack $This.usr.7.3.opt -side right -padx 60 -pady 5
             pack $This.usr.7.3 -side top -fill both
+            frame $This.usr.7.4 -borderwidth 0 -relief flat
+               button $This.usr.7.4.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 5 }
+               pack $This.usr.7.4.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.7.4.lab6 -textvariable "faireImageRef(flat-field)"
+               pack $This.usr.7.4.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.7.4.ent6 -textvariable faireImageRef(1,flat-field) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.7.4.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.7.4 -side top -fill both
         # pack $This.usr.7 -side bottom -fill both
 
          frame $This.usr.6 -borderwidth 1 -relief raised
@@ -942,7 +947,8 @@ namespace eval ::faireImageRef {
            ###    $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
            ###    $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
             set list_faireImageRef [ list $caption(audace,menu,faire_offset) \
-               $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) ]
+               $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
+               $caption(audace,menu,pretraite) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -1004,6 +1010,7 @@ namespace eval ::faireImageRef {
       variable This
       global audace
       global caption
+      global conf
       global faireImageRef
 
       #---
@@ -1109,10 +1116,10 @@ namespace eval ::faireImageRef {
              }
              #---
              set offset $faireImageRef(1,offset)
-             set norm $faireImageRef(1,norm)
-             set const "0"
-             set temp "temp"
-             set tempo "tempo"
+             set norm   $faireImageRef(1,norm)
+             set const  "0"
+             set temp   "temp"
+             set tempo  "tempo"
              catch { sub2 $in $offset $temp $const $nb } m
              catch { noffset2 $temp $tempo $norm $nb } m
              catch { smedian $tempo $out $nb } m
@@ -1148,9 +1155,35 @@ namespace eval ::faireImageRef {
              set offset $faireImageRef(1,offset)
              set dark   $faireImageRef(1,dark)
              set flat   $faireImageRef(1,flat-field)
-
-             catch { } m
-
+             set const  "0"
+             set temp   "temp"
+             #--- Deux possibilites de pretraitement
+             if { $faireImageRef(1,opt) == "0" } {
+                #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
+                #--- Realisation de X = ( Offset + Dark )
+                catch {
+                   set buf_pretrait [::buf::create]
+                   buf$buf_pretrait load $audace(rep_images)/$offset
+                   buf$buf_pretrait add $audace(rep_images)/$dark $const
+                   buf$buf_pretrait save $audace(rep_images)/offset+dark
+                   ::buf::delete $buf_pretrait
+                } m
+                #--- Realisation de Y = [ Generique d'entree - ( X ) ]
+                catch { sub2 $in offset+dark $temp $const $nb } m
+                #--- Realisation de Z = Y / Flat-field
+                catch { div2 $temp $flat $out $const $nb } m
+                #--- Suppression des fichiers intermediaires
+                catch { delete2 $temp $nb } m
+                catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
+             } else {
+                #--- Optimisation du noir
+                catch { opt2 $in $dark $offset $temp $nb } m
+                #--- Division par le flat
+                catch { div2 $temp $flat $out $const $nb } m
+                #--- Suppression des fichiers intermediaires
+                catch { delete2 $temp $nb } m
+             }
+             #---
              if { $m == "" } {
                 tk_messageBox -title $caption(audace,menu,pretraite) -type ok -message $caption(audace,fin_traitement)
              } else {
