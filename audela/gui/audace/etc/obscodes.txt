@@ -150,30 +150,30 @@ Code  Long.   cos      sin    Name
 141   7.3672 0.65646 +0.75189 Hottviller
 142   7.1874 0.62156 +0.78075 Sinsen 
 143   9.0250 0.6930  +0.7186  Gnosca 
-144   1.6653 0.65550 +0.75267 Bray et Lu 
+144   1.6660 0.65549 +0.75268 Bray et Lu 
 145   4.5597 0.62734 +0.77614 's-Gravenwezel 
 146  10.6673 0.71715 +0.69487 Frignano 
-147   8.5814 0.70043 +0.71139 Osservatorio Astronomico di Suno
+147   8.57391 0.700430 +0.711392 Osservatorio Astronomico di Suno
 148   2.0375 0.72481 +0.68667 Guitalens 
 149   4.2236 0.65403 +0.75396 Beine-Nauroy 
 150   2.1572 0.65806 +0.75045 Maisons Laffitte 
 151   8.7440 0.67719 +0.73346 Eschenberg Observatory, Winterthur
 152  25.5633 0.57036 +0.81868 Moletai Astronomical Observatory
-153   9.1758 0.66079 +0.74815 Stuttgart-Hoffeld 
+153   9.1747 0.66080 +0.74814 Stuttgart-Hoffeld 
 154  12.1043 0.68923 +0.72250 Cortina 
 155  10.1971 0.55864 +0.82664 Ole Romer Observatory, Aarhus
 156  15.0858 0.79431 +0.60549 Catania Astrophysical Observatory
 157  12.8117 0.74166 +0.66864 Frasso Sabino
 158   7.6033 0.69871 +0.71333 Promiod
 159  10.5153 0.72065 +0.69115 Monte Agliale
-160  10.8833 0.7225  +0.6890  Castelmartini 
+160  10.84144 0.722651 +0.688913 Castelmartini 
 161   8.1605 0.70725 +0.70467 Cerrina Tololo Observatory 
 162  15.8083 0.76000 +0.64794 Potenza 
 163   6.1492 0.65017 +0.75731 Roeser Observatory, Luxembourg
 164   6.8861 0.66631 +0.74325 St. Michel sur Meurthe 
 165   1.7553 0.74984 +0.65946 Piera Observatory, Barcelona 
 166  16.0117 0.63730 +0.76812 Upice 
-167   8.5727 0.67662 +0.73398 Bulach OBservatory 
+167   8.5727 0.67662 +0.73398 Bulach Observatory 
 168  59.50   0.546   +0.835   Kourovskaya
 169   8.4016 0.70737 +0.70453 Airali Observatory 
 170   1.9206 0.75217 +0.65711 Observatorio de Begues 
@@ -194,7 +194,7 @@ Code  Long.   cos      sin    Name
 185   7.4219 0.67876 +0.73200 Observatoire Astronomique Jurassien-Vicques
 186  66.8821 0.77679 +0.62781 Kitab
 187  17.0733 0.61314 +0.78735 Astronomical Observatory, Borowiec
-188  66.88   0.781   +0.622   Shokin Majdanak
+188  66.8964 0.78206 +0.62176 Majdanak
 189   6.1514 0.69340 +0.71823 Geneva (before 1967)
 190  68.68   0.783   +0.619   Gissar
 191  68.7811 0.78306 +0.62006 Dushanbe
@@ -246,7 +246,7 @@ Code  Long.   cos      sin    Name
 237   2.7333 0.6822  +0.7288  Baugy 
 238  10.9094 0.50204 +0.86197 Grorudalen Optical Observatory 
 239   8.4114 0.64506 +0.76159 Michael Adrian Observatory, Trebur
-240   8.8342 0.66229 +0.74685 Herrenberg Sternwarte
+240   8.83317 0.662308 +0.746832 Herrenberg Sternwarte
 241  13.4700 0.66465 +0.74474 Schaerding 
 242   1.6956 0.72681 +0.68460 Varennes 
 243   9.4130 0.59572 +0.80050 Umbrella Observatory 
@@ -319,7 +319,7 @@ Code  Long.   cos      sin    Name
 358 140.1586 0.78856 +0.61296 Nanyo 
 359 135.1719 0.82782 +0.55912 Wakayama
 360 132.9442 0.83314 +0.55138 Kuma Kogen 
-361 134.89558 0.826520 +0.561023 Sumoto 
+361 134.8933 0.82649 +0.56106 Sumoto 
 362 140.6550 0.73673 +0.67398 Ray Observatory 
 363 130.7703 0.83416 +0.54967 Yamada 
 364 130.5747 0.85213 +0.52164 YCPM Kagoshima Station 
@@ -395,6 +395,8 @@ Code  Long.   cos      sin    Name
 434  10.9206 0.70765 +0.70419 S. Benedetto Po 
 435  11.8936 0.70330 +0.70852 G. Colombo Astronomical Observatory, Padua
 436  11.3356 0.71658 +0.69528 Osservatorio di Livergnano
+437 284.6971 0.76700 +0.63953 Haverford
+438 287.3621 0.74059 +0.66978 Smith College Observatory, Northampton
 439 253.2539 0.81156 +0.58288 ROTSE-III, Los Alamos
 440 278.6842 0.73025 +0.68097 Elginfield Observatory
 441 357.1697 0.55559 +0.82867 Swilken Brae, St. Andrews 
@@ -455,7 +457,7 @@ Code  Long.   cos      sin    Name
 496 358.6860 0.6311  +0.7731  Bishopstoke 
 497 359.30   0.626   +0.776   Ascot-Loudwater 
 498 359.26   0.612   +0.788   Northampton 
-499 359.79   0.626   +0.776   Cheam 
+499 359.7924 0.62558 +0.77755 Cheam 
 500   0.00000 0.000000 0.000000 Geocentric
 501   0.3475 0.63237 +0.77208 Herstmonceux
 502   0.85   0.617   +0.783   Colchester 
@@ -498,7 +500,7 @@ Code  Long.   cos      sin    Name
 539  14.1316 0.66968 +0.74024 Kremsmunster
 540  14.2753 0.66470 +0.74477 Linz
 541  14.3953 0.64306 +0.76331 Prague
-542  13.04   0.607   +0.790   Falkensee 
+542  13.0374 0.6091  +0.7904  Falkensee 
 543  12.3688 0.6260  +0.7772  Leipzig (before 1861)
 544  13.4250 0.61040 +0.78945 Wilhelm Foerster Observatory, Berlin
 545  16.3817 0.66767 +0.74200 Vienna (before 1879)
@@ -543,7 +545,7 @@ Code  Long.   cos      sin    Name
 584  30.2946 0.50213 +0.86189 Leningrad
 585  30.53   0.638   +0.767   Kiev comet station
 586   0.1423 0.73358 +0.67799 Pic du Midi
-587   9.2302 0.69744 +0.71448 Sormano
+587   9.23025 0.697442 +0.714485 Sormano
 588  11.25   0.715   +0.697   Eremo di Tizzano
 589  12.64   0.739   +0.673   Santa Lucia Stroncone
 590   7.46   0.678   +0.734   Metzerlen
@@ -674,7 +676,7 @@ Code  Long.   cos      sin    Name
 715 253.2759 0.84546 +0.53264 Jornada Observatory, Las Cruces 
 716 255.2489 0.77753 +0.62731 Palmer Divide Observatory, Colorado Springs
 717 256.0481 0.86160 +0.50636 Prude Ranch 
-718 247.7125 0.76004 +0.64802 University of Utah, Tooele
+718 247.7125 0.76004 +0.64802 Wiggins Observatory, Tooele
 719 253.08608 0.829384 +0.557204 Etscorn Observatory
 720 259.6261 0.90216 +0.43018 Universidad de Monterrey
 721 259.7312 0.76271 +0.64476 Lime Creek 
@@ -800,7 +802,7 @@ Code  Long.   cos      sin    Name
 841 279.44233 0.796229 +0.603220 Martin Observatory, Blacksburg
 842 282.7678 0.76901 +0.63713 Gettysburg College Observatory
 843 273.0648 0.82481 +0.56357 Emerald Lane Observatory, Decatur 
-844 303.8103 0.82250 -0.56689 Los Molinos
+844 303.80982 0.822499 -0.566884 Los Molinos
 845 283.5058 0.73942 +0.67107 Ford Observatory, Ithaca
 846 269.65501 0.779842 +0.623926 Principia Astronomical Observatory, Elsah
 847 275.9750 0.7078  +0.7041  Lunar Cafe Observatory 
@@ -939,7 +941,7 @@ Code  Long.   cos      sin    Name
 980 357.2200 0.58864 +0.80570 Lancaster 
 981 353.3522 0.58409 +0.80898 Armagh
 982 353.6621 0.59771 +0.79904 Dunsink Observatory, Dublin
-983 353.7946 0.80521 +0.59101 San Fernando
+983 353.79525 0.805167 +0.591067 San Fernando
 984 357.26   0.631   +0.774   Eastfield 
 985 357.53   0.607   +0.790   Telford 
 986 358.75   0.624   +0.779   Ascot 
@@ -1004,7 +1006,7 @@ A44  13.6972 0.66609 +0.74346 Altschwendt
 A45   9.3620 0.62525 +0.77786 Karrenkneul 
 A46  16.5825 0.65349 +0.75447 Lelekovice 
 A47  16.6031 0.75962 +0.64829 Matera 
-A48  10.8885 0.70401 +0.70782 Verona 
+A48  10.8885 0.70401 +0.70782 Povegliano Veronese 
 A49  17.6372 0.50372 +0.86098 Uppsala-Angstrom
 A50  28.9973 0.64407 +0.76245 Andrushivka Astronomical Observatory
 A51  18.6667 0.5837  +0.8093  Danzig 
@@ -1020,16 +1022,58 @@ A60  20.8106 0.84556 -0.53260 YSTAR-NEOPAT Station, Sutherland
 A61   8.8581 0.70949 +0.70238 Tortona 
 A62   9.2301 0.66233 +0.74678 Aichtal 
 A63   4.7567 0.69879 +0.71298 Cosmosoz Obs., Tassin la Demi Lune 
-A64   6.1151 0.69034 +0.72132 Observatoire de la SAG, St-Cergue 
+A64   6.1151 0.69034 +0.72132 Couvaloup de St-Cergue 
 A65   2.4083 0.71939 +0.69239 Le Couvent de Lentin 
 A66  10.3161 0.72613 +0.68526 Stazione Osservativa Astronomica, Livorno
+A67   7.6785 0.71665 +0.69522 Chiusa di Pesio 
+A68   9.6533 0.57755 +0.81362 Swedenborg Obs., Bockholmwik 
+A69  11.3300 0.7287  +0.6826  Osservatorio Palazzo Bindi Sergardi 
 A70  25.2033 0.42654 +0.90144 Lumijoki 
+A71  18.4500 0.6647  +0.7446  Stixendorf
+A72  13.6222 0.62904 +0.77481 Radebeul Observatory 
+A73  16.2895 0.66788 +0.74183 Penzing Astrometric Obs., Vienna 
+A74   8.76240 0.641951 +0.764216 Bergen-Enkheim Observatory 
+A75   2.1861 0.75124 +0.65783 Fort Pius Observatory, Barcelona 
+A76  20.8356 0.66948 +0.74037 Andromeda Observatory, Miskolc 
+A77   5.6475 0.72058 +0.69119 Observatoire Chante-Perdrix, Dauban 
+A78  11.7164 0.72298 +0.68868 Stia 
+A79  23.4078 0.73875 +0.67205 Zvezdno Obshtestvo Observatory, Plana 
+A80  14.1222 0.61408 +0.78662 Lindenberg Observatory
+A81  12.4033 0.74578 +0.66397 Balzaretto Observatory, Rome 
+A82  13.8744 0.70037 +0.71148 Osservatorio Astronomico di Trieste
 A83  29.9969 0.45945 +0.88525 Jakokoski Observatory
 A84  30.3333 0.80175 +0.59632 TUBITAK National Observatory
+A85  30.8065 0.68881 +0.72252 Odessa Astronomical Observatory, Kryzhanovka
+A86   4.3547 0.70170 +0.71021 Albigneux 
+A87   8.7662 0.64935 +0.75798 Rimbach 
+A88   8.9083 0.7149  +0.6969  Bolzaneto 
+A89  10.3308 0.67421 +0.73621 Sterni Observatory, Kempten 
+A90   2.1431 0.75120 +0.65788 Sant Gervasi Observatory, Barcelona 
+A91  26.5997 0.46678 +0.88143 Hankasalmi Observatory 
+A92  26.3442 0.71507 +0.69674 Urseanu Observatory, Bucharest
+A93  10.4189 0.72222 +0.68935 Lucca 
+A94  13.4577 0.69641 +0.71526 Cormons 
+A95  28.3892 0.46584 +0.88193 Taurus Hill Observatory, Varkaus 
+A96  16.2867 0.66656 +0.74303 Klosterneuburg
+A97  16.4219 0.66646 +0.74308 Stammersdorf 
+A98  30.2092 0.58214 +0.81040 Taurus-1 Observatory, Baran' 
+A99  10.8589 0.69978 +0.71223 Osservatorio del Monte Baldo 
+B00   2.5767 0.66289 +0.74622 Savigny-le-Temple 
+B01   8.4464 0.64117 +0.76499 Taunus Observatory, Frankfurt 
+B02  20.6566 0.63224 +0.77224 Kielce 
+B03  16.2698 0.66759 +0.74211 Alter Satzberg, Vienna 
+B04   7.4783 0.69868 +0.71339 Saint-Barthelemy Observatory
+B05  37.8831 0.57134 +0.81800 Ka-Dar Observatory, Barybino
 B18  42.5008 0.72958 +0.68232 Terskol
+C42  87.1778 0.72711 +0.68469 Xingming Observatory, Mt. Nanshan
+D14 113.3231 0.92000 +0.39061 Nanchuan Observatory, Guangzhou
 D17 114.2200 0.9245  +0.3799  Hong Kong
 D21 115.8150 0.8492  -0.5263  Shenton Park 
+D34 120.7839 0.92796 +0.37148 Kenting Observatory, Hengchun
 D35 120.8736 0.91818 +0.39597 Lulin Observatory
+D44 124.1392 0.91143 +0.41016 Ishigakijima Astronomical Observatory
+D55 127.9747 0.79571 +0.60370 Kangwon Science High School Observatory, Ksho
+D61 134.9131 0.82671 +0.56075 Suntopia Marina, Sumoto 
 D70 133.4686 0.83505 +0.54834 Tosa 
 D74 134.6819 0.83041 +0.55530 Nakagawa 
 D82 137.6317 0.83058 -0.55504 Wallaroo 
@@ -1049,14 +1093,21 @@ E14 149.1100 0.81852 -0.57274 Hunters Hill Observatory, Ngunnawal
 E15 149.6061 0.82016 -0.57041 Magellan Observatory, near Goulburn 
 E16 149.3667 0.83169 -0.55366 Grove Creek Observatory, Trunkey 
 E17 150.3417 0.8329  -0.5519  Leura 
+E19 151.0958 0.83042 -0.55528 Kingsgrove 
 E21 151.5667 0.8838  -0.4665  Norma Rose Observatory, Leyburn
 E25 153.1170 0.88713 -0.45997 Rochedale (APTA) 
+E26 153.3971 0.88414 -0.46566 RAS Observatory, Biggera Waters
 F60 201.9528 0.92994 +0.36656 Ironwood North Observatory, Hawaii
 F65 203.7424 0.93624 +0.35154 Haleakala-Faulkes Telescope North
+F84 210.3842 0.95330 -0.30100 Hibiscus Observatory, Punaauia 
 G57 236.8564 0.70171 +0.71009 Dilbert Observatory, Forest Grove 
+G59 237.4530 0.67475 +0.73559 Maiden Lane Obs., Bainbridge Island 
 G61 238.1524 0.79270 +0.60760 Pleasanton 
+G63 238.6858 0.70152 +0.71031 Mill Creek Observatory, The Dalles 
 G64 239.2911 0.77535 +0.62979 Blue Canyon Observatory 
+G65 238.3612 0.79616 +0.60338 Vulcan North, Lick Observatory, Mount Hamilton
 G66 238.9169 0.78135 +0.62206 Lake Forest Observatory, Forest Hills 
+G67 239.3650 0.78134 +0.62225 Rancho Del Sol, Camino 
 G70 241.4547 0.82543 +0.56273 Francisquito Observatory, Los Angeles 
 G71 241.6047 0.83216 +0.55276 Rancho Palos Verdes 
 G72 241.8306 0.82961 +0.55651 University Hills 
@@ -1064,8 +1115,12 @@ G73 241.9400 0.82804 +0.55925 Mount Wilson-TIE
 G74 242.8854 0.83743 +0.54485 Escondido 
 G75 243.2783 0.8351  +0.5487  Starry Knight Observatory, Coto de Caza
 G76 242.4178 0.83388 +0.55015 Altimira Observatory, Coto de Caza 
+G77 243.7183 0.8274  +0.5603  Baldwin Lake 
 G78 244.3127 0.84158 +0.53832 Desert Wanderer Observatory, El Centro 
+G79 243.6165 0.82718 +0.56030 Goat Mountain Astronomical Research Station
+G87 248.1894 0.74666 +0.66331 Calvin M. Hooper Memorial Observatory, Hyde Park
 G88 247.8881 0.83064 +0.55514 LAMP Observatory, New River 
+G89 248.3069 0.81933 +0.57197 Kachina Observatory, Flagstaff 
 G90 248.9658 0.84301 +0.53639 Three Buttes Observatory, Tucson 
 G91 249.1154 0.85205 +0.52249 Whipple Observatory, Mt. Hopkins--2MASS
 G92 249.2814 0.84920 +0.52660 Jarnac Observatory, Vail 
@@ -1075,57 +1130,92 @@ G95 249.7622 0.85404 +0.51888 Hereford Arizona Observatory, Hereford
 G96 249.2083 0.8451  +0.5336  Mt. Lemmon Survey
 G98 251.34354 0.815037 +0.578012 Calvin-Rehoboth Observatory, Rehoboth
 G99 251.8104 0.84192 +0.53835 NF Observatory, Silver City 
+H00 251.6987 0.84247 +0.53746 Tyrone 
 H02 253.3706 0.81146 +0.58309 Sulphur Flats Observatory, La Cueva 
 H03 253.3553 0.81753 +0.57440 Sandia View Observatory, Rio Rancho
 H04 254.0260 0.81388 +0.57964 Santa Fe 
 H05 254.0708 0.77126 +0.63477 Edmund Kline Observatory, Deer Trail 
 H06 254.4711 0.84071 +0.54032 New Mexico Skies Observatory
 H07 254.4700 0.84072 +0.54030 7300 Observatory, Cloudcroft 
+H08 254.4708 0.84071 +0.54031 BlackBird Observatory, Cloudcroft 
 H09 255.5886 0.77070 +0.63549 Antelope Hills Observatory, Bennett 
 H29 262.5494 0.81372 +0.57940 Ivywood Observatory, Edmond 
 H31 263.3300 0.87011 +0.49123 Star Ridge Observatory, Weimar 
+H32 263.6334 0.86174 +0.50567 Texas A&M Physics Observatory, College Station
 H33 264.1217 0.80990 +0.58466 Bixhoma Observatory, Bixby 
 H34 264.8258 0.84600 +0.53143 Chapel Hill 
 H35 264.9517 0.77423 +0.63085 Leavenworth 
 H36 264.2936 0.78043 +0.62323 Sandlot Observatory, Scranton 
 H37 265.2003 0.72947 +0.68182 Grems Timmons Observatories, Graettinger 
+H38 265.9864 0.75079 +0.65840 Timberline Observatory, Urbandale 
 H39 266.6828 0.70944 +0.70247 S.O.S. Observatory, Minneapolis 
 H40 266.7306 0.82519 +0.56302 Nubbin Ridge Observatory 
 H41 267.0742 0.81870 +0.57238 Petit Jean Mountain 
 H42 267.5078 0.73568 +0.67512 Wartburg College Observatory, Waverly
 H43 267.4998 0.81918 +0.57163 Conway 
 H44 267.7982 0.81880 +0.57220 Cascade Mountain 
+H45 267.0831 0.81890 +0.57210 Petit Jean Mountain South 
+H47 269.1439 0.84639 +0.53079 Vicksburg 
+H48 265.0139 0.79424 +0.60565 PSU Greenbush Observatory, Pittsburg
+H49 266.8636 0.81712 +0.57457 ATU Astronomical Observatory, Russellville
+H51 270.4003 0.73117 +0.68011 Greiner Research Observatory, Verona 
 H54 271.6514 0.71305 +0.69883 Cedar Drive Observatory, Pulaski 
-H55 271.8558 0.77283 +0.63254 Antares Obseratory, Charleston 
+H55 271.8558 0.77283 +0.63254 Astronomical Research Observatory, Charleston
 H59 273.3651 0.76362 +0.64356 Prairie Grass Observatory, Camp Cullom 
 H62 274.4117 0.73335 +0.67763 Calvin College Observatory
 H63 274.9276 0.75227 +0.65672 DeKalb Observatory, Auburn 
+H64 275.4364 0.77796 +0.62623 Thomas More College Observatory, Crestview Hills
+H65 275.4364 0.77995 +0.62381 Waltonfields Observatory, Walton 
+H66 276.1460 0.76956 +0.63651 Yellow Springs 
 H67 276.1624 0.74081 +0.66952 Stonegate Observatory, Ann Arbor 
 H69 276.9277 0.76439 +0.64280 Ohio Wesleyan University
 H70 277.4458 0.81412 +0.57897 Asheville 
 H72 278.2258 0.89584 +0.44289 Evelyn L. Egan Observatory, Fort Myers
 H74 278.8747 0.87602 +0.48066 Bar J Observatory, New Smyrna Beach 
+H76 279.4133 0.90197 +0.43036 Oakridge Observatory, Miami 
 H77 279.7653 0.89877 +0.43695 Buehler Observatory 
 H79 280.5000 0.7232  +0.6883  York University Observatory, Toronto
+H82 281.7839 0.77836 +0.62576 CBA-NOVAC Observatory, Front Royal 
+H84 282.4961 0.73259 +0.67843 Northview Observatory, Mendon 
+H85 283.0029 0.77784 +0.62638 Silver Spring 
 H86 283.1576 0.77693 +0.62749 CBA-East Observatory, Laurel 
 H88 283.7577 0.77295 +0.63235 Hope Observatory, Belcamp 
+H89 284.2975 0.70235 +0.70945 Galaxy Blues Observatory, Gatineau 
+H90 284.4731 0.70267 +0.70914 Ottawa 
 H91 285.0483 0.71227 +0.69959 Reynolds Observatory, Potsdam 
 H92 285.6211 0.76785 +0.63849 Arcturus Observatory 
 H93 285.5758 0.75934 +0.64853 Berkeley Heights 
 H96 286.6142 0.69143 +0.72005 Observatoire des Pleiades, Mandeville 
 H97 287.2013 0.74649 +0.66323 Talcott Mountain Science Center, Avon
+H98 287.2655 0.74987 +0.65938 Dark Rosanne Obs., Middlefield 
 I00 288.2294 0.74794 +0.66157 Carbuncle Hill Observatory, Coventry 
+I01 288.8626 0.74068 +0.66963 Clay Center Observatory, Brookline
 I02 289.1941 0.86560 -0.49980 Cerro Tololo Observatory, La Serena--2MASS
 I03 289.2704 0.87346 -0.48603 European Southern Obs., La Silla--ASTROVIRTEL
 I04 289.3152 0.86693 -0.49697 Mamalluca Observatory 
 I05 289.2980 0.87559 -0.48217 Las Campanas Observatory-TIE
+I06 289.8061 0.74801 +0.66147 Werner Schmidt Obs., Dennis-Yarmouth Regional HS
 I10 291.8201 0.92164 -0.38771 CAOS-CampoCatino Austral Observatory Survey
 I30 299.3417 0.83966 -0.54131 Observatorio Geminis Austral
 I31 299.3649 0.83995 -0.54086 Observatorio Astronomico del Colegio Cristo Rey
 I37 301.4236 0.82515 -0.56302 Astrodomi Observatory, Santa Rita 
 I77 316.0025 0.94119 -0.33714 CEAMIG-REA Observatory, Belo Horizonte
 J50 342.1176 0.87764 +0.47847 La Palma-NEON
+J54 343.4906 0.88149 +0.47142 Bradford Robotic Telescope
+J55 344.3144 0.88549 +0.46313 Los Altos de Arguineguin Observatory 
 J56 344.4536 0.88416 +0.46624 Observatorio La Avejerilla 
+J59 356.2039 0.72693 +0.68441 Observatorio Linceo, Santander 
+J60 354.3406 0.74773 +0.66201 Tocororo Observatory, Arquillinos 
+J61 353.4264 0.59719 +0.79942 Brownstown Observatory, Kilcloon 
+J62 351.6345 0.59017 +0.80459 Kingsland Observatory, Boyle 
+J63 359.4831 0.78548 +0.61683 San Gabriel 
+J64 359.3459 0.78871 +0.61271 La Mata 
+J65 353.4500 0.59830 +0.79860 Celbridge 
+J66 357.7833 0.61071 +0.78922 Kinver 
+J67 359.4667 0.77114 +0.63457 Observatorio La Puebla de Vallbona 
+J68 357.7055 0.61813 +0.78345 Tweenhills Observatory, Hartpury 
+J69 358.9803 0.63144 +0.77286 North Observatory, Clanfield 
+J70 358.8404 0.78968 +0.61149 Obs. Astronomico Vega del Thader, El Palmar
 J71 357.8947 0.59350 +0.80217 Willow Bank Observatory 
 J72 358.9664 0.79065 +0.61028 Valle del Sol 
 J73 359.0833 0.6187  +0.7830  Quainton 
@@ -1139,7 +1229,7 @@ J80 359.1083 0.70862 +0.70323 Sainte Helene
 J81 358.1350 0.7360  +0.6749  Guirguillano 
 J82 357.3067 0.5935  +0.8021  Leyland 
 J83 357.3883 0.59274 +0.80270 Olive Farm Observatory, Hoghton 
-J84 358.9803 0.63144 +0.77285 Clanfield 
+J84 358.9803 0.63144 +0.77285 South Observatory, Clanfield 
 J85 357.4833 0.5666  +0.8213  Makerstoun
 J86 356.6153 0.79930 +0.59968 Sierra Nevada Observatory
 J87 355.5117 0.7605  +0.6475  La Canada 
@@ -1162,4 +1252,6 @@ Back to minor planet lists <MPLists.html> or miscellaneous lists
 <OtherLists.html>
 
 MPC </iau/mpc.html>
+
+Valid HTML 4.01! <http://validator.w3.org/check?uri=referer>
 
