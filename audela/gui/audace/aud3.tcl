@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.7 2006-07-03 16:04:56 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.8 2006-07-08 00:35:45 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -805,12 +805,14 @@ namespace eval ::faireImageRef {
       global faireImageRef
 
       #--- Initialisation
-      set faireImageRef(in)        ""
-      set faireImageRef(out)       ""
-      set faireImageRef(nb)        ""
-      set faireImageRef(1,offset)  ""
-      set faireImageRef(1,methode) "2"
-      set faireImageRef(1,norm)    ""
+      set faireImageRef(in)           ""
+      set faireImageRef(out)          ""
+      set faireImageRef(nb)           ""
+      set faireImageRef(1,offset)     ""
+      set faireImageRef(1,dark)       ""
+      set faireImageRef(1,flat-field) ""
+      set faireImageRef(1,methode)    "2"
+      set faireImageRef(1,norm)       ""
 
       #---
       toplevel $This
@@ -823,6 +825,37 @@ namespace eval ::faireImageRef {
 
       #---
       frame $This.usr -borderwidth 0 -relief raised
+
+         frame $This.usr.7 -borderwidth 1 -relief raised
+            frame $This.usr.7.1 -borderwidth 0 -relief flat
+               button $This.usr.7.1.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 3 }
+               pack $This.usr.7.1.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.7.1.lab6 -textvariable "faireImageRef(offset)"
+               pack $This.usr.7.1.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.7.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.7.1.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.7.1 -side top -fill both
+            frame $This.usr.7.2 -borderwidth 0 -relief flat
+               button $This.usr.7.2.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 4 }
+               pack $This.usr.7.2.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.7.2.lab6 -textvariable "faireImageRef(dark)"
+               pack $This.usr.7.2.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.7.2.ent6 -textvariable faireImageRef(1,dark) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.7.2.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.7.2 -side top -fill both
+            frame $This.usr.7.3 -borderwidth 0 -relief flat
+               button $This.usr.7.3.explore -text "$caption(script,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 5 }
+               pack $This.usr.7.3.explore -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.7.3.lab6 -textvariable "faireImageRef(flat-field)"
+               pack $This.usr.7.3.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.7.3.ent6 -textvariable faireImageRef(1,flat-field) -width 20 -font $audace(font,arial_8_b)
+               pack $This.usr.7.3.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.7.3 -side top -fill both
+        # pack $This.usr.7 -side bottom -fill both
+
          frame $This.usr.6 -borderwidth 1 -relief raised
             frame $This.usr.6.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.6.1.che1 -text "$caption(afficher,image,fin)" -variable faireImageRef(1,disp)
@@ -905,8 +938,9 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             #--- Liste des pretraitements disponibles
-            set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
-               $caption(audace,menu,faire_flat_field) ]
+            set list_faireImageRef [ list $caption(audace,menu,raw2cfa) $caption(audace,menu,faire_offset) \
+               $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
+               $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -919,6 +953,7 @@ namespace eval ::faireImageRef {
                 -command { }
             }
          pack $This.usr.1 -side bottom -fill both -ipady 5
+
       pack $This.usr -side top -fill both -expand 1
 
       frame $This.cmd -borderwidth 1 -relief raised
@@ -983,8 +1018,13 @@ namespace eval ::faireImageRef {
           return
       }
       if { $faireImageRef(out) == "" } {
-          tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_sortie)
-          return
+         if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) || $faireImageRef(operation) == $caption(audace,menu,pretraite) || $faireImageRef(operation) == $caption(audace,menu,cfa2rgb) } {
+             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,sortie_generique)
+             return
+         } else {
+             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_sortie)
+             return
+         }
       }
       #---
       if { [ TestEntier $faireImageRef(nb) ] == "0" } {
@@ -997,6 +1037,14 @@ namespace eval ::faireImageRef {
       #--- que la commande switch continue sur la ligne suivante
       if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
        switch $faireImageRef(operation) \
+          "$caption(audace,menu,raw2cfa)" {
+             catch { raw2cfa $in $out $nb } m
+             if { $m == "" } {
+                tk_messageBox -title $caption(audace,menu,raw2cfa) -type ok -message $caption(audace,fin_traitement)
+             } else {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+             }
+          } \
           "$caption(audace,menu,faire_offset)" {
              catch { smedian $in $out $nb } m
              if { $m == "" } {
@@ -1077,6 +1125,43 @@ namespace eval ::faireImageRef {
              } else {
                 tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
              }
+          } \
+          "$caption(audace,menu,pretraite)" {
+             #--- Il faut saisir l'offset
+             if { $faireImageRef(1,offset) == "" } {
+                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                return
+             }
+             #--- Il faut saisir le dark
+             if { $faireImageRef(1,dark) == "" } {
+                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
+                return
+             }
+             #--- Il faut saisir le flat-field
+             if { $faireImageRef(1,flat-field) == "" } {
+                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,flat-field)
+                return
+             }
+             #---
+             set offset $faireImageRef(1,offset)
+             set dark   $faireImageRef(1,dark)
+             set flat   $faireImageRef(1,flat-field)
+
+             catch { } m
+
+             if { $m == "" } {
+                tk_messageBox -title $caption(audace,menu,pretraite) -type ok -message $caption(audace,fin_traitement)
+             } else {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+             }
+          } \
+          "$caption(audace,menu,cfa2rgb)" {
+             catch { cfa2rgb $in $out $nb } m
+             if { $m == "" } {
+                tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok -message $caption(audace,fin_traitement)
+             } else {
+                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+             }
           }
       }
       ::faireImageRef::recup_position
@@ -1096,12 +1181,18 @@ namespace eval ::faireImageRef {
       global faireImageRef
 
       #---
-      if { $faireImageRef(operation) == $caption(audace,menu,faire_offset) } {
+      if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) } {
+         set faireImageRef(page_web) "1112raw2cfa"
+      } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_offset) } {
          set faireImageRef(page_web) "1113faire_offset"
       } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_dark) } {
          set faireImageRef(page_web) "1114faire_dark"
       } elseif { $faireImageRef(operation) == $caption(audace,menu,faire_flat_field) } {
          set faireImageRef(page_web) "1115faire_flat_field"
+      } elseif { $faireImageRef(operation) == $caption(audace,menu,pretraite) } {
+         set faireImageRef(page_web) "1116pretraitement"
+      } elseif { $faireImageRef(operation) == $caption(audace,menu,cfa2rgb) } {
+         set faireImageRef(page_web) "1117cfa2rgb"
       }
 
       #---
@@ -1121,6 +1212,15 @@ namespace eval ::faireImageRef {
       #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $faireImageRef(operation) \
+       "$caption(audace,menu,raw2cfa)" {
+          pack $This.usr.1 -in $This.usr -side top -fill both
+          pack $This.usr.2 -in $This.usr -side top -fill both
+          pack forget $This.usr.3
+          pack forget $This.usr.4
+          pack forget $This.usr.5
+          pack forget $This.usr.6
+          pack forget $This.usr.7
+       } \
        "$caption(audace,menu,faire_offset)" {
           pack $This.usr.1 -in $This.usr -side top -fill both
           pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1128,6 +1228,7 @@ namespace eval ::faireImageRef {
           pack forget $This.usr.4
           pack forget $This.usr.5
           pack $This.usr.6 -in $This.usr -side top -fill both
+          pack forget $This.usr.7
        } \
        "$caption(audace,menu,faire_dark)" {
           pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1136,6 +1237,7 @@ namespace eval ::faireImageRef {
           pack forget $This.usr.4
           pack $This.usr.5 -in $This.usr -side top -fill both
           pack $This.usr.6 -in $This.usr -side top -fill both
+          pack forget $This.usr.7
        } \
        "$caption(audace,menu,faire_flat_field)" {
           pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1144,6 +1246,25 @@ namespace eval ::faireImageRef {
           pack $This.usr.4 -in $This.usr -side top -fill both
           pack forget $This.usr.5
           pack $This.usr.6 -in $This.usr -side top -fill both
+          pack forget $This.usr.7
+       } \
+       "$caption(audace,menu,pretraite)" {
+          pack $This.usr.1 -in $This.usr -side top -fill both
+          pack $This.usr.2 -in $This.usr -side top -fill both
+          pack forget $This.usr.3
+          pack forget $This.usr.4
+          pack forget $This.usr.5
+          pack forget $This.usr.6
+          pack $This.usr.7 -in $This.usr -side top -fill both
+       } \
+       "$caption(audace,menu,cfa2rgb)" {
+          pack $This.usr.1 -in $This.usr -side top -fill both
+          pack $This.usr.2 -in $This.usr -side top -fill both
+          pack forget $This.usr.3
+          pack forget $This.usr.4
+          pack forget $This.usr.5
+          pack forget $This.usr.6
+          pack forget $This.usr.7
        }
      # ::console::affiche_erreur "$n1,$n2,$op,$faireImageRef(operation)\n"
    }
@@ -1163,6 +1284,10 @@ namespace eval ::faireImageRef {
          set faireImageRef(out) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "3" } {
          set faireImageRef(1,offset) [ file rootname [ file tail $filename ] ]
+      } elseif { $In_Out == "4" } {
+         set faireImageRef(1,dark) [ file rootname [ file tail $filename ] ]
+      } elseif { $In_Out == "5" } {
+         set faireImageRef(1,flat-field) [ file rootname [ file tail $filename ] ]
       }
    }
 
@@ -1170,7 +1295,11 @@ namespace eval ::faireImageRef {
       global caption
       global faireImageRef
 
-      if { $faireImageRef(operation) == "$caption(audace,menu,faire_dark)" } {
+      if { $faireImageRef(operation) == "$caption(audace,menu,raw2cfa)" } {
+         set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
+         set faireImageRef(nombre)          "$caption(audace,image,nombre)"
+         set faireImageRef(image_sortie)    "$caption(audace,image_generique,sortie)"
+      } elseif { $faireImageRef(operation) == "$caption(audace,menu,faire_dark)" } {
          set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
          set faireImageRef(nombre)          "$caption(audace,image,nombre)"
          set faireImageRef(image_sortie)    "$caption(audace,image,sortie)"
@@ -1181,6 +1310,17 @@ namespace eval ::faireImageRef {
          set faireImageRef(image_sortie)    "$caption(audace,image,sortie)"
          set faireImageRef(offset)          "$caption(audace,image,offset)"
          set faireImageRef(normalisation)   "$caption(audace,valeur_normalisation)"
+      } elseif { $faireImageRef(operation) == "$caption(audace,menu,pretraite)" } {
+         set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
+         set faireImageRef(nombre)          "$caption(audace,image,nombre)"
+         set faireImageRef(image_sortie)    "$caption(audace,image_generique,sortie)"
+         set faireImageRef(offset)          "$caption(audace,image,offset)"
+         set faireImageRef(dark)            "$caption(audace,image,dark)"
+         set faireImageRef(flat-field)      "$caption(audace,image,flat-field)"
+      } elseif { $faireImageRef(operation) == "$caption(audace,menu,cfa2rgb)" } {
+         set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
+         set faireImageRef(nombre)          "$caption(audace,image,nombre)"
+         set faireImageRef(image_sortie)    "$caption(audace,image_generique,sortie)"
       } else {
          set faireImageRef(image_generique) "$caption(audace,image_generique,entree)"
          set faireImageRef(nombre)          "$caption(audace,image,nombre)"
