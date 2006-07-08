@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.8 2006-07-08 00:35:45 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.9 2006-07-08 07:29:27 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -938,9 +938,11 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             #--- Liste des pretraitements disponibles
-            set list_faireImageRef [ list $caption(audace,menu,raw2cfa) $caption(audace,menu,faire_offset) \
-               $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
-               $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
+           ### set list_faireImageRef [ list $caption(audace,menu,raw2cfa) $caption(audace,menu,faire_offset) \
+           ###    $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
+           ###    $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
+            set list_faireImageRef [ list $caption(audace,menu,faire_offset) \
+               $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
