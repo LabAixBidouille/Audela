@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.18 2006-07-07 20:56:03 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.19 2006-07-08 00:35:21 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -650,12 +650,18 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
          { ::traiteImage::run "$caption(audace,menu,clip)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,raw2cfa)..." \
+         { ::faireImageRef::run "$caption(audace,menu,raw2cfa)" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_offset)..." \
          { ::faireImageRef::run "$caption(audace,menu,faire_offset)" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_dark)..." \
          { ::faireImageRef::run "$caption(audace,menu,faire_dark)" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_flat_field)..." \
          { ::faireImageRef::run "$caption(audace,menu,faire_flat_field)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,pretraite)..." \
+         { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
+         { ::faireImageRef::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,run,median)..." \
          { ::traiteWindow::run "$caption(audace,run,median)" "$audace(base).traiteWindow" }
@@ -718,8 +724,6 @@ namespace eval ::audace {
          { ::mapWindow::run "$audace(base).mapWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
          { ::carte::showMapFromBuffer buf$audace(bufNo) }
-
-      Menu           $visuNo "$caption(audace,menu,couleur)"
 
       Menu           $visuNo "$caption(audace,menu,outils)"
       Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" { ::audace::pas_Outil }
