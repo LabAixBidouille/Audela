@@ -1,4 +1,4 @@
-AudeLA-1.4.0 (2006mmjj)
+AudeLA-1.4.0 (20060709)
 
 
 1. Introduction
@@ -309,15 +309,15 @@ cibles que vous voulez compiler, et effectuez la compilation.
 5.2 Linux
 ---------
 
-5.2.2 Compilation et installation de AudeLA
+5.2.1 Compilation et installation de AudeLA
 ------------------------------------------
 
 -> Pour linux, il vous faut telecharger et extraire les sources de audela.
 	$ wget http://software.audela.free.fr/13/audela-1.3.0-src.tar.gz
-	$ tar -xf audela-1.3.0-src.tar.gz
+	$ tar -xf audela-1.4.0-src.tar.gz
 
 -> Configurez le paquetage AudeLA :
-	$ cd audela-1.3.0/src
+	$ cd audela-1.4.0/src
 	$ ./configure
 
 	configure peut prendre les options suivantes :
@@ -424,6 +424,20 @@ Vous pouvez tout compiler d'un coup :
    Remarque : 
    il n'est pas necessaire d'installer gtkam ou gphoto2.
    Ne pas confondre gphoto2 avec libgphoto2 !!
+
+5.2.3 Pre-requis
+----------------
+
+AudeLA necessite les modules externes suivants pour fonctionner:
+ - Tcl 8.4 (avec Debian, paquets tcl84 et tcl84-dev)
+ - Tk 8.4 (avec Debian, paquets tk84 et tk84-dev)
+
+Optionnel:
+ - gsl (http://www.gnu.org/software/gsl)
+
+Autres:
+ - Img 1.3 (http://prdownloads.sourceforge.net/tkimg/tkimg1.3.tar.gz?download)
+ - Blt 2.4 (http://prdownloads.sourceforge.net/blt/BLT2.4z.tar.gz?download)
 
 5.3 MAC OS-X
 ------------
@@ -590,5 +604,5 @@ Les Auteurs.
 AudeLA, page d'accueil : http://audela.ccdaude.com
                     ou : http://software.audela.free.fr/
 
-Copyright (C)1999-2005, The AudeLA Core Team.
+Copyright (C)1999-2006, The AudeLA Core Team.
 
