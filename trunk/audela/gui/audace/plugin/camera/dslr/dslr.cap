@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.6 2006-07-07 07:01:05 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.7 2006-07-10 20:25:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -35,8 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,pas_telecharger)        "Non scaricare"
    set caption(dslr,immediat)               "Adesso"
    set caption(dslr,acq_suivante)           "Durante la successiva acquisizione"
-   set caption(dslr,utiliser_cf)            "# Utiliser la carte Compact Flash de l'APN"
-   set caption(dslr,supprimer_image)        "# Supprimer l'image de la carte Compact Flash après chargement"
+   set caption(dslr,utiliser_cf)            "Uso della Memory Card dell'APN"
+   set caption(dslr,supprimer_image)        "Cancellazione immagine dalla memory Card dopo il caricamento"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

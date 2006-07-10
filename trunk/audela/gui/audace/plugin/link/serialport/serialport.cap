@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.4 2006-07-03 16:03:32 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.5 2006-07-10 20:25:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,7 +21,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(serialport,titre)        "# Port série"
+   set caption(serialport,titre)        "Porta seriale"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
