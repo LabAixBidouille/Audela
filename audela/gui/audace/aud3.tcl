@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.10 2006-07-08 20:44:53 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.11 2006-07-10 14:56:15 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -1152,11 +1152,12 @@ namespace eval ::faireImageRef {
                 return
              }
              #---
-             set offset $faireImageRef(1,offset)
-             set dark   $faireImageRef(1,dark)
-             set flat   $faireImageRef(1,flat-field)
-             set const  "0"
-             set temp   "temp"
+             set offset     $faireImageRef(1,offset)
+             set dark       $faireImageRef(1,dark)
+             set flat       $faireImageRef(1,flat-field)
+             set const      "0"
+             set const_mult "1"
+             set temp       "temp"
              #--- Deux possibilites de pretraitement
              if { $faireImageRef(1,opt) == "0" } {
                 #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
@@ -1171,7 +1172,7 @@ namespace eval ::faireImageRef {
                 #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                 catch { sub2 $in offset+dark $temp $const $nb } m
                 #--- Realisation de Z = Y / Flat-field
-                catch { div2 $temp $flat $out $const $nb } m
+                catch { div2 $temp $flat $out $const_mult $nb } m
                 #--- Suppression des fichiers intermediaires
                 catch { delete2 $temp $nb } m
                 catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
@@ -1179,7 +1180,7 @@ namespace eval ::faireImageRef {
                 #--- Optimisation du noir
                 catch { opt2 $in $dark $offset $temp $nb } m
                 #--- Division par le flat
-                catch { div2 $temp $flat $out $const $nb } m
+                catch { div2 $temp $flat $out $const_mult $nb } m
                 #--- Suppression des fichiers intermediaires
                 catch { delete2 $temp $nb } m
              }
