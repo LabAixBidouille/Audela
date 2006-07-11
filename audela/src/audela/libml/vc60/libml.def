@@ -1,2 +1,0 @@
-LIBRARY libml
-EXPORTS Ml_Init @1

@@ -1,2 +1,0 @@
-LIBRARY libkitty
-EXPORTS Kitty_Init @1

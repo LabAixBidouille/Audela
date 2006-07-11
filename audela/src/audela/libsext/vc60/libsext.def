@@ -1,2 +1,0 @@
-LIBRARY libsext
-EXPORTS Sext_Init @1

@@ -1,3 +1,0 @@
-LIBRARY CCD_Driver
-EXPORTS AskForExecuteCCDCommand @1
-EXPORTS direct_main @2

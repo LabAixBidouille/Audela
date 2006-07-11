@@ -1,2 +1,0 @@
-LIBRARY libsynonyme
-EXPORTS Synonyme_Init @1

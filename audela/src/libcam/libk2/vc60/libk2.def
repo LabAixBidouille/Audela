@@ -1,2 +1,0 @@
-LIBRARY libk2
-EXPORTS K_Init @1

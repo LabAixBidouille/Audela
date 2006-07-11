@@ -1,2 +1,0 @@
-LIBRARY libgzip
-EXPORTS Gzip_Init @1

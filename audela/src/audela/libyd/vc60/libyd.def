@@ -1,2 +1,0 @@
-LIBRARY libyd
-EXPORTS Yd_Init @1

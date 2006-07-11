@@ -1,2 +1,0 @@
-LIBRARY libbm
-EXPORTS Bm_Init @1
