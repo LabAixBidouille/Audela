@@ -1,7 +1,10 @@
-# version.tcl
+#
+# Update $Id: version.tcl,v 1.2 2006-07-11 16:17:11 robertdelmas Exp $
+#
+# File : version.tcl
 #
 # This file is part of the AudeLA project : <http://software.audela.free.fr>
-# Copyright (C) 1998-2004 The AudeLA Core Team
+# Copyright (C) 1999-2006 The AudeLA Core Team
 #
 # Initial author : Denis MARCHAIS <denis.marchais@free.fr>
 # 
@@ -22,9 +25,12 @@
 
 global audela
  
-set audela(major) 1
-set audela(minor) 3
-set audela(patch) 0
-set audela(extra) ""
+set audela(major)   "1"
+set audela(minor)   "3"
+set audela(patch)   "0"
+set audela(extra)   ""
 
 set audela(version) "1.3.0"
+
+set audela(date)    "11/07/2006"
+
