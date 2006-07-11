@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: audela.tcl,v 1.5 2006-06-20 18:02:13 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.6 2006-07-11 16:08:46 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
