@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.7 2006-06-20 17:25:59 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.8 2006-07-11 16:25:19 robertdelmas Exp $
 #
 
 #
@@ -2490,7 +2490,7 @@ namespace eval confVersion {
       pack $This.lab2 -in $This.frame1 -padx 30 -pady 0
 
       #--- Date de la mise a jour
-      label $This.labURL2 -text "$caption(en-tete,a_propos_de_maj)" -font $audace(font,arial_10_n) -fg $color(red)
+      label $This.labURL2 -text "$caption(en-tete,a_propos_de_maj) $audela(date)." -font $audace(font,arial_10_n) -fg $color(red)
       pack $This.labURL2 -in $This.frame1 -padx 30 -pady 5
 
       #--- Logiciel libre et gratuit
