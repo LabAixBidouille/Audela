@@ -1,4 +1,4 @@
-AudeLA-1.4.0 (20060709)
+AudeLA-1.4.0 (20060711)
 
 
 1. Introduction
@@ -46,21 +46,24 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - AndorTech,
 - Finger Lakes Instruments.
 
-AudeLA est capable de piloter les interfaces de communication suivantes :
-- AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
-- EthernAude (interface Ethernet pour cameras CCD),
-- QuickAudine (interface USB pour cameras Audine),
-- QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
-  mise au point, etc.),
-- Port parallele,
-- Port serie.
-
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
 - Ouranos (codeurs absolus),
 - AudeCom (ex-carte Kauffmann),
 - Temma (monture Takahashi avec module Temma),
+- ASCOM,
 - N'importe quel telescope repondant au protocole LX200.
+
+AudeLA est capable de piloter les interfaces de communication suivantes :
+- AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
+- EthernAude (interface Ethernet pour cameras CCD),
+- GPhoto2,
+- Port parallele,
+- PhotoPC
+- QuickAudine (interface USB pour cameras Audine),
+- QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
+  mise au point, etc.),
+- Port serie.
 
 AudeLA est capable de piloter les equipements suivants :
 - La roue a filtres developpee dans le cadre de l'association Aude.
