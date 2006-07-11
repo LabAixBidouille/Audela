@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.6 2006-06-20 17:51:32 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.7 2006-07-11 16:31:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -93,6 +93,8 @@ set caption(conftel,temma_ctl_mobile:)                "Tracking Speed Control:"
 set caption(conftel,temma_mobile_ad)                  "Right Ascension Speed"
 set caption(conftel,temma_mobile_dec)                 "Declination Speed"
 
+set caption(conftel,driver_ascom)                     "# Driver ASCOM"
+
 set caption(conftel,ra)                               "RA"
 set caption(conftel,dec)                              "Dec."
 set caption(conftel,et)                               "and"
@@ -123,6 +125,7 @@ set caption(conftel,site_ouranos)                     "http://www.microtec.net/~
 set caption(conftel,doc_audecom)                      "AudeCom-V41.pdf"
 set caption(conftel,site_lxnet)                       "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
 set caption(conftel,site_temma)                       "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+set caption(conftel,site_ascom)                       "http://ascom-standards.org/"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -209,6 +212,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Vitesse en ascension droite"
    set caption(conftel,temma_mobile_dec)              "Vitesse en déclinaison"
 
+   set caption(conftel,driver_ascom)                  "Driver ASCOM"
+
    set caption(conftel,ra)                            "AD"
    set caption(conftel,dec)                           "Déc."
    set caption(conftel,et)                            "et"
@@ -239,6 +244,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -325,6 +331,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Velocita` in ascensione retta"
    set caption(conftel,temma_mobile_dec)              "Velocita` in declinazione"
 
+   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+
    set caption(conftel,ra)                            "AR"
    set caption(conftel,dec)                           "Dec."
    set caption(conftel,et)                            "e"
@@ -355,6 +363,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -441,6 +450,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Velocidad en Ascensión Recta"
    set caption(conftel,temma_mobile_dec)              "Velocidad en Declinación"
 
+   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+
    set caption(conftel,ra)                            "AR"
    set caption(conftel,dec)                           "Dec."
    set caption(conftel,et)                            "y"
@@ -471,6 +482,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -557,6 +569,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Rektaszension Tempo"
    set caption(conftel,temma_mobile_dec)              "Deklination Tempo"
 
+   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+
    set caption(conftel,ra)                            "RA"
    set caption(conftel,dec)                           "Dek."
    set caption(conftel,et)                            "und"
@@ -587,6 +601,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -673,6 +688,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Right Ascension Speed"
    set caption(conftel,temma_mobile_dec)              "Declination Speed"
 
+   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+
    set caption(conftel,ra)                            "RA"
    set caption(conftel,dec)                           "Dec."
    set caption(conftel,et)                            "and"
@@ -703,6 +720,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
 
 }
 

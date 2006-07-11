@@ -1,14 +1,15 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.8 2006-06-20 17:27:07 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.9 2006-07-11 16:32:07 robertdelmas Exp $
 #
 
-#--- Initialisation des variables confTel(conf_lx200,connect), (conf_temma,connect) et confTel(...)
+#--- Initialisation des variables confTel
 global confTel
 
 set confTel(conf_lx200,connect)     "0"
 set confTel(conf_temma,connect)     "0"
+set confTel(conf_ascom,connect)     "0"
 set confTel(fenetre,mobile,valider) "0"
 
 namespace eval ::confTel {
@@ -49,7 +50,7 @@ namespace eval ::confTel {
    # confTel::run
    # Cree la fenetre de choix et de configuration des telescopes
    # This = chemin de la fenetre
-   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma)
+   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma, ascom)
    #
    proc run { } {
       variable This
@@ -591,11 +592,12 @@ namespace eval ::confTel {
       frame $This.usr -borderwidth 0 -relief raised
          #--- Creation de la fenetre a onglets
          set nn $This.usr.book
-         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma } -borderwidth 1
+         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma ASCOM } -borderwidth 1
          fillPage1 $nn
          fillPage2 $nn
          fillPage3 $nn
          fillPage4 $nn
+         fillPage5 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       frame $This.start -borderwidth 1 -relief raised
@@ -648,7 +650,7 @@ namespace eval ::confTel {
       set confTel(conf_lx200,port)            $conf(lx200,port)
       set confTel(conf_lx200,ite-lente_tempo) $conf(lx200,ite-lente_tempo)
 
-      set confTel(raquette)     $conf(raquette)
+      set confTel(raquette)                   $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp1) [ Rnotebook:frame $nn 1 ]
@@ -1493,7 +1495,7 @@ namespace eval ::confTel {
       set confTel(conf_temma,suivi_dec)   $conf(temma,suivi_dec)
       set confTel(conf_temma,type)        $conf(temma,type)
 
-      set confTel(raquette)          $conf(raquette)
+      set confTel(raquette)               $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp4) [ Rnotebook:frame $nn 4 ]
@@ -1712,6 +1714,134 @@ namespace eval ::confTel {
    }
 
    #
+   # Onglet de configuration des drivers ASCOM
+   #
+   proc fillPage5 { nn } {
+      global conf
+      global audace
+      global caption
+      global confTel
+      global color
+      global frmm
+
+      #--- Drivers ASCOM installes sur le PC
+      set confTel(ascom_drivers) ""
+      if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
+         set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" } msg ]
+         if { $erreur == "0" } {
+            foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" ] {
+               if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
+                  lappend confTel(ascom_drivers) [list $r $key]
+               }
+            }
+         } else {
+            set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" } msg ]
+            if { $erreur == "0" } {
+               foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" ] {
+                  if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
+                     lappend confTel(ascom_drivers) [list $r $key]
+                  }
+               }
+            }
+         }
+      }
+
+      #--- initConf
+      if { ! [ info exists conf(ascom,driver) ] } { set conf(ascom,driver) [ lindex $confTel(ascom_drivers) 0 ] }
+
+      #--- confToWidget
+      set confTel(conf_ascom,driver) $conf(ascom,driver)
+
+      set confTel(raquette)          $conf(raquette)
+
+      #--- Initialisation
+      set frmm(Telscp5) [Rnotebook:frame $nn 5]
+      set frm $frmm(Telscp5)
+
+      #--- Definition des couleurs
+      set fg  $color(blue)
+
+      #--- Creation des differents frames
+      frame $frm.frame1 -borderwidth 0 -relief raised
+      pack $frm.frame1 -side top -fill x
+
+      frame $frm.frame2 -borderwidth 0 -relief raised
+      pack $frm.frame2 -side top -fill both -expand 1
+
+      frame $frm.frame3 -borderwidth 0 -relief raised
+      pack $frm.frame3 -side bottom -fill x -pady 2
+
+      #--- Definition du driver
+      label $frm.lab1 -text "$caption(conftel,driver_ascom)"
+      pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+
+      ComboBox $frm.driver \
+         -width 50         \
+         -height [ llength $confTel(ascom_drivers) ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -textvariable confTel(conf_ascom,driver) \
+         -editable 0       \
+         -values $confTel(ascom_drivers)
+      pack $frm.driver -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+
+      #--- Le checkbutton pour la visibilite de la raquette a l'ecran
+      checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
+         -highlightthickness 0 -variable confTel(raquette)
+      pack $frm.raquette -in $frm.frame2 -anchor n -side left -padx 10 -pady 10
+      ComboBox $frm.nom_raquette \
+         -width 10         \
+         -height [ llength $::confPad::private(driverlist) ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -modifycmd {
+            set label $audace(nom_raquette)
+            set index [lsearch -exact $::confPad::private(driverlist) $label ]
+            if { $index != -1 } {
+               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
+            } else {
+               set ::confPad::private(conf_confPad) ""
+            }
+            set conf(confPad) $::confPad::private(conf_confPad)
+
+            ::confPad::run
+         } \
+         -textvariable audace(nom_raquette) \
+         -editable 0       \
+         -values $::confPad::private(driverlist)
+      pack $frm.nom_raquette -in $frm.frame2 -anchor n -side left -padx 0 -pady 10
+
+      #--- Choix de la raquette
+      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
+      pack $frm.choix_raquette -in $frm.frame2 -anchor n -side top -padx 10 -pady 10 -ipadx 20 -ipady 5 -expand true
+
+      #--- Site web officiel des drivers ASCOM
+      label $frm.lab103 -text "$caption(conftel,site_web_ref)"
+      pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
+
+      label $frm.labURL -text "$caption(conftel,site_ascom)" -font $audace(font,url) -fg $color(blue)
+      pack $frm.labURL -in $frm.frame3 -side top -fill x -pady 2
+
+      #--- Creation du lien avec le navigateur web et changement de sa couleur
+      bind $frm.labURL <ButtonPress-1> {
+         set filename "$caption(conftel,site_ascom)"
+         ::audace::Lance_Site_htm $filename
+      }
+      bind $frm.labURL <Enter> {
+         global frmm
+         set frm $frmm(Telscp5)
+         $frm.labURL configure -fg $color(purple)
+      }
+      bind $frm.labURL <Leave> {
+         global frmm
+         set frm $frmm(Telscp5)
+         $frm.labURL configure -fg $color(blue)
+      }
+
+      bind [Rnotebook:button $nn 5] <Button-1> { global confTel ; set confTel(tel) "ascom" }
+   }
+
+   #
    # confTel::Format_Match_AD
    # Definit le format en entree de l'AD pour MATCH d'Ouranos
    #
@@ -1838,6 +1968,7 @@ namespace eval ::confTel {
       set nn $This.usr.book
       set confTel(tel) $tel
       switch -exact -- $tel {
+         ascom   { Rnotebook:raise $nn 5 }
          temma   { Rnotebook:raise $nn 4 }
          audecom { Rnotebook:raise $nn 3 }
          ouranos { Rnotebook:raise $nn 2 }
@@ -1873,6 +2004,7 @@ namespace eval ::confTel {
                set confTel(ouranos,connect)    "0"
                set confTel(audecom,connect)    "1"
                set confTel(conf_temma,connect) "0"
+               set confTel(conf_ascom,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create audecom $conf(audecom,port) } msg ]
                if { $erreur == "1" } {
@@ -1953,6 +2085,7 @@ namespace eval ::confTel {
                set confTel(ouranos,connect)    "1"
                set confTel(audecom,connect)    "0"
                set confTel(conf_temma,connect) "0"
+               set confTel(conf_ascom,connect) "0"
                #--- Arrete la lecture des coordonnees
                set ouranoscom(lecture) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
@@ -1991,6 +2124,7 @@ namespace eval ::confTel {
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
                   set confTel(conf_temma,connect) "0"
+                  set confTel(conf_ascom,connect) "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                   set erreur [ catch { set audace(telNo) [ tel::create lxnet "" -name lxnet \
                         -host $conf(audinet,host) \
@@ -2019,6 +2153,7 @@ namespace eval ::confTel {
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
                   set confTel(conf_temma,connect) "0"
+                  set confTel(conf_ascom,connect) "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                   set erreur [ catch { tel::create lx200 $conf(lx200,port) } msg ]
                   if { $erreur == "1" } {
@@ -2048,6 +2183,7 @@ namespace eval ::confTel {
                set confTel(ouranos,connect)    "0"
                set confTel(audecom,connect)    "0"
                set confTel(conf_temma,connect) "1"
+               set confTel(conf_ascom,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create temma $conf(temma,port) } msg ]
                if { $erreur == "1" } {
@@ -2119,6 +2255,27 @@ namespace eval ::confTel {
                #--- Gestion des boutons actifs/inactifs
                ::confTel::config_correc_Temma
             }
+         ascom {
+               set confTel(conf_lx200,connect) "0"
+               set confTel(ouranos,connect)    "0"
+               set confTel(audecom,connect)    "0"
+               set confTel(conf_temma,connect) "0"
+               set confTel(conf_ascom,connect) "1"
+               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+               set erreur [ catch { tel::create ascom [ lindex $conf(ascom,driver) 1 ] } msg ]
+               if { $erreur == "1" } {
+                  if { $confTel(ascom_drivers) == "" } {
+                     #--- Commentaire uniquement en anglais (donc pas de caption)
+                     append msg "\nNo ASCOM Driver."
+                  }
+                  tk_messageBox -message "$msg" -icon error
+               } else {
+                  console::affiche_saut "\n"
+                  console::affiche_erreur "$caption(conftel,driver_ascom) \
+                     $caption(conftel,2points) [ lindex $conf(ascom,driver) 1 ] \n"
+                  set audace(telNo) $msg
+               }
+            }
       }
 
       #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
@@ -2150,6 +2307,7 @@ namespace eval ::confTel {
          set confTel(ouranos,connect)    "0"
          set confTel(audecom,connect)    "0"
          set confTel(conf_temma,connect) "0"
+         set confTel(conf_ascom,connect) "0"
          $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,tiret)" -fg $color(blue)
       } else {
          $audace(base).fra1.labTel_name_labURL configure -text "$conf(telescope)" -fg $color(blue)
@@ -2253,6 +2411,9 @@ namespace eval ::confTel {
       set conf(temma,suivi_ad)        $confTel(conf_temma,suivi_ad)
       set conf(temma,suivi_dec)       $confTel(conf_temma,suivi_dec)
       set conf(temma,type)            $confTel(conf_temma,type)
+      #--- Memorise la configuration du driver ASCOM dans le tableau conf(ascom,...)
+      set frm [ Rnotebook:frame $nn 5 ]
+      set conf(ascom,driver)          $confTel(conf_ascom,driver)
    }
 }
 
