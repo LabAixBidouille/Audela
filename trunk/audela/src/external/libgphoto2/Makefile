@@ -3,10 +3,10 @@
 build:
 
 install:
-	cp -f include/gphoto2*.h ../include
+	cp -f include/libgphoto2.h ../include
 
 clean:
-	rm -f ../include/gphoto2*.h
+	rm -f ../include/libgphoto2.h
 
 distclean: clean
 	rm -f *~ *.bak

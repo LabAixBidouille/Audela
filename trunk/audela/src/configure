@@ -5215,7 +5215,7 @@ fi
 
 
 
-EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw porttalk sbig sextractor tcl"
+EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
 if test x"$TARGET" = x"Linux" ; then
 	EXTERNAL="$EXTERNAL fli"
 fi
@@ -5225,9 +5225,9 @@ if test x"$GSL_FOUND" = x"1" ; then
 	CONTRIB="$CONTRIB libbm"
 fi
 
-AUDELA="audela libaudela libgzip libmc librgb libsext libtt"
+AUDELA="audela libaudela libgzip libmc libml librgb libsext libtt"
 if test x"$GSL_FOUND" = x"1" ; then
-	AUDELA="$AUDELA libak libjm libgsltcl"
+	AUDELA="$AUDELA libak libgsltcl libjm libyd"
 fi
 
 LIBCAMS="libaudinet libethernaude"
