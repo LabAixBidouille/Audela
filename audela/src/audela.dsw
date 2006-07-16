@@ -39,7 +39,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libml"=".\audela\libak\vc60\libml.dsp" - Package Owner=<4>
+Project: "libml"=".\audela\libml\vc60\libml.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -50,7 +50,7 @@ Package=<4>
 }}}
 ###############################################################################
 
-Project: "libyd"=".\audela\libak\vc60\libyd.dsp" - Package Owner=<4>
+Project: "libyd"=".\audela\libyd\vc60\libyd.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

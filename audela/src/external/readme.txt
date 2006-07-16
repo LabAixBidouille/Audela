@@ -16,6 +16,16 @@ Sous windows:
    jpeg6b : vars.bat (regler les chemins si besoin), puis
    make.bat, puis install.bat
 
+ - Compiler libdcjpeg\vc60\libdcjpeg.dsw en mode release
+
+ - Compiler libdcraw\vc60\libdcraw.dsw en mode release
+
+ - Lancer libftd2xx\make.bat puis libftd2xx\install.bat
+
+ - Lancer libgphoto2\make.bat puis libgphoto2\install.bat
+
+ - Lancer libusb\make.bat puis libusb\install.bat
+
  - Lancer porttalk\make.bat puis porttalk\install.bat
 
  - Lancer sbig\make.bat puis sbig\install.bat
