@@ -44,7 +44,7 @@ set version 1.4.0
                regsub -all / "$thisfile" \\ name1
                regsub ${base0} "$dirname" "" temp
                regsub -all / "$temp" \\ name2
-               set name2 "{app}$name2"
+               set name2 "{app}\\$name2"
                if {$shortname=="PortTalk.sys"} {
                   append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
                }
