@@ -1,5 +1,5 @@
 #
-# Update $Id: version.tcl,v 1.5 2006-07-16 15:45:22 denismarchais Exp $
+# Update $Id: version.tcl,v 1.6 2006-07-16 22:52:56 denismarchais Exp $
 #
 # File : version.tcl
 #
