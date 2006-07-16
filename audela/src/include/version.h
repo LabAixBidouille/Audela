@@ -30,4 +30,6 @@
 
 #define AUDELA_VERSION "1.4.0"
 
+#define AUDELA_DATE "16/07/2006"
+
 #endif

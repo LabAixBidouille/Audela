@@ -30,4 +30,6 @@
 
 #define AUDELA_VERSION "@MAJOR@.@MINOR@.@PATCH@@EXTRA@"
 
+#define AUDELA_DATE "@REL_DATE@"
+
 #endif

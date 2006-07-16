@@ -1,5 +1,5 @@
 #
-# Update $Id: version.tcl.in,v 1.2 2006-07-11 16:21:51 robertdelmas Exp $
+# Update $Id: version.tcl.in,v 1.3 2006-07-16 15:45:22 denismarchais Exp $
 #
 # File : version.tcl
 #
@@ -31,4 +31,6 @@ set audela(patch) "@PATCH@"
 set audela(extra) "@EXTRA@"
 
 set audela(version) "@MAJOR@.@MINOR@.@PATCH@@EXTRA@"
+
+set audela(date)    "@REL_DATE@"
 
