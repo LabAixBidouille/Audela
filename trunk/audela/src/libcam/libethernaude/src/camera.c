@@ -31,7 +31,7 @@
 
 struct camini CAM_INI[] = {
     {"Audine",		/* camera name */
-     "audine",		/* camera name */
+     "audine",		/* camera product */
      "kaf401",			/* ccd name */
      768, 512,			/* maxx maxy */
      14, 14,			/* overscans x */
@@ -119,8 +119,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     HWND hwnd;
     int r;
     char exe_file[1000];
-#endif
     char cmdline[1000];
+#endif
 
     /* on n'utilise pas les fonctions du port // pour ce driver */
     cam->authorized = 1;
@@ -295,7 +295,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasTDICaps=%d",	     cam->ethvar.InfoCCD_HasTDICaps); util_log(cmdline, 0);
     sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasVideoCaps=%d",	     cam->ethvar.InfoCCD_HasVideoCaps); util_log(cmdline, 0);
     sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasRegulationTempCaps=%d",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(cmdline, 0);
-    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasGPSDatation=%d",	     cam->ethvar.InfoCCD_HasGPSDatation); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasEventAude=%d",	     cam->ethvar.InfoCCD_HasEventAude); util_log(cmdline, 0);
 
     return 0;
 }

@@ -77,7 +77,7 @@ typedef struct {
     int InfoCCD_HasTDICaps;
     int InfoCCD_HasVideoCaps;
     int InfoCCD_HasRegulationTempCaps;
-    int InfoCCD_HasGPSDatation;
+    int InfoCCD_HasEventAude;
 
     int BitPerPixels;
     double VersionID;		/* obsolete ? */
