@@ -3,7 +3,7 @@
 # Fichier : listfiles.tcl
 # Description : genere un fichier texte pour Inno setup
 # Auteur : Alain KLOTZ
-# Date de MAJ : 2 jiun 2006
+# Date de MAJ : 16 juillet 2006
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
