@@ -1313,8 +1313,8 @@ DEV_ROOT=`pwd`
 MAJOR=1
 MINOR=4
 PATCH=0
-EXTRA=
-REL_DATE=16/07/2006
+EXTRA=-beta1
+REL_DATE=17/07/2006
 
 
 
@@ -5239,7 +5239,7 @@ if test x"$WEBCAM_ENABLE" = x"1" ; then
 	LIBCAMS="$LIBCAMS libwebcam"
 fi
 
-LIBTELS="libaudecom libavrcom libcombit libcompad liblx200  liblxnet libmcmt libouranos libtelcom libtemma"
+LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
 
 echo "$as_me:$LINENO: result: EXTERNAL = $EXTERNAL" >&5
 echo "${ECHO_T}EXTERNAL = $EXTERNAL" >&6
