@@ -1,5 +1,5 @@
 #
-# Update $Id: version.tcl,v 1.6 2006-07-16 22:52:56 denismarchais Exp $
+# Update $Id: version.tcl,v 1.7 2006-07-17 20:02:46 denismarchais Exp $
 #
 # File : version.tcl
 #
@@ -28,9 +28,9 @@ global audela
 set audela(major) "1"
 set audela(minor) "4"
 set audela(patch) "0"
-set audela(extra) ""
+set audela(extra) "-beta1"
 
-set audela(version) "1.4.0"
+set audela(version) "1.4.0-beta1"
 
-set audela(date)    "16/07/2006"
+set audela(date)    "17/07/2006"
 
