@@ -158,7 +158,7 @@ if test x"$WEBCAM_ENABLE" = x"1" ; then
 	LIBCAMS="$LIBCAMS libwebcam"
 fi
 
-LIBTELS="libaudecom libavrcom libcombit libcompad liblx200  liblxnet libmcmt libouranos libtelcom libtemma"
+LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
 
 AC_MSG_RESULT([EXTERNAL = $EXTERNAL])
 AC_MSG_RESULT([CONTRIB  = $CONTRIB])
