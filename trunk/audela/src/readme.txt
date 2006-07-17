@@ -1,4 +1,4 @@
-AudeLA-1.4.0 (20060716)
+AudeLA-1.4.0-BETA1 (20060717)
 
 
 1. Introduction
@@ -316,11 +316,11 @@ cibles que vous voulez compiler, et effectuez la compilation.
 ------------------------------------------
 
 -> Pour linux, il vous faut telecharger et extraire les sources de audela.
-	$ wget http://software.audela.free.fr/13/audela-1.3.0-src.tar.gz
-	$ tar -xf audela-1.4.0-src.tar.gz
+	$ wget http://software.audela.free.fr/13/audela-1.4.0-beta1-src.tar.gz
+	$ tar -xf audela-1.4.0-beta1-src.tar.gz
 
 -> Configurez le paquetage AudeLA :
-	$ cd audela-1.4.0/src
+	$ cd audela-1.4.0-beta1/src
 	$ ./configure
 
 	configure peut prendre les options suivantes :
