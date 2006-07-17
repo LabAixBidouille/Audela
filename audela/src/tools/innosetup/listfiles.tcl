@@ -7,7 +7,7 @@
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
-set version 1.4.0
+set version 1.4.0-beta1
 
    proc analdir { base } {
       global tab result resultfile f base0
