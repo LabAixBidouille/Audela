@@ -576,8 +576,7 @@ Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\t
 Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\etc\catagoto\cat_ngc.txt"; DestDir: "{app}\gui\audace\etc\catagoto"; 
 Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\etc\catagoto\cat_messier.txt"; DestDir: "{app}\gui\audace\etc\catagoto"; 
 Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\etc\catagoto\cat_ic.txt"; DestDir: "{app}\gui\audace\etc\catagoto"; 
-Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\palette\fonction_transfert.pal"; DestDir: "{app}\gui\audace\palette"; 
-Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\palette\rainbow.pal"; DestDir: "{app}\gui\audace\palette"; 
+Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\palette\rainbow.pal"; DestDir: "{app}\gui\audace\palette";
 Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\palette\log.pal"; DestDir: "{app}\gui\audace\palette"; 
 Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\palette\iris.pal"; DestDir: "{app}\gui\audace\palette"; 
 Source: "D:\Denis\DEV_AUDELA\SOURCEFORGE\audela-enroute-1.4.0-beta1\gui\..\src\tools\innosetup\..\..\..\gui\audace\palette\inv.pal"; DestDir: "{app}\gui\audace\palette"; 
