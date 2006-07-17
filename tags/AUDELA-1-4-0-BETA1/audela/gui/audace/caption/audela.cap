@@ -1,0 +1,88 @@
+#
+# Fichier : audela.cap
+# Mise a jour $Id: audela.cap,v 1.3 2006-06-20 17:52:24 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(audela,main_title)        "AudeLA: Interface Selection"
+set caption(audela,language)          "Language Selection:"
+set caption(audela,description)       "Choose the interface you want to use:"
+set caption(audela,soft1)             "Tutorial"
+set caption(audela,soft2)             "Aud'ACE"
+set caption(audela,launch)            "Run"
+set caption(audela,dirtcl)            "../gui/test test.tcl"
+set caption(audela,direct_audace)     "Do not display this interface any more."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA : Sélection de l'interface utilisateur"
+   set caption(audela,language)       "Sélection de la langue :"
+   set caption(audela,description)    "Sélectionnez l'interface que vous voulez utiliser :"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Lancer"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "Ne plus afficher cette interface."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA: Scelta dell'interfaccia utente"
+   set caption(audela,language)       "Scelta delle lingue:"
+   set caption(audela,description)    "Scegliere l'interfaccia d'uso:"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Esegui"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "Non visualizzare piu` questa interfaccia."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA: Alternativas de interfaz de usuario"
+   set caption(audela,language)       "Selecció de idioma:"
+   set caption(audela,description)    "Escoger la interfaz de usuario a utilizar:"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Arrancar"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "No mostrar esta interfaz más."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA: Benutzer Schnittstelle Wahl"
+   set caption(audela,language)       "Sprache Wahl:"
+   set caption(audela,description)    "Wählen sie die Schnittstelle die sie wünschen:"
+   set caption(audela,soft1)          "Abstützung"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Ausführen"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "Diese Interface nicht mehr anzeigen."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA: Valg af brugerflade"
+   set caption(audela,language)       "Valg af sprog:"
+   set caption(audela,description)    "Vælg den brugerflade, du ønsker!"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Kør"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "Vis ikke denne meddelelse igen!"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

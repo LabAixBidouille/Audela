@@ -1,0 +1,82 @@
+#
+# Fichier : newscript.cap
+# Mise a jour $Id: newscript.cap,v 1.3 2006-06-20 17:53:34 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(newscript,nouveau_script)     "New Script"
+set caption(newscript,pas_de_nom)         "noname.tcl"
+set caption(newscript,parcourir)          "..."
+set caption(newscript,nom_script)         "File Name"
+set caption(newscript,ok)                 "OK"
+set caption(newscript,annuler)            "Cancel"
+set caption(newscript,aide)               "Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(newscript,nouveau_script)  "Nouveau script"
+   set caption(newscript,pas_de_nom)      "noname.tcl"
+   set caption(newscript,parcourir)       "..."
+   set caption(newscript,nom_script)      "Nom du fichier"
+   set caption(newscript,ok)              "OK"
+   set caption(newscript,annuler)         "Annuler"
+   set caption(newscript,aide)            "Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(newscript,nouveau_script)  "Nuovo script"
+   set caption(newscript,pas_de_nom)      "noname.tcl"
+   set caption(newscript,parcourir)       "..."
+   set caption(newscript,nom_script)      "Nome file"
+   set caption(newscript,ok)              "OK"
+   set caption(newscript,annuler)         "Cancella"
+   set caption(newscript,aide)            "Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(newscript,nouveau_script)  "Nuevo script"
+   set caption(newscript,pas_de_nom)      "noname.tcl"
+   set caption(newscript,parcourir)       "..."
+   set caption(newscript,nom_script)      "Nombre de fichero"
+   set caption(newscript,ok)              "OK"
+   set caption(newscript,annuler)         "Cancelar"
+   set caption(newscript,aide)            "Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(newscript,nouveau_script)  "Neuen Skript"
+   set caption(newscript,pas_de_nom)      "noname.tcl"
+   set caption(newscript,parcourir)       "..."
+   set caption(newscript,nom_script)      "Dateien Namen"
+   set caption(newscript,ok)              "OK"
+   set caption(newscript,annuler)         "Annullieren"
+   set caption(newscript,aide)            "Hilfe"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(newscript,nouveau_script)  "Ny skript"
+   set caption(newscript,pas_de_nom)      "noname.tcl"
+   set caption(newscript,parcourir)       "..."
+   set caption(newscript,nom_script)      "Filnavn"
+   set caption(newscript,ok)              "OK"
+   set caption(newscript,annuler)         "Annuller"
+   set caption(newscript,aide)            "Hjælp"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

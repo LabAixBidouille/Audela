@@ -1,0 +1,58 @@
+#
+# Fichier : snvisuzoom.cap
+# Mise a jour $Id: snvisuzoom.cap,v 1.3 2006-06-20 21:28:09 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(snvisuzoom,zoom_main_title)      "Sn View - Zoom 1"
+set caption(snvisuzoom,zoom_main_title_d)    "Sn View - Zoom 2"
+set caption(snvisuzoom,wait)                 "Wait..."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Sn Visu - Loupe 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Sn Visu - Loupe 2"
+   set caption(snvisuzoom,wait)              "En cours..."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Vista Sn - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Vista Sn - Zoom 2"
+   set caption(snvisuzoom,wait)              "Attesa..."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Sn Ver - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Sn Ver - Zoom 2"
+   set caption(snvisuzoom,wait)              "Esperar..."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Sn Visu - Lupe 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Sn Visu - Lupe 2"
+   set caption(snvisuzoom,wait)              "Laufend..."
+
+# *************** Version danoise ***************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Sn Se - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Sn Se - Zoom 2"
+   set caption(snvisuzoom,wait)              "Vent..."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,10 @@
+LIBRARY libaudela
+EXPORTS Audela_Init
+        audela_open
+        audela_close
+        audela_eval
+        audela_getresult
+        audela_putbuf
+        audela_getbuf
+
+
