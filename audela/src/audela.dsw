@@ -133,18 +133,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libavrcom"=".\libtel\libavrcom\vc60\libavrcom.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "libbm"=".\contrib\libbm\vc60\libbm.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -170,18 +158,6 @@ Package=<4>
 ###############################################################################
 
 Project: "libcombit"=".\libtel\libcombit\vc60\libcombit.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "libcompad"=".\libtel\libcompad\vc60\libcompad.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -385,18 +361,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libmcmt"=".\libtel\libmcmt\vc60\libmcmt.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "libouranos"=".\libtel\libouranos\vc60\libouranos.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -494,18 +458,6 @@ Package=<4>
 ###############################################################################
 
 Project: "libsynonyme"=".\libcam\libsynonyme\vc60\libsynonyme.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "libtelcom"=".\libtel\libtelcom\vc60\libtelcom.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
