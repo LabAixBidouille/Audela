@@ -267,7 +267,7 @@ unsigned char Image::AudelaAImage(Tcl_Interp *interp, unsigned short numbuf) {
 unsigned char Image::ImageAAudela(Tcl_Interp *interp, unsigned short numbuf) {
 
   // unsigned char result,retour;
-  char lignetcl[50];
+  char lignetcl[256];
   // char keyname[10],s[50],value_char[100];
   //int ptr,datatype;
 
