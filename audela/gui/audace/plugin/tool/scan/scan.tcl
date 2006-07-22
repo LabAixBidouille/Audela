@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.4 2006-07-22 23:22:42 denismarchais Exp $
+# Mise a jour $Id: scan.tcl,v 1.5 2006-07-22 23:50:45 denismarchais Exp $
 #
 
 package provide scan 1.0
@@ -148,7 +148,7 @@ namespace eval ::Dscan {
          if { $panneau(Dscan,binning) == "1x1" } { set bin 1 }
          set w [ ::Dscan::int [ expr ($panneau(Dscan,col2)-$panneau(Dscan,col1)+1) ] ]
          set h [ ::Dscan::int $panneau(Dscan,lig1) ]
-         set o [ ::Dscan::int [ expr ($panneau(Dscan,col1)-1) ] ]
+         set o [ ::Dscan::int $panneau(Dscan,col1) ]
 
          #--- Gestion du moteur d'A.D.
          if { $motor == "motoroff" } {
