@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.4 2006-06-20 21:23:48 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.5 2006-07-22 23:22:52 denismarchais Exp $
 #
 
 package provide scanfast 1.0
@@ -23,7 +23,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "$caption(scanfast,comment2) [ expr int($hautpix*$dt*3/1000.) ] $caption(scanfast,secondes)\n"
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment3)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin 0 -fast 0 -firstpix $firstpix -tmpfile 
+   cam$audace(camNo) scan $largpix $hautpix $bin 1 -fast 0 -firstpix $firstpix -tmpfile -biny $bin
    set tmort [ expr 1000.*[ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ] ]
    ::console::affiche_resultat "   $caption(scanfast,comment4) = $tmort $caption(scanfast,ms/ligne)\n"
    set dt0 [ expr $dt-$tmort ]
@@ -37,7 +37,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    set speed [ cam$audace(camNo) scanloop ]
    ::console::affiche_resultat "$caption(scanfast,iteration) 0 :\n"
    ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile
+   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
    set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
    ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
    set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -45,7 +45,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,iteration) 1 :\n"
    ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile
+   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
    set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
    ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
    set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -54,7 +54,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    if { [ expr int($hautpix*$dt/1000.) ] < "20" } {
       ::console::affiche_resultat "$caption(scanfast,iteration) 2 :\n"
       ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile
+      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
       ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
       set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -62,7 +62,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "$caption(scanfast,iteration) 3 :\n"
       ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile
+      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
       ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
       set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -70,7 +70,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "\n"
    }
    ::console::affiche_resultat "$caption(scanfast,comment10)\n"
-   ::console::affiche_resultat "cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile\n"
+   ::console::affiche_resultat "cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin\n"
    ::console::affiche_resultat "\n"
    return [ list $dt0 $speed ]
 }
@@ -195,9 +195,9 @@ namespace eval ::Scanfast {
          if { $panneau(Scanfast,binning) == "4x4" } { set bin 4 }
          if { $panneau(Scanfast,binning) == "2x2" } { set bin 2 }
          if { $panneau(Scanfast,binning) == "1x1" } { set bin 1 }
-         set w [ ::Scanfast::int [ expr ($panneau(Scanfast,col2)-$panneau(Scanfast,col1)+1) ] ]
+         set w [ ::Scanfast::int [ expr $panneau(Scanfast,col2) - $panneau(Scanfast,col1) + 1 ] ]
          set h [ ::Scanfast::int $panneau(Scanfast,lig1) ]
-         set o [ ::Scanfast::int [ expr ($panneau(Scanfast,col1)-1) ] ]
+         set o [ ::Scanfast::int $panneau(Scanfast,col1) ]
          set temps_mort 10 ; #--- Estimation du temps mort a 10 ms par ligne
          set duree [ expr ($panneau(Scanfast,dt)+$temps_mort)*$h/1000./86400. ]
          #--- Gestion du moteur d'A.D.
@@ -262,9 +262,9 @@ namespace eval ::Scanfast {
          focus $audace(base).wintimeaudace
          #--- Acquisition
          if { $o == "0" } {
-            cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -fast $panneau(Scanfast,speed) -tmpfile
+            cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
          } else {
-            cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $o -fast $panneau(Scanfast,speed) -tmpfile 
+            cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $o -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
          }
          catch { cam$audace(camNo) shutter synchro }
          #--- Graphisme du panneau
@@ -303,9 +303,9 @@ namespace eval ::Scanfast {
          if { $panneau(Scanfast,binning) == "4x4" } { set bin 4 }
          if { $panneau(Scanfast,binning) == "2x2" } { set bin 2 }
          if { $panneau(Scanfast,binning) == "1x1" } { set bin 1 }
-         set w [ ::Scanfast::int [ expr ($panneau(Scanfast,col2)-$panneau(Scanfast,col1))/$bin ] ]
+         set w [ ::Scanfast::int [ expr $panneau(Scanfast,col2) - $panneau(Scanfast,col1) + 1 ] ]
          set h [ ::Scanfast::int $panneau(Scanfast,lig1) ]
-         set o [ ::Scanfast::int [ expr ($panneau(Scanfast,col1)-0)/$bin ] ]
+         set o [ ::Scanfast::int $panneau(Scanfast,col1) ]
          set results [ prescanfast $w $h $panneau(Scanfast,interlig1) $o $bin ]
          set panneau(Scanfast,dt) [ lindex $results 0 ]
          set panneau(Scanfast,speed) [ lindex $results 1 ]
