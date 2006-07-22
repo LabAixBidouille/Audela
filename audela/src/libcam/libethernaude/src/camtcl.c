@@ -299,6 +299,8 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    if (offset + w > cam->nb_photox) {
       w = cam->nb_photox - (offset - 1);
    }
+   offset = (offset - 1) / b + 1;
+   w = w / b;
    if (b < 1) {
       b = 1;
    }
@@ -389,7 +391,7 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    TheScanStruct->y = 0;
    TheScanStruct->stop = 0;
 
-   TheScanStruct->line_size = 1+(w-1)/b;
+   TheScanStruct->line_size = w;
    TheScanStruct->pix = (unsigned short*)calloc(TheScanStruct->line_size*h,sizeof(unsigned short));
    TheScanStruct->pix2 = TheScanStruct->pix;
 
@@ -427,10 +429,11 @@ void EthernaudeScanCallback(ClientData clientData)
    struct camprop *cam;
    char ligne[200];
    int readok = 1, k;
-
+   
    sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Enter function at %ld",__LINE__,libcam_getms()); util_log(ligne,0);
    sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> y=%d",__LINE__,TheScanStruct->y); util_log(ligne,0);
 
+   cam = (struct camprop *)clientData;
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "ReadoutLine_TDIMode", &ParamCCDIn, 1);
    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
@@ -461,8 +464,8 @@ void EthernaudeScanCallback(ClientData clientData)
 
    if (TheScanStruct->stop == 1) {
       // Arret a la demande de l'utilisateur
-      cam = (struct camprop *)clientData;
       EthernaudeScanTerminateSequence(clientData, cam->camno, "User aborted exposure.");
+	  return;
    }
 
    if (readok == 1) {
@@ -470,18 +473,18 @@ void EthernaudeScanCallback(ClientData clientData)
       TheScanStruct->y += 1;
       TheScanStruct->pix2 += TheScanStruct->line_size;
       if (TheScanStruct->y == TheScanStruct->height) {
-	 // La derniere ligne du scan est atteinte.
+         // La derniere ligne du scan est atteinte.
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Last line read; transfer image to AudeLA buffer (at %ld)",__LINE__,libcam_getms()); util_log(ligne,0);
-	 libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
+         libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Date conversion",__LINE__); util_log(ligne,0);
-	 libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
+         libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
          cam = (struct camprop *)clientData;
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Call EthernaudeScanTerminateSequence",__LINE__); util_log(ligne,0);
-	 EthernaudeScanTerminateSequence(clientData, cam->camno, "Normal end: last line reached.");
+         EthernaudeScanTerminateSequence(clientData, cam->camno, "Normal end: last line reached.");
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Return from call EthernaudeScanTerminateSequence",__LINE__); util_log(ligne,0);
       } else {
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> reschedule for dt=%d at %ld",__LINE__,TheScanStruct->idt,libcam_getms()); util_log(ligne,0);
-	 TheScanStruct->TimerToken = Tcl_CreateTimerHandler(TheScanStruct->idt, EthernaudeScanCallback, (ClientData) cam);
+         TheScanStruct->TimerToken = Tcl_CreateTimerHandler(TheScanStruct->idt, EthernaudeScanCallback, (ClientData) cam);
       }
    } else {
       // Si la lecture de la ligne a echoue, alors on retente plus tard.
@@ -574,7 +577,7 @@ void EthernaudeScanTransfer(ClientData clientData)
     pp = (float *) malloc(nbpix * sizeof(float));
     sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanTransfer:%d> Float buffer created (size=%d,pointer=0x%08p=%d)",__LINE__,nbpix,pp,pp); util_log(ligne,0);
     while (--nbpix >= 0) {
-       pp[nbpix] = (float)(TheScanStruct->pix[nbpix]);
+       pp[nbpix] = (float)(TheScanStruct->pix[nbpix] / 256 + (TheScanStruct->pix[nbpix] % 256) * 256);
     }
     sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanTransfer:%d> Buffer copy done",__LINE__); util_log(ligne,0);
     sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
