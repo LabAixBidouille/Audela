@@ -86,7 +86,7 @@ public:
 	char * gets(void) const throw();
 	void discard() throw();
 	void TransferFrom(CError& err) throw();
-   static char * CError::message(int error); // static pour pouvoir l'utiliser sans créer d'intance  de CError
+   static char * message(int error); // static pour pouvoir l'utiliser sans créer d'intance  de CError
                                              // cpour compatibilité avec l'ancien système d'erreur
                                              // qui n'utilisait pas les exceptions
 };
