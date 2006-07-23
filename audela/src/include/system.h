@@ -29,6 +29,9 @@
 #undef CONFIG_X86_CMPXCHG
 
 /* the following lines include the system.h */
+#define __KERNEL__
+#include <asm/types.h>
+#undef __KERNEL__
 #include <asm/system.h>
 /* for Red-Hat
 #include "/usr/i386-glibc21-linux/include/asm/system.h"
