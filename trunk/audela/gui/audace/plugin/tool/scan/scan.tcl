@@ -1,9 +1,9 @@
 #
 # Fichier : scan.tcl
 # Description : Outil pour l'acquisition en mode scan
-# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.5 2006-07-22 23:50:45 denismarchais Exp $
+# Mise a jour $Id: scan.tcl,v 1.6 2006-07-25 22:07:46 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -27,8 +27,6 @@ namespace eval ::Dscan {
 
       set This $this
       #---
-      set panneau(Dscan,choix_bin)   "1x1 2x2 4x4"
-      set panneau(Dscan,binning)     "2x2"
       set panneau(menu_name,Dscan)   "$caption(scan,drift_scan)"
       set panneau(Dscan,aide)        "$caption(scan,help_titre)"
       set panneau(Dscan,col)         "$caption(scan,colonnes)"
@@ -65,7 +63,7 @@ namespace eval ::Dscan {
       if { ! [ info exists parametres(Dscan,col1) ] }    { set parametres(Dscan,col1)    "1" }
       if { ! [ info exists parametres(Dscan,col2) ] }    { set parametres(Dscan,col2)    "768" }
       if { ! [ info exists parametres(Dscan,lig1) ] }    { set parametres(Dscan,lig1)    "1500" }
-      if { ! [ info exists parametres(Dscan,dimpix) ] }  { set parametres(Dscan,dimpix)  "9" }
+      if { ! [ info exists parametres(Dscan,dimpix) ] }  { set parametres(Dscan,dimpix)  "9.0" }
       if { ! [ info exists parametres(Dscan,binning) ] } { set parametres(Dscan,binning) "2x2" }
       if { ! [ info exists parametres(Dscan,foc) ] }     { set parametres(Dscan,foc)     ".85" }
       if { ! [ info exists parametres(Dscan,dec) ] }     { set parametres(Dscan,dec)     "0d" }
@@ -98,11 +96,36 @@ namespace eval ::Dscan {
       }
    }
 
+   proc Adapt_Outil_Scan { { a "" } { b "" } { c "" } } {
+      variable This
+      global conf
+      global panneau
+
+      #--- Mise a jour de la liste des binnings disponibles
+      $This.fra3.bin.but_bin.menu delete 0 20
+      set list_binning_scan [ ::confLink::getBinningList_Scan [ ::confVisu::getCamNo 1 ] ]
+      foreach valbin $list_binning_scan {
+         $This.fra3.bin.but_bin.menu add radiobutton -label "$valbin" \
+            -indicatoron "1" \
+            -value "$valbin" \
+            -variable panneau(Dscan,binning) \
+            -command { ::Dscan::cmdCalcul }
+      }
+      #--- Cas particulier
+      if { $conf(confLink) == "ethernaude" } {
+         if { $panneau(Dscan,binning) == "4x4" } {
+            set panneau(Dscan,binning) "1x1"
+            ::Dscan::cmdCalcul
+         }
+      }
+   }
+
    proc startTool { visuNo } {
       variable This
-      global audace
 
       ::Dscan::Chargement_Var
+      ::Dscan::Adapt_Outil_Scan
+      ::confVisu::addCameraListener 1 ::Dscan::Adapt_Outil_Scan
       pack $This -side left -fill y
    }
 
@@ -110,6 +133,7 @@ namespace eval ::Dscan {
       variable This
 
       ::Dscan::Enregistrement_Var
+      ::confVisu::removeCameraListener 1 ::Dscan::Adapt_Outil_Scan
       pack forget $This
    }
 
@@ -135,20 +159,27 @@ namespace eval ::Dscan {
          set panneau(Dscan,acquisition) "1"
          set panneau(Dscan,stop1)       "0"
 
+         #--- La premiere colonne ne peut pas etre inferieure a 1
+         if { $panneau(Dscan,col1) < "1" } {
+            set panneau(Dscan,col1) "1"
+         }
+
          #--- Gestion graphique du bouton GO CCD
          $This.fra4.but1 configure -relief groove -text $panneau(Dscan,go1) -state disabled
          #--- Gestion graphique du bouton STOP - Inactif avant le debut du scan
          $This.fra4.but2 configure -relief groove -text $panneau(Dscan,stop) -state disabled
          update
 
-         #--- Definition des parametres du scan
+         #--- Definition du binning
          set bin 4
          if { $panneau(Dscan,binning) == "4x4" } { set bin 4 }
          if { $panneau(Dscan,binning) == "2x2" } { set bin 2 }
          if { $panneau(Dscan,binning) == "1x1" } { set bin 1 }
-         set w [ ::Dscan::int [ expr ($panneau(Dscan,col2)-$panneau(Dscan,col1)+1) ] ]
+
+         #--- Definition des parametres du scan (w : largeur - h : hauteur - o : offset)
+         set w [ ::Dscan::int [ expr $panneau(Dscan,col2) - $panneau(Dscan,col1) + 1 ] ]
          set h [ ::Dscan::int $panneau(Dscan,lig1) ]
-         set o [ ::Dscan::int $panneau(Dscan,col1) ]
+         set o [ ::Dscan::int [ expr $panneau(Dscan,col1) - 1 ] ] ; #--- Offset = (numero colonne de debut) - 1
 
          #--- Gestion du moteur d'A.D.
          if { $motor == "motoroff" } {
@@ -214,7 +245,7 @@ namespace eval ::Dscan {
       }
    }
 
-   proc scan { w h bin dt { o "0" } } {
+   proc scan { w h bin dt o } {
       variable This
       global audace
       global panneau
@@ -299,6 +330,11 @@ namespace eval ::Dscan {
       global panneau
       global caption
 
+      #--- La premiere colonne ne peut pas etre inferieure a 1
+      if { $panneau(Dscan,col1) < "1" } {
+         set panneau(Dscan,col1) "1"
+      }
+      #--- Calcul de dt
       if { $panneau(Dscan,binning) == "4x4" } { set bin 4 }
       if { $panneau(Dscan,binning) == "2x2" } { set bin 2 }
       if { $panneau(Dscan,binning) == "1x1" } { set bin 1 }
@@ -362,7 +398,7 @@ namespace eval ::Dscan {
       }
       $This.fra3.fra3.ent2 configure -textvariable panneau(Dscan,dec)  
       update
-      ::Dscan::cmdCalcul 
+      ::Dscan::cmdCalcul
    }
 }
 
@@ -462,7 +498,7 @@ proc DscanBuildIF { This } {
             menubutton $This.fra3.bin.but_bin -text $panneau(Dscan,bin) -menu $This.fra3.bin.but_bin.menu -relief raised
             pack $This.fra3.bin.but_bin -in $This.fra3.bin -side left -fill none
             set m [ menu $This.fra3.bin.but_bin.menu -tearoff 0 ]
-            foreach valbin $panneau(Dscan,choix_bin) {
+            foreach valbin [ ::confLink::getBinningList_Scan [ ::confVisu::getCamNo 1 ] ] {
                $m add radiobutton -label "$valbin" \
                   -indicatoron "1" \
                   -value "$valbin" \
