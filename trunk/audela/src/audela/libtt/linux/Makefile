@@ -10,7 +10,7 @@ SRCDIR       = ../src
 
 DEPENDENCIES = $(patsubst %.a,%.depend,$(OUTPUT))
 
-CXXFLAGS     = -c -fno-strict-aliasing -fPIC -Wall -O2 -I ../../../include -I ../../../external/include -I $(SRCDIR) 
+CXXFLAGS     = -c -fno-strict-aliasing -fPIC -Wall -O2 -I ../../../include -I ../../../external/include -I $(SRCDIR)
 LDFLAGS      = -shared -ldl -lm
 
 SRC = $(SRCDIR)/files.c $(SRCDIR)/fs_fsio1.c $(SRCDIR)/fs_fsio2.c \
@@ -23,7 +23,7 @@ SRC = $(SRCDIR)/files.c $(SRCDIR)/fs_fsio1.c $(SRCDIR)/fs_fsio2.c \
       $(SRCDIR)/tt_seri5.c $(SRCDIR)/tt_stac1.c $(SRCDIR)/tt_stac2.c \
       $(SRCDIR)/tt_time1.c $(SRCDIR)/tt_user1.c $(SRCDIR)/tt_user3.c \
       $(SRCDIR)/tt_user4.c $(SRCDIR)/tt_util1.c $(SRCDIR)/tt_util2.c \
-      $(SRCDIR)/tt_util3.c
+      $(SRCDIR)/tt_util3.c $(SRCDIR)/tt_user2.c $(SRCDIR)/tt_user5.c
 
 OBJ = $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 
@@ -33,7 +33,7 @@ $(OUTPUT): $(OBJ)
 	@echo "*** Linking library $@"
 	$(LD) $(LDFLAGS) -o $@ $? ../../../external/lib/libcfitsio.a ../../../external/lib/libjpeg.a
 	$(CP) $@ $(OUTPUTDIR)
-	
+
 %.o: $(SRCDIR)/%.c
 	@echo "*** Compilation de $<"
 	$(CXX) $(CXXFLAGS) -o $@ $<
@@ -46,7 +46,7 @@ makedep:
 clean::
 	$(RM) $(OBJ) $(OUTPUT)
 cleanall:: clean
-	$(RM) makedep *~ *.bak *.BAK *.swp $(SRCDIR)/*~ $(SRCDIR)/*.bak $(SRCDIR)/*.BAK $(SRCDIR)/*.swp 
+	$(RM) makedep *~ *.bak *.BAK *.swp $(SRCDIR)/*~ $(SRCDIR)/*.bak $(SRCDIR)/*.BAK $(SRCDIR)/*.swp
 distclean: cleanall
 	@-$(RM) -rf ../vc60/Debug ../vc60/Release
 	@-$(RM) ../vc60/*.mak ../vc60/*.ncb ../vc60/*.opt ../vc60/*.plg
