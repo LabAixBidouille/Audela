@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -62,11 +62,17 @@
 #ifndef __TTUSER1H__
 #include "tt_user1.h"
 #endif
+#ifndef __TTUSER2H__
+#include "tt_user2.h"
+#endif
 #ifndef __TTUSER3H__
 #include "tt_user3.h"
 #endif
 #ifndef __TTUSER4H__
 #include "tt_user4.h"
+#endif
+#ifndef __TTUSER5H__
+#include "tt_user5.h"
 #endif
 
 #define TT_MAX_CHAR 127
@@ -694,8 +700,10 @@ typedef struct {
    char jpegfile[FLEN_FILENAME];
    int jpegfile_make;
    TT_USER1_IMA_STACK user1;
+   TT_USER2_IMA_STACK user2;
    TT_USER3_IMA_STACK user3;
    TT_USER4_IMA_STACK user4;
+   TT_USER5_IMA_STACK user5;
 } TT_IMA_STACK;
 
 /* --- pour la fonction ima/series --- */
@@ -835,8 +843,10 @@ typedef struct {
    int nbimages;
    double fwhmsat;
    TT_USER1_IMA_SERIES user1;
+   TT_USER2_IMA_SERIES user2;
    TT_USER3_IMA_SERIES user3;
    TT_USER4_IMA_SERIES user4;
+   TT_USER5_IMA_SERIES user5;
 } TT_IMA_SERIES;
 
 /* ======================================================================== */
@@ -1072,6 +1082,15 @@ int tt_user1_ima_stack_builder2(TT_IMA_STACK *pstack);
 int tt_user1_ima_stack_builder3(char *mot,char *argu,TT_IMA_STACK *pstack);
 int tt_user1_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg);
 
+int tt_user2_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries);
+int tt_user2_ima_series_builder2(TT_IMA_SERIES *pseries);
+int tt_user2_ima_series_builder3(char *mot,char *argu,TT_IMA_SERIES *pseries);
+int tt_user2_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *msg);
+int tt_user2_ima_stack_builder1(char *keys10,TT_IMA_STACK *pstack);
+int tt_user2_ima_stack_builder2(TT_IMA_STACK *pstack);
+int tt_user2_ima_stack_builder3(char *mot,char *argu,TT_IMA_STACK *pstack);
+int tt_user2_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg);
+
 int tt_user3_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries);
 int tt_user3_ima_series_builder2(TT_IMA_SERIES *pseries);
 int tt_user3_ima_series_builder3(char *mot,char *argu,TT_IMA_SERIES *pseries);
@@ -1089,6 +1108,15 @@ int tt_user4_ima_stack_builder1(char *keys10,TT_IMA_STACK *pstack);
 int tt_user4_ima_stack_builder2(TT_IMA_STACK *pstack);
 int tt_user4_ima_stack_builder3(char *mot,char *argu,TT_IMA_STACK *pstack);
 int tt_user4_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg);
+
+int tt_user5_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries);
+int tt_user5_ima_series_builder2(TT_IMA_SERIES *pseries);
+int tt_user5_ima_series_builder3(char *mot,char *argu,TT_IMA_SERIES *pseries);
+int tt_user5_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *msg);
+int tt_user5_ima_stack_builder1(char *keys10,TT_IMA_STACK *pstack);
+int tt_user5_ima_stack_builder2(TT_IMA_STACK *pstack);
+int tt_user5_ima_stack_builder3(char *mot,char *argu,TT_IMA_STACK *pstack);
+int tt_user5_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg);
 
 /***************************************************************************/
 /***************************************************************************/

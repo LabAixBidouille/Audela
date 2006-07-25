@@ -392,8 +392,10 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
       fct_found=TT_YES;
    } else {
       tt_user1_ima_series_dispatch1(pseries,&fct_found,&msg);
+      tt_user2_ima_series_dispatch1(pseries,&fct_found,&msg);
       tt_user3_ima_series_dispatch1(pseries,&fct_found,&msg);
       tt_user4_ima_series_dispatch1(pseries,&fct_found,&msg);
+      tt_user5_ima_series_dispatch1(pseries,&fct_found,&msg);
    }
 
    if (fct_found==TT_NO) {
