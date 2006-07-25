@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.22 2006-07-25 16:34:14 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.23 2006-07-25 22:07:09 robertdelmas Exp $
 #
 
 global confCam
@@ -2952,18 +2952,17 @@ namespace eval ::confCam {
 
    #----------------------------------------------------------------------------
    # confCam::selectCamItem
-   # Selectionne un onglet en passant l'item de la camera 
+   # Selectionne un onglet en passant l'item de la camera
    #
-   # parametres : 
+   # parametres :
    #    aucun
    #----------------------------------------------------------------------------
    proc selectCamItem { } {
       global confCam
-      global conf
 
       #--- je recupere l'item courant
       set cam_item $confCam(cam_item)
-      
+
       #--- je selectionne l'onglet correspondant a la camera de cet item
       ::confCam::select $confCam(camera,$cam_item,camName) 
    }
@@ -3002,7 +3001,6 @@ namespace eval ::confCam {
          set audace(camNo) $confCam(camera,$cam_item,camNo)
       }
       set confCam(camera,$cam_item,camName) ""
-
    }
 
    #
@@ -3010,7 +3008,7 @@ namespace eval ::confCam {
    #    retourne "1" si la camera est demarree, sinon retourne "0"
    # 
    #  parametres :
-   #     camNo : numero de ma camera   
+   #     camNo : numero de ma camera
    #    
    proc isReady { camNo } {
       #--- Je verifie si la camera est capable fournir son nom
@@ -3032,10 +3030,8 @@ namespace eval ::confCam {
    #     camNo : numero de la camera
    #    
    proc getBinningList { camNo } {
-
-      #--- Je verifie si la camera est capable fournir son nom
+      #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
-
       if { $result == 0 } {
          #---
          switch $product {
@@ -3050,35 +3046,6 @@ namespace eval ::confCam {
          set binningList { }
       }
       return $binningList
-   }
-
-   #
-   # confCam::getBinningList_Scan
-   #    retourne la liste des binnings Audine possibles pour les outils Drift-scan et Scan rapide
-   # 
-   #  parametres :
-   #     camNo : numero de la camera
-   #    
-   proc getBinningList_Scan { camNo } {
-      global conf
-
-      #--- Je verifie si la camera est capable fournir son nom
-      set result [ catch { cam$camNo product } product]
-
-      if { $result == 0 } {
-         #---
-         switch $conf(confLink) {
-            ethernaude {
-               set binningList_Scan { 1x1 2x2 }
-            }
-            default {
-               set binningList_Scan { 1x1 2x2 4x4 }
-            }
-         }
-      } else {
-         set binningList_Scan { }
-      }
-      return $binningList_Scan
    }
 
    #
@@ -3149,7 +3116,7 @@ namespace eval ::confCam {
    #
    proc hasShutter { camNo } {
       global conf
-      
+
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
       #---
