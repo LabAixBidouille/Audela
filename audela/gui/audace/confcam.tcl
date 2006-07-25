@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.21 2006-07-03 17:27:03 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.22 2006-07-25 16:34:14 robertdelmas Exp $
 #
 
 global confCam
@@ -3026,23 +3026,22 @@ namespace eval ::confCam {
 
    #
    # confCam::getBinningList
-   #    retourne la list des binning possibles de la camera
+   #    retourne la liste des binnings possibles de la camera
    # 
    #  parametres :
    #     camNo : numero de la camera
    #    
    proc getBinningList { camNo } {
-      global confCam
-      
+
       #--- Je verifie si la camera est capable fournir son nom
-      set result [ catch  { cam$camNo product } product] 
-      
-      if  { $result == 0 } {
+      set result [ catch { cam$camNo product } product]
+
+      if { $result == 0 } {
          #---
-         switch  $product {
-            dslr { 
+         switch $product {
+            dslr {
                set binningList [cam$camNo quality list]
-            }         
+            }
             default {
                set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
             }
@@ -3051,6 +3050,35 @@ namespace eval ::confCam {
          set binningList { }
       }
       return $binningList
+   }
+
+   #
+   # confCam::getBinningList_Scan
+   #    retourne la liste des binnings Audine possibles pour les outils Drift-scan et Scan rapide
+   # 
+   #  parametres :
+   #     camNo : numero de la camera
+   #    
+   proc getBinningList_Scan { camNo } {
+      global conf
+
+      #--- Je verifie si la camera est capable fournir son nom
+      set result [ catch { cam$camNo product } product]
+
+      if { $result == 0 } {
+         #---
+         switch $conf(confLink) {
+            ethernaude {
+               set binningList_Scan { 1x1 2x2 }
+            }
+            default {
+               set binningList_Scan { 1x1 2x2 4x4 }
+            }
+         }
+      } else {
+         set binningList_Scan { }
+      }
+      return $binningList_Scan
    }
 
    #
