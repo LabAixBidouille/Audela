@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.6 2006-07-25 22:07:46 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.7 2006-07-26 16:59:45 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -114,9 +114,13 @@ namespace eval ::Dscan {
       #--- Cas particulier
       if { $conf(confLink) == "ethernaude" } {
          if { $panneau(Dscan,binning) == "4x4" } {
-            set panneau(Dscan,binning) "1x1"
+            set panneau(Dscan,binning) "2x2"
             ::Dscan::cmdCalcul
          }
+      } elseif { $conf(confLink) == "parallelport" } {
+         #--- C'est bon, on ne fait rien
+      } else {
+         set panneau(Dscan,binning) "1x1"
       }
    }
 
@@ -152,93 +156,96 @@ namespace eval ::Dscan {
       global conf
       global audace
       global panneau
-      global caption
 
       if { [ ::cam::list ] != "" } {
-         #--- Initialisation des variables
-         set panneau(Dscan,acquisition) "1"
-         set panneau(Dscan,stop1)       "0"
+         if { $conf(camera,A,camName) == "audine" } {
+            if { ( $conf(confLink) == "ethernaude" ) || ( $conf(confLink) == "parallelport" ) } {
+               #--- Initialisation des variables
+               set panneau(Dscan,acquisition) "1"
+               set panneau(Dscan,stop1)       "0"
 
-         #--- La premiere colonne ne peut pas etre inferieure a 1
-         if { $panneau(Dscan,col1) < "1" } {
-            set panneau(Dscan,col1) "1"
-         }
-
-         #--- Gestion graphique du bouton GO CCD
-         $This.fra4.but1 configure -relief groove -text $panneau(Dscan,go1) -state disabled
-         #--- Gestion graphique du bouton STOP - Inactif avant le debut du scan
-         $This.fra4.but2 configure -relief groove -text $panneau(Dscan,stop) -state disabled
-         update
-
-         #--- Definition du binning
-         set bin 4
-         if { $panneau(Dscan,binning) == "4x4" } { set bin 4 }
-         if { $panneau(Dscan,binning) == "2x2" } { set bin 2 }
-         if { $panneau(Dscan,binning) == "1x1" } { set bin 1 }
-
-         #--- Definition des parametres du scan (w : largeur - h : hauteur - o : offset)
-         set w [ ::Dscan::int [ expr $panneau(Dscan,col2) - $panneau(Dscan,col1) + 1 ] ]
-         set h [ ::Dscan::int $panneau(Dscan,lig1) ]
-         set o [ ::Dscan::int [ expr $panneau(Dscan,col1) - 1 ] ] ; #--- Offset = (numero colonne de debut) - 1
-
-         #--- Gestion du moteur d'A.D.
-         if { $motor == "motoroff" } {
-            if { [ ::tel::list ] != "" } {
-               #--- Arret du moteur d'AD
-               tel$audace(telNo) radec motor off
-            }
-         }
-
-         #--- Temporisation ou non entre l'arret moteur et le debut de la pose
-         if { [ info exists conf(tempo_scan,active) ] == "0" } {
-            set conf(tempo_scan,active) "1"
-            set conf(tempo_scan,delai)  "3"
-         }
-
-         #--- Attente du demarrage du scan
-         if { $conf(tempo_scan,active) == "1" } {
-            #--- Decompte du temps d'attente
-            set attente $conf(tempo_scan,delai)
-            if { $conf(tempo_scan,delai) > "0" } {
-               while { $conf(tempo_scan,delai) > "0" } {
-                  ::camera::Avancement_scan "-10" $panneau(Dscan,lig1)
-                  update
-                  after 1000	
-                  incr conf(tempo_scan,delai) "-1"
+               #--- La premiere colonne ne peut pas etre inferieure a 1
+               if { $panneau(Dscan,col1) < "1" } {
+                  set panneau(Dscan,col1) "1"
                }
+
+               #--- Gestion graphique du bouton GO CCD
+               $This.fra4.but1 configure -relief groove -text $panneau(Dscan,go1) -state disabled
+               #--- Gestion graphique du bouton STOP - Inactif avant le debut du scan
+               $This.fra4.but2 configure -relief groove -text $panneau(Dscan,stop) -state disabled
+               update
+
+               #--- Definition du binning
+               set bin 4
+               if { $panneau(Dscan,binning) == "4x4" } { set bin 4 }
+               if { $panneau(Dscan,binning) == "2x2" } { set bin 2 }
+               if { $panneau(Dscan,binning) == "1x1" } { set bin 1 }
+
+               #--- Definition des parametres du scan (w : largeur - h : hauteur - o : offset)
+               set w [ ::Dscan::int [ expr $panneau(Dscan,col2) - $panneau(Dscan,col1) + 1 ] ]
+               set h [ ::Dscan::int $panneau(Dscan,lig1) ]
+               set o [ ::Dscan::int [ expr $panneau(Dscan,col1) - 1 ] ] ; #--- Offset = (numero colonne de debut) - 1
+
+               #--- Gestion du moteur d'A.D.
+               if { $motor == "motoroff" } {
+                  if { [ ::tel::list ] != "" } {
+                     #--- Arret du moteur d'AD
+                     tel$audace(telNo) radec motor off
+                  }
+               }
+
+               #--- Temporisation ou non entre l'arret moteur et le debut de la pose
+               if { [ info exists conf(tempo_scan,active) ] == "0" } {
+                  set conf(tempo_scan,active) "1"
+                  set conf(tempo_scan,delai)  "3"
+               }
+
+               #--- Attente du demarrage du scan
+               if { $conf(tempo_scan,active) == "1" } {
+                  #--- Decompte du temps d'attente
+                  set attente $conf(tempo_scan,delai)
+                  if { $conf(tempo_scan,delai) > "0" } {
+                     while { $conf(tempo_scan,delai) > "0" } {
+                        ::camera::Avancement_scan "-10" $panneau(Dscan,lig1)
+                        update
+                        after 1000	
+                        incr conf(tempo_scan,delai) "-1"
+                     }
+                  }
+                  set conf(tempo_scan,delai) $attente
+               }
+
+               #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
+               $This.fra4.but2 configure -relief raised -text $panneau(Dscan,stop) -state normal
+               update
+
+               #--- Changement de variable
+               set dt $panneau(Dscan,interlig1)
+
+               #--- Appel a la fonction d'acquisition
+               ::Dscan::scan $w $h $bin $dt $o
+
+               #--- Graphisme du panneau
+               $This.fra4.but1 configure -relief groove -text $panneau(Dscan,go2) -state disabled
+               update
+
+               #--- Visualisation de l'image
+               ::audace::autovisu $audace(visuNo)
+
+               #--- Gestion du moteur d'A.D.
+               if { $motor == "motoroff" } {
+                  if { [ ::tel::list ] != "" } {
+                     #--- Remise en marche du moteur d'AD
+                     tel$audace(telNo) radec motor on
+                  }
+               }
+
+               #--- Graphisme panneau
+               set panneau(Dscan,acquisition) "0"
+               $This.fra4.but1 configure -relief raised -text $panneau(Dscan,go0) -state normal
+               update
             }
-            set conf(tempo_scan,delai) $attente
          }
-
-         #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
-         $This.fra4.but2 configure -relief raised -text $panneau(Dscan,stop) -state normal
-         update
-
-         #--- Changement de variable
-         set dt $panneau(Dscan,interlig1)
-
-         #--- Appel a la fonction d'acquisition
-         ::Dscan::scan $w $h $bin $dt $o
-
-         #--- Graphisme du panneau
-         $This.fra4.but1 configure -relief groove -text $panneau(Dscan,go2) -state disabled
-         update
-
-         #--- Visualisation de l'image
-         ::audace::autovisu $audace(visuNo)
-
-         #--- Gestion du moteur d'A.D.
-         if { $motor == "motoroff" } {
-            if { [ ::tel::list ] != "" } {
-               #--- Remise en marche du moteur d'AD
-               tel$audace(telNo) radec motor on
-            }
-         }
-
-         #--- Graphisme panneau
-         set panneau(Dscan,acquisition) "0"
-         $This.fra4.but1 configure -relief raised -text $panneau(Dscan,go0) -state normal
-         update
       } else {
          ::confCam::run
          tkwait window $audace(base).confCam
@@ -246,11 +253,8 @@ namespace eval ::Dscan {
    }
 
    proc scan { w h bin dt o } {
-      variable This
       global audace
       global panneau
-      global caption
-      global scan_result1
 
       #--- Petit raccourci
       set camera cam$audace(camNo)
@@ -295,7 +299,6 @@ namespace eval ::Dscan {
       variable This
       global audace
       global panneau
-      global caption
 
       if { [ ::cam::list ] != "" } {
          if { $panneau(Dscan,acquisition) == "1" } {
@@ -327,8 +330,8 @@ namespace eval ::Dscan {
 
    proc cmdCalcul { } {
       variable This
+      global conf
       global panneau
-      global caption
 
       #--- La premiere colonne ne peut pas etre inferieure a 1
       if { $panneau(Dscan,col1) < "1" } {
@@ -405,7 +408,6 @@ namespace eval ::Dscan {
 proc DscanBuildIF { This } {
    global audace
    global panneau
-   global caption
 
    frame $This -borderwidth 2 -relief groove
 
