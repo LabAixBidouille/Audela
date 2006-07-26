@@ -2,7 +2,7 @@
 # Fichier : conflink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.3 2006-07-25 22:07:31 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.4 2006-07-26 16:59:15 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -457,8 +457,8 @@ namespace eval ::confLink {
 
    #------------------------------------------------------------
    # getBinningList_Scan
-   # Retourne la liste des binnings Audine possibles pour les outils Drift-scan et Scan rapide
-   # en fonction du type de liaison (parallele ou EthernAude)
+   # Retourne la liste des binnings Audine possibles pour les outils Drift-scan et
+   # Scan rapide en fonction du type de liaison utilisee (parallele ou EthernAude)
    # Parametres :
    #    camNo : numero de la camera
    #------------------------------------------------------------
@@ -468,17 +468,21 @@ namespace eval ::confLink {
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
       if { $result == 0 } {
-         #---
-         switch $conf(confLink) {
-            ethernaude {
-               set binningList_Scan { 1x1 2x2 }
+         if { $product == "audine" } {
+            #---
+            switch $conf(confLink) {
+               ethernaude {
+                  set binningList_Scan { 1x1 2x2 }
+               }
+               parallelport {
+                  set binningList_Scan { 1x1 2x2 4x4 }
+               }
+               default {
+                  set binningList_Scan { }
+               }
             }
-            parallelport {
-               set binningList_Scan { 1x1 2x2 4x4 }
-            }
-            default {
-               set binningList_Scan { }
-            }
+         } else {
+            set binningList_Scan { }
          }
       } else {
          set binningList_Scan { }
