@@ -518,9 +518,9 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       if (f[i]>max) max=f[i];
    }
 
-   /* Normalisation du profil à 32767 */
-   max=32767.0/max;
-   /*max=1.;*/
+   /* Normalisation du profil à 32767 non faite */
+   /*max=32767.0/max;*/
+   max=1.;
    for (i=0;i<imax;i++) {
       for (j=0;j<hauteur;j++) {
          p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
