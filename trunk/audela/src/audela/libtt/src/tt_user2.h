@@ -28,7 +28,7 @@
 
 /* --- autorized between 2001 and 2999 ---*/
 #define TT_IMASERIES_USER2_PROFILE2 2001
-#define TT_IMASERIES_USER2_MEDIANY2 2002
+#define TT_IMASERIES_USER2_LOPT 2002
 
 /* --- autorized between 2001 and 2999 ---*/
 #define TT_IMASTACK_USER2_TUTU 2001

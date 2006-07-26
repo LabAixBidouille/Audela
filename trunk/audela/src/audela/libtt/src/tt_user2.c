@@ -26,7 +26,7 @@
 int tt_ima_stack_2_tutu(TT_IMA_STACK *pstack);
 
 int tt_ima_series_profile2(TT_IMA_SERIES *pseries);
-int tt_ima_series_mediany2(TT_IMA_SERIES *pseries);
+int tt_ima_series_lopt(TT_IMA_SERIES *pseries);
 
 
 /**************************************************************************/
@@ -41,7 +41,7 @@ int tt_user2_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries)
 /**************************************************************************/
 {
    if (strcmp(keys10,"PROFILE2")==0) { pseries->numfct=TT_IMASERIES_USER2_PROFILE2; }
-   else if (strcmp(keys10,"MEDIANY2")==0) { pseries->numfct=TT_IMASERIES_USER2_MEDIANY2; }
+   else if (strcmp(keys10,"LOPT")==0) { pseries->numfct=TT_IMASERIES_USER2_LOPT; }
    return(OK_DLL);
 }
 
@@ -86,8 +86,8 @@ int tt_user2_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *ms
       *msg=tt_ima_series_profile2(pseries);
       *fct_found=TT_YES;
    }
-   else if (pseries->numfct==TT_IMASERIES_USER2_MEDIANY2) {
-      *msg=tt_ima_series_mediany2(pseries);
+   else if (pseries->numfct==TT_IMASERIES_USER2_LOPT) {
+      *msg=tt_ima_series_lopt(pseries);
       *fct_found=TT_YES;
    }
    return(OK_DLL);
@@ -300,22 +300,33 @@ int tt_ima_series_profile2(TT_IMA_SERIES *pseries)
 
 
 /**************************************************************************/
-/* Fonction MedianY                                                      */
+/* Fonction lopt                                                          */
 /* arguments possibles : y1,y2,height                                     */
+/* D'apres la routine de IRIS */
 /**************************************************************************/
-int tt_ima_series_mediany2(TT_IMA_SERIES *pseries)
+/******************************* L_OPT **********************************/
+/* Calcul la somme normalisée et optimisé entre les lignes lmax et lmin */
+/* Version simpliflié sans réjection des pixels aberrants               */
+/* Variance constante (indépendante du signal)                          */
+/* Dans ce cas                                                          */
+/*    F = S(P.(D-ciel)) / S(P . P)                                      */
+/*                                                                      */
+/* Voir J. G. Robertson, PASP 98, 1220-1231, November 1986              */
+/* V5.0 -> calcul d'une fonction de poids locale                        */
+/************************************************************************/
+int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
 {
    TT_IMA *p_in,*p_out;
    int index;
-
-   int w, h;
-   int height;
-   int y1,y2;
-   int x,y;              /* loop variable */
-   double value;          /* temporary variable */
+   int imax,jmax,lmin,lmax;
+   int hauteur;
    int temp;             /* temporary variable */
-   int diff_y,diff_y_2;
-   double *tab=NULL;
+   double *f=NULL,*P=NULL;
+   int nb;
+   int i,j,k;
+   double max,somme,norme;
+   double v,w,s;
+   double vv[50]; 
 
    char message[TT_MAXLIGNE];
    int taille,msg;
@@ -324,70 +335,202 @@ int tt_ima_series_mediany2(TT_IMA_SERIES *pseries)
    p_in=pseries->p_in;
    p_out=pseries->p_out;
    index=pseries->index;
-
-
-   w=p_in->naxis1;
-   h=p_in->naxis2;
-   height=pseries->user2.height;
-   y1=pseries->user2.y1-1;
-   y2=pseries->user2.y2-1;
-
-   /* --- initialisation ---*/
-   /*tt_imabuilder(p_out);*/
-   tt_imacreater(p_out,p_in->naxis1,height);
-
+   imax=p_in->naxis1;
+   jmax=p_in->naxis2;
+   hauteur=pseries->user2.height;
+   lmin=pseries->user2.y1-1;
+   lmax=pseries->user2.y2-1;
 
    /* verification des donnees */
-   if (height < 0)
-   {
-         sprintf(message,"height must be positive");
-         tt_errlog(TT_ERR_WRONG_VALUE,message);
-         return(TT_ERR_WRONG_VALUE);
-   } /* end of if-statement */
+   if (hauteur < 0) {
+      sprintf(message,"height must be positive");
+      tt_errlog(TT_ERR_WRONG_VALUE,message);
+      return(TT_ERR_WRONG_VALUE);
+   }
+   if ((lmin < 2) || (lmax < 2) || (lmin >jmax -2) || (lmax > jmax-2)) {
+      sprintf(message,"y1 and y2 must be contained between 3 and %d",jmax-2);
+      tt_errlog(TT_ERR_WRONG_VALUE,message);
+      return(TT_ERR_WRONG_VALUE);
+   }
+   if(lmin > lmax) {
+      temp = lmax;
+      lmax = lmin;
+      lmin = temp;
+   }
+   if ((lmax-lmin) < 4) {
+      strcpy(message,"y2-y1 must be highter than 4");
+      tt_errlog(TT_ERR_WRONG_VALUE,message);
+      return(TT_ERR_WRONG_VALUE);
+   }
 
-   if ((y1 < 0) || (y2 < 0) || (y1 >h -1) || (y2 > h-1))
-   {
-         sprintf(message,"y1 and y2 must be contained between 1 and %d",h);
-         tt_errlog(TT_ERR_WRONG_VALUE,message);
-         return(TT_ERR_WRONG_VALUE);
-   } /* end of if-statement */
-
-   if(y1 > y2)
-   {
-       temp = y2;
-       y2 = y1;
-       y1 = temp;
-   } /* end of if-statement */
-
-
-   /* mediany */
-   diff_y = (y2 - y1) + 1;
-   diff_y_2 = (int) (diff_y / 2);
+   /* Profil spectral monodimentionnel (f)*/
    taille=sizeof(double);
-   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&tab,&diff_y,&taille,"tab"))!=0) {
-      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_mediany for pointer tab");
+   nb=(int)(imax);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&f,&nb,&taille,"f"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_mediany2 for pointer f");
       return(TT_ERR_PB_MALLOC);
    }
 
-   for(x = 0; x < w;x++)
-   {
-       for(y = 0;y < diff_y;y++)
-       {
-           *(tab + y) = p_in->p[x + ((y + y1) * w)];
-       } /* end of x-loop */
-       tt_util_qsort_double(tab,0,diff_y,NULL);
-       if ((diff_y % 2) == 1)
-           value = *(tab + diff_y_2);
-       else value =  (*(tab + diff_y_2) + *(tab + diff_y_2 - 1)) / 2;
-       for(y = 0; y < height;y++)
-       {
-           p_out->p[x + y * w] = (TT_PTYPE)value;
-       } /* end of x-loop */
-   } /* end of y-loop */
+   /* Modele profil spectral colonne (P)*/
+   taille=sizeof(double);
+   nb=(int)(lmax-lmin+1);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&P,&nb,&taille,"P"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_mediany2 for pointer P");
+      tt_free(f,"f");
+      return(TT_ERR_PB_MALLOC);
+   }
 
-   tt_free(tab,"tab");
+   /* --- initialisation ---*/
+   tt_imacreater(p_out,imax,hauteur);
 
-   /* --- calcul des temps (pour l'entete fits) ---*/
+   /*/////////////////////////////////////*/
+   /*/ Calcul du profil spectral optimisé */
+   /*/////////////////////////////////////*/
+   max=-1e10;
+
+   /* On gère les 3 premières colonnes*/
+   for (i=0;i<3;i++) {
+      somme=0.0;
+      k=0;
+
+      /* Calcul de la fonction de poids */
+      for (j=lmin-1;j<lmax;j++,k++) {
+         P[k]=(double)p_in->p[j*imax+i];
+      }
+
+      /* La fonction de poids est rendue strictement positive et normalisée */
+      s=0;
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         if (P[k]<0) P[k]=0;
+         s=s+P[k];
+      }  
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         P[k]=P[k]/s;
+      }
+
+      /* Calcul de la norme */
+      s=0;
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         s=s+P[k]*P[k];
+      }  
+      norme=s;
+ 
+      /* Calcul du profil optimisé */
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {
+         v=(double)p_in->p[j*imax+i];
+         w=P[k];
+         somme+=w*v;
+      }
+      f[i]=somme/norme;
+      if (f[i]>max) max=f[i];
+   }
+
+   /* On gère les 3 dernières colonne */
+   i=imax-3;
+   for (i=imax-3;i<imax;i++) {
+      somme=0.0;
+      k=0;
+      /* Calcul de la fonction de poids*/
+      for (j=lmin-1;j<lmax;j++,k++) {
+         P[k]=(double)p_in->p[j*imax+i];
+      }
+
+      /* La fonction de poids est rendue strictement positive et normalisée*/
+      s=0;
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         if (P[k]<0) P[k]=0;
+         s=s+P[k];
+      }  
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         P[k]=P[k]/s;
+      }
+
+      /* Calcul de la norme */
+      s=0;
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         s=s+P[k]*P[k];
+      }  
+      norme=s;
+   
+      /* Calcul du profil optimisé */
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {
+         v=(double)p_in->p[j*imax+i];
+         w=P[k];
+         somme+=w*v;
+      }
+      f[i]=somme/norme;
+      if (f[i]>max) max=f[i];
+   }
+
+   /* On gère le reste du profil... */
+   for (i=3;i<imax-3;i++) {
+      somme=0.0;
+      k=0;
+      /* Calcul de la fonction de poids = médiane sur 7 colonnes */
+      for (j=lmin-1;j<lmax;j++,k++) {
+         vv[0]=(double)p_in->p[j*imax+i-3];
+         vv[1]=(double)p_in->p[j*imax+i-2];
+         vv[2]=(double)p_in->p[j*imax+i-1];
+         vv[3]=(double)p_in->p[j*imax+i];
+         vv[4]=(double)p_in->p[j*imax+i+1];
+         vv[5]=(double)p_in->p[j*imax+i+2];
+         vv[6]=(double)p_in->p[j*imax+i+3];
+         tt_util_qsort_double(vv,0,6,NULL);
+         P[k]=vv[3];
+      }
+
+      /* La fonction de poids est rendue strictement positive et normalisée */
+      s=0;
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         if (P[k]<0) P[k]=0;
+         s=s+P[k];
+      }  
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         P[k]=P[k]/s;
+      }
+
+      /* Calcul de la norme */
+      s=0;
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {      
+         s=s+P[k]*P[k];
+      }  
+      norme=s;
+   
+      /* Calcul du profil optimisé */
+      k=0;
+      for (j=lmin-1;j<lmax;j++,k++) {
+         v=(double)p_in->p[j*imax+i];
+         w=P[k];
+         somme+=w*v;
+      }
+      f[i]=somme/norme;
+      if (f[i]>max) max=f[i];
+   }
+
+   /* Normalisation du profil à 32767 */
+   max=32767.0/max;
+   /*max=1.;*/
+   for (i=0;i<imax;i++) {
+      for (j=0;j<hauteur;j++) {
+         p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
+      }
+   }
+
+   tt_free(f,"f");
+   tt_free(P,"P");
+
+   /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
    pseries->exptime_stack=pseries->exptime[index-1];
 

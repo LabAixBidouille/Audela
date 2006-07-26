@@ -491,8 +491,10 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
 
 
    tt_user1_ima_series_builder1(keys[10],pseries);
+   tt_user2_ima_series_builder1(keys[10],pseries);
    tt_user3_ima_series_builder1(keys[10],pseries);
    tt_user4_ima_series_builder1(keys[10],pseries);
+   tt_user5_ima_series_builder1(keys[10],pseries);
 
    /* --- valeurs des options par defaut ---*/
    strcpy(pseries->catafile,"");
@@ -614,8 +616,10 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->p_ast.pv_valid=TT_NO;
 
    tt_user1_ima_series_builder2(pseries);
+   tt_user2_ima_series_builder2(pseries);
    tt_user3_ima_series_builder2(pseries);
    tt_user4_ima_series_builder2(pseries);
+   tt_user5_ima_series_builder2(pseries);
 
    /* --- decodage des parametres optionels ---*/
    for (k=11;k<(pseries->nbkeys);k++) {
@@ -1005,8 +1009,10 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
 	 }
    }
      tt_user1_ima_series_builder3(mot,argu,pseries);
+     tt_user2_ima_series_builder3(mot,argu,pseries);
      tt_user3_ima_series_builder3(mot,argu,pseries);
      tt_user4_ima_series_builder3(mot,argu,pseries);
+     tt_user5_ima_series_builder3(mot,argu,pseries);
    }
    if ((pseries->pixelsat_compute==TT_YES)&&(pseries->pixelsat_value==TT_MIN_DOUBLE)&&(pseries->bitpix!=0)) {
       pseries->pixelsat_value=valsat;
