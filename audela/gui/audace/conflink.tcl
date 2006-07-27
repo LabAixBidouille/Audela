@@ -2,7 +2,7 @@
 # Fichier : conflink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.4 2006-07-26 16:59:15 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.5 2006-07-27 22:21:26 michelpujol Exp $
 #
 
 namespace eval ::confLink {
@@ -28,7 +28,6 @@ namespace eval ::confLink {
       global conf
 
       #---
-      set private(driverPattern) [ file join audace plugin link * pkgIndex.tcl ]
       set private(frm)           "$audace(base).conflink"
       #--- cree les variables dans conf(..) si elles n'existent pas
       if { ! [ info exists conf(confLink) ] }          { set conf(confLink)          "" }
@@ -360,12 +359,12 @@ namespace eval ::confLink {
    #
    # conditions : 
    #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
-   #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
+   #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
    #  - le driver doit avoir une procedure getlabel
    # 
    # si le driver remplit les conditions 
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
-   #    sinon le fichier tcl est ignore car ce n'est pas un driver
+   #    sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
    #
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
@@ -378,7 +377,8 @@ namespace eval ::confLink {
       set private(namespacelist)  ""
       set private(driverlist)     ""
 
-      #--- chargement des differentes fenetres de configuration des drivers
+      #--- je recherche les fichiers pkgIndex.tcl
+      set private(driverPattern) [ file join audace plugin link * pkgIndex.tcl ]
       set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
       
       if { "$filelist" == "" } {
@@ -387,14 +387,21 @@ namespace eval ::confLink {
       }
       
       #--- je recherche les drivers repondant au filtre driverPattern
-      foreach fichier [glob $private(driverPattern)] {
-         uplevel #0 "source $fichier"
-         catch {
-            set linkname [ file tail [ file dirname "$fichier" ] ]
-            package require $linkname
-            if { [$linkname\:\:getDriverType] == $private(driverType) } {
+      foreach fichierPkgIndex [glob $private(driverPattern)] {
+         #--- je charge le fichier pkgIndex.tcl 
+         uplevel #0 "source $fichierPkgIndex"
+         
+         set linkname [ file tail [ file dirname "$fichierPkgIndex" ] ]
+         package require $linkname
+          #--- je verifie que le namespace possede les procedure getDriverType et getLabel
+         if { [namespace which -command $linkname\:\:getDriverType] != "" 
+              && [namespace which -command $linkname\:\:getLabel] != "" } {
+            #--- verifie que driver est du type attendu
+            set driverType [$linkname\:\:getDriverType]
+            if { $driverType == $private(driverType) } {
+               #--- je recupere le label du driver
                set driverlabel "[$linkname\:\:getLabel]" 
-               #--- si c'est un driver valide, je l'ajoute dans la liste
+               #--- c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $linkname
                lappend private(driverlist) $driverlabel
                $audace(console)::affiche_prompt "#$caption(conflink,liaison) $driverlabel v[package present $linkname]\n"                 
