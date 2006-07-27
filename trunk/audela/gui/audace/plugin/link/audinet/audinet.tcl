@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.3 2006-06-20 19:26:25 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.4 2006-07-27 22:19:19 michelpujol Exp $
 #
 
 package provide audinet 1.0
@@ -96,6 +96,7 @@ namespace eval audinet {
    #------------------------------------------------------------
    proc initConf { } {
       global conf
+      global caption
 
       if { ! [ info exists conf(audinet,host) ] }         { set conf(audinet,host)         "168.254.216.36" }
       if { ! [ info exists conf(audinet,ipsetting) ] }    { set conf(audinet,ipsetting)    "0" }
