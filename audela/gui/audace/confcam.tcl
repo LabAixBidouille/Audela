@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.23 2006-07-25 22:07:09 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.24 2006-07-27 22:37:54 robertdelmas Exp $
 #
 
 global confCam
@@ -36,17 +36,14 @@ namespace eval ::confCam {
       if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
       if { ! [ info exists conf(camera,C,start)   ] } { set conf(camera,C,start)   "0" }
       if { ! [ info exists conf(camera,position)  ] } { set conf(camera,position)  "+25+45" }
-      
-      #--- Variables a declarer avant le chargement des outils
-      if { ! [ info exists conf(audine,foncobtu) ] }   { set conf(audine,foncobtu) "0" }
-      
+
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.tcl ]\""
 
       #--- Intialise les variables de chaque camera
-      
+
       #--- initConf 1
       if { ! [ info exists conf(audine,ampli_ccd) ] } { set conf(audine,ampli_ccd) "1" }
       if { ! [ info exists conf(audine,can) ] }       { set conf(audine,can)       "$caption(confcam,can_ad976a)" }
@@ -3048,6 +3045,41 @@ namespace eval ::confCam {
       return $binningList
    }
 
+   #------------------------------------------------------------
+   # getBinningList_Scan
+   # Retourne la liste des binnings Audine possibles pour les outils Drift-scan et
+   # Scan rapide en fonction du type de liaison utilisee (parallele ou EthernAude)
+   # Parametres :
+   #    camNo : numero de la camera
+   #------------------------------------------------------------
+   proc getBinningList_Scan { camNo } {
+      global conf
+
+      #--- Je verifie si la camera est capable fournir son nom de famille
+      set result [ catch { cam$camNo product } product]
+      if { $result == 0 } {
+         if { $product == "audine" } {
+            #---
+            switch $conf(confLink) {
+               ethernaude {
+                  set binningList_Scan { 1x1 2x2 }
+               }
+               parallelport {
+                  set binningList_Scan { 1x1 2x2 4x4 }
+               }
+               default {
+                  set binningList_Scan { }
+               }
+            }
+         } else {
+            set binningList_Scan { }
+         }
+      } else {
+         set binningList_Scan { }
+      }
+      return $binningList_Scan
+   }
+
    #
    # confCam::getName
    #    retourne le nom de la camera si la camera est demarree, sinon retourne "0"
@@ -3109,6 +3141,38 @@ namespace eval ::confCam {
    }
 
    #
+   # confCam::hasScan
+   #    retourne "1" si la camera possede un mode scan, sinon retourne "0"
+   #
+   #  parametre 
+   #
+   proc hasScan { camNo } {
+      global conf
+
+      #--- Je verifie si la camera est capable fournir son nom de famille
+      set result [ catch { cam$camNo product } camProduct ]
+      #---
+      if { $result == 0 } {
+         switch -exact -- $camProduct {
+            audine  {
+                       if { $conf(confLink) == "parallelport" } { 
+                          return 1
+                       } elseif { $conf(confLink) == "audinet" } {
+                          return 1
+                       } elseif { $conf(confLink) == "ethernaude" } {
+                          return 1
+                       } else {
+                          return 0
+                       }
+                    }
+            default { return 0 }
+         }
+      } else {
+         return 0
+      }
+   }
+
+   #
    # confCam::hasShutter
    #    retourne "1" si la camera possede un obturateur, sinon retourne "0"
    #
@@ -3123,7 +3187,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch -exact -- $camProduct {
             audine  { return 1 }
-            hisis   { 
+            hisis   {
                        if { $conf(hisis,modele) == "11" } { 
                           return 0
                        } else {
