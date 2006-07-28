@@ -39,7 +39,7 @@ ifdef LIBLINK
 CXXFLAGS += -I $(SRCDIR)
 %.o: $(LIBLINKDIR)/%.cpp
 	@echo "*** Compiling $<"
-	$(CCX) $(CXXFLAGS) -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 endif
 
 

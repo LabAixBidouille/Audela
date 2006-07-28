@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS DEV_ROOT MAJOR MINOR PATCH EXTRA REL_DATE TCL_VERSION TCL_BIN_DIR TCL_SRC_DIR TCL_LIB_FILE TCL_LIB_FLAG TCL_LIB_SPEC TCL_STUB_LIB_FILE TCL_STUB_LIB_FLAG TCL_STUB_LIB_SPEC TK_VERSION TK_BIN_DIR TK_SRC_DIR TK_LIB_FILE TCL_INCLUDE_SPEC TK_XINCLUDES TK_LIB_SPEC TK_STUB_LIB_SPEC GSL_CONFIG CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT GSL_CFLAGS GSL_LIBS GSL_FOUND CXX CXXFLAGS ac_ct_CXX DL_LIB CPP EGREP WEBCAM_ENABLE EXTERNAL CONTRIB AUDELA LIBCAMS LIBTELS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS DEV_ROOT MAJOR MINOR PATCH EXTRA REL_DATE TCL_VERSION TCL_BIN_DIR TCL_SRC_DIR TCL_LIB_FILE TCL_LIB_FLAG TCL_LIB_SPEC TCL_STUB_LIB_FILE TCL_STUB_LIB_FLAG TCL_STUB_LIB_SPEC TK_VERSION TK_BIN_DIR TK_SRC_DIR TK_LIB_FILE TCL_INCLUDE_SPEC TK_XINCLUDES TK_LIB_SPEC TK_STUB_LIB_SPEC GSL_CONFIG CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT GSL_CFLAGS GSL_LIBS GSL_FOUND CXX CXXFLAGS ac_ct_CXX DL_LIB CPP EGREP WEBCAM_ENABLE EXTERNAL CONTRIB AUDELA LIBCAMS LIBTELS LIBLINKS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -5217,9 +5217,6 @@ fi
 
 
 EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
-if test x"$TARGET" = x"Linux" ; then
-	EXTERNAL="$EXTERNAL fli"
-fi
 
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
@@ -5233,13 +5230,15 @@ fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libfingerlakes libhisis libk2 libkitty libsbig libstarlight libsynonyme"
+	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libkitty libsbig libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
 	LIBCAMS="$LIBCAMS libwebcam"
 fi
 
 LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
+
+LIBLINKS="libparallelport"
 
 echo "$as_me:$LINENO: result: EXTERNAL = $EXTERNAL" >&5
 echo "${ECHO_T}EXTERNAL = $EXTERNAL" >&6
@@ -5251,6 +5250,9 @@ echo "$as_me:$LINENO: result: LIBCAMS  = $LIBCAMS" >&5
 echo "${ECHO_T}LIBCAMS  = $LIBCAMS" >&6
 echo "$as_me:$LINENO: result: LIBTELS  = $LIBTELS" >&5
 echo "${ECHO_T}LIBTELS  = $LIBTELS" >&6
+echo "$as_me:$LINENO: result: LIBLINKS = $LIBLINKS" >&5
+echo "${ECHO_T}LIBLINKS = $LIBLINKS" >&6
+
 
 
 
@@ -5942,6 +5944,7 @@ s,@CONTRIB@,$CONTRIB,;t t
 s,@AUDELA@,$AUDELA,;t t
 s,@LIBCAMS@,$LIBCAMS,;t t
 s,@LIBTELS@,$LIBTELS,;t t
+s,@LIBLINKS@,$LIBLINKS,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
