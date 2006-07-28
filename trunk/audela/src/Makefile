@@ -3,7 +3,7 @@ include Makefile.rules
 
 all: $(ALL)
 
-.PHONY: external contrib audela libcam libtel $(ALL) dist distclean
+.PHONY: external contrib audela libcam libtel liblink $(ALL) dist distclean
 
 $(EXTERNAL):
 	make -C external/$@
@@ -20,7 +20,10 @@ $(LIBCAMS):
 $(LIBTELS):
 	make -C libtel/$@/linux
 
-external contrib audela libcam libtel: 
+$(LIBLINKS):
+	make -C liblink/$@/linux
+
+external contrib audela libcam libtel liblink: 
 	make -C $@
 
 clean cleanall:
@@ -45,6 +48,7 @@ dist:
 	make -C include  $@ distdir=$(distdir)/src/include
 	make -C ../lib   $@ distdir=$(distdir)/lib
 	make -C libcam   $@ distdir=$(distdir)/src/libcam
+	make -C liblink  $@ distdir=$(distdir)/src/liblink
 	make -C libtel   $@ distdir=$(distdir)/src/libtel
 	make -C tools    $@ distdir=$(distdir)/src/tools
 

@@ -132,9 +132,6 @@ dnl Configure the modules to be compiled.
 dnl
 
 EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
-if test x"$TARGET" = x"Linux" ; then
-	EXTERNAL="$EXTERNAL fli"
-fi
 
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
@@ -150,7 +147,7 @@ fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libfingerlakes libhisis libk2 libkitty libsbig libstarlight libsynonyme"
+	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libkitty libsbig libstarlight libsynonyme"
 fi
 dnl LIBCAMS="$LIBCAMS libquicka"
 dnl libquicka only works on Windows for the moment.  
@@ -160,17 +157,21 @@ fi
 
 LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
 
+LIBLINKS="libparallelport libquickremote"
+
 AC_MSG_RESULT([EXTERNAL = $EXTERNAL])
 AC_MSG_RESULT([CONTRIB  = $CONTRIB])
 AC_MSG_RESULT([AUDELA   = $AUDELA])
 AC_MSG_RESULT([LIBCAMS  = $LIBCAMS])
 AC_MSG_RESULT([LIBTELS  = $LIBTELS])
+AC_MSG_RESULT([LIBLINKS = $LIBLINKS])
 
 AC_SUBST(EXTERNAL)
 AC_SUBST(CONTRIB)
 AC_SUBST(AUDELA)
 AC_SUBST(LIBCAMS)
 AC_SUBST(LIBTELS)
+AC_SUBST(LIBLINKS)
 
 dnl Output
 dnl
