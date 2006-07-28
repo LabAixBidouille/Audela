@@ -27,12 +27,12 @@ external contrib audela libcam libtel liblink:
 	make -C $@
 
 clean cleanall:
-	@$(foreach DIR, contrib audela libcam libtel, make -C $(DIR) $@ ; )
+	@$(foreach DIR, contrib audela libcam liblink libtel, make -C $(DIR) $@ ; )
 
 distdir=$(ROOT)/$(PACKAGE)-$(VERSION)
 
 distclean: local-clean
-	@$(foreach DIR, contrib audela libcam libtel, make -C $(DIR) $@ ; )
+	@$(foreach DIR, contrib audela libcam liblink libtel, make -C $(DIR) $@ ; )
 
 dist:
 	if test -d "$(distdir)"; then \
