@@ -2,7 +2,7 @@
 # Fichier : conflink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.5 2006-07-27 22:21:26 michelpujol Exp $
+# Mise a jour $Id: conflink.tcl,v 1.6 2006-07-28 07:16:28 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -380,20 +380,20 @@ namespace eval ::confLink {
       #--- je recherche les fichiers pkgIndex.tcl
       set private(driverPattern) [ file join audace plugin link * pkgIndex.tcl ]
       set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-      
+
       if { "$filelist" == "" } {
          #--- aucun fichier correct
          return 1
       }
-      
+
       #--- je recherche les drivers repondant au filtre driverPattern
       foreach fichierPkgIndex [glob $private(driverPattern)] {
          #--- je charge le fichier pkgIndex.tcl 
          uplevel #0 "source $fichierPkgIndex"
-         
+
          set linkname [ file tail [ file dirname "$fichierPkgIndex" ] ]
          package require $linkname
-          #--- je verifie que le namespace possede les procedure getDriverType et getLabel
+         #--- je verifie que le namespace possede les procedure getDriverType et getLabel
          if { [namespace which -command $linkname\:\:getDriverType] != "" 
               && [namespace which -command $linkname\:\:getLabel] != "" } {
             #--- verifie que driver est du type attendu
@@ -460,41 +460,6 @@ namespace eval ::confLink {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).connectLiaison
-   }
-
-   #------------------------------------------------------------
-   # getBinningList_Scan
-   # Retourne la liste des binnings Audine possibles pour les outils Drift-scan et
-   # Scan rapide en fonction du type de liaison utilisee (parallele ou EthernAude)
-   # Parametres :
-   #    camNo : numero de la camera
-   #------------------------------------------------------------
-   proc getBinningList_Scan { camNo } {
-      global conf
-
-      #--- Je verifie si la camera est capable fournir son nom de famille
-      set result [ catch { cam$camNo product } product]
-      if { $result == 0 } {
-         if { $product == "audine" } {
-            #---
-            switch $conf(confLink) {
-               ethernaude {
-                  set binningList_Scan { 1x1 2x2 }
-               }
-               parallelport {
-                  set binningList_Scan { 1x1 2x2 4x4 }
-               }
-               default {
-                  set binningList_Scan { }
-               }
-            }
-         } else {
-            set binningList_Scan { }
-         }
-      } else {
-         set binningList_Scan { }
-      }
-      return $binningList_Scan
    }
 
 }
