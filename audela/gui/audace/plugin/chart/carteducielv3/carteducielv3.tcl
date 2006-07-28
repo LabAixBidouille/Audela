@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.4 2006-06-20 18:31:16 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.5 2006-07-28 10:47:43 robertdelmas Exp $
 #
 
 package provide carteducielv3 1.0
@@ -303,7 +303,7 @@ namespace eval carteducielv3 {
             }
             set tres2 "$caption(carteducielv3,message_ping)"
             tk_messageBox -message "$tres1.\n$tres2 $res2" -icon info
-          }
+         }
       pack $frm.ping -in $frm.frame4 -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel de Cartes du Ciel
