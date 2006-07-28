@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.6 2006-06-20 19:27:07 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.7 2006-07-28 10:36:18 robertdelmas Exp $
 #
 
 package provide ethernaude 1.0
@@ -182,7 +182,9 @@ namespace eval ethernaude {
 
       #--- Bouton de test de la connexion
       button $frm.ping -text "$caption(ethernaude,test_ethernaude)" -relief raised -state normal \
-         -command "::ethernaude::testping $::ethernaude::widget(conf_ethernaude,host)"
+         -command {
+            ::ethernaude::testping $::ethernaude::widget(conf_ethernaude,host)
+         }
       pack $frm.ping -in $frm.frame1 -anchor center -side top -padx 70 -pady 7 -ipadx 10 -ipady 5 -expand true
 
       #--- Envoi ou non de l'adresse IP a l'EthernAude
