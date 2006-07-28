@@ -641,13 +641,13 @@ void CBuffer::SaveFits(char *filename)
 
    naxis1 = pix->GetWidth();
    naxis2 = pix->GetHeight();
-   ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
 
    switch( pix->getPixelClass() ) {
       case CLASS_RGB :  
          SaveFitsRGB(filename);
          return;
       default :
+         ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
          pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
          break;
    }
@@ -658,7 +658,10 @@ void CBuffer::SaveFits(char *filename)
    
    // Allocation de l'espace memoire pour les tableaux de mots-cles
    msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) throw CErrorLibtt(msg);   
+   if(msg) {
+      free(ppix);
+      throw CErrorLibtt(msg);
+   }
 
    // Je transforme les seuils en entier si saving_type vaut byte, short ou ushort
    // Si les mots-cles n'existent pas, alors on ne fait rien. Merci Jacques !
@@ -695,7 +698,10 @@ void CBuffer::SaveFits(char *filename)
    // Enregistrement proprement dit de l'image.
    msg = Libtt_main(TT_PTR_SAVEIMA,12,filename,ppix,&datatype,&naxis1,&naxis2,
       &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
-   if(msg) throw CErrorLibtt(msg);
+   if(msg) {
+      free(ppix);
+      throw CErrorLibtt(msg);
+   }
    
    // Liberation de la memoire allouee par libtt
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
@@ -835,7 +841,10 @@ void CBuffer::Save1d(char *filename,int iaxis2)
 
    // Allocation de l'espace memoire pour les tableaux de mots-cles
    msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) throw CErrorLibtt(msg);
+   if(msg) {
+      free(ppix1);
+      throw CErrorLibtt(msg);
+   }
 
    // Conversion keywords vers tableaux 'Made in Klotz'
    keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
@@ -845,6 +854,7 @@ void CBuffer::Save1d(char *filename,int iaxis2)
       &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
    if(msg) {
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      free(ppix1);
       throw CErrorLibtt(msg);
    }
 
@@ -896,7 +906,10 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
 
    // Allocation de l'espace memoire pour les tableaux de mots-cles
    msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) throw CErrorLibtt(msg);
+   if(msg) {
+      free(ppix1);
+      throw CErrorLibtt(msg);
+   }
 
    // Conversion keywords vers tableaux 'Made in Klotz'
    keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
@@ -905,7 +918,6 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    if ((naxis3<=0)||(nnaxis2<1)) {
       msg = Libtt_main(TT_PTR_SAVEIMA,12,filename,ppix1,&datatype,&naxis1,&naxis2,
          &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
-      if(msg) throw CErrorLibtt(msg);
    } else {
       ppix=(TYPE_PIXELS*)(ppix1+(iaxis3_beg-1)*naxis1*nnaxis2);
       if (iaxis3_end<iaxis3_beg) { dummy=iaxis3_beg; iaxis3_beg=iaxis3_end; iaxis3_end=iaxis3_beg;}
@@ -917,6 +929,7 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    }
    if(msg) {
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      free(ppix1);
       throw CErrorLibtt(msg);
    }
 
@@ -966,7 +979,10 @@ void CBuffer::SaveFitsRGB(char *filename)
 
    // Allocation de l'espace memoire pour les tableaux de mots-cles
    msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) throw CErrorLibtt(msg);
+   if(msg) {
+      free(pixels);
+      throw CErrorLibtt(msg);
+   }
 
    // Conversion keywords vers tableaux 'Made in Klotz'
    keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
@@ -975,6 +991,7 @@ void CBuffer::SaveFitsRGB(char *filename)
          &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
    if(msg) {
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      free(pixels);
       throw CErrorLibtt(msg);
    }
 
