@@ -1,10 +1,8 @@
 #
-# Update $Id: version.tcl,v 1.7 2006-07-17 20:02:46 denismarchais Exp $
-#
 # File : version.tcl
 #
 # This file is part of the AudeLA project : <http://software.audela.free.fr>
-# Copyright (C) 1999-2004 The AudeLA Core Team
+# Copyright (C) 1999-2006 The AudeLA Core Team
 #
 # Initial author : Denis MARCHAIS <denis.marchais@free.fr>
 #
@@ -28,9 +26,9 @@ global audela
 set audela(major) "1"
 set audela(minor) "4"
 set audela(patch) "0"
-set audela(extra) "-beta1"
+set audela(extra) "-beta1-modified"
 
-set audela(version) "1.4.0-beta1"
+set audela(version) "1.4.0-beta1-modified"
 
 set audela(date)    "17/07/2006"
 
