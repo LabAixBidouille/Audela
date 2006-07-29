@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.24 2006-07-27 22:37:54 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.25 2006-07-29 22:26:53 denismarchais Exp $
 #
 
 global confCam
@@ -3901,7 +3901,7 @@ namespace eval ::confCam {
                   set ccd "kaf401"
                }
                if { $conf(audine,port) == "$caption(confcam,quicka)" } {
-                  set erreur [ catch { cam::create quicka $conf(audine,port) -ccd $ccd -name Audine } camNo ]
+                  set erreur [ catch { cam::create quicka $conf(audine,port) -name Audine -ccd $ccd } camNo ]
                } elseif { $conf(audine,port) == "$caption(confcam,ethernaude)" } {
 ###
 ### Attention : Ajout de 2 fois -debug dans le cam::create
@@ -3951,7 +3951,7 @@ namespace eval ::confCam {
                      ::confVisu::visuDynamix $visuNo 32767 -32768
                   }
                } elseif { $conf(audine,port) == "$caption(confcam,audinet)" } {
-                  set erreur [ catch { cam::create audinet "" -ccd $ccd -name Audine \
+                  set erreur [ catch { cam::create audinet "" -name Audine -ccd $ccd \
                      -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                      -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) } camNo ]
                   if { $erreur == "1" } {
