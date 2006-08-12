@@ -311,12 +311,13 @@ proc spc_dat2fits { args } {
 	} elseif { [llength $args] == 2 } {
 	    set filenamespc [ lindex $args 0 ]
 	    set filenameout [ lindex $args 1 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_dat2fits fichier_profil.dat ?fichier_sortie.fit?\n\n"
 	}
 	## === Lecture du fichier de donnees du profil de raie ===
 	set input [open "$audace(rep_images)/$filenamespc" r]
 	set contents [split [read $input] \n]
 	close $input
-	
 	## === Extraction des numeros des pixels et des intensites ===
 	#::console::affiche_resultat "ICI :\n $contents.\n"
 	#set profilspc(naxis1) [expr [llength $contents]-2]
@@ -1335,7 +1336,7 @@ proc spc_dat2png { args } {
 	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	set ext ".dat"
 	
-	spc_fits2dat $fichier
+	#spc_fits2dat $fichier
 	#-- Retire l'extension .fit du nom du fichier
 	set spcfile [ file rootname $fichier ]
 	
@@ -1717,3 +1718,85 @@ proc spc_dats2fits { args } {
     }
 }
 ###########################################################################
+
+
+#"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""#
+#  Ancienne implémentation des fonction 
+#
+#"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""#
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .dat en .png
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 27-04-2006
+# Date modification : 27-04-2006
+# Arguments : fichier .dat du profil de raie, titre, ?xdeb, xfin?
+####################################################################
+
+proc spc_dat2png_27042006 { args } {
+    global audace
+    global conf
+    global tcl_platform
+
+    if { [llength $args] == 4 || [llength $args] == 2 } {
+	if { [llength $args] == 2 } {
+	    set fichier [ lindex $args 0 ]
+	    set titre [ lindex $args 1 ]
+	    #set xdeb "*"
+	    #set xfin "*"
+	    set fichierfit [ spc_dat2fits $fichier ${fichier}_fittmp ]
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichierfit"
+	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	    #-- Demarre et fini le graphe en deçca de 3% des limites pour l'esthetique
+	    set largeur [ expr 0.03*$naxis1 ]
+	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	    set xdeb [ expr $xdeb0+$largeur ]
+	    set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+	    set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+	} elseif { [llength $args] == 4 } {
+	    set fichier [ lindex $args 0 ]
+	    set titre [ lindex $args 1 ]
+	    set xdeb [ lindex $args 2 ]
+	    set xfin [ lindex $args 3 ]
+	    set fichierfit [ spc_dat2fits $fichier ${fichier}_fittmp ]
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichierfit"
+	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	}
+
+	#--- Adapte la légende de l'abscisse
+	if { $xdeb0 == 1.0 } {
+	    set legendex "Position (Pixel)"
+	} else {
+	    set legendex "Wavelength (A)"
+	}
+	set legendey "Intensity (ADU)"
+
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
+	set ext ".dat"
+	
+	#spc_fits2dat $fichier
+	#-- Retire l'extension .fit du nom du fichier
+	set spcfile [ file rootname $fichier ]
+	
+	#--- Créée le fichier script pour gnuplot :
+	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
+	puts $file_id "call \"${repertoire_gp}/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	close $file_id
+
+	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+	if { $tcl_platform(os)=="Linux" } {
+	    set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	} else {
+	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	}
+
+	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
+    } else {
+	::console::affiche_erreur "Usage: spc_dat2png fichier_fits \"Titre\" ?xdébut xfin?\n\n"
+    }
+}
+####################################################################

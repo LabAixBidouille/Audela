@@ -453,7 +453,7 @@ proc spc_rinstrum { args } {
    global conf
    set precision 0.0001
 
-   if {[llength $args] == 2} {
+   if { [llength $args] == 2 } {
        set fichier_mes [ file rootname [ lindex $args 0 ] ]
        set fichier_ref [ file rootname [ lindex $args 1 ] ]
 
@@ -519,6 +519,43 @@ proc spc_rinstrum { args } {
 }
 #****************************************************************#
 
+
+
+##########################################################
+# Effectue la correction de la réponse intrumentale à l'aide du profil_a_corriger, profil_étoile_référence et profil_étoile_catalogue
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 14-07-2006
+# Date de mise à jour : 14-07-2006
+# Arguments : profil_a_corriger profil_étoile_référence profil_étoile_catalogue
+##########################################################
+
+proc spc_rinstrumcorr { args } {
+
+   global audace
+   global conf
+   if { [llength $args] == 3 } {
+       set spectre_acorr [ file rootname [ lindex $args 0 ] ]
+       set etoile_ref [ file rootname [ lindex $args 1 ] ]
+       set etoile_cat [ file rootname [ lindex $args 2 ] ]
+
+   } else {
+       ::console::affiche_erreur "Usage: spc_rinstrumcorr profil_a_corriger profil_étoile_référence profil_étoile_catalogue\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+
+
+
+
+
+
+####################################################################################
+# Ancienne version des fonctions
+####################################################################################
 
 proc spc_rinstrum_020905 { args } {
 

@@ -1,4 +1,4 @@
-AudeLA-1.4.0-BETA1 (20060717)
+AudeLA-1.4.0-BETA1 (20060804)
 
 
 1. Introduction
@@ -57,6 +57,7 @@ AudeLA est capable de piloter les montures suivantes :
 AudeLA est capable de piloter les interfaces de communication suivantes :
 - AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
 - EthernAude (interface Ethernet pour cameras CCD),
+- Manuel,
 - GPhoto2,
 - Port parallele,
 - PhotoPC
@@ -499,33 +500,38 @@ Par la suite, ils ont ete rejoints par :
 Ils forment "The AudeLA Core Team" (TACT), nom employe pour le copyright dans 
 les sources.
 
-Un bon nombre de personnes a contribue a AudeLA ou Aud'ACE. Citons dans le
-desordre :
- - Jacques MICHELET <jacques.michelet@laposte.net> : libjm et outils GPS,
-   King, scripts de photometrie (calaphot) et de tri par fwhm (tri_fwhm).
- - Francois COCHARD : Outils Acquisition et Pretraitement.
- - Olivier THIZY : Script de photometrie (calaphot).
- - Raymond ZACHANTKE : Outil APN, telescope AvrCom, codeurs Ouranos.
- - Philippe KAUFFMANN : Carte AudeCom.
- - Guillaume SPITZER : libgs pour l'interfacage avec "Guide".
- - Benoit MAUGIS : libbm, traitement de series d'images, gestion d'images
-   FITS polychromes (poly), traitement d'images stellaires, utilisation
-   conjointe d'AudeLA et d'Iris, outils Visionneuse et Acquisition fenetree.
+Un bon nombre de personnes ont contribue a AudeLA ou Aud'ACE. Citons dans
+le desordre :
+ - Jacques MICHELET <jacques.michelet@laposte.net> : Librairie libjm et
+   outils GPS et King, scripts de photometrie (calaphot) et de tri par
+   fwhm (tri_fwhm).
+ - Francois COCHARD <francois.cochard@wanadoo.fr> : Outils Acquisition et
+   Pretraitement.
+ - Olivier THIZY <thizy@free.fr> : Script de photometrie (calaphot).
+ - Raymond ZACHANTKE <zachantk@club-internet.fr> : Outil APN et monture
+   Ouranos.
+ - Philippe KAUFFMANN <philippe.kauffmann@free.fr> : Monture AudeCom.
+ - Guillaume SPITZER <gspitzer@free.fr> : Librairie libgs pour
+   l'interfacage avec "Guide".
+ - Benoit MAUGIS <benoit.maugis@laposte.net> : Librairie libbm, traitement
+   de series d'images, gestion d'images FITS polychromes (poly), traitement
+   d'images stellaires, utilisation conjointe d'AudeLA et d'Iris, outils
+   Visionneuse et Acquisition fenetree.
  - Pierre THIERRY : Imagerie couleur et obturateur "thierry".
- - Patrick CHEVALLEY : Driver WebCam longue pose.
+ - Patrick CHEVALLEY <pchev@gmx.ch> : Driver WebCam longue pose.
  - Arkadius KALICKI : Driver WebCam.
- - Michel MEUNIER <michel.meunier10@tiscali.fr> est l'auteur du driver 
-   Ethernaude et du driver MCMT.
- - Vincent COTREZ : Script de detection (detection).
- - Benjamin MAUCLAIRE : Filtres des traitements d'images.
+ - Michel MEUNIER <michel.meunier100@wanadoo.fr> : Driver Ethernaude.
+ - Vincent COTREZ <vincentcotrez@yahoo.fr> : Script de detection (detection).
+ - Benjamin MAUCLAIRE <bmauclaire@underlands.org> : Filtres pour traitements
+   d'images et scripts pour la spectroscopie (spcaudace).
  - Harald RISCHBIETER : Traitement d'images matriciel.
- - Xavier REY-ROBERT : Utilitaire scriptis pour executer des scripts de
-   commande Iris.
- - Raoul BEHREND : Utilitaires pour la conversion d'images au format FITS.
- - Jerome BERTHIER : Outil pour l'observatoire virtuel.
- - Sylvain GIRARD <sly.girarg@wanadoo.fr> est l'auteur du driver libk2 de la
-   camera Kitty2.
- - Jim CADIEN : Support pour la camera Cookbook.
+ - Xavier REY-ROBERT <xrr@altern.org> : Utilitaire scriptis pour executer
+   des scripts de commande Iris.
+ - Raoul BEHREND <raoul.behrend@obs.unige.ch> : Utilitaires pour la
+   conversion d'images au format FITS.
+ - Jerome BERTHIER <berthier@imcce.fr> : Outil pour l'Observatoire Virtuel.
+ - Sylvain GIRARD <zesly@wanadoo.fr> : Driver libk2 de la camera Kitty2.
+ - Jim CADIEN <jcadien1@gmail.com> : Support pour la camera Cookbook.
  - Darth VADOR <vador@darkstar.com> : Inspiration permanente.
  - Christian JASINSKI, Dez FUTAK, Dan HOLLER : Traduction anglaise.
  - Fausto MANENTI : Traduction italienne.

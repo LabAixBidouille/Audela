@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.21 2006-07-08 20:44:29 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.22 2006-08-12 21:23:01 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -1955,6 +1955,14 @@ namespace eval ::audace {
             destroy .second
          }
          destroy .main
+      }
+      #--- Si l'outil SnVisu est affiche, je le ferme avant de quitter
+      if { [ winfo exists $audace(base).snvisu ] } {
+         sn_delete
+      }
+      #--- Si l'outil CCD Couleur est affiche, je le ferme avant de quitter
+      if { [ winfo exists $audace(base).test ] } {
+         testexit
       }
       #---
       menustate disabled

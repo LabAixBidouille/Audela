@@ -2,7 +2,7 @@
 # Fichier : conflink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.6 2006-07-28 07:16:28 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.7 2006-08-12 21:24:06 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -30,7 +30,7 @@ namespace eval ::confLink {
       #---
       set private(frm)           "$audace(base).conflink"
       #--- cree les variables dans conf(..) si elles n'existent pas
-      if { ! [ info exists conf(confLink) ] }          { set conf(confLink)          "" }
+      if { ! [ info exists conf(confLink) ] }          { set conf(confLink)          "parallelport" }
       if { ! [ info exists conf(confLink,start) ] }    { set conf(confLink,start)    "0" }
       if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
 
@@ -95,6 +95,7 @@ namespace eval ::confLink {
    proc appliquer { } {
       variable private
       global audace
+      global caption
       global conf
 
       $private(frm).cmd.ok configure -state disabled
@@ -111,6 +112,17 @@ namespace eval ::confLink {
          set conf(confLink) [lindex $private(namespacelist) $index]
       } else {
          set conf(confLink) ""
+      }
+
+      #--- Je positionne la liaison sur celle qui vient d'etre selectionnee en fonction de la camera utilisee
+      if { [ winfo exists $audace(base).confCam ] } {
+         if { [Rnotebook:currentName $audace(base).confCam.usr.book ] == "Audine" } {
+            ::confCam::setconfLink_Audine
+         } elseif { [Rnotebook:currentName $audace(base).confCam.usr.book ] == "WebCam" } {
+            ::confCam::setconfLink_WebCam
+         } elseif { [Rnotebook:currentName $audace(base).confCam.usr.book ] == "$caption(confcam,dslr)" } {
+            ::confCam::setconfLink_APN
+         }
       }
 
       #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)

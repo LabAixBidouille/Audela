@@ -15,8 +15,39 @@
 ##########################################################
 
 
+
 ##########################################################
-#  Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
+# Procedure de determination de la vitesse radiale en km/s à l'aide du décalage d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 13-07-2006
+# Date de mise à jour : 13-07-2006
+# Arguments : delta_lambda lambda
+##########################################################
+
+proc spc_vradiale { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 2 } {
+       set delta_lambda [ lindex $args 0 ]
+       set lambda [lindex $args 1 ]
+       
+       set vrad [ expr 299792.458*$delata_lambda/lambda ]
+       ::console::affiche_resultat "La vitesse radiale de l'objet est : $vrad km/s\n"
+       return $vrad
+   } else {
+       ::console::affiche_erreur "Usage: spc_vradiale delta_lambda lambda\n\n"
+   }
+
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 13-08-2005
@@ -44,11 +75,11 @@ proc spc_npte { args } {
    }
 
 }
-##########################################################
+#*******************************************************************************#
 
 
 ##########################################################
-#  Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
+# Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 13-08-2005
@@ -77,13 +108,13 @@ proc spc_npne { args } {
    }
 
 }
-##########################################################
+#*******************************************************************************#
 
 
 
 
 ##########################################################
-#  Procedure de tracer de largeur équivalente pour une série de spectres
+# Procedure de tracer de largeur équivalente pour une série de spectres
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 04-08-2005
@@ -163,5 +194,8 @@ proc spc_ewcourbe { args } {
 	::console::affiche_erreur "Usage: spc_ewcourbe nom_générique_profils_normalisés_fits lambda_raie largeur_raie a/e (absorption/émission)\n\n"
     }
 }
-#****************************************************************#
+#*******************************************************************************#
+
+
+
 

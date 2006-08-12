@@ -1,7 +1,7 @@
 #
 # Fichier : tkutil.tcl
 # Description : Regroupement de procedures
-# Mise a jour $Id: tkutil.tcl,v 1.3 2006-06-20 18:08:23 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.4 2006-08-12 20:56:44 robertdelmas Exp $
 #
 
 #
@@ -81,7 +81,6 @@ proc boxBegin {coord} {
    global infos
    catch {unset infos(box)}
    set infos(box,1) [screen2Canvas $coord]
-   set infos(point) [canvas2Picture $infos(box,1)]
 }
 
 #

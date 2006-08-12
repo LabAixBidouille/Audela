@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.4 2006-07-26 16:59:30 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.5 2006-08-12 21:05:25 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -81,10 +81,10 @@ namespace eval eventAude_GPS {
    proc createDialog { } {
       variable This
       global audace
+      global caption
       global color
       global conf
       global confCam
-      global caption
 
       #--- initConf
       if { ! [ info exists conf(eventaude_gps,position) ] } { set conf(eventaude_gps,position) "+600+490" }
@@ -177,11 +177,13 @@ namespace eval eventAude_GPS {
       pack $This.lab8 -in $This.frame6 -anchor center -side left -padx 5 -pady 5
 
       #--- Mise a jour de la longitude et de la latitude
-      button $This.maj_long_lat -text "$caption(eventaude_gps,maj_long+lat)" -command { }
+      button $This.maj_long_lat -text "$caption(eventaude_gps,maj_long+lat)" \
+         -command { ::eventAude_GPS::confirm_save_long_lat }
       pack $This.maj_long_lat -in $This.frame7 -side top -padx 3 -pady 3 -ipadx 5 -ipady 5
 
       #--- Mise a jour de l'altitude
-      button $This.maj_alt -text "$caption(eventaude_gps,maj_alt)" -command { }
+      button $This.maj_alt -text "$caption(eventaude_gps,maj_alt)" \
+         -command { ::eventAude_GPS::confirm_save_alt }
       pack $This.maj_alt -in $This.frame7 -side top -padx 3 -pady 3 -ipadx 5 -ipady 5
 
       #--- Recuperation des coordonnees GPS par l'EventAude
@@ -251,8 +253,8 @@ namespace eval eventAude_GPS {
    # Permet d'obtenir les coordonnees GPS de l'observateur
    #
    proc coord_GPS { } {
-      global confCam
       global caption
+      global confCam
 
       catch {
          #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
@@ -261,12 +263,90 @@ namespace eval eventAude_GPS {
          if { [set $statusVariableName] != "exp" } {
             set confCam(coord_GPS_Observateur) [ cam$confCam(camera,$confCam(cam_item),camNo) gps ]
             set confCam(long_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 1 ] 180 ]
-            set confCam(longi_GPS_Observateur) "[ lindex $confCam(coord_GPS_Observateur) 2 ] [ format "%2d° %2d' %4.2f''" [ lindex $confCam(long_GPS_Observateur) 0 ] [ lindex $confCam(long_GPS_Observateur) 1 ] [ lindex $confCam(long_GPS_Observateur) 2 ] ]"
+            set longi_est_ouest [ lindex $confCam(coord_GPS_Observateur) 2 ]
+            if { $longi_est_ouest == "W" } {
+               set longi_est_ouest "$caption(eventaude_gps,ouest)"
+            } elseif { $longi_est_ouest == "E" } {
+               set longi_est_ouest "$caption(eventaude_gps,est)"
+            }
+            set confCam(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $confCam(long_GPS_Observateur) 0 ] [ lindex $confCam(long_GPS_Observateur) 1 ] [ lindex $confCam(long_GPS_Observateur) 2 ] ]"
             set confCam(lat_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 3 ] 90 ]
             set confCam(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $confCam(lat_GPS_Observateur) 0 ] [ lindex $confCam(lat_GPS_Observateur) 1 ] [ lindex $confCam(lat_GPS_Observateur) 2 ] ]
             set confCam(alt_GPS_Observateur) [ lindex $confCam(coord_GPS_Observateur) 4 ]
             set confCam(alti_GPS_Observateur) [ format "%5.0f m" $confCam(alt_GPS_Observateur) ]
          }
+      }
+   }
+
+   #
+   # eventAude_GPS::confirm_save_long_lat
+   # Confirme la sauvegarde des coordonnees GPS en longitude et en latitude
+   #
+   proc confirm_save_long_lat { } {
+      global audace
+      global caption
+      global confCam
+      global confgene
+
+      set choix [ tk_messageBox -type yesno -icon warning -title "$caption(eventaude_gps,maj_long+lat-)" \
+         -message "$caption(eventaude_gps,confirm)" ]
+      if { $choix == "yes" } {
+         #--- Mise en forme et sauvegarde de la longitude
+         set confgene(posobs,long) [lindex $confCam(coord_GPS_Observateur) 1]
+         set confgene(posobs,long) [mc_angle2dms $confgene(posobs,long) 180 nozero 1 auto string]
+         set confgene(posobs,estouest) [lindex $confCam(coord_GPS_Observateur) 2]
+         if { $confgene(posobs,estouest) == "W" } {
+            set confgene(posobs,estouest) "$caption(eventaude_gps,ouest)"
+         } elseif { $confgene(posobs,estouest) == "E" } {
+            set confgene(posobs,estouest) $caption(eventaude_gps,est)
+         }
+
+         #--- Mise en forme et sauvegarde de la latitude
+         set confgene(posobs,lat) [lindex $confCam(coord_GPS_Observateur) 3]
+         if { $confgene(posobs,lat) < 0 } {
+            set confgene(posobs,nordsud) "$caption(eventaude_gps,sud)"
+            set confgene(posobs,lat)     "[expr abs($confgene(posobs,lat))]"
+         } else {
+            set confgene(posobs,nordsud) "$caption(eventaude_gps,nord)"
+            set confgene(posobs,lat)     "$confgene(posobs,lat)"
+         }
+         set confgene(posobs,lat) [mc_angle2dms $confgene(posobs,lat) 90 nozero 1 auto string]
+
+         #--- Mise a jour de champs de la boite Position de l'observateur
+         set confgene(posobs,ref_geodesique)         "WGS84"
+         set confgene(posobs,station_uai)            ""
+         set confgene(posobs,observateur,mpc)        ""
+         $audace(base).confPosObs.labURLRed11 configure -text "$confgene(posobs,observateur,mpc)" -fg $audace(color,textColor)
+         set confgene(posobs,observateur,mpcstation) ""
+         $audace(base).confPosObs.labURLRed13 configure -text "$confgene(posobs,observateur,mpcstation)" -fg $audace(color,textColor)
+         ::confPosObs::Position
+      }
+   }
+
+   #
+   # eventAude_GPS::confirm_save_alt
+   # Confirme la sauvegarde des coordonnees GPS en altitude
+   #
+   proc confirm_save_alt { } {
+      global audace
+      global caption
+      global confCam
+      global confgene
+
+      set choix [ tk_messageBox -type yesno -icon warning -title "$caption(eventaude_gps,maj_alt-)" \
+         -message "$caption(eventaude_gps,confirm)" ]
+      if { $choix == "yes" } {
+         #--- Mise en forme et sauvegarde de l'altitude
+         set confgene(posobs,altitude)               [ string trimleft [ format "%5.0f" $confCam(alt_GPS_Observateur) ] " " ]
+
+         #--- Mise a jour de champs de la boite Position de l'observateur
+         set confgene(posobs,ref_geodesique)         "WGS84"
+         set confgene(posobs,station_uai)            ""
+         set confgene(posobs,observateur,mpc)        ""
+         $audace(base).confPosObs.labURLRed11 configure -text "$confgene(posobs,observateur,mpc)" -fg $audace(color,textColor)
+         set confgene(posobs,observateur,mpcstation) ""
+         $audace(base).confPosObs.labURLRed13 configure -text "$confgene(posobs,observateur,mpcstation)" -fg $audace(color,textColor)
+         ::confPosObs::Position
       }
    }
 

@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.2 2006-06-20 21:28:21 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.tcl,v 1.3 2006-08-12 21:16:47 robertdelmas Exp $
 #
 
 #--- Chargement des captions
@@ -50,7 +50,7 @@ proc sn_visuzoom_g { { zoom 3 } } {
    set zone(image1_zoom) $audace(base).snvisuzoom_g.image1.canvas
 
    #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
-   ::visu::create 2 4 4
+   ::visu::create 3 4 4
 
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
    $zone(image1_zoom) create image 1 1 -image image4 -anchor nw -tag img4
@@ -142,7 +142,7 @@ proc sn_visuzoom_d { { zoom 3 } } {
    set zone(image2_zoom) $audace(base).snvisuzoom_d.image2.canvas
 
    #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
-   ::visu::create 3 5 5
+   ::visu::create 4 5 5
 
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
    $zone(image2_zoom) create image 1 1 -image image5 -anchor nw -tag img5

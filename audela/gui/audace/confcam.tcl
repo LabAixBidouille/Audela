@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.25 2006-07-29 22:26:53 denismarchais Exp $
+# Mise a jour $Id: confcam.tcl,v 1.26 2006-08-12 21:27:10 robertdelmas Exp $
 #
 
 global confCam
@@ -2588,7 +2588,8 @@ namespace eval ::confCam {
                set conf(confLink) "quickremote"
                ::confLink::run
             } elseif { $confCam(conf_dslr,link_longue_pose) == "$caption(confcam,dslr_externe)" } {
-               
+               set conf(confLink) "external"
+               ::confLink::run
             }
          }
       pack $frm.moyen_longue_pose -in $frm.frame8 -anchor center -side right -padx 20
@@ -3002,11 +3003,11 @@ namespace eval ::confCam {
 
    #
    # confCam::isReady
-   #    retourne "1" si la camera est demarree, sinon retourne "0"
-   # 
-   #  parametres :
-   #     camNo : numero de ma camera
-   #    
+   #    Retourne "1" si la camera est demarree, sinon retourne "0"
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc isReady { camNo } {
       #--- Je verifie si la camera est capable fournir son nom
       set result [ catch { cam$camNo name } ]
@@ -3021,11 +3022,11 @@ namespace eval ::confCam {
 
    #
    # confCam::getBinningList
-   #    retourne la liste des binnings possibles de la camera
-   # 
-   #  parametres :
-   #     camNo : numero de la camera
-   #    
+   #    Retourne la liste des binnings possibles de la camera
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc getBinningList { camNo } {
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
@@ -3045,13 +3046,14 @@ namespace eval ::confCam {
       return $binningList
    }
 
-   #------------------------------------------------------------
-   # getBinningList_Scan
-   # Retourne la liste des binnings Audine possibles pour les outils Drift-scan et
-   # Scan rapide en fonction du type de liaison utilisee (parallele ou EthernAude)
-   # Parametres :
-   #    camNo : numero de la camera
-   #------------------------------------------------------------
+   #
+   # confCam::getBinningList_Scan
+   #    Retourne la liste des binnings Audine possibles pour les outils Drift-scan et
+   #    Scan rapide en fonction du type de liaison utilisee (parallele, Audinet ou EthernAude)
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc getBinningList_Scan { camNo } {
       global conf
 
@@ -3063,6 +3065,10 @@ namespace eval ::confCam {
             switch $conf(confLink) {
                ethernaude {
                   set binningList_Scan { 1x1 2x2 }
+               }
+               audinet {
+                  #--- A confirmer avec le materiel
+                  set binningList_Scan { 1x1 2x2 4x4 }
                }
                parallelport {
                   set binningList_Scan { 1x1 2x2 4x4 }
@@ -3082,11 +3088,11 @@ namespace eval ::confCam {
 
    #
    # confCam::getName
-   #    retourne le nom de la camera si la camera est demarree, sinon retourne "0"
-   # 
-   #  parametres :
-   #     camNo : numero de ma camera
-   #    
+   #    Retourne le nom de la camera si la camera est demarree, sinon retourne "0"
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc getName { camNo } {
       #--- Je verifie si la camera est capable fournir son nom
       set result [ catch { cam$camNo name } camName ]
@@ -3102,11 +3108,11 @@ namespace eval ::confCam {
 
    #
    # confCam::getProduct
-   #    retourne le nom de la famille de la camera si la camera est demarree, sinon retourne "0"
-   # 
-   #  parametres :
-   #     camNo : numero de ma camera
-   #    
+   #    Retourne le nom de la famille de la camera si la camera est demarree, sinon retourne "0"
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc getProduct { camNo } {
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3122,10 +3128,11 @@ namespace eval ::confCam {
 
    #
    # confCam::hasVideo
-   #    retourne "1" si la camera possede un mode video, sinon retourne "0"
-   # 
-   #  parametre 
-   #    
+   #    Retourne "1" si la camera possede un mode video, sinon retourne "0"
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc hasVideo { camNo } {
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3142,9 +3149,10 @@ namespace eval ::confCam {
 
    #
    # confCam::hasScan
-   #    retourne "1" si la camera possede un mode scan, sinon retourne "0"
+   #    Retourne "1" si la camera possede un mode scan, sinon retourne "0"
    #
-   #  parametre 
+   #  Parametres :
+   #     camNo : Numero de la camera
    #
    proc hasScan { camNo } {
       global conf
@@ -3155,7 +3163,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch -exact -- $camProduct {
             audine  {
-                       if { $conf(confLink) == "parallelport" } { 
+                       if { $conf(confLink) == "parallelport" } {
                           return 1
                        } elseif { $conf(confLink) == "audinet" } {
                           return 1
@@ -3174,9 +3182,10 @@ namespace eval ::confCam {
 
    #
    # confCam::hasShutter
-   #    retourne "1" si la camera possede un obturateur, sinon retourne "0"
+   #    Retourne "1" si la camera possede un obturateur, sinon retourne "0"
    #
-   #  parametre 
+   #  Parametres :
+   #     camNo : Numero de la camera
    #
    proc hasShutter { camNo } {
       global conf
@@ -3188,7 +3197,7 @@ namespace eval ::confCam {
          switch -exact -- $camProduct {
             audine  { return 1 }
             hisis   {
-                       if { $conf(hisis,modele) == "11" } { 
+                       if { $conf(hisis,modele) == "11" } {
                           return 0
                        } else {
                           return 1
@@ -3204,11 +3213,175 @@ namespace eval ::confCam {
    }
 
    #
+   # confCam::getShutterOption
+   #    Retourne la liste des options de l'obturateur (O : ouvert, F : ferme, S : synchro)
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
+   proc getShutterOption { camNo } {
+      global conf
+      global caption
+
+      #--- Je verifie si la camera est capable fournir son nom de famille
+      set result [ catch { cam$camNo product } camProduct ]
+      #---
+      if { $result == 0 } {
+         switch -exact -- $camProduct {
+            audine  {
+                       if { $conf(confLink) == "parallelport" } {
+                          #--- O + F + S
+                          set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                       } elseif { $conf(confLink) == "quickaudine" } {
+                          #--- F + S
+                          set ShutterOptionList [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                       } elseif { $conf(confLink) == "audinet" } {
+                          #--- O + F + S - A confirmer avec le materiel
+                          set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                       } elseif { $conf(confLink) == "ethernaude" } {
+                          #--- F + S
+                          set ShutterOptionList [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                       }
+                    }
+            hisis   {
+                       if { $conf(hisis,modele) == "11" } {
+                          set ShutterOptionList { }
+                       } else {
+                          #--- O + F + S - A confirmer avec le materiel
+                          set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                       }
+                    }
+            sbig    {
+               #--- O + F + S - A confirmer avec le materiel
+               set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                    }
+            andor   {
+               #--- O + F + S - A confirmer avec le materiel
+               set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+                    }
+            default {
+               set ShutterOptionList { }
+            }
+         }
+      } else {
+         set ShutterOptionList { }
+      }
+      return $ShutterOptionList
+   }
+
+   #
+   # confCam::setconfLink_Audine
+   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la camera Audine
+   #
+   proc setconfLink_Audine { } {
+      global caption
+      global conf
+      global confCam
+      global frmm
+
+      #--- Initialisation pour l'onglet Audine
+      set frm $frmm(Camera1)
+      #--- Positionnement en fonction de la liaison selectionnee
+      if { $conf(confLink) == "parallelport" } {
+         if { $confCam(conf_audine,port) != "$caption(confcam,lpt2)" } {
+            set confCam(conf_audine,port) "$caption(confcam,lpt1)"
+         }
+      } elseif { $conf(confLink) == "quickaudine" } {
+         set confCam(conf_audine,port) "$caption(confcam,quicka)"
+      } elseif { $conf(confLink) == "audinet" } {
+         set confCam(conf_audine,port) "$caption(confcam,audinet)"
+      } elseif { $conf(confLink) == "ethernaude" } {
+         set confCam(conf_audine,port) "$caption(confcam,ethernaude)"
+      }
+      $frm.port configure -textvariable confCam(conf_audine,port)
+   }
+
+   #
+   # confCam::setconfLink_WebCam
+   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la camera WebCam
+   #
+   proc setconfLink_WebCam { } {
+      global caption
+      global conf
+      global confCam
+      global frmm
+
+      #--- Initialisation pour l'onglet WebCam
+      set frm $frmm(Camera7)
+      #--- Positionnement en fonction de la liaison selectionnee
+      if { $conf(confLink) == "parallelport" } {
+         if { $confCam(conf_webcam,longueposeport) != "$caption(confcam,lpt2)" } {
+            set confCam(conf_webcam,longueposeport) "$caption(confcam,lpt1)"
+         }
+      } elseif { $conf(confLink) == "quickremote" } {
+         set confCam(conf_webcam,longueposeport) "$caption(confcam,quickremote)"
+      }
+      $frm.lpport configure -textvariable confCam(conf_webcam,longueposeport)
+   }
+
+   #
+   # confCam::setconfLink_APN
+   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la camera APN
+   #
+   proc setconfLink_APN { } {
+      global caption
+      global conf
+      global confCam
+      global frmm
+
+      #--- Initialisation pour l'onglet APN
+      set frm $frmm(Camera10)
+      #--- Positionnement en fonction de la liaison selectionnee
+      if { $conf(confLink) == "photopc" } {
+         set confCam(conf_dslr,link) "$caption(confcam,dslr_photopc)"
+         $frm.port configure -textvariable confCam(conf_dslr,link)
+      } elseif { $conf(confLink) == "gphoto2" } {
+         set confCam(conf_dslr,link) "$caption(confcam,dslr_gphoto2)"
+         $frm.port configure -textvariable confCam(conf_dslr,link)
+      } elseif { $conf(confLink) == "quickremote" } {
+         set confCam(conf_dslr,link_longue_pose) "$caption(confcam,dslr_quickremote)"
+         $frm.moyen_longue_pose configure -textvariable confCam(conf_dslr,link_longue_pose)
+      } elseif { $conf(confLink) == "external" } {
+         set confCam(conf_dslr,link_longue_pose) "$caption(confcam,dslr_externe)"
+         $frm.moyen_longue_pose configure -textvariable confCam(conf_dslr,link_longue_pose)
+      }
+      #--- Gestion des 2 types de liaisons suivant les APN (DSLR) utilisés
+      if { $confCam(conf_dslr,link) == "$caption(confcam,dslr_photopc)" } {
+         pack $frm.frame2 -side top -fill x
+         pack $frm.frame3 -side top -fill x
+         pack forget $frm.frame4
+         pack forget $frm.frame5
+         pack forget $frm.frame6
+         pack forget $frm.frame7
+         pack forget $frm.frame8
+         pack forget $frm.frame9
+         pack forget $frm.frame10
+         pack forget $frm.frame11
+         pack $frm.frame12 -side bottom -fill x -pady 2
+         pack forget $frm.frame13
+      } elseif { $confCam(conf_dslr,link) == "$caption(confcam,dslr_gphoto2)" } {
+         pack forget $frm.frame2
+         pack forget $frm.frame3
+         pack $frm.frame4 -side top -fill x
+         pack $frm.frame5 -in $frm.frame4 -anchor n -side top -fill x
+         pack $frm.frame6 -in $frm.frame4 -anchor s -side left -fill x
+         pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
+         pack $frm.frame8 -in $frm.frame7 -anchor n -side top -fill x
+         pack $frm.frame9 -in $frm.frame7 -anchor n -side top -fill x
+         pack $frm.frame10 -in $frm.frame7 -anchor n -side top -fill x
+         pack $frm.frame11 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
+         pack forget $frm.frame12
+         pack $frm.frame13 -side bottom -fill x -pady 2
+      }
+   }
+
+   #
    # confCam::closeCamera
    #  Ferme la camera
-   # 
-   #  parametre 
-   #    
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
    proc closeCamera { camNo } {
       global confCam
       
@@ -3901,7 +4074,7 @@ namespace eval ::confCam {
                   set ccd "kaf401"
                }
                if { $conf(audine,port) == "$caption(confcam,quicka)" } {
-                  set erreur [ catch { cam::create quicka $conf(audine,port) -name Audine -ccd $ccd } camNo ]
+                  set erreur [ catch { cam::create quicka $conf(audine,port) -ccd $ccd -name Audine } camNo ]
                } elseif { $conf(audine,port) == "$caption(confcam,ethernaude)" } {
 ###
 ### Attention : Ajout de 2 fois -debug dans le cam::create
@@ -3951,7 +4124,7 @@ namespace eval ::confCam {
                      ::confVisu::visuDynamix $visuNo 32767 -32768
                   }
                } elseif { $conf(audine,port) == "$caption(confcam,audinet)" } {
-                  set erreur [ catch { cam::create audinet "" -name Audine -ccd $ccd \
+                  set erreur [ catch { cam::create audinet "" -ccd $ccd -name Audine \
                      -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                      -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) } camNo ]
                   if { $erreur == "1" } {

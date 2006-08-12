@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.3 2006-06-20 21:27:53 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.4 2006-08-12 21:16:29 robertdelmas Exp $
 #
 
 global audace
@@ -54,7 +54,6 @@ global audace
 #--- Chargement des captions
 source [ file join $audace(rep_plugin) tool supernovae snvisu.cap ]
 
-set snexit                 "1"
 set snvisu(blink_go)       "0"
 set snvisu(exit_blink)     "1"
 set snvisu(ima_rep2_exist) "0"
@@ -66,7 +65,7 @@ set rep(x1) [globgalsn $aa]
 set rep00 {}
 set aa "$rep(1)/*${extname}.gz"
 catch {set rep00 [globgalsn $aa]}
-#lappend rep(x1) $rep00         
+#lappend rep(x1) $rep00
 set rep(x1) [concat $rep(x1) $rep00]
 set rep(xx1) -1
 set aa "$rep(2)/*$extname"
@@ -106,6 +105,8 @@ if {$snconfvisu(scrollbars)=="on"} {
    wm minsize $audace(base).snvisu 860 490
 }
 wm title $audace(base).snvisu $caption(snvisu,main_title)
+
+wm protocol $audace(base).snvisu WM_DELETE_WINDOW { sn_delete }
 
 #--- Create the command line
 #--- Cree la ligne de commande
@@ -235,7 +236,7 @@ pack $audace(base).snvisu.frame7.but_goto \
 #--- Cree le bouton 'Quitter'
 button $audace(base).snvisu.frame7.but_exit \
    -text $caption(snvisu,exit) -borderwidth 2 \
-   -command { sn_adios }
+   -command { sn_delete }
 pack $audace(base).snvisu.frame7.but_exit \
    -in $audace(base).snvisu.frame7 -side left -anchor center \
    -expand true -ipadx 5 -ipady 5
@@ -247,7 +248,7 @@ frame $audace(base).snvisu.frame8 \
 pack $audace(base).snvisu.frame8 \
    -in $audace(base).snvisu.frame1 -anchor center -expand 1 -fill both
 
-#--- Bouton de configuration  
+#--- Bouton de configuration
 button $audace(base).snvisu.frame8.but_config \
    -text "$caption(snvisu,configuration)" -borderwidth 2 \
    -command { snvisu_configuration }
@@ -255,7 +256,7 @@ pack $audace(base).snvisu.frame8.but_config \
    -in $audace(base).snvisu.frame8 -side left -anchor center \
    -padx 10 -ipadx 5 -ipady 5
 
-#--- Bouton de configuration  
+#--- Bouton de configuration
 button $audace(base).snvisu.frame8.but_raccourcis \
    -text "$caption(snvisu,raccourcis)" -borderwidth 2 \
    -command { ::audace::showHelpPlugin tool supernovae supernovae_go.htm sn_raccourcis }
@@ -263,14 +264,14 @@ pack $audace(base).snvisu.frame8.but_raccourcis \
    -in $audace(base).snvisu.frame8 -side left -anchor center \
    -padx 10 -ipadx 5 -ipady 5
 
-#--- Bouton d'appel au logiciel de carte  
+#--- Bouton d'appel au logiciel de carte
 #--- Je n'affiche le bouton que si le logiciel est pret
 #--- et si le logiciel est deja lance
 if { [ info commands "::carte::isReady" ] != "" } {
    if  { [ ::carte::isReady ] == 0 } {
       button $audace(base).snvisu.frame8.but_cdc \
          -text "$caption(snvisu,carte)" -borderwidth 2 \
-         -command { afficheCarte  }
+         -command { afficheCarte }
       pack $audace(base).snvisu.frame8.but_cdc \
          -in $audace(base).snvisu.frame8 -side left -anchor center \
          -padx 10 -ipadx 5 -ipady 5
@@ -345,7 +346,7 @@ frame $audace(base).snvisu.frame2 \
 pack $audace(base).snvisu.frame2 \
    -in $audace(base).snvisu -anchor s -side bottom -expand 0 -fill x
 
-    scale $audace(base).snvisu.frame2.sca1 -orient horizontal -to 32767 -length $gnaxis1scale \
+    scale $audace(base).snvisu.frame2.sca1 -orient horizontal -to 32767 -from -10000 -length $gnaxis1scale \
        -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
        -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
        -relief raised -command changeHiCut1
@@ -353,7 +354,7 @@ pack $audace(base).snvisu.frame2 \
        -in $audace(base).snvisu.frame2 -anchor s -side left -expand 0 -padx 10
     set zone(sh1) $audace(base).snvisu.frame2.sca1
 
-    scale $audace(base).snvisu.frame2.sca2 -orient horizontal -to 32767 -length $gnaxis1scale \
+    scale $audace(base).snvisu.frame2.sca2 -orient horizontal -to 32767 -from -10000 -length $gnaxis1scale \
        -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
        -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
        -relief raised -command changeHiCut2
@@ -427,51 +428,6 @@ focus $audace(base).snvisu
 # === Met en place les liaisons
 # =========================================
 
-#--- Destroy the toplevel window with the upper right cross
-#--- Detruit la fenetre principale avec la croix en haut a droite
-bind $audace(base).snvisu <Destroy> {
-   if { $snexit == "1" } {
-      sn_delete
-      set snexit "0"
-   }
-}
-
-proc sn_delete { } {
-   global num
-   global audace
-   global snconfvisu
-
-   snconfvisu_save
-   buf::delete $num(buffer1)
-   buf::delete $num(buffer2)
-   visu::delete $num(visu_1)
-   visu::delete $num(visu_2)
-   catch { destroy $audace(base).snvisuzoom_g }
-   catch { destroy $audace(base).snvisuzoom_d }
-   #--- Nettoyage des eventuels fichiers crees
-   set ext [buf$audace(bufNo) extension]
-   catch {
-      file delete [ file join $snconfvisu(rep1) dummy1$ext ]
-      file delete [ file join $snconfvisu(rep1) dummy2$ext ]
-      file delete [ file join $snconfvisu(rep1) dummyb2$ext ]
-      file delete [ file join $snconfvisu(rep1) filter$ext ]
-      file delete [ file join $snconfvisu(rep1) filter2$ext ]
-      file delete [ file join $snconfvisu(rep1) filter3$ext ]
-      file delete [ file join [pwd] com.lst ]
-      file delete [ file join [pwd] dif.lst ]
-      file delete [ file join [pwd] eq.lst ]
-      file delete [ file join [pwd] in.lst ]
-      file delete [ file join [pwd] ref.lst ]
-      file delete [ file join [pwd] xy.lst ]
-   }
-}
-
-proc sn_adios { } {
-   global audace
-
-   destroy $audace(base).snvisu
-}
-
 #--- Execute a command from the command line
 #--- Execute une commande a partir de la ligne de commande
 bind $zone(command_line) <Key-Return> {
@@ -523,11 +479,11 @@ bind $audace(base).snvisu <Key-F4> {
 }
 
 bind $audace(base).snvisu <Key-F5> {
-   sn_header 2
+   sn_header $num(buffer1)
 }
 
 bind $audace(base).snvisu <Key-F6> {
-   sn_header 3
+   sn_header $num(buffer2)
 }
 
 bind $audace(base).snvisu <Key-F7> {
@@ -598,25 +554,60 @@ $zone(image2) create image 1 1 -image image200 -anchor nw -tag display
 # === It is the end of the script ===
 # ===================================
 
-proc get_seuils { { numbuf 1 } } {
+proc sn_delete { } {
+   global num
+   global audace
+   global snvisu
+   global snconfvisu
+
+   #--- On ne ferme SnVisu que s'il n'y a pas de blink en cours
+   if { $snvisu(blink_go) == "1" } {
+      return
+   }
+   #---
+   snconfvisu_save
+   buf::delete $num(buffer1)
+   buf::delete $num(buffer2)
+   visu::delete $num(visu_1)
+   visu::delete $num(visu_2)
+   visu::delete 4
+   visu::delete 5
+   destroy $audace(base).snvisu
+   #--- Effacement des fenetres des zooms si elles existent
+   if { [ winfo exists $audace(base).snvisuzoom_g ] } {
+      destroy $audace(base).snvisuzoom_g
+   }
+   if { [ winfo exists $audace(base).snvisuzoom_d ] } {
+      destroy $audace(base).snvisuzoom_d
+   }
+   #--- Nettoyage des eventuels fichiers crees
+   set ext [buf$audace(bufNo) extension]
+   catch {
+      file delete [ file join $snconfvisu(rep1) filter$ext ]
+      file delete [ file join $snconfvisu(rep1) filter2$ext ]
+      file delete [ file join $snconfvisu(rep1) filter3$ext ]
+   }
+}
+
+proc get_seuils { numbuf } {
    set hi [lindex [buf$numbuf getkwd MIPS-HI] 1]
    if {$hi==""} {
       set hi [lindex [buf$numbuf getkwd DATAMAX] 1]
    }
    if {$hi==""} {
-      set hi 32000
+      set hi 32768
    }
    set lo [lindex [buf$numbuf getkwd MIPS-LO] 1]
    if {$lo==""} {
       set lo [lindex [buf$numbuf getkwd DATAMIN] 1]
    }
    if {$lo==""} {
-      set lo 32000
+      set lo 32768
    }
    return [list $hi $lo]
 }
 
-proc set_seuils { { numbuf 1 } } {
+proc set_seuils { numbuf } {
    set hi [lindex [buf$numbuf getkwd MIPS-HI] 1]
    if {$hi==""} {
       set hi [lindex [buf$numbuf getkwd DATAMAX] 1]
@@ -646,21 +637,25 @@ proc no_cosmic { } {
    global zone
    global num
 
-   set filename [lindex $rep(x1) $rep(xx1)]
-   set name [file tail "$filename"]
-   set extname "[buf$num(buffer1) extension]"
-   set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
-   ttscript2 "IMA/SERIES \"$rep(1)\" \"$name\" . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" FILTER kernel_type=med kernel_width=3 kernel_coef=1.2"
-   set filename "$rep(1)/filter$extname"
-   $audace(base).snvisu.lst1 insert end "$caption(snvisu,filter) $rep(1) $name -> $filename"
-   $audace(base).snvisu.lst1 yview moveto 1.0
-   #--- Disparition du sautillement des widgets inferieurs
-   pack $audace(base).snvisu.lst1.scr1 \
-      -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
-   #---
-   set result [buf$num(buffer1) load $filename]
-   ::audace::autovisu $num(visu_1)
-   $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
+   #--- Applique un filtre median sur l'image de la nuit pour eliminer les cosmiques
+   if { [ buf$num(buffer1) imageready ] == "1" } {
+      set filename [lindex $rep(x1) $rep(xx1)]
+      set name [file tail "$filename"]
+      set extname "[buf$num(buffer1) extension]"
+      set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
+      ttscript2 "IMA/SERIES \"$rep(1)\" \"$name\" . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" FILTER kernel_type=med kernel_width=3 kernel_coef=1.2"
+      set filename "$rep(1)/filter$extname"
+      $audace(base).snvisu.lst1 insert end "$caption(snvisu,filter) $rep(1) $name -> $filename"
+      $audace(base).snvisu.lst1 yview moveto 1.0
+      #--- Disparition du sautillement des widgets inferieurs
+      pack $audace(base).snvisu.lst1.scr1 \
+         -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
+      #---
+      set result [buf$num(buffer1) load $filename]
+     ### ::audace::autovisu $num(visu_1)
+      visu$num(visu_1) disp
+      $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
+   }
 }
 
 proc subsky { } {
@@ -695,7 +690,7 @@ proc subsky { } {
          -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       #---
       set result [buf$num(buffer1) load $filename]
-      ::audace::autovisu $num(visu_1)
+     ### ::audace::autovisu $num(visu_1)
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
 
@@ -714,7 +709,7 @@ proc subsky { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          set result [buf$num(buffer2) load $filename]
-         ::audace::autovisu $num(visu_2)
+        ### ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
       } elseif { ( $snvisu(ima_rep3_exist) == "1" ) && ( $snconfvisu(num_rep2_3) == "1" ) } { 
@@ -732,7 +727,7 @@ proc subsky { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          set result [buf$num(buffer2) load $filename]
-         ::audace::autovisu $num(visu_2)
+        ### ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
       }
@@ -743,7 +738,7 @@ proc subsky { } {
    update
 }
 
-proc change_dir { { numbuf "1" } } {
+proc change_dir { numbuf } {
    global audace
    global caption
    global rep
@@ -833,30 +828,40 @@ proc affimages { } {
    #--- Nettoyage des 2 canvas avant affichage
    catch {
       #--- Du canvas de l'image 1
-      image delete image100
-      image create photo image100
+      visu$num(visu_1) clear
+      buf$num(buffer1) clear
       #--- Du canvas de l'image 2
-      image delete image200
-      image create photo image200
+      visu$num(visu_2) clear
+      buf$num(buffer2) clear
    }
 
+   #--- Effacement des fenetres des zooms si elles existent
+   if { [ winfo exists $audace(base).snvisuzoom_g ] } {
+      destroy $audace(base).snvisuzoom_g
+   }
+   if { [ winfo exists $audace(base).snvisuzoom_d ] } {
+      destroy $audace(base).snvisuzoom_d
+   }
+
+   #--- Traitement des limites
    set total [llength $rep(x1)]
    if { $rep(xx1) >= $total } {
-      set rep(xx1) [expr $total-1]
+      set rep(xx1) $total
    }
    if { $rep(xx1) < 0 } {
-      set rep(xx1) 0
+      set rep(xx1) -1
    }
+   #---
    if { ( $rep(xx1) < $total ) && ( $rep(xx1) >= 0 ) } {
       set filename [lindex $rep(x1) $rep(xx1)]
       set a [catch {buf$num(buffer1) load $filename} result]
       if {$a==1} {
          return
       }
-      ::audace::autovisu $num(visu_1)
+     ### ::audace::autovisu $num(visu_1)
+      visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
-      #$audace(base).snvisu.lst1 delete 0 end
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
@@ -869,8 +874,6 @@ proc affimages { } {
       #---
       set zone(naxis1) [lindex [buf$num(buffer1) getkwd NAXIS1] 1]
       set zone(naxis2) [lindex [buf$num(buffer1) getkwd NAXIS2] 1]
-      catch { destroy $audace(base).snvisuzoom_g }
-      catch { destroy $audace(base).snvisuzoom_d }
       catch { $zone(image1) configure -scrollregion [list 0 0 $zone(naxis1) $zone(naxis2)] }
       #---
       set posimoins [string last - $name]
@@ -951,7 +954,7 @@ proc affimages { } {
                set filename $filename.gz
                set rep(gz2) yes
             }
-         }      
+         }
       } else {
          if { [ file exists $filename] == 0 } {
             if { [ file exists [ file rootname $filename ] ] == 1 } { 
@@ -1001,32 +1004,33 @@ proc affimages { } {
          #--- Disparition du sautillement des widgets inferieurs
          pack $audace(base).snvisu.lst1.scr1 \
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
+      }
+      #---
+      if {$result==""} {
+        ### ::audace::autovisu $num(visu_2)
+         visu$num(visu_2) disp
+         $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+         $zone(labelh2) configure -text "$caption(snvisu,reference) : [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]"
          #---
-         if {$result==""} {
-            ::audace::autovisu $num(visu_2)
-            $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
-            $zone(labelh2) configure -text "$caption(snvisu,reference) : [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]"
-            #---
-            set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
-            set zone(naxis2_2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
-            catch { destroy $audace(base).snvisuzoom_g }
-            catch { destroy $audace(base).snvisuzoom_d }
-            catch { $zone(image2) configure -scrollregion [list 0 0 $zone(naxis1_2) $zone(naxis2_2)] }
-         } else {
-            visu$num(visu_2) cut {32700 32699}
-            visu$num(visu_2) disp
-            $zone(labelh2) configure -text ""
-         }
+         set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
+         set zone(naxis2_2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
+         catch { $zone(image2) configure -scrollregion [list 0 0 $zone(naxis1_2) $zone(naxis2_2)] }
+      } else {
+         visu$num(visu_2) disp
+         $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+         $zone(labelh2) configure -text ""
       }
    } else {
-      $audace(base).snvisu.lst1 delete 0 end
+      #---
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,0image)"
       $audace(base).snvisu.lst1 yview moveto 1.0
+      #---
+      $zone(label1) configure -text ""
       #--- Disparition du sautillement des widgets inferieurs
       pack $audace(base).snvisu.lst1.scr1 \
          -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       #---
-   }     
+   }
 }
 
 proc gotoimage { } {
@@ -1071,10 +1075,10 @@ proc gotoimage { } {
       pack $audace(base).snvisu1.frame1.command_line \
          -fill x -side right \
          -padx 5 -pady 5
-   pack $audace(base).snvisu1.frame1 -side top -fill both -expand 1  
+   pack $audace(base).snvisu1.frame1 -side top -fill both -expand 1
 
    #--- Je place le focus immediatement dans la zone de saisie
-   focus $audace(base).snvisu1.frame1.command_line     
+   focus $audace(base).snvisu1.frame1.command_line
 
    #--- Create the button 'Cancel'
    #--- Cree le bouton 'Annuler'
@@ -1101,11 +1105,11 @@ proc gotoimage { } {
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- La touche Escape est equivalente au bouton "but_cancel"
-   bind $audace(base).snvisu1 <Key-Escape>  { $audace(base).snvisu1.but_cancel invoke }   
+   bind $audace(base).snvisu1 <Key-Escape>  { $audace(base).snvisu1.but_cancel invoke }
 
    #--- La touche Return est equivalente au bouton "but_go"
    bind $audace(base).snvisu1 <Key-Return>  { $audace(base).snvisu1.but_go invoke }
-    
+
    $audace(base).snvisu1.frame1.command_line selection range 0 end 
 
    #--- La fenetre est active
@@ -1388,6 +1392,7 @@ proc saveimage { } {
    global num
    global rep
    global snconfvisu
+   global zone
 
    #---
    set rep(blink,last) ""
@@ -1421,9 +1426,11 @@ proc saveimage { } {
       #--- Mise a jour de l'affichage avec la nouvelle image de reference
       affimages
    } else {
-      $audace(base).snvisu.lst1 delete 0 end
+      #---
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,0image)"
       $audace(base).snvisu.lst1 yview moveto 1.0
+      #---
+      $zone(label1) configure -text ""
       #--- Disparition du sautillement des widgets inferieurs
       pack $audace(base).snvisu.lst1.scr1 \
          -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
@@ -1656,7 +1663,8 @@ proc htmlimage { } {
              pack $audace(base).snvisu.lst1.scr1 \
                 -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
              #---
-             destroy $audace(base).snvisu2 ; return
+             destroy $audace(base).snvisu2
+             return
          }
       pack $audace(base).snvisu2.fra_button.but_go \
          -in $audace(base).snvisu2.fra_button -side left -anchor w \
@@ -1773,7 +1781,7 @@ proc htmlimage { } {
    ::confColor::applyColor $audace(base).snvisu2
 }
 
-proc sn_header { { bufnum 2 } } {
+proc sn_header { bufnum } {
    global audace caption color num snvisu
 
    set i 0
@@ -1782,16 +1790,16 @@ proc sn_header { { bufnum 2 } } {
    }
 
    if { [ buf$bufnum imageready ] == "1" } {
-      if { $bufnum == "2" } {
+      if { $bufnum == "$num(buffer1)" } {
          set title "$caption(snvisu,fits_header) : $snvisu(name)     [ lindex [ buf$num(buffer1) getkwd DATE-OBS ] 1 ]"
-      } elseif { $bufnum == "3" } {
+      } elseif { $bufnum == "$num(buffer2)" } {
          set title "$caption(snvisu,fits_header) - $caption(snvisu,reference) : \
             $snvisu(name)      [ lindex [ buf$num(buffer2) getkwd DATE-OBS ] 1 ]"
       }
    } else {
-      if { $bufnum == "2" } {
+      if { $bufnum == "$num(buffer1)" } {
          set title "$caption(snvisu,fits_header)"
-      } elseif { $bufnum == "3" } {
+      } elseif { $bufnum == "$num(buffer2)" } {
          set title "$caption(snvisu,fits_header) - $caption(snvisu,reference)"
       }
    }
@@ -1857,6 +1865,12 @@ proc snblinkimage { } {
       return
    }
 
+   #--- Animation en cours
+   set snvisu(blink_go) "1"
+
+   #--- Initialisation
+   set rep(blink,last) ""
+
    #--- Recentrage de l'image de reference
    set b [::buf::create]
    set ext [buf$audace(bufNo) extension]
@@ -1870,10 +1884,29 @@ proc snblinkimage { } {
       buf$b window [list 1 1 $dimx $dimy]
       buf$b            save "$audace(rep_images)/dummy2"
       buf$num(buffer1) save "$audace(rep_images)/dummy1"
-      set objefile "__dummy__$ext"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" STAT objefile"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER translate=never"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
+      set objefile "__dummy__"
+      set error [ catch { 
+         ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" STAT objefile"
+         ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER translate=never"
+         ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
+      } msg ]
+      #--- Interception de l'erreur
+      if { $error == "1" } {
+         tk_messageBox -title "$caption(snvisu,attention)" -type ok -message "$msg \n"
+         #--- Detruit les fichiers intermediaires
+         file delete [ file join $snconfvisu(rep1) dummy1$ext ]
+         file delete [ file join $snconfvisu(rep1) dummy2$ext ]
+         file delete [ file join $snconfvisu(rep1) dummyb2$ext ]
+         catch { file delete [ file join $snconfvisu(rep1) __dummy__1$ext ] }
+         file delete [ file join [pwd] com.lst ]
+         file delete [ file join [pwd] dif.lst ]
+         file delete [ file join [pwd] eq.lst ]
+         file delete [ file join [pwd] in.lst ]
+         file delete [ file join [pwd] ref.lst ]
+         file delete [ file join [pwd] xy.lst ]
+         #---
+         return
+      }
       buf$b load "$audace(rep_images)/dummyb2"
       set shsb [visu$num(visu_2) cut]
       set text0 "[buf$b getkwd MIPS-LO]"
@@ -1899,7 +1932,6 @@ proc snblinkimage { } {
    visu101 disp [ list $snvisu(seuil_2_haut) $snvisu(seuil_2_bas) ]
 
    #--- Animation
-   set snvisu(blink_go) "1"
    for { set t 1 } { $t <= $snconfvisu(nb_blink) } { incr t } {
       $zone(image1) itemconfigure display -image image100
       update
@@ -1917,6 +1949,18 @@ proc snblinkimage { } {
    catch { image delete image101 }
    ::buf::delete $b
 
+   #--- Detruit les fichiers intermediaires
+   file delete [ file join $snconfvisu(rep1) dummy1$ext ]
+   file delete [ file join $snconfvisu(rep1) dummy2$ext ]
+   file delete [ file join $snconfvisu(rep1) dummyb2$ext ]
+   catch { file delete [ file join $snconfvisu(rep1) __dummy__1$ext ] }
+   file delete [ file join [pwd] com.lst ]
+   file delete [ file join [pwd] dif.lst ]
+   file delete [ file join [pwd] eq.lst ]
+   file delete [ file join [pwd] in.lst ]
+   file delete [ file join [pwd] ref.lst ]
+   file delete [ file join [pwd] xy.lst ]
+
    #--- Reconfigure pour Aud'ACE normal
    $zone(image1) itemconfigure display -image image100
    update
@@ -1924,9 +1968,11 @@ proc snblinkimage { } {
    #--- Gestion du bouton 'blink'
    $audace(base).snvisu.frame7.but_blink configure -text $caption(snvisu,blink_go) -command { set snvisu(exit_blink) "1" ; snblinkimage }
    update
+
+   #--- Animation terminee
    set snvisu(blink_go) "0"
 
-}     
+}
 
 #===============================================
 #  afficheCarte 

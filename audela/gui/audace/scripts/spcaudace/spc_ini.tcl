@@ -68,19 +68,20 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu Géométrie ---#
      set captionspc(spc_geometrie) "Géométrie"
+     set captionspc(spc_pretraitementfc_w) "Prétraitement de spectres 2D"
      set captionspc(spc_register_w) "Appariement d'une série de spectres 2D"
-     set captionspc(spc_rot180) "Rotation de 180°"
-     set captionspc(spc_tiltauto) "Rotation automatique"
+     set captionspc(spc_rot180_w) "Rotation de 180° (2D/1D)"
+     set captionspc(spc_tiltauto_w) "Rotation automatique (2D)"
      set captionspc(spc_tilt_w) "Rotation manuelle"
-     set captionspc(spc_slant_w) "Correction du slant"
-     set captionspc(spc_smile_w) "Correction du smile"
+     set captionspc(spc_slant_w) "Correction du slant (2D)"
+     set captionspc(spc_smilex_w) "Correction du smile d'axe X (2D)"
+     set captionspc(spc_smiley_w) "Correction du smile d'axe Y (2D)"
 
      #--- Menu Profil de raies ---#
      set captionspc(spc_profil) "Profil de raies"
-     set captionspc(spc_open_fitfile) "Créer le profil d'une zone"
-     set captionspc(spc_profil_w) "Créer le profil automatiue d'un spectre"
-     set captionspc(spc_traitea_w) "Prétraitement et profil automatique d'une série"
-     set captionspc(spc_select_w) "Découpage d'une zone de profil"
+     set captionspc(spc_profil_w) "Créer le profil automatique d'un spectre"
+     set captionspc(spc_traitea_w) "Prétraitement d'une série et profil automatique"
+     set captionspc(spc_extract_zone_w) "Créer un profil à partir d'une zone"
 
      #--- Menu Mesures ---#
      set captionspc(spc_mesures) "Mesures"
@@ -92,10 +93,18 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu Calibration ---#
      set captionspc(spc_calibration) "Calibration"
-     set captionspc(cali_lambda) "Étalonnage en lambda"
-     set captionspc(cali_flux) "Étalonnage en flux (appliquer la RI)"
-     set captionspc(spc_norma) "Normalisation"
-     set captionspc(spc_rinstrum_w) "Calcul de la réponse instrumentale RI"
+     set captionspc(spc_calibre2file_w) "Étalonnage en lambda avec 2 raies"
+     set captionspc(spc_calibre2loifile_w) "Étalonnage en lambda avec lampe étalon"
+     set captionspc(spc_rinstrum_w) "Calcul de la réponse instrumentale"
+     set captionspc(spc_rinstrumcorr_w) "Correction de la réponse instrumentale"
+     set captionspc(spc_norma_w) "Normalisation"
+
+     #--- Menu Pipelines ---#
+     set captionspc(spc_pipelines) "Pipelines"
+     set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"
+     set captionspc(spc_geom2rinstrum_w) "Corrections géométriques -> correction instrumentale"
+     set captionspc(spc_traite2calibre_w) "Prétraitement -> calibration"
+     set captionspc(spc_traite2rinstrum_w) "Prétraitement -> correction instrumentale"
 
      #--- Menu Analyse ---#
      set captionspc(spc_analyse) "Analyse"

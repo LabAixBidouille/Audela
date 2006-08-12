@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.8 2006-07-11 16:25:19 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.9 2006-08-12 21:23:43 robertdelmas Exp $
 #
 
 #
@@ -464,12 +464,15 @@ namespace eval confPosObs {
       #--- Si un format MPC existe je peux modifier l'altitude du format GPS sans modifier la longitude et la latitude
       if { $confgene(posobs,observateur,mpc) != "" } {
          if { $confgene(posobs,ref_geodesique) == "WGS84" } {
+            set altitude $confgene(posobs,altitude)
             ::confPosObs::MPC
-            set confgene(posobs,observateur,gps) "GPS [lindex $confgene(posobs,observateur,gps) 1] [lindex $confgene(posobs,observateur,gps) 2] [lindex $confgene(posobs,observateur,gps) 3] $confgene(posobs,altitude)"
+            set confgene(posobs,observateur,gps) "GPS [lindex $confgene(posobs,observateur,gps) 1] [lindex $confgene(posobs,observateur,gps) 2] [lindex $confgene(posobs,observateur,gps) 3] $altitude"
+            set confgene(posobs,altitude) $altitude
          } elseif { $confgene(posobs,ref_geodesique) == "ED50" } {
             set confgene(posobs,observateur,gps-ed50) "GPS [mc_angle2deg $longitude] $estouest [mc_angle2deg $latitude] $confgene(posobs,altitude)"
             set confgene(posobs,observateur,ed50-wgs84) [mc_home2geosys $confgene(posobs,observateur,gps-ed50) ED50 WGS84]
-            set confgene(posobs,observateur,gps) "GPS [lindex $confgene(posobs,observateur,ed50-wgs84) 0] [lindex $confgene(posobs,observateur,gps-ed50) 2] [lindex $confgene(posobs,observateur,ed50-wgs84) 1] [lindex $confgene(posobs,observateur,ed50-wgs84) 2]"
+            set longitude_ed50 [lindex $confgene(posobs,observateur,ed50-wgs84) 0]
+            set confgene(posobs,observateur,gps) "GPS [expr abs($longitude_ed50)] [lindex $confgene(posobs,observateur,gps-ed50) 2] [lindex $confgene(posobs,observateur,ed50-wgs84) 1] [lindex $confgene(posobs,observateur,ed50-wgs84) 2]"
          }
       } else {
          if { $confgene(posobs,ref_geodesique) == "WGS84" } {
@@ -477,7 +480,8 @@ namespace eval confPosObs {
          } elseif { $confgene(posobs,ref_geodesique) == "ED50" } {
             set confgene(posobs,observateur,gps-ed50) "GPS [mc_angle2deg $longitude] $estouest [mc_angle2deg $latitude] $confgene(posobs,altitude)"
             set confgene(posobs,observateur,ed50-wgs84) [mc_home2geosys $confgene(posobs,observateur,gps-ed50) ED50 WGS84]
-            set confgene(posobs,observateur,gps) "GPS [lindex $confgene(posobs,observateur,ed50-wgs84) 0] [lindex $confgene(posobs,observateur,gps-ed50) 2] [lindex $confgene(posobs,observateur,ed50-wgs84) 1] [lindex $confgene(posobs,observateur,ed50-wgs84) 2]"
+            set longitude_ed50 [lindex $confgene(posobs,observateur,ed50-wgs84) 0]
+            set confgene(posobs,observateur,gps) "GPS [expr abs($longitude_ed50)] [lindex $confgene(posobs,observateur,gps-ed50) 2] [lindex $confgene(posobs,observateur,ed50-wgs84) 1] [lindex $confgene(posobs,observateur,ed50-wgs84) 2]"
          }
       }
       #--- Mise en forme et affichage de la position au format GPS
@@ -549,6 +553,8 @@ namespace eval confPosObs {
                set confgene(posobs,estouest) [lindex $confgene(posobs,observateur,gps) 2]
                if { $confgene(posobs,estouest) == "W" } {
                   set confgene(posobs,estouest) "$caption(confgene,position_ouest)"
+               } elseif { $confgene(posobs,estouest) == "E" } {
+                  set confgene(posobs,estouest) $caption(confgene,position_est)
                }
                #--- Latitude
                set confgene(posobs,lat) [lindex $confgene(posobs,observateur,gps) 3]
@@ -1192,9 +1198,13 @@ namespace eval confFichierIma {
       #--- Mise a jour de l'extension pour toutes les visu disponibles
       foreach visuNo [::visu::list] {
          if { $conf(fichier,compres) == "1" } {
-            set panneau(AcqFC,$visuNo,extension) $conf(extension,new).gz
+            set panneau(AcqFC,$visuNo,extension)  $conf(extension,new).gz
+            set panneau(Dscan,extension_image)    $conf(extension,new).gz
+            set panneau(Scanfast,extension_image) $conf(extension,new).gz
          } else {
-            set panneau(AcqFC,$visuNo,extension) $conf(extension,new)
+            set panneau(AcqFC,$visuNo,extension)  $conf(extension,new)
+            set panneau(Dscan,extension_image)    $conf(extension,new)
+            set panneau(Scanfast,extension_image) $conf(extension,new)
          }
       }
    }

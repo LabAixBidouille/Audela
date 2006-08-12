@@ -84,6 +84,7 @@ proc spc_winini { } {
    wm maxsize .spc [winfo screenwidth .spc] [winfo screenheight .spc]
    wm minsize .spc 320 200
    wm resizable .spc 1 1
+   # A ameliorer : lorsqu'un graphe est affiche et que la fenetre est elargie, la fenetre du graphe ne prend pas toute la place.
 
    # === On remplit la fenetre ===
    if {[info command .spc.g] == "" } { 
@@ -144,12 +145,14 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.geometrie -label $captionspc(spc_geometrie) -underline 0
       menu .spc.menuBar.geometrie -tearoff 0
       # .spc configure -menu .spc.menuBar
+      .spc.menuBar.geometrie add command -label $captionspc(spc_pretraitementfc_w) -command "spc_pretraitementfc_w" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_register_w) -command "spc_register" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_rot180) -command "spc_rot180" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_tiltauto) -command "spc_tiltauto" -underline 0
+      .spc.menuBar.geometrie add command -label $captionspc(spc_rot180_w) -command "spc_rot180" -underline 0
+      .spc.menuBar.geometrie add command -label $captionspc(spc_tiltauto_w) -command "spc_tiltauto" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_tilt_w) -command "spc_tilt" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_slant_w) -command "spc_slant" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_smile_w) -command "spc_smile" -underline 0
+      .spc.menuBar.geometrie add command -label $captionspc(spc_smilex_w) -command "spc_smilex" -underline 0
+      .spc.menuBar.geometrie add command -label $captionspc(spc_smiley_w) -command "spc_smiley" -underline 0
 
 
       #--- Menu Profil de raies ---#
@@ -158,6 +161,7 @@ proc spc_winini { } {
       #.spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
       .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
+      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_zone" -underline 0
       .spc configure -menu .spc.menuBar
       #bind .spc <Control-N> spc_open_fitfile
       #bind .spc <Control-n> spc_open_fitfile
@@ -178,16 +182,25 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(spc_calibration) -underline 0
       menu .spc.menuBar.calibration -tearoff 0
       # .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "spc_calibre2" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(cali_flux) -command "spc_calibref" -underline 0 -accelerator "Ctrl-F"
-      .spc.menuBar.calibration add command -label $captionspc(spc_norma) -command "spc_norma" -underline 0
+      .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
+      .spc.menuBar.calibration add command -label $captionspc(spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
       .spc.menuBar.calibration add command -label $captionspc(spc_rinstrum_w) -command "spc_rinstrum" -underline 0
+      .spc.menuBar.calibration add command -label $captionspc(spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
+      .spc.menuBar.calibration add command -label $captionspc(spc_norma_w) -command "spc_norma" -underline 0
       .spc configure -menu .spc.menuBar
       bind .spc <Control-L> cali_lambda
       bind .spc <Control-l> cali_lambda
       bind .spc <Control-F> cali_flux
       bind .spc <Control-f> cali_flux
 
+      #--- Menu Pipelines ---#
+      .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0
+      menu .spc.menuBar.pipelines -tearoff 0
+      # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "spc_geom2rinstrum_w" -underline 0 -accelerator "Ctrl-2"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "spc_traite2calibre_w" -underline 0 -accelerator "Ctrl-3"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "spc_traite2rinstrum_w" -underline 0 -accelerator "Ctrl-4"
 
       #--- Menu Analyse ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0

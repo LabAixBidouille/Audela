@@ -1,38 +1,38 @@
 #
 # Fichier : test.tcl
 # Description : Script pour lancer une application de test a partir d'AudeLA
-# Mise a jour $Id: test.tcl,v 1.4 2006-06-20 18:08:12 robertdelmas Exp $
+# Mise a jour $Id: test.tcl,v 1.5 2006-08-12 20:56:31 robertdelmas Exp $
 #
 
-#--- definition des variables globales (arrays)
+#--- definition des variables globales
 global caption
 global color
 global zone
 global infos
 
-# --- initialisation de variables d'infos
+#--- initialisation des variables d'infos
 set infos(MouseState) rien
-set infos(box) {1 1 1 1}
+set infos(box)        {1 1 1 1}
 
 #--- description du texte a placer sur l'ecran
 set caption(main_title) "Test"
-set caption(acq) "Acquisition"
-set caption(load) "Ouvrir"
-set caption(save) "Sauver"
-set caption(exit) "Quitter"
-set caption(wait) "En cours..."
+set caption(acq)        "Acquisition"
+set caption(load)       "Ouvrir"
+set caption(save)       "Enregistrer"
+set caption(exit)       "Quitter"
+set caption(wait)       "En cours..."
 
 #--- definition des couleurs
-set color(back) #123456
+set color(back)       #123456
 set color(back_image) #000000
-set color(rectangle) #0000EE
-set color(scroll) #BBBBBB
+set color(rectangle)  #0000EE
+set color(scroll)     #BBBBBB
 
-# --- initialisation de variables de zone
+#--- initialisation des variables de zone
 set zone(naxis1) 0
 set zone(naxis2) 0
 
-# --- charge des proc utilitaires pour Tk
+#--- charge des proc utilitaires pour Tk
 source tkutil.tcl
 
 #--- cache la fenetre racine
@@ -96,7 +96,7 @@ source tkutil.tcl
       -padx 3 -pady 3
    set zone(load) .test.frame1.but_load
 
-#--- cree le bouton 'sauver'
+#--- cree le bouton 'enregistrer'
    button .test.frame1.but_save \
       -text $caption(save) -borderwidth 4 \
       -command { testsave }
@@ -120,7 +120,7 @@ frame .test.frame2 \
 pack .test.frame2 \
    -in .test -anchor s -side bottom -expand 0 -fill x
 
-# --- cree la glissiere de seuil bas
+#--- cree la glissiere de seuil bas
 scale .test.frame2.sca1 -orient horizontal -from 0 -to 32767 -length 200 \
    -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
    -troughcolor $color(back) -background $color(back) \
@@ -129,7 +129,7 @@ pack .test.frame2.sca1 \
    -in .test.frame2 -anchor s -side left -expand 0 -padx 10 -pady 3
 set zone(sb1) .test.frame2.sca1
 
-# --- cree la glissiere de seuil haut
+#--- cree la glissiere de seuil haut
 scale .test.frame2.sca2 -orient horizontal -from 0 -to 32767 -length 200 \
    -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
    -troughcolor $color(back) -background $color(back) \
@@ -188,9 +188,10 @@ bind $zone(image1) <ButtonPress-1> {
      }
   }
 
-# --- re-affiche l'image si on relache les curseurs des glissieres
+#--- re-affiche l'image si on relache les curseurs des glissieres
 bind $zone(sh1) <ButtonRelease> {catch {visu1 disp}}
 bind $zone(sb1) <ButtonRelease> {catch {visu1 disp}}
+
 #--- execute une commande a partir de la ligne de commande
 bind $zone(command_line) <Key-Return> {
    set resultat [eval $command_line]
@@ -200,19 +201,19 @@ bind $zone(command_line) <Key-Return> {
    set $command_line ""
 }
 
-# --- affiche la valeur du pixel pointe dans l'image
+#--- affiche la valeur du pixel pointe dans l'image
 bind $zone(image1) <Motion> {
    global zone
-   # --- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
+   #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
    set xy [screen2Canvas [list %x %y]]
-   # --- Transforme les coordonnees canvas (x,y) en coordonnees image (xi,yi)
+   #--- Transforme les coordonnees canvas (x,y) en coordonnees image (xi,yi)
    set xyi [canvas2Picture $xy]
    set xi [lindex $xyi 0]
    set yi [lindex $xyi 1]
-   # --- Intens contiendra l'intensite du pixel pointe
+   #--- Intens contiendra l'intensite du pixel pointe
    set intens -
-   catch {set intens [buf1 getpix [list $xi $yi]]}
-   # --- Affichage des coordonnees 
+   catch { set intens [ lindex [ buf1 getpix [ list $xi $yi ] ] 1 ] }
+   #--- Affichage des coordonnees
    wm title .test "Test : ($xi,$yi) = $intens    "
 }
 
@@ -243,9 +244,10 @@ proc testload { } {
    global caption
    set filename [tk_getOpenFile -title $caption(load) \
       -filetypes {{{Images FITS} {.fit}}} \
-      -initialdir .. ]
+      -initialdir [ file join .. .. images ] ]
    if {$filename!=""} {
       buf1 load $filename
+      visu1 clear
       testvisu
    }
 }
@@ -256,11 +258,11 @@ proc testvisu { } {
    set zone(naxis2) [lindex [buf1 getkwd NAXIS2] 1]
    $zone(image1) configure -scrollregion [list 0 0 $zone(naxis1) $zone(naxis2)]
    visu1 disp
-   # --- place les curseurs des barres de seuil au bon endroit
+   #--- place les curseurs des barres de seuil au bon endroit
    set shb [testgetseuils]
    $zone(sb1) set [lindex $shb 1]
    $zone(sh1) set [lindex $shb 0]
-   # --- definit les limites de seuils bas et haut
+   #--- definit les limites de seuils bas et haut
    set hi [buf1 getkwd MIPS-HI]
    set lo [buf1 getkwd MIPS-LO]
    buf1 stat
@@ -276,24 +278,24 @@ proc testvisu { } {
 }
 
 proc testgetseuils { } {
-   # --- retourne un liste contenant le seuil haut et bas de l'image
+   #--- retourne un liste contenant le seuil haut et bas de l'image
    global zone
-   # --- on recherche la valeur du mot cle MIPS-HI
+   #--- on recherche la valeur du mot cle MIPS-HI
    set hi [lindex [buf1 getkwd MIPS-HI] 1]
    if {$hi==""} {
-      # --- sinon on recherche la valeur du mot cle DATAMAX
+      #--- sinon on recherche la valeur du mot cle DATAMAX
       set hi [lindex [buf1 getkwd DATAMAX] 1]
    }
    if {$hi==""} {
-      # --- sinon on fait une stat sur l'image
+      #--- sinon on fait une stat sur l'image
       buf1 stat
       set hi [lindex [buf1 getkwd MIPS-HI] 1]
       set lo [lindex [buf1 getkwd MIPS-LO] 1]
    }
-   # --- on recherche la valeur du mot cle MIPS-LO
+   #--- on recherche la valeur du mot cle MIPS-LO
    set lo [lindex [buf1 getkwd MIPS-LO] 1]
    if {$lo==""} {
-      # --- sinon on recherche la valeur du mot cle DATAMIN
+      #--- sinon on recherche la valeur du mot cle DATAMIN
       set lo [lindex [buf1 getkwd DATAMIN] 1]
    }
    if {$lo==""} {
@@ -306,7 +308,7 @@ proc testsave { } {
    global caption
    set filename [tk_getSaveFile -title $caption(load) \
       -filetypes {{{Images FITS} {.fit}}} \
-      -initialdir .. ]
+      -initialdir [ file join .. .. images ] ]
    if {$filename!=""} {
       buf1 save $filename
    }
