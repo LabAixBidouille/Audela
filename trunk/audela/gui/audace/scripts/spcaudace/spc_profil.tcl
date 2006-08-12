@@ -339,9 +339,11 @@ proc spc_detectasym { args } {
 	#--- Creations de profils de plusieurs colonnes
 	set xpas [ expr int($naxis1/5) ]
 	#-- n° du profil resultant
+	::console::affiche_resultat "Pas entre chaque point de détection : $xpas\n"
 	set i 1
 	for {set k $xpas} {$k <= $naxis1} {incr k} {
 	    set fsortie [ file rootname [ spc_profilx $fichier $k ] ]
+	    # ::console::affiche_resultat "$fsortie\n"
 	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/profil-$i$conf(extension,defaut)"
 	    set k [ expr $k+$xpas-1 ]
 	    incr i
@@ -410,7 +412,7 @@ proc spc_subskiesfrac { args } {
 
     if {[llength $args] == 1} {
 	set nom_generique [lindex $args 0]
-	set liste_fichiers [ lsort -dictionary [glob ${nom_generique}*$conf(extension,defaut)] ]
+	set liste_fichiers [ lsort -dictionary [glob ${nom_generique}\[0-9\]*$conf(extension,defaut)] ]
 	set nbimg [ llength $liste_fichiers ]
 	::console::affiche_resultat "$nbimg fichiers à traiter.\n"
 	set i 1
@@ -426,8 +428,54 @@ proc spc_subskiesfrac { args } {
 	::console::affiche_erreur "Usage: spc_subskies nom générique spectres_2D_fits\n\n"
     }
 }
+#*********************************************************************#
+
+
+
+###############################################################
+# Soustrait le fond de ciel sur une série de spectres 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 26-07-2006
+# Date de mise a jour : 26-07-2006                               
+# Arguments : nom du spectre 2D netoye du fond de ciel à binner
 ###############################################################
 
+proc spc_binlopt { args } {
+
+    global audace
+    global conf
+
+    if { [llength $args] == 3 } {
+	set spectre2d [ lindex $args 0 ]
+	set ycentre [ expr int([ lindex $args 1 ]) ]
+	set ylargeur [ lindex $args 2 ]
+
+	#--- Détermine les limites adaptées du binning :
+	set dy [ expr int($ylargeur*.5-1)+1 ]
+	set yinf [ expr $ycentre-int($dy) ]
+	set ysup [ expr $ycentre+int($dy) ]
+	set htr [ expr $dy*2 ]
+	if { $dy != 0.5 } {
+	    ::console::affiche_resultat "Hauteur de binning : $htr\n"
+	}
+
+	#--- Effectue le binning optimise par la mathode de Roberval (lopt de tt_user2.c)
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre2d"
+	buf$audace(bufNo) imaseries "LOPT y1=$yinf y2=$ysup height=1"
+
+	#--- SAuvegarde du profil 1D
+	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${spectre2d}_spc"
+	::console::affiche_resultat "Profil de raies sauvé sous ${spectre2d}_spc$conf(extension,defaut)\n"
+	return ${spectre2d}_spc
+    } else {
+	::console::affiche_erreur "Usage: spc_binlopt nom_spectres_2D_fits ycentre ylargeur_a_binner\n\n"
+    }
+}
+#*********************************************************************#
 
 
 
@@ -499,6 +547,18 @@ proc spc_profil { args } {
 	#--- Bining :
 	if { $methodebin == "add" } {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
+	} elseif { $methodebin == "rober" } {
+	    #-- Cas particulier de zone de binning : elle est decoupée et c'est $spectre_zone_fc
+	    #-- au lieu de faire : [ spc_binlopt $spectre_zone_fc $ycenter $hauteur ]
+	    buf$audace(bufNo) load "$audace(rep_images)/$spectre_zone_fc"
+	    set ylargeur [ expr [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]-1 ]
+	    #-- Bizarement, lopt ne peut prendre la dimension totale d'une image :
+	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
+	    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	    buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+	    buf$audace(bufNo) bitpix float
+	    buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
+	    set profil_fc ${spectre_zone_fc}_spc
 	} else {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
 	}
@@ -508,7 +568,7 @@ proc spc_profil { args } {
 	file delete "$audace(rep_images)/${spectre2d}_zone$conf(extension,defaut)"
 	return $profil_fc
    } else {
-	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?\n\n"
+	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add, rober, horne)?\n\n"
    }
 }
 #**************************************************************************#
@@ -538,8 +598,8 @@ proc spc_subsky { args } {
 	::console::affiche_resultat "ycenter : $ycenter ; hauteur : $hauteur\n"
 	#--- Initialisation de paramètres
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
-	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
+	set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+	set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
 
 	#--- Passe en entier ycenter et hauteur pour le decoupage de zones de meme taille :
 	#[ expr $ycenter+0.5*$hauteur-(int($ycenter+0.5*$hauteur)+1) ] >= 0.5 
@@ -731,7 +791,7 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
     ##---- Traitement d'une zone de longueur egale a la selection et de hauteur egale a celle de l'image initiale (par la suite ce sera sur une hauteur decidee a l'avance) -------------------#
 
     ## Creation d'une image de largeur limiteée par xinf_zone et xsup_zone et d'une hauteur ysup-yinf+ht_dessus+ht_dessous
-    set coords_zonev [list $xsup_zone [expr $ysup+$ht_dessus] $xinf_zone [expr $yinf-$ht_dessous+1]]
+    set coords_zonev [list $xsup_zone [expr int($ysup+$ht_dessus)] [expr int($xinf_zone)] [expr int($yinf-$ht_dessous)+1]]
     ## ::console::affiche_resultat "Coords_zone : $coords_zone\n"
     #::console::affiche_resultat "${filenamespc_spatial} ; Coords_zonev : $coords_zonev, ht_sup : $ht_dessus, ht_inf : $ht_dessous\n"
     buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spatial"
@@ -900,7 +960,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     ##-- Traitement d'une zone de longueur egale a la selection et de hauteur egale a celle de l'image initiale (par la suite ce sera sur une hauteur decidee a l'avance) -------------------#
 
     ## Creation d'une image de largeur limiteée par xinf_zone et xsup_zone et d'une hauteur ysup-yinf+ht_dessus+ht_dessous
-    set coords_zonev [list $xsup_zone [expr $ysup+$ht_dessus] $xinf_zone [expr $yinf-$ht_dessous+1]]
+    set coords_zonev [list $xsup_zone [expr int($ysup+$ht_dessus)] [expr int($xinf_zone)] [expr int($yinf-$ht_dessous)+1]]
     ## ::console::affiche_resultat "Coords_zone : $coords_zone\n"
     #::console::affiche_resultat "${filenamespc_spatial} ; Coords_zonev : $coords_zonev, ht_sup : $ht_dessus, ht_inf : $ht_dessous\n"
     buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spatial"
@@ -1040,7 +1100,6 @@ proc spc_profilx { args } {
 	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	#- Les commandes PROFILE et PROFILE2 n'accèptent pas les noms de fichier compliqués
 	buf$audace(bufNo) imaseries "PROFILE2 filename=$audace(rep_images)/$nomprofil$extsp direction=y offset=$x"
-
 	#--- Sauvegarde du profil
 	#-- Elève la première ligne du fichier dat (label des colonnes)
 	#- J'ai modifié tt_user3 ligne 350 de la libtt.

@@ -615,7 +615,7 @@ proc spc_div { args } {
 	    ::console::affiche_resultat "\nLes 2 profils de raies ne sont pas divisibles.\n"
 	}
     } else {
-	::console::affiche_erreur "Usage : spc_div profil_de_raies-1-fits profil_de_raies-2-fits\n\n"
+	::console::affiche_erreur "Usage : spc_div profil_de_raies_numérateur_fits profil_de_raies_dénominateur_fits\n\n"
     }
 }
 #*********************************************************************#

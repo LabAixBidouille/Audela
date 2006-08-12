@@ -2,30 +2,29 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.3 2006-06-20 20:51:38 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.4 2006-08-12 21:09:40 robertdelmas Exp $
 #
 #****************************************************************
 #
+#Who   When   What
 #
-#
-#Who		When		What
-#--------	---------	----------------------------------------------------
-#srondi	2002-07-XX  modified
+#----------------------------------------------------------------
+#srondi 2002-07-XX modified
 #
 
 #****************************************************************
-#		NAME
-#			cmanimate - Animate the FITS images from MASCOT
+# NAME
+#   cmanimate : Animate the FITS images from MASCOT
 #
-#		SYNOPSIS
+# SYNOPSIS :
 #
 #
-#		DESCRIPTION
-#			Permit the user to browse and animate the images from the
-#                 Mini All Sky Cloud Observation Tool and to display some
-#			information (positions of the UT's)
+# DESCRIPTION :
+#   Permit the user to browse and animate the images from the
+#   Mini All Sky Cloud Observation Tool (MASCOT) and to display
+#   some information (positions of the UT's)
 #
-#------------------------------------------------------------------------------------
+#----------------------------------------------------------------
 
 package provide cmanimate 1.0
 
@@ -43,12 +42,11 @@ namespace eval ::cmanim {
 
    proc createPanel { this } {
       variable This
-      global conf
       global audace
-      global panneau
       global caption
       global cmconf
       global numero
+      global panneau
 
       #--- Chargement des variables de configuration de cmaude
       set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
@@ -60,18 +58,18 @@ namespace eval ::cmanim {
       if { [ file exists $fichier_cmanimate ] } {
          source $fichier_cmanimate
       }
+      #--- Initialisation du nom de la fenetre
       set This $this
-      #---
+      #--- Initialisation des captions
       set panneau(menu_name,cmanim)       "$caption(cmanimate,titre)"
       set panneau(cmanim,aide)            "$caption(cmanimate,help_titre)"
       set panneau(cmanim,genericfilename) "$caption(cmanimate,nom_generique)"
-      set panneau(cmanim,filename)        ""
+      set panneau(cmanim,parcourir)       "$caption(cmanimate,parcourir)"
       set panneau(cmanim,nbimages)        "$caption(cmanimate,nbre_images)"
       set panneau(cmanim,delayms)         "$caption(cmanimate,delai_ms)"
       set panneau(cmanim,nbloops)         "$caption(cmanimate,nbre_boucles)"
       set panneau(cmanim,goall)           "$caption(cmanimate,animation_totale)"
       set panneau(cmanim,golast)          "$caption(cmanimate,animation_fin)"
-      set panneau(cmanim,nblast)          "10"
       set panneau(cmanim,lbllast)         "$caption(cmanimate,image)"
       set panneau(cmanim,gotolast)        "$caption(cmanimate,aller_derniere_image)"
       set panneau(cmanim,forw)            "$caption(cmanimate,image_suivante)"
@@ -79,8 +77,15 @@ namespace eval ::cmanim {
       set panneau(cmanim,label_ima)       "$caption(cmanimate,status)"
       set panneau(cmanim,status)          "$caption(cmanimate,status1)"
       set panneau(cmanim,goimg)           "$caption(cmanimate,aller_image)"
+      #--- Initialisation de variables
+      if { [ info exists panneau(cmanim,filename) ] == "0" } { set panneau(cmanim,filename) "" }
+      if { [ info exists panneau(cmanim,nbi) ] == "0" }      { set panneau(cmanim,nbi)      "3" }
+      if { [ info exists panneau(cmanim,ms) ] == "0" }       { set panneau(cmanim,ms)       "100" }
+      if { [ info exists panneau(cmanim,nbl) ] == "0" }      { set panneau(cmanim,nbl)      "2" }
+      set panneau(cmanim,nblast)          "10"
       set panneau(cmanim,numimg)          "1"
       set numero                          "1"
+      #--- Construction de l'interface
       cmanimBuildIF $This
    }
 
@@ -195,32 +200,34 @@ namespace eval ::cmanim {
    proc cmdGoall { } {
       variable This
       global audace
-      global panneau
       global caption
+      global panneau
 
+      #--- Destruction de la fenetre d'erreur si elle existe
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
+      }
       #--- Clean the screen
       visu$audace(visuNo) clear
-      #---
-      if { $panneau(cmanim,encours) == "0" } {
+      #--- Lancement de l'animation
+      if { $panneau(cmanim,filename) != "" } {
          #--- Efface la position des telescopes
          $audace(hCanvas) delete uts
-         set panneau(cmanim,encours) "1"
          grab $This.frago.but1
-         $This.frago.but1 configure -relief groove
+         $This.frago.but1 configure -relief groove -state disabled
          set panneau(cmanim,status) "$caption(cmanimate,animation_en_cours)"
          $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
          update
-         #--- In case of errors (wrong folder or doesn't exist)
-         #--- If no error, function ANIMATE
-         set num [ catch { animate_mascot $panneau(cmanim,filename) $panneau(cmanim,nbi) $panneau(cmanim,ms) \
-            $panneau(cmanim,nbl) } msg ]
-         if { $num == "1" } {
+         #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
+         #--- supportee par la variable error retournee par la procedure animate_mascot du present script
+         set error [ animate_mascot $panneau(cmanim,filename) $panneau(cmanim,nbi) $panneau(cmanim,ms) \
+            $panneau(cmanim,nbl) ]
+         if { $error == "1" } {
             ::cmanim::ErreurFichier
          }
          grab release $This.frago.but1
-         $This.frago.but1 configure -relief raised
+         $This.frago.but1 configure -relief raised -state normal
          update
-         set panneau(cmanim,encours) "0"
          set panneau(cmanim,status) "$caption(cmanimate,animation_terminee)"
          $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
          cmdchkuts_1
@@ -228,37 +235,39 @@ namespace eval ::cmanim {
    }
 
    proc animate_mascot { filename nb {millisecondes 200} {nbtours 10} } {
-      #--- filename : Nom generique des fichiers a animer
+      #--- filename : Nom generique des fichiers image filename*.fit a animer
       #--- nb : Nombre d'images (1 a nb)
-      #--- millisecondes : Timer entre chaque image affichee
+      #--- millisecondes : Temps entre chaque image affichee
       #--- nbtours : Nombre de boucles sur les nb images
-      #
-      global conf
       global audace
-      global panneau
       global caption
       global color
+      global conf
+      global panneau
 
+      #--- Repertoire des images
       set len [string length $conf(rep_images)]
       set folder "$conf(rep_images)"
-      if { $len> "0" } {
+      if { $len > "0" } {
          set car [string index "$conf(rep_images)" [expr $len-1]]
          if { $car != "/" } {
             append folder "/"
          }
       }
+      #--- Je sauvegarde le canvas
       set basecanvas $audace(base).can1.canvas
-      #--- Je sauvegarde le numero de l'image associe à la visu
+      #--- Je sauvegarde le numero de l'image associe a la visu
       set imageNo [visu$audace(visuNo) image]
-      #--- On va creer nb zones de visu a partir de 101
-      set off 100
-      #--- Cree les visu et les Tk_photoimage
+      #--- Initialisation des visu
+      set off "100"
+      #--- Creation de nb visu a partir de la visu numero 101 (100 + 1) et des Tk_photoimage
       for { set k 1 } { $k <= $nb } { incr k } {
          set kk [expr $k+$off]
-         #--- Cree l'image si elle n'existe pas et l'associe a la visu
+         #--- Creation de l'image et association a la visu
          visu$audace(visuNo) image $kk
-         buf$audace(bufNo) load "$folder$filename$k"
-         #---
+         #--- Chargement de l'image avec gestion des erreurs
+         set error [ catch { buf$audace(bufNo) load "$folder$filename$k" } msg ]
+         #--- Positionnement de la zone pointee par le telescope sur l'image
          if { $panneau(cmanim,drawposuts) == "1" } {
             if { $panneau(cmanim,position) == "2" } {
             #--- Positionnement pour l'option Paranal avec des images en binning 1x1
@@ -278,67 +287,74 @@ namespace eval ::cmanim {
                #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
             }
          }
-         #--- Affiche l'image associee a la visu
+         #--- Affichage de l'image associee a la visu
          ::audace::autovisu $audace(visuNo)
       }
       #--- Animation
-      for { set t 1 } { $t <= $nbtours } { incr t } {   
-         for { set k 1 } { $k <= $nb } { incr k } {
-            set kk [expr $k+$off]
-            #---
-            if { $panneau(cmanim,drawposuts) == "1" } {
-               if { $panneau(cmanim,position) == "2" } {
-               #--- Positionnement pour l'option Paranal avec des images en binning 1x1
-                  catch {
-                     set altut(1) $altut1($k)
-                     set aziut(1) $aziut1($k)
-                     set altut(2) $altut2($k)
-                     set aziut(2) $aziut2($k)
-                     set altut(3) $altut3($k)
-                     set aziut(3) $aziut3($k)
-                     set altut(4) $altut4($k)
-                     set aziut(4) $aziut4($k)
-                     altaz2oval $altut(1) $aziut(1) "$caption(cmanimate,ut1)" "$color(red)" "1" "13" "uts"
-                     altaz2oval $altut(2) $aziut(2) "$caption(cmanimate,ut2)" "$color(yellow)" "1" "13" "uts"
-                     altaz2oval $altut(3) $aziut(3) "$caption(cmanimate,ut3)" "$color(green)" "1" "13" "uts"
-                     altaz2oval $altut(4) $aziut(4) "$caption(cmanimate,ut4)" "$color(blue)" "1" "13" "uts"
+      if { $error == "0" } {
+         for { set t 1 } { $t <= $nbtours } { incr t } {
+            for { set k 1 } { $k <= $nb } { incr k } {
+               set kk [expr $k+$off]
+               #--- Positionnement de la zone pointee par le telescope sur l'image
+               if { $panneau(cmanim,drawposuts) == "1" } {
+                  if { $panneau(cmanim,position) == "2" } {
+                  #--- Positionnement pour l'option Paranal avec des images en binning 1x1
+                     catch {
+                        set altut(1) $altut1($k)
+                        set aziut(1) $aziut1($k)
+                        set altut(2) $altut2($k)
+                        set aziut(2) $aziut2($k)
+                        set altut(3) $altut3($k)
+                        set aziut(3) $aziut3($k)
+                        set altut(4) $altut4($k)
+                        set aziut(4) $aziut4($k)
+                        altaz2oval $altut(1) $aziut(1) "$caption(cmanimate,ut1)" "$color(red)" "1" "13" "uts"
+                        altaz2oval $altut(2) $aziut(2) "$caption(cmanimate,ut2)" "$color(yellow)" "1" "13" "uts"
+                        altaz2oval $altut(3) $aziut(3) "$caption(cmanimate,ut3)" "$color(green)" "1" "13" "uts"
+                        altaz2oval $altut(4) $aziut(4) "$caption(cmanimate,ut4)" "$color(blue)" "1" "13" "uts"
+                     }
+                  } elseif { $panneau(cmanim,position) == "1" } {
+                  #--- Positionnement pour l'option 'Votre instrument' avec des images en binning 1x1
+                     #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
                   }
-               } elseif { $panneau(cmanim,position) == "1" } {
-               #--- Positionnement pour l'option 'Votre instrument' avec des images en binning 1x1
-                  #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
                }
+               $basecanvas itemconfigure display -image image$kk
+               #--- Chargement de l'image associee a la visu
+               visu$audace(visuNo) image $kk
+               update
+               after $millisecondes
+               #--- Effacement des surimpressions
+               $audace(hCanvas) delete uts
             }
-            $basecanvas itemconfigure display -image image$kk
-            #--- Change l'image associee a la visu
-            visu$audace(visuNo) image $kk
-            update
-            after $millisecondes
-            #--- Effacement des surimpressions
-            $audace(hCanvas) delete uts
          }
       }
-      #--- Detruit les Tk_photoimage
+      #--- Destruction des Tk_photoimage
       for { set k 1 } { $k <= $nb } { incr k } {
          set kk [expr $k+$off]
          image delete image$kk
       }
-      #--- Reconfigure pour Aud'ACE normal
+      #--- Reconfiguration pour Aud'ACE normal
       $basecanvas itemconfigure display -image image$imageNo
       update
-      #--- Je restaure le numero de l'image associe a la visu
+      #--- Restauration du numero de l'image associe a la visu
       visu$audace(visuNo) image $imageNo
-      buf$audace(bufNo) load $folder${filename}1
-      ::audace::autovisu $audace(visuNo)
+      #--- Affichage de la premiere image de l'animation si elle existe
+      if { $error == "0" } {
+         buf$audace(bufNo) load $folder${filename}1
+         ::audace::autovisu $audace(visuNo)
+      }
+      #--- Variable error pour la gestion des erreurs
+      return $error
    }
 
    proc cmdGolast { } {
       variable This
       global audace
-      global conf
-      global panneau
       global caption
-      global numbrstart
+      global conf
       global numbrend
+      global numbrstart
+      global panneau
 
       set numbrend "0"
       set num "1"
@@ -352,31 +368,34 @@ namespace eval ::cmanim {
       if { $numbrstart <= "0" } {
          set numbrstart "1"
       }
+      if { $numbrend <= "0" } {
+         set numbrend "1"
+      }
+      #--- Destruction de la fenetre d'erreur si elle existe
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
+      }
       #--- Clean the screen
       visu$audace(visuNo) clear
-      #---
-      if { $panneau(cmanim,encours) == "0" } {
+      #--- Lancement de l'animation
+      if { $panneau(cmanim,filename) != "" } {
          #--- Efface la position des telescopes
          $audace(hCanvas) delete uts
-         set panneau(cmanim,encours) "1"
-         grab $This.frago.but1
-         $This.frago.but5 configure -relief groove
-         $This.frago.but1 configure -relief groove
+         grab $This.frago.but5
+         $This.frago.but5 configure -relief groove -state disabled
          set panneau(cmanim,status) "$caption(cmanimate,animation_en_cours)"
          $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
          update
-         #--- In case of errors (wrong folder or doesn't exist)
-         #--- If no error, function ANIMATE
-         set num [ catch { ::cmanim::animate_mascot_last $panneau(cmanim,filename) $numbrstart $numbrend \
-            $panneau(cmanim,ms) $panneau(cmanim,nbl) } msg ]
-         if { $num == "1" } {
+         #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
+         #--- supportee par la variable error retournee par la procedure animate_mascot_last du present script
+         set error [ ::cmanim::animate_mascot_last $panneau(cmanim,filename) $numbrstart $numbrend \
+            $panneau(cmanim,ms) $panneau(cmanim,nbl) ]
+         if { $error == "1" } {
             ::cmanim::ErreurFichier
          }
-         grab release $This.frago.but1
-         $This.frago.but1 configure -relief raised
-         $This.frago.but5 configure -relief raised
+         grab release $This.frago.but5
+         $This.frago.but5 configure -relief raised -state normal
          update
-         set panneau(cmanim,encours) "0"
          set panneau(cmanim,status) "$caption(cmanimate,animation_terminee)"
          $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
          cmdchkuts_1
@@ -384,17 +403,18 @@ namespace eval ::cmanim {
    }
 
    proc animate_mascot_last { filename numbrstart numbrend millisecondes nbtours } {
-      #--- filename : Nom generique des fichiers filename*.extension a animer
-      #--- numbrstart : Numero d'image de debut
-      #--- numbrend : Numero d'image de fin
-      #--- millisecondes : Timer entre chaque image affichee
+      #--- filename : Nom generique des fichiers image filename*.fit a animer
+      #--- numbrstart : Numero de l'image de debut
+      #--- numbrend : Numero de l'image de fin
+      #--- millisecondes : Temps entre chaque image affichee
       #--- nbtours : Nombre de boucles sur les nb images
-      global conf
       global audace
-      global panneau
       global caption
       global color
+      global conf
+      global panneau
 
+      #--- Repertoire des images
       set len [string length $conf(rep_images)]
       set folder "$conf(rep_images)"
       if { $len > "0" } {
@@ -403,18 +423,20 @@ namespace eval ::cmanim {
             append folder "/"
          }
       }
+      #--- Je sauvegarde le canvas
       set basecanvas $audace(base).can1.canvas
-      #--- Je sauvegarde le numero de l'image associe à la visu
+      #--- Je sauvegarde le numero de l'image associe a la visu
       set imageNo [visu$audace(visuNo) image]
-      #--- On va creer nb zones de visu a partir de 101
+      #--- Initialisation des visu
       set off "100"
-      #--- Cree les visu et les Tk_photoimage
+      #--- Creation de nb visu a partir de la visu numero 101 (100 + 1) et des Tk_photoimage
       for { set k $numbrstart } { $k <= $numbrend } { incr k } {
          set kk [expr $k+$off]
-         #--- Cree l'image si elle n'existe pas et l'associe a la visu
+         #--- Creation de l'image et association a la visu
          visu$audace(visuNo) image $kk
-         buf$audace(bufNo) load "$folder$filename$k"
-         #---
+         #--- Chargement de l'image avec gestion des erreurs
+         set error [ catch { buf$audace(bufNo) load "$folder$filename$k" } msg ]
+         #--- Positionnement de la zone pointee par le telescope sur l'image
          if { $panneau(cmanim,drawposuts) == "1" } {
             if { $panneau(cmanim,position) == "2" } {
             #--- Positionnement pour l'option Paranal avec des images en binning 1x1
@@ -434,165 +456,200 @@ namespace eval ::cmanim {
                #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
             }
          }
-         #--- Affiche l'image associee a la visu
+         #--- Affichage de l'image associee a la visu
          ::audace::autovisu $audace(visuNo)
       }
       #--- Animation
-      for { set t 1 } { $t <= $nbtours } { incr t } {
-         for { set k $numbrstart } { $k <= $numbrend } { incr k } {
-            set kk [expr $k+$off]
-            #---
-            if { $panneau(cmanim,drawposuts) == "1" } {
-               if { $panneau(cmanim,position) == "2" } {
-               #--- Positionnement pour l'option Paranal avec des images en binning 1x1
-                  catch {
-                     set altut(1) $altut1($k)
-                     set aziut(1) $aziut1($k)
-                     set altut(2) $altut2($k)
-                     set aziut(2) $aziut2($k)
-                     set altut(3) $altut3($k)
-                     set aziut(3) $aziut3($k)
-                     set altut(4) $altut4($k)
-                     set aziut(4) $aziut4($k)
-                     altaz2oval $altut(1) $aziut(1) "$caption(cmanimate,ut1)" "$color(red)" "1" "13" "uts"
-                     altaz2oval $altut(2) $aziut(2) "$caption(cmanimate,ut2)" "$color(yellow)" "1" "13" "uts"
-                     altaz2oval $altut(3) $aziut(3) "$caption(cmanimate,ut3)" "$color(green)" "1" "13" "uts"
-                     altaz2oval $altut(4) $aziut(4) "$caption(cmanimate,ut4)" "$color(blue)" "1" "13" "uts"
+      if { $error == "0" } {
+         for { set t 1 } { $t <= $nbtours } { incr t } {
+            for { set k $numbrstart } { $k <= $numbrend } { incr k } {
+               set kk [expr $k+$off]
+               #--- Positionnement de la zone pointee par le telescope sur l'image
+               if { $panneau(cmanim,drawposuts) == "1" } {
+                  if { $panneau(cmanim,position) == "2" } {
+                  #--- Positionnement pour l'option Paranal avec des images en binning 1x1
+                     catch {
+                        set altut(1) $altut1($k)
+                        set aziut(1) $aziut1($k)
+                        set altut(2) $altut2($k)
+                        set aziut(2) $aziut2($k)
+                        set altut(3) $altut3($k)
+                        set aziut(3) $aziut3($k)
+                        set altut(4) $altut4($k)
+                        set aziut(4) $aziut4($k)
+                        altaz2oval $altut(1) $aziut(1) "$caption(cmanimate,ut1)" "$color(red)" "1" "13" "uts"
+                        altaz2oval $altut(2) $aziut(2) "$caption(cmanimate,ut2)" "$color(yellow)" "1" "13" "uts"
+                        altaz2oval $altut(3) $aziut(3) "$caption(cmanimate,ut3)" "$color(green)" "1" "13" "uts"
+                        altaz2oval $altut(4) $aziut(4) "$caption(cmanimate,ut4)" "$color(blue)" "1" "13" "uts"
+                     }
+                  } elseif { $panneau(cmanim,position) == "1" } {
+                  #--- Positionnement pour l'option 'Votre instrument' avec des images en binning 1x1
+                     #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
                   }
-               } elseif { $panneau(cmanim,position) == "1" } {
-               #--- Positionnement pour l'option 'Votre instrument' avec des images en binning 1x1
-                  #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
                }
+               $basecanvas itemconfigure display -image image$kk
+               #--- Chargement de l'image associee a la visu
+               visu$audace(visuNo) image $kk
+               update
+               after $millisecondes
+               #--- Effacement des surimpressions
+               $audace(hCanvas) delete uts
             }
-            $basecanvas itemconfigure display -image image$kk
-            #--- Change l'image associee a la visu
-            visu$audace(visuNo) image $kk
-            update
-            after $millisecondes
-            #--- Effacement des surimpressions
-            $audace(hCanvas) delete uts
          }
       }
-      #--- Detruit les Tk_photoimage
+      #--- Destruction des Tk_photoimage
       for { set k $numbrstart } { $k <= $numbrend } { incr k } {
          set kk [expr $k+$off]
          image delete image$kk
       }
-      #--- Reconfigure pour Aud'ACE normal
+      #--- Reconfiguration pour Aud'ACE normal
       $basecanvas itemconfigure display -image image$imageNo
       update
-      #--- Je restaure le numero de l'image associe a la visu
+      #--- Restauration du numero de l'image associe a la visu
       visu$audace(visuNo) image $imageNo
-      buf$audace(bufNo) load $folder${filename}1
-      ::audace::autovisu $audace(visuNo)
+      #--- Affichage de la premiere image de l'animation si elle existe
+      if { $error == "0" } {
+         buf$audace(bufNo) load $folder${filename}1
+         ::audace::autovisu $audace(visuNo)
+      }
+      #--- Variable error pour la gestion des erreurs
+      return $error
    }
 
    proc cmdForw { } {
    #--- Push on FORWARD button, pass to the following image
       variable This
-      global conf
       global audace
-      global panneau
       global caption
+      global conf
       global numero
+      global panneau
 
-      incr numero 1
-      set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
-      set num [ catch { loadima $nom_image } msg ]
-      if { $num == "1" } {
-         incr numero -1
-         ::cmanim::ErreurFichier
-      } else {
-         set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-         set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
-         $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
-         cmdchkuts_1
+      #--- Destruction de la fenetre d'erreur si elle existe
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
+      }
+      #---
+      if { $panneau(cmanim,filename) != "" } {
+         incr numero 1
+         set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
+         set num [ catch { loadima $nom_image } msg ]
+         if { $num == "1" } {
+            incr numero -1
+            ::cmanim::ErreurFichier
+         } else {
+            set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
+            set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
+            cmdchkuts_1
+         }
       }
    }
 
    proc cmdBackw { } {
    #--- Push on BACKWARD button, pass to the previous image
       variable This
-      global conf
       global audace
-      global panneau
       global caption
+      global conf
       global numero
+      global panneau
 
-      incr numero -1
-      if { $numero < "1" } {
-         set numero "1"
-         ::cmanim::ErreurFichier
+      #--- Destruction de la fenetre d'erreur si elle existe
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
       }
-      set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
-      set num [ catch { loadima $nom_image } msg ]
-      if { $num == "1" } then {
-         incr numero 1
-         ::cmanim::ErreurFichier
-      } else {
-         set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-         set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
-         $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
-         cmdchkuts_1
+      #---
+      if { $panneau(cmanim,filename) != "" } {
+         incr numero -1
+         if { $numero < "1" } {
+            set numero "1"
+            ::cmanim::ErreurFichier
+         }
+         set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
+         set num [ catch { loadima $nom_image } msg ]
+         if { $num == "1" } then {
+            incr numero 1
+            ::cmanim::ErreurFichier
+         } else {
+            set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
+            set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
+            cmdchkuts_1
+         }
       }
    }
 
    proc cmdGotolast { } {
    #--- Push on Go To Last button, pass to the last image available
       variable This
-      global conf
       global audace
-      global panneau
       global caption
+      global conf
       global numero
+      global panneau
 
-      set numero "1"
-      set num "1"
-      while { $num != "0" } {
-         incr numero 1
-         set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
-         set num [ file exists $nom_image ]
+      #--- Destruction de la fenetre d'erreur si elle existe
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
       }
-      incr numero -1
-      set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
-      set num [catch {loadima $nom_image} msg]
-      if { $num == "1" } then {
-         ::cmanim::ErreurFichier
-      } else {
-         set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-         set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
-         $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
-         cmdchkuts_1
+      #---
+      if { $panneau(cmanim,filename) != "" } {
+         set numero "1"
+         set num "1"
+         while { $num != "0" } {
+            incr numero 1
+            set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
+            set num [ file exists $nom_image ]
+         }
+         incr numero -1
+         set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
+         set num [catch {loadima $nom_image} msg]
+         if { $num == "1" } then {
+            ::cmanim::ErreurFichier
+         } else {
+            set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
+            set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
+            cmdchkuts_1
+         }
       }
    }
 
    proc cmdGoto { } {
    #--- Push on Go To button, pass to the image number "numero"
       variable This
-      global conf
       global audace
-      global panneau
       global caption
+      global conf
       global numero
+      global panneau
 
-      set numero "$panneau(cmanim,numimg)"
-      set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
-      set num [catch {loadima $nom_image} msg]
-      if { $num == "1" } then {
-         ::cmanim::ErreurFichier
-         set numero "1"
-      } else {
-         set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-         set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
-         $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
-         cmdchkuts_1
+      #--- Destruction de la fenetre d'erreur si elle existe
+      if { [ winfo exists $audace(base).erreurfichier ] } {
+         destroy $audace(base).erreurfichier
+      }
+      #---
+      if { $panneau(cmanim,filename) != "" } {
+         set numero "$panneau(cmanim,numimg)"
+         set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
+         set num [catch {loadima $nom_image} msg]
+         if { $num == "1" } then {
+            ::cmanim::ErreurFichier
+            set numero "1"
+         } else {
+            set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
+            set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
+            cmdchkuts_1
+         }
       }
    }
 
    proc cmdchkgrid { } {
       global audace
-      global panneau
       global caption
+      global panneau
 
       if { $panneau(cmanim,drawgrid) == "1" } then {
          console::affiche_erreur "$caption(cmanimate,dessine_grille)"
@@ -604,12 +661,11 @@ namespace eval ::cmanim {
    }
 
    proc cmdGrid { } {
-      global conf
       global audace
       global caption
-      global panneau
-      global color
       global cmconf
+      global color
+      global panneau
 
       if { $panneau(cmanim,position) == "2" } {
       #--- Grille pour l'option Paranal avec des images en binning 1x1
@@ -646,10 +702,9 @@ namespace eval ::cmanim {
    }
 
    proc altaz2oval { altut aziut utID color_cmanimate width radius tag } {
-      global cmconf
-      global conf
       global audace
       global caption
+      global cmconf
 
       set centerx [lindex $cmconf(zenith11) 0]
       set centery [lindex $cmconf(zenith11) 1]
@@ -669,8 +724,8 @@ namespace eval ::cmanim {
 
    proc cmdchkuts { } {
       global audace
-      global panneau
       global caption
+      global panneau
 
       if { $panneau(cmanim,drawposuts) == "1" } then {
          $audace(hCanvas) delete uts
@@ -693,8 +748,6 @@ namespace eval ::cmanim {
    proc cmdchkuts_1 { } {
       global audace
       global panneau
-      global caption
-      global color
 
       if { $panneau(cmanim,drawposuts) == "1" } then {
          $audace(hCanvas) delete uts
@@ -707,9 +760,9 @@ namespace eval ::cmanim {
    proc cmdDrawuts { } {
    #--- Draw the position of the UT's on the image
       global audace
-      global panneau
       global caption
       global color
+      global panneau
 
       if { $panneau(cmanim,position) == "2" } {
       #--- Positionnement pour l'option Paranal avec des images en binning 1x1
@@ -836,36 +889,6 @@ namespace eval ::cmanim {
       set panneau(cmanim,filename) [ lindex [ decomp $filename ] 1 ]
    }
 
-   proc Nom_gene { } {
-      global audace
-      global caption
-
-      if { [ winfo exists $audace(base).nom_gene ] } {
-         destroy $audace(base).nom_gene
-      }
-      toplevel $audace(base).nom_gene
-      wm transient $audace(base).nom_gene $audace(base)
-      wm title $audace(base).nom_gene "$caption(cmanimate,attention)"
-      set posx_nom_gene [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
-      set posy_nom_gene [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $audace(base).nom_gene +[ expr $posx_nom_gene + 170 ]+[ expr $posy_nom_gene + 102 ]
-      wm resizable $audace(base).nom_gene 0 0
-
-      #--- Cree l'affichage du message
-      label $audace(base).nom_gene.lab1 -text "$caption(cmanimate,message1)"
-      pack $audace(base).nom_gene.lab1 -padx 10 -pady 2
-      label $audace(base).nom_gene.lab2 -text "$caption(cmanimate,message2)"
-      pack $audace(base).nom_gene.lab2 -padx 10 -pady 2
-      label $audace(base).nom_gene.lab3 -text "$caption(cmanimate,message3)"
-      pack $audace(base).nom_gene.lab3 -padx 10 -pady 2
-
-      #--- La nouvelle fenetre est active
-      focus $audace(base).nom_gene
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).nom_gene
-   }
-
 #--- End of the procedures
 }
 
@@ -874,17 +897,11 @@ proc cmanimBuildIF { This } {
 #=== Panel graphism ===
 #======================
    global audace
-   global panneau
    global caption
    global color
+   global panneau
 
-   #--- Initialisation des variables du panneau
-   set panneau(cmanim,encours)  "0"
-   if { [ info exists panneau(cmanim,filename) ] == "0" } { set panneau(cmanim,filename) "" }
-   if { [ info exists panneau(cmanim,nbi) ] == "0" }      { set panneau(cmanim,nbi)      "3" }
-   if { [ info exists panneau(cmanim,ms) ] == "0" }       { set panneau(cmanim,ms)       "100" }
-   if { [ info exists panneau(cmanim,nbl) ] == "0" }      { set panneau(cmanim,nbl)      "2" }
-
+   #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
 
       #--- Title frame
@@ -907,11 +924,14 @@ proc cmanimBuildIF { This } {
          label  $This.fra2.lab1 -text "$panneau(cmanim,genericfilename)" -relief flat
          pack   $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 2
 
+         #--- Bouton parcourir
+         button $This.fra2.but1 -borderwidth 2 -text "$panneau(cmanim,parcourir)" \
+            -command { ::cmanim::edit_nom_image }
+         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -ipady 3 -side left
+
          #--- Entry for generic name
          entry  $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanim,filename) -relief groove
-         pack   $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 4
-         bind $This.fra2.ent1 <Enter> { ::cmanim::Nom_gene }
-         bind $This.fra2.ent1 <Leave> { destroy $audace(base).nom_gene }
+         pack   $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -side left
 
       pack $This.fra2 -side top -fill x
 
@@ -1070,7 +1090,6 @@ proc cmanimBuildIF { This } {
       pack $This.fra6 -side top -fill x
 
       #--- Binding pour afficher le nom generique des images et le positionnement des instruments
-      bind $This.fra2.ent1 <Key-Escape> { ::cmanim::edit_nom_image }
       catch {
          bind $This.frauts.lab.but2.labURL1 <ButtonPress-1> { ::cmanim::Position_Tel }
          bind $This.frauts.lab.but2.labURL2 <ButtonPress-1> { ::cmanim::Position_Tel }

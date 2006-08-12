@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.8 2006-07-07 20:43:56 robertdelmas Exp $
+# Mise a jour $Id: aud1.tcl,v 1.9 2006-08-12 21:23:21 robertdelmas Exp $
 #
 
 #
@@ -930,58 +930,78 @@ proc dir { { rgxp "*" } } {
 }
 
 proc animate { filename nb {millisecondes 200} {nbtours 10} } {
-   #--- filename : Nom generique des fichiers filename*.fit a animer
+   #--- filename : Nom generique des fichiers image filename*.fit a animer
    #--- nb : Nombre d'images (1 a nb)
-   #--- millisecondes : Timer entre chaque image affichee
+   #--- millisecondes : Temps entre chaque image affichee
    #--- nbtours : Nombre de boucles sur les nb images
    #
    global conf
    global audace
 
-   set len [string length $conf(rep_images)]
+   #--- Repertoire des images
+   set len [ string length $conf(rep_images) ]
    set folder "$conf(rep_images)"
-   if {$len>"0"} {
-      set car [string index "$conf(rep_images)" [expr $len-1]]
-      if {$car!="/"} {
+   if { $len > "0" } {
+      set car [ string index "$conf(rep_images)" [ expr $len-1 ] ]
+      if { $car != "/" } {
          append folder "/"
       }
    }
+
+   #--- Je sauvegarde le canvas
    set basecanvas $audace(base).can1.canvas
-   #--- Je sauvegarde le numero de l'image associe à la visu
+
+   #--- Je sauvegarde le numero de l'image associe a la visu
    set imageNo [visu$audace(visuNo) image]
-   #--- On va creer nb zones de visu a partir de 101
+
+   #--- Initialisation des visu
    set off 100
-   #--- Cree les visu et les Tk_photoimage
+
+   #--- Creation de nb visu a partir de la visu numero 101 (100 + 1) et des Tk_photoimage
    for {set k 1} {$k<=$nb} {incr k} {
       set kk [expr $k+$off]
-      #--- Cree l'image si elle n'existe pas et l'associe a la visu
+      #--- Creation de l'image et association a la visu
       visu$audace(visuNo) image $kk
-      buf$audace(bufNo) load "$folder$filename$k"
-      #--- Affiche l'image associee a la visu
+      #--- Affichage de l'image avec gestion des erreurs
+      set error [ catch { buf$audace(bufNo) load "$folder$filename$k" } msg ]
       ::audace::autovisu $audace(visuNo)
    }
+
    #--- Animation
-   for {set t 1} {$t<=$nbtours} {incr t} {
-      for {set k 1} {$k<=$nb} {incr k} {
-         set kk [expr $k+$off]
-         $basecanvas itemconfigure display -image image$kk
-         #--- Change l'image associee a la visu
-         visu$audace(visuNo) image $kk
-         update
-         after $millisecondes
+   if { $error == "0" } {
+      for {set t 1} {$t<=$nbtours} {incr t} {
+         for {set k 1} {$k<=$nb} {incr k} {
+            set kk [expr $k+$off]
+            $basecanvas itemconfigure display -image image$kk
+            #--- Chargement de l'image associee a la visu
+            visu$audace(visuNo) image $kk
+            update
+            after $millisecondes
+         }
       }
    }
-   #--- Detruit les Tk_photoimage
+
+   #--- Destruction des Tk_photoimage
    for {set k 1} {$k<=$nb} {incr k} {
       set kk [expr $k+$off]
       image delete image$kk
    }
-   #--- Reconfigure pour Aud'ACE normal
+
+   #--- Reconfiguration pour Aud'ACE normal
    $basecanvas itemconfigure display -image image$imageNo
    update
-   #--- Je restaure le numero de l'image associe a la visu
+
+   #--- Restauration du numero de l'image associe a la visu
    visu$audace(visuNo) image $imageNo
-   buf$audace(bufNo) load $folder${filename}1
-   ::audace::autovisu $audace(visuNo)
+
+   #--- Affichage de la premiere image de l'animation si elle existe
+   if { $error == "0" } {
+      buf$audace(bufNo) load "$folder${filename}1"
+      ::audace::autovisu $audace(visuNo)
+   }
+
+   #--- Variable error pour la gestion des erreurs
+   return $error
+
 }
 

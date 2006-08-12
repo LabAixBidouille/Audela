@@ -314,7 +314,7 @@ proc spc_hcrop { args } {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	   buf$audace(bufNo) window $windowcoords
 	   set nomfichierlg [ file rootname $fichier ]
-	   regexp {(.+)\-[0-9]+} $nomfichierlg match nomfichier
+	   regexp {(.+)\-?[0-9]+} $nomfichierlg match nomfichier
 	   buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_hcrop-$kk$conf(extension,defaut)"
 	   #::console::affiche_resultat "Image $kk traitée\n"
 	   incr kk

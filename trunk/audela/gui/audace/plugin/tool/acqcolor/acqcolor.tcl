@@ -2,15 +2,17 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.4 2006-06-20 20:35:58 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.5 2006-08-12 21:06:38 robertdelmas Exp $
 #
 
 proc testexit { } {
    global audace
 
    ::cam::delete 1000
-   ::visu::delete 1000
    ::buf::delete 1000
+   ::buf::delete 1001
+   ::visu::delete 1000
+   ::visu::delete 1001
    destroy $audace(base).test
 }
 
@@ -18,12 +20,12 @@ proc testexit { } {
 load librgb[info sharedlibextension]
 
 #--- Definition des variables globales (arrays) 
-global caption 
+global caption
 global audace
 global confcolor
 global conf
-global zone 
-global infos 
+global zone
+global infos
 
 #--- Definition des chemins
 set rep(color) [ file join $audace(rep_plugin) tool acqcolor ]
@@ -40,7 +42,6 @@ set zone(image2,naxis2) "0"
 #--- Initialisation des variables d'infos 
 set infos(MouseState) "rien" 
 set infos(box)        {1 1 1 1} 
-set infos(point)      {1 1} 
 set infos(type_image) ""
 set infos(dir)        ""
 catch {
@@ -75,8 +76,8 @@ if { $conf(color_nb_fenetre) == "0" } {
 # Ref: Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392
 # 
 proc color_Scrolled_Canvas { c args } {
-   frame $c 
-   eval {canvas $c.canvas \ 
+   frame $c
+   eval {canvas $c.canvas \
       -xscrollcommand [ list $c.xscroll set ] \
       -yscrollcommand [ list $c.yscroll set ] \
       -highlightthickness 0 \
@@ -90,14 +91,6 @@ proc color_Scrolled_Canvas { c args } {
    return $c.canvas
 }
 
-proc color_visu_scroll { bufnum } {
-   global zone 
-
-   set zone($bufnum,naxis1) [ lindex [ buf$bufnum getkwd NAXIS1 ] 1 ]
-   set zone($bufnum,naxis2) [ lindex [ buf$bufnum getkwd NAXIS2 ] 1 ]
-   $zone(image1) configure -scrollregion [ list 0 0 $zone($bufnum,naxis1) $zone($bufnum,naxis2) ]
-}
-
 #--- Raz de l'image et de l'en-tete FITS
 catch { buf1001 clear }
 
@@ -109,7 +102,7 @@ if { [ winfo exists $audace(base).test ] } {
    return
 }
 
-toplevel $audace(base).test -class Toplevel -relief groove -borderwidth 2
+toplevel $audace(base).test -class Toplevel -relief groove -borderwidth 0
 wm geometry $audace(base).test ${dimfenx}x${dimfeny}+0+0
 wm resizable $audace(base).test 1 1
 wm minsize $audace(base).test 600 400
@@ -190,7 +183,7 @@ pack $audace(base).test.frame1 \
 
    pack $audace(base).test.frame1.fra1 \
       -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x
- 
+
    #--- Cree un frame pour les demandes d'acquisition serie
    frame $audace(base).test.frame1.fra3 \
       -borderwidth 1 -cursor arrow
@@ -617,7 +610,7 @@ bind $zone(image1) <ButtonRelease-1> {
    }
 }
 
-#--- Copy vers la zone d'affichage numero 2
+#--- Copie vers la zone d'affichage numero 2
 bind $zone(image2) <ButtonPress-1> {
    bell
    testcopy1to2
@@ -682,7 +675,7 @@ bind $zone(image1) <Motion> {
    }
    if { $infos(type_image) == "noiretblanc" } {
       catch {
-         set intens [ buf1000 getpix [ list $xi $yi ] ]
+         set intens [ lindex [ buf1000 getpix [ list $xi $yi ] ] 1 ]
          set intens [ expr round($intens) ]
          set intens "$intens"
       }
@@ -1404,7 +1397,6 @@ proc testboxBegin { coord } {
 
    catch { unset infos(box) }
    set infos(box,1) [ testscreen2Canvas $coord ]
-   set infos(point) [ testcanvas2Picture $infos(box,1) ]
 }
 
 # 
@@ -1471,9 +1463,9 @@ proc testboxEnd { coord } {
 proc testscreen2Canvas { coord } {
    global zone
 
-   set x [ $zone(image1) canvasx [ lindex $coord 0 ] ]
-   set y [ $zone(image1) canvasy [ lindex $coord 1 ] ]
-   return [ list $x $y ]
+   scan [$zone(image1) canvasx [lindex $coord 0]] "%d" xx
+   scan [$zone(image1) canvasy [lindex $coord 1]] "%d" yy
+   return [ list $xx $yy ]
 }
 
 # 
@@ -1533,7 +1525,9 @@ proc testjpeg { } {
 }
 
 proc header_color { } {
-   global audace caption color
+   global audace
+   global caption
+   global color
 
    set i 0
    if [winfo exists $audace(base).header_color] {

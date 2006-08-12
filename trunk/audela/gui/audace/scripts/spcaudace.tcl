@@ -52,7 +52,8 @@ source [ file join $audace(rep_scripts) spcaudace spc_astrophys.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_numeric.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_echelle.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_metaf.tcl ]
-
+source [ file join $audace(rep_scripts) spcaudace spc_gui_boxes.tcl ]
+source [ file join $audace(rep_scripts) spcaudace spc_gui_runs.tcl ]
 #--------- Lancement ---------------#
 
 

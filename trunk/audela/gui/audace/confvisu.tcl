@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.30 2006-07-07 20:56:49 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.31 2006-08-12 21:24:26 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -208,7 +208,7 @@ namespace eval ::confVisu {
 
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
-      
+
    }
 
    #------------------------------------------------------------
@@ -233,7 +233,6 @@ namespace eval ::confVisu {
         wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
       }
 
-
       if { $force == "-novisu" } {
          return
       }
@@ -241,7 +240,7 @@ namespace eval ::confVisu {
       set bufNo [visu$visuNo buf]
       set private($visuNo,picture_w) [lindex [buf$bufNo getkwd NAXIS1] 1]
       if { "$private($visuNo,picture_w)" == "" } {
-         set private($visuNo,picture_w)  0
+         set private($visuNo,picture_w) 0
       }
       set private($visuNo,picture_h) [lindex [buf$bufNo getkwd NAXIS2] 1]
       if { "$private($visuNo,picture_h)" == "" } {
@@ -253,13 +252,13 @@ namespace eval ::confVisu {
       set zoom    $private($visuNo,zoom)
       set imageNo [visu$visuNo image]
 
-
       if { [ image type image$imageNo ] == "video" } {
          #--- Je mets la fenetre a l'echelle
          image$imageNo configure -scale "$zoom"
 
          #--- Je mets a jour la taille les scrollbars
          setScrollbarSize $visuNo
+
          #--- Je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
 
@@ -270,13 +269,12 @@ namespace eval ::confVisu {
 
          #--- je supprime le fenetrage si la fenetre déborde de l'image
          set windowBox [visu$visuNo window]
-      
+
          if { [lindex $windowBox 2] > $width 
             || [lindex $windowBox 3] > $height } {
             set private($visuNo,window) "0"
             setWindow $visuNo
-         } 
-      
+         }
 
          #--- Si le buffer contient une image on met a jour les seuils
          if { [ buf$bufNo imageready ] == "1" } {
@@ -312,7 +310,7 @@ namespace eval ::confVisu {
 
          #--- mise à jour des scrollbar
          setScrollbarSize $visuNo
-         
+
          #--- Je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
       }
@@ -500,7 +498,7 @@ namespace eval ::confVisu {
 
       visu$visuNo zoom $private($visuNo,zoom)
 
-      # rafraichissement de l'image avec le nouveau zoom
+      #--- rafraichissement de l'image avec le nouveau zoom
       ###if { [ buf[getBufNo $visuNo] imageready ] == "1" } {
          visu$visuNo clear
          visu$visuNo disp
@@ -877,7 +875,6 @@ namespace eval ::confVisu {
       trace remove variable "::confVisu::private($visuNo,lastFileName)" write $cmd
    }
 
-
    #------------------------------------------------------------
    #  stopTool
    #     arrete l'outil courant
@@ -1228,7 +1225,7 @@ namespace eval ::confVisu {
             }
          }
       }  else {
-         bind $private($visuNo,hCanvas) $sequence  "$command"
+         bind $private($visuNo,hCanvas) $sequence "$command"
       }
    }
 
@@ -1693,7 +1690,7 @@ namespace eval ::confVisu {
          set y2 [lindex $coord2 1]
          set private($visuNo,boxSize) [list $x1 $y1 $x2 $y2]
          if { $visuNo == 1 } {
-            set ::audace(box) $private($visuNo,boxSize)      
+            set ::audace(box) $private($visuNo,boxSize)
          }
       }
    }
@@ -1738,7 +1735,7 @@ namespace eval ::confVisu {
          set private($visuNo,boxSize) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
          if { $visuNo == 1 } {
-            set ::audace(box) $private($visuNo,boxSize)      
+            set ::audace(box) $private($visuNo,boxSize)
          }
       }
    }

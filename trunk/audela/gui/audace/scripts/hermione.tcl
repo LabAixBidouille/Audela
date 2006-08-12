@@ -1,7 +1,9 @@
 #
 # Fichier : hermione.tcl
-# Description : Observation d'une occultation en automatique, optimise pour une Audine Kaf-0400
-# Mise a jour $Id: hermione.tcl,v 1.3 2006-06-21 18:50:39 robertdelmas Exp $
+# Description : Observation d'une occultation en automatique
+# Camera : Script optimise pour une Audine Kaf-0400 pilotee par un port parallele
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: hermione.tcl,v 1.4 2006-08-12 21:00:43 robertdelmas Exp $
 #
 
 global audace
@@ -12,10 +14,11 @@ set buffer buf$audace(bufNo)
 
 #--- Inverser le "yes" et le "no" au moment de l'observation reelle de l'occultation
 #--- Simulation du script
-set simulation "yes"
+ set simulation "yes"
 #--- Observation reelle de l'occultation sur le ciel
 ### set simulation "no"
 
+#--- Initialisation du nom et de la date de debut de l'observation
 set astername  "hermione"
 set debut      "2004-02-16T22:28:00"
 
@@ -23,13 +26,14 @@ set debut      "2004-02-16T22:28:00"
 #--- A adapter en temps reel juste avant de lancer le script
 set firstpix "300"
 
+#--- Definition de la longueur du scan
 if { $simulation == "yes" } {
    set h "520"
 } else {
    set h "6000"
 }
 
-#--- Fenetre de 250 pixels de large
+#--- Fenetre de 250 pixels de large en binning 1x1
 set w   "250"
 set bin "1"
 
@@ -44,17 +48,20 @@ if { $simulation == "yes" } {
    set datejd [ mc_date2jd $debut ]
 }
 
+#--- Attente du debut de l'observation
 while { [ mc_date2jd [ ::audace::date_sys2ut now ] ] < $datejd } {
    after 1000
-   ::console::affiche_resultat "Attente [ mc_date2ymdhms [ ::audace::date_sys2ut now ] ] \n"
+   ::console::affiche_resultat "\n"
+   ::console::affiche_resultat "Attente du début de l'observation.\n"
+   ::console::affiche_resultat "Il est actuellement : [ mc_date2ymdhms [ ::audace::date_sys2ut now ] ] \n"
 }
 set name [ mc_date2ymdhms [ ::audace::date_sys2ut ] ]
 set name [ format "%04d%02d%02d%02d%02d" [lindex $name 0] [lindex $name 1] [lindex $name 2] [lindex $name 3] [lindex $name 4] ]
+
 ::console::affiche_resultat "\n"
 ::console::affiche_resultat "Scan en cours...\n"
-::console::affiche_resultat "\n"
 
-#--- Acquisition et gestion de l'obturateur
+#--- Acquisition du scan et gestion de l'obturateur
 catch { $camera shutter opened }
 $camera scan $w $h $bin $dt -firstpix $firstpix -fast $speed -tmpfile
 $buffer save "i0_$name"
