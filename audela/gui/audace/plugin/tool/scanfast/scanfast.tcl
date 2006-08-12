@@ -1,9 +1,9 @@
 #
 # Fichier : scanfast.tcl
 # Description : Outil pour l'acquisition en mode scan rapide
-# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.5 2006-07-22 23:22:52 denismarchais Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.6 2006-08-12 20:37:09 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -23,7 +23,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "$caption(scanfast,comment2) [ expr int($hautpix*$dt*3/1000.) ] $caption(scanfast,secondes)\n"
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment3)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin 1 -fast 0 -firstpix $firstpix -tmpfile -biny $bin
+   cam$audace(camNo) scan $largpix $hautpix $bin 0 -fast 0 -firstpix $firstpix -tmpfile -biny $bin
    set tmort [ expr 1000.*[ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ] ]
    ::console::affiche_resultat "   $caption(scanfast,comment4) = $tmort $caption(scanfast,ms/ligne)\n"
    set dt0 [ expr $dt-$tmort ]
@@ -70,7 +70,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "\n"
    }
    ::console::affiche_resultat "$caption(scanfast,comment10)\n"
-   ::console::affiche_resultat "cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin\n"
+   ::console::affiche_resultat "cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin \n"
    ::console::affiche_resultat "\n"
    return [ list $dt0 $speed ]
 }
@@ -189,15 +189,22 @@ namespace eval ::Scanfast {
       global caption
 
       if { [ ::cam::list ] != "" } {
+         #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
+         if { $panneau(Scanfast,col1) < "1" } {
+            set panneau(Scanfast,col1) "1"
+         }
+         #--- Gestion graphique du bouton GO CCD
          $This.fra4.but1 configure -relief groove -text $panneau(Scanfast,go1) -state disabled
          update
+         #--- Definition du binning
          set bin 4
          if { $panneau(Scanfast,binning) == "4x4" } { set bin 4 }
          if { $panneau(Scanfast,binning) == "2x2" } { set bin 2 }
          if { $panneau(Scanfast,binning) == "1x1" } { set bin 1 }
+         #--- Definition des parametres du scan (w : largeur - h : hauteur - f : firstpix)
          set w [ ::Scanfast::int [ expr $panneau(Scanfast,col2) - $panneau(Scanfast,col1) + 1 ] ]
          set h [ ::Scanfast::int $panneau(Scanfast,lig1) ]
-         set o [ ::Scanfast::int $panneau(Scanfast,col1) ]
+         set f [ ::Scanfast::int $panneau(Scanfast,col1) ]
          set temps_mort 10 ; #--- Estimation du temps mort a 10 ms par ligne
          set duree [ expr ($panneau(Scanfast,dt)+$temps_mort)*$h/1000./86400. ]
          #--- Gestion du moteur d'A.D.
@@ -219,7 +226,7 @@ namespace eval ::Scanfast {
                while { $conf(tempo_scan,delai) > "0" } {
                   ::camera::Avancement_scan "-10" $panneau(Scanfast,lig1)
                   update
-                  after 1000	
+                  after 1000
                   incr conf(tempo_scan,delai) "-1"
                }
             }
@@ -250,7 +257,7 @@ namespace eval ::Scanfast {
          wm title $audace(base).wintimeaudace "$caption(scanfast,scanfast)"
          set posx_wintimeaudace [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
          set posy_wintimeaudace [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-         wm geometry $audace(base).wintimeaudace +[ expr $posx_wintimeaudace  + 350 ]+[ expr $posy_wintimeaudace  + 75 ]
+         wm geometry $audace(base).wintimeaudace +[ expr $posx_wintimeaudace + 350 ]+[ expr $posy_wintimeaudace + 75 ]
          label $audace(base).wintimeaudace.lab_beg -text "\n$caption(scanfast,debut) $date_beg1"
          pack $audace(base).wintimeaudace.lab_beg -padx 10 -pady 5
          label $audace(base).wintimeaudace.lab_end -text "$caption(scanfast,fin) $date_end1\n"
@@ -261,11 +268,7 @@ namespace eval ::Scanfast {
          update
          focus $audace(base).wintimeaudace
          #--- Acquisition
-         if { $o == "0" } {
-            cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
-         } else {
-            cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $o -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
-         }
+         cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $f -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
          catch { cam$audace(camNo) shutter synchro }
          #--- Graphisme du panneau
          $This.fra4.but1 configure -relief groove -text $panneau(Scanfast,go2) -state disabled
@@ -299,14 +302,19 @@ namespace eval ::Scanfast {
       if { [ ::cam::list ] != "" } {
          $This.fra33.but1 configure -relief groove -state disabled
          update
+         #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
+         if { $panneau(Scanfast,col1) < "1" } {
+            set panneau(Scanfast,col1) "1"
+         }
+         #---
          set bin 4
          if { $panneau(Scanfast,binning) == "4x4" } { set bin 4 }
          if { $panneau(Scanfast,binning) == "2x2" } { set bin 2 }
          if { $panneau(Scanfast,binning) == "1x1" } { set bin 1 }
-         set w [ ::Scanfast::int [ expr $panneau(Scanfast,col2) - $panneau(Scanfast,col1) + 1 ] ]
+         set w [ ::Scanfast::int [ expr ( $panneau(Scanfast,col2) - $panneau(Scanfast,col1) + 1 ) / $bin ] ]
          set h [ ::Scanfast::int $panneau(Scanfast,lig1) ]
-         set o [ ::Scanfast::int $panneau(Scanfast,col1) ]
-         set results [ prescanfast $w $h $panneau(Scanfast,interlig1) $o $bin ]
+         set f [ ::Scanfast::int [ expr $panneau(Scanfast,col1) / $bin ] ]
+         set results [ prescanfast $w $h $panneau(Scanfast,interlig1) $f $bin ]
          set panneau(Scanfast,dt) [ lindex $results 0 ]
          set panneau(Scanfast,speed) [ lindex $results 1 ]
          $This.fra33.fra1.ent1 configure -textvariable panneau(Scanfast,dt)
