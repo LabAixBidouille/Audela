@@ -503,6 +503,7 @@ int open_quicka(void)
     }
 #endif
 #if defined(OS_LIN)
+printf("QUICKA_NAME=%s\n",QUICKA_NAME);
     quicka = dlopen(QUICKA_NAME, RTLD_LAZY);
     if (quicka != NULL) {
 	USB_LOADLIB = dlsym(quicka, USB_LOADLIBQ);

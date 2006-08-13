@@ -4,12 +4,12 @@ build:
 
 install:
 	cp -f include/linux/*.h ../include
-	cp -f bin/libftd2xx.so.0.4.8    ../../bin
+	cp -f bin/libftd2xx.so.0.4.8    ../../../bin/libftd2xx.so.0
 
 clean:
 	rm -f ../include/ftd2xx.h
 	rm -f ../include/WinTypes.h
-	rm -f ../..bin/libftd2xx.so.0.4.8 
+	rm -f ../../../bin/libftd2xx.so.0.4.8 
 
 distclean: clean
 	rm -f *~ *.bak
