@@ -180,39 +180,38 @@ r = usb_closelib()
 /* Start of the QUICKA.DLL code...    */
 /* Compiler: VisualC++ 6.0            */
 /*====================================*/
-#include <windows.h>  
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef _WINDOWS
+#include <windows.h>  
 typedef DWORD FT_HANDLE;
-typedef DWORD FT_STATUS;
+typedef ULONG FT_STATUS;
 
-static FT_HANDLE UsbHandle;
 static HMODULE g_usb_module;
 
+#define QUICKA_EXPORT _declspec(dllexport)
+#define QUICKA_API _stdcall
+
+#endif
+
+#ifdef __linux__
+#include <ftd2xx.h>
+#include <unistd.h>
+#define QUICKA_EXPORT
+#define QUICKA_API
+#endif
+
+static FT_HANDLE UsbHandle;
+
+#ifdef _WINDOWS
 typedef FT_STATUS (WINAPI *PtrToOpen)(PVOID, FT_HANDLE *); 
+#endif
+#ifdef __linux__
+typedef FT_STATUS (WINAPI *PtrToOpen)(INT, FT_HANDLE *); 
+#endif
 static PtrToOpen g_usb_Open; 
 int UsbOpen(PVOID);
-
-typedef FT_STATUS (WINAPI *PtrToOpenEx)(PVOID, DWORD, FT_HANDLE *); 
-static PtrToOpenEx g_usb_OpenEx; 
-int UsbOpenEx(PVOID, DWORD);
-
-typedef FT_STATUS (WINAPI *PtrToListDevices)(PVOID, PVOID, DWORD);
-static PtrToListDevices g_usb_ListDevices; 
-int UsbListDevices(PVOID, PVOID, DWORD);
-
-typedef FT_STATUS (WINAPI *PtrToClose)(FT_HANDLE);
-static PtrToClose g_usb_Close;
-int UsbClose();
-
-typedef FT_STATUS (WINAPI *PtrToRead)(FT_HANDLE, LPVOID, DWORD, LPDWORD);
-static PtrToRead g_usb_Read;
-int UsbRead(LPVOID, DWORD, LPDWORD);
-
-typedef FT_STATUS (WINAPI *PtrToWrite)(FT_HANDLE, LPVOID, DWORD, LPDWORD);
-extern PtrToWrite g_usb_Write;
-int UsbWrite(LPVOID, DWORD, LPDWORD);
 
 typedef FT_STATUS (WINAPI *PtrToOpenEx)(PVOID, DWORD, FT_HANDLE *); 
 static PtrToOpenEx g_usb_OpenEx; 
@@ -254,8 +253,9 @@ int UsbGetQueueStatus(LPDWORD);
 /****************** USB_LOADLIB ******************/
 /* Load the FTDI USB library                     */
 /*************************************************/
-_declspec(dllexport) short _stdcall usb_loadlib(void)
+QUICKA_EXPORT short QUICKA_API usb_loadlib(void)
 {
+#ifdef _WINDOWS
 g_usb_module=LoadLibrary("Ftd2xx.dll");	
 if (g_usb_module == NULL)
   {
@@ -332,25 +332,39 @@ if (g_usb_GetQueueStatus == NULL)
 	// Error: Can't Find FT_GetQueueStatus
 	return 11;
    }
-
+#endif
+#ifdef __linux__
+g_usb_Write = FT_Write;
+g_usb_Read = FT_Read;
+g_usb_Open = FT_Open;
+g_usb_OpenEx = FT_OpenEx;
+g_usb_ListDevices = FT_ListDevices;
+g_usb_Close = FT_Close;
+g_usb_ResetDevice = FT_ResetDevice;
+g_usb_Purge = FT_Purge;
+g_usb_SetTimeouts = FT_SetTimeouts;
+g_usb_GetQueueStatus = FT_GetQueueStatus;
+#endif
 return 0;
 }
 
 /************ USB_CLOSELIB ***************/
 /* Download the FTDI                     */
 /*****************************************/
-_declspec(dllexport) short _stdcall usb_closelib(void)
+QUICKA_EXPORT short QUICKA_API usb_closelib(void)
 {
+#ifdef _WINDOWS
 FreeLibrary(g_usb_module);
+#endif
 return 0;
 }
 
 /************* USB_INIT ***********/
 /* Initiate USB interface         */
 /**********************************/
-_declspec(dllexport) short _stdcall usb_init(void)
+QUICKA_EXPORT short QUICKA_API usb_init(void)
 {
-if (UsbOpen(0)!=0)
+if (UsbOpen(7)!=0)
    {
    // Error: USB interface not ready
    return 12;
@@ -363,7 +377,7 @@ return 0;
 /************ USB_END *************/
 /* Initiate USB interface         */
 /**********************************/
-_declspec(dllexport) short _stdcall usb_end(void)
+QUICKA_EXPORT short QUICKA_API usb_end(void)
 {
 if (UsbClose()!=0)
    {
@@ -376,7 +390,7 @@ return 0;
 /********** USB_WRITE *************/
 /* Write onto USB interface       */
 /**********************************/
-_declspec(dllexport) short _stdcall usb_write(short v)
+QUICKA_EXPORT short QUICKA_API usb_write(short v)
 {
 unsigned char tx[2];
 unsigned long Nb_RxOctets;
@@ -405,7 +419,7 @@ return 0;
 /* Note: overscan mode -> negative value for x1                   */
 /*                     -> y2>nx                                   */
 /******************************************************************/
-_declspec(dllexport) short _stdcall usb_start(short KAF,short x1,short y1,short x2,short y2,
+QUICKA_EXPORT short QUICKA_API usb_start(short KAF,short x1,short y1,short x2,short y2,
                                               short bin_x,short bin_y,short shutter,
                                               short shutter_mode,short ampli_mode,
                                               short acq_mode,short d1,short d2,short speed,
@@ -418,7 +432,7 @@ short Y1_H_1,Y1_L_2,Y1_L_1;
 short Y2_H_1,Y2_L_2,Y2_L_1;
 unsigned char tx[2],rx[2];
 unsigned long Nb_RxOctets;
-short nx;
+short nx=0;
 
 if (KAF==4) 
    {
@@ -594,7 +608,12 @@ UsbGetQueueStatus(&Nb_RxOctets);
 while (Nb_RxOctets==0) 
    {
    UsbGetQueueStatus(&Nb_RxOctets);
+#ifdef _WINDOWS
    Sleep(10); // TimeOut
+#endif
+#ifdef __linux__
+   usleep(10000);
+#endif
    k++;
    if (k==2000) /* 200 changed by 2000 by A. Klotz on Jul. 2003 18th (k=308) */ 
       {
@@ -619,7 +638,7 @@ return 0;
 /* (imax, jmax) : image format            */
 /* p : pointer to the image               */
 /******************************************/
-_declspec(dllexport) short _stdcall usb_readaudine(short imax,short jmax,short *p)
+QUICKA_EXPORT short QUICKA_API usb_readaudine(short imax,short jmax,short *p)
 {
 int j=0;
 int k=0;
@@ -731,7 +750,12 @@ return (*g_usb_Write)(UsbHandle,lpvBuffer,dwBuffSize,lpdwBytes);
 //********************************************************************
 int UsbOpen(PVOID pvDevice)
 {
+#ifdef _WINDOWS
 return (*g_usb_Open)(pvDevice,&UsbHandle);
+#endif
+#ifdef __linux__
+return (*g_usb_Open)((int)pvDevice,&UsbHandle);
+#endif
 }	
 
 //********************************************************************
@@ -774,4 +798,4 @@ return (*g_usb_SetTimeouts)(UsbHandle,dwReadTimeout,dwWriteTimeout);
 int UsbGetQueueStatus(LPDWORD lpdwAmountInRxQueue)
 {
 return (*g_usb_GetQueueStatus)(UsbHandle,lpdwAmountInRxQueue);
-}	
+}
