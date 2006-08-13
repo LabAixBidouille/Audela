@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.3 2006-06-20 21:29:00 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.4 2006-08-13 21:47:19 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -502,6 +502,12 @@ pack $audace(base).snacq.frame2.but_exit \
    -in $audace(base).snacq.frame2 -side left -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+button $audace(base).snacq.frame2.but_help \
+   -text $caption(snacq,help) -borderwidth 2 \
+   -command { ::audace::showHelpPlugin tool supernovae supernovae_go.htm sn_acq }
+pack $audace(base).snacq.frame2.but_help \
+   -in $audace(base).snacq.frame2 -side right -anchor e \
+   -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_gobias \
    -text $caption(snacq,gobias) -borderwidth 2 \
    -command { makebias }
@@ -514,7 +520,6 @@ button $audace(base).snacq.frame2.but_godark \
 pack $audace(base).snacq.frame2.but_godark \
    -in $audace(base).snacq.frame2 -side right -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
 #--- Create a vertical scrollbar for the status listbox
 #--- Cree un acsenseur vertical pour la console de retour d'etats
 frame $audace(base).snacq.frame3
