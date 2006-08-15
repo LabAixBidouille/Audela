@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.6 2006-06-20 17:28:21 robertdelmas Exp $
+# Mise a jour $Id: divers.tcl,v 1.7 2006-08-15 21:34:44 alainklotz Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
@@ -16,7 +16,6 @@ proc charge {args} {
 #--- Debut Modif Robert
   global audace caption conf
 #--- Fin Modif Robert
-
     if {[syntaxe_args $args 0 1 [list [list "-novisu" "-dovisu"] [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
     # Configuration des options
@@ -81,7 +80,7 @@ proc charge {args} {
       set fenetre "$audace(base)"
       #--- Ouvre la boite de choix des images
       set nom_complet [ ::tkutil::box_load $fenetre $rep $audace(bufNo) "1" ]
-    # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de 
+    # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de
     # répertoire et d'extension pour former le nom complet.
     } else {
       # Nom relatif ou absolu...
@@ -103,7 +102,7 @@ proc charge {args} {
 
     if {[string compare $nom_complet ""] != 0 } {
 
-      # Si le fichier est compressé par bzip2, on le copie dans le répertoire 
+      # Si le fichier est compressé par bzip2, on le copie dans le répertoire
       # temporaire pour le décompresser
 
       if {[file extension $nom_complet] == ".bz2"} {
@@ -141,14 +140,14 @@ proc charge {args} {
 
       } else {
 
-        # On vérifie que le nom de fichier est valide, ie ne comporte 
-        # pas d'accents, sinon la librairie fitsio sera incapable de 
+        # On vérifie que le nom de fichier est valide, ie ne comporte
+        # pas d'accents, sinon la librairie fitsio sera incapable de
         # de le charger.
 
         if {[nom_valide $nom_complet]==1} {
 
           if {[string compare $buf $audace(bufNo)] == 0} {
-             loadima "$nom_complet" $novisu
+             loadima "$nom_complet" $audace(visuNo) $novisu
           } else {
              buf$buf load "$nom_complet"
             }
@@ -160,7 +159,7 @@ proc charge {args} {
 #--- Fin Modif Robert
           "Linux" {
             # Sous Linux, on copie le fichier dans /tmp/.audela
-            # en supprimant les caractères accentués et on essaie 
+            # en supprimant les caractères accentués et on essaie
             # de le recharger à partir de là.
             set fichier_tmp [cree_fichier -nom_base [suppr_accents [file tail $fichier]] -rep "/tmp/.audela"]
             file delete $fichier_tmp
@@ -180,7 +179,7 @@ proc charge {args} {
             }
           default {
             # Sous les autres systèmes d'exploitation (dont Windows)
-            # faute d'un dossier temporaire bien défini, on signale 
+            # faute d'un dossier temporaire bien défini, on signale
             # le problème sans y remédier.
             console::affiche_resultat "${caption(divers,nom_invalide)}\n $nom_complet\n"
             }
@@ -253,7 +252,7 @@ proc sauve {args} {
       #--- Ouvre la boite de choix des images
       set nom_complet [ ::tkutil::box_save $fenetre $rep $audace(bufNo) "1" ]
 
-    # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de 
+    # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de
     # répertoire et d'extension pour former le nom complet.
     } else {
       # Nom relatif ou absolu...
@@ -286,8 +285,8 @@ proc sauve {args} {
 
             buf::delete $dern_num_buf
 
-            # Second cas : on veut enregistrer sur un plan couleur 
-            # déjà existant, por éviter un bug on doit charger tous les plans couleurs, 
+            # Second cas : on veut enregistrer sur un plan couleur
+            # déjà existant, por éviter un bug on doit charger tous les plans couleurs,
             # effacer le fichier existant et tout réenregistrer dans l'ordre.
 
             # Chargement des plans couleurs dans des buffers temporaires
@@ -307,7 +306,7 @@ proc sauve {args} {
 
             # Effacement du fichier
             file delete $nom_complet
-            # Enregistrement des plans couleurs successifs et libération des 
+            # Enregistrement des plans couleurs successifs et libération des
             # tampons images correspondant
 
             # On fait le premier plan à part...
@@ -391,7 +390,7 @@ proc sauve_jpeg {args} {
     if {[string compare $nom_complet ""] != 0 } {
       if { [ buf$audace(bufNo) imageready ] == "1" } {
 
-        # Deux cas sont possibles : 
+        # Deux cas sont possibles :
         # - si la palette est monochrome, on enregistre en jpeg N&B.
         # - si la palette est polychrome, on enregistre en jpeg couleurs
 
@@ -412,7 +411,7 @@ proc sauve_jpeg {args} {
 
           # Création du buffer temporaire
           set num_buf_tmp [buf::create]
-          buf$audace(bufNo) copyto $num_buf_tmp 
+          buf$audace(bufNo) copyto $num_buf_tmp
 
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
 
@@ -456,7 +455,7 @@ proc sauve_jpeg {args} {
           # plan B
           buf$audace(bufNo) copyto $num_buf_tmp
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_B}
-          sauve plan_B -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)	
+          sauve plan_B -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)
 
           # Suppression du buffer temporaire
           buf::delete $num_buf_tmp
@@ -528,7 +527,7 @@ proc soustrait {args} {
 
     # Procédure principale
     buf$buf sub [file join "$rep" "$fichier_aux$ext;$aux_polyNo"] 0
-    
+
     # Si le buffer de travail est le buffer Aud'ACE, on refraîchit l'affichage
     if {$audace(bufNo) == $buf} {
 #--- Debut modif Robert
@@ -594,10 +593,10 @@ proc normalise {args} {
     set num_buf_tmp [buf::create]
     # On charge l'image auxiliaire pour déterminer la moyenne de son fond de ciel
     charge $fichier_aux -buf $num_buf_tmp -rep "$rep" -ext $ext -polyNo $aux_polyNo
-    set moy [lindex [buf$num_buf_tmp stat] 6]    
+    set moy [lindex [buf$num_buf_tmp stat] 6]
     # Suppression du buffer temporaire
     buf::delete $num_buf_tmp
- 
+
     # Normalisation
     buf$buf div [file join "$rep" "$fichier_aux$ext;$aux_polyNo"] $moy
 
@@ -625,7 +624,7 @@ proc suppr_serie {args} {
 #--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
-    
+
     # Configuration des paramètres obligatoires
     set nom_generique [lindex $args 0]
 
@@ -650,8 +649,8 @@ proc suppr_serie {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
-    # Procédure principale  
+
+    # Procédure principale
     set index_corbeille [liste_index $nom_generique -rep "$rep" -ext $ext]
     foreach index $index_corbeille {file delete [file join "$rep" $nom_generique$index$ext]}
   } else {
@@ -693,7 +692,7 @@ proc suppr_fin_serie {args} {
       set ext $conf(extension,defaut).gz
       }
 
-    # Procédure principale  
+    # Procédure principale
     set index_cibles [lsort -integer [liste_index $nom_generique -rep "$rep" -ext $ext]]
     set index_fin [lsearch -regexp -exact $index_cibles $index_fin]
     if {$index_fin>=0} {
@@ -717,7 +716,7 @@ proc suppr_debut_serie {args} {
 
     # Configuration des paramètres obligatoires
     set nom_generique [lindex $args 0]
-    set index_debut [lindex $args 1]    
+    set index_debut [lindex $args 1]
 
     # Configuration des options
     set options [lrange $args 2 [expr [llength $args]-1]]
@@ -741,7 +740,7 @@ proc suppr_debut_serie {args} {
       set ext $conf(extension,defaut).gz
       }
 
-    # Procédure principale  
+    # Procédure principale
     set index_cibles [lsort -integer [liste_index $nom_generique -rep "$rep" -ext $ext]]
     set index_debut [lsearch -exact $index_cibles $index_debut]
     if {$index_debut>=0} {
@@ -786,8 +785,8 @@ proc renumerote {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
-    # Procédure principale  
+
+    # Procédure principale
     set index_serie [lsort [liste_index $nom_generique -rep "$rep" -ext $ext]]
     # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
     if [catch [set index_serie [lsort -integer $index_serie]]] {}
@@ -868,7 +867,7 @@ proc renomme {args} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
       }
 
-    # Procédure principale  
+    # Procédure principale
     # On ne continue que si l'on n'écrase pas la série...
     if {[string compare $in_rep$ancien_nom_generique$in_ext $ex_rep$nouveau_nom_generique$ex_ext] != 0} {
 
@@ -932,7 +931,7 @@ proc renomme {args} {
 
         # On réindexe la série cible :
         renumerote $nouveau_nom_generique -rep $ex_rep -ext $ex_ext
-        
+
         # On détermine à quel index on continue la copie
         set index [expr [llength $index_newserie]+1]
 
@@ -1028,10 +1027,10 @@ proc copie {args} {
       }
     if {$ex_ext_index>=0} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
-      } 
+      }
 
 
-    # Procédure principale  
+    # Procédure principale
     # On ne continue que si l'on n'écrase pas la série...
     if {[string compare $in_rep$ancien_nom_generique$in_ext $ex_rep$nouveau_nom_generique$ex_ext] != 0} {
 
@@ -1095,7 +1094,7 @@ proc copie {args} {
 
         # On réindexe la série cible :
         renumerote $nouveau_nom_generique -rep $ex_rep -ext $ex_ext
-        
+
         # On détermine à quel index on continue la copie
         set index [expr [llength $index_newserie]+1]
 
@@ -1188,7 +1187,7 @@ proc copie_partielle {args} {
       }
     if {$ex_ext_index>=0} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
-      } 
+      }
 
     # Procédure principale
     # On ne continue que si le vieux nom générique et le nouveau sont différents
@@ -1206,10 +1205,10 @@ proc copie_partielle {args} {
       foreach index $index_oldserie {
         file copy [file join $in_rep $ancien_nom_generique$index$in_ext] [file join $rep_tmp $ancien_nom_generique$index$in_ext]
         }
-      
+
       # On copie la sous-série
       renomme $ancien_nom_generique $nouveau_nom_generique -in_rep $rep_tmp -ex_rep $ex_rep -in_ext $in_ext -ex_ext $ex_ext
-     
+
       # Suppression du répertoire temporaire (qui est vide car on vient d'en déplacer les fichiers qui y étaient temporairement).
       file delete [file join $rep_tmp]
 
@@ -1226,7 +1225,7 @@ proc serie_charge {args} {
 #--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
-    
+
     # Configuration des paramètres obligatoires
     set nom_generique [lindex $args 0]
 
@@ -1251,8 +1250,8 @@ proc serie_charge {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
-    # Procédure principale  
+
+    # Procédure principale
     set index_serie [liste_index $nom_generique -rep "$rep" -ext $ext]
     set index_buffers ""
     foreach index $index_serie {
@@ -1325,7 +1324,7 @@ proc serie_fenetre {args} {
       }
     if {$ex_ext_index>=0} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
-      } 
+      }
     if {$polyNo_index>=0} {
       set in_polyNo [lindex [lindex $options_1param $polyNo_index] 1]
       set ex_polyNo [lindex [lindex $options_1param $polyNo_index] 1]
@@ -1418,7 +1417,7 @@ proc souris_fenetre {args} {
       }
     if {$ex_ext_index>=0} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
-      } 
+      }
     if {$polyNo_index>=0} {
       set in_polyNo [lindex [lindex $options_1param $polyNo_index] 1]
       set ex_polyNo [lindex [lindex $options_1param $polyNo_index] 1]
@@ -1501,7 +1500,7 @@ proc serie_rot {args} {
       }
     if {$ex_ext_index>=0} {
       set ex_ext [lindex [lindex $options_1param $ex_ext_index] 1]
-      } 
+      }
     if {$polyNo_index>=0} {
       set in_polyNo [lindex [lindex $options_1param $polyNo_index] 1]
       set ex_polyNo [lindex [lindex $options_1param $polyNo_index] 1]
@@ -1517,7 +1516,7 @@ proc serie_rot {args} {
       }
 
     # Procédure principale
-    # On récupère la liste des index de la série initiale...	  
+    # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
 
     # Création du buffer temporaire
@@ -1613,7 +1612,7 @@ proc serie_trans {args} {
       }
 
     # Procédure principale
-    # On récupère la liste des index de la série initiale...	  
+    # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
 
     # Création du buffer temporaire
@@ -1695,7 +1694,7 @@ proc series_traligne {args} {
     # Tex au plus on la renumérote.
     renumerote $ex -rep $ex_rep -ext $ext
 
-    # On garde en mémoire le nom du dernier fichier de cette série, qui servira de 
+    # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
     # référence pour recaler la série suivante
     set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
     set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
@@ -1709,7 +1708,7 @@ proc series_traligne {args} {
 
     foreach serie $series_amodif {
 
-      # On détermine le cadre de référence ;       
+      # On détermine le cadre de référence ;
       console::affiche_resultat "$caption(divers,series_trreg_cadre-ref) $serie\n"
       loadima "$fichier_ref"
 
@@ -1720,7 +1719,7 @@ proc series_traligne {args} {
       pack .series_traligne.lab -expand true
       button .series_traligne.but -command {set script(series_traligne,attente) 0} -text "ok"
       pack .series_traligne.but -expand true
-    
+
       # On attend que l'utilisateur ait validé
       vwait script(series_traligne,attente)
 
@@ -1757,13 +1756,13 @@ proc series_traligne {args} {
       # Rotation
       console::affiche_resultat "$caption(divers,series_trreg_rot) $serie\n"
       serie_rot tmp_trans_$serie tmp_rot_$serie [lindex $modifs 2] [lindex $modifs 3] [lindex $modifs 4] -rep $rep_tmp -ext $ext
-      # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire, 
+      # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire,
       # l'auto-écrasement bugge)
       suppr_serie tmp_trans_$serie -rep $rep_tmp -ext $ext
       # On renomme vers la série de destination
       renomme tmp_rot_$serie $ex -in_rep $rep_tmp -ex_rep $ex_rep -ext $ext
 
-      # On garde en mémoire le nom du dernier fichier de cette série, qui servira de 
+      # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
       # référence pour recaler la série suivante
       set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
       set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
@@ -1871,7 +1870,7 @@ proc serie_sauvejpeg {args} {
       }
 
     # Procédure principale
-    # On récupère la liste des index de la série initiale...	  
+    # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
 
     # Création du buffer temporaire
@@ -1901,7 +1900,7 @@ proc serie_sauvejpeg {args} {
         set seuil_haut [lindex $list_seuils 0]
         set seuil_bas [lindex $list_seuils 1]
         }
-      
+
       buf$num_buf_tmp savejpeg [file join $ex_rep $ex_name$index$ex_ext] $qualitejpeg $seuil_bas $seuil_haut
       }
 
@@ -2116,7 +2115,7 @@ proc serie_soustrait {args} {
     # On enregistre sur le disque l'image à soustraire
     sauve soustrait -buf $buf -rep "$rep_tmp" -ext [lindex [decomp $ex_ext] 3]
 
-    # On récupère la liste des index de la série initiale...	  
+    # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
@@ -2235,7 +2234,7 @@ proc serie_normalise {args} {
     # On enregistre sur le disque l'image à soustrairepar laquelle normaliser
     sauve normalise -buf $buf -rep "$rep_tmp" -ext [lindex [decomp $ex_ext] 3]
 
-    # On récupère la liste des index de la série initiale...	  
+    # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
@@ -2342,7 +2341,7 @@ proc normalise_gain {args} {
       return
       }
 
-    # On récupère la liste des index de la série initiale...	  
+    # On récupère la liste des index de la série initiale...
     set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
@@ -2747,7 +2746,7 @@ proc decomp {args} {
       set filename [file rootname $filename]
       # On enregistre l'extension
       set extension [file extension $filename]
-      } 
+      }
     ".bz2" {
       # Cas où le fichier est compressé
       set gz ".bz2"
@@ -2755,7 +2754,7 @@ proc decomp {args} {
       set filename [file rootname $filename]
       # On enregistre l'extension
       set extension [file extension $filename]
-      } 
+      }
     default {
       # Cas où le fichier n'est pas compressé
       set gz ""
@@ -2812,19 +2811,19 @@ proc liste_index {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
-    # Procédure principale  
+
+    # Procédure principale
 
     # NB : On renvoie les index des fichiers dont le nom générique correspond à {nom_generique}
     # Sous-entendu : on s'occupe d'une série indexée...
     # On fait une première sélection
     set panier [glob -nocomplain [file join "$rep" $nom_generique*$ext]]
     # Attention ! Dans la liste référencée "panier" on a trop de fichiers ! En effet on a en plus :
-    # 1) Un éventuel fichier nom_generique$ext (non indexé) 
+    # 1) Un éventuel fichier nom_generique$ext (non indexé)
     # 2) Les fichiers dont le nom générique commence pareil mais est plus long
     # 3) Et même : des fichiers dont le nom générique commence pareil mais comprend des majuscules !!!!!!!!!!!!
 
-    # On solutionne le point n°1 :  
+    # On solutionne le point n°1 :
     # Pour que la fonction lsearch ne se mélange pas les crayons entre les extensions .FIT et .fit (par exemple)
     # on créée une nouvelle liste où les noms de fichiers sont tronqués de l'extension
 
@@ -2837,7 +2836,7 @@ proc liste_index {args} {
       set panier [concat [lrange $panier 0 [expr $no_index-1]] [lrange $panier [expr $no_index+1] [expr [llength $panier]-1]]]
       }
 
-    # Pour éviter des problèmes dans les cas où le nom générique se termine par un chiffre, on rajoute dans ce cas 
+    # Pour éviter des problèmes dans les cas où le nom générique se termine par un chiffre, on rajoute dans ce cas
     # un "_" dans tous les noms de fichiers
     if {[dernier_est_chiffre $nom_generique]=="1"} {
       set new_panier ""
@@ -2896,13 +2895,13 @@ proc liste_series {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
-    # Procédure principale  
- 
+
+    # Procédure principale
+
     # On récupère la liste des fichiers du répertoire courant
     set panier [glob -nocomplain [file join "$rep" *$ext]]
 
-    # On parcours cette liste en enregistrant chaque nouvelle série 
+    # On parcours cette liste en enregistrant chaque nouvelle série
     set liste_series ""
 
     foreach fichier $panier {
@@ -2940,13 +2939,13 @@ proc liste_sousreps {args} {
     } else {
       set rep $audace(rep_images)
       }
-       
-    # Procédure principale  
+
+    # Procédure principale
 
     # On récupère la liste des fichiers du répertoire courant
     set panier [glob -nocomplain [file join "$rep" *]]
 
-    # On parcours cette liste en enregistrant chaque nouvelle série 
+    # On parcours cette liste en enregistrant chaque nouvelle série
     set liste_repertoires ""
 
     foreach entree $panier {
@@ -2994,21 +2993,21 @@ proc serie_existe {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
-    # Procédure principale  
+
+    # Procédure principale
     if {[liste_index $nom_generique -rep "$rep" -ext $ext] == ""} {
       console::affiche_resultat "$caption(divers,erreur,serie_existe) [file join $rep $nom_generique*$ext]\n"
       return "0"
     } else {
       return "1"
-      }  
+      }
   } else {
     error $caption(divers,syntax,serie_existe)
     }
   }
 
 
-proc numerotation_usuelle {args} { 
+proc numerotation_usuelle {args} {
 #--- Debut Modif Robert
   global audace caption conf
 #--- Fin Modif Robert
@@ -3042,16 +3041,16 @@ proc numerotation_usuelle {args} {
       set ext $conf(extension,defaut).gz
       }
 
-    # Procédure principale  
+    # Procédure principale
     # On récupère les index
     set liste [liste_index $nom_generique -rep "$rep" -ext $ext]
     # On essaie de les ranger par ordre croissant
     catch [set liste [lsort -integer $liste]] {}
-    
+
     set k 1
     foreach index $liste {
       if {$k!=$index} {
-        return 0        
+        return 0
         break
         }
       incr k
@@ -3063,7 +3062,7 @@ proc numerotation_usuelle {args} {
   }
 
 
-proc compare_index_series {args} { 
+proc compare_index_series {args} {
 #--- Debut Modif Robert
   global audace caption conf
 #--- Fin Modif Robert
@@ -3164,10 +3163,10 @@ proc cree_sousrep {args} {
     # Procédure principale
     set subdir [file join "$rep" $nom_base]
     set k 0
-    while {[file exist $subdir]=="1"} {	
+    while {[file exist $subdir]=="1"} {
       incr k
       set subdir [file join "$rep" ${nom_base}_$k]
-      }  
+      }
     file mkdir $subdir
     return $subdir
   } else {
@@ -3235,10 +3234,10 @@ proc cree_fichier {args} {
     # Procédure principale
     set fichier [file join "$rep" $nom_base$ext]
     set k 0
-    while {[file exist $fichier]=="1"} {	
+    while {[file exist $fichier]=="1"} {
       incr k
       set fichier [file join "$rep" ${nom_base}_$k$ext]
-      }  
+      }
     set f [open $fichier w]
     close $f
     return $fichier
@@ -3338,16 +3337,16 @@ proc range_options {args} {
     set list_args_opt [lrange $list_opts 0 [expr $index-1]]
 
     set option_en_cours ""
-    # Une option et ses arguments consitue une sous-liste que l'on enregistre dans la liste list_X, où X est le nombre 
+    # Une option et ses arguments consitue une sous-liste que l'on enregistre dans la liste list_X, où X est le nombre
     # d'entrées pour l'option
- 
+
     # On garde en mémoire dans la variable X le Xmax atteint.
     set X "-1"
 
     while {$index<=$ind_max} {
       set option_en_cours [lappend option_en_cours [lindex $list_opts $index]]
-  
-      # Si l'élément en position index+1 commence par "-", ou si l'on est dans la dernière boucle : 
+
+      # Si l'élément en position index+1 commence par "-", ou si l'on est dans la dernière boucle :
       # on enregistre l'option en cours dans la liste list_X qui lui convient.
       if {([string index [lindex $list_opts [expr $index+1]] 0]=="-")||($index==$ind_max)} {
         set type_option [expr [llength $option_en_cours]-1]
@@ -3404,8 +3403,8 @@ proc calcul_trzaligne {args} {
 
     # Procédure principale
     # On appelle (x1,y1) les coordonnées du 1er point de la 1ère liste,
-    # (x2,y2) les coordonnées du 2nd point de la 1ère liste, (x'1,y'1) les 
-    # coordonnées du 1er point de la seconde liste, (x'2,y'2) les coordonnées 
+    # (x2,y2) les coordonnées du 2nd point de la 1ère liste, (x'1,y'1) les
+    # coordonnées du 1er point de la seconde liste, (x'2,y'2) les coordonnées
     # du 2nd point de la seconde liste.
     set x1 [lindex $liste_coord1 0]
     set y1 [lindex $liste_coord1 1]
@@ -3424,7 +3423,7 @@ proc calcul_trzaligne {args} {
     set x'I [expr 0.5*(${x'1}+${x'2})]
     set y'I [expr 0.5*(${y'1}+${y'2})]
 
-    # Soient (v1,v2) les coordonnées d'un vecteur directeur de la médiatrice du 1er segment, 
+    # Soient (v1,v2) les coordonnées d'un vecteur directeur de la médiatrice du 1er segment,
     set v1 [expr $y2-$y1]
     set v2 [expr $x1-$x2]
     # On norme ce vecteur.
@@ -3449,8 +3448,8 @@ proc calcul_trzaligne {args} {
     # cos(theta) puisque les vecteurs sont normés. On convertit directement theta en degrés décimaux.
     set theta [expr 180*acos( $v1 * ${v'1} + $v2 * ${v'2} ) / 3.14159265359]
 
-    # On a obtenu pour theta la solution comprise entre 0 et 180 degrés. Pour traiter le cas d'un 
-    # theta négatif, on calcule le produit vectoriel de (v1,v2) et (v'1,v'2) qui est un vecteur 
+    # On a obtenu pour theta la solution comprise entre 0 et 180 degrés. Pour traiter le cas d'un
+    # theta négatif, on calcule le produit vectoriel de (v1,v2) et (v'1,v'2) qui est un vecteur
     # orthogonal de norme 1. Sa composante orthogonale vaut donc -1 (theta entre 0 et 180 degrés) ou +1
     # (theta entre -180 et 0 degrés).
     set prodvect [expr $v1 * ${v'2} - $v2 * ${v'1}]
@@ -3527,8 +3526,8 @@ proc date_chiffresAlettres {args} {
     if {$jour == "1"} {
       set jour "1er"
       }
-    
-    return "$jour ${mois_lettres} $annee"    
+
+    return "$jour ${mois_lettres} $annee"
 
   } else {
     error $caption(divers,syntax,date_chiffresAlettres)
