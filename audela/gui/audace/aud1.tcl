@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.9 2006-08-12 21:23:21 robertdelmas Exp $
+# Mise a jour $Id: aud1.tcl,v 1.10 2006-08-15 21:09:21 alainklotz Exp $
 #
 
 #
@@ -222,7 +222,7 @@ proc savejpeg { { filename "?" } } {
 proc visu { { cuts "autocuts" } } {
    global audace
 
-   ::confVisu::visu $audace(visuNo) $cuts 
+   ::confVisu::visu $audace(visuNo) $cuts
 }
 
 #
@@ -277,7 +277,7 @@ proc statwin { visuNo } {
    global caption
 
    #---
-   set base [ ::confVisu::getBase $visuNo ] 
+   set base [ ::confVisu::getBase $visuNo ]
    #---
    set This "$base.statwin"
    if [ winfo exists $This ] {
@@ -328,7 +328,7 @@ proc fwhm { visuNo } {
    global caption
 
    #---
-   set base [ ::confVisu::getBase $visuNo ] 
+   set base [ ::confVisu::getBase $visuNo ]
    #---
    set This "$base.fwhm"
    if [ winfo exists $This ] {
@@ -372,7 +372,7 @@ proc fitgauss { visuNo } {
    global color
 
    #---
-   set base [ ::confVisu::getBase $visuNo ] 
+   set base [ ::confVisu::getBase $visuNo ]
    #---
    set This "$base.fitgauss"
    if [ winfo exists $This ] {
@@ -506,7 +506,7 @@ proc center { visuNo } {
    global caption
 
    #---
-   set base [ ::confVisu::getBase $visuNo ] 
+   set base [ ::confVisu::getBase $visuNo ]
    #---
    set This "$base.center"
    if [ winfo exists $This ] {
@@ -547,7 +547,7 @@ proc photom { visuNo } {
    global caption
 
    #---
-   set base [ ::confVisu::getBase $visuNo ] 
+   set base [ ::confVisu::getBase $visuNo ]
    #---
    set This "$base.photom"
    if [ winfo exists $This ] {
@@ -729,10 +729,10 @@ proc rot { args } {
 proc log { args } {
    global audace
 
-   if {[llength $args] == 2} {
+   if {[llength $args] == 1} {
       buf$audace(bufNo) log [lindex $args 0]
       ::audace::autovisu $audace(visuNo)
-   } elseif {[llength $args] == 3} {
+   } elseif {[llength $args] == 2} {
       buf$audace(bufNo) log [lindex $args 0] [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
