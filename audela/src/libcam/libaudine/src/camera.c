@@ -538,7 +538,7 @@ void audine_zi_zh_inv(struct camprop *cam)
     }
 #endif
 
-    for (i = 0; i < n_iter; i++)
+    for (i = 0; i < n_iter/4; i++)
 	libcam_out(port, cam->bytes[0xFB]);	/* 11111011 */
     for (i = 0; i < n_iter; i++)
 	libcam_out(port, cam->bytes[0xFA]);	/* 11111010 */
@@ -546,7 +546,7 @@ void audine_zi_zh_inv(struct camprop *cam)
 	libcam_out(port, cam->bytes[0xF9]);	/* 11111001 */
     for (i = 0; i < n_iter; i++)
 	libcam_out(port, cam->bytes[0xFA]);	/* 11111010 */
-    for (i = 0; i < n_iter; i++)
+    for (i = 0; i < n_iter/4; i++)
 	libcam_out(port, cam->bytes[0xFB]);	/* 11111011 */
 }
 
