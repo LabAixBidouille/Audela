@@ -337,6 +337,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "libcelestron"=".\libtel\liblx200\vc60\libcelestron.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "liblxnet"=".\libtel\liblxnet\vc60\liblxnet.dsp" - Package Owner=<4>
 
 Package=<5>
