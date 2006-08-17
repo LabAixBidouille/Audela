@@ -26,8 +26,7 @@
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelLongFormat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelRadecInitAdditional(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelVersion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 #endif

@@ -74,6 +74,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 {
    char s[1024],ssres[1024];
    char ss[256],ssusb[256];
+   unsigned char a[10];
    int k;
    /* --- transcode a port argument into comX or into /dev... */
    strcpy(ss,argv[2]);
@@ -120,8 +121,78 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    mytel_flush(tel);
-   mytel_set_format(tel,0);
+   mytel_set_format(tel,1);
    tel->tempo=300;
+   /* get the informations : initializations */
+   tel->version_major=(unsigned char)0;
+   tel->version_minor=(unsigned char)0;
+   tel->version=(double)0;
+   tel->device_azmra_motor_version_major=(unsigned char)0;
+   tel->device_azmra_motor_version_minor=(unsigned char)0;
+   tel->device_azmra_motor_version=(double)0;
+   tel->device_altdec_motor_version_major=(unsigned char)0;
+   tel->device_altdec_motor_version_minor=(unsigned char)0;
+   tel->device_altdec_motor_version=(double)0;
+   tel->device_gps_unit_version_major=(unsigned char)0;
+   tel->device_gps_unit_version_minor=(unsigned char)0;
+   tel->device_gps_unit_version=(double)0;
+   tel->device_rtc_version_major=(unsigned char)0;
+   tel->device_rtc_version_minor=(unsigned char)0;
+   tel->device_rtc_version=(double)0;
+   /* get the informations : version */
+   sprintf(s,"puts -nonewline %s \"v\"",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"after 150"); mytel_tcleval(tel,s);
+   sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
+   strcpy(ss,tel->interp->result);
+   tel->version_major=(unsigned char)ss[0];
+   tel->version_minor=(unsigned char)ss[1];
+   sprintf(a,"%c.%c",ss[0],ss[1]);
+   tel->version=atof(a);
+   /* get the informations : device versions */
+   if (tel->version>=1.6) {
+      a[0]=1;
+      a[1]=16;
+      a[2]=254;
+      a[3]=0;
+      a[4]=0;
+      a[5]=0;
+      a[6]=2;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+      tel->device_azmra_motor_version_major=(unsigned char)ss[0];
+      tel->device_azmra_motor_version_minor=(unsigned char)ss[1];
+      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_azmra_motor_version=atof(a);
+      a[1]=17;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+      tel->device_altdec_motor_version_major=(unsigned char)ss[0];
+      tel->device_altdec_motor_version_minor=(unsigned char)ss[1];
+      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_altdec_motor_version=atof(a);
+      a[1]=176;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+      tel->device_gps_unit_version_major=(unsigned char)ss[0];
+      tel->device_gps_unit_version_minor=(unsigned char)ss[1];
+      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_gps_unit_version=atof(a);
+      a[1]=178;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+      tel->device_rtc_version_major=(unsigned char)ss[0];
+      tel->device_rtc_version_minor=(unsigned char)ss[1];
+      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_rtc_version=atof(a);
+   }
    return 0;
 }
 
@@ -130,7 +201,13 @@ int tel_testcom(struct telprop *tel)
 /* --- called by : tel1 testcom --- */
 /* -------------------------------- */
 {
-   if (mytel_get_format(tel)==1) {
+   char a[5],s[1024];
+   a[0]='x';
+   sprintf(s,"puts -nonewline %s \"K%c\"",tel->channel,a[0]); mytel_tcleval(tel,s);
+   sprintf(s,"after 150"); mytel_tcleval(tel,s);
+   sprintf(s,"read %s 2",tel->channel); mytel_tcleval(tel,s);
+   strcpy(s,tel->interp->result);
+   if (s[0]=='x') {
       return 1;
    } else {
       return 0;
@@ -284,7 +361,6 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 }
 
 
-
 /* ================================================================ */
 /* ================================================================ */
 /* ===     Fonctions de base pour le pilotage du telescope      === */
@@ -296,77 +372,27 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 int mytel_radec_init(struct telprop *tel)
 /* it corresponds to the "sync" function of a Nexstar */
 {
-   char s[1024],ls[100];
-   int nbcar_1,nbcar_2;
+   char s[1024],ls[100],command[5];
+   int nbits;
+   if (tel->version<4.1) {
+      return 0;
+   }
    /* get the short|long format */
    mytel_get_format(tel);
    if (tel->longformatindex==0) {
-      strcpy(ls,"-format long");
-      nbcar_1=9;
-      nbcar_2=10;
+      nbits=16;
+      strcpy(command,"S");
    } else {
-      strcpy(ls,"-format short");
-      nbcar_1=8;
-      nbcar_2=7;
+      nbits=24;
+      strcpy(command,"s");
    }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   /* Send Sr */
-   sprintf(s,"puts -nonewline %s \"#:Sr %s#\"",tel->channel,tel->interp->result); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angles2nexstar %f %f %d",tel->ra0,tel->dec0,ls); mytel_tcleval(tel,s);
+   /* Send S or s */
+   sprintf(s,"puts -nonewline %s \"%s%s\"",tel->channel,command,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
+   /* Receive # if it is OK */
    sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-   /* Send Sd */
-   sprintf(s,"puts -nonewline %s \"#:Sd %s#\"",tel->channel,tel->interp->result); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 200"); mytel_tcleval(tel,s);
-   /*mytel_flush(tel);*/
-   return 0;
-}
-
-int mytel_radec_init_additional(struct telprop *tel)
-/* it corresponds to the "additional synchonize for Losmandy Gemini */
-/* sends :Cm# instead of :CM# for calculating the pointing model parameters and */
-/* synchronizing to the position given.*/
- {
-   char s[1024],ls[100];
-   int nbcar_1,nbcar_2;
-   /* get the short|long format */
-   mytel_get_format(tel);
-   if (tel->longformatindex==0) {
-      strcpy(ls,"-format long");
-      nbcar_1=9;
-      nbcar_2=10;
-   } else {
-      strcpy(ls,"-format short");
-      nbcar_1=8;
-      nbcar_2=7;
-   }
-   /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   /* Send Sr */
-   sprintf(s,"puts -nonewline %s \"#:Sr %s#\"",tel->channel,tel->interp->result); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-   /* Send Sd */
-   sprintf(s,"puts -nonewline %s \"#:Sd %s#\"",tel->channel,tel->interp->result); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   sprintf(s,"puts -nonewline %s \"#:Cm#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 200"); mytel_tcleval(tel,s);
    /*mytel_flush(tel);*/
    return 0;
 }
@@ -385,53 +411,44 @@ int mytel_radec_state(struct telprop *tel,char *result)
 
 int mytel_radec_goto(struct telprop *tel)
 {
-   char s[1024],ls[100],ss[1024];
+   char s[1024],ls[100],ss[100],command[5];
    char coord0[50],coord1[50];
-   int nbcar_1,nbcar_2,time_in=0,time_out=240;
+   int time_in=0,time_out=240,nbits;
+   char tracking_mode=0;
+   /* get the tracking mode */
+   sprintf(s,"puts -nonewline %s \"t\"",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"after 150"); mytel_tcleval(tel,s);
+   sprintf(s,"read %s 2",tel->channel); mytel_tcleval(tel,s);
+   strcpy(ss,tel->interp->result);
+   tracking_mode=ss[0];
    /* get the short|long format */
    mytel_get_format(tel);
-   if (tel->longformatindex==0) {
-      strcpy(ls,"-format long");
-      nbcar_1=9;
-      nbcar_2=10;
+   if ((tel->longformatindex==0)||(tel->version<2.2)) {
+      nbits=16;
+      if (tracking_mode==1) {
+         strcpy(command,"R");
+      } else {
+         strcpy(command,"B");
+      }
    } else {
-      strcpy(ls,"-format short");
-      nbcar_1=8;
-      nbcar_2=7;
+      nbits=24;
+      if (tracking_mode==1) {
+         strcpy(command,"r");
+      } else {
+         strcpy(command,"b");
+      }
    }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   /* Send Sr */
-   sprintf(s,"puts -nonewline %s \"#:Sr %s#\"",tel->channel,tel->interp->result); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angles2nexstar %f %f %d",tel->ra0,tel->dec0,ls); mytel_tcleval(tel,s);
+   /* Send Goto */
+   sprintf(s,"puts -nonewline %s \"%s%s\"",tel->channel,command,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-   /* Send Sd */
-   sprintf(s,"puts -nonewline %s \"#:Sd %s#\"",tel->channel,tel->interp->result); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   /* Send MS */
-   sprintf(s,"puts -nonewline %s \"#:MS#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   /* Receive 0 if the telescope can complete the slew */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   if ((strcmp(ss,"1")==0)||(strcmp(ss,"2")==0)) {
-      /* The telescope can not complete the slew and tells something*/
-      mytel_flush(tel);
-      return 0;
-   }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
       tel_radec_coord(tel,coord0);
       while (1==1) {
-   	     time_in++;
+   	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
          tel_radec_coord(tel,coord1);
          if (strcmp(coord0,coord1)==0) {break;}
@@ -444,80 +461,131 @@ int mytel_radec_goto(struct telprop *tel)
 
 int mytel_radec_move(struct telprop *tel,char *direction)
 {
-   char s[1024],direc[10];
+   char s[1024],direc[10],a[15];
+   char rate;
+   if (tel->version<1.6) {
+      return 0;
+   }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   /* LX200 protocol has 4 motion rates */
-   if ((tel->radec_move_rate<=0.25)) {
-      /* Guide */
-      sprintf(s,"puts -nonewline %s \"#:RG#\"",tel->channel); mytel_tcleval(tel,s);
-   } else if ((tel->radec_move_rate>0.25)&&(tel->radec_move_rate<=0.5)) {
-      /* Center */
-      sprintf(s,"puts -nonewline %s \"#:RC#\"",tel->channel); mytel_tcleval(tel,s);
-   } else if ((tel->radec_move_rate>0.5)&&(tel->radec_move_rate<=0.75)) {
-      /* Find */
-      sprintf(s,"puts -nonewline %s \"#:RM#\"",tel->channel); mytel_tcleval(tel,s);
-   } else if ((tel->radec_move_rate>0.75)) {
-      /* Slew */
-      sprintf(s,"puts -nonewline %s \"#:RS#\"",tel->channel); mytel_tcleval(tel,s);
-   }
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
-   strcpy(direc,tel->interp->result);
+   a[0]=2;
    if (strcmp(direc,"N")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Mn#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=17;
+      a[2]=36;
    } else if (strcmp(direc,"S")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Ms#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=17;
+      a[2]=37;
    } else if (strcmp(direc,"E")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Me#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=16;
+      a[2]=36;
    } else if (strcmp(direc,"W")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Mw#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=16;
+      a[2]=37;
    }
+   rate=(unsigned char)(tel->radec_move_rate/9);
+   a[3]=rate;
+   a[4]=0;
+   a[5]=0;
+   a[6]=0;
+   if (rate>2) {
+      /* Turn off the tracking */
+      tel->radec_motor=1;
+      mytel_radec_motor(tel);
+   }
+   sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
+   /* Receive # if it is OK */
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    return 0;
 }
 
 int mytel_radec_stop(struct telprop *tel,char *direction)
 {
-   char s[1024],direc[10];
+   char s[1024],direc[10],a[15];
+   char rate;
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
+   /* Turn off the tracking */
+   /*
+   sprintf(s,"puts -nonewline %s \"t0\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
-   strcpy(direc,tel->interp->result);
+   */
+   if (tel->version<1.6) {
+      return 0;
+   }
+   a[0]=2;
+   rate=(unsigned char)(0);
+   a[3]=rate;
+   a[4]=0;
+   a[5]=0;
+   a[6]=0;
    if (strcmp(direc,"N")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Qn#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=17;
+      a[2]=36;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
    } else if (strcmp(direc,"S")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Qs#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=17;
+      a[2]=37;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
    } else if (strcmp(direc,"E")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Qe#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=16;
+      a[2]=36;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
    } else if (strcmp(direc,"W")==0) {
-      sprintf(s,"puts -nonewline %s \"#:Qw#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=16;
+      a[2]=37;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
    } else {
-      sprintf(s,"puts -nonewline %s \"#:Q#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=17;
+      a[2]=36;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
       sprintf(s,"after 50"); mytel_tcleval(tel,s);
-      sprintf(s,"puts -nonewline %s \"#:Qn#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=17;
+      a[2]=37;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
       sprintf(s,"after 50"); mytel_tcleval(tel,s);
-      sprintf(s,"puts -nonewline %s \"#:Qs#\"",tel->channel); mytel_tcleval(tel,s);
+      a[1]=16;
+      a[2]=36;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
       sprintf(s,"after 50"); mytel_tcleval(tel,s);
-      sprintf(s,"puts -nonewline %s \"#:Qe#\"",tel->channel); mytel_tcleval(tel,s);
-      sprintf(s,"after 50"); mytel_tcleval(tel,s);
-      sprintf(s,"puts -nonewline %s \"#:Qw#\"",tel->channel); mytel_tcleval(tel,s);
-      sprintf(s,"after 50"); mytel_tcleval(tel,s);
+      a[1]=16;
+      a[2]=37;
+      sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
    }
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
+   /* Receive # if it is OK */
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   /* motors on */
+   tel->radec_motor=0;
+   mytel_radec_motor(tel);
    return 0;
 }
 
 int mytel_radec_motor(struct telprop *tel)
 {
-   char s[1024];
+   char s[1024],ss[100],latns;
+   if (tel->version<1.6) {
+      return 0;
+   }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"after 20"); mytel_tcleval(tel,s);
    if (tel->radec_motor==1) {
       /* stop the motor */
-      sprintf(s,"puts -nonewline %s \"#:AL#\"",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"puts -nonewline %s \"T0\"",tel->channel); mytel_tcleval(tel,s);
    } else {
       /* start the motor */
-      sprintf(s,"puts -nonewline %s \"#:AP#\"",tel->channel); mytel_tcleval(tel,s);
+      mytel_flush(tel);
+      if (tel->version>=2.3) {
+         sprintf(s,"puts -nonewline %s \"w\"",tel->channel); mytel_tcleval(tel,s);
+         sprintf(s,"after 150"); mytel_tcleval(tel,s);
+         sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
+         strcpy(ss,tel->interp->result);
+         latns=ss[3];
+      } else {
+         latns=(char)0;
+      }
+      if (latns=='1') {
+         sprintf(s,"puts -nonewline %s \"T3\"",tel->channel); mytel_tcleval(tel,s);
+      } else {
+         sprintf(s,"puts -nonewline %s \"T2\"",tel->channel); mytel_tcleval(tel,s);
+      }
    }
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    return 0;
@@ -525,77 +593,55 @@ int mytel_radec_motor(struct telprop *tel)
 
 int mytel_radec_coord(struct telprop *tel,char *result)
 {
-   char s[1024],ss[1024],signe[2],ls[100];
-   int h,d,m,sec;
-   int nbcar_1,nbcar_2;
+   char s[1024],ss[1024],ra[100],dec[100],command[5];
+   int nbits;
+   char tracking_mode=0;
    strcpy(result,"");
+   if (tel->version<1.2) {
+      return 0;
+   }
+   /* get the tracking mode */
+   if (tel->version>=2.3) {
+      sprintf(s,"puts -nonewline %s \"t\"",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 2",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+      tracking_mode=ss[0];
+   }
    /* get the short|long format */
    mytel_get_format(tel);
-   if (tel->longformatindex==0) {
-      strcpy(ls,"-format long");
-      nbcar_1=9;
-      nbcar_2=10;
+   if ((tel->longformatindex==0)||(tel->version<2.2)) {
+      nbits=16;
+      if (tracking_mode==1) {
+         strcpy(command,"Z");
+      } else {
+         strcpy(command,"E");
+      }
    } else {
-      strcpy(ls,"-format short");
-      nbcar_1=8;
-      nbcar_2=7;
+      nbits=24;
+      if (tracking_mode==1) {
+         strcpy(command,"z");
+      } else {
+         strcpy(command,"e");
+      }
    }
-   /* Send GR */
-   sprintf(s,"puts -nonewline %s \"#:GR#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* Receive a string terminated by # */
-   sprintf(s,"read %s %d",tel->channel,nbcar_1); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   h=atoi(s);
-   sprintf(s,"string range \"%s\" 3 4",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m=atoi(s);
-   if (tel->longformatindex==0) {
-      sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
-      strcpy(s,tel->interp->result);
-      sec=atoi(s);
-      sprintf(s,"%02dh%02dm%02ds",h,m,sec);
-   } else {
-      sprintf(s,"string range \"%s\" 6 6",ss); mytel_tcleval(tel,s);
-      strcpy(s,tel->interp->result);
-      sec=atoi(s);
-      /*sprintf(s,"%02ldh%02ld.%01ldm",h,m,sec);*/
-      sprintf(s,"%02dh%02dm%02ds",h,m,sec*6);
-   }
-   sprintf(result,"%s ",s);
-   /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   /* Send GD */
-   sprintf(s,"puts -nonewline %s \"#:GD#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* Receive a string terminated by # */
-   sprintf(s,"read %s %d",tel->channel,nbcar_2); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
+   /* Send E or e */
+   sprintf(s,"puts -nonewline %s \"%s\"",tel->channel,command); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
-   strcpy(signe,tel->interp->result);
-   if ((strcmp(signe,"-")!=0)&&(strcmp(signe,"+")!=0)) {
-      strcpy(signe,"+");
-   }
-   sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d=atoi(s);
-   sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m=atoi(s);
+   /* Receive results and # if it is OK */
    if (tel->longformatindex==0) {
-      sprintf(s,"string range \"%s\" 7 8",ss); mytel_tcleval(tel,s);
-      strcpy(s,tel->interp->result);
-      sec=atoi(s);
-      sprintf(s,"%s%02dd%02dm%02ds",signe,d,m,sec);
+      sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
    } else {
-      /*sprintf(s,"%s%02ldh%02ldm",signe,d,m);*/
-      sprintf(s,"%s%02dd%02dm%02ds",signe,d,m,sec=0);
+      sprintf(s,"read %s 18",tel->channel); mytel_tcleval(tel,s);
    }
-   strcat(result,s);
+   sprintf(s,"mc_nexstar2angles %s",tel->interp->result); mytel_tcleval(tel,s);
+   strcpy(ss,tel->interp->result);
+   sprintf(s,"mc_angle2hms [lindex %s 0] 360 zero 2 auto string",ss); mytel_tcleval(tel,s);
+   strcpy(ra,tel->interp->result);
+   sprintf(s,"mc_angle2dms [lindex %s 0] 90 zero 1 + string",ss); mytel_tcleval(tel,s);
+   strcpy(dec,tel->interp->result);
+   sprintf(result,"%s %s",ra,dec);
    return 0;
 }
 
@@ -611,32 +657,11 @@ int mytel_focus_goto(struct telprop *tel)
 
 int mytel_focus_move(struct telprop *tel,char *direction)
 {
-   char s[1024],direc[10];
-   /* LX200 protocol has 2 motion rates */
-   if (tel->focus_move_rate<=0.5) {
-      /* Slow */
-      sprintf(s,"puts -nonewline %s \"#:FS#\"",tel->channel); mytel_tcleval(tel,s);
-   } else if (tel->focus_move_rate>0.5) {
-      /* Fast */
-      sprintf(s,"puts -nonewline %s \"#:FF#\"",tel->channel); mytel_tcleval(tel,s);
-   }
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
-   strcpy(direc,tel->interp->result);
-   if (strcmp(direc,"+")==0) {
-      sprintf(s,"puts -nonewline %s \"#:F+#\"",tel->channel); mytel_tcleval(tel,s);
-   } else if (strcmp(direc,"-")==0) {
-      sprintf(s,"puts -nonewline %s \"#:F-#\"",tel->channel); mytel_tcleval(tel,s);
-   }
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
    return 0;
 }
 
 int mytel_focus_stop(struct telprop *tel,char *direction)
 {
-   char s[1024];
-   sprintf(s,"puts -nonewline %s \"#:FQ#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
    return 0;
 }
 
@@ -653,134 +678,77 @@ int mytel_focus_coord(struct telprop *tel,char *result)
 int mytel_date_get(struct telprop *tel,char *ligne)
 {
    char s[1024],ss[1024];
-   int y,m,d,h,min;
-   int sec;
-   /* Get the time */
-   mytel_flush(tel);
-   sprintf(s,"puts -nonewline %s \"#:GL#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   h=atoi(s);
-   sprintf(s,"string range \"%s\" 3 4",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   min=atoi(s);
-   sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   sec=atoi(s);
-   /* Get the date */
-   sprintf(s,"puts -nonewline %s \"#:GC#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m=atoi(s);
-   sprintf(s,"string range \"%s\" 3 4",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d=atoi(s);
-   sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   y=atoi(s);
-   if (y>91) {
-      y=y+1900;
+   /* Get the date & time */
+   if (tel->version<2.3) {
+      strcpy(ss,"000000");
    } else {
-      y=y+2000;
+      mytel_flush(tel);
+      sprintf(s,"puts -nonewline %s \"h\"",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
    }
    /* Returns the result */
-   sprintf(ligne,"%d %d %d %d %d %d.0",y,m,d,h,min,sec);
+   sprintf(ligne,"20%02d %d %d %d %d %d.0",ss[5],ss[3],ss[4],ss[0],ss[1],ss[2]);
    return 0;
 }
 
 int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s)
 {
    char ligne[1024],ligne2[1024];
-   int sec,nbdiese,k=0;
+   int sec,k=0;
+   if (tel->version<2.3) {
+      return 0;
+   }
    /* Set the time */
    mytel_flush(tel);
    sec=(int)(s);
-   sprintf(ligne2,"%02d:%02d:%02d",h,min,sec);
-   sprintf(ligne,"puts -nonewline %s \"#:SL %s#\"",tel->channel,ligne2); mytel_tcleval(tel,ligne);
+   sprintf(ligne2,"%c%c%c%c%c%c00",h,min,sec,m,d,y-2000);
+   sprintf(ligne,"puts -nonewline %s \"H%s\"",tel->channel,ligne2); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
    sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
-   /* Set the date */
-   if (y<1992) {y=1992;}
-   if (y>2091) {y=2091;}
-   if (y<2000) {
-      y=y-1900;
-   } else {
-      y=y-2000;
-   }
-   sprintf(ligne2,"%02d/%02d/%02d",m,d,y);
-   sprintf(ligne,"puts -nonewline %s \"#:SC %s#\"",tel->channel,ligne2); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
-   nbdiese=0;
-   while (1==1) {
-      sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
-      sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
-      strcpy(ligne,tel->interp->result);
-      if (strcmp(ligne,"#")==0) {
-         nbdiese++;
-      }
-      k++;
-	  if ((nbdiese==2)||(k>300)) {
-         break;
-      }
-   }
    return 0;
 }
 
 int mytel_home_get(struct telprop *tel,char *ligne)
 {
    char s[1024],ss[1024],signe[3],ew[3];
-   int d1,m1,d2,m2;
    double longitude,latitude;
-   /* Get the longitude */
-   mytel_flush(tel);
-   sprintf(s,"puts -nonewline %s \"#:Gg#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 7",tel->channel); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"string range \"%s\" 0 2",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d1=atoi(s);
-   sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m1=atoi(s);
-   longitude=(double)d1+(double)m1/60.;
-   if (longitude>180) {
-      longitude=360.-longitude;
+   char lond,lonm,lons,lonew,latd,latm,lats,latns;
+   /* Get the location */
+   if (tel->version<2.3) {
+      longitude=0.;
+      latitude=0.;
+      strcpy(signe,"");
       strcpy(ew,"e");
    } else {
-      strcpy(ew,"w");
+      mytel_flush(tel);
+      sprintf(s,"puts -nonewline %s \"w\"",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"after 150"); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+      latd=ss[0];
+      latm=ss[1];
+      lats=ss[2];
+      latns=ss[3];
+      lond=ss[4];
+      lonm=ss[5];
+      lons=ss[6];
+      lonew=ss[7];
+      latitude=(double)latd+(double)latm/60.+(double)lats/3600.;
+      if (latns=='1') {
+         strcpy(signe,"-");
+      } else {
+         strcpy(signe,"");
+      }
+      longitude=(double)lond+(double)lonm/60.+(double)lons/3600.;
+      if (lonew=='1') {
+         strcpy(ew,"w");
+      } else {
+         strcpy(ew,"e");
+      }
    }
-   /* Get the latitude */
-   sprintf(s,"puts -nonewline %s \"#:Gt#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 7",tel->channel); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d2=atoi(s);
-   sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m2=atoi(s);
-   sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   if (strcmp(s,"-")==0) {
-      strcpy(signe,"-");
-   } else {
-      strcpy(signe,"+");
-   }
-   latitude=fabs((double)d2)+(double)m2/60.;
    /* Returns the result */
    sprintf(ligne,"GPS %f %s %s%f 0",longitude,ew,signe,latitude);
    return 0;
@@ -788,26 +756,43 @@ int mytel_home_get(struct telprop *tel,char *ligne)
 
 int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude)
 {
-   char ligne[1024],ligne2[1024];
+   char ligne[1024],ligne1[1024],ligne2[1024];
+   char lond,lonm,lons,lonew,latd,latm,lats,latns;
    /* Set the longitude */
-   mytel_flush(tel);
-   if ((strcmp(ew,"E")==0)||(strcmp(ew,"e")==0)) {
-      longitude=360.-longitude;
+   if (tel->version<2.3) {
+      return 0;
    }
-   sprintf(ligne,"mc_angle2dms %f 360 zero 0 + list",longitude); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   sprintf(ligne,"string range \"[string range [lindex {%s} 0] 1 3]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   sprintf(ligne,"puts -nonewline %s \"#:Sg %s#\"",tel->channel,ligne2); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
+   mytel_flush(tel);
+   sprintf(ligne,"mc_angle2dms %f 360 nozero 0 auto list",longitude); mytel_tcleval(tel,ligne);
+   strcpy(ligne1,tel->interp->result);
+   sprintf(ligne,"lindex %s 0",ligne1); mytel_tcleval(tel,ligne);
+   lond=(unsigned char)atoi(tel->interp->result);
+   sprintf(ligne,"lindex %s 1",ligne1); mytel_tcleval(tel,ligne);
+   lonm=(unsigned char)atoi(tel->interp->result);
+   sprintf(ligne,"lindex %s 2",ligne1); mytel_tcleval(tel,ligne);
+   lons=(unsigned char)atoi(tel->interp->result);
+   if ((strcmp(ew,"E")==0)||(strcmp(ew,"e")==0)) {
+      lonew=(unsigned char)0;
+   } else {
+      lonew=(unsigned char)1;
+   }
    /* Set the latitude */
-   sprintf(ligne,"mc_angle2dms %f 90 zero 0 + list",latitude); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   sprintf(ligne,"string range \"[string range [lindex {%s} 0] 0 0][string range [lindex {%s} 0] 1 2]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2,ligne2); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   sprintf(ligne,"puts -nonewline %s \"#:St %s#\"",tel->channel,ligne2); mytel_tcleval(tel,ligne);
+   mytel_flush(tel);
+   sprintf(ligne,"mc_angle2dms %f 360 nozero 0 auto list",fabs(latitude)); mytel_tcleval(tel,ligne);
+   strcpy(ligne1,tel->interp->result);
+   sprintf(ligne,"lindex %s 0",ligne1); mytel_tcleval(tel,ligne);
+   latd=(unsigned char)atoi(tel->interp->result);
+   sprintf(ligne,"lindex %s 1",ligne1); mytel_tcleval(tel,ligne);
+   latm=(unsigned char)atoi(tel->interp->result);
+   sprintf(ligne,"lindex %s 2",ligne1); mytel_tcleval(tel,ligne);
+   lats=(unsigned char)atoi(tel->interp->result);
+   if (latitude>0) {
+      latns=(unsigned char)0;
+   } else {
+      latns=(unsigned char)1;
+   }
+   sprintf(ligne2,"%c%c%c%c%c%c%c%c00",latd,latm,lats,latns,lond,lonm,lons,lonew);
+   sprintf(ligne,"puts -nonewline %s \"W%s\"",tel->channel,ligne2); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
    sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
@@ -823,39 +808,24 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 
 int mytel_get_format(struct telprop *tel)
 {
-   char s[1024];
-   int len,k;
+   int k;
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   mytel_flush(tel);
-   sprintf(s,"puts -nonewline %s \"#:GR#\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 8",tel->channel); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   len=(int)strlen(s);
-   k=0;
-   /* 12:34:45# ou 12:34.7# */
-   if (len>=7) {
-      if (s[5]=='.') {
-         tel->longformatindex=1;
-         k=1;
-      } else if (s[5]==':') {
-         tel->longformatindex=0;
-         k=1;
-         sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-      }
+   if (tel->version>=2.2) {
+      k=1;
+      tel->longformatindex=1;
+   } else {
+      k=0;
+      tel->longformatindex=0;
    }
    return k;
 }
 
 int mytel_set_format(struct telprop *tel,int longformatindex)
 {
-   char s[1024];
    int k=0;
+   tel->longformatindex=0;
    if (mytel_get_format(tel)==1) {
-      if (longformatindex!=tel->longformatindex) {
-         /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-         sprintf(s,"puts -nonewline %s \"#:U#\"",tel->channel); mytel_tcleval(tel,s);
-         sprintf(s,"after 10"); mytel_tcleval(tel,s);
+      if (longformatindex==1) {
          tel->longformatindex=longformatindex;
          k=1;
       }

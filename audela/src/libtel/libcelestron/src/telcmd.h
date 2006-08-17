@@ -26,7 +26,7 @@ static struct cmditem cmdlist[] = {
    /* === Specific commands for that telescope ===*/
    {"longformat", (Tcl_CmdProc *)cmdTelLongFormat},\
    {"tempo", (Tcl_CmdProc *)cmdTelTempo},\
-   {"correct", (Tcl_CmdProc *)cmdTelCorrect},\
+   {"version", (Tcl_CmdProc *)cmdTelVersion},\
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };
