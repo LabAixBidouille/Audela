@@ -113,83 +113,11 @@ int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return result;
 }
 
-int cmdTelRadecInitAdditional(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-
-   /* --- init ---*/
-   if (argc>=3) {
-      /* - call the pointing model if exists -*/
-      sprintf(ligne,"set libtel(radec) {%s}",argv[2]);
-      Tcl_Eval(interp,ligne);
-      if (strcmp(tel->model_cat2tel,"")!=0) {
-         sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[2]);
-         Tcl_Eval(interp,ligne);
-      }
-      Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-      strcpy(ligne,interp->result);
-      /* - end of pointing model-*/
-      libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
-      /* - sends specific GEMINI command for updating internal TPOINT model */
-      mytel_radec_init_additional(tel);
-   } else {
-      sprintf(ligne,"Usage: %s %s {angle_ra angle_dec}",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_ERROR;
-   }
-
-   result = TCL_OK;
-   return result;
-}
-
-int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+int cmdTelVersion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    struct telprop *tel;
-   char *direction;
-   int duration;
-
    tel = (struct telprop *)clientData;
-   if(argc!=4) {
-      sprintf(ligne,"Usage: %s %s {n,e,w,s} {0...9999}",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      return TCL_ERROR;
-   } else {
-      switch(argv[2][0]) {
-      case 'n':
-      case 'N':
-	 direction = "n";
-	 break;
-      case 'e':
-      case 'E':
-	 direction = "e";
-	 break;
-      case 'w':
-      case 'W':
-	 direction = "w";
-	 break;
-      case 's':
-      case 'S':
-	 direction = "s";
-	 break;
-      default:
-	 sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|e|w|s",argv[0],argv[1]);
-	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-	 return TCL_ERROR;
-      }
-      if (Tcl_GetInt(interp, argv[3], &duration) != TCL_OK) {
-	 sprintf(ligne,"Usage: %s %s direction time\ntime shall be an integer between 0 and 9999",argv[0],argv[1]);
-	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-	 return TCL_ERROR;
-      }
-      if ((duration<0)||(duration>9999)) {
-	 sprintf(ligne,"Usage: %s %s direction time\ntime shall be between 0 and 9999",argv[0],argv[1]);
-	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-	 return TCL_ERROR;
-      }
-      mytel_correct(tel,direction,duration);
-   }
+	sprintf(ligne,"{version %f} {azmra_motor %f} {altdec_motor %f} {gps_unit %f} {rtc %f}",tel->version,tel->device_azmra_motor_version,tel->device_altdec_motor_version,tel->device_gps_unit_version,tel->device_rtc_version);
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return TCL_OK;
 }
