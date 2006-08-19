@@ -44,8 +44,8 @@
    Tcl_CreateCommand(interp,"mc_angle2hms",(Tcl_CmdProc *)Cmd_mctcl_angle2hms,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_angle2lx200ra",(Tcl_CmdProc *)Cmd_mctcl_angle2lx200ra,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_angle2lx200dec",(Tcl_CmdProc *)Cmd_mctcl_angle2lx200dec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
-   Tcl_CreateCommand(interp,"mc_angles2ultima2000",(Tcl_CmdProc *)Cmd_mctcl_angles2ultima2000,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
-   Tcl_CreateCommand(interp,"mc_ultima20002angles",(Tcl_CmdProc *)Cmd_mctcl_ultima20002angles,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
+   Tcl_CreateCommand(interp,"mc_angles2nexstar",(Tcl_CmdProc *)Cmd_mctcl_angles2nexstar,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
+   Tcl_CreateCommand(interp,"mc_nexstar2angles",(Tcl_CmdProc *)Cmd_mctcl_nexstar2angles,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_anglescomp",(Tcl_CmdProc *)Cmd_mctcl_anglescomp,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_anglesep",(Tcl_CmdProc *)Cmd_mctcl_anglesep,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_date2jd",(Tcl_CmdProc *)Cmd_mctcl_date2jd,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
