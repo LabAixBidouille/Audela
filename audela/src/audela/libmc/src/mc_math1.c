@@ -267,7 +267,7 @@ void mc_strupr(char *chainein, char *chaineout)
    len2=strlen(chaineout);
    len=(len1<len2)?len1:len2;
    */
-   for (k=0;k<len;k++) {
+   for (k=0;k<=len;k++) {
       a=chainein[k];
       if ((a>='a')&&(a<='z')){chaineout[k]=(char)(a-32); }
       else {chaineout[k]=a; }
