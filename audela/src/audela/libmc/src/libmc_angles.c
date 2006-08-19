@@ -1943,39 +1943,53 @@ int Cmd_mctcl_angle2lx200dec(ClientData clientData, Tcl_Interp *interp, int argc
    return(result);
 }
 
-int Cmd_mctcl_angles2ultima2000(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Cmd_mctcl_angles2nexstar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
-/* Convertit un type Angle en RADEC Ultima2000                              */
+/* Convertit un type Angle en RADEC Nexstar                                 */
 /****************************************************************************/
-/* mc_angles2ultima2000                                                     */
+/* mc_angles2nexstar                                                        */
 /*  Angle Angle                                                             */
 /****************************************************************************/
 {
-   char s[524],aa[5];
-   int result,a[4];
+   char s[524],aa[9],ra[9],dec[9];
+   int result,a[9];
    double angle,x;
-   int k,kk;
+   int k,kk,bits=16,nibble;
+   double coef;
 
    if(argc<=2) {
-      sprintf(s,"Usage: %s Angle_ra Angle_dec", argv[0]);
+      sprintf(s,"Usage: %s Angle_ra Angle_dec ?bits?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
+      return result;
    } else {
-	  /* --- decode l'angle ---*/
+      if (argc>3) {
+         bits=atoi(argv[3]);
+      }
+      if ((bits!=16)&&(bits!=24)) {
+         bits=16;
+      }
+      nibble=bits/4;
+	   /* --- decode l'angle ---*/
       result = TCL_OK;
       for (kk=1;kk<=2;kk++) {
          mctcl_decode_angle(interp,argv[kk],&angle);
+         if ((angle<0)&&(kk=2)) {
+            angle=angle+360.;
+         }
          angle=fmod(angle,360.);
          angle=fmod(angle+360.,360.);
-         x=angle*65536./360.;
-         a[0]=(int)floor(x/4096.);
-         x=x-4096*(double)a[0];
-         a[1]=(int)floor(x/256.);
-         x=x-256*(double)a[1];
-         a[2]=(int)floor(x/16.);
-         x=x-16*(double)a[2];
-         a[3]=(int)floor(x);
-         for (k=0;k<4;k++) {
+
+         coef=pow(16,nibble);
+         x=angle*coef/360.;
+
+         for (k=0;k<nibble;k++) {
+            coef=pow(16,nibble-k-1);
+            a[k]=(int)floor(x/coef);
+            x=x-coef*(double)a[k];
+         }
+
+         for (k=0;k<nibble;k++) {
             if      (a[k]== 0) { aa[k]='0'; }
             else if (a[k]== 1) { aa[k]='1'; }
             else if (a[k]== 2) { aa[k]='2'; }
@@ -1993,85 +2007,99 @@ int Cmd_mctcl_angles2ultima2000(ClientData clientData, Tcl_Interp *interp, int a
             else if (a[k]==14) { aa[k]='E'; }
             else if (a[k]==15) { aa[k]='F'; }
          }
-         aa[4]='\0';
-         s[4]=',';
-         s[9]='\0';
-         for (k=0;k<4;k++) {
-            if (kk==1) {
-               s[k]=aa[k];
-            } else {
-               s[k+5]=aa[k];
-            }
+         if (bits==24) {
+            aa[k++]='0';
+            aa[k++]='0';
+         }
+         aa[k]='\0';
+         if (kk==1) {
+            strcpy(ra,aa);
+         } else {
+            strcpy(dec,aa);
          }
       }
    }
+   sprintf(s,"%s,%s",ra,dec);
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return(result);
 }
 
-int Cmd_mctcl_ultima20002angles(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Cmd_mctcl_nexstar2angles(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
-/* Convertit RADEC Ultima2000 en un type Angle                              */
+/* Convertit RADEC nexstar en un type Angle                                 */
 /****************************************************************************/
-/* mc_angles2ultima2000                                                     */
+/* mc_angles2nexstar                                                        */
 /*  string                                                                  */
 /****************************************************************************/
 {
-   char s[524],ultima[15],aa[5];
-   int result,a[4];
-   double x,ra=0.,dec=0.;
+   char s[524],ultima[15],aa[9];
+   int result,a[9],len,nibble,bits,offset;
+   double x,ra=0.,dec=0.,coef;
    int k,kk;
 
    if(argc<=1) {
-      sprintf(s,"Usage: %s Ultima200_string", argv[0]);
+      sprintf(s,"Usage: %s nexstar_string", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
       strcpy(ultima,argv[1]);
-      if ((int)strlen(ultima)<9) {
-         sprintf(s,"Ultima2000_string %s non long enough",ultima);
+      len=(int)strlen(ultima);
+      if (len==9) {
+         bits=16;
+         offset=5;
+      } else if (len==17) {
+         bits=24;
+         offset=9;
+      } else {
+         sprintf(s,"nexstar_string %s not valid",ultima);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          result = TCL_ERROR;
-      } else {
-  	      /* --- decode l'angle ---*/
-         for (kk=1;kk<=2;kk++) {
-           if (kk==1) {
-              aa[0]=ultima[0];
-              aa[1]=ultima[1];
-              aa[2]=ultima[2];
-              aa[3]=ultima[3];
-           } else {
-              aa[0]=ultima[5];
-              aa[1]=ultima[6];
-              aa[2]=ultima[7];
-              aa[3]=ultima[8];
+         return result;
+      }
+      nibble=bits/4;
+
+      /* --- decode l'angle ---*/
+      for (kk=1;kk<=2;kk++) {
+        if (kk==1) {
+           for (k=0;k<nibble;k++) {
+              aa[k]=ultima[k];
            }
-           for (k=0;k<4;k++) {
-              if      (aa[k]=='0') { a[k]=0; }
-              else if (aa[k]=='1') { a[k]=1; }
-              else if (aa[k]=='2') { a[k]=2; }
-              else if (aa[k]=='3') { a[k]=3; }
-              else if (aa[k]=='4') { a[k]=4; }
-              else if (aa[k]=='5') { a[k]=5; }
-              else if (aa[k]=='6') { a[k]=6; }
-              else if (aa[k]=='7') { a[k]=7; }
-              else if (aa[k]=='8') { a[k]=8; }
-              else if (aa[k]=='9') { a[k]=9; }
-              else if (aa[k]=='A') { a[k]=10; }
-              else if (aa[k]=='B') { a[k]=11; }
-              else if (aa[k]=='C') { a[k]=12; }
-              else if (aa[k]=='D') { a[k]=13; }
-              else if (aa[k]=='E') { a[k]=14; }
-              else if (aa[k]=='F') { a[k]=15; }
+        } else {
+           for (k=0;k<nibble;k++) {
+              aa[k]=ultima[k+offset];
            }
-           x=4096*a[0]+256*a[1]+16*a[2]+a[3];
-           if (kk==1) {
-              ra=x/65536*360.;
-           } else {
-              dec=x/65536*360.;
-              if (dec>180) { dec=dec-360.; }
-           }
-         }
+        }
+        for (k=0;k<nibble;k++) {
+           if      (aa[k]=='0') { a[k]=0; }
+           else if (aa[k]=='1') { a[k]=1; }
+           else if (aa[k]=='2') { a[k]=2; }
+           else if (aa[k]=='3') { a[k]=3; }
+           else if (aa[k]=='4') { a[k]=4; }
+           else if (aa[k]=='5') { a[k]=5; }
+           else if (aa[k]=='6') { a[k]=6; }
+           else if (aa[k]=='7') { a[k]=7; }
+           else if (aa[k]=='8') { a[k]=8; }
+           else if (aa[k]=='9') { a[k]=9; }
+           else if (aa[k]=='A') { a[k]=10; }
+           else if (aa[k]=='B') { a[k]=11; }
+           else if (aa[k]=='C') { a[k]=12; }
+           else if (aa[k]=='D') { a[k]=13; }
+           else if (aa[k]=='E') { a[k]=14; }
+           else if (aa[k]=='F') { a[k]=15; }
+        }
+        x=0;
+        for (k=0;k<nibble;k++) {
+           coef=pow(16,nibble-k-1);
+           x=x+a[k]*coef;
+        }
+        coef=pow(16,nibble);
+        /*x=4096*a[0]+256*a[1]+16*a[2]+a[3];*/
+        if (kk==1) {
+           ra=x/coef*360.;
+        } else {
+           dec=x/coef*360.;
+           if (dec>180) { dec=dec-360.; }
+        }        
       }
       sprintf(s,"%12f %12f",ra,dec);
       Tcl_SetResult(interp,s,TCL_VOLATILE);

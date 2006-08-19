@@ -68,8 +68,8 @@
  int Cmd_mctcl_angle2hms(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_angle2dms(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_angle2rad(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
- int Cmd_mctcl_angles2ultima2000(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
- int Cmd_mctcl_ultima20002angles(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_angles2nexstar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_nexstar2angles(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_dms2deg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_hms2deg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
