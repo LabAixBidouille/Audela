@@ -500,8 +500,8 @@ parameters     of the physical observation.<br>
 better than 2 arcsec.<br>
         <br>
          <b>mc_libration&nbsp;<a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Dates</a> ?<a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#home">Home</a></b><b>?</b> 
+ href="#date">Dates</a> ?<a
+ href="#home">Home</a></b><b>?</b> 
            
 <p>Compute the geocentric parameters of libration (or topocentric ones if
     Home is specified).A 6 element list is returned : <br>
@@ -614,21 +614,21 @@ of the Nexstar protocol.  Bits=16 (default value) or 24.<br>
         <b>mc_nexstar2angles </b>Ultima2000_string : returns a list RA DEC
   (in  degrees) from a string formatted by the Nexstar protocol.         
 <p><b>mc_radec2altaz </b><a href="#angle">Angle_ra</a> <a href="#angle">Angle_dec</a><a
- href="mcusr_fr.htm#home">Home</a><a href="mcusr_fr.htm#date">Date</a> :
+ href="#home">Home</a><a href="#date">Date</a> :
 returns a list that contains four usefull angles used in the altaz coordinate
  system : Azimut, Altitude, Hour angle and Parallactic angle. <br>
         <b>mc_hadec2altaz </b><a href="#angle">Angle_ha</a> <a
- href="#angle">Angle_dec</a><a href="mcusr_fr.htm#home">Home</a><a
- href="mcusr_fr.htm#date">Date</a> : returns a list that contains four usefull 
+ href="#angle">Angle_dec</a><a href="#home">Home</a><a
+ href="#date">Date</a> : returns a list that contains four usefull 
  angles used in the altaz coordinate  system : Azimut, Altitude, Hour angle 
  and Parallactic angle. <br>
         <b>mc_altaz2radec </b><a href="#angle">Angle_Azimuth</a> <a
- href="#angle">Angle_Altitude</a><a href="mcusr_fr.htm#home">Home</a><a
- href="mcusr_fr.htm#date">Date</a> : returns a list Ra,Dec from azimut and
+ href="#angle">Angle_Altitude</a><a href="#home">Home</a><a
+ href="#date">Date</a> : returns a list Ra,Dec from azimut and
     altitude <br>
         <b>mc_altaz2hadec </b><a href="#angle">Angle_Azimuth</a> <a
- href="#angle">Angle_Altitude</a><a href="mcusr_fr.htm#home">Home</a><a
- href="mcusr_fr.htm#date">Date</a> : returns a list Hour Angle,Dec from azimut
+ href="#angle">Angle_Altitude</a><a href="#home">Home</a><a
+ href="#date">Date</a> : returns a list Hour Angle,Dec from azimut
     and altitude <br>
         <b>mc_refraction</b>&nbsp; altitude out2in|in2out ?temperature? ?pressure? 
     : compute the correction (degrees) due to the atmospheric refraction, 
@@ -647,23 +647,23 @@ from   the out of atmosph&egrave;re (add the result) and in2out for the inverse
  allow to return a fourth parameter, the height above the reference ellipsoid.<br>
       <br>
       <b>mc_radec2galactic</b> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angles_RaDec</a>
-   <a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date_Equinox</a>
+ href="#angle">Angles_RaDec</a>
+   <a href="#date">Date_Equinox</a>
    : transform the listAngles_RaDec at the equinox Date_Equinox to the galactic
    coordinates (type II).<br>
        <b>mc_galactic2radec</b> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angles_LonLat</a>&nbsp;<a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date_Equinox</a>
+ href="#angle">Angles_LonLat</a>&nbsp;<a
+ href="#date">Date_Equinox</a>
    : transform the listAngles_LonLat of the galactic coordinates (type II)
  to  the RaDec coordinates at the equinox Date_Equinox.<b><br>
        mc_radec2ecliptic</b>&nbsp;<a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angles_RaDec</a>
-   <a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date_Equinox</a>
+ href="#angle">Angles_RaDec</a>
+   <a href="#date">Date_Equinox</a>
    : transform the listAngles_RaDec at the equinox Date_Equinox to the ecliptic
    coordinates.<br>
         <b>mc_ecliptic2radec</b> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angles_LonLat</a>&nbsp;<a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date_Equinox</a>
+ href="#angle">Angles_LonLat</a>&nbsp;<a
+ href="#date">Date_Equinox</a>
    : transform the listAngles_LonLat of ecliptic coordinates  to the RaDec
  coordinates  at the equinox Date_Equinox.<br>
        <br>
@@ -673,7 +673,7 @@ from   the out of atmosph&egrave;re (add the result) and in2out for the inverse
          <b>mc_date2jd</b> <a href="#date">Date</a> : returns the julian
 day   from   a type Date. <br>
    <b><a name="mc_date2tt"></a>mc_date2tt</b>  <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date</a> : converts 
+ href="#date">Date</a> : converts 
  the date in terretrial time expressed in julian day. <br>
         <b>mc_date2ymdhms</b> <a href="#date">Date</a> : returns the gregorian
    calendar  date (Yyyy Mm Dd Hh Mm Ss.sss) from a type Date <br>
@@ -688,20 +688,20 @@ type   Date and  Home. <br>
         <b>mc_datescomp</b> <a href="#date">Date</a> Operand days : performs
   a  mathematical  operation from a type Date.<br>
   <b><a name="mc_tt2bary"></a>mc_tt2bary</b> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date</a> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Ra</a>
-<a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Dec</a>
-   <a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Equinox</a>
-  ?<a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#home">Home</a>?
+ href="#date">Date</a> <a
+ href="#angle">Angle_Ra</a>
+<a href="#angle">Angle_Dec</a>
+   <a href="#date">Equinox</a>
+  ?<a href="#home">Home</a>?
 :  returns the julian day corresponding to the arrival at the solar system
 barycenter, of an event observed on the Earth at a date expressed in terrestrial
 time.<br>
  <b><a name="mc_dates_ut2bary"></a>mc_dates_ut2bary</b> <a
- href="file:///C:/d/audela/dev/libmc/html/mcusr_fr.htm#date">ListDates_UT</a>
- <a href="file:///C:/d/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Ra</a> 
- <a href="file:///C:/d/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Dec</a> 
- <a href="file:///C:/d/audela/dev/libmc/html/mcusr_fr.htm#date">Equinox</a> 
- ?<a href="file:///C:/d/audela/dev/libmc/html/mcusr_fr.htm#home">Home</a>? 
+ href="#date">ListDates_UT</a>
+ <a href="#angle">Angle_Ra</a> 
+ <a href="#angle">Angle_Dec</a> 
+ <a href="#date">Equinox</a> 
+ ?<a href="#home">Home</a>? 
   : returns the julian days corresponding to the arrival at the solar system
  barycenter, of a series of events observed on the Earth at a date expressed 
 in universal time UTC.<br>
@@ -889,18 +889,18 @@ GPS   format   from type Home list. <br>
                 
 <h3>2.2.7. Radial velocities corrections</h3>
        <b>mc_baryvel</b> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date</a> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Ra</a>
-<a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Dec</a>
-   <a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Equinox</a>
-  ?<a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#home">Home</a>?
+ href="#date">Date</a> <a
+ href="#angle">Angle_Ra</a>
+<a href="#angle">Angle_Dec</a>
+   <a href="#date">Equinox</a>
+  ?<a href="#home">Home</a>?
 :  return the barycventrical correction to add to the radial velocity measurement
   of an object at coordinates Angle_Ra Angle_Dec at equinox Equinox. The
 barycentrical    correction refer the velocity to the barycentre of the solar
 system. Le  diurnal  correction is added if Home is used.<br>
       <b>mc_lsr</b> <a
- href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#angle">AnglesRaDec</a>
-   <a href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Equinox</a> 
+ href="#angle">AnglesRaDec</a>
+   <a href="#date">Equinox</a> 
   reference : Return the correction to add to the radial velocity measurement 
   of an object at coordinates Angle_Ra Angle_Dec at equinox Equinox, for the
   following referencial systems :<br>
