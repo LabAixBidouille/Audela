@@ -47,7 +47,7 @@ void mc_mpc_dec1(char *ligne, struct asterident *aster)
          aster->nbjours=-1;
 	   return;
    }
-   col1=167;col2=172;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=167;col2=174;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    for (col1=0;col1<(int)strlen(texte);col1++) {
       if ((texte[col1]<'0')||(texte[col1]>'9')) { texte[col1]=' '; }
    }
@@ -67,7 +67,7 @@ void mc_mpc_dec1(char *ligne, struct asterident *aster)
    /*---*/
    col1=175;
    col2=(int)strlen(ligne);
-   if ((col2-col1)>20) {col2=col1+20;}
+   if ((col2-col1)>19) {col2=col1+19;}
    strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    /* elimine les blancs de debut et de fin sur le nom */
    strcpy(aster->name,texte);
@@ -164,9 +164,9 @@ void mc_bow_dec1(char *ligne, struct asterident *aster)
    if ((int)strlen(ligne)<215) {
 	  return;
    }
-   col1=  1;col2=  5;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=  1;col2=  6;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->num=atoi(texte);
-   col1=  7;col2= 24;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=  8;col2= 25;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    /* elimine les blancs de debut et de fin sur le nom */
    for (col1=0;col1<(int)strlen(texte);col1++) {
       if (texte[col1]!=' ') { break; }
@@ -180,63 +180,63 @@ void mc_bow_dec1(char *ligne, struct asterident *aster)
       aster->name[k-col1]=texte[k];
    }
    aster->name[k]='\0';
-   col1= 42;col2= 46;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 43;col2= 47;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->h=atof(texte);
-   col1= 48;col2= 52;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 49;col2= 53;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->g=atof(texte);
-   col1= 54;col2= 57;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 55;col2= 58;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->bv=atof(texte);
-   col1= 59;col2= 63;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 60;col2= 64;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->rayoniras=atof(texte);
-   col1= 65;col2= 66;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 66;col2= 67;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    strcpy(aster->classe,texte);
-   col1= 70;col2= 73;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 71;col2= 74;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->code1=atoi(texte);
-   col1= 74;col2= 77;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 75;col2= 78;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->code2=atoi(texte);
-   col1= 78;col2= 81;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 79;col2= 82;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->code3=atoi(texte);
-   col1= 82;col2= 85;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 83;col2= 85;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->code4=atoi(texte);
-   col1= 86;col2= 89;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 87;col2= 90;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->code5=atoi(texte);
-   col1= 90;col2= 93;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 91;col2= 94;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->code6=atoi(texte);
-   col1= 94;col2= 99;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1= 95;col2=100;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->nbjours=atoi(texte);
-   col1=100;col2=104;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=101;col2=105;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->nbobs=atoi(texte);
-   col1=106;col2=109;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=107;col2=110;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    annee=atoi(texte);
-   col1=110;col2=111;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=111;col2=112;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    mois=atoi(texte);
-   col1=112;col2=113;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=113;col2=114;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    jour=atof(texte);
    mc_date_jd(annee,mois,jour,&jj);
    aster->jj_epoque=jj;
-   col1=115;col2=124;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=116;col2=125;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->m0=atof(texte)*DR;
    aster->jj_m0=aster->jj_epoque;
    aster->jj_equinoxe=J2000;
-   col1=126;col2=135;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=127;col2=136;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->w=atof(texte)*DR;
-   col1=137;col2=146;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=138;col2=147;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->o=atof(texte)*DR;
-   col1=147;col2=156;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=149;col2=157;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->i=atof(texte)*DR;
-   col1=158;col2=167;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=159;col2=168;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->e=atof(texte);
-   col1=168;col2=180;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=170;col2=181;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->a=atof(texte);
-   col1=190;col2=197;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=192;col2=198;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->ceu0=atof(texte);
-   col1=199;col2=206;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=200;col2=207;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    aster->ceut=atof(texte);
-   col1=208;col2=211;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=209;col2=212;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    annee=atoi(texte);
-   col1=212;col2=213;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=213;col2=214;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    mois=atoi(texte);
-   col1=214;col2=215;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+   col1=215;col2=216;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
    jour=atof(texte);
    mc_date_jd(annee,mois,jour,&jj);
    aster->jj_ceu0=jj;

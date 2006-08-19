@@ -1314,9 +1314,9 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /****************************************************************************/
    double jj,jour=0.;
    double *jds=NULL;
-   int result,code,planetnum,kd,kf,kp=0,ko,sortie=NO,kpp,kppp=0,k1,k2;
+   int result,code,planetnum,kd,kf,kp=0,ko,sortie=NO,kpp,k1,k2;
    char s0[100],s[1024],name[50],name2[50];
-   char objename[100],planetname[100],orbitformat[15],orbitstring[300],orbitfile[1024];
+   char objename[10000],orbitformat[15],orbitstring[300],orbitfile[1024];
    char **dates=NULL,**formats=NULL,**planets=NULL;
    char charsigne[2];
    int nbdates,nbformats,year,month,nbplanets,stationfilefound,stationfound;
@@ -1343,7 +1343,15 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	   Tcl_DStringInit(&dsptr);
 	   /* --- decode le type de planete ---*/
       mctcl_decode_planet(interp,argv[1],&planetnum,objename,orbitformat,orbitfile);
-	   strcpy(planetname,objename);
+      if ((planetnum>=SOLEIL)&&(planetnum<=LUNE)) {
+   	   /* --- lit la liste des planetes */
+         strcpy(objename,argv[1]);
+		} else if (planetnum==ALLPLANETS) {
+         /* --- lit la liste de toutes les planetes */
+         strcpy(objename,"sun moo mer ven mar jup sat ura nep plu");
+      }
+      /* --- lit la liste de tous les astres demandes */
+      Tcl_SplitList(interp,objename,&nbplanets,&planets);
       /* --- decode les dates ---*/
 	   nextindex=2;
 	   if (argc<=2) {
@@ -1428,16 +1436,6 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
       /* ============================*/
 	   for (kd=0;kd<nbdates;kd++) {
 		   jj=jds[kd];
-		   if (kd==0) {
-		      nbplanets=1;
-            if ((planetnum>=SOLEIL)&&(planetnum<=LUNE)) {
-   	         /* --- lit la liste des planetes */
-               code=Tcl_SplitList(interp,argv[1],&nbplanets,&planets);
-		      } else if (planetnum==ALLPLANETS) {
-	            /* --- lit la liste de toutes les planetes */
-               code=Tcl_SplitList(interp,"sun moo mer ven mar jup sat ura nep plu",&nbplanets,&planets);
-			   }
-		   }
 		   /* --- position de la Lune si on veut l'elongation par rapport a la Lune ---*/
 		   if (ok4moonelong==YES) {
             mc_adlunap(jj,longmpc,rhocosphip,rhosinphip,&asdmoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
@@ -1503,13 +1501,16 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		         }
 			      kp++;
 
-			   /* ------------------------------*/
-			   /* --- cas de d'asteroides *  ---*/
-			   /* ------------------------------*/
+			   /* ---------------------------*/
+			   /* --- cas d'asteroides *  ---*/
+			   /* ---------------------------*/
 		      } else if (planetnum==OTHERPLANET) {
 			      sortie=NO;
+			      if (kp>=nbplanets) { sortie=YES; break; }
+      	      strcpy(name,planets[kp]);
+			      mc_strupr(name,name);
 			      /* --- ouverture du fichier de la base d'orbite ---*/
-			      if (kp==0) {
+			      if (fichier_in==NULL) {
    				   if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
                      if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
 					         orbitfilefound=NO;
@@ -1519,24 +1520,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 					         break;
 					      }
                   }
-      	         /* --- lit la liste des planetes */
-                  Tcl_SplitList(interp,argv[1],&nbplanets,&planets);
-                  kppp=0;
-			      }
-               /* --- on sort si toutes les planetes ont ete calculees ---*/
-               if (kppp==(nbplanets-2)) { fclose(fichier_in);sortie=YES;break;}
-     	         /* --- fin de la base d'orbite pour debuggage ---*/
-			      /*
-			      if (kp>=40) {
-				     orbitfilefound=YES;
-				     if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
-					    kp=-6;
-                        fclose(fichier_in);
-				     }
-			         sortie=YES;
-				     break;
-			      }
-			      */
+               }
       	      /* --- lecture d'une ligne de la base d'orbite ---*/
 			      if (strcmp(orbitformat,"BOWELLFILE")==0) {
       			   if (feof(fichier_in)!=0) { fclose(fichier_in);sortie=YES;break;}
@@ -1563,11 +1547,9 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			      } else {
 				      orbitisgood=NO;
 			      }
-
-               kp++;
 			      /* --- selection des options pour les bases de donnees ---*/
 			      if (orbitisgood==YES) {
-                  for (kpp=0;kpp<nbplanets-2;kpp++) {
+                  for (kpp=0;kpp<nbplanets;kpp++) {
       	            strcpy(name,planets[kpp]);
 			            mc_strupr(name,name);
                      if (strcmp(name,"*")==0) {
@@ -1578,7 +1560,6 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
                         orbitisgood=NO;
                         if (strcmp(name,name2)==0) {
                            orbitisgood=YES;
-                           kppp++;
                            break;
                         }
                         for (k1=0,k2=0;k1<(int)strlen(name2);k1++) {
@@ -1587,13 +1568,11 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
                         name2[k2]='\0';
                         if (strcmp(name,name2)==0) {
                            orbitisgood=YES;
-                           kppp++;
                            break;
                         }
                         sprintf(name2,"%d",aster.num);
                         if (strcmp(name,name2)==0) {
                            orbitisgood=YES;
-                           kppp++;
                            break;
                         }
                      }
@@ -1604,10 +1583,12 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			            if (strcmp(name,"-NUMB")==0) { if (atof(argv[ko+1])==0) { if (aster.num>0) { orbitisgood=NO; }}}
 			            if (strcmp(name,"-PROV")==0) { if (atof(argv[ko+1])==0) { if (aster.num<=0) { orbitisgood=NO; }}}
 				      }
+
                }
 			      /* --- calcul ---*/
 			      ok4compute=PB;
 			      if (orbitisgood==YES) {
+                  kp++;
    			      mc_aster2elem(aster,&elem);
 			         sprintf(objename,elem.designation);
 			         mc_adasaap(jj,longmpc,rhocosphip,rhosinphip,elem,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
@@ -1703,7 +1684,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			      Tcl_DStringAppend(&dsptr,"} ",-1);
                   result = TCL_OK;
 			   }
-			} /* fin de format de sortie */
+			} /* fin de formatage des resultats */
 		 } while (sortie==NO); /* fin de boucle sur les planetes pour une date donnee */
 	  } /* fin de boucle sur la date */
 	  /* === sortie et destructeurs ===*/
@@ -1711,6 +1692,9 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
       if (dates!=NULL) { Tcl_Free((char *) dates); }
       if (formats!=NULL) { Tcl_Free((char *) formats); }
       if (planets!=NULL) { Tcl_Free((char *) planets); }
+   }
+   if (fichier_in!=NULL) {
+      fclose(fichier_in);
    }
    /* --- le dernier element de la liste contient un commentaire ---*/
    if (stationfilefound==NO) {
