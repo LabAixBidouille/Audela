@@ -53,6 +53,7 @@ int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSave1d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdGetNaxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -134,6 +135,7 @@ static struct cmditem cmdlist[] = {
    {"fwhm", (Tcl_CmdProc *)cmdFwhm},
    {"getkwd", (Tcl_CmdProc *)cmdGetKwd},
    {"getkwds", (Tcl_CmdProc *)cmdGetKwds},
+   {"getnaxis",         (Tcl_CmdProc *)cmdGetNaxis},
    {"getpix",           (Tcl_CmdProc *)cmdGetPix},
    {"getpixels",        (Tcl_CmdProc *)cmdGetPixels},
    {"getpixelsheight",  (Tcl_CmdProc *)cmdGetPixelsHeight},
@@ -1501,17 +1503,32 @@ int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                   sprintf(ligne,"Buffer is NULL : abnormal error.");
                   retour = TCL_ERROR;
                } else {
+                  int plane =0;
                   naxis1 = buffer->GetW();
                   naxis2 = buffer->GetH();
                   // Test sur la position du point par rapport aux coins.
-                  if((x<=0)||(x>naxis1)||(y<=0)||(y>naxis2)) {
-                     sprintf(ligne,"Out of limits point ((%d,%d) in (1,1),(%d,%d)).",x,y,naxis1,naxis2);
-                     retour = TCL_ERROR;
+                  if( buffer->GetNaxis() == 1  ) {
+                     if( x<=0||x>naxis1) {
+                        sprintf(ligne,"Out of limits point ((%d,%d) in (1,1),(%d,%d)).",x,y,naxis1,naxis2);
+                        retour = TCL_ERROR;
+                     } else {
+                        x -=1;
+                        y = 0;
+                        retour = TCL_OK;
+                     }
                   } else {
-                     int plane =0;
-                     // Changement de repere
-                     x -= 1;
-                     y -= 1;
+                     if(x<=0||x>naxis1||y<=0||y>naxis2) {
+                        sprintf(ligne,"Out of limits point ((%d,%d) in (1,1),(%d,%d)).",x,y,naxis1,naxis2);
+                        retour = TCL_ERROR;
+                     } else { 
+                        // Changement de repere
+                        x -= 1;
+                        y -= 1;
+                        retour = TCL_OK;
+                     }
+                  }
+                  
+                  if ( retour == TCL_OK) {
                      try { 
                         buffer->GetPix(&plane,&val1,&val2,&val3,x,y);
                         buffer->GetDataType(&dt);
@@ -1681,6 +1698,33 @@ int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    
    return retour;
 }
+
+//==============================================================================
+// buf$i getnaxis
+//   retuns image naxis
+//   
+//
+int cmdGetNaxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   CBuffer *buffer;
+   char *ligne;
+   int retour;
+   ligne = new char[1000];
+
+   if(argc!=2) {
+      sprintf(ligne,"Usage: %s %s ",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      buffer = (CBuffer*)clientData;
+      sprintf(ligne,"%d",buffer->GetNaxis());
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_OK;
+   }
+   delete ligne;
+   return retour;
+}
+
 
 //==============================================================================
 // buf$i getpixelsheight
@@ -3879,8 +3923,8 @@ int cmdWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          } else {
             buffer = (CBuffer*)clientData;
             // Collecte de renseignements pour la suite
-            naxis1 = buffer->GetKeywords()->FindKeyword("NAXIS1")->GetIntValue();
-            naxis2 = buffer->GetKeywords()->FindKeyword("NAXIS2")->GetIntValue();
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}

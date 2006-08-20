@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.31 2006-08-12 21:24:26 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.32 2006-08-20 17:09:44 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -238,11 +238,18 @@ namespace eval ::confVisu {
       }
 
       set bufNo [visu$visuNo buf]
-      set private($visuNo,picture_w) [lindex [buf$bufNo getkwd NAXIS1] 1]
+      set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
       if { "$private($visuNo,picture_w)" == "" } {
          set private($visuNo,picture_w) 0
       }
-      set private($visuNo,picture_h) [lindex [buf$bufNo getkwd NAXIS2] 1]
+      
+      if { [buf$bufNo getnaxis] == 1 } {
+         #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visue
+         set private($visuNo,picture_h) [visu$visuNo thickness]
+      } else {
+         #--- dans le cas d'une image 2D ou plus, la hauteur est la valeur retournee par le buffer
+         set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
+      }
       if { "$private($visuNo,picture_h)" == "" } {
          set private($visuNo,picture_h) 0
       }

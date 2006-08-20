@@ -41,6 +41,7 @@ int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdVisuPalDir(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuThickness(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuZoom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
@@ -55,6 +56,7 @@ static struct cmditem cmdlist[] = {
    {"image", (Tcl_CmdProc *)cmdVisuImage},
    {"mirrorx", (Tcl_CmdProc *)cmdVisuMirrorX},
    {"mirrory", (Tcl_CmdProc *)cmdVisuMirrorY},
+   {"thickness", (Tcl_CmdProc *)cmdVisuThickness},
    {"window", (Tcl_CmdProc *)cmdVisuWindow},
    {"zoom", (Tcl_CmdProc *)cmdVisuZoom},
    {NULL, NULL}
@@ -633,6 +635,12 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                int naxis1 = buffer->GetW();
                int naxis2 = buffer->GetH();
 
+               if( buffer->GetNaxis() == 1 ) {
+                  naxis2 = visu->GetThickness();
+               } else {
+                  naxis2 = buffer->GetH();
+               }
+
                if(y1>y2) {
                   i = y2;
                   y2 = y1;
@@ -764,4 +772,51 @@ int cmdVisuMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    free(ligne);
    return result;
 }
+
+//---------------------------------------------------------------------
+/**
+ * cmdThickness
+ *   set or get thickness of 1D picture
+ *   
+ * Parameters: 
+ *    value  : name  
+ * Results:
+ *    returns  ident or FORMAT_UNKNOWN if name is not found
+ * Side effects:
+ *    none
+ */
+int cmdVisuThickness(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+  int result = TCL_OK;
+   char *ligne;
+   CVisu *visu;
+
+   ligne = (char*)calloc(200,sizeof(char));
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?value?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      visu = (CVisu*)clientData;
+      strcpy(ligne, "");
+      sprintf(ligne, "%d", visu->GetThickness() );
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      int thickness;
+      visu = (CVisu*)clientData;
+      if(Tcl_GetInt(interp,argv[2],&thickness)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s ?0|1?\nvalue must be an integer",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         visu = (CVisu*)clientData;
+         visu->SetThickness(thickness);
+      }
+   }
+   free(ligne);
+
+   return result;
+}
+
 

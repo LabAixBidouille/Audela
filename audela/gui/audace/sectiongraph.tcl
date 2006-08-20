@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.5 2006-06-20 17:35:46 robertdelmas Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.6 2006-08-20 17:09:44 michelpujol Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -103,6 +103,10 @@ proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { 
    set width     [buf$bufNo getpixelswidth]
    set height    [buf$bufNo getpixelsheight]
 
+   if { [buf$bufNo getnaxis] == 1 } {
+      set height [visu$visuNo thickness]
+   }
+   
    if { $width > 0 && $height > 0 } {
       #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
       set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]

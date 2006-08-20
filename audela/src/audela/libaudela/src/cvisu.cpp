@@ -41,6 +41,7 @@ CVisu::CVisu(Tcl_Interp *Interp, int buf, int img)
    locutBlue = (Lut_Cut)0;
    hicutBlue = (Lut_Cut)32767;
    palette_dir = NULL;
+   thickness_1d = 20;
 
    // Initialisation eventuelle de la Tk_Image
    CreateImage(img);
@@ -84,12 +85,16 @@ int CVisu::GetMirrorY()
    return mirrorY;
 }
 
-
+int CVisu::GetThickness()
+{
+   return thickness_1d;
+}
 
 void CVisu::GetZoom(double *z)
 {
    *z = zoom;
 }
+
 
 int CVisu::IsFull()
 {
@@ -419,7 +424,7 @@ int CVisu::UpdateDisplay()
    CBuffer *buffer;
    unsigned char *ptr;
    char *ligne;
-   int ww, wh;              // window width, height multiplied by zoom
+   //int ww, wh;              // window width, height multiplied by zoom
    int xx1, yy1, xx2, yy2;  // window coordinates
    int orgw, orgh;          // picture width, height
    int orgww, orgwh;        // original window width, height
@@ -438,13 +443,13 @@ int CVisu::UpdateDisplay()
       xx2 = orgw - 1;
       yy2 = orgh - 1;
    } else {
-      if( x1>orgw || x2>orgw) {
-         return ELIBSTD_X1X2_NOT_IN_1NAXIS1;
-      }
+      //if( x1>orgw || x2>orgw) {
+      //   return ELIBSTD_X1X2_NOT_IN_1NAXIS1;
+      //}
 
-      if( y1>orgh || y2>orgh ) {
-         return ELIBSTD_Y1Y2_NOT_IN_1NAXIS2;
-      }
+      //if( y1>orgh || y2>orgh ) {
+      //   return ELIBSTD_Y1Y2_NOT_IN_1NAXIS2;
+      //}
 
       xx1 = x1-1;
       yy1 = y1-1;
@@ -453,15 +458,14 @@ int CVisu::UpdateDisplay()
    }
 
    
-
-   orgww = xx2 - xx1 + 1; // Largeur de la fenetre au depart
-   orgwh = yy2 - yy1 + 1; // Hauteur ...
-   if (zoom>0) {
-      ww = (int)ceil(zoom * orgww);     // Largeur de la fenetre a l'arrivee, en pixels unitaires
-      wh = (int)ceil(zoom * orgwh);     // Hauteur ...
+   if( buffer->GetNaxis() == 1 ) {
+      orgww = xx2 - xx1 + 1; // Largeur 
+      orgwh = thickness_1d;
+      yy1 = 0;
+      yy2 = 0;
    } else {
-      ww=1;
-      wh=1;
+      orgww = xx2 - xx1 + 1; // Largeur 
+      orgwh = yy2 - yy1 + 1; // Hauteur 
    }
 
    ptr = (unsigned char*)calloc(orgww*orgwh,3);
@@ -473,6 +477,20 @@ int CVisu::UpdateDisplay()
       hicutRed, locutRed, hicutGreen, locutGreen, hicutBlue, locutBlue,
       &pal, ptr);
 
+   if( buffer->GetNaxis() == 1 ) {
+      unsigned char *ptr2;
+      ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
+      if(ptr2==NULL) {
+         free(ptr);
+         return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
+      }
+      for(int y=0 ; y < thickness_1d; y++) {
+         memcpy(ptr2+y*orgww*3, ptr, orgww*3);
+      }
+      free(ptr);
+      ptr = ptr2;
+   }
+      
    // Preparation de la structure a passer a TCL/TK pour afficher l'image.
    pib.pixelPtr = ptr;
    pib.width = orgww;
@@ -497,7 +515,7 @@ int CVisu::UpdateDisplay()
 
    //Tk_PhotoPutBlock(ph,&pib,0,0, ww,wh);
    if( zoom == 1 ) {
-      Tk_PhotoPutBlock(ph,&pib,0,0, ww,wh);
+      Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
    } else if( zoom > 1) {
       Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1);
    } else {
@@ -535,6 +553,11 @@ void CVisu::SetPaletteDir(char *dir)
    palette_dir = (char*)malloc(strlen(dir)+1);
    palette_dir[0] = 0;
    strcpy(palette_dir,dir);
+}
+
+void CVisu::SetThickness(int val)
+{
+   thickness_1d = val;
 }
 
 int CVisu::SetWindow(int xx1, int yy1, int xx2, int yy2)

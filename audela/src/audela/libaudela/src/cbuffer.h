@@ -98,6 +98,7 @@ protected:
    */
    char *fitsextension;
    CPixels        *pix;
+   int            naxis;
    CFitsKeywords  *keywords;
    float          initialMipsLo;
    float          initialMipsHi;
@@ -148,6 +149,7 @@ public:
    void GetDataType(TDataType *dt);
    int  GetH();
    CFitsKeywords* GetKeywords() {return keywords;};
+   int  GetNaxis();
    void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixels(TYPE_PIXELS* pixels);
    void GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane);

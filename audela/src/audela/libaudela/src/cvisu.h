@@ -53,6 +53,8 @@ class CVisu : public CDevice {
    Lut_Cut hicutGreen;
    Lut_Cut locutBlue;
    Lut_Cut hicutBlue;
+   int thickness_1d ; // epaisseur de l'affichage d'une image 1D
+
 
       public:
    int x1, y1, x2, y2;
@@ -86,8 +88,9 @@ class CVisu : public CDevice {
    Lut_Cut GetGrayHicut();
    Lut_Cut GetGrayLocut();
    char* GetPaletteDir();
-   void GetZoom(double *zoom);
+   int GetThickness();
    int GetWindow(int *xx1, int *yy1, int *xx2, int *yy2);
+   void GetZoom(double *zoom);
    void SetGrayCuts(Lut_Cut hc, Lut_Cut lc);
    void SetRgbCuts(Lut_Cut hcRed, Lut_Cut lcRed, Lut_Cut hcGreen, Lut_Cut lcGreen, Lut_Cut hcBlue, Lut_Cut lcBlue);
    double SetZoom(double z);
@@ -95,6 +98,7 @@ class CVisu : public CDevice {
    void SetMirrorX( int val);
    void SetMirrorY( int val);
    void SetMirrorDiag( int val);
+   void SetThickness(int val);
    int UpdateDisplay();
 };
 
