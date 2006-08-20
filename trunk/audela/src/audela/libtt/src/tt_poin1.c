@@ -1050,15 +1050,15 @@ int tt_ptr_loadima3d(void *args)
    if (argu[8]!=NULL) {
       nbkeys=p_in.nbkeys;
       for (k=0,kk=0;k<p_in.nbkeys;k++) {
-         if (strcmp(p_in.keynames[k],"NAXIS")==0) {
-            strcpy(p_in.values[k],"2");
-         }
-         if (strcmp(p_in.keynames[k],"NAXIS3")==0) {
-            nbkeys--;
-         }
-         if ((strcmp(p_in.keynames[k],"NAXIS2")==0)&&(all==1)) {
-            sprintf(p_in.values[k],"%d",p_in.naxis2);
-         }
+//         if (strcmp(p_in.keynames[k],"NAXIS")==0) {
+//            strcpy(p_in.values[k],"2");
+//         }
+//         if (strcmp(p_in.keynames[k],"NAXIS3")==0) {
+//            nbkeys--;
+//         }
+//         if ((strcmp(p_in.keynames[k],"NAXIS2")==0)&&(all==1)) {
+//            sprintf(p_in.values[k],"%d",p_in.naxis2);
+//         }
       }
       if ((msg=libtt_main0(TT_PTR_ALLOKEYS,6,&nbkeys,&keynames,&values,
        &comments,&units,&datatypes))!=0) {

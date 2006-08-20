@@ -55,8 +55,9 @@ extern char* message(int error);
 #define ELIBSTD_PALETTE_NOTCOMPLETE        -22
 #define ELIBSTD_SUB_WINDOW_ALREADY_EXIST   -23
 #define ELIBSTD_PIXEL_FORMAT_UNKNOWN       -24
-
 #define ELIBSTD_CANT_OPEN_FILE				 -25
+#define ELIBSTD_NO_NAXIS_KWD               -26
+
 #define ELIBSTD_LIBTT_ERROR    				 -29
 
 #define ELIBSTD_NOT_IMPLEMENTED				 -30

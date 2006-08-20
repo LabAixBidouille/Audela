@@ -24,6 +24,7 @@
 
 #include <iostream.h>
 #include <fstream.h>
+#include <time.h>
 
 #include "cbuffer.h"
 #include "cpixelsgray.h"
@@ -42,6 +43,7 @@ CBuffer::CBuffer() : CDevice()
    SetSavingType(USHORT_IMG);
    keywords = NULL;
    pix = NULL;
+   naxis = 0;
    p_ast = NULL;
    compress_type = BUFCOMPRESS_NONE;
    fitsextension = new char[CHAREXTENSION];
@@ -255,6 +257,12 @@ void CBuffer::LoadFits(char *filename)
          throw CError("LoadFits error: plane number is not 1 or 3.");
       }
 
+      k = keywords->FindKeyword("NAXIS");
+      if( k != NULL) {
+         naxis =k->GetIntValue();
+      } else {
+         throw new CError(ELIBSTD_NO_NAXIS_KWD);
+      }
       
       // On reinitialise les parametres astrometriques
       p_ast->valid = 0;
@@ -320,7 +328,6 @@ void CBuffer::LoadNoFits(int pixelSize, int offset[4], int pitch , int width, in
    double level;
    int x, y;
    int base;
-   int naxis;
    
    
    try {
@@ -395,7 +402,7 @@ void CBuffer::LoadRawFile(char * filename)
 
    int result;
 
-   int width, height, planes, naxis;
+   int width, height;
    unsigned short * pixels;
    struct DataInfo  dataInfo;
    struct tm *tmtime;
@@ -415,7 +422,6 @@ void CBuffer::LoadRawFile(char * filename)
       libdcraw_freeBuffer(pixels);
 
       naxis = 2;
-      planes = 3;
       keywords->Add("NAXIS", &naxis,TINT,"","");
       keywords->Add("NAXIS1",&width,TINT,"","");
       keywords->Add("NAXIS2",&height,TINT,"","");
@@ -1072,6 +1078,14 @@ void CBuffer::SaveRawFile(char *filename)
 
 }
 
+/*
+ * int CBuffer::GetNaxis() --
+ *  Renvoie le nombre d'axes de l'image
+ */
+int CBuffer::GetNaxis()
+{
+   return naxis;
+}
 
 /*
  * int CBuffer::GetW() --
@@ -1912,7 +1926,7 @@ void CBuffer::Div(char *filename, float constante)
  */
 void CBuffer::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)
 {
-   pix->GetPix(plane , val1, val2, val3, x, y);
+     pix->GetPix(plane , val1, val2, val3, x, y);
 }
 
 
@@ -2057,7 +2071,7 @@ void CBuffer::TtImaSeries(char *s)
    char **comments=NULL;
    char **units=NULL;
    int *datatypes=NULL;
-   char valchar[80];
+//   char valchar[80];
    TYPE_PIXELS *ppixOut=NULL;
    //TYPE_PIXELS *ppixIn=NULL;
    CPixels * pixelsOut;
@@ -2080,10 +2094,10 @@ void CBuffer::TtImaSeries(char *s)
       
       // On recupere les mots cles
       keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
-      sprintf(valchar,"%d",pix->GetWidth() );
-      SetKeyword("NAXIS1",valchar,"int","","");
-      sprintf(valchar,"%d",pix->GetHeight());
-      SetKeyword("NAXIS2",valchar,"isnt","","");
+      //sprintf(valchar,"%d",pix->GetWidth() );
+      //SetKeyword("NAXIS1",valchar,"int","","");
+      //sprintf(valchar,"%d",pix->GetHeight());
+      //SetKeyword("NAXIS2",valchar,"isnt","","");
       
       // On reinitialise les parametres astrometriques
       p_ast->valid = 0;

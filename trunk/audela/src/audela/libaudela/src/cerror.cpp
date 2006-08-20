@@ -112,6 +112,8 @@ char* CError::message(int error)
          return "not enough memory for keywords allocation";
       case ELIBSTD_NO_MEMORY_FOR_ASTROMPARAMS :
          return "not enough memory for astrometric parameters allocation";
+      case ELIBSTD_NO_NAXIS_KWD :
+         return "image does not have mandatory FITS NAXIS1 keyword";
       case ELIBSTD_NO_NAXIS1_KWD :
          return "image does not have mandatory FITS NAXIS1 keyword";
       case ELIBSTD_NO_NAXIS2_KWD :
