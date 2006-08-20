@@ -459,7 +459,7 @@ int tt_ptr_saveima(void *args)
    int nbkeys,datatype;
    void **argu;
    int msg;
-   int naxis1,naxis2,bitpix,k;
+   int naxis1,naxis2,bitpix,k,naxis=2;
    void *p=NULL;
    char *fullname=NULL;
    char **keynames=NULL;
@@ -483,18 +483,7 @@ int tt_ptr_saveima(void *args)
    if (argu[6]==NULL) { return(PB_DLL); }
    bitpix=*(int*)(argu[6]);
 
-   /* --- construit et remplit l'image p_out ---*/
-   if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
-      return(msg);
-   }
-   if ((msg=tt_imacreater(&p_out,naxis1,naxis2))!=OK_DLL) {
-      return(msg);
-   }
-   if ((msg=tt_util_ptr2ttima(p,datatype,&p_out))!=OK_DLL) {
-      return(msg);
-   }
-
-   /* --- remplit le header avec les nouveaux mots cle eventuels ---*/
+   /* --- verifie le nombre d'axes de l'image  ---*/
    if ((argu[7]!=NULL)&&(argu[8]!=NULL)&&(argu[9]!=NULL)&&(argu[10]!=NULL)&&(argu[11]!=NULL)&&(argu[12]!=NULL)) {
       nbkeys=*(int*)(argu[7]);
       keynames=(char**)(argu[8]);
@@ -502,6 +491,35 @@ int tt_ptr_saveima(void *args)
       comments=(char**)(argu[10]);
       units=(char**)(argu[11]);
       datatypes=(int*)(argu[12]);
+      for (k=0;k<nbkeys;k++) {
+         if (strcmp(keynames[k],"NAXIS")==0) {
+            naxis=atoi(values[k]);
+         }
+         if ((naxis<1)||(naxis>2)) {
+            naxis=2;
+         }
+      }
+   }
+
+   /* --- construit et remplit l'image p_out ---*/
+   if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
+      return(msg);
+   }
+   if (naxis==1) {
+      if ((msg=tt_imacreater1d(&p_out,naxis1))!=OK_DLL) {
+         return(msg);
+      }
+   } else {
+      if ((msg=tt_imacreater(&p_out,naxis1,naxis2))!=OK_DLL) {
+         return(msg);
+      }
+   }
+   if ((msg=tt_util_ptr2ttima(p,datatype,&p_out))!=OK_DLL) {
+      return(msg);
+   }
+
+   /* --- remplit le header avec les nouveaux mots cle eventuels ---*/
+   if ((argu[7]!=NULL)&&(argu[8]!=NULL)&&(argu[9]!=NULL)&&(argu[10]!=NULL)&&(argu[11]!=NULL)&&(argu[12]!=NULL)) {
       for (k=0;k<nbkeys;k++) {
 	 tt_imanewkeychar(&p_out,keynames[k],values[k],datatypes[k],comments[k],units[k]);
       }
@@ -899,7 +917,7 @@ int tt_ptr_saveima3d(void *args)
    int nbkeys,datatype;
    void **argu;
    int msg;
-   int naxis1,naxis2,naxis3,bitpix,k;
+   int naxis1,naxis2,naxis3,bitpix,k,naxis=3;
    void *p=NULL;
    char *fullname=NULL;
    char **keynames=NULL;
@@ -925,12 +943,39 @@ int tt_ptr_saveima3d(void *args)
    if (argu[6]==NULL) { return(PB_DLL); }
    bitpix=*(int*)(argu[7]);
 
+   if ((argu[8]!=NULL)&&(argu[9]!=NULL)&&(argu[10]!=NULL)&&(argu[11]!=NULL)&&(argu[12]!=NULL)&&(argu[13]!=NULL)) {
+      nbkeys=*(int*)(argu[8]);
+      keynames=(char**)(argu[9]);
+      values=(char**)(argu[10]);
+      comments=(char**)(argu[11]);
+      units=(char**)(argu[12]);
+      datatypes=(int*)(argu[13]);
+      for (k=0;k<nbkeys;k++) {
+         if (strcmp(keynames[k],"NAXIS")==0) {
+            naxis=atoi(values[k]);
+         }
+         if ((naxis<1)||(naxis>3)) {
+            naxis=3;
+         }
+      }
+   }
+
    /* --- construit et remplit l'image p_out ---*/
    if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
       return(msg);
    }
-   if ((msg=tt_imacreater3d(&p_out,naxis1,naxis2,naxis3))!=OK_DLL) {
-      return(msg);
+   if (naxis==1) {
+      if ((msg=tt_imacreater1d(&p_out,naxis1))!=OK_DLL) {
+         return(msg);
+      }
+   } else if (naxis==2) {
+      if ((msg=tt_imacreater(&p_out,naxis1,naxis2))!=OK_DLL) {
+         return(msg);
+      }
+   } else {
+      if ((msg=tt_imacreater3d(&p_out,naxis1,naxis2,naxis3))!=OK_DLL) {
+         return(msg);
+      }
    }
    if ((msg=tt_util_ptr2ttima(p,datatype,&p_out))!=OK_DLL) {
       return(msg);
@@ -1050,15 +1095,12 @@ int tt_ptr_loadima3d(void *args)
    if (argu[8]!=NULL) {
       nbkeys=p_in.nbkeys;
       for (k=0,kk=0;k<p_in.nbkeys;k++) {
-//         if (strcmp(p_in.keynames[k],"NAXIS")==0) {
-//            strcpy(p_in.values[k],"2");
-//         }
-//         if (strcmp(p_in.keynames[k],"NAXIS3")==0) {
-//            nbkeys--;
-//         }
-//         if ((strcmp(p_in.keynames[k],"NAXIS2")==0)&&(all==1)) {
-//            sprintf(p_in.values[k],"%d",p_in.naxis2);
-//         }
+         if (strcmp(p_in.keynames[k],"NAXIS3")==0) {
+            nbkeys--;
+         }
+         if ((strcmp(p_in.keynames[k],"NAXIS2")==0)&&(all==1)) {
+            sprintf(p_in.values[k],"%d",p_in.naxis2);
+         }
       }
       if ((msg=libtt_main0(TT_PTR_ALLOKEYS,6,&nbkeys,&keynames,&values,
        &comments,&units,&datatypes))!=0) {

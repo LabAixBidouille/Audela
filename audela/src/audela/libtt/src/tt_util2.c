@@ -2748,7 +2748,7 @@ int tt_util_transima1(TT_IMA_SERIES *pseries,double trans_x,double trans_y)
 	    coef_c=alpha*(1-beta);
 	    coef_d=alpha*beta;
 	 }
-	 if ((x1>=1)&&(x1<(imax-1))&&(y1>=1)&&(y1<(jmax-1))) {
+	 if ((x1>=0)&&(x1<=(imax-1))&&(y1>=0)&&(y1<=(jmax-1))) {
 	    ka=x1+y1*imax;
 	    kb=x1+(y1+1)*imax;
 	    kc=x1+1+y1*imax;
