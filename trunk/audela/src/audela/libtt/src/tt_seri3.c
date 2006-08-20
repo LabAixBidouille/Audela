@@ -334,10 +334,10 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
    long nelem;
    double value=0,kernel_coef=0;
    int kkk,index;
-   int k,bordure;
-   int nb,kx,ky,x,y,imax,jmax,nb0;
+   int k,bordure,bordurex,bordurey;
+   int nb,kx,ky,x,y,imax,jmax;
    double val0,threshold,*val,*valtri,val1,val2,*kpatern;
-   int type_threshold,kernel_type,kernel_width;
+   int type_threshold,kernel_type,kernel_width,kernel_widthx,kernel_widthy;
    int taille,nombre,msg;
 
    /* --- initialisations ---*/
@@ -353,10 +353,33 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
    imax=p_in->naxis1;
    jmax=p_in->naxis2;
 
+   /* --- initialisation de l'image ---*/
+   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+      value=p_in->p[kkk];
+      p_out->p[kkk]=(TT_PTYPE)(value);
+   }
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   /* --- conditions d'utilisation du filtre par rapport a la forme de l'image ---*/
+   kernel_widthx=kernel_widthy=kernel_width;
+   if (kernel_width>imax) {
+      kernel_widthx=1;
+   }
+   if (kernel_width>jmax) {
+      kernel_widthy=1;
+   }
+   if ((kernel_widthx==1)&&(kernel_widthy==1)) {
+      return(OK_DLL);
+   }
+
    /* --- mise en place du kernel ---*/
    bordure=(kernel_width-1)/2; /* 1 pour 3 et 2 pour 5 ... */
-   nb=kernel_width*kernel_width;
-   nb0=((jmax>=kernel_width)?kernel_width:jmax)*((imax>=kernel_width)?kernel_width:imax);
+   bordurex=(kernel_widthx-1)/2; /* 1 pour 3 et 2 pour 5 ... */
+   bordurey=(kernel_widthy-1)/2; /* 1 pour 3 et 2 pour 5 ... */
+   nb=kernel_widthx*kernel_widthy;
    val=NULL;
    nombre=nb+1;
    taille=sizeof(double);
@@ -397,45 +420,16 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
 	 kpatern[k]/=val0;
       }
    } else if (kernel_type==TT_KERNELTYPE_FB) {
-      if ((imax>=kernel_width)&&(jmax>=kernel_width)) {
-         for (val0=0,ky=0;ky<=2*bordure;ky++) {
-	    val1=(ky-bordure);
-	    for (kx=0;kx<=2*bordure;kx++) {
-	       val2=(kx-bordure);
-	       val2=val2*val2+val1*val1;
-	       value=exp(-val2/bordure*2);
-	       k=(kx+1)+(ky)*kernel_width;
-	       kpatern[k]=value;
-	       val0+=value;
-            }
-	 }
-      } else if ((imax<kernel_width)&&(jmax>=kernel_width)) {
-         for (val0=0,ky=0;ky<=2*bordure;ky++) {
-	    val1=(ky-bordure);
-	    for (kx=0;kx<=2*bordure;kx++) {
-	       /*val2=(kx-bordure);*/
-	       val2=0;
-	       val2=val2*val2+val1*val1;
-	       value=exp(-val2/bordure*2);
-	       k=(kx+1)+(ky)*kernel_width;
-	       kpatern[k]=value;
-	       val0+=value;
-            }
-	 }
-      } else if ((imax>=kernel_width)&&(jmax<kernel_width)) {
-         for (val0=0,ky=0;ky<=2*bordure;ky++) {
-	    /*val1=(ky-bordure);*/
-	    val1=0;
-	    for (kx=0;kx<=2*bordure;kx++) {
-	       /*val2=(kx-bordure);*/
-	       val2=(kx-bordure);
-	       val2=val2*val2+val1*val1;
-	       value=exp(-val2/bordure*2);
-	       k=(kx+1)+(ky)*kernel_width;
-	       kpatern[k]=value;
-	       val0+=value;
-            }
-	 }
+      for (val0=0,ky=0;ky<=2*bordurey;ky++) {
+         val1=(ky-bordurey);
+	 for (kx=0;kx<=2*bordurex;kx++) {
+	    val2=(kx-bordurex);
+	    val2=val2*val2+val1*val1;
+	    value=exp(-val2/bordure*2);
+	    k=(kx+1)+(ky)*kernel_widthx;
+	    kpatern[k]=value;
+	    val0+=value;
+         }
       }
       for (k=1;k<=nb;k++) {
 	 kpatern[k]/=val0;
@@ -502,27 +496,18 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
       }
    }
 
-   /* --- calcul de la fonction ---*/
-   /*tt_imabuilder(p_out);*/
-   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
-   for (kkk=0;kkk<(int)(nelem);kkk++) {
-      value=p_in->p[kkk];
-      p_out->p[kkk]=(TT_PTYPE)(value);
-   }
    /* - boucle du grand balayage en y -*/
    x=bordure;
-
    for (y=0;y<jmax;y++) {
-   //for (y=bordure;y<=jmax-1-bordure;y++) {
       if (jmax>=kernel_width) {
          if (y>=jmax-bordure) { continue; }
          if (y<bordure) { continue; }
       }
       k=0;
       /* - 1ere demi boucle de balayage kernel en x -*/
-      for (ky=y-bordure;ky<=y+bordure;ky++) {
-	 for (kx=x-bordure;kx<=x+bordure-1;kx++) {
-	    k=(kx-(x-bordure)+1)+(ky-(y-bordure))*kernel_width;
+      for (ky=y-bordurey;ky<=y+bordurey;ky++) {
+	 for (kx=x-bordurex;kx<=x+bordurex-1;kx++) {
+	    k=(kx-(x-bordurex)+1)+(ky-(y-bordurey))*kernel_widthx;
 	    kkk=(int)((ky)*imax)+(kx);
             if (kkk>=0) {
                val[k]=p_in->p[kkk];
@@ -533,14 +518,13 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
       }
       /* -  boucle du grand balayage en x -*/
       for (x=0;x<imax;x++) {
-      //for (x=bordure;x<=imax-1-bordure;x++) {
          if (imax>=kernel_width) {
             if (x>=imax-bordure) { continue; }
             if (x<bordure) { continue; }         
          }
          /* - 2eme demi boucle de balayage kernel en x -*/
-         for (kkk=1,kx=x+bordure,ky=y-bordure;ky<=y+bordure;ky++,kkk++) {
-	    k=kkk*kernel_width;
+         for (kkk=1,kx=x+bordurex,ky=y-bordurey;ky<=y+bordurey;ky++,kkk++) {
+	    k=kkk*kernel_widthx;
             if (kkk>=0) {
                val[k]=p_in->p[(int)((ky)*imax)+(kx)];
             } else {
@@ -552,7 +536,6 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
          }
          /* - val0 est la valeur du pixel central -*/
          val0=valtri[(int)((nb+1)/2)];
-         //val0=valtri[(int)((nb+1+nb-nb0)/2)];
          /* - condition pour effectuer le calcul -*/
          if ((type_threshold== 0)||
 	    ((type_threshold==-1)&&(val0<=threshold))||
@@ -586,18 +569,14 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
 	    p_out->p[(int)((y)*imax)+(x)]=(TT_PTYPE)(value);
          }
          /* - on deplace les valeurs dans le kernel -*/
-         for (kx=1;kx<=kernel_width-1;kx++) {
-	    for (ky=1;ky<=kernel_width;ky++) {
-	       k=kx+(ky-1)*kernel_width;
+         for (kx=1;kx<=kernel_widthx-1;kx++) {
+	    for (ky=1;ky<=kernel_widthy;ky++) {
+	       k=kx+(ky-1)*kernel_widthx;
 	       val[k]=val[k+1];
 	    }
 	 }
       } /* - boucle du grand balayage en x -*/
    } /* - boucle du grand balayage en y -*/
-
-   /* --- calcul des temps ---*/
-   pseries->jj_stack=pseries->jj[index-1];
-   pseries->exptime_stack=pseries->exptime[index-1];
 
    tt_free(val,"val");tt_free(valtri,"valtri");tt_free(kpatern,"kpatern");
 
@@ -1194,7 +1173,8 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
 {
    TT_IMA *p_in,*p_out,*p_tmp1;
    double val;
-   int index,adr2,imax,jmax,i1,j1,adr,k;
+   int index,adr2,imax,jmax,i1,j1,adr,k,kkk;
+   long nelem;
    double somme;
    int largeur,largeur2;
    double *filtre;
@@ -1204,6 +1184,7 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
    char comment[FLEN_COMMENT];
    char unit[FLEN_COMMENT];
    int datatype,msg;
+   double value=0;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1213,6 +1194,7 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
    imax=p_in->naxis1;
    jmax=p_in->naxis2;
    kernel_type=pseries->kernel_type;
+   nelem=pseries->nelements;
 
    /* === decode la largeur du filtre ===*/
    sigma=pseries->sigma_value;
@@ -1232,6 +1214,14 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
    /* ==== cree les images de calcul===*/
    tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+      value=p_in->p[kkk];
+      p_tmp1->p[kkk]=(TT_PTYPE)(value);
+      p_out->p[kkk]=(TT_PTYPE)(value);
+   }
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
 
    /*==== preparation du Filtre ====*/
    largeur=(short)((float)5.*sigma+(float)1.);
@@ -1762,7 +1752,7 @@ int tt_ima_series_back_1(TT_IMA_SERIES *pseries)
 	    coef_d=alpha*beta;
 	 /*}*/
 	 value=nulval;
-	 if ((x1>=0)&&(x1<(imax-1))&&(y1>=0)&&(y1<(jmax-1))) {
+	 if ((x1>=0)&&(x1<=(imax-1))&&(y1>=0)&&(y1<=(jmax-1))) {
 	    ka=x1+y1*imax;
 	    kb=x1+(y1+1)*imax;
 	    kc=x1+1+y1*imax;

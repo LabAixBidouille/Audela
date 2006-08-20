@@ -76,6 +76,8 @@ int tt_ima_series_saver_end(TT_IMA_SERIES *pseries,char *fullname)
       tt_util_bgk(pseries->p_in,&bgmean,&bgsigma);
       tt_imanewkey(pseries->p_out,"SKYLEVEL",&bgmean,TDOUBLE,"Sky level for photometric use","adu");
    }
+   /* --- on force le nombres d'axes a celui de l'image entrante ---*/
+   pseries->p_out->naxis=pseries->p_in->naxis;
    /* --- sauve l'image ---*/
    if ((msg=tt_imasaver(pseries->p_out,fullname,pseries->bitpix))!=0) {
       sprintf(message,"File %s cannot be saved",fullname);

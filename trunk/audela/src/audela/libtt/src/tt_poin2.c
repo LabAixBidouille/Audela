@@ -50,7 +50,7 @@ int tt_ptr_imaseries(void *args)
    char **keys=NULL;
    void **argu;
    int msg;
-   int naxis1,naxis2,k;
+   int naxis1,naxis2,k,naxis;
    void **pp_in=NULL,*p_in=NULL,**pp_out=NULL,*p_out=NULL;
    char ligne[TT_MAXLIGNE];
    char ***pkeynames=NULL;
@@ -157,7 +157,11 @@ int tt_ptr_imaseries(void *args)
 	  strcpy(pseries.p_in->comments[k],(char*)*((*pcomments)+k));
 	  strcpy(pseries.p_in->units[k],(char*)*((*punits)+k));
 	  pseries.p_in->datatypes[k]=(int)*((*pdatatypes)+k);
+          if (strcmp(pseries.p_in->keynames[k],"NAXIS")==0) {
+             naxis=(int)atoi(pseries.p_in->values[k]);
+          }
        }
+       pseries.p_in->naxis=naxis;
        strcpy(pseries.p_in->keynames[nbkeys],"");
        pseries.p_in->keyused=TT_YES;
        pseries.p_in->nbkeys=nbkeys;
@@ -230,6 +234,9 @@ int tt_ptr_imaseries(void *args)
        pseries.p_out->nbkeys=nbkeys;
 
    }
+
+   /* --- on force le nombre d'axes egal a celui d'netree ---*/
+   pseries.p_out->naxis=pseries.p_in->naxis;
 
    /* --- complete l'entete avec l'historique de ce traitement ---*/
    if ((msg=tt_ima_series_history(keys,&pseries))!=OK_DLL) {

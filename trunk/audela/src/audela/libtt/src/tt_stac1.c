@@ -98,7 +98,7 @@ int tt_fct_ima_stack(void *arg1)
 /***************************************************************************/
 {
    int msg;
-   int naxis1_1,naxis2_1,k,kk,kkk,nbzones;
+   int naxis,naxis1_1,naxis2_1,k,kk,kkk,nbzones;
    long nelements,firstelem,nelem,n,nelem0;
    char **keys,*ligne,fonction[80];
    char fullname[(FLEN_FILENAME)+5];
@@ -196,6 +196,7 @@ int tt_fct_ima_stack(void *arg1)
       return(msg);
    }
    strcpy(fullname0,fullname);
+   naxis=p_in.naxis;
    naxis1_1=p_in.naxis1;
    naxis2_1=p_in.naxis2;
    if (pstack.bitpix==0) {
@@ -401,6 +402,9 @@ int tt_fct_ima_stack(void *arg1)
       strcat(xvalue," ");
    }
    tt_imanewkeytt(&p_out,xvalue,"TT History","");
+
+   /* --- on force le nombre d'axes = a celui de la premiere image  ---*/
+   p_out.naxis=naxis;
 
    /* --- sauve l'image ---*/
    if ((msg=tt_imasaver(&p_out,fullname,pstack.bitpix))!=0) {
