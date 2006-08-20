@@ -820,13 +820,14 @@ void CBuffer::Save1d(char *filename,int iaxis2)
          y1=0;
          y2=naxis2-2;
          nnaxis1=naxis2;
-      } else if (naxis1==1) {
+      } else if (naxis2==1) {
          y1=0;
          y2=0;
          x1=0;
          x2=naxis1-1;
          nnaxis1=naxis1;
-      } else {
+      }
+      if (iaxis2>0) {
          if (iaxis2>=naxis2) {
             iaxis2=naxis2-1;
          }
@@ -856,7 +857,7 @@ void CBuffer::Save1d(char *filename,int iaxis2)
    keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
 
    // Enregistrement proprement dit de l'image.
-   msg = Libtt_main(TT_PTR_SAVEIMA1D,11,filename,ppix1,&datatype,&naxis1,
+   msg = Libtt_main(TT_PTR_SAVEIMA1D,11,filename,ppix1,&datatype,&nnaxis1,
       &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
    if(msg) {
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
