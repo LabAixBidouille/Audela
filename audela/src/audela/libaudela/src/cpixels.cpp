@@ -46,6 +46,16 @@ void CPixels::AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
+   naxis1 = this->GetWidth();
+   naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
@@ -86,6 +96,16 @@ void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
+   naxis1 = this->GetWidth();
+   naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
    naxis1 = x2-x1;
    naxis2 = y2-y1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
@@ -133,10 +153,20 @@ void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
-   naxis1 = x2-x1;
-   naxis2 = y2-y1;
+   naxis1 = this->GetWidth();
+   naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
+   naxis1 = x2-x1+1;
+   naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2-1, y2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
 
    *nbpix=naxis1 * naxis2;
 
@@ -197,10 +227,20 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
-   naxis1 = x2-x1;
-   naxis2 = y2-y1;
+   naxis1 = this->GetWidth();
+   naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
+   naxis1 = x2-x1+1;
+   naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2-1, y2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
    
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
@@ -275,6 +315,16 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
    TYPE_PIXELS *pixTemp;
    int naxis1, naxis2;
 
+   naxis1 = this->GetWidth();
+   naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
@@ -749,6 +799,14 @@ void CPixels::Fwhm(int x1, int y1, int x2, int y2,
 
    naxis1 = this->GetWidth();
    naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
    if((x1<0)||(x2<0)||(x1>naxis1-1)||(x2>naxis1-1)) {
       throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
    }
@@ -832,6 +890,14 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
 
    naxis1 = this->GetWidth();
    naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
    if((x1<0)||(x2<0)||(x1>naxis1-1)||(x2>naxis1-1)) {
       throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
    }

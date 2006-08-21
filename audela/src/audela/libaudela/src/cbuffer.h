@@ -206,7 +206,7 @@ public:
             float *locut, float *hicut,  float *maxi,    float *mini,   float *mean,
             float *sigma, float *bgmean, float *bgsigma, float *contrast);
    void Scar( int x1,int y1,int x2,int y2);
-   void SyntheGauss(double xc, double yc, double imax, double fwhmx, double fwhmy, double limitadu);
+   void SyntheGauss(double xc, double yc, double imax, double jmax, double fwhmx, double fwhmy, double limitadu);
    void radec2xy(double ra, double dec, double *x, double *y,int order);
    void xy2radec(double x, double y, double *ra, double *dec,int order);
 

@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.10 2006-08-15 21:09:21 alainklotz Exp $
+# Mise a jour $Id: aud1.tcl,v 1.11 2006-08-21 16:33:07 alainklotz Exp $
 #
 
 #
@@ -393,7 +393,24 @@ proc fitgauss { visuNo } {
    wm geometry $This $conf(fitgauss,position)
    wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This fitgauss"
    #--- Lecture de la gaussienne d'ajustement
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box ]
+   set bufNo [ ::confVisu::getBufNo $visuNo ]
+   set valeurs [ buf$bufNo fitgauss $box ]
+   set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
+   if {$naxis1=={}} { set naxis1 1 }
+   set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
+   if {$naxis2=={}} { set naxis2 1 }
+   set dif 0.
+   if {$naxis1==1} {
+      set if0 [ expr [ lindex $valeurs 6 ]*.601*sqrt(3.14159265) ]
+   } elseif {$naxis2==1} {
+      set if0 [ expr [ lindex $valeurs 2 ]*.601*sqrt(3.14159265) ]
+   } else {
+      set if0 [ expr [ lindex $valeurs 2 ]*[ lindex $valeurs 6 ]*.601*.601*3.14159265 ]
+      set if1 [ expr [ lindex $valeurs 0 ]*$if0 ]
+      set if2 [ expr [ lindex $valeurs 4 ]*$if0 ]
+      set if0 [ expr ($if1+$if2)/2. ]
+      set dif [ expr abs($if1-$if0) ]
+   }
    #--- Cree les etiquettes
    label $This.lab0 -text "Visu$visuNo"
    pack $This.lab0 -padx 10 -pady 2
@@ -415,16 +432,17 @@ proc fitgauss { visuNo } {
    ::console::affiche_resultat "$texte\n"
    label $This.lab4 -text "$texte"
    pack $This.lab4 -padx 10 -pady 2
-   set if0 [ expr [ lindex $valeurs 2 ]*[ lindex $valeurs 6 ]*.601*.601*3.14159265 ]
-   set if1 [ expr [ lindex $valeurs 0 ]*$if0 ]
-   set if2 [ expr [ lindex $valeurs 4 ]*$if0 ]
-   set if0 [ expr ($if1+$if2)/2. ]
-   set dif [ expr abs($if1-$if0) ]
    set texte "$caption(audace,integflux) : $if0 +/- $dif"
    ::console::affiche_resultat "$texte\n"
    label $This.lab5 -text "$texte"
    pack $This.lab5 -padx 10 -pady 2
-   set mag1 [ expr -2.5*log10($if0+$dif) ]
+   if {[expr $if0+$dif]<=0} {
+	   set dif [expr $if0+1]
+   }
+	set mag1 [ expr -2.5*log10($if0+$dif) ]
+   if {[expr $if0-$dif]<=0} {
+	   set dif [expr $if0-1]
+   }
    set mag2 [ expr -2.5*log10($if0-$dif) ]
    set mag0 [ expr ($mag1+$mag2)/2. ]
    set dmag [ expr abs($mag1-$mag0) ]
