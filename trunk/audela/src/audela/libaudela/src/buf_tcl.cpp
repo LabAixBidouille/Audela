@@ -2054,6 +2054,14 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             buffer = (CBuffer*)clientData;
             naxis1 = buffer->GetW();
             naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
             //pix    = buffer->pix;
             // Remise en ordre des coordonnees de la fenetre
             if(x1>x2) {
@@ -2073,6 +2081,7 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                Tcl_SetResult(interp,"Cadre hors de l'image",TCL_VOLATILE);
                retour = TCL_ERROR;
             } else {
+                    /*
                if((x1==x2)||(y1==y2)) {
                   if(cmd==CMD_FLUX) {
                      int plane;
@@ -2093,7 +2102,8 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                      Tcl_SetResult(interp,s,TCL_VOLATILE);
                   }
                   retour = TCL_OK;
-               } else {
+               } else {*/
+
                   // Petit changement de repere pour avoir des coordonnees partant de (0,0)
                   // et non de (1,1).
                    x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
@@ -2127,7 +2137,7 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                        Tcl_SetResult(interp,s,TCL_VOLATILE);
                        retour = TCL_ERROR;
                    }
-               }
+               //}
             }
          }
       }
@@ -2664,6 +2674,7 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char **listArgv;          // Liste des argulents passes a getpix.
    int listArgc;             // Nombre d'elements dans la liste des coordonnees.
    int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   int naxis1,naxis2,temp;
 
    ligne = new char[1000];
 
@@ -2672,6 +2683,7 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
+      buffer = (CBuffer*)clientData;
       if (argc==3) {
          if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
             sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
@@ -2699,6 +2711,26 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_ERROR;
             }
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
          }
       } else {
          // on va traiter toute l'image
@@ -2708,7 +2740,6 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          y2=0;
       }
       // Appel a la methode du buffer
-      buffer = (CBuffer*)clientData;
       try {
          buffer->Stat(x1-1,y1-1,x2-1,y2-1,&locut,&hicut,&maxi, &mini, &mean, &sigma,
                          &bgmean, &bgsigma, &contrast);
@@ -3314,6 +3345,7 @@ int cmdFwhm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    double fwhmx, fwhmy;      // Fwhm dans les deux axes de la gaussienne.
    double fondx, fondy;      // Fonds en x et y.
    double errx, erry;        // Erreurs sur les modelisations.
+   int naxis1,naxis2,temp;
 
    ligne = new char[1000];
 
@@ -3349,6 +3381,26 @@ int cmdFwhm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
             try {
                buffer->Fwhm(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
                   &maxy,&posy,&fwhmy,&fondy,&erry,0.,0.);
@@ -3378,6 +3430,7 @@ int cmdScar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
    int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   int naxis1,naxis2,temp;
 
    ligne = new char[1000];
 
@@ -3413,6 +3466,26 @@ int cmdScar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
             try {
             buffer->Scar(x1-1,y1-1,x2-1,y2-1);
             retour = TCL_OK;
@@ -3447,6 +3520,7 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    double pi=3.14159265359;
    int sub,k;
    double fwhmx0=0., fwhmy0=0.; // Fwhm contrainte dans les deux axes de la gaussienne.
+   int naxis1,naxis2,temp;
    ligne = new char[1000];
 
    if(argc<3) {
@@ -3499,6 +3573,26 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
             try {
                buffer->Fwhm(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
                   &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
@@ -3528,7 +3622,7 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
                if (sub==1) {
-                  buffer->SyntheGauss(posx-1.,posy-1.,-0.5*(maxx+maxy),fwhmx,fwhmy,0.);
+                  buffer->SyntheGauss(posx-1.,posy-1.,-maxx, -maxy,fwhmx,fwhmy,0.);
                }
                retour = TCL_OK;
             } catch(const CError& e) {
@@ -3600,7 +3694,7 @@ int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
-            buffer->SyntheGauss(xc-1.,yc-1.,imax,fwhmx,fwhmy,limitadu);
+            buffer->SyntheGauss(xc-1.,yc-1.,imax,imax,fwhmx,fwhmy,limitadu);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
             retour = TCL_OK;
          }
@@ -3711,6 +3805,7 @@ int cmdBinX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
    int width = 20;           // Largeur par défaut de l'image de sortie
    ligne = new char[1000];
+   int naxis1,temp;
 
    if((argc!=4)&&(argc!=5)) {
       sprintf(ligne,"Usage: %s %s x1 x2 ?width?",argv[0],argv[1]);
@@ -3732,6 +3827,16 @@ int cmdBinX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
+            naxis1 = buffer->GetW();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
             buffer->BinX(x1-1,x2-1,width);
             retour = TCL_OK;
          } catch(const CError& e) {
@@ -3752,6 +3857,7 @@ int cmdBinY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
    int y1, y2;               // Coordonnees de la fenetre.
+   int naxis2,temp;
 
    int height = 20;          // Hauteur par défaut de l'image de sortie
    ligne = new char[1000];
@@ -3776,6 +3882,16 @@ int cmdBinY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
+            naxis2 = buffer->GetH();
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
             buffer->BinY(y1-1,y2-1,height);
             retour = TCL_OK;
          } catch(const CError& e) {
@@ -3796,6 +3912,7 @@ int cmdMedX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
    int x1, x2;               // Coordonnees de la fenetre.
+   int naxis1,temp;
 
    int width = 20;           // Largeur par défaut de l'image de sortie
    ligne = new char[1000];
@@ -3820,6 +3937,16 @@ int cmdMedX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
+            naxis1 = buffer->GetW();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
             buffer->MedX(x1-1,x2-1,width);
             retour = TCL_OK;
          } catch(const CError& e) {
@@ -3840,6 +3967,7 @@ int cmdMedY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
    int y1, y2;               // Coordonnees de la fenetre.
+   int naxis2,temp;
 
    int height = 20;          // Hauteur par défaut de l'image de sortie
    ligne = new char[1000];
@@ -3864,6 +3992,16 @@ int cmdMedY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
+            naxis2 = buffer->GetH();
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
             buffer->MedY(y1-1,y2-1,height);
             retour = TCL_OK;
          } catch(const CError& e) {
@@ -4185,6 +4323,7 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    double fwhmx, fwhmy;      // Fwhm dans les deux axes de la gaussienne.
    double fondx, fondy;      // Fonds en x et y.
    double errx, erry;        // Erreurs sur les modelisations.
+   int temp,naxis1,naxis2;
    int sub,k;
    double fwhmx0=0., fwhmy0=0.; // Fwhm contrainte dans les deux axes de la gaussienne.
    ligne = new char[1000];
@@ -4239,6 +4378,26 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
             try {
                buffer->Fwhm2d(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
                   &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
@@ -4256,7 +4415,7 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
                if (sub==1) {
-                  buffer->SyntheGauss(posx-1.,posy-1.,-0.5*(maxx+maxy),fwhmx,fwhmy,0.);
+                  buffer->SyntheGauss(posx-1.,posy-1.,-maxx,-maxy,fwhmx,fwhmy,0.);
                }
                retour = TCL_OK;
             } catch(const CError& e) {

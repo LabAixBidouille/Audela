@@ -1785,7 +1785,7 @@ void CBuffer::CopyTo(CBuffer*dest)
 
 void CBuffer::CopyFrom(CFitsKeywords*hdr, TColorPlane plane, TYPE_PIXELS*pixels)
 {
-   int naxis1, naxis2, naxis;
+   int naxis1=1, naxis2=1, naxis=2;
    int nb_keys, msg;
    char **keynames=NULL;
    char **values=NULL;
@@ -1797,7 +1797,9 @@ void CBuffer::CopyFrom(CFitsKeywords*hdr, TColorPlane plane, TYPE_PIXELS*pixels)
 
    naxis  = hdr->FindKeyword("NAXIS")->GetIntValue();
    naxis1 = hdr->FindKeyword("NAXIS1")->GetIntValue();
-   naxis2 = hdr->FindKeyword("NAXIS2")->GetIntValue();
+   if (hdr->FindKeyword("NAXIS2")!=NULL) {
+      naxis2 = hdr->FindKeyword("NAXIS2")->GetIntValue();
+   }
 
    FreeBuffer(DONT_KEEP_KEYWORDS);
    SetPixels(plane, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, pixels, 0, 0, 0);
@@ -2205,6 +2207,7 @@ void CBuffer::Scar( int x1,int y1,int x2,int y2)
    int i,j;
    double dltadu,dltpix,deb,fin;
    TYPE_PIXELS *ppix= NULL;
+   int xx1,xx2,yy1,yy2;
 
    naxis1=GetW();
    naxis2=GetH();
@@ -2224,27 +2227,39 @@ void CBuffer::Scar( int x1,int y1,int x2,int y2)
    if((y1<0)||(y2<0)||(y1>naxis2-1)||(y2>naxis2-1)) {throw CError(ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);}
    if(x1>x2) {i = x2; x2 = x1; x1 = i;}
    if(y1>y2) {i = y2; y2 = y1; y1 = i;}
-   if (x2>x1+1) {
-      if (y2>y1+1) {
-         // couture horizontale
-         dltpix=(double)(x2-x1);
-         for(j=y1+1;j<y2;j++) {
-            deb=(double)*(ppix+naxis1*j+x1);
-            fin=(double)*(ppix+naxis1*j+x2);
-            dltadu=(double)(fin-deb);
-            for(i=x1+1;i<x2;i++) {
-               *(ppix+naxis1*j+i)=(TYPE_PIXELS)(deb+dltadu*(i-x1)/dltpix);
-            }
-         }
-         // couture verticale
-         dltpix=(double)(y2-y1);
+   yy1=y1;
+   yy2=y2;
+   if (y1==y2) {
+      yy1--;
+      yy2++;
+   }
+   if (yy2>yy1+1) {
+      // couture horizontale
+      dltpix=(double)(x2-x1);
+      for(j=yy1+1;j<yy2;j++) {
+         deb=(double)*(ppix+naxis1*j+x1);
+         fin=(double)*(ppix+naxis1*j+x2);
+         dltadu=(double)(fin-deb);
          for(i=x1+1;i<x2;i++) {
-            deb=(double)*(ppix+naxis1*y1+i);
-            fin=(double)*(ppix+naxis1*y2+i);
-            dltadu=(double)(fin-deb);
-            for(j=y1+1;j<y2;j++) {
-              *(ppix+naxis1*j+i)=(TYPE_PIXELS) (( *(ppix+naxis1*j+i) + (deb+dltadu*(j-y1)/dltpix) )/2.);
-            }
+            *(ppix+naxis1*j+i)=(TYPE_PIXELS)(deb+dltadu*(i-x1)/dltpix);
+         }
+      }
+   }
+   xx1=x1;
+   xx2=x2;
+   if (x1==x2) {
+      xx1--;
+      xx2++;
+   }
+   if (xx2>xx1+1) {
+      // couture verticale
+      dltpix=(double)(y2-y1);
+      for(i=xx1+1;i<xx2;i++) {
+         deb=(double)*(ppix+naxis1*y1+i);
+         fin=(double)*(ppix+naxis1*y2+i);
+         dltadu=(double)(fin-deb);
+         for(j=y1+1;j<y2;j++) {
+            *(ppix+naxis1*j+i)=(TYPE_PIXELS) (( *(ppix+naxis1*j+i) + (deb+dltadu*(j-y1)/dltpix) )/2.);
          }
       }
    }
@@ -2256,11 +2271,11 @@ void CBuffer::Scar( int x1,int y1,int x2,int y2)
    free(ppix);
 }
 
-void CBuffer::SyntheGauss(double xc, double yc, double imax, double fwhmx, double fwhmy, double limitadu)
+void CBuffer::SyntheGauss(double xc, double yc, double imax, double jmax, double fwhmx, double fwhmy, double limitadu)
 {
    int naxis1, naxis2;
    int i,j,x1,x2,y1,y2;
-   double sigx,sigy,rx,ry,r;
+   double sigx,sigy,rx,ry,r,intmax;
    TYPE_PIXELS *ppix= NULL;
 
    naxis1=GetW();
@@ -2279,7 +2294,7 @@ void CBuffer::SyntheGauss(double xc, double yc, double imax, double fwhmx, doubl
    // r2 = (x-xc)*(x-xc) + (y-yc)*(y-yc)
    // i(x,y) = i(x,y) + ( imax * exp ( -r2/sig2 ) )
    // imax peut etre negatif pour soustraire la gaussienne
-   if ((fwhmx<=0.)||(fwhmy<=0.)||(imax==0.)) {
+   if ((fwhmx<=0.)||(fwhmy<=0.)||((imax==0.)&&(jmax==0.))) {
       return ;
    }
    sigx=fwhmx*0.601;
@@ -2287,10 +2302,18 @@ void CBuffer::SyntheGauss(double xc, double yc, double imax, double fwhmx, doubl
    if (limitadu==0.) {
       limitadu=1.;
    }
-   r=-log(fabs(limitadu/imax));
+   intmax=(imax+jmax)/2.;
+   if ((naxis1==1)&&(naxis2>1)) {
+      intmax=jmax;
+   } else if ((naxis1>1)&&(naxis2==1)) {
+      intmax=imax;
+   }
+   r=-log(fabs(limitadu/intmax));
    if (r<=0.) {return ;}
    rx=sigx*sqrt(r);
    ry=sigy*sqrt(r);
+   sigx*=sigx;
+   sigy*=sigy;
    x1=(int)floor(xc-rx);
    x2=(int)ceil(xc+rx);
    y1=(int)floor(yc-ry);
@@ -2303,15 +2326,13 @@ void CBuffer::SyntheGauss(double xc, double yc, double imax, double fwhmx, doubl
    if (x2>naxis1-1) {x2=naxis1-1;}
    if (y2<0) {y2=0;}
    if (y2>naxis2-1) {y2=naxis2-1;}
-   sigx*=sigx;
-   sigy*=sigy;
    for(j=y1;j<=y2;j++) {
       ry=(double)j-yc;
       ry*=ry;
       for(i=x1;i<=x2;i++) {
          rx=(double)i-xc;
          rx*=rx;
-         *(ppix+naxis1*j+i)=(TYPE_PIXELS)( *(ppix+naxis1*j+i) + imax*exp(-rx/sigx-ry/sigy) );
+         *(ppix+naxis1*j+i)=(TYPE_PIXELS)( *(ppix+naxis1*j+i) + intmax*exp(-rx/sigx-ry/sigy) );
       }
    }
 
