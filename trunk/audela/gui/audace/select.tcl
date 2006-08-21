@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Mise a jour $Id: select.tcl,v 1.5 2006-06-20 17:36:02 robertdelmas Exp $
+# Mise a jour $Id: select.tcl,v 1.6 2006-08-21 11:51:25 alainklotz Exp $
 #
 
 namespace eval ::selectWindow {
@@ -35,9 +35,9 @@ namespace eval ::selectWindow {
       wm geometry $This +0+70
       wm resizable $This 1 1
       wm protocol $This WM_DELETE_WINDOW ::selectWindow::end
-      
+
       frame $This.fra2 -bd 2 -relief groove
-      
+
       frame $This.fra2.f -bd 2 -relief groove
          label $This.fra2.f.titre -text "$caption(select,entree)"
          label $This.fra2.f.lne -text "$caption(select,nom)"
@@ -88,8 +88,8 @@ namespace eval ::selectWindow {
 
       grid $This.fra2.f -row 0 -column 0 -padx 2 -pady 4 -ipadx 4 -ipady 4 -sticky ew
       grid $This.fra2.g -row 0 -column 1 -padx 2 -pady 4 -ipadx 4 -ipady 4 -sticky ew
-      grid $This.fra2.h -row 1 -column 0 -columnspan 2 -padx 2 -pady 0 -sticky ew 
-      grid $This.fra2.i -row 2 -column 0 -columnspan 2 -padx 2 -pady 4 -sticky news; #-sticky ew 
+      grid $This.fra2.h -row 1 -column 0 -columnspan 2 -padx 2 -pady 0 -sticky ew
+      grid $This.fra2.i -row 2 -column 0 -columnspan 2 -padx 2 -pady 4 -sticky news; #-sticky ew
       grid columnconfigure $This.fra2 0 -weight 1
       grid rowconfigure $This.fra2 2 -weight 1
 
@@ -101,7 +101,7 @@ namespace eval ::selectWindow {
       #--- Creation des variables audace dependant de la visu
       set selectWindow(buffer) [visu$selectWindow(visuNo) buf]
       set selectWindow(canvas) $::confVisu::private($selectWindow(visuNo),hCanvas)
-      
+
       #--- La fenetre est active
       focus $This
 
@@ -212,10 +212,10 @@ namespace eval ::selectWindow {
             incr selectWindow(index) -1
          }
          if { $selectWindow(index) < "0" } {
-            set selectWindow(indexEntree) "$caption(select,tiret)"            
+            set selectWindow(indexEntree) "$caption(select,tiret)"
             $This.fra2.h.b1 configure -state disabled
             $This.fra2.h.b2 configure -state disabled
-         } 
+         }
          dispima $selectWindow(index)
       }
    }
@@ -274,20 +274,26 @@ namespace eval ::selectWindow {
          set selectWindow(index) 0
          unset selectWindow(indexEntree)
          dispima $selectWindow(index)
-         $selectWindow(canvas) configure -width [ lindex [ buf$selectWindow(buffer) getkwd NAXIS1 ] 1 ]
-         $selectWindow(canvas) configure -height [ lindex [ buf$selectWindow(buffer) getkwd NAXIS2 ] 1 ]
+         set w [ buf$selectWindow(buffer) getpixelswidth ]
+         $selectWindow(canvas) configure -width $w
+         if { [buf$selectWindow(buffer) getnaxis] == 1 } {
+            set h [ visu$selectWindow(visuNo) thickness ]
+         } else {
+            set h [ buf$selectWindow(buffer) getpixelsheight ]
+         }
+         $selectWindow(canvas) configure -height $h
          if { [ llength $selectWindow(liste_entree) ] != "1" } {
             $This.fra2.h.b2 configure -state normal
          } else {
             $This.fra2.h.b2 configure -state disabled
          }
-         $This.fra2.h.b3 configure -state normal      
-         $This.fra2.h.b4 configure -state normal      
+         $This.fra2.h.b3 configure -state normal
+         $This.fra2.h.b4 configure -state normal
          foreach elem $selectWindow(liste_entree) {
             $This.fra2.i.t insert insert "# $elem\n"
          }
          $This.fra2.i.t insert insert "\n"
-         $This.fra2.i.t see insert 
+         $This.fra2.i.t see insert
       }
    }
 
