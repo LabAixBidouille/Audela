@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.4 2006-06-20 17:19:18 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.5 2006-08-21 17:28:14 alainklotz Exp $
 #
 
 namespace eval ::astrometry {
@@ -729,8 +729,9 @@ namespace eval ::astrometry {
       ::buf::delete $k
    }
 
-   proc mpc_provisional2packed { designation } {
-      # 2000EL118 <=> K00EB8L
+   proc mpc_provisional2packed { designation {format old} } {
+      #               1222345   122233335
+      # 2000EL118 <=> K00EB8L   K00E0118L
       #--- On supprime les espaces
       regsub -all " " $designation "" a
       #--- Verifie la longueur de la chaine
@@ -752,16 +753,21 @@ namespace eval ::astrometry {
          set a4 0
       } else {
          set len [string length $numorder]
-         if {$len==1} {
-            set a3 0
-            set a4 [string index $numorder 0]
-         } elseif {$len==2} {
-            set a3 [string index $numorder 0]
-            set a4 [string index $numorder 1]
+         if {$format=="old"} {
+            if {$len==1} {
+               set a3 0
+               set a4 [string index $numorder 0]
+            } elseif {$len==2} {
+               set a3 [string index $numorder 0]
+               set a4 [string index $numorder 1]
+            } else {
+               set yy [string range $numorder 0 1]
+               set a3 [format %c [expr 65+$yy-10]]
+               set a4 [string index $numorder 2]
+            }
          } else {
-            set yy [string range $numorder 0 1]
-            set a3 [format %c [expr 65+$yy-10]]
-            set a4 [string index $numorder 2]
+            set a3 [format %04d $numorder]
+            set a4 ""
          }
       }
       #--- Chaine finale
@@ -769,8 +775,9 @@ namespace eval ::astrometry {
       return $designation
    }
 
-   proc mpc_packed2provisional2 { designation } {
-      # 2000EL118 <=> K00EB8L
+   proc mpc_packed2provisional { designation {format old} } {
+      #               1222345   122233335
+      # 2000EL118 <=> K00EB8L   K00E0118L
       #--- On supprime les espaces
       regsub -all " " $designation "" a
       #--- Verifie la longueur de la chaine
@@ -788,20 +795,29 @@ namespace eval ::astrometry {
       set a1 [expr 10+[lsearch $table $yy]]
       #--- Decode l'annee et la premiere lettre
       set a2 [string range $a 1 3]
-      #--- Decode l'annee et la seconde lettre
-      set a5 [string range $a 6 6]
-      #--- Decode le nombre
-      set numorder [string range $a 4 4]
-      set a3 [expr 10+[lsearch $table $numorder]]
-      if {$a3==9} {
-         set a3 [expr $numorder]
-      }
-      if {$a3==0} {
-         set a3 ""
-      }
-      set numorder [string range $a 5 5]
-         set a4 [expr $numorder]
-      if {$a4==0} {
+      #--- Decode la lettre et le nombre
+      if {$format=="old"} {
+         #--- Decode l'annee et la seconde lettre
+         set a5 [string range $a 6 6]
+         #--- Decode le nombre
+         set numorder [string range $a 4 4]
+         set a3 [expr 10+[lsearch $table $numorder]]
+         if {$a3==9} {
+            set a3 [expr $numorder]
+         }
+         if {$a3==0} {
+            set a3 ""
+         }
+         set numorder [string range $a 5 5]
+            set a4 [expr $numorder]
+         if {$a4==0} {
+            set a4 ""
+         }
+      } else {
+         #--- Decode l'annee et la seconde lettre
+         set a5 [string range $a 8 8]
+         #--- Decode le nombre
+         set a3 [string trimleft [string range $a 4 7] 0]
          set a4 ""
       }
       #--- Chaine finale
