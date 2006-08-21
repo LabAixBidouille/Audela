@@ -211,7 +211,7 @@ unsigned char Image::AudelaAImage(Tcl_Interp *interp, unsigned short numbuf) {
     datatype=1;
   }
   if (datatype==0) {
-    naxis1=0;
+    naxis1=1; /* correction AK */
   } else {
     naxis1=atoi(value_char);
   }
@@ -227,7 +227,7 @@ unsigned char Image::AudelaAImage(Tcl_Interp *interp, unsigned short numbuf) {
     datatype=1;
   }
   if (datatype==0) {
-    naxis2=0;
+    naxis2=1; /* correction AK */
   } else {
     naxis2=atoi(value_char);
   }
