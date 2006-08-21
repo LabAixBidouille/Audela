@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.11 2006-08-21 16:33:07 alainklotz Exp $
+# Mise a jour $Id: aud1.tcl,v 1.12 2006-08-21 22:12:58 alainklotz Exp $
 #
 
 #
@@ -462,7 +462,7 @@ proc fitgauss { visuNo } {
       #    Rab101    C2003 10 18.89848 01 33 53.74 +02 27 19.3          18.6        xxx
       #--- C2003 10 18.89848 : Indique la date du milieu de la pose pour l'image
       #--- (annee, mois, jour decimal --> qui permet d'avoir l'heure du milieu de la pose a la seconde pres)
-      set mpc "$caption(audace,MPC_format)\n     .        C"
+      set mpc "OLD $caption(audace,MPC_format)\n     .        C"
       set demiexposure [ expr ( [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]+0. )/86400./2. ]
       set d [mc_date2iso8601 [ mc_datescomp [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd DATE-OBS ] 1 ] + $demiexposure ] ]
       set annee [ string range $d 0 3 ]
@@ -508,8 +508,18 @@ proc fitgauss { visuNo } {
          ::console::affiche_erreur "$caption(audace,boite,attention)\n"
          ::console::affiche_erreur "[eval [concat {format} { $caption(audace,UAI_site_image) $conf(posobs,station_uai) } ] ]\n"
       }
+      #         1         2         3         4         5         6         7         8        9         10        11        12        13
+      #123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12
+      #       J94R1234   1*C19940608.988773453 16 22 02.7812  -17 49 13.745   18.511R      1                                           0104
+      #       J94R1234   2*C19940608.988773453 00.500 00.50            F.4000N             1.000                                       0104
+      #       J94R1234   3*C19940608.988773453 2002.1234          +43.1234          148.0                                              0104
+      #       .          1 C
+      #set mpc "NEW $caption(audace,MPC_format)\n       .          1 C"
+      # ---
+      #::console::affiche_resultat "\n"
+      ::console::affiche_resultat "Use http://cfa-www.harvard.edu/iau/info/Astrometry.html for informations\n"
+      ::console::affiche_resultat "Use ::astrometry::mpc_provisional2packed to convert designation to MPC packed form\n"
    }
-   ::console::affiche_resultat "\n\n"
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

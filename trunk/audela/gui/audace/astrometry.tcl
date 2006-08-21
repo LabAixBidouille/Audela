@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.5 2006-08-21 17:28:14 alainklotz Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.6 2006-08-21 22:12:58 alainklotz Exp $
 #
 
 namespace eval ::astrometry {
@@ -732,6 +732,8 @@ namespace eval ::astrometry {
    proc mpc_provisional2packed { designation {format old} } {
       #               1222345   122233335
       # 2000EL118 <=> K00EB8L   K00E0118L
+      #--- On met en majuscules
+      set designation [string toupper $designation]
       #--- On supprime les espaces
       regsub -all " " $designation "" a
       #--- Verifie la longueur de la chaine
