@@ -112,8 +112,8 @@ proc spc_winini { } {
       menu .spc.menuBar.file -tearoff 0
       .spc.menuBar.file add command -label $captionspc(loadspcfit) -command "spc_loadfit" -underline 0 -accelerator "Ctrl-O"
       .spc.menuBar.file add command -label $captionspc(loadspctxt) -command "spc_loaddat" -underline 0 -accelerator "Ctrl-T"
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png_w) -command "spc_spc2png" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png2_w) -command "spc_spc2png2" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_spc2png_w) -command "spc_fit2png" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_spc2png2_w) -command "spc_fit2png2" -underline 0
       .spc.menuBar.file add command -label $captionspc(writeps) -command "spc_postscript" -underline 0 -accelerator "Ctrl-E"
       .spc.menuBar.file add command -label $captionspc(spc_fits2dat_w) -command "spc_fits2dat" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_dat2fits_w) -command "spc_dat2fits" -underline 0
@@ -128,13 +128,14 @@ proc spc_winini { } {
 
       .spc.menuBar.file add command -label $captionspc(quitspc) -command "destroy .spc" -underline 0 -accelerator "Ctrl-Q"
       .spc configure -menu .spc.menuBar
+      #-- Raccourcis calviers :
       bind .spc <Control-O> spc_loadfit
-      bind .spc <Control-A> spc_loaddat
+      bind .spc <Control-T> spc_loaddat
       bind .spc <Control-P> spc_print
       bind .spc <Control-E> spc_postscript
       bind .spc <Control-Q> { destroy .spc }
       bind .spc <Control-o> spc_loadfit
-      bind .spc <Control-a> spc_loaddat
+      bind .spc <Control-t> spc_loaddat
       bind .spc <Control-p> spc_print
       bind .spc <Control-e> spc_postscript
       bind .spc <Control-q> { destroy .spc }
@@ -163,6 +164,7 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_zone" -underline 0
       .spc configure -menu .spc.menuBar
+      #-- Raccourcis calviers :
       #bind .spc <Control-N> spc_open_fitfile
       #bind .spc <Control-n> spc_open_fitfile
 
@@ -188,6 +190,7 @@ proc spc_winini { } {
       .spc.menuBar.calibration add command -label $captionspc(spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
       .spc.menuBar.calibration add command -label $captionspc(spc_norma_w) -command "spc_norma" -underline 0
       .spc configure -menu .spc.menuBar
+      #-- Raccourcis calviers :
       bind .spc <Control-L> cali_lambda
       bind .spc <Control-l> cali_lambda
       bind .spc <Control-F> cali_flux
@@ -197,10 +200,20 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0
       menu .spc.menuBar.pipelines -tearoff 0
       # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "spc_geom2rinstrum_w" -underline 0 -accelerator "Ctrl-2"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "spc_traite2calibre_w" -underline 0 -accelerator "Ctrl-3"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "spc_traite2rinstrum_w" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-2"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-3"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "::param_spc_audace_traite2calibre::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-5"
+      .spc configure -menu .spc.menuBar
+      #-- Raccourcis calviers :
+      bind .spc <Control-0> ::param_spc_audace_traitesimple2calibre::run
+      bind .spc <Control-1> ::param_spc_audace_traitesimple2rinstrum::run
+      bind .spc <Control-2> ::param_spc_audace_geom2calibre::run
+      bind .spc <Control-3> ::param_spc_audace_geom2rinstrum::run
+      bind .spc <Control-4> ::param_spc_audace_traite2calibre::run
+      bind .spc <Control-5> ::param_spc_audace_traite2rinstrum::run
 
       #--- Menu Analyse ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0
@@ -213,6 +226,7 @@ proc spc_winini { } {
       .spc.menuBar.analyse add command -label $captionspc(spc_npne_w) -command "spc_npne" -underline 0 -accelerator "Ctrl-D"
       .spc.menuBar.analyse add command -label $captionspc(spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
       .spc configure -menu .spc.menuBar
+      #-- Raccourcis calviers :
       bind .spc <Control-A> mes_especes
       bind .spc <Control-a> mes_especes
       bind .spc <Control-E> spc_npte_w
@@ -344,9 +358,16 @@ proc pvisu { } {
    set kk 0
    # for {set k 1} {$k<=$len} {incr k} {} # Boucle originale Klotz
    for {set k 0} {$k<$len} {incr k} {
-         append pp " [lindex $profilspc(pixels) $k]"
-         append yy " [lindex $profilspc(intensite) $k]"
-         incr kk         
+       append pp " [lindex $profilspc(pixels) $k]"
+       append yy " [lindex $profilspc(intensite) $k]"
+       #-- Gestion des valeurs "nan" de l'intensite
+       # set valy [lindex $profilspc(intensite) $k]
+       #if { $valy == "nan" } {
+       #   append yy " 0"
+       # } else {
+       #   append yy " $valy"
+       #}
+       incr kk         
    }
    #::console::affiche_resultat "$pp\n"
    blt::vector create vx
