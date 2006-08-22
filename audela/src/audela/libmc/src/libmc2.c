@@ -1314,7 +1314,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /****************************************************************************/
    double jj,jour=0.;
    double *jds=NULL;
-   int result,code,planetnum,kd,kf,kp=0,ko,sortie=NO,kpp,k1,k2;
+   int result,code,planetnum,kd,kf,kp=0,ko,sortie=NO,kpp,k1,k2,kppp=0;
    char s0[100],s[1024],name[50],name2[50];
    char objename[10000],orbitformat[15],orbitstring[300],orbitfile[1024];
    char **dates=NULL,**formats=NULL,**planets=NULL;
@@ -1331,6 +1331,9 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    struct elemorb elem;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
    FILE *fichier_in=NULL;
+   double timelim=1e3;
+   time_t ltime;
+   long t0,t1;
    Tcl_DString dsptr;
 
    if(argc<=1) {
@@ -1340,6 +1343,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	   return(result);;
    } else {
 	   result=TCL_OK;
+      t0=time(&ltime);
 	   Tcl_DStringInit(&dsptr);
 	   /* --- decode le type de planete ---*/
       mctcl_decode_planet(interp,argv[1],&planetnum,objename,orbitformat,orbitfile);
@@ -1429,6 +1433,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
          else if (strcmp(s,"-AZIMUTH<")==0) { ok4azimcoord=YES; }
          else if (strcmp(s,"-HA>")==0) { ok4azimcoord=YES; }
          else if (strcmp(s,"-HA<")==0) { ok4azimcoord=YES; }
+         else if (strcmp(s,"-TIMELIM")==0) { timelim=atof(argv[ko+1]); }
 	   }
 	   /* === calculs ===*/
       /* ============================*/
@@ -1506,9 +1511,15 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			   /* ---------------------------*/
 		      } else if (planetnum==OTHERPLANET) {
 			      sortie=NO;
-			      if (kp>=nbplanets) { sortie=YES; break; }
-      	      strcpy(name,planets[kp]);
-			      mc_strupr(name,name);
+               t1=time(&ltime)-t0;
+               if (t1>timelim) { sortie=YES; break; }
+               if ((strcmp(planets[0],"*")!=0)&&(kp>=nbplanets)) { sortie=YES; break; }
+			      if (strcmp(planets[0],"*")!=0) { 
+       	         strcpy(name,planets[kp]);
+			         mc_strupr(name,name);
+               } else {
+       	         strcpy(name,"*");
+               }
 			      /* --- ouverture du fichier de la base d'orbite ---*/
 			      if (fichier_in==NULL) {
    				   if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
@@ -1552,7 +1563,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
                   for (kpp=0;kpp<nbplanets;kpp++) {
       	            strcpy(name,planets[kpp]);
 			            mc_strupr(name,name);
-                     if (strcmp(name,"*")==0) {
+                     if (strcmp(planets[0],"*")==0) {
                         orbitisgood=YES;
                         break;
                      } else {
@@ -1635,13 +1646,14 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			      if (strcmp(s,"-HA<")==0) { if (((ha/(DR))>atof(argv[ko+1]))&&((ha/(DR))<360.-atof(argv[ko+1]))) { ok4print=NO; }}
 			   }
 			   if ((ok4print==YES)&&(ok4compute==OK)) {
-                  mc_deg2h_m_s(asd/(DR),&rah,&ram,&ras);
-                  mc_deg2d_m_s(dec/(DR),charsigne,&decd,&decm,&decs);
+                kppp++;
+                mc_deg2h_m_s(asd/(DR),&rah,&ram,&ras);
+                mc_deg2d_m_s(dec/(DR),charsigne,&decd,&decm,&decs);
 		          mc_jd_date(jj,&year,&month,&jour);
 		          strcpy(s,"");
-	              Tcl_DStringAppend(&dsptr,"{",-1);
+	             Tcl_DStringAppend(&dsptr,"{",-1);
 		          for (kf=0;kf<nbformats;kf++) {
-                     if (strcmp(formats[kf],"RAH")==0) { sprintf(s0,"%d",(int)rah); Tcl_DStringAppend(&dsptr,s0,-1); }
+                   if (strcmp(formats[kf],"RAH")==0) { sprintf(s0,"%d",(int)rah); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"RAH.H")==0) { sprintf(s0,"%.11f",rah+(ram+ras/60)/60); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"RAM")==0) { sprintf(s0,"%d",(int)ram); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"RAM.M")==0) { sprintf(s0,"%.8f",ram+ras/60); Tcl_DStringAppend(&dsptr,s0,-1); }
@@ -1679,11 +1691,11 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		             else if (strcmp(formats[kf],"POSNORTH")==0) { sprintf(s0,"%.12f",posangle_north/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"POSSUN")==0) { sprintf(s0,"%.12f",posangle_sun/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"OBJENAME")==0) { sprintf(s0,"%s",objename); Tcl_DStringAppend(&dsptr,s0,-1); }
-				     Tcl_DStringAppend(&dsptr," ",-1);
+				       Tcl_DStringAppend(&dsptr," ",-1);
 		          }
-			      Tcl_DStringAppend(&dsptr,"} ",-1);
-                  result = TCL_OK;
-			   }
+			       Tcl_DStringAppend(&dsptr,"} ",-1);
+                result = TCL_OK;
+            }
 			} /* fin de formatage des resultats */
 		 } while (sortie==NO); /* fin de boucle sur les planetes pour une date donnee */
 	  } /* fin de boucle sur la date */
@@ -1716,7 +1728,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	  Tcl_DStringAppend(&dsptr,"}",-1);
    } else {
 	  Tcl_DStringAppend(&dsptr,"{Ok",-1);
-	  sprintf(s," {J2000.0 coordinates} %d",kp);
+	  sprintf(s," {J2000.0 coordinates} %d",kppp);
 	  Tcl_DStringAppend(&dsptr,s,-1);
 	  Tcl_DStringAppend(&dsptr,"}",-1);
    }
