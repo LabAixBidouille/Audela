@@ -4,8 +4,8 @@
 # Description : Script pour générer un fichier FITS de spectre conforme à la base de données bess
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
-#				Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise à jour : Premier jet 13 mars 2006
+#               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
+# Mise à jour : 22 aout 2006
 #####################################################################
 
 # Définition d'un espace réservé à ce script
@@ -38,7 +38,7 @@ namespace eval ::bess {
         set police(titre) {helvetica 11 bold}
     }
 
-    source [file join $audace(rep_scripts) bess_module bess_module.cap]
+    source [file join $audace(rep_scripts) spcaudace bess_module bess_module.cap]
     source [file join $audace(rep_scripts) spcaudace spc_io.tcl]
 
     #*************************************************************************#
@@ -116,8 +116,8 @@ namespace eval ::bess {
      # Ferme le fichier de sortie des résultats...
      close $fileId
 
- 	}
- 	
+   }
+   
     #*************************************************************************#
     #*************  AnnuleSaisie  ********************************************#
     #*************************************************************************#
@@ -131,8 +131,8 @@ namespace eval ::bess {
         destroy $audace(base).saisie
         update idletasks
     }
- 	
- 	
+   
+   
     #**************************************************************************
     #*************************************************************************#
     #*************  JourJulienImage  *****************************************#
@@ -366,175 +366,175 @@ namespace eval ::bess {
        
         # ------ test de validité des différents champs:
         # Test validité Objet
-        	# Vérifier qu'il n'y a pas d'espace ??
+         # Vérifier qu'il n'y a pas d'espace ??
         # Test validité RA
-        	# C'est un réel
-    	if {$pas_glop == 0} {
-        	if {!([string is double $parametres(ra)])} {
-			set message_erreur $text_bess(pb_ra)
-			tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+         # C'est un réel
+      if {$pas_glop == 0} {
+         if {!([string is double $parametres(ra)])} {
+         set message_erreur $text_bess(pb_ra)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
             set pas_glop 1
-        	}
+         }
         }
-        	# Domaine de validité
+         # Domaine de validité
 
         # Test validité DEC
-        	# C'est un réel
-    	if {$pas_glop == 0} {
-        	if {!([string is double $parametres(dec)])} {
-			set message_erreur $text_bess(pb_dec)
-			tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+         # C'est un réel
+      if {$pas_glop == 0} {
+         if {!([string is double $parametres(dec)])} {
+         set message_erreur $text_bess(pb_dec)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
             set pas_glop 1
-        	}
+         }
         }
-        	# Domaine de validité
+         # Domaine de validité
 
         # Test que RA et DEC sont tous les deux présents OU absents
-    	if {$pas_glop == 0} {
-        	if {($parametres(ra) != "" && $parametres(dec) == "") || ($parametres(ra) == "" && $parametres(dec) != "")} {
-			set message_erreur $text_bess(pb_coherence_dec_ra)
-			tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-            set pas_glop 1	        	
-        	}
+      if {$pas_glop == 0} {
+         if {($parametres(ra) != "" && $parametres(dec) == "") || ($parametres(ra) == "" && $parametres(dec) != "")} {
+         set message_erreur $text_bess(pb_coherence_dec_ra)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+            set pas_glop 1          
+         }
         }
         # Test validité Date début
         
         # Test validité Exptime
-        	# C'est un réel
-    	if {$pas_glop == 0} {
-        	if {!([string is double $parametres(exptime)])} {
-			set message_erreur $text_bess(pb_exptime)
-			tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+         # C'est un réel
+      if {$pas_glop == 0} {
+         if {!([string is double $parametres(exptime)])} {
+         set message_erreur $text_bess(pb_exptime)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
             set pas_glop 1
-        	}
+         }
         }
-        	# Domaine de validité
+         # Domaine de validité
         # Test validité Equipement
-		# Test validité SiteObs
-		# Test validité obs1
-			# Vérifier qu'il n'y a pas de virgule dans le nom ?
-		# Test validité obs2
-			# Vérifier qu'il n'y a pas de virgule dans le nom ?
-		# Test validité obs3
-			# Vérifier qu'il n'y a pas de virgule dans le nom ?
-		# Test validité fichier d'entrée
-			# Vérifier que c'est du .dat ou du .spc ou du .fit
-    	if {$pas_glop == 0} {
-			if {[file extension $parametres(fich_in)] != ".dat" &&
-				[file extension $parametres(fich_in)] != ".spc" &&
-				[file extension $parametres(fich_in)] != ".fit" } {
-				set message_erreur $text_bess(pb_format_fich_in)
-				tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-	            set pas_glop 1
+      # Test validité SiteObs
+      # Test validité obs1
+         # Vérifier qu'il n'y a pas de virgule dans le nom ?
+      # Test validité obs2
+         # Vérifier qu'il n'y a pas de virgule dans le nom ?
+      # Test validité obs3
+         # Vérifier qu'il n'y a pas de virgule dans le nom ?
+      # Test validité fichier d'entrée
+         # Vérifier que c'est du .dat ou du .spc ou du .fit
+      if {$pas_glop == 0} {
+         if {[file extension $parametres(fich_in)] != ".dat" &&
+            [file extension $parametres(fich_in)] != ".spc" &&
+            [file extension $parametres(fich_in)] != ".fit" } {
+            set message_erreur $text_bess(pb_format_fich_in)
+            tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+               set pas_glop 1
             }
         }
-        	# Vérifier que le fichier existe
-    	if {$pas_glop == 0} {
-        	if {!([file exists [file join $audace(rep_images) $parametres(fich_in)]])} {
-			set message_erreur $text_bess(pb_fichier_absent)
-			tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+         # Vérifier que le fichier existe
+      if {$pas_glop == 0} {
+         if {!([file exists [file join $audace(rep_images) $parametres(fich_in)]])} {
+         set message_erreur $text_bess(pb_fichier_absent)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
             set pas_glop 1
-        	}
+         }
         }
-        	
-		# Test validité fichier de sortie
-			# Vérifier qu'il n'y a pas d'extension
-    	if {$pas_glop == 0} {
-			if {[file extension $parametres(fich_out)] != "" } {
-				set message_erreur $text_bess(pb_format_fich_out)
-				tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-		        set pas_glop 1
-	        }
+         
+      # Test validité fichier de sortie
+         # Vérifier qu'il n'y a pas d'extension
+      if {$pas_glop == 0} {
+         if {[file extension $parametres(fich_out)] != "" } {
+            set message_erreur $text_bess(pb_format_fich_out)
+            tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+              set pas_glop 1
+           }
         }
 
-		# A la fin de tous les tests, on ne poursuit que si tout est Ok
+      # A la fin de tous les tests, on ne poursuit que si tout est Ok
         if {$pas_glop == 0} {
 
         # A partir de là, je fais le traitement:
         # 1 - Je transforme le fichier d'entrée en fits (routine de Benjamin)
         set racine [file rootname $parametres(fich_in)]
         switch [file extension $parametres(fich_in)] {
-	        ".dat" {
-		        spc_dat2fits $parametres(fich_in)
-		        buf$audace(bufNo) load [file join $audace(rep_images) "$racine.fit"]
-    		}
-    		
-    		".spc" {
-		        spc_spc2fits $parametres(fich_in)
-		        buf$audace(bufNo) load [file join $audace(rep_images) "$racine.fit"]
-		        # Corriger: virer l'extension _spc à la création du fichier (cf Benjamin)
-    		}
-    		
-    		".fit" {
-	    		# On se contente de charger le fichier
-		        buf$audace(bufNo) load [file join $audace(rep_images) $parametres(fich_in)]
-    		}
-			
-    		default {
-	    		break
-    		}
-		}
-		
+           ".dat" {
+              spc_dat2fits $parametres(fich_in)
+              buf$audace(bufNo) load [file join $audace(rep_images) "$racine.fit"]
+         }
+         
+         ".spc" {
+              spc_spc2fits $parametres(fich_in)
+              buf$audace(bufNo) load [file join $audace(rep_images) "$racine.fit"]
+              # Corriger: virer l'extension _spc à la création du fichier (cf Benjamin)
+         }
+         
+         ".fit" {
+            # On se contente de charger le fichier
+              buf$audace(bufNo) load [file join $audace(rep_images) $parametres(fich_in)]
+         }
+         
+         default {
+            break
+         }
+      }
+      
         # 2 - J'ajoute le mot-clé OBJNAME
         buf1 setkwd [list "OBJNAME" $parametres(objet) string "Current name of the object" ""]
 
         # 3 - J'ajoute le mot-clé RA si il existe
         if {$parametres(ra) != ""} {
-        	buf1 setkwd [list "RA" $parametres(ra) float "Right ascension" "deg"]
-    	}
+         buf1 setkwd [list "RA" $parametres(ra) float "Right ascension" "deg"]
+      }
 
         # 4 - J'ajoute le mot-clé DEC si il existe
         if {$parametres(dec) != ""} {
-        	buf1 setkwd [list "DEC" $parametres(dec) float "Declination" "deg"]
-    	}
+         buf1 setkwd [list "DEC" $parametres(dec) float "Declination" "deg"]
+      }
 
-    	# 5 - J'ajoute le mot-clé DATE-OBS
-    	set dateobs [join [list $parametres(datedeb)T$parametres(heuredeb)]]
+      # 5 - J'ajoute le mot-clé DATE-OBS
+      set dateobs [join [list $parametres(datedeb)T$parametres(heuredeb)]]
         buf1 setkwd [list "DATE-OBS" $dateobs string "Date of observation start" ""]
 
-    	# 6 - j'ajoute le mot-clé EXPTIME
-    	buf1 setkwd [list "EXPTIME" $parametres(exptime) float "Total time of exposure" "s"]
+      # 6 - j'ajoute le mot-clé EXPTIME
+      buf1 setkwd [list "EXPTIME" $parametres(exptime) float "Total time of exposure" "s"]
 
-    	# 7 - j'ajoute le mot-clé BSS_INST
-    	buf1 setkwd [list "BSS_INST" "$parametres(equipement)" string "Equipment used for acquisition" ""]
+      # 7 - j'ajoute le mot-clé BSS_INST
+      buf1 setkwd [list "BSS_INST" "$parametres(equipement)" string "Equipment used for acquisition" ""]
 
-    	# 8 - j'ajoute le mot-clé BSS_OBS
-    	buf1 setkwd [list "BSS_OBS" "$parametres(siteobs)" string "Observation site" ""]
-    	    	
-    	# 9 - j'ajoute le mot-clé OBSERVER
-    	set obs "$parametres(obs1)"
-    	if {$parametres(obs2) != ""} {
-	    	append obs ", " "$parametres(obs2)"
-    	}
+      # 8 - j'ajoute le mot-clé BSS_OBS
+      buf1 setkwd [list "BSS_OBS" "$parametres(siteobs)" string "Observation site" ""]
+            
+      # 9 - j'ajoute le mot-clé OBSERVER
+      set obs "$parametres(obs1)"
+      if {$parametres(obs2) != ""} {
+         append obs ", " "$parametres(obs2)"
+      }
         if {$parametres(obs3) != ""} {
-	    	append obs ", " "$parametres(obs3)"
-    	}
-    	buf1 setkwd [list "OBSERVER" "$obs" string "Observer(s)" ""]
-    	
-    	# 10 - j'ajoute le mot-clé CUNIT1
-    	buf1 setkwd [list "CUNIT1" "Angstroms" string "Wavelength unit" ""]
-    	
-    	# 11 - j'ajoute le mot-clé CTYPE1
-    	buf1 setkwd [list "CTYPE1" "Wavelength" string "" ""]
+         append obs ", " "$parametres(obs3)"
+      }
+      buf1 setkwd [list "OBSERVER" "$obs" string "Observer(s)" ""]
+      
+      # 10 - j'ajoute le mot-clé CUNIT1
+      buf1 setkwd [list "CUNIT1" "Angstroms" string "Wavelength unit" ""]
+      
+      # 11 - j'ajoute le mot-clé CTYPE1
+      buf1 setkwd [list "CTYPE1" "Wavelength" string "" ""]
 
-    	# 12 - j'ajoute le mot-clé CRPIX1
-    	buf1 setkwd [list "CRPIX1" 1.0 float "Reference pixel" ""]
+      # 12 - j'ajoute le mot-clé CRPIX1
+      buf1 setkwd [list "CRPIX1" 1.0 float "Reference pixel" ""]
 
-    	# 13 - j'ajoute le mot-clé BSS_VHEL
-    	buf1 setkwd [list "BSS_VHEL" 0 float "Heliocentric speed" "km/s"]
-    	
-    	# 14 - j'ajoute le mot-clé BSS_OBS
-    	buf1 setkwd [list "BSS_OBS" "$parametres(siteobs)" string "Observation site" ""]
-    	
-    	# 15 - Ne me reste plus qu'à sauvegarder l'image
+      # 13 - j'ajoute le mot-clé BSS_VHEL
+      buf1 setkwd [list "BSS_VHEL" 0 float "Heliocentric speed" "km/s"]
+      
+      # 14 - j'ajoute le mot-clé BSS_OBS
+      buf1 setkwd [list "BSS_OBS" "$parametres(siteobs)" string "Observation site" ""]
+      
+      # 15 - Ne me reste plus qu'à sauvegarder l'image
         buf$audace(bufNo) save [file join "$audace(rep_images)" "$parametres(fich_out).fit"]
-		# J'efface le fichier créé par spc_dat2fits ou spc_spc2fits
-		if {$racine != $parametres(fich_out) && [file extension $parametres(fich_in)] != ".fit"} {
-			file delete [file join $audace(rep_images) "$racine.fit"]
-		}
-    	
-    	# Quand tous les traitements sont termines, je ferme la fenetre
-#     	destroy $audace(base).saisie
+      # J'efface le fichier créé par spc_dat2fits ou spc_spc2fits
+      if {$racine != $parametres(fich_out) && [file extension $parametres(fich_in)] != ".fit"} {
+         file delete [file join $audace(rep_images) "$racine.fit"]
+      }
+      
+      # Quand tous les traitements sont termines, je ferme la fenetre
+#        destroy $audace(base).saisie
 #         update
 
         }
@@ -544,3 +544,4 @@ namespace eval ::bess {
 # Fin du namespace bess
 
 ::bess::Principal
+
