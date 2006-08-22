@@ -518,7 +518,7 @@ proc spc_profil { args } {
 	    set methodedetect [ lindex $args 2 ]
 	    set methodebin [ lindex $args 3 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, none, frac)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?\n\n"
+	    ::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, none, frac)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add, rober, horne)?\n\n"
 	}
 
 	#--- Chargement du spectre :
@@ -538,7 +538,7 @@ proc spc_profil { args } {
 	    set gauss_params [ spc_detect $spectre2d ]
 	}
 
-	#--- Découpage de la zone à biner et retrait du fond de ciel :
+	#--- Découpage de la zone à binner et retrait du fond de ciel :
 	set ycenter [ lindex $gauss_params 0 ] 
 	set hauteur [ lindex $gauss_params 1 ]
 	#-- Algo : set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
@@ -670,7 +670,7 @@ proc spc_subsky { args } {
 	    file delete "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
 	} elseif { $methodemoy == "moy2" } {
 
-	    #--- Moyenne de la valeur des fonds de ciel des 2 zones :
+	    #--- Moyenne de la valeur des fonds de ciel tirés des 2 zones :
 	    ::console::affiche_resultat "Soustraction du fond de ciel : moyenne des 2 fonds.\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
 	    set moysup [ lindex [ buf$audace(bufNo) stat ] 6 ]

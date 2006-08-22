@@ -162,8 +162,9 @@ proc spc_register { args } {
 
    if {[llength $args] == 1} {
        set filename [ lindex $args 0 ]
-       # Détection fragile : * doit etre un nombre de 0 a n. glob -nocomplain ?
-       set fileliste [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ]
+       #- Détection fragile : * doit etre un nombre de 0 a n. glob -nocomplain ?
+       #- Améliorée le 14-08-2006
+       set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) ${filename}\[0-9\]*$conf(extension,defaut) ] ]
        # Les fichiers de fileliste contiennent aussi le nom du repertoire
        set nb_file [ llength $fileliste ]
        set fichier1 [file tail [ lindex $fileliste 0 ]]
@@ -187,7 +188,7 @@ proc spc_register { args } {
        }
        
        # Recale chaque spectre 2D verticalement par rapport au premier
-       ::console::affiche_resultat "Recalage de $nb_file images..."
+       ::console::affiche_resultat "Recalage de $nb_file images...\n"
        set ycentre [ lindex $ycoords 0 ]
        set fichier ""
        foreach rfichier $fileliste {
@@ -198,6 +199,7 @@ proc spc_register { args } {
 	   trans 0 $dy
 	   set nomfichierlg [ file rootname $fichier ]
 	   regexp {(.+)\-[0-9]+} $nomfichierlg match nomfichier
+	   # set nomfichier [ file rootname $fichier ]
 	   buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_r-$kk$conf(extension,defaut)"
 	   #::console::affiche_resultat "Image $kk traitée\n"
 	   incr k
@@ -217,7 +219,7 @@ proc spc_register { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 26-08-2005
-# Date modification : 29-10-2005/27-12-2005
+# Date modification : 29-10-2005/27-12-2005/15-08-2006
 # Arguments : fichier .fit
 # Heuristique : si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre.
 ####################################################################
@@ -226,31 +228,36 @@ proc spc_tiltauto { args } {
    global audace
    global conf
    set pi [expr acos(-1.0)]
+   set anglelimit 1.5
 
    if {[llength $args] == 1} {
        set filename [ lindex $args 0 ]
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+
+       #--- Algo de detection : binx aux bords droit et gauche sur une largeur de 1/100 de celle de l'image.
        set largeur [ expr $naxis1/100 ]
        set windowcoords [ list 1 1 3 $naxis2 ]
 
-       ## Binning des colonnes à l'extrême gauche de l'image
+       #--- Algo : determine le centre des taches du bord gauche et droit et calcul l'angle.
+       #- Methode un peu fragile : trouve parfois un angle important (4 ou 15°) alors que ce n'est pas le cas.
+       #-- Binning des colonnes à l'extrême gauche de l'image
        buf$audace(bufNo) binx [expr $largeur+1] [expr 2*$largeur] 3
        set x1 [ expr int(1.5*$largeur) ]
        set y1 [lindex [buf$audace(bufNo) centro $windowcoords] 1]
 
-       ## Binning des colonnes à l'extrême droite de l'image
+       #-- Binning des colonnes à l'extrême droite de l'image
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        buf$audace(bufNo) binx [expr $naxis1-2*$largeur] [expr $naxis1-$largeur] 3
        set x2 [ expr int($naxis1-1.5*$largeur) ]
        set y2 [lindex [buf$audace(bufNo) centro $windowcoords] 1]
 
-       ## Effectue la rotation
-       # Angles>0 vers le haut de l'image
+       #-- Effectue la rotation d'angle "angle" et de centre=centre moyen de l'epaisseur du spectre :
+       #- Angles>0 vers le haut de l'image
        set angle [expr 180/$pi*atan(1.0*($y1-$y2)/($x2-$x1))]
        ## Si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre
-       if { $angle <= 6 } {
+       if { $angle <= $anglelimit && $angle >= -$anglelimit } {
 	   set yinf [ expr int(0.5*($y1+$y2)) ]
 	   set xinf [ expr int($naxis1/2) ] 
 	   buf$audace(bufNo) load "$audace(rep_images)/$filename"
@@ -259,17 +266,15 @@ proc spc_tiltauto { args } {
 	   buf$audace(bufNo) rot $xinf $yinf $angle
 	   ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xinf,$yinf).\n"
 	   #-- Modification du nom du fichier de sortie
-	   set filespc [ file rootname $filename ]
+	   set filespc [ file tail [ file rootname $filename ] ]
 	   buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt$conf(extension,defaut)"
-	   #loadima ${filespc}_tilt$conf(extension,defaut)
 	   ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt$conf(extension,defaut).\n"
 	   return ${filespc}_tilt
        } else {
 	   ::console::affiche_resultat "Rotation d'angle 0° car angle=$angle est érroné.\n"
 	   #-- Modification du nom du fichier de sortie
-	   set filespc [ file rootname $filename ]
+	   set filespc [ file tail [ file rootname $filename ] ]
 	   buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt0$conf(extension,defaut)"
-	   #loadima ${filespc}_tilt0$conf(extension,defaut)
 	   ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt0$conf(extension,defaut).\n"
 	   return ${filespc}_tilt0
        }
@@ -896,7 +901,7 @@ proc spc_smilex2imgs { args } {
 	    return ${filename}-slx
 	} else {  
 	    set i 1
-	    ::console::affiche_resultat "$nbsp spectres à traiter...\n\n"
+	    ::console::affiche_resultat "Correction du smilex de $nbsp spectres...\n\n"
 	    foreach lefichier $liste_images {
 		set fichier [ file tail $lefichier ]
 		buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -922,7 +927,7 @@ proc spc_smilex2imgs { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 16-06-2006
-# Date modification : 16-06-2006
+# Date modification : 15-08-2006
 # Arguments : nom générique des spectres à traiter
 ####################################################################
 
@@ -935,28 +940,89 @@ proc spc_tiltautoimgs { args } {
 	set filename [ file rootname [ lindex $args 0 ] ]
 
 	#--- Applique le smile au(x) spectre(s) incriminé(s)
-	set liste_images [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ]
+	set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
 	set nbsp [ llength $liste_images ]
 	if { $nbsp ==  1 } {
-	    set spectre_tilte [ spc_tiltauto $filename ]
-	    ::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilte$conf(extension,defaut)\n"
-	    return $spectre_tilte
-	} else {  
+	    set spectre_tilt [ spc_tiltauto $filename ]
+	    ::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilt$conf(extension,defaut)\n"
+	    return $spectre_tilt
+	} else {
 	    set i 1
+	    set nbspbad 0
 	    ::console::affiche_resultat "$nbsp spectres à traiter...\n\n"
 	    foreach lefichier $liste_images {
-		set fichier [ file tail $lefichier ]
+		set fichier [ file rootname [ file tail $lefichier ] ]
 		set spectre_tilte [ spc_tiltauto $fichier ]
-		file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
-		::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		#-- Cas des spectres dont la rotation excede une valeur seuil :
+		if { [ regexp {(.+)tilt0+} $spectre_tilte match spectrem ] } {
+		    file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt0-$i$conf(extension,defaut)"
+		    ::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt0-$i$conf(extension,defaut).\n\n"
+		    incr nbspbad
+		} else {
+		    file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+		    ::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		}
 		incr i
 	    }
+
+	    #--- Renumerote si des spectres ont ete ecrates de la serie :
+	    if { $nbspbad >= 1 } {
+		renumerote ${filename}tilt-
+	    }
+
 	    #--- Messages d'information
 	    #::console::affiche_resultat "Spectre corrigés sauvés sous ${filename}tilt-\*$conf(extension,defaut).\n"
 	    return ${filename}tilt-
 	}
     } else {
 	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D\n\n"
+    }
+}
+#********************************************************************************#
+
+
+
+####################################################################
+# Procédure d'élimination des spectres bruts inexploitables : passage nuageux...
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 15-08-2006
+# Date modification : 15-08-2006
+# Arguments : nom générique des spectres à traiter
+# Heuristique : si l'épaisseur du spectre est trop faible, l'image est considérée comme altérée.
+####################################################################
+
+proc spc_reject { args } {
+
+    global audace
+    global conf
+    set hauteur_min 6.0
+
+    if { [ llength $args ] == 1} {
+	set nomgeneric [ lindex $args 0 ]
+	set listeimg [ lsort -dictionary [ glob -dir $audace(rep_images) ${nomgeneric}\[0-9\]*$conf(extension,defaut) ] ]
+	set nbimg [ llength $listeimg ]
+
+	#--- Heuristique : si l'épaisseur du spectre est trop faible, l'image est considérée comme altérée.
+	set i 0
+	::console::affiche_resultat "Vérification de $nbimg spectres...\n"
+	foreach spectre $listeimg {
+	    set fichier [ file tail [ file rootname $spectre ] ]
+	    set sp_hauteur [ lindex [ spc_detect $fichier ] 1 ]
+	    if { $sp_hauteur < $hauteur_min } {
+		incr i
+		file rename $audace(rep_images)/$fichier$conf(extension,defaut) $audace(rep_images)/bad_$fichier$conf(extension,defaut)
+		::console::affiche_resultat "Le spectre $fichier est altéré et est donc renomé en bad_$fichier\n"
+	    }
+	}
+
+	#--- Renumerote les images dans le cas ou il y a au moins un rejet :
+	if { $i >= 1 } {
+	    renumerote $nomgeneric
+	}
+	::console::affiche_resultat "$i spectre(s) retiré(s) de la série\n"
+    } else {
+	::console::affiche_erreur "Usage: spc_reject nom_générique_spectre_2D\n\n"
     }
 }
 #********************************************************************************#

@@ -230,8 +230,16 @@ proc openspccal { args } {
    set dtype [lindex [buf$audace(bufNo) getkwd "CTYPE1"] 1]
 
    for {set k 1} {$k<=$naxis1} {incr k} {
-       # Lit la valeur des elements du fichier fit
-       lappend intensites [buf$audace(bufNo) getpix [list $k 1]]
+       #-- Lit la valeur des elements du fichier fit
+       # lappend intensites [buf$audace(bufNo) getpix [list $k 1]]
+       #-- Gestion des valeurs "nan" de l'intensite
+       set ival [ buf$audace(bufNo) getpix [list $k 1] ]
+       #if { $ival == "nan" } {
+	#   lappend intensites 0
+	#   ::console::affiche_resultat "Cas nan : $ival\n"
+       #} else {
+	   lappend intensites $ival
+       #}
    }
    set spectre [list $intensites $naxis1 $xdepart $xincr $xcenter "$dtype"]
    return $spectre
@@ -1146,6 +1154,8 @@ proc spc_fit2png { args } {
     global audace
     global conf
     global tcl_platform
+    #-- 3%=0.03
+    set lpart 0
 
     if { [llength $args] == 4 || [llength $args] == 2 } {
 	if { [llength $args] == 2 } {
@@ -1156,7 +1166,7 @@ proc spc_fit2png { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
 	    #-- Demarre et fini le graphe en deçca de 3% des limites pour l'esthetique
-	    set largeur [ expr 0.03*$naxis1 ]
+	    set largeur [ expr $lpart*$naxis1 ]
 	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
 	    set xdeb [ expr $xdeb0+$largeur ]
 	    set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]

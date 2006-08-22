@@ -101,6 +101,8 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu Pipelines ---#
      set captionspc(spc_pipelines) "Pipelines"
+     set captionspc(spc_traitesimple2calibre_w) "Prétraitement simple -> calibration"
+     set captionspc(spc_traitesimple2rinstrum_w) "Prétraitement simple -> réponse instrumentale"
      set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"
      set captionspc(spc_geom2rinstrum_w) "Corrections géométriques -> correction instrumentale"
      set captionspc(spc_traite2calibre_w) "Prétraitement -> calibration"
