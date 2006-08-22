@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.12 2006-08-21 22:12:58 alainklotz Exp $
+# Mise a jour $Id: aud1.tcl,v 1.13 2006-08-22 18:04:55 robertdelmas Exp $
 #
 
 #
@@ -414,7 +414,7 @@ proc fitgauss { visuNo } {
    #--- Cree les etiquettes
    label $This.lab0 -text "Visu$visuNo"
    pack $This.lab0 -padx 10 -pady 2
-   ::console::affiche_resultat "Visu$visuNo $caption(audace,title_gauss)\n"
+   ::console::affiche_resultat "=== Visu$visuNo $caption(audace,title_gauss)\n"
    ::console::affiche_resultat "$caption(audace,coord_box) : $box\n"
    set texte "$caption(audace,center,xy) : [ format "%.2f" [ lindex $valeurs 1 ] ] / [ format "%.2f" [ lindex $valeurs 5 ] ]"
    ::console::affiche_resultat "$texte\n"
@@ -437,17 +437,18 @@ proc fitgauss { visuNo } {
    label $This.lab5 -text "$texte"
    pack $This.lab5 -padx 10 -pady 2
    if {[expr $if0+$dif]<=0} {
-	   set dif [expr $if0+1]
+      set dif [expr $if0+1]
    }
-	set mag1 [ expr -2.5*log10($if0+$dif) ]
+   set mag1 [ expr -2.5*log10($if0+$dif) ]
    if {[expr $if0-$dif]<=0} {
-	   set dif [expr $if0-1]
+      set dif [expr $if0-1]
    }
    set mag2 [ expr -2.5*log10($if0-$dif) ]
    set mag0 [ expr ($mag1+$mag2)/2. ]
    set dmag [ expr abs($mag1-$mag0) ]
    set texte "$caption(audace,mag_instrument) : [ format %6.3f $mag0 ] +/- [ format %6.3f $dmag ]"
    ::console::affiche_resultat "$texte\n"
+   ::console::affiche_saut "\n"
    if { [ $base.fra1.labURLX cget -fg ] == "$color(blue)" } {
       set radec [ buf[ ::confVisu::getBufNo $visuNo ] xy2radec [ list [ lindex $valeurs 1 ] [ lindex $valeurs 5 ] ] ]
       set ra [ lindex $radec 0 ]
@@ -501,12 +502,14 @@ proc fitgauss { visuNo } {
       }
       #---
       append mpc "        $xxx"
-      ::console::affiche_resultat "\n"
+      ::console::affiche_saut "\n"
       ::console::affiche_resultat "$mpc\n"
+      ::console::affiche_saut "\n"
       #---
       if { $xxx != "xxx" } {
          ::console::affiche_erreur "$caption(audace,boite,attention)\n"
          ::console::affiche_erreur "[eval [concat {format} { $caption(audace,UAI_site_image) $conf(posobs,station_uai) } ] ]\n"
+         ::console::affiche_saut "\n"
       }
       #         1         2         3         4         5         6         7         8        9         10        11        12        13
       #123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12
@@ -516,9 +519,9 @@ proc fitgauss { visuNo } {
       #       .          1 C
       #set mpc "NEW $caption(audace,MPC_format)\n       .          1 C"
       # ---
-      #::console::affiche_resultat "\n"
-      ::console::affiche_resultat "Use http://cfa-www.harvard.edu/iau/info/Astrometry.html for informations\n"
-      ::console::affiche_resultat "Use ::astrometry::mpc_provisional2packed to convert designation to MPC packed form\n"
+      ::console::affiche_resultat "Use http://cfa-www.harvard.edu/iau/info/Astrometry.html for informations.\n"
+      ::console::affiche_resultat "Use ::astrometry::mpc_provisional2packed to convert designation to MPC packed form.\n"
+      ::console::affiche_saut "\n"
    }
    #--- La fenetre est active
    focus $This
