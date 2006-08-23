@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.4 2006-08-12 21:16:29 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.5 2006-08-23 21:03:21 robertdelmas Exp $
 #
 
 global audace
@@ -1042,81 +1042,81 @@ proc gotoimage { } {
    global info_image
 
    #---
-   if { [winfo exists $audace(base).snvisu1] } {
-      wm withdraw $audace(base).snvisu1
-      wm deiconify $audace(base).snvisu1
-      focus $audace(base).snvisu1.but_cancel
+   if { [winfo exists $audace(base).snvisu_1] } {
+      wm withdraw $audace(base).snvisu_1
+      wm deiconify $audace(base).snvisu_1
+      focus $audace(base).snvisu_1.but_cancel
       return
    }
 
-   #--- Create the toplevel window .snvisu1
-   #--- Cree la fenetre .snvisu1 de niveau le plus haut
-   toplevel $audace(base).snvisu1 -class Toplevel
-   wm title $audace(base).snvisu1 $caption(snvisu,secondary_title)
-   set posx_snvisu1 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 1 ]
-   set posy_snvisu1 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 2 ]
-   wm geometry $audace(base).snvisu1 +[ expr $posx_snvisu1 + 490 ]+[ expr $posy_snvisu1 + 160 ]
-   wm resizable $audace(base).snvisu1 0 0
-   wm transient $audace(base).snvisu1 $audace(base).snvisu
-   wm protocol $audace(base).snvisu1 WM_DELETE_WINDOW { set command_line2 "" ; destroy $audace(base).snvisu1 }
+   #--- Create the toplevel window .snvisu_1
+   #--- Cree la fenetre .snvisu_1 de niveau le plus haut
+   toplevel $audace(base).snvisu_1 -class Toplevel
+   wm title $audace(base).snvisu_1 $caption(snvisu,secondary_title)
+   set posx_snvisu_1 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 1 ]
+   set posy_snvisu_1 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 2 ]
+   wm geometry $audace(base).snvisu_1 +[ expr $posx_snvisu_1 + 490 ]+[ expr $posy_snvisu_1 + 160 ]
+   wm resizable $audace(base).snvisu_1 0 0
+   wm transient $audace(base).snvisu_1 $audace(base).snvisu
+   wm protocol $audace(base).snvisu_1 WM_DELETE_WINDOW { set command_line2 "" ; destroy $audace(base).snvisu_1 }
 
    #--- Create the label and the command line
    #--- Cree l'etiquette et la ligne de commande
-   frame $audace(base).snvisu1.frame1 -borderwidth 0 -relief raised
-      label $audace(base).snvisu1.frame1.label \
+   frame $audace(base).snvisu_1.frame1 -borderwidth 0 -relief raised
+      label $audace(base).snvisu_1.frame1.label \
          -font $audace(font,arial_8_b) -text $caption(snvisu,image_numero) \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu1.frame1.label \
+      pack $audace(base).snvisu_1.frame1.label \
          -fill x -side left \
          -padx 5 -pady 5
-      entry $audace(base).snvisu1.frame1.command_line \
+      entry $audace(base).snvisu_1.frame1.command_line \
          -font $audace(font,arial_8_b) -textvariable command_line2 \
          -borderwidth 1 -relief groove -takefocus 1 -width 8
-      pack $audace(base).snvisu1.frame1.command_line \
+      pack $audace(base).snvisu_1.frame1.command_line \
          -fill x -side right \
          -padx 5 -pady 5
-   pack $audace(base).snvisu1.frame1 -side top -fill both -expand 1
+   pack $audace(base).snvisu_1.frame1 -side top -fill both -expand 1
 
    #--- Je place le focus immediatement dans la zone de saisie
-   focus $audace(base).snvisu1.frame1.command_line
+   focus $audace(base).snvisu_1.frame1.command_line
 
    #--- Create the button 'Cancel'
    #--- Cree le bouton 'Annuler'
-   button $audace(base).snvisu1.but_cancel \
+   button $audace(base).snvisu_1.but_cancel \
       -text $caption(snvisu,cancel) -borderwidth 2 \
-      -command { set command_line2 "" ; destroy $audace(base).snvisu1 }
-   pack $audace(base).snvisu1.but_cancel \
-      -in $audace(base).snvisu1 -side left -anchor w \
+      -command { set command_line2 "" ; destroy $audace(base).snvisu_1 }
+   pack $audace(base).snvisu_1.but_cancel \
+      -in $audace(base).snvisu_1 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- Create the button 'GO'
    #--- Cree le bouton 'GO'
-   button $audace(base).snvisu1.but_go \
+   button $audace(base).snvisu_1.but_go \
       -text $caption(snvisu,go) -borderwidth 2 \
       -command {
          if { $command_line2 != "" } {
             set rep(xx1) [expr $command_line2-1]
             affimages
-            destroy $audace(base).snvisu1
+            destroy $audace(base).snvisu_1
          }
       }
-   pack $audace(base).snvisu1.but_go \
-      -in $audace(base).snvisu1 -side left -anchor w \
+   pack $audace(base).snvisu_1.but_go \
+      -in $audace(base).snvisu_1 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- La touche Escape est equivalente au bouton "but_cancel"
-   bind $audace(base).snvisu1 <Key-Escape>  { $audace(base).snvisu1.but_cancel invoke }
+   bind $audace(base).snvisu_1 <Key-Escape>  { $audace(base).snvisu_1.but_cancel invoke }
 
    #--- La touche Return est equivalente au bouton "but_go"
-   bind $audace(base).snvisu1 <Key-Return>  { $audace(base).snvisu1.but_go invoke }
+   bind $audace(base).snvisu_1 <Key-Return>  { $audace(base).snvisu_1.but_go invoke }
 
-   $audace(base).snvisu1.frame1.command_line selection range 0 end 
+   $audace(base).snvisu_1.frame1.command_line selection range 0 end 
 
    #--- La fenetre est active
-   focus $audace(base).snvisu1
+   focus $audace(base).snvisu_1
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).snvisu1
+   ::confColor::applyColor $audace(base).snvisu_1
 }
 
 proc snvisu_configuration { } {
@@ -1126,36 +1126,36 @@ proc snvisu_configuration { } {
    global snconfvisu
 
    #---
-   if { [winfo exists $audace(base).snvisu3] } {
-      wm withdraw $audace(base).snvisu3
-      wm deiconify $audace(base).snvisu3
-      focus $audace(base).snvisu3.but_cancel
+   if { [winfo exists $audace(base).snvisu_3] } {
+      wm withdraw $audace(base).snvisu_3
+      wm deiconify $audace(base).snvisu_3
+      focus $audace(base).snvisu_3.but_cancel
       return
    }
 
-   #--- Create the toplevel window .snvisu3
-   #--- Cree la fenetre .snvisu3 de niveau le plus haut
-   toplevel $audace(base).snvisu3 -class Toplevel
-   wm title $audace(base).snvisu3 $caption(snvisu,config_title)
-   set posx_snvisu3 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 1 ]
-   set posy_snvisu3 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 2 ]
-   wm geometry $audace(base).snvisu3 +[ expr $posx_snvisu3 + 165 ]+[ expr $posy_snvisu3 + 100 ]
-   wm resizable $audace(base).snvisu3 0 0
-   wm transient $audace(base).snvisu3 $audace(base).snvisu
-   wm protocol $audace(base).snvisu3 WM_DELETE_WINDOW { set command_line2 "" ; destroy $audace(base).snvisu3 }
+   #--- Create the toplevel window .snvisu_3
+   #--- Cree la fenetre .snvisu_3 de niveau le plus haut
+   toplevel $audace(base).snvisu_3 -class Toplevel
+   wm title $audace(base).snvisu_3 $caption(snvisu,config_title)
+   set posx_snvisu_3 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 1 ]
+   set posy_snvisu_3 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 2 ]
+   wm geometry $audace(base).snvisu_3 +[ expr $posx_snvisu_3 + 165 ]+[ expr $posy_snvisu_3 + 100 ]
+   wm resizable $audace(base).snvisu_3 0 0
+   wm transient $audace(base).snvisu_3 $audace(base).snvisu
+   wm protocol $audace(base).snvisu_3 WM_DELETE_WINDOW { set command_line2 "" ; destroy $audace(base).snvisu_3 }
 
    #--- Create the label and the radiobutton
    #--- Cree l'etiquette et les radiobuttons
-   frame $audace(base).snvisu3.frame1 -borderwidth 0 -relief raised
+   frame $audace(base).snvisu_3.frame1 -borderwidth 0 -relief raised
       #--- Label
-      label $audace(base).snvisu3.frame1.label \
+      label $audace(base).snvisu_3.frame1.label \
          -font $audace(font,arial_8_b) -text $caption(snvisu,rafraich_images) \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu3.frame1.label \
+      pack $audace(base).snvisu_3.frame1.label \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Bouton radio 1 - Option "motion"
-      radiobutton $audace(base).snvisu3.frame1.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $audace(base).snvisu_3.frame1.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,motion) -value "motion" -variable snconfvisu(cuts_change) \
          -font $audace(font,arial_8_b) -command {
             global num
@@ -1163,11 +1163,11 @@ proc snvisu_configuration { } {
             bind $zone(sh1) <Motion> { catch { visu$num(visu_1) disp ; visu4 disp } }
             bind $zone(sh2) <Motion> { catch { visu$num(visu_2) disp ; visu5 disp } }
          }
-      pack $audace(base).snvisu3.frame1.but_rad0 \
-         -in $audace(base).snvisu3.frame1 -side left -anchor center \
+      pack $audace(base).snvisu_3.frame1.but_rad0 \
+         -in $audace(base).snvisu_3.frame1 -side left -anchor center \
          -padx 5 -pady 5  
       #--- Bouton radio 2 - Option "release"
-      radiobutton $audace(base).snvisu3.frame1.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $audace(base).snvisu_3.frame1.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,release) -value "release" -variable snconfvisu(cuts_change) \
          -font $audace(font,arial_8_b) -command {
             global num
@@ -1175,185 +1175,185 @@ proc snvisu_configuration { } {
             bind $zone(sh1) <ButtonRelease> { catch { visu$num(visu_1) disp ; visu4 disp } }
             bind $zone(sh2) <ButtonRelease> { catch { visu$num(visu_2) disp ; visu5 disp } }
          }
-      pack $audace(base).snvisu3.frame1.but_rad1 \
-         -in $audace(base).snvisu3.frame1 -side left -anchor center \
+      pack $audace(base).snvisu_3.frame1.but_rad1 \
+         -in $audace(base).snvisu_3.frame1 -side left -anchor center \
          -padx 5 -pady 5  
-   pack $audace(base).snvisu3.frame1 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame1 -side top -fill both -expand 1  
 
    #--- Create the label and the command lines
    #--- Cree l'etiquette et les lignes de commande
-   frame $audace(base).snvisu3.frame2 -borderwidth 0 -relief raised
+   frame $audace(base).snvisu_3.frame2 -borderwidth 0 -relief raised
       #--- Label
-      label $audace(base).snvisu3.frame2.label \
+      label $audace(base).snvisu_3.frame2.label \
          -font $audace(font,arial_8_b) -text $caption(snvisu,blink_delai) \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu3.frame2.label \
+      pack $audace(base).snvisu_3.frame2.label \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Entry
-      entry $audace(base).snvisu3.frame2.command_line \
+      entry $audace(base).snvisu_3.frame2.command_line \
          -font $audace(font,arial_8_b) -textvariable snconfvisu(delai_blink) \
          -borderwidth 1 -relief groove -takefocus 1 -width 8 -justify center
-      pack $audace(base).snvisu3.frame2.command_line \
+      pack $audace(base).snvisu_3.frame2.command_line \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Label
-      label $audace(base).snvisu3.frame2.label1 \
+      label $audace(base).snvisu_3.frame2.label1 \
          -font $audace(font,arial_8_b) -text $caption(snvisu,blink_nbre) \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu3.frame2.label1 \
+      pack $audace(base).snvisu_3.frame2.label1 \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Entry
-      entry $audace(base).snvisu3.frame2.command_line_1 \
+      entry $audace(base).snvisu_3.frame2.command_line_1 \
          -font $audace(font,arial_8_b) -textvariable snconfvisu(nb_blink) \
          -borderwidth 1 -relief groove -takefocus 1 -width 8 -justify center
-      pack $audace(base).snvisu3.frame2.command_line_1 \
+      pack $audace(base).snvisu_3.frame2.command_line_1 \
          -fill x -side left \
          -padx 5 -pady 5
-   pack $audace(base).snvisu3.frame2 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame2 -side top -fill both -expand 1  
 
    #--- Create the label and the radiobutton
    #--- Cree l'etiquette et les radiobuttons
-   frame $audace(base).snvisu3.frame3 -borderwidth 0 -relief raised
+   frame $audace(base).snvisu_3.frame3 -borderwidth 0 -relief raised
       #--- Label
-      label $audace(base).snvisu3.frame3.label \
+      label $audace(base).snvisu_3.frame3.label \
          -font $audace(font,arial_8_b) -text $caption(snvisu,scrollbar) \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu3.frame3.label \
+      pack $audace(base).snvisu_3.frame3.label \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Bouton radio 1 - Option avec scrollbar
-      radiobutton $audace(base).snvisu3.frame3.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $audace(base).snvisu_3.frame3.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,scroollbar_on) -value "on" -variable snconfvisu(scrollbars) \
          -font $audace(font,arial_8_b) -command { }
-      pack $audace(base).snvisu3.frame3.but_rad0 \
-         -in $audace(base).snvisu3.frame3 -side left -anchor center \
+      pack $audace(base).snvisu_3.frame3.but_rad0 \
+         -in $audace(base).snvisu_3.frame3 -side left -anchor center \
          -padx 5 -pady 5  
       #--- Bouton radio 2 - Option sans scrollbar
-      radiobutton $audace(base).snvisu3.frame3.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $audace(base).snvisu_3.frame3.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,scroollbar_off) -value "off" -variable snconfvisu(scrollbars) \
          -font $audace(font,arial_8_b) -command { }
-      pack $audace(base).snvisu3.frame3.but_rad1 \
-         -in $audace(base).snvisu3.frame3 -side left -anchor center \
+      pack $audace(base).snvisu_3.frame3.but_rad1 \
+         -in $audace(base).snvisu_3.frame3 -side left -anchor center \
          -padx 5 -pady 5  
-   pack $audace(base).snvisu3.frame3 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame3 -side top -fill both -expand 1  
 
    #--- Create the label and the radiobutton
    #--- Cree l'etiquette et les radiobuttons
-   frame $audace(base).snvisu3.frame4 -borderwidth 0 -relief raised
+   frame $audace(base).snvisu_3.frame4 -borderwidth 0 -relief raised
       #--- Label
-      label $audace(base).snvisu3.frame4.label \
+      label $audace(base).snvisu_3.frame4.label \
          -font $audace(font,arial_8_b) -text $caption(snvisu,image_gzip) \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu3.frame4.label \
+      pack $audace(base).snvisu_3.frame4.label \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Bouton radio 1 - Option enregistrement image non compressee
-      radiobutton $audace(base).snvisu3.frame4.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $audace(base).snvisu_3.frame4.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text [ buf$audace(bufNo) extension ] -value "no" -variable snconfvisu(gzip) \
          -font $audace(font,arial_8_b) -command { set rep(gz) "$snconfvisu(gzip)" }
-      pack $audace(base).snvisu3.frame4.but_rad0 \
-         -in $audace(base).snvisu3.frame4 -side left -anchor center \
+      pack $audace(base).snvisu_3.frame4.but_rad0 \
+         -in $audace(base).snvisu_3.frame4 -side left -anchor center \
          -padx 5 -pady 5  
       #--- Bouton radio 2 - Option enregistrement image compressee
-      radiobutton $audace(base).snvisu3.frame4.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $audace(base).snvisu_3.frame4.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "[ buf$audace(bufNo) extension ].gz" -value "yes" -variable snconfvisu(gzip) \
          -font $audace(font,arial_8_b) -command { set rep(gz) "$snconfvisu(gzip)" }
-      pack $audace(base).snvisu3.frame4.but_rad1 \
-         -in $audace(base).snvisu3.frame4 -side left -anchor center \
+      pack $audace(base).snvisu_3.frame4.but_rad1 \
+         -in $audace(base).snvisu_3.frame4 -side left -anchor center \
          -padx 5 -pady 5  
-   pack $audace(base).snvisu3.frame4 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame4 -side top -fill both -expand 1  
 
    #--- Create the checkbutton, the button et the command line
    #--- Cree le checkbutton, le bouton et la ligne de commande
-   frame $audace(base).snvisu3.frame5 -borderwidth 0 -relief raised
+   frame $audace(base).snvisu_3.frame5 -borderwidth 0 -relief raised
       #--- Checkbutton images DSS sur disque dur ou sur DVD
-      checkbutton $audace(base).snvisu3.frame5.dss_dvd -text "$caption(snvisu,dss_dvd)" \
+      checkbutton $audace(base).snvisu_3.frame5.dss_dvd -text "$caption(snvisu,dss_dvd)" \
          -highlightthickness 0 -variable snconfvisu(dss_dvd) \
          -font $audace(font,arial_8_b)
-      pack $audace(base).snvisu3.frame5.dss_dvd \
-        -in $audace(base).snvisu3.frame5 -anchor center -side left \
+      pack $audace(base).snvisu_3.frame5.dss_dvd \
+        -in $audace(base).snvisu_3.frame5 -anchor center -side left \
         -padx 5 -pady 5
       #--- Bouton parcourir
-      button $audace(base).snvisu3.frame5.explore -text "$caption(snvisu,parcourir)" -width 1 \
+      button $audace(base).snvisu_3.frame5.explore -text "$caption(snvisu,parcourir)" -width 1 \
          -command {
             set initialdir $snconfvisu(rep_dss_dvd)
             set title $caption(snvisu,rep_dss_dvd)
             set snconfvisu(rep_dss_dvd) [ tk_chooseDirectory -title "$title" -initialdir "$initialdir" \
-               -parent "$audace(base).snvisu3" ]
+               -parent "$audace(base).snvisu_3" ]
             if { $snconfvisu(rep_dss_dvd) == "" } {
                set snconfvisu(rep_dss_dvd) "$initialdir"
             }
-            $audace(base).snvisu3.frame5.ent configure -textvariable snconfvisu(rep_dss_dvd)
+            $audace(base).snvisu_3.frame5.ent configure -textvariable snconfvisu(rep_dss_dvd)
          }
-      pack $audace(base).snvisu3.frame5.explore \
-         -in $audace(base).snvisu3.frame5 -anchor center -side left \
+      pack $audace(base).snvisu_3.frame5.explore \
+         -in $audace(base).snvisu_3.frame5 -anchor center -side left \
          -padx 5 -pady 5 -ipady 5
       #--- Entry
-      entry $audace(base).snvisu3.frame5.ent \
+      entry $audace(base).snvisu_3.frame5.ent \
          -textvariable snconfvisu(rep_dss_dvd) -width 6
-      pack $audace(base).snvisu3.frame5.ent \
-         -in $audace(base).snvisu3.frame5 -anchor center -side left \
+      pack $audace(base).snvisu_3.frame5.ent \
+         -in $audace(base).snvisu_3.frame5 -anchor center -side left \
          -padx 5 -pady 5
-   pack $audace(base).snvisu3.frame5 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame5 -side top -fill both -expand 1  
 
    #--- Create the checkbutton
    #--- Cree le checkbutton
-   frame $audace(base).snvisu3.frame6 -borderwidth 0 -relief raised
+   frame $audace(base).snvisu_3.frame6 -borderwidth 0 -relief raised
       #--- Checkbutton images DSS sur disque dur ou sur DVD
-      checkbutton $audace(base).snvisu3.frame6.priorite_dvd -text "$caption(snvisu,priorite_dvd)" \
+      checkbutton $audace(base).snvisu_3.frame6.priorite_dvd -text "$caption(snvisu,priorite_dvd)" \
          -highlightthickness 0 -variable snconfvisu(priorite_dvd) \
          -font $audace(font,arial_8_b)
-      pack $audace(base).snvisu3.frame6.priorite_dvd \
-        -in $audace(base).snvisu3.frame6 -anchor center -side left \
+      pack $audace(base).snvisu_3.frame6.priorite_dvd \
+        -in $audace(base).snvisu_3.frame6 -anchor center -side left \
         -padx 5 -pady 5
-   pack $audace(base).snvisu3.frame6 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame6 -side top -fill both -expand 1  
 
    #--- Create the button 'Cancel'
    #--- Cree le bouton 'Annuler'
-   button $audace(base).snvisu3.but_cancel \
+   button $audace(base).snvisu_3.but_cancel \
       -text $caption(snvisu,cancel) -borderwidth 2 \
-      -command { destroy $audace(base).snvisu3 }
-   pack $audace(base).snvisu3.but_cancel \
-      -in $audace(base).snvisu3 -side left -anchor w \
+      -command { destroy $audace(base).snvisu_3 }
+   pack $audace(base).snvisu_3.but_cancel \
+      -in $audace(base).snvisu_3 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- Create the button 'GO'
    #--- Cree le bouton 'GO'
-   button $audace(base).snvisu3.but_go \
+   button $audace(base).snvisu_3.but_go \
       -text $caption(snvisu,go) -borderwidth 2 \
       -command {
          ::snvisuconfiguration_save
-         destroy $audace(base).snvisu3
+         destroy $audace(base).snvisu_3
          tk_messageBox -message "$caption(snvisu,alerte1)\n$caption(snvisu,alerte2)\n$caption(snvisu,alerte3)\n" -icon warning -title "$caption(snvisu,attention)"
       }
-   pack $audace(base).snvisu3.but_go \
-      -in $audace(base).snvisu3 -side left -anchor w \
+   pack $audace(base).snvisu_3.but_go \
+      -in $audace(base).snvisu_3 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- Create the button 'Help'
    #--- Cree le bouton 'Aide'
-   button $audace(base).snvisu3.but_help \
+   button $audace(base).snvisu_3.but_help \
       -text $caption(snvisu,aide) -borderwidth 2 \
       -command {
          ::audace::showHelpPlugin tool supernovae supernovae_go.htm sn_config
       }
-   pack $audace(base).snvisu3.but_help \
-      -in $audace(base).snvisu3 -side right -anchor w \
+   pack $audace(base).snvisu_3.but_help \
+      -in $audace(base).snvisu_3 -side right -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- La touche Escape est equivalente au bouton "but_cancel"
-   bind $audace(base).snvisu3 <Key-Escape>  { $audace(base).snvisu3.but_cancel invoke }   
+   bind $audace(base).snvisu_3 <Key-Escape>  { $audace(base).snvisu_3.but_cancel invoke }   
 
    #--- La touche Return est equivalente au bouton "but_go"
-   bind $audace(base).snvisu3 <Key-Return>  { $audace(base).snvisu3.but_go invoke }
+   bind $audace(base).snvisu_3 <Key-Return>  { $audace(base).snvisu_3.but_go invoke }
     
    #--- La fenetre est active
-   focus $audace(base).snvisu3
+   focus $audace(base).snvisu_3
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).snvisu3
+   ::confColor::applyColor $audace(base).snvisu_3
 }
 
 proc changeHiCut1 { foo } {
@@ -1441,7 +1441,7 @@ proc saveimage { } {
 proc saveimages_jpeg { { invew 0 } { invns 0 } } {
    #--- Sauve les deux buffers en Jpeg
    global rep
-   global num   
+   global num
    global audace
 
    set filename [lindex $rep(x1) $rep(xx1)]
@@ -1450,7 +1450,7 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
    #---
    #set rep1 "[lindex $rep(1) 0]" 
    set rep1 "$rep(1)"
-   set filename "$rep1"     
+   set filename "$rep1"
 
    set extname "[buf$num(buffer1) extension]"
    append filename "/i$extname"
@@ -1524,7 +1524,7 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
 
       #visu$num(bufDSS) cut "$hight $low" 
       #visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
-      #visu$num(bufDSS) disp                                        
+      #visu$num(bufDSS) disp
       set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
       buf::delete $num(bufDSS)
    }
@@ -1566,40 +1566,40 @@ proc htmlimage { } {
    set htmlp(invns) 0
 
    #---
-   if { [winfo exists $audace(base).snvisu2] } {
-      wm withdraw $audace(base).snvisu2
-      wm deiconify $audace(base).snvisu2
-      focus $audace(base).snvisu2.fra_button.but_cancel
+   if { [winfo exists $audace(base).snvisu_2] } {
+      wm withdraw $audace(base).snvisu_2
+      wm deiconify $audace(base).snvisu_2
+      focus $audace(base).snvisu_2.fra_button.but_cancel
       return
    }
 
-   #--- Create the toplevel window .snvisu2
-   #--- Cree la fenetre .snvisu2 de niveau le plus haut
-   toplevel $audace(base).snvisu2 -class Toplevel
-   wm title $audace(base).snvisu2 $caption(snvisu,html_title)
-   set posx_snvisu2 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 1 ]
-   set posy_snvisu2 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 2 ]
-   wm geometry $audace(base).snvisu2 +[ expr $posx_snvisu2 + 515 ]+[ expr $posy_snvisu2 + 100 ]
-   wm resizable $audace(base).snvisu2 0 0
-   wm transient $audace(base).snvisu2 $audace(base).snvisu
-   wm protocol $audace(base).snvisu2 WM_DELETE_WINDOW { destroy $audace(base).snvisu2 }
+   #--- Create the toplevel window .snvisu_2
+   #--- Cree la fenetre .snvisu_2 de niveau le plus haut
+   toplevel $audace(base).snvisu_2 -class Toplevel
+   wm title $audace(base).snvisu_2 $caption(snvisu,html_title)
+   set posx_snvisu_2 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 1 ]
+   set posy_snvisu_2 [ lindex [ split [ wm geometry $audace(base).snvisu ] "+" ] 2 ]
+   wm geometry $audace(base).snvisu_2 +[ expr $posx_snvisu_2 + 515 ]+[ expr $posy_snvisu_2 + 100 ]
+   wm resizable $audace(base).snvisu_2 0 0
+   wm transient $audace(base).snvisu_2 $audace(base).snvisu
+   wm protocol $audace(base).snvisu_2 WM_DELETE_WINDOW { destroy $audace(base).snvisu_2 }
 
    #--- Buttons frame
-   frame $audace(base).snvisu2.fra_button \
+   frame $audace(base).snvisu_2.fra_button \
       -borderwidth 0 -cursor arrow
 
       #--- Create the button 'Cancel'
       #--- Cree le bouton 'Annuler'
-      button $audace(base).snvisu2.fra_button.but_cancel \
+      button $audace(base).snvisu_2.fra_button.but_cancel \
          -text $caption(snvisu,cancel) -borderwidth 2 \
-         -command { destroy $audace(base).snvisu2 ; return }
-      pack $audace(base).snvisu2.fra_button.but_cancel \
-         -in $audace(base).snvisu2.fra_button -side left -anchor w \
+         -command { destroy $audace(base).snvisu_2 ; return }
+      pack $audace(base).snvisu_2.fra_button.but_cancel \
+         -in $audace(base).snvisu_2.fra_button -side left -anchor w \
          -padx 5 -pady 5 -ipadx 5 -ipady 5
 
       #--- Create the button 'GO'
       #--- Cree le bouton 'GO'
-      button $audace(base).snvisu2.fra_button.but_go \
+      button $audace(base).snvisu_2.fra_button.but_go \
          -text $caption(snvisu,go) -borderwidth 2 \
          -command {
              global htmlp
@@ -1663,67 +1663,67 @@ proc htmlimage { } {
              pack $audace(base).snvisu.lst1.scr1 \
                 -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
              #---
-             destroy $audace(base).snvisu2
+             destroy $audace(base).snvisu_2
              return
          }
-      pack $audace(base).snvisu2.fra_button.but_go \
-         -in $audace(base).snvisu2.fra_button -side left -anchor w \
+      pack $audace(base).snvisu_2.fra_button.but_go \
+         -in $audace(base).snvisu_2.fra_button -side left -anchor w \
          -padx 5 -pady 5 -ipadx 5 -ipady 5
 
-   pack $audace(base).snvisu2.fra_button \
-      -in $audace(base).snvisu2 -anchor s -side bottom -expand 0 -fill x
+   pack $audace(base).snvisu_2.fra_button \
+      -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
 
    #--- Frame de magest
-   frame $audace(base).snvisu2.fra_magest \
+   frame $audace(base).snvisu_2.fra_magest \
       -borderwidth 0 -cursor arrow
       #--- Label de magest
-      label $audace(base).snvisu2.fra_magest.lab_magest \
+      label $audace(base).snvisu_2.fra_magest.lab_magest \
          -font $audace(font,arial_8_b) -text "$caption(snvisu,magnitude)" \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu2.fra_magest.lab_magest \
-         -in $audace(base).snvisu2.fra_magest -side left \
+      pack $audace(base).snvisu_2.fra_magest.lab_magest \
+         -in $audace(base).snvisu_2.fra_magest -side left \
          -padx 3
       #--- Create the command line
       #--- Cree la ligne de commande
-      entry $audace(base).snvisu2.fra_magest.entry_magest \
+      entry $audace(base).snvisu_2.fra_magest.entry_magest \
          -font $audace(font,arial_8_b) -textvariable htmlp(magest) \
          -borderwidth 1 -relief groove -width 10
-      pack $audace(base).snvisu2.fra_magest.entry_magest \
-         -in $audace(base).snvisu2.fra_magest -side left \
+      pack $audace(base).snvisu_2.fra_magest.entry_magest \
+         -in $audace(base).snvisu_2.fra_magest -side left \
          -padx 3
-   pack $audace(base).snvisu2.fra_magest \
-      -in $audace(base).snvisu2 -pady 3 -anchor s -side bottom -expand 0 -fill x
+   pack $audace(base).snvisu_2.fra_magest \
+      -in $audace(base).snvisu_2 -pady 3 -anchor s -side bottom -expand 0 -fill x
 
    #---
-   checkbutton $audace(base).snvisu2.chk_invew \
+   checkbutton $audace(base).snvisu_2.chk_invew \
       -text "$caption(snvisu,invert,mirror)" -variable htmlp(invew)
-   pack $audace(base).snvisu2.chk_invew \
-      -in $audace(base).snvisu2 -side bottom \
+   pack $audace(base).snvisu_2.chk_invew \
+      -in $audace(base).snvisu_2 -side bottom \
       -padx 20 -pady 3 -anchor w
    #--- Frame de posew
-   frame $audace(base).snvisu2.fra_posew \
+   frame $audace(base).snvisu_2.fra_posew \
       -borderwidth 0 -cursor arrow
       #--- Label de posew
-      label $audace(base).snvisu2.fra_posew.lab_posew \
+      label $audace(base).snvisu_2.fra_posew.lab_posew \
          -font $audace(font,arial_8_b) -text "$caption(snvisu,offsetew)" \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu2.fra_posew.lab_posew \
-         -in $audace(base).snvisu2.fra_posew -side left \
+      pack $audace(base).snvisu_2.fra_posew.lab_posew \
+         -in $audace(base).snvisu_2.fra_posew -side left \
          -padx 3 -pady 3
       #--- Create the command line
       #--- Cree la ligne de commande
-      entry $audace(base).snvisu2.fra_posew.entry_posew \
+      entry $audace(base).snvisu_2.fra_posew.entry_posew \
          -font $audace(font,arial_8_b) -textvariable htmlp(posew) \
          -borderwidth 1 -relief groove -width 10
-      pack $audace(base).snvisu2.fra_posew.entry_posew \
-         -in $audace(base).snvisu2.fra_posew -side left \
+      pack $audace(base).snvisu_2.fra_posew.entry_posew \
+         -in $audace(base).snvisu_2.fra_posew -side left \
          -padx 3 -pady 3
       #--- Create the menu 'E/W'
-      menubutton $audace(base).snvisu2.fra_posew.optionmenu1 -textvariable htmlp(direw) \
-         -menu $audace(base).snvisu2.fra_posew.optionmenu1.menu -relief raised
-      pack $audace(base).snvisu2.fra_posew.optionmenu1 -in $audace(base).snvisu2.fra_posew \
+      menubutton $audace(base).snvisu_2.fra_posew.optionmenu1 -textvariable htmlp(direw) \
+         -menu $audace(base).snvisu_2.fra_posew.optionmenu1.menu -relief raised
+      pack $audace(base).snvisu_2.fra_posew.optionmenu1 -in $audace(base).snvisu_2.fra_posew \
          -anchor center -pady 2 -padx 4 -ipadx 3
-      set m [menu $audace(base).snvisu2.fra_posew.optionmenu1.menu -tearoff 0 ]
+      set m [menu $audace(base).snvisu_2.fra_posew.optionmenu1.menu -tearoff 0 ]
       foreach pos_e_o "$caption(snvisu,east) $caption(snvisu,west)" {
         $m add radiobutton -label "$pos_e_o" \
             -indicatoron "1" \
@@ -1731,39 +1731,39 @@ proc htmlimage { } {
             -variable htmlp(direw) \
             -command { }
       }
-   pack $audace(base).snvisu2.fra_posew \
-      -in $audace(base).snvisu2 -anchor s -side bottom -expand 0 -fill x
+   pack $audace(base).snvisu_2.fra_posew \
+      -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
 
    #---
-   checkbutton $audace(base).snvisu2.chk_invns \
+   checkbutton $audace(base).snvisu_2.chk_invns \
       -text "$caption(snvisu,invert,flip)" -variable htmlp(invns)
-   pack $audace(base).snvisu2.chk_invns \
-      -in $audace(base).snvisu2 -side bottom \
+   pack $audace(base).snvisu_2.chk_invns \
+      -in $audace(base).snvisu_2 -side bottom \
       -padx 20 -pady 3 -anchor w
          #--- Frame de posns
-   frame $audace(base).snvisu2.fra_posns \
+   frame $audace(base).snvisu_2.fra_posns \
       -borderwidth 0 -cursor arrow
       #--- Label de posns
-      label $audace(base).snvisu2.fra_posns.lab_posns \
+      label $audace(base).snvisu_2.fra_posns.lab_posns \
          -font $audace(font,arial_8_b) -text "$caption(snvisu,offsetns)" \
          -borderwidth 0 -relief flat
-      pack $audace(base).snvisu2.fra_posns.lab_posns \
-         -in $audace(base).snvisu2.fra_posns -side left \
+      pack $audace(base).snvisu_2.fra_posns.lab_posns \
+         -in $audace(base).snvisu_2.fra_posns -side left \
          -padx 3 -pady 3
       #--- Create the command line
       #--- Cree la ligne de commande
-      entry $audace(base).snvisu2.fra_posns.entry_posns \
+      entry $audace(base).snvisu_2.fra_posns.entry_posns \
          -font $audace(font,arial_8_b) -textvariable htmlp(posns) \
          -borderwidth 1 -relief groove -width 10
-      pack $audace(base).snvisu2.fra_posns.entry_posns \
-         -in $audace(base).snvisu2.fra_posns -side left \
+      pack $audace(base).snvisu_2.fra_posns.entry_posns \
+         -in $audace(base).snvisu_2.fra_posns -side left \
          -padx 3 -pady 3
       #--- Create the menu 'N/S'
-      menubutton $audace(base).snvisu2.fra_posns.optionmenu1 -textvariable htmlp(dirns) \
-         -menu $audace(base).snvisu2.fra_posns.optionmenu1.menu -relief raised
-      pack $audace(base).snvisu2.fra_posns.optionmenu1 -in $audace(base).snvisu2.fra_posns \
+      menubutton $audace(base).snvisu_2.fra_posns.optionmenu1 -textvariable htmlp(dirns) \
+         -menu $audace(base).snvisu_2.fra_posns.optionmenu1.menu -relief raised
+      pack $audace(base).snvisu_2.fra_posns.optionmenu1 -in $audace(base).snvisu_2.fra_posns \
          -anchor center -pady 2 -padx 4 -ipadx 3
-      set m [menu $audace(base).snvisu2.fra_posns.optionmenu1.menu -tearoff 0 ]
+      set m [menu $audace(base).snvisu_2.fra_posns.optionmenu1.menu -tearoff 0 ]
       foreach pos_n_s "$caption(snvisu,north) $caption(snvisu,south)" {
         $m add radiobutton -label "$pos_n_s" \
             -indicatoron "1" \
@@ -1771,14 +1771,14 @@ proc htmlimage { } {
             -variable htmlp(dirns) \
             -command { }
       }
-   pack $audace(base).snvisu2.fra_posns \
-      -in $audace(base).snvisu2 -anchor s -side bottom -expand 0 -fill x
+   pack $audace(base).snvisu_2.fra_posns \
+      -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
 
    #--- La fenetre est active
-   focus $audace(base).snvisu2
+   focus $audace(base).snvisu_2
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).snvisu2
+   ::confColor::applyColor $audace(base).snvisu_2
 }
 
 proc sn_header { bufnum } {
