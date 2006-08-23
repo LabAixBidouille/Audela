@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.4 2006-06-20 17:36:52 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.5 2006-08-23 19:51:54 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -115,11 +115,11 @@ namespace eval tkutil {
       }
       set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
       #---
-      catch { 
-        #--- Je detruis la boite de dialogue cree par tk_getOpenFile
-        #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
-       ### ::console::disp "box_load  [ winfo children .audace.__tk_filedialog.f2 ] \n" 
-        destroy  $parent.__tk_filedialog
+      catch {
+         #--- Je detruis la boite de dialogue cree par tk_getOpenFile
+         #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
+        ### ::console::disp "box_load  [ winfo children .audace.__tk_filedialog.f2 ] \n" 
+         destroy $parent.__tk_filedialog
       }
       #---
       return $filename
@@ -141,11 +141,11 @@ namespace eval tkutil {
       set filename [ file join file:///[ tk_getOpenFile -title $title \
          -filetypes $filetypes -initialdir $initialdir -parent $parent ] ]
       #---
-      catch { 
-        #--- Je detruis la boite de dialogue cree par tk_getOpenFile
-        #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
-       ### ::console::disp "box_load  [ winfo children .audace.__tk_filedialog.f2 ] \n" 
-        destroy  $parent.__tk_filedialog
+      catch {
+         #--- Je detruis la boite de dialogue cree par tk_getOpenFile
+         #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
+        ### ::console::disp "box_load  [ winfo children .audace.__tk_filedialog.f2 ] \n" 
+         destroy $parent.__tk_filedialog
       }
       #---
       return $filename
