@@ -2,7 +2,7 @@
 # Fichier : spectro_configure.tcl
 # Description : Configuration de l'outil dedie a la spectroscopie
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro_configure.tcl,v 1.2 2006-08-22 20:45:25 robertdelmas Exp $
+# Mise a jour $Id: spectro_configure.tcl,v 1.3 2006-08-23 20:24:13 robertdelmas Exp $
 #
 
 namespace eval ::spectro_configure {
@@ -76,17 +76,17 @@ namespace eval ::spectro_configure {
 
       #--- Title
       frame .spectro.buttons -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         button .spectro.load_button  \
+         button .spectro.load_button \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,load_button)" \
             -command {::spectro_configure::load}
          pack  .spectro.load_button -in .spectro.buttons -side left -fill none -padx 3
-         button .spectro.save_button  \
+         button .spectro.save_button \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,save_button)" \
             -command {::spectro_configure::save}
          pack  .spectro.save_button -in .spectro.buttons -side left -fill none -padx 3
-         button .spectro.return_button  \
+         button .spectro.return_button \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,return_button)" \
             -command {::spectro_configure::go}
@@ -95,12 +95,12 @@ namespace eval ::spectro_configure {
 
       #--- UAI code observatory
       frame .spectro.namerawfits -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.namerawfits.label  \
+         label .spectro.namerawfits.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,code_obs) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.namerawfits.label -in .spectro.namerawfits -side left -fill none
-         entry  .spectro.namerawfits.entry  \
+         entry  .spectro.namerawfits.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,code_obs) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -109,12 +109,12 @@ namespace eval ::spectro_configure {
 
       #--- Longitude observatory
       frame .spectro.nameraw -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.nameraw.label  \
+         label .spectro.nameraw.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,longitude) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.nameraw.label -in .spectro.nameraw -side left -fill none
-         entry  .spectro.nameraw.entry  \
+         entry  .spectro.nameraw.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,longitude) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -123,12 +123,12 @@ namespace eval ::spectro_configure {
 
       #--- Longitude observatory
       frame .spectro.telescope -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.telescope.label  \
+         label .spectro.telescope.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,sens) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.telescope.label -in .spectro.telescope -side left -fill none
-         entry  .spectro.telescope.entry  \
+         entry  .spectro.telescope.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,sens) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 10
@@ -137,12 +137,12 @@ namespace eval ::spectro_configure {
 
       #--- Latitude observatory
       frame .spectro.ra -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.ra.label  \
+         label .spectro.ra.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,latitude) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.ra.label -in .spectro.ra -side left -fill none
-         entry  .spectro.ra.entry  \
+         entry  .spectro.ra.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,latitude) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 10
@@ -151,12 +151,12 @@ namespace eval ::spectro_configure {
 
       #--- Altitude observatory
       frame .spectro.dec -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.dec.label  \
+         label .spectro.dec.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,altitude) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.dec.label -in .spectro.dec -side left -fill none
-         entry  .spectro.dec.entry  \
+         entry  .spectro.dec.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,altitude) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 10
@@ -165,12 +165,12 @@ namespace eval ::spectro_configure {
 
       #--- Observatory name
       frame .spectro.flat -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.flat.label  \
+         label .spectro.flat.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,desc_location) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.flat.label -in .spectro.flat -side left -fill none
-         entry  .spectro.flat.entry  \
+         entry  .spectro.flat.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,desc_location) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -179,12 +179,12 @@ namespace eval ::spectro_configure {
 
       #--- Camera description
       frame .spectro.pathcat -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.pathcat.label  \
+         label .spectro.pathcat.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,desc_camera) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.pathcat.label -in .spectro.pathcat -side left -fill none
-         entry  .spectro.pathcat.entry  \
+         entry  .spectro.pathcat.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,desc_camera) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -193,12 +193,12 @@ namespace eval ::spectro_configure {
 
       #--- Telescope description
       frame .spectro.dark -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.dark.label  \
+         label .spectro.dark.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,desc_telescope) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.dark.label -in .spectro.dark -side left -fill none
-         entry  .spectro.dark.entry  \
+         entry  .spectro.dark.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,desc_telescope) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -207,12 +207,12 @@ namespace eval ::spectro_configure {
 
       #--- Diameter telescope
       frame .spectro.box -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.box.label  \
+         label .spectro.box.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,tel_diam) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.box.label -in .spectro.box -side left -fill none
-         entry  .spectro.box.entry  \
+         entry  .spectro.box.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,tel_diam) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -221,12 +221,12 @@ namespace eval ::spectro_configure {
 
       #--- F/D telescope
       frame .spectro.namein -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.namein.label  \
+         label .spectro.namein.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,tel_fd) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.namein.label -in .spectro.namein -side left -fill none
-         entry  .spectro.namein.entry  \
+         entry  .spectro.namein.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,tel_fd) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -235,12 +235,12 @@ namespace eval ::spectro_configure {
 
       #--- Comment
       frame .spectro.nameout -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
-         label .spectro.nameout.label  \
+         label .spectro.nameout.label \
             -font $audace(spectro,configure,font,c12b) \
             -text "$caption(spectro,configure,config,comment) " -bg $audace(spectro,configure,color,backpad) \
             -fg $audace(spectro,configure,color,textkey) -relief flat
          pack  .spectro.nameout.label -in .spectro.nameout -side left -fill none
-         entry  .spectro.nameout.entry  \
+         entry  .spectro.nameout.entry \
             -font $audace(spectro,configure,font,c12b) \
             -textvariable audace(spectro,configure,config,comment) -bg $audace(spectro,configure,color,backdisp) \
             -fg $audace(spectro,configure,color,textdisp) -relief flat -width 20
@@ -299,27 +299,28 @@ namespace eval ::spectro_configure {
          }
       }
       #::console::affiche_resultat "$texte"
-      set filename [ tk_getSaveFile -title "$caption(spectro,configure,save)" -filetypes {{configuration *.spectro}} -initialdir [ file join $audace(rep_plugin) tool spectro ] ]
-      set n [string length $filename]
-      set ext [string range $filename [expr $n-[string length ".spectro"]] end]
-      if {[string compare $ext ".spectro"]!=0} {
-         append filename .spectro
+      set filename [ tk_getSaveFile -title "$caption(spectro,configure,save)" -filetypes {{configuration *.spectro}} -initialdir [ file join $audace(rep_plugin) tool spectro ] -parent .spectro ]
+      if { $filename != "" } {
+         set n [string length $filename]
+         set ext [string range $filename [expr $n-[string length ".spectro"]] end]
+         if {[string compare $ext ".spectro"]!=0} {
+            append filename .spectro
+         }
+         set f [open $filename w]
+         puts -nonewline $f $texte
+         close $f
       }
-      set f [open $filename w]
-      puts -nonewline $f $texte
-      close $f
    }
 
    proc load { } {
       global audace
       global caption
 
-      set filename [ tk_getOpenFile -title "$caption(spectro,configure,load)" -filetypes {{configuration *.spectro}} -initialdir [ file join $audace(rep_plugin) tool spectro ] ]
+      set filename [ tk_getOpenFile -title "$caption(spectro,configure,load)" -filetypes {{configuration *.spectro}} -initialdir [ file join $audace(rep_plugin) tool spectro ] -parent .spectro ]
       if { [ file exists $filename ] } {
          source $filename
       }
    }
-
 
 }
 
