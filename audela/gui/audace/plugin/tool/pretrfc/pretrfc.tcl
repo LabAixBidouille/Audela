@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.3 2006-06-20 21:18:58 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.4 2006-08-23 17:45:01 robertdelmas Exp $
 #
 
 #=====================================================================
@@ -1803,7 +1803,7 @@ proc pretraitFCBuildIF { This } {
         DynamicHelp::add $This.titre.but -text $caption(pretrfc,help,titre)
 
       pack $This.titre -side top -fill x
-      
+
       #--- Trame du bouton Lancement
       frame $This.lance -borderwidth 1 -relief groove
 
