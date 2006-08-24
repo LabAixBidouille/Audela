@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.14 2006-08-24 21:31:35 alainklotz Exp $
+# Mise a jour $Id: aud1.tcl,v 1.15 2006-08-24 22:01:57 robertdelmas Exp $
 #
 
 #
@@ -486,7 +486,7 @@ proc fitgauss { visuNo } {
    #
    set caption(audace,largequiv,xy) "Larg. Equiv."
    if {($naxis1==1)||($naxis2==1)} {
-	   set texte "$caption(audace,largequiv,xy) : [ format "%f" $leq ] pixels"
+      set texte "$caption(audace,largequiv,xy) : [ format "%f" $leq ] pixels"
       ::console::affiche_resultat "$texte\n"
       label $This.lab6 -text "$texte"
       pack $This.lab6 -padx 10 -pady 2
