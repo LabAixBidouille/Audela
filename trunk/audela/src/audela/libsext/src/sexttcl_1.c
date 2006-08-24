@@ -64,10 +64,10 @@ int Cmd_sexttcl_sexexe(ClientData clientData, Tcl_Interp *interp, int argc, char
       Tcl_Eval(interp,s);
 #if defined OS_WIN
       hwnd=GetDesktopWindow();
-	   strcpy(exe_file,"bin/sex.exe");
+	   strcpy(exe_file,"../bin/sex.exe");
       r=(int)ShellExecute(hwnd,"open",exe_file,cmdline,NULL,SW_HIDE);
       if (r<=32) {
-	      strcpy(exe_file,"bin/sextractor.exe");
+	      strcpy(exe_file,"../bin/sextractor.exe");
          r=(int)ShellExecute(hwnd,"open",exe_file,cmdline,NULL,SW_HIDE);
          if (r<=32) {
             Tcl_SetResult(interp,"ShellExecute Error",TCL_VOLATILE);
@@ -83,7 +83,7 @@ int Cmd_sexttcl_sexexe(ClientData clientData, Tcl_Interp *interp, int argc, char
 		result = TCL_OK;
 #endif
 #if defined OS_LIN
-	   sprintf(exe_file,"exec bin/sex %s",cmdline);
+	   sprintf(exe_file,"exec ../bin/sex %s",cmdline);
       Tcl_Eval(interp,exe_file);
          do {
             Tcl_Eval(interp,"after 500");
