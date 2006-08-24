@@ -78,6 +78,13 @@ int tt_ima_series_saver_end(TT_IMA_SERIES *pseries,char *fullname)
    }
    /* --- on force le nombres d'axes a celui de l'image entrante ---*/
    pseries->p_out->naxis=pseries->p_in->naxis;
+
+   /* --- on force les mots cle des dimension en sortie ---*/
+   tt_imanewkey(pseries->p_out,"NAXIS1",&pseries->p_out->naxis1,TINT,"","");
+   if (pseries->p_out->naxis>1) {
+      tt_imanewkey(pseries->p_out,"NAXIS2",&pseries->p_out->naxis2,TINT,"","");
+   }
+
    /* --- sauve l'image ---*/
    if ((msg=tt_imasaver(pseries->p_out,fullname,pseries->bitpix))!=0) {
       sprintf(message,"File %s cannot be saved",fullname);
