@@ -223,7 +223,13 @@ int tt_ptr_imaseries(void *args)
        }
        for (k=0;k<nbkeys;k++) {
 	  strcpy(pseries.p_out->keynames[k],(char*)*((*pkeynames)+k));
-	  strcpy(pseries.p_out->values[k],(char*)*((*pvalues)+k));
+          if (strcmp(pseries.p_out->keynames[k],"NAXIS1")==0) {
+	     sprintf(pseries.p_out->values[k],"%d",pseries.p_out->naxis1);
+          } else if (strcmp(pseries.p_out->keynames[k],"NAXIS2")==0) {
+	     sprintf(pseries.p_out->values[k],"%d",pseries.p_out->naxis2);
+          } else {
+	     strcpy(pseries.p_out->values[k],(char*)*((*pvalues)+k));
+          }
 	  strcpy(pseries.p_out->comments[k],(char*)*((*pcomments)+k));
 	  strcpy(pseries.p_out->units[k],(char*)*((*punits)+k));
 	  pseries.p_out->datatypes[k]=(int)*((*pdatatypes)+k);
