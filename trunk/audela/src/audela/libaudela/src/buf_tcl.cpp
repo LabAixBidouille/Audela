@@ -1810,10 +1810,11 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    int i;
    int reverse_x =0;
    int reverse_y =0;
+   char comment[]="class width height bitpix compression ?import_pointer? ?-keep_keywords? ?-pixels_size? ?-reverse_x? ?-reverse_y?";
 
    ligne = (char*)calloc(1000,sizeof(char));
-   if( argc < 8 ) {
-      sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels [-keep_keywords]",argv[0],argv[1]);
+   if( argc < 7 ) {
+      sprintf(ligne,"Usage: %s %s %s",argv[0],argv[1],comment);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       free(ligne);
       return TCL_ERROR;
@@ -1821,40 +1822,43 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       
       // parametres obligatoires
       if( (pixelClass = CPixels::getPixelClass( argv[2] )) == CLASS_UNKNOWN ){
-         sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels\n class must be IMAGE_GRAY|IMAGE_RGB|IMAGE_3D|VIDEO ",argv[0],argv[1]);
+         sprintf(ligne,"Usage: %s %s %s\n class must be CLASS_GRAY|CLASS_RGB|CLASS_3D|CLASS_VIDEO ",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       }
       
-      if(Tcl_GetInt(interp,argv[3],&width)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels\nwidth must be an integer > 0",argv[0],argv[1]);
+      if((Tcl_GetInt(interp,argv[3],&width)!=TCL_OK)&&(retour==TCL_OK)) {
+         sprintf(ligne,"Usage: %s %s %s\nwidth must be an integer > 0",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       } 
       
-      if(Tcl_GetInt(interp,argv[4],&height)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels\nheight must be an integer > 0",argv[0],argv[1]);
+      if((Tcl_GetInt(interp,argv[4],&height)!=TCL_OK)&&(retour==TCL_OK)) {
+         sprintf(ligne,"Usage: %s %s %s\nheight must be an integer > 0",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       } 
       
-      if( (pixelFormat = CPixels::getPixelFormat( argv[5] )) == FORMAT_UNKNOWN ){
-         sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels\n class must be FORMAT_BYTE|FORMAT_SHORT|FORMAT_FLOAT",argv[0],argv[1]);
+      if( ((pixelFormat = CPixels::getPixelFormat( argv[5] )) == FORMAT_UNKNOWN )&&(retour==TCL_OK)){
+         sprintf(ligne,"Usage: %s %s %s\n bitpix must be FORMAT_BYTE|FORMAT_SHORT|FORMAT_FLOAT",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       }
       
-      if( (compression = CPixels::getPixelCompression( argv[6] )) == COMPRESS_UNKNOWN ){
-         sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels\n compression must be COMPRESS_NONE|COMPRESS_I420",argv[0],argv[1]);
+      if( ((compression = CPixels::getPixelCompression( argv[6] )) == COMPRESS_UNKNOWN)&&(retour==TCL_OK) ){
+         sprintf(ligne,"Usage: %s %s %s\n compression must be COMPRESS_NONE|COMPRESS_I420",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       }
       
-      if(Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s class width height bitpix compression pixels\nppixels must be an integer > 0",argv[0],argv[1]);
-         retour =  TCL_ERROR;
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      } 
+      pixelData=0;
+      if (argc>=8) {
+         if((Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK)&&(retour==TCL_OK)) {
+            sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1]);
+            retour =  TCL_ERROR;
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         }
+      }
 
       keep_keywords = DONT_KEEP_KEYWORDS;
    
