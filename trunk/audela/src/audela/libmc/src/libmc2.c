@@ -1400,10 +1400,10 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
   	      for (kf=0;kf<nbformats;kf++) {
 	         mc_strupr(formats[kf],formats[kf]);
             if (strcmp(formats[kf],"MOONELONG")==0) { ok4moonelong=YES; }
-            else if (strcmp(formats[kf],"AZIMUTH")==0) { ok4azimcoord=YES; }
+            else if ((strcmp(formats[kf],"AZIMUTH")==0)||(strcmp(formats[kf],"AZIMUT")==0)) { ok4azimcoord=YES; }
             else if (strcmp(formats[kf],"ALTITUDE")==0) { ok4azimcoord=YES; }
-            else if (strcmp(formats[kf],"AZIMUTH")==0) { ok4azimcoord=YES; }
-            else if (strcmp(formats[kf],"AZIMUTH")==0) { ok4azimcoord=YES; }
+            else if ((strcmp(formats[kf],"AZIMUTH")==0)||(strcmp(formats[kf],"AZIMUT")==0)) { ok4azimcoord=YES; }
+            else if ((strcmp(formats[kf],"AZIMUTH")==0)||(strcmp(formats[kf],"AZIMUT")==0)) { ok4azimcoord=YES; }
             else if (strcmp(formats[kf],"HA")==0) { ok4azimcoord=YES; }
             else if (strcmp(formats[kf],"HA")==0) { ok4azimcoord=YES; }
 		   }
@@ -1429,8 +1429,8 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
          else if (strcmp(s,"-MOONELONG<")==0) { ok4moonelong=YES; }
          else if (strcmp(s,"-ALTITUDE>")==0) { ok4azimcoord=YES; }
          else if (strcmp(s,"-ALTITUDE<")==0) { ok4azimcoord=YES; }
-         else if (strcmp(s,"-AZIMUTH>")==0) { ok4azimcoord=YES; }
-         else if (strcmp(s,"-AZIMUTH<")==0) { ok4azimcoord=YES; }
+         else if ((strcmp(s,"-AZIMUTH>")==0)||(strcmp(s,"-AZIMUT>")==0)) { ok4azimcoord=YES; }
+         else if ((strcmp(s,"-AZIMUTH<")==0)||(strcmp(s,"-AZIMUT<")==0)) { ok4azimcoord=YES; }
          else if (strcmp(s,"-HA>")==0) { ok4azimcoord=YES; }
          else if (strcmp(s,"-HA<")==0) { ok4azimcoord=YES; }
          else if (strcmp(s,"-TIMELIM")==0) { timelim=atof(argv[ko+1]); }
@@ -1640,8 +1640,8 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			      if (strcmp(s,"-MOONELONG<")==0) { if ((moonelong/(DR))>atof(argv[ko+1])) { ok4print=NO; }}
 			      if (strcmp(s,"-ALTITUDE>")==0) { if ((h/(DR))<atof(argv[ko+1])) { ok4print=NO; }}
 			      if (strcmp(s,"-ALTITUDE<")==0) { if ((h/(DR))>atof(argv[ko+1])) { ok4print=NO; }}
-			      if (strcmp(s,"-AZIMUTH>")==0) { if (((az/(DR))<atof(argv[ko+1]))||((az/(DR))>360.-atof(argv[ko+1]))) { ok4print=NO; }}
-			      if (strcmp(s,"-AZIMUTH<")==0) { if (((az/(DR))>atof(argv[ko+1]))&&((az/(DR))<360.-atof(argv[ko+1]))) { ok4print=NO; }}
+			      if ((strcmp(s,"-AZIMUTH>")==0)||(strcmp(s,"-AZIMUT>")==0)) { if (((az/(DR))<atof(argv[ko+1]))||((az/(DR))>360.-atof(argv[ko+1]))) { ok4print=NO; }}
+			      if ((strcmp(s,"-AZIMUTH<")==0)||(strcmp(s,"-AZIMUT<")==0)) { if (((az/(DR))>atof(argv[ko+1]))&&((az/(DR))<360.-atof(argv[ko+1]))) { ok4print=NO; }}
 			      if (strcmp(s,"-HA>")==0) { if (((ha/(DR))<atof(argv[ko+1]))||((ha/(DR))>360.-atof(argv[ko+1]))) { ok4print=NO; }}
 			      if (strcmp(s,"-HA<")==0) { if (((ha/(DR))>atof(argv[ko+1]))&&((ha/(DR))<360.-atof(argv[ko+1]))) { ok4print=NO; }}
 			   }
@@ -1675,7 +1675,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		             else if (strcmp(formats[kf],"ELONG")==0) { sprintf(s0,"%.12f",elong/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"MOONELONG")==0) { sprintf(s0,"%.12f",moonelong/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"HA")==0) { sprintf(s0,"%.12f",ha/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
-		             else if (strcmp(formats[kf],"AZIMUTH")==0) { sprintf(s0,"%.12f",az/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
+		             else if ((strcmp(formats[kf],"AZIMUTH")==0)||((strcmp(formats[kf],"AZIMUT")==0))) { sprintf(s0,"%.12f",az/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"ALTITUDE")==0) { sprintf(s0,"%.12f",h/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"PHASE")==0) { sprintf(s0,"%.12f",phase/(DR)); Tcl_DStringAppend(&dsptr,s0,-1); }
 		             else if (strcmp(formats[kf],"MAG")==0) { sprintf(s0,"%f",mag); Tcl_DStringAppend(&dsptr,s0,-1); }
