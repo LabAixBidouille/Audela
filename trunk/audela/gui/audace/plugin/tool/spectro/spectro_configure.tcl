@@ -2,7 +2,7 @@
 # Fichier : spectro_configure.tcl
 # Description : Configuration de l'outil dedie a la spectroscopie
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro_configure.tcl,v 1.3 2006-08-23 20:24:13 robertdelmas Exp $
+# Mise a jour $Id: spectro_configure.tcl,v 1.4 2006-08-24 21:51:48 robertdelmas Exp $
 #
 
 namespace eval ::spectro_configure {
@@ -74,7 +74,7 @@ namespace eval ::spectro_configure {
       pack .spectro.title \
          -in .spectro -fill x -side top -pady 5
 
-      #--- Title
+      #--- Buttons
       frame .spectro.buttons -borderwidth 3 -relief sunken -bg $audace(spectro,configure,color,backpad)
          button .spectro.load_button \
             -font $audace(spectro,configure,font,c12b) \
