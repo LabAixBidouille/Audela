@@ -663,10 +663,12 @@ void CBuffer::SaveFits(char *filename)
    nb_keys = keywords->GetKeywordNb();
    
    // Allocation de l'espace memoire pour les tableaux de mots-cles
-   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) {
-      free(ppix);
-      throw CErrorLibtt(msg);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(ppix);
+         throw CErrorLibtt(msg);
+      }
    }
 
    // Je transforme les seuils en entier si saving_type vaut byte, short ou ushort
@@ -710,7 +712,13 @@ void CBuffer::SaveFits(char *filename)
    }
    
    // Liberation de la memoire allouee par libtt
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(ppix);
+         throw CErrorLibtt(msg);
+      }
+   }
 
    free(ppix);
 }
@@ -847,10 +855,12 @@ void CBuffer::Save1d(char *filename,int iaxis2)
    nb_keys = keywords->GetKeywordNb();
 
    // Allocation de l'espace memoire pour les tableaux de mots-cles
-   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) {
-      free(ppix1);
-      throw CErrorLibtt(msg);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(ppix1);
+         throw CErrorLibtt(msg);
+      }
    }
 
    // Conversion keywords vers tableaux 'Made in Klotz'
@@ -866,7 +876,13 @@ void CBuffer::Save1d(char *filename,int iaxis2)
    }
 
    // Liberation de la memoire allouee par libtt
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(ppix1);
+         throw CErrorLibtt(msg);
+      }
+   }
 
    free(ppix1);
 
@@ -912,10 +928,12 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    nb_keys = keywords->GetKeywordNb();
 
    // Allocation de l'espace memoire pour les tableaux de mots-cles
-   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) {
-      free(ppix1);
-      throw CErrorLibtt(msg);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(ppix1);
+         throw CErrorLibtt(msg);
+      }
    }
 
    // Conversion keywords vers tableaux 'Made in Klotz'
@@ -941,7 +959,13 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    }
 
    // Liberation de la memoire allouee par libtt
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(ppix1);
+         throw CErrorLibtt(msg);
+      }
+   }
 
    free(ppix1);
 
@@ -985,10 +1009,12 @@ void CBuffer::SaveFitsRGB(char *filename)
    nb_keys = keywords->GetKeywordNb();
 
    // Allocation de l'espace memoire pour les tableaux de mots-cles
-   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-   if(msg) {
-      free(pixels);
-      throw CErrorLibtt(msg);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(pixels);
+         throw CErrorLibtt(msg);
+      }
    }
 
    // Conversion keywords vers tableaux 'Made in Klotz'
@@ -1003,7 +1029,13 @@ void CBuffer::SaveFitsRGB(char *filename)
    }
 
    // Liberation de la memoire allouee par libtt
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         free(pixels);
+         throw CErrorLibtt(msg);
+      }
+   }
 
    free(pixels);
 
