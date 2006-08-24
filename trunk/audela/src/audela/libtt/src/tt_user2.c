@@ -406,8 +406,12 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
          s=s+P[k];
       }  
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
-         P[k]=P[k]/s;
+      for (j=lmin-1;j<lmax;j++,k++) {
+         if (s==0) {
+            P[k]=0.;
+         } else {
+            P[k]=P[k]/s;
+         }
       }
 
       /* Calcul de la norme */
@@ -425,7 +429,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
          w=P[k];
          somme+=w*v;
       }
-      f[i]=somme/norme;
+      if (norme==0) {
+         f[i]=0.;
+      } else {
+         f[i]=somme/norme;
+      }
       if (f[i]>max) max=f[i];
    }
 
@@ -448,7 +456,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       }  
       k=0;
       for (j=lmin-1;j<lmax;j++,k++) {      
-         P[k]=P[k]/s;
+         if (s==0) {
+            P[k]=0.;
+         } else {
+            P[k]=P[k]/s;
+         }
       }
 
       /* Calcul de la norme */
@@ -466,7 +478,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
          w=P[k];
          somme+=w*v;
       }
-      f[i]=somme/norme;
+      if (norme==0) {
+         f[i]=0.;
+      } else {
+         f[i]=somme/norme;
+      }
       if (f[i]>max) max=f[i];
    }
 
@@ -496,7 +512,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       }  
       k=0;
       for (j=lmin-1;j<lmax;j++,k++) {      
-         P[k]=P[k]/s;
+         if (s==0) {
+            P[k]=0.;
+         } else {
+            P[k]=P[k]/s;
+         }
       }
 
       /* Calcul de la norme */
@@ -514,7 +534,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
          w=P[k];
          somme+=w*v;
       }
-      f[i]=somme/norme;
+      if (norme==0) {
+         f[i]=0.;
+      } else {
+         f[i]=somme/norme;
+      }
       if (f[i]>max) max=f[i];
    }
 
