@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.6 2006-08-21 22:12:58 alainklotz Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.7 2006-08-24 15:54:08 alainklotz Exp $
 #
 
 namespace eval ::astrometry {
@@ -349,11 +349,11 @@ namespace eval ::astrometry {
       }
    }
 
-   proc start { } {
+   proc start { {sextractor no } } {
       variable astrom
       global audace caption color
 
-      set sextractor no
+      #set sextractor yes
       set starfile no
       #::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
       if {$astrom(currenttypecal)=="delwcs"} {
@@ -400,13 +400,26 @@ namespace eval ::astrometry {
             set d [list $kwd "$::astrometry::astrom(wcsvalues,$kwd)" "$::astrometry::astrom(wcstypes,$kwd)" "$::astrometry::astrom(wcscomments,$kwd)" "$::astrometry::astrom(wcsunits,$kwd)"]
             set kwd0 [lindex $d 0]
             set val [lindex $d 1]
+            set unit [lindex $d 4]
             #::console::affiche_resultat " set d1=$d\n"
             if {$kwd0!=""} {
                if {$kwd0=="RA"}       { set valra [mc_angle2deg $val 360] }
                if {$kwd0=="DEC"}      { set valdec [mc_angle2deg $val 90] }
                if {$kwd0=="FOCLEN"}   { set valfoclen $val }
-               if {$kwd0=="PIXSIZE1"} { set valpixsize1 $val }
-               if {$kwd0=="PIXSIZE2"} { set valpixsize2 $val }
+               if {$kwd0=="PIXSIZE1"} {
+                  set mult 1.
+                  if {$unit=="m"} {
+                     set mult 1e6
+                  }
+                  set valpixsize1 [expr $val*$mult] ; # um
+               }
+               if {$kwd0=="PIXSIZE2"} {
+                  set mult 1.
+                  if {$unit=="m"} {
+                     set mult 1e6
+                  }
+                  set valpixsize2 [expr $val*$mult] ; # um
+               }
             }
          }
          set pi [expr 4*atan(1.)]
@@ -418,8 +431,14 @@ namespace eval ::astrometry {
             if {$kwd0!=""} {
                if {$kwd0=="CRVAL1"} { set val $valra }
                if {$kwd0=="CRVAL2"} { set val $valdec }
-               if {$kwd0=="CDELT1"} { set val [expr -2*atan($valpixsize1/$valfoclen*1e-6/2.)*180/$pi] }
-               if {$kwd0=="CDELT2"} { set val [expr 2*atan($valpixsize2/$valfoclen*1e-6/2.)*180/$pi] }
+               if {$kwd0=="CDELT1"} {
+                  set mult 1e-6
+                  set val [expr -2*atan($valpixsize1/$valfoclen*$mult/2.)*180/$pi]
+               }
+               if {$kwd0=="CDELT2"} {
+                  set mult 1e-6
+                  set val [expr 2*atan($valpixsize2/$valfoclen*$mult/2.)*180/$pi]
+               }
                set d [lreplace $d 1 1 $val]
                buf$audace(bufNo) setkwd $d
             }
@@ -441,6 +460,7 @@ namespace eval ::astrometry {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
          } else {
             buf$audace(bufNo) save "${mypath}/${sky}$ext"
+            # exec sex $mypath/$sky0$ext -c [pwd]/config.sex
             sextractor "$mypath/$sky0$ext" -c config.sex
          }
          $astrom(This).status.lab configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
@@ -464,13 +484,9 @@ namespace eval ::astrometry {
             $astrom(This).status.lab configure -text "$caption(astrometry,start,4) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
             $astrom(This).status.lab configure -text "$caption(astrometry,start,5)" ; update
-           # if {$sextractor=="no"} {
-           #    ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY2 delta=5 epsilon=0.0002"
-           # } else {
-           #    ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
-           # }
-           # $astrom(This).status.lab configure -text "$caption(astrometry,start,4) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
-           # ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
+            if {$sextractor=="yes"} {
+               ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
+            }
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             buf$audace(bufNo) load "${mypath}/${sky}$ext"
