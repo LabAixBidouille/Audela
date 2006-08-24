@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.5 2006-08-23 21:03:21 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.6 2006-08-24 19:07:16 robertdelmas Exp $
 #
 
 global audace
@@ -579,6 +579,16 @@ proc sn_delete { } {
    }
    if { [ winfo exists $audace(base).snvisuzoom_d ] } {
       destroy $audace(base).snvisuzoom_d
+   }
+   #--- Effacement des fenetres gotoimage, htmlimage et snvisu_configuration si elles existent
+   if { [ winfo exists $audace(base).snvisu_1 ] } {
+      destroy $audace(base).snvisu_1
+   }
+   if { [ winfo exists $audace(base).snvisu_2 ] } {
+      destroy $audace(base).snvisu_2
+   }
+   if { [ winfo exists $audace(base).snvisu_3 ] } {
+      destroy $audace(base).snvisu_3
    }
    #--- Nettoyage des eventuels fichiers crees
    set ext [buf$audace(bufNo) extension]
@@ -1379,10 +1389,12 @@ proc confirm_save { } {
    if { [ buf$num(buffer1) imageready ] == "1" } {
       set choix [ tk_messageBox -type yesno -icon warning -title "$caption(snvisu,save1)" \
          -message "$caption(snvisu,confirm)" ]
-      if { $choix == "yes" } {
-         saveimage
+      if { [ winfo exists $audace(base).snvisu ] } {
+         if { $choix == "yes" } {
+            saveimage
+         }
+         focus $audace(base).snvisu
       }
-      focus $audace(base).snvisu
    }
 }
 
@@ -1540,6 +1552,14 @@ proc htmlimage { } {
    global rep
    global htmlp
 
+   #--- Les 2 images doivent etre presentes
+   if { [ buf$num(buffer1) imageready ] == "0" } {
+      return
+   }
+   if { [ buf$num(buffer2) imageready ] == "0" } {
+      return
+   }
+   #---
    set filename [lindex $rep(x1) $rep(xx1)]
    set name [file tail $filename]
    set dossier [file dirname $filename]
@@ -1657,7 +1677,7 @@ proc htmlimage { } {
              set fileId [open $htmlp(filenamehtml) w]
              puts $fileId $texte
              close $fileId
-             $audace(base).snvisu.lst1 insert end "page html $htmlp(filenamehtml)"
+             $audace(base).snvisu.lst1 insert end "$caption(snvisu,page_html) $htmlp(filenamehtml)"
              $audace(base).snvisu.lst1 yview moveto 1.0
              #--- Disparition du sautillement des widgets inferieurs
              pack $audace(base).snvisu.lst1.scr1 \
