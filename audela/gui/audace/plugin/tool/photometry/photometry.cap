@@ -1,0 +1,81 @@
+#
+# Fichier : photometry.cap
+# Date de mise a jour : 27 mai 2006
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(photometry,help,titre)            "Help for this tool"
+set caption(photometry,titre,panneau)         "Photometry"
+
+set caption(photometry,configure,titre) "Photometry: Configuration"
+set caption(photometry,configure,titre2) "Photometry: Configuration"
+set caption(photometry,configure,load_button) "Load configuration"
+set caption(photometry,configure,save_button) "Save configuration"
+set caption(photometry,configure,return_button) "OK"
+set caption(photometry,configure,load) "Load configuration"
+set caption(photometry,configure,save) "Save configuration"
+set caption(photometry,configure,config,code_obs) "Code observateur"
+set caption(photometry,configure,config,longitude) "Longitude de l'observatoire (deg.)"
+set caption(photometry,configure,config,sens) "Longitude de l'observatoire (E|W)"
+set caption(photometry,configure,config,latitude) "Latitude de l'observatoire (deg.)"
+set caption(photometry,configure,config,altitude) "Altitude de l'observatoire (m)"
+set caption(photometry,configure,config,desc_camera) "Nom de l'observatoire"
+set caption(photometry,configure,config,desc_telescope) "Desciption de la caméra"
+set caption(photometry,configure,config,desc_location) "Description du télescope"
+set caption(photometry,configure,config,tel_diam) "Diamètre du télescope (m)"
+set caption(photometry,configure,config,tel_fd) "f/D du télescope"
+set caption(photometry,configure,config,comment) "Commentaire"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(photometry,help,titre)            "Aide pour cet outil"
+   set caption(photometry,titre,panneau)         "Photometrie"
+set caption(photometry,configure,titre) "Photometry: Configuration"
+set caption(photometry,configure,titre2) "Photometry: Configuration"
+set caption(photometry,configure,load_button) "Load configuration"
+set caption(photometry,configure,save_button) "Save configuration"
+set caption(photometry,configure,return_button) "OK"
+set caption(photometry,configure,load) "Load configuration"
+set caption(photometry,configure,save) "Save configuration"
+set caption(photometry,configure,config,code_obs) "Code observateur"
+set caption(photometry,configure,config,longitude) "Longitude de l'observatoire (deg.)"
+set caption(photometry,configure,config,sens) "Longitude de l'observatoire (E|W)"
+set caption(photometry,configure,config,latitude) "Latitude de l'observatoire (deg.)"
+set caption(photometry,configure,config,altitude) "Altitude de l'observatoire (m)"
+set caption(photometry,configure,config,desc_camera) "Nom de l'observatoire"
+set caption(photometry,configure,config,desc_telescope) "Desciption de la caméra"
+set caption(photometry,configure,config,desc_location) "Description du télescope"
+set caption(photometry,configure,config,tel_diam) "Diamètre du télescope (m)"
+set caption(photometry,configure,config,tel_fd) "f/D du télescope"
+set caption(photometry,configure,config,comment) "Commentaire"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
