@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.13 2006-08-22 18:04:55 robertdelmas Exp $
+# Mise a jour $Id: aud1.tcl,v 1.14 2006-08-24 21:31:35 alainklotz Exp $
 #
 
 #
@@ -400,14 +400,30 @@ proc fitgauss { visuNo } {
    set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
    if {$naxis2=={}} { set naxis2 1 }
    set dif 0.
+   set intx [lindex $valeurs 0]
+   set xc [lindex $valeurs 1]
+   set fwhmx [lindex $valeurs 2]
+   set bgx [lindex $valeurs 3]
+   set inty [lindex $valeurs 4]
+   set yc [lindex $valeurs 5]
+   set fwhmy [lindex $valeurs 6]
+   set bgy [lindex $valeurs 7]
    if {$naxis1==1} {
-      set if0 [ expr [ lindex $valeurs 6 ]*.601*sqrt(3.14159265) ]
+      set if0 [ expr $inty*$fwhmy*.601*sqrt(3.14159265) ]
+      set leq 0.
+      if {$bgy!=0} {
+         set leq [expr -$if0/$bgy]
+      }
    } elseif {$naxis2==1} {
-      set if0 [ expr [ lindex $valeurs 2 ]*.601*sqrt(3.14159265) ]
+      set if0 [ expr $intx*$fwhmx*.601*sqrt(3.14159265) ]
+      set leq 0.
+      if {$bgx!=0} {
+         set leq [expr -$if0/$bgx]
+      }
    } else {
-      set if0 [ expr [ lindex $valeurs 2 ]*[ lindex $valeurs 6 ]*.601*.601*3.14159265 ]
-      set if1 [ expr [ lindex $valeurs 0 ]*$if0 ]
-      set if2 [ expr [ lindex $valeurs 4 ]*$if0 ]
+      set if0 [ expr $fwhmx*$fwhmy*.601*.601*3.14159265 ]
+      set if1 [ expr $intx*$if0 ]
+      set if2 [ expr $inty*$if0 ]
       set if0 [ expr ($if1+$if2)/2. ]
       set dif [ expr abs($if1-$if0) ]
    }
@@ -416,26 +432,66 @@ proc fitgauss { visuNo } {
    pack $This.lab0 -padx 10 -pady 2
    ::console::affiche_resultat "=== Visu$visuNo $caption(audace,title_gauss)\n"
    ::console::affiche_resultat "$caption(audace,coord_box) : $box\n"
-   set texte "$caption(audace,center,xy) : [ format "%.2f" [ lindex $valeurs 1 ] ] / [ format "%.2f" [ lindex $valeurs 5 ] ]"
+   set texte "$caption(audace,center,xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%.2f" $xc ] / [ format "%.2f" $yc ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%.2f" $xc ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%.2f" $yc ]"
+   }
    ::console::affiche_resultat "$texte\n"
    label $This.lab1 -text "$texte"
    pack $This.lab1 -padx 10 -pady 2
-   set texte "$caption(audace,fwhm,xy) : [ format "%.3f" [ lindex $valeurs 2 ] ] / [ format "%.3f" [ lindex $valeurs 6 ] ]"
+   set texte "$caption(audace,fwhm,xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%.3f" $fwhmx ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%.3f" $fwhmy ]"
+   }
    ::console::affiche_resultat "$texte\n"
    label $This.lab2 -text "$texte"
    pack $This.lab2 -padx 10 -pady 2
-   set texte "$caption(audace,intens,xy) : [ format "%f" [ lindex $valeurs 0 ] ] / [ format "%f" [ lindex $valeurs 4 ] ]"
+   set texte "$caption(audace,intens,xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%f" $intx ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%f" $inty ]"
+   }
    ::console::affiche_resultat "$texte\n"
    label $This.lab3 -text "$texte"
    pack $This.lab3 -padx 10 -pady 2
-   set texte "$caption(audace,back,xy) : [ format "%f" [ lindex $valeurs 3 ] ] / [ format "%f" [ lindex $valeurs 7 ] ]"
+   set texte "$caption(audace,back,xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%f" $bgx ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%f" $bgy ]"
+   }
    ::console::affiche_resultat "$texte\n"
    label $This.lab4 -text "$texte"
    pack $This.lab4 -padx 10 -pady 2
-   set texte "$caption(audace,integflux) : $if0 +/- $dif"
+   set texte "$caption(audace,integflux) : $if0 "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "+/- $dif"
+   }
    ::console::affiche_resultat "$texte\n"
    label $This.lab5 -text "$texte"
    pack $This.lab5 -padx 10 -pady 2
+   #
+   set caption(audace,largequiv,xy) "Larg. Equiv."
+   if {($naxis1==1)||($naxis2==1)} {
+	   set texte "$caption(audace,largequiv,xy) : [ format "%f" $leq ] pixels"
+      ::console::affiche_resultat "$texte\n"
+      label $This.lab6 -text "$texte"
+      pack $This.lab6 -padx 10 -pady 2
+   }
+   #
    if {[expr $if0+$dif]<=0} {
       set dif [expr $if0+1]
    }

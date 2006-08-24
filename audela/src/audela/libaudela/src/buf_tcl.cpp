@@ -3601,24 +3601,24 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                buffer->Fwhm(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
                   &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
                fluxx=maxx*0.601*fwhmx*sqrt(pi);
-               maxx=fluxx/(fwhmx*fwhmy*0.601*0.601*pi);
                if (x1<x2) {
                   posx=posx+x1;
                } else {
                   posx=posx+x2;
                }
                if (y2!=y1) {
+                  maxx=fluxx/(fwhmx*fwhmy*0.601*0.601*pi);
                   fondx=fondx/(1.+fabs((double)(y2-y1)));
                   errx=errx/(1.+fabs((double)(y2-y1)));
                }
                fluxy=maxy*0.601*fwhmy*sqrt(pi);
-               maxy=fluxy/(fwhmx*fwhmy*0.601*0.601*pi);
                if (y1<y2) {
                   posy=posy+y1;
                } else {
                   posy=posy+y2;
                }
                if (x2!=x1) {
+                  maxy=fluxy/(fwhmx*fwhmy*0.601*0.601*pi);
                   fondy=fondy/(1.+fabs((double)(x2-x1)));
                   erry=erry/(1.+fabs((double)(x2-x1)));
                }
