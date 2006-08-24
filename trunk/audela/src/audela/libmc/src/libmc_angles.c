@@ -368,7 +368,7 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
          phi2=atan((Z2/sqrt(X2*X2+Y2*Y2))/(1-a*ee*cosphi/(sqrt(X2*X2+Y2*Y2)*sqrt(1-ee*sinphi*sinphi))));
          delta=fabs(phi2-phi0)/(DR)*3600.;
          phi0=phi2;
-      } while (delta<0.1);
+      } while (delta>0.1);
       cosphi=cos(phi2);
       sinphi=sin(phi2);
       h=sqrt(X2*X2+Y2*Y2)/cosphi-a/sqrt(1-ee*sinphi*sinphi);
@@ -803,8 +803,6 @@ int Cmd_mctcl_hadec2altaz(ClientData clientData, Tcl_Interp *interp, int argc, c
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
       sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
-// mc_hadec2altaz 12.34567 45.67889 {gps 4. e 43 1230} now0
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
