@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.7 2006-08-24 15:54:08 alainklotz Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.8 2006-08-25 21:56:06 alainklotz Exp $
 #
 
 namespace eval ::astrometry {
@@ -349,7 +349,7 @@ namespace eval ::astrometry {
       }
    }
 
-   proc start { {sextractor no } } {
+   proc start { {sextractor no } {silent no } } {
       variable astrom
       global audace caption color
 
@@ -466,7 +466,9 @@ namespace eval ::astrometry {
          $astrom(This).status.lab configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if { $erreur == "1" } {
-            tk_messageBox -message "$caption(astrometry,erreur_catalog)" -icon error
+            if {$silent=="no"} {
+               tk_messageBox -message "$caption(astrometry,erreur_catalog)" -icon error
+            }
             file delete [ file join [pwd] usno.lst ]
             file delete [ file join $mypath ${sky}$ext ]
             file delete [ file join $mypath ${sky}0$ext ]
@@ -483,10 +485,6 @@ namespace eval ::astrometry {
             }
             $astrom(This).status.lab configure -text "$caption(astrometry,start,4) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
-            $astrom(This).status.lab configure -text "$caption(astrometry,start,5)" ; update
-            if {$sextractor=="yes"} {
-               ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
-            }
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             buf$audace(bufNo) load "${mypath}/${sky}$ext"
@@ -502,7 +500,9 @@ namespace eval ::astrometry {
       } elseif {$astrom(currenttypecal)=="file"} {
          set erreur [ catch { calibrate_from_file $::astrometry::catvalues(reffile) } msg ]
          if { $erreur == "1" } {
-            tk_messageBox -message "$caption(astrometry,erreur_file)" -icon error
+            if {$silent=="no"} {
+               tk_messageBox -message "$caption(astrometry,erreur_file)" -icon error
+            }
             $astrom(This).status.lab configure -text ""
             update
             return
