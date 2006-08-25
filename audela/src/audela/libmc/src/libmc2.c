@@ -1504,7 +1504,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
           	      mc_adlunap(jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 			         ok4compute=OK;
 		         }
-			      kp++;
+               kp++;
 
 			   /* ---------------------------*/
 			   /* --- cas d'asteroides *  ---*/
@@ -1534,7 +1534,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
                }
       	      /* --- lecture d'une ligne de la base d'orbite ---*/
 			      if (strcmp(orbitformat,"BOWELLFILE")==0) {
-      			   if (feof(fichier_in)!=0) { fclose(fichier_in);sortie=YES;break;}
+      			   if (feof(fichier_in)!=0) { sortie=YES;break;}
                   if (fgets(orbitstring,300,fichier_in)==0) {
 			            strcpy(orbitstring,"");
 			         }
@@ -1545,7 +1545,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	  			         orbitisgood=YES;
 				      }
 			      } else if (strcmp(orbitformat,"MPCFILE")==0) {
-    			      if (feof(fichier_in)!=0) {fclose(fichier_in);sortie=YES;break;}
+    			      if (feof(fichier_in)!=0) {sortie=YES;break;}
                   if (fgets(orbitstring,300,fichier_in)==0) {
 			            strcpy(orbitstring,"");
 			         }
@@ -1698,15 +1698,16 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
             }
 			} /* fin de formatage des resultats */
 		 } while (sortie==NO); /* fin de boucle sur les planetes pour une date donnee */
+       if (fichier_in!=NULL) {
+          fclose(fichier_in);
+          fichier_in=NULL;
+       }
 	  } /* fin de boucle sur la date */
 	  /* === sortie et destructeurs ===*/
 	  if (jds!=NULL) { free(jds); }
       if (dates!=NULL) { Tcl_Free((char *) dates); }
       if (formats!=NULL) { Tcl_Free((char *) formats); }
       if (planets!=NULL) { Tcl_Free((char *) planets); }
-   }
-   if (fichier_in!=NULL) {
-      fclose(fichier_in);
    }
    /* --- le dernier element de la liste contient un commentaire ---*/
    if (stationfilefound==NO) {
