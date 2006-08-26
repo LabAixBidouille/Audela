@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.4 2006-06-20 17:21:01 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.5 2006-08-26 21:24:23 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -170,12 +170,8 @@ namespace eval camera {
       if { $GO_Stop == "1" } {
 
          #--- Appel du timer
-         if { $Exposure > "1" } {
+         if { $Exposure >= "2" } {
             ::camera::dispTime_1 $CameraName "::camera::Avancement_pose"
-         } else {
-            if { $Exposure != "0" } {
-               ::camera::Avancement_pose "1"
-            }
          }
 
          #--- Attente de la fin de la pose

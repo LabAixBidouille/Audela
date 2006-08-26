@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.22 2006-08-12 21:18:23 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.23 2006-08-26 21:24:04 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -1811,6 +1811,11 @@ namespace eval ::AcqFC {
            cam$camNo shutter "closed"
       }
 
+      #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+      if { $exptime >= "0" && $exptime < "2" } {
+         ::AcqFC::Avancement_pose $visuNo "1"
+      }
+
       #--- Initialisation du fenetrage
       catch {
         set n1n2 [ cam$camNo nbcells ]
@@ -1840,12 +1845,8 @@ namespace eval ::AcqFC {
          #--- Alarme sonore de fin de pose
          ::camera::alarme_sonore $exptime
          #--- Appel du timer
-         if { $exptime > "1" } {
+         if { $exptime >= "2" } {
            ::camera::dispTime_2 cam$camNo $panneau(AcqFC,$visuNo,This).status.lab "::AcqFC::Avancement_pose" $visuNo
-         } else {
-           if { $exptime != "0" } {
-              ::AcqFC::Avancement_pose $visuNo "1"
-           }
          }
          #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
          if { $conf(dslr,telecharge_mode) == "3" && $panneau(AcqFC,$visuNo,mode) >= "1" && $panneau(AcqFC,$visuNo,mode) <= "5" } {

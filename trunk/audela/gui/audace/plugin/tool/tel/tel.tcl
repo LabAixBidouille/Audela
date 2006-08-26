@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.4 2006-06-20 21:30:12 robertdelmas Exp $
+# Mise a jour $Id: tel.tcl,v 1.5 2006-08-26 21:23:02 robertdelmas Exp $
 #
 
 package provide tel 1.0
@@ -491,8 +491,8 @@ namespace eval ::Tlscp {
       #--- La commande bin permet de fixer le binning.
       $camera bin [ list $binning $binning ]
 
-      #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-      if { $exptime == "0" } {
+      #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+      if { $exptime >= "0" && $exptime < "2" } {
          ::camera::Avancement_pose "1"
       }
 

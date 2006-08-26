@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.4 2006-06-20 21:21:36 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.5 2006-08-26 21:23:36 robertdelmas Exp $
 #
 
 package provide remotectrl 1.0
@@ -694,7 +694,7 @@ namespace eval ::Rmctrl {
          eval $message
 
          #--- Appel du timer
-         if { $exptime > "1" } {
+         if { $exptime > "2" } {
         ### ::Rmctrl::dispTime
          }
 
