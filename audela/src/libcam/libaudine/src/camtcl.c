@@ -920,6 +920,8 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
     unsigned long msloop, msloop10, msloops[10];
     char msgtcl[] = "Usage: %s %s width height bin dt ?-firstpix index? ?-fast speed? ?-perfo? ?-tmpfile?";
     char text[1024];
+    
+    
     ligne = (char *) calloc(200, sizeof(char));
     ligne2 = (char *) calloc(200, sizeof(char));
     if (argc < 6) {
@@ -1048,6 +1050,7 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		    }
 		    /* Nettoyage du ccd */
 		    CAM_DRV.start_exp(cam, "amplion");
+		    audine_shutter_on(cam);
 		    Tcl_Eval(interp, "clock seconds");
 		    cam->clockbegin = (int) atoi(interp->result);
 		    TheScanStruct->t0 = libcam_getms();
@@ -1187,6 +1190,14 @@ void AudineScanTerminateSequence(ClientData clientData, int camno, char *reason)
     char s[80];
     FILE *f;
     int i;
+    struct camprop *cam;
+
+    cam = (struct camprop *) clientData;
+    
+    if ((cam->shutterindex == 1) || (cam->shutterindex == 0)) {
+        audine_shutter_off(cam);
+    }
+
     if (TheScanStruct->fileima == 1) {
 	fclose(TheScanStruct->fima);
 	TheScanStruct->fima = NULL;
