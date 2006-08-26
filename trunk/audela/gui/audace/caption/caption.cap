@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.16 2006-07-08 00:36:10 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.17 2006-08-26 17:55:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -269,6 +269,7 @@ set caption(audace,intens,xy)                         "Intensity"
 set caption(audace,integflux)                         "Integrated Flux"
 set caption(audace,mag_instrument)                    "Instrument Magnitude -2.5*log10(Flux)"
 set caption(audace,MPC_format)                        "MPC Format:"
+set caption(audace,largequiv,xy)                      "# Largeur équivalente"
 set caption(audace,UAI_site_image)                    "UAI %s site must be where the image was acquired."
 set caption(superposer,carte,champ)                   "Superimpose Field Chart"
 set caption(catalogue,recherche)                      "Path to the Catalog"
@@ -598,6 +599,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,integflux)                      "Flux intégré"
    set caption(audace,mag_instrument)                 "Magnitude instrumentale -2.5*log10(flux)"
    set caption(audace,MPC_format)                     "Format MPC :"
+   set caption(audace,largequiv,xy)                   "Largeur équivalente"
    set caption(audace,UAI_site_image)                 "Le site UAI %s doit être celui où l'image a été acquise."
    set caption(superposer,carte,champ)                "Superposer la carte de champ"
    set caption(catalogue,recherche)                   "Chemin d'accès au catalogue"
@@ -927,6 +929,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,integflux)                      "Flusso integrato"
    set caption(audace,mag_instrument)                 "Magnitudine strumentale -2.5*log10(flusso)"
    set caption(audace,MPC_format)                     "Formato MPC:"
+   set caption(audace,largequiv,xy)                   "# Largeur équivalente"
    set caption(audace,UAI_site_image)                 "Il sito UAI %s dovra` essere quello dove l'immagine sara` acquisita."
    set caption(superposer,carte,champ)                "Definizione campo stellare"
    set caption(catalogue,recherche)                   "Percorso del catalogo"
@@ -1256,6 +1259,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,integflux)                      "Flujo intregrado"
    set caption(audace,mag_instrument)                 "Magnitud instrumental -2.5*log10(flujo)"
    set caption(audace,MPC_format)                     "Formato MPC:"
+   set caption(audace,largequiv,xy)                   "# Largeur équivalente"
    set caption(audace,UAI_site_image)                 "El sitio UAI %s debe estar donde se ha adquirido la imagen."
    set caption(superposer,carte,champ)                "Superponer mapa del campo"
    set caption(catalogue,recherche)                   "Ruta al catálogo"
@@ -1585,6 +1589,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,integflux)                      "Integrierter Fluss"
    set caption(audace,mag_instrument)                 "Instrumental Größe -2.5*log10(Fluss)"
    set caption(audace,MPC_format)                     "MPC Format:"
+   set caption(audace,largequiv,xy)                   "# Largeur équivalente"
    set caption(audace,UAI_site_image)                 "Die UAI %s Stelle muss die sein wo das Bild erworben wurde."
    set caption(superposer,carte,champ)                "Die Feld Karte überlagern"
    set caption(catalogue,recherche)                   "Weg zum Katalog"
@@ -1914,6 +1919,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,integflux)                      "Integreret Flux"
    set caption(audace,mag_instrument)                 "Instrument magnitude -2.5*log10(Flux)"
    set caption(audace,MPC_format)                     "MPC Format:"
+   set caption(audace,largequiv,xy)                   "# Largeur équivalente"
    set caption(audace,UAI_site_image)                 "Stedet UAI %s må være hvorfra billedet blev hentet."
    set caption(superposer,carte,champ)                "Læg Feltkort på"
    set caption(catalogue,recherche)                   "Sti til katalog"
