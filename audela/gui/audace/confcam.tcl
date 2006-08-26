@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.26 2006-08-12 21:27:10 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.27 2006-08-26 01:14:14 denismarchais Exp $
 #
 
 global confCam
@@ -4084,13 +4084,22 @@ namespace eval ::confCam {
                   set eth_canspeed [ expr round(($conf(ethernaude,canspeed)-7.11)/(39.51-7.11)*30.) ]
                   if { $eth_canspeed < "0" } { set eth_canspeed "0" }
                   if { $eth_canspeed > "100" } { set eth_canspeed "100" }
+                  if { [ string range $conf(audine,typeobtu) 0 5 ] == "audine" } {
+                     # L'ethernaude semble inverser le fonctionnement de l'obturateur par rapport au port 
+                     # parallele ; on retabli donc ici le fonctionnement nominal.
+                     if { [ string index $conf(audine,typeobtu) 7 ] == "-" } {
+                        set shutterinvert 0
+                     } else {
+                        set shutterinvert 1
+                     }
+                  }                  
                   if { $conf(ethernaude,ipsetting) == "1" } {
                      set erreur [ catch { cam::create ethernaude udp -ip $conf(ethernaude,host) \
-                        -canspeed $eth_canspeed -name Audine \
+                        -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
                         -ipsetting [ file join $audace(rep_install) bin IPSetting.exe ] -debug } camNo ]
                   } else {
                      set erreur [ catch { cam::create ethernaude udp -ip $conf(ethernaude,host) \
-                        -canspeed $eth_canspeed -name Audine -debug } camNo ]
+                        -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug } camNo ]
                   }
                   if { $erreur == "1" } {
                      tk_messageBox -message "$camNo" -icon error
@@ -4112,13 +4121,6 @@ namespace eval ::confCam {
                         }
                         2 {
                            cam$confCam(camera,$cam_item,camNo) shutter "synchro"
-                        }
-                     }
-                     if { [ string range $conf(audine,typeobtu) 0 5 ] == "audine" } {
-                        if { [ string index $conf(audine,typeobtu) 7 ] == "-" } {
-                           catch { cam$confCam(camera,$cam_item,camNo) shuttertype audine }
-                        } else {
-                           catch { cam$confCam(camera,$cam_item,camNo) shuttertype audine reverse }
                         }
                      }
                      ::confVisu::visuDynamix $visuNo 32767 -32768
