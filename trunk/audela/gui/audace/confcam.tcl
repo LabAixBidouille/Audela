@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.27 2006-08-26 01:14:14 denismarchais Exp $
+# Mise a jour $Id: confcam.tcl,v 1.28 2006-08-26 16:45:55 robertdelmas Exp $
 #
 
 global confCam
@@ -200,7 +200,7 @@ namespace eval ::confCam {
 
    #
    # confCam::startDriver
-   # Ouvre les cameras  
+   # Ouvre les cameras
    #
    proc startDriver { } {
       global conf
@@ -228,10 +228,6 @@ namespace eval ::confCam {
    # Ferme toutes les cameras ouvertes
    #
    proc stopDriver { } {
-      global conf
-      global confCam
-
-      #---
       ::confCam::stopItem A
       ::confCam::stopItem B
       ::confCam::stopItem C
@@ -317,14 +313,19 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver le bouton Tests pour la fabrication de la camera Audine
    #
    proc ConfAudine { } {
-      variable This
+      global audace
       global caption
       global confCam
       global frmm
 
       set cam_item $confCam(cam_item)
 
-      if { [ info exists This ] } {
+      #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
+      if { [ winfo exists $audace(base).testAudine ] } {
+         ::testAudine::fermer
+      }
+
+      if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera1)
          if { ( [::confCam::getProduct $confCam(camera,$cam_item,camNo)] == "audine" ) && \
             ( $confCam(conf_audine,port) != "$caption(confcam,quicka)" ) && \
@@ -344,14 +345,13 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver les boutons de configuration de la Kitty K2
    #
    proc ConfKitty { } {
-      variable This
-      global conf
+      global audace
       global confCam
       global frmm
 
       set cam_item $confCam(cam_item)
 
-      if { [ info exists This ] } {
+      if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera6)
          if { [ winfo exists $frm.radio_on ] } {
             if { [::confCam::getName $confCam(camera,$cam_item,camNo)] == "KITTYK2" } {
@@ -376,13 +376,13 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver les boutons de configuration de la WebCam
    #
    proc ConfWebCam { } {
-      variable This
+      global audace
       global confCam
       global frmm
 
       set cam_item $confCam(cam_item)
 
-      if { [ info exists This ] } {
+      if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera7)
          if { [::confCam::getProduct $confCam(camera,$cam_item,camNo)] == "webcam" } {
             #--- Boutons de configuration de la WebCam actif
@@ -406,13 +406,18 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver le bouton de configuration des APN (DSLR)
    #
    proc ConfDSLR { } {
-      variable This
+      global audace
       global confCam
       global frmm
 
       set cam_item $confCam(cam_item)
 
-      if { [ info exists This ] } {
+      #--- Si la fenetre Telecharger l'image pour la fabrication de la camera est affichee, je la ferme
+      if { [ winfo exists $audace(base).telecharge_image ] } {
+         destroy $audace(base).telecharge_image
+      }
+
+      if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera10)
          if { [ winfo exists $frm.config_telechargement ] } {
             if { [::confCam::getProduct $confCam(camera,$cam_item,camNo)] == "dslr" } {
@@ -1873,19 +1878,19 @@ namespace eval ::confCam {
             #--- Refroidissement On
             radiobutton $frm.radio_on -anchor w -highlightthickness 0 \
                -text "$caption(confcam,refroidissement_on)" -value 1 \
-               -variable confCam(conf_kitty,on_off) -command "cam$confCam(camera,$confCam(cam_item),camNo) cooler on"
+               -variable confCam(conf_kitty,on_off) -command { cam$confCam(camera,$confCam(cam_item),camNo) cooler on }
             pack $frm.radio_on -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
             #--- Refroidissement Off
             radiobutton $frm.radio_off -anchor w -highlightthickness 0 \
                -text "$caption(confcam,refroidissement_off)" -value 0 \
-               -variable confCam(conf_kitty,on_off) -command "cam$confCam(camera,$confCam(cam_item),camNo) cooler off"
+               -variable confCam(conf_kitty,on_off) -command { cam$confCam(camera,$confCam(cam_item),camNo) cooler off }
             pack $frm.radio_off -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
             #--- Definition de la temperature du capteur CCD
             label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
             pack $frm.temp_ccd -in $frm.frame13 -side left -fill x -padx 10 -pady 0
             #--- Bouton de test du microcontrolleur de la carte d'interface
             button $frm.test -text "$caption(confcam,test)" -relief raised \
-               -command "cam$confCam(camera,$confCam(cam_item),camNo) sx28test"
+               -command { cam$confCam(camera,$confCam(cam_item),camNo) sx28test }
             pack $frm.test -in $frm.frame14 -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
             #--- Gestion des boutons actif/inactif
             ::confCam::ConfKitty
@@ -1958,19 +1963,19 @@ namespace eval ::confCam {
          #--- Refroidissement On
          radiobutton $frm.radio_on -anchor w -highlightthickness 0 \
             -text "$caption(confcam,refroidissement_on)" -value 1 \
-            -variable confCam(conf_kitty,on_off) -command "cam$confCam(camera,$confCam(cam_item),camNo) cooler on"
+            -variable confCam(conf_kitty,on_off) -command { cam$confCam(camera,$confCam(cam_item),camNo) cooler on }
          pack $frm.radio_on -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
          #--- Refroidissement Off
          radiobutton $frm.radio_off -anchor w -highlightthickness 0 \
             -text "$caption(confcam,refroidissement_off)" -value 0 \
-            -variable confCam(conf_kitty,on_off) -command "cam$confCam(camera,$confCam(cam_item),camNo) cooler off"
+            -variable confCam(conf_kitty,on_off) -command { cam$confCam(camera,$confCam(cam_item),camNo) cooler off }
          pack $frm.radio_off -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
          #--- Definition de la temperature du capteur CCD
          label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
          pack $frm.temp_ccd -in $frm.frame13 -side left -fill x -padx 10 -pady 0
          #--- Bouton de test du microcontrolleur de la carte d'interface
          button $frm.test -text "$caption(confcam,test)" -relief raised \
-            -command "cam$confCam(camera,$confCam(cam_item),camNo) sx28test"
+            -command { cam$confCam(camera,$confCam(cam_item),camNo) sx28test }
          pack $frm.test -in $frm.frame14 -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
       }
 
@@ -2098,10 +2103,10 @@ namespace eval ::confCam {
 
       #--- Boutons de configuration de la source et du format video
       button $frm.conf_webcam -text "$caption(confcam,conf_webcam)" \
-         -command { global confCam ; cam$confCam(camera,$confCam(cam_item),camNo) videosource }
+         -command { cam$confCam(camera,$confCam(cam_item),camNo) videosource }
       pack $frm.conf_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
       button $frm.format_webcam -text "$caption(confcam,format_webcam)" \
-         -command { global confCam ; cam$confCam(camera,$confCam(cam_item),camNo) videoformat }
+         -command { cam$confCam(camera,$confCam(cam_item),camNo) videoformat }
       pack $frm.format_webcam -in $frm.frame5 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion des boutons actifs/inactifs
@@ -2971,6 +2976,7 @@ namespace eval ::confCam {
    #----------------------------------------------------------------------------
    proc stopItem { cam_item } {
       global audace
+      global caption
       global conf
       global confCam
 
@@ -2987,12 +2993,33 @@ namespace eval ::confCam {
             ::confVisu::setCamera $confCam(camera,$cam_item,visuNo) 0
             set confCam(camera,$cam_item,visuNo) "0"
          }
-         
          #--- Supprime la camera
          set result [ catch { cam::delete $camNo } erreur ]
          if { $result == "1" } { console::affiche_erreur "$erreur \n" }
-      }      
-      
+         #--- Gestion des boutons actifs/inactifs
+         if { [ winfo exists $audace(base).conflink ] } {
+            if { [ Rnotebook:currentName $audace(base).conflink.usr.book ] == "EthernAude" } {
+               ::ethernaude::ConfEthernAude
+            }
+         }
+         if { [ Rnotebook:currentName $audace(base).confCam.usr.book ] == "Audine" } {
+            #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
+            if { [ winfo exists $audace(base).testAudine ] } {
+               ::testAudine::fermer
+            }
+            ::confCam::ConfAudine
+         } elseif { [ Rnotebook:currentName $audace(base).confCam.usr.book ] == "Kitty" } {
+            ::confCam::ConfKitty
+         } elseif { [ Rnotebook:currentName $audace(base).confCam.usr.book ] == "WebCam" } {
+            ::confCam::ConfWebCam
+         } elseif { [ Rnotebook:currentName $audace(base).confCam.usr.book ] == "$caption(confcam,dslr)" } {
+            if { [ winfo exists $audace(base).telecharge_image ] } {
+               destroy $audace(base).telecharge_image
+            }
+            ::confCam::ConfDSLR
+         }
+      }
+
       #--- Raz des parametres de l'item 
       set confCam(camera,$cam_item,camNo) "0"
       if { $cam_item == "A" } {
@@ -4085,14 +4112,14 @@ namespace eval ::confCam {
                   if { $eth_canspeed < "0" } { set eth_canspeed "0" }
                   if { $eth_canspeed > "100" } { set eth_canspeed "100" }
                   if { [ string range $conf(audine,typeobtu) 0 5 ] == "audine" } {
-                     # L'ethernaude semble inverser le fonctionnement de l'obturateur par rapport au port 
-                     # parallele ; on retabli donc ici le fonctionnement nominal.
+                     # L'EthernAude semble inverser le fonctionnement de l'obturateur par rapport au
+                     # fonctionnement du port parallele, on retablit donc ici le meme fonctionnement
                      if { [ string index $conf(audine,typeobtu) 7 ] == "-" } {
-                        set shutterinvert 0
+                        set shutterinvert "0"
                      } else {
-                        set shutterinvert 1
+                        set shutterinvert "1"
                      }
-                  }                  
+                  }
                   if { $conf(ethernaude,ipsetting) == "1" } {
                      set erreur [ catch { cam::create ethernaude udp -ip $conf(ethernaude,host) \
                         -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
