@@ -356,22 +356,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		   strcpy(ligne, "ShutterOpen=1");
 	    }
 	    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-	    /*
-	       if (cam->shutterindex==0) {
-	       if (cam->shutteraudinereverse==0) {
-	       strcpy(ligne,"ShutterOpen=0");
-	       } else {
-	       strcpy(ligne,"ShutterOpen=1");
-	       }
-	       } else {
-	       if (cam->shutteraudinereverse==0) {
-	       strcpy(ligne,"ShutterOpen=1");
-	       } else {
-	       strcpy(ligne,"ShutterOpen=0");
-	       }
-	       }
-	       paramCCD_put(-1,ligne,&ParamCCDIn,1);
-	     */
 	    util_log("", 1);
 	    for (k = 0; k < ParamCCDIn.NbreParam; k++) {
 		paramCCD_get(k, result, &ParamCCDIn);

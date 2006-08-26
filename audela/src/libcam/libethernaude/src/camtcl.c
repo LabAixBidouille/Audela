@@ -328,21 +328,13 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
    sprintf(ligne, "Amount_Lines=%d", h);
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-	
-	
+
    if (cam->shutterindex == 0) {
-      if (cam->shutteraudinereverse == 0) {
-	 strcpy(ligne, "OpenCloseShutter=FALSE");
-      } else {
-	 strcpy(ligne, "OpenCloseShutter=TRUE");
-      }
+      strcpy(ligne, "OpenCloseShutter=FALSE");
    } else {
-      if (cam->shutteraudinereverse == 0) {
-	 strcpy(ligne, "OpenCloseShutter=TRUE");
-      } else {
-	 strcpy(ligne, "OpenCloseShutter=FALSE");
-      }
+      strcpy(ligne, "OpenCloseShutter=TRUE");
    }
+   
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
    util_log("", 1);
    for (k = 0; k < ParamCCDIn.NbreParam; k++) {
@@ -714,83 +706,6 @@ int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc,
 }
 
 
-/*
- * -----------------------------------------------------------------------------
- *  cmdEthernaudeShutterType()
- *
- * Setect the type of shutter. 2 shutter types are supported :
- *  audine : build by Raymond David (Essentiel Electronic)
- *  thierry : build by Pierre Thierry.
- *
- * -----------------------------------------------------------------------------
- */
-int cmdEthernaudeShutterType(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
-{
-    char ligne[256];
-    char ligne2[256];
-    char **argvv = NULL;
-    int argcc;
-    int result = TCL_OK, pb = 0, reinit = 0;
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    if ((argc != 2) && (argc > 4)) {
-	pb = 1;
-    } else if (argc == 2) {
-	pb = 0;
-    } else {
-	if (strcmp(argv[2], "audine") == 0) {
-	    cam->shuttertypeindex = 0;
-	    cam->shutteraudinereverse = 0;
-	    if (argc >= 4) {
-		if (strcmp(argv[3], "reverse") == 0) {
-		    cam->shutteraudinereverse = 1;
-		}
-	    }
-	    reinit = 1;
-	    pb = 0;
-	    /*
-	       } else if (strcmp(argv[2],"thierry")==0) {
-	       cam->shuttertypeindex=1;
-	       pb=0;
-	     */
-	} else {
-	    pb = 1;
-	}
-    }
-    if (pb == 1) {
-	/*sprintf(ligne,"Usage: %s %s audine|thierry ?options?",argv[0],argv[1]); */
-	sprintf(ligne, "Usage: %s %s audine ?options?", argv[0], argv[1]);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	result = TCL_ERROR;
-    } else {
-	strcpy(ligne, "");
-	if (cam->shuttertypeindex == 0) {
-	    if (cam->shutteraudinereverse == 0) {
-		sprintf(ligne, "audine");
-	    } else {
-		sprintf(ligne, "audine reverse");
-	    }
-	} else if (cam->shuttertypeindex == 1) {
-	    sprintf(ligne, "thierry");
-	}
-	if (reinit == 1) {
-#ifdef CAMTCL_DEBUG
-	    printf("close dans cmdEthernaudeShutterType\n");
-#endif
-	    CAM_DRV.close(cam);
-	    sprintf(ligne2, "-ip %d.%d.%d.%d -shutterinvert %d -canspeed %d ", cam->inparams.ip[0], cam->inparams.ip[1], cam->inparams.ip[2], cam->inparams.ip[3], cam->shutteraudinereverse, cam->inparams.canspeed);
-	    util_splitline(ligne2, &argcc, &argvv);
-	    if (CAM_DRV.init(cam, argcc, argvv) != 0) {
-		Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
-		util_free((char *) argvv);
-		return TCL_ERROR;
-	    }
-	    util_free((char *) argvv);
-	}
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-    }
-    return result;
-}
 
 /*
  * -----------------------------------------------------------------------------
