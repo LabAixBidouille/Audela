@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.7 2006-07-07 12:56:03 michelpujol Exp $
+ * $Id: libcam.c,v 1.8 2006-08-26 00:18:35 denismarchais Exp $
  */
 
 #include "sysexp.h"
@@ -141,6 +141,7 @@ static int cmdCamFoclen(ClientData clientData, Tcl_Interp * interp, int argc, ch
 static int cmdCamOverscan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamInterrupt(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 static int cam_init_common(struct camprop *cam, int argc, char **argv);
 
@@ -161,31 +162,85 @@ static struct camprop *camprops = NULL;
 #define LOG_INFO    3
 #define LOG_DEBUG   4
 
-static int debug_level = 4;
+static int debug_level = 0;
+
+/*
+ * char* getlogdate(char *buf, size_t size)
+ *   Generates a FITS compliant string into buf representing the date at which
+ *   this function is called. Returns buf.
+ */
+char *getlogdate(char *buf, size_t size)
+{
+#if defined(OS_WIN)
+  #ifdef _MSC_VER
+    /* cas special a Microsoft C++ pour avoir les millisecondes */
+    struct _timeb timebuffer;
+    time_t ltime;
+    _ftime(&timebuffer);
+    time(&ltime);
+    strftime(buf, size - 3, "%Y-%m-%d %H:%M:%S", localtime(&ltime));
+    sprintf(buf, "%s.%02d", buf, (int) (timebuffer.millitm / 10));
+  #else
+    struct time t1;
+    struct date d1;
+    getdate(&d1);
+    gettime(&t1);
+    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%02d : ", d1.da_year,
+	    d1.da_mon, d1.da_day, t1.ti_hour, t1.ti_min, t1.ti_sec,
+	    t1.ti_hund);
+  #endif
+#elif defined(OS_LIN)
+    struct timeb timebuffer;
+    time_t ltime;
+    ftime(&timebuffer);
+    time(&ltime);
+    strftime(buf, size - 3, "%Y-%m-%d %H:%M:%S", localtime(&ltime));
+    sprintf(buf, "%s.%02d", buf, (int) (timebuffer.millitm / 10));
+#elif defined(OS_MACOS)
+    struct timeval t;
+    char message[50];
+    char s1[27];
+    gettimeofday(&t,NULL);
+    strftime(message,45,"%Y-%m-%dT%H:%M:%S",localtime((const time_t*)(&t.tv_sec)));
+    sprintf(s1,"%s.%02d : ",message,(t.tv_usec)/10000);
+#else
+    sprintf(s1,"[No time functions available]");
+#endif
+
+    return buf;
+}
 
 static void libcam_log(int level, const char *fmt, ...)
 {
+   FILE *f;
+   char buf[100];
+
    va_list mkr;
    va_start(mkr, fmt);
+   
    if (level <= debug_level) {
+      getlogdate(buf,100);
+      f = fopen("libcam.txt","at+");
       switch (level) {
       case LOG_ERROR:
-         printf("%s(%s) <ERROR> : ", CAM_LIBNAME, CAM_LIBVER);
+         fprintf(f,"%s - %s(%s) <ERROR> : ", buf, CAM_LIBNAME, CAM_LIBVER);
          break;
       case LOG_WARNING:
-         printf("%s(%s) <WARNING> : ", CAM_LIBNAME, CAM_LIBVER);
+         fprintf(f,"%s - %s(%s) <WARNING> : ", buf, CAM_LIBNAME, CAM_LIBVER);
          break;
       case LOG_INFO:
-         printf("%s(%s) <INFO> : ", CAM_LIBNAME, CAM_LIBVER);
+         fprintf(f,"%s - %s(%s) <INFO> : ", buf, CAM_LIBNAME, CAM_LIBVER);
          break;
       case LOG_DEBUG:
-         printf("%s(%s) <DEBUG> : ", CAM_LIBNAME, CAM_LIBVER);
+         fprintf(f,"%s - %s(%s) <DEBUG> : ", buf, CAM_LIBNAME, CAM_LIBVER);
          break;
       }
-      vprintf(fmt, mkr);
-      printf("\n");
+      vfprintf(f,fmt, mkr);
+      fprintf(f,"\n");
       va_end(mkr);
+      fclose(f);
    }
+
 }
 
 
@@ -309,12 +364,17 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    char s[1024], ss[50];
    int retour = TCL_OK, k, i;
    struct cmditem *cmd;
-   
-   fprintf(stderr, "%s(%s): enter cmdCam(argc=%d", CAM_LIBNAME, CAM_LIBVER, argc);
-   for (i = 0; i < argc; i++) {
-      fprintf(stderr, ",argv[%d]=%s", i, argv[i]);
+
+   if (debug_level > 0) {
+      char s1[256], *s2;
+      s2 = s1;
+      s2 += sprintf(s2,"Enter cmdCam (argc=%d", argc);
+      for (i = 0; i < argc; i++) {
+         s2 += sprintf(s2, ",argv[%d]=%s", i, argv[i]);
+      }
+      s2 += sprintf(s2, ")");
+      libcam_log(LOG_INFO, "%s", s1);
    }
-   fprintf(stderr, ")\n");
    
    if (argc == 1) {
       sprintf(s, "%s choose sub-command among ", argv[0]);
@@ -1590,3 +1650,33 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->capabilities.videoMode      = 0;  // existance du mode video
    return 0;
 }
+
+static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK;
+   struct camprop *cam;
+   
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1|2|3|4?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%d", debug_level);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      cam = (struct camprop *) clientData;
+      if (Tcl_GetInt(interp, argv[2], &debug_level) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?0|1?\nvalue must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         Tcl_SetResult(interp, "", TCL_VOLATILE);
+         result = TCL_OK;
+      }
+   }
+   return result;
+}
+
