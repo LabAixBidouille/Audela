@@ -2,7 +2,7 @@
 # Fichier : testaudine.tcl
 # Description : Permet de faire les tests lors de la fabrication d'une Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: testaudine.tcl,v 1.3 2006-06-20 19:19:59 robertdelmas Exp $
+# Mise a jour $Id: testaudine.tcl,v 1.4 2006-08-26 14:56:12 robertdelmas Exp $
 #
 
 namespace eval testAudine {
@@ -140,7 +140,7 @@ namespace eval testAudine {
 
       #--- Cree le bouton 'Fermer' 
       button $This.but_fermer -text "$caption(testaudine,fermer)" -width 7 -borderwidth 2 \
-         -command { ::testAudine::fermer  } 
+         -command { ::testAudine::fermer } 
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active

@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.10 2006-08-26 01:00:34 denismarchais Exp $
+# Mise a jour $Id: scan.tcl,v 1.11 2006-08-26 14:57:21 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -291,7 +291,7 @@ namespace eval ::Dscan {
       set panneau(Dscan,nblg)  [ expr int($panneau(Dscan,nblg1)) + 1 ]
 
       #--- Sauvegarde de l'etat de l'obturateur
-      set shutter_state [cam$audace(camNo) shutter]
+      set panneau(shutter_state) [ cam$audace(camNo) shutter ]
       cam$audace(camNo) shutter synchro
 
       #--- Declenchement de l'acquisition
@@ -320,7 +320,7 @@ namespace eval ::Dscan {
       }
 
       #--- Restauration de l'etat initial de l'obturateur
-      cam$audace(camNo) shutter $shutter_state
+      cam$audace(camNo) shutter $panneau(shutter_state)
    }
 
    proc cmdStop { } {

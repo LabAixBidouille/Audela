@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.9 2006-08-26 00:59:57 denismarchais Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.10 2006-08-26 14:56:55 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -309,7 +309,7 @@ namespace eval ::Scanfast {
             }
 
             #--- Sauvegarde de l'etat de l'obturateur
-            set shutter_state [cam$audace(camNo) shutter]
+            set shutter_state [ cam$audace(camNo) shutter ]
             cam$audace(camNo) shutter synchro
 
             #--- Destruction de la fenetre indiquant l'attente

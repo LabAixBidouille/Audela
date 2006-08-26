@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.4 2006-07-03 17:48:34 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.5 2006-08-26 14:58:31 robertdelmas Exp $
 #
 
 namespace eval cameraDSLR {
@@ -45,7 +45,7 @@ namespace eval cameraDSLR {
          wm transient $audace(base).telecharge_image $audace(base).confCam
          set posx_telecharge_image [ lindex [ split [ wm geometry $audace(base).confCam ] "+" ] 1 ]
          set posy_telecharge_image [ lindex [ split [ wm geometry $audace(base).confCam ] "+" ] 2 ]
-         wm geometry $audace(base).telecharge_image +[ expr $posx_telecharge_image + 350 ]+[ expr $posy_telecharge_image + 90 ]
+         wm geometry $audace(base).telecharge_image +[ expr $posx_telecharge_image + 300 ]+[ expr $posy_telecharge_image + 20 ]
       } else {
          wm transient $audace(base).telecharge_image $audace(base)
          set posx_telecharge_image [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
