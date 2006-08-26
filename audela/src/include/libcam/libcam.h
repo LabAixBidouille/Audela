@@ -74,6 +74,7 @@ struct cmditem {
    {"mirrorv", (Tcl_CmdProc *)cmdCamMirrorV},\
    {"capabilities", (Tcl_CmdProc *)cmdCamCapabilities},\
    {"lasterror", (Tcl_CmdProc *)cmdCamLastError},\
+   {"debug", (Tcl_CmdProc *)cmdCamDebug},\
 
 
 
