@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.5 2006-08-12 21:06:38 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.6 2006-08-26 21:24:39 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -798,7 +798,7 @@ proc testpointage { } {
    #--- Alarme sonore de fin de pose
    ::camera::alarme_sonore $confcolor(exptime)
    #--- Appel du timer
-   if { $confcolor(exptime) > "1" } {
+   if { $confcolor(exptime) > "2" } {
       ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
    }
    #--- Attend la fin de la pose
@@ -856,7 +856,7 @@ proc testacqfen { } {
    #--- Alarme sonore de fin de pose
    ::camera::alarme_sonore $confcolor(exptime)
    #--- Appel du timer
-   if { $confcolor(exptime) > "1" } {
+   if { $confcolor(exptime) > "2" } {
       ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
    }
    #--- Attend la fin de la pose
@@ -904,7 +904,7 @@ proc testtotal { } {
    #--- Alarme sonore de fin de pose
    ::camera::alarme_sonore $confcolor(exptime)
    #--- Appel du timer
-   if { $confcolor(exptime) > "1" } {
+   if { $confcolor(exptime) > "2" } {
       ::camera::dispTime cam1000 $audace(base).test.frame2.fra0.labURL_decompte $color(red)
    }
    #--- Attend la fin de la pose

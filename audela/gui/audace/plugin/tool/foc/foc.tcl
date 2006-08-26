@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.3 2006-06-20 20:55:32 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.4 2006-08-26 21:23:17 robertdelmas Exp $
 #
 
 package provide foc 1.0
@@ -193,8 +193,8 @@ namespace eval ::Focs {
       #--- La commande bin permet de fixer le binning
       $camera bin [ list $panneau(Focs,bin) $panneau(Focs,bin) ]
 
-      #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-      if { $panneau(Focs,exptime) == "0" } {
+      #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+      if { $panneau(Focs,exptime) >= "0" && $panneau(Focs,exptime) < "2" } {
          ::camera::Avancement_pose "1"
       }
 
