@@ -14,7 +14,6 @@
     {"reinit", (Tcl_CmdProc *) cmdEthernaudeReinit}, \
     {"scan", (Tcl_CmdProc *) cmdEthernaudeScan}, \
     {"breakscan", (Tcl_CmdProc *) cmdEthernaudeBreakScan}, \
-    {"shuttertype", (Tcl_CmdProc *) cmdEthernaudeShutterType}, \
     {"canspeed", (Tcl_CmdProc *) cmdEthernaudeCanSpeed}, \
     {"directclear", (Tcl_CmdProc *) cmdEthernaudeDirectClear}, \
     {"directreset", (Tcl_CmdProc *) cmdEthernaudeDirectReset}, \
