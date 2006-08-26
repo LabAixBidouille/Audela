@@ -85,11 +85,20 @@ int Tk_AppInit(Tcl_Interp *interp);
 //------------------------------------------------------------------------------
 // Log functions
 //
+#if defined(__LOG_AUDELA_)
 #if defined(OS_LIN) || defined(OS_MACOS)
 #define LOG(what...) log_write(what)
 #endif
 #if defined(OS_WIN)
 #define LOG log_write
+#endif
+#else
+#if defined(OS_LIN) || defined(OS_MACOS)
+#define LOG(what...)
+#endif
+#if defined(OS_WIN)
+#define LOG
+#endif
 #endif
 
 #if defined(__DEBUG_AUDELA__)
