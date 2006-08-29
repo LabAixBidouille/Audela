@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.10 2006-08-26 14:56:55 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.11 2006-08-29 20:46:50 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -108,8 +108,10 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,loops)           "$caption(scanfast,boucles)"
       set panneau(Scanfast,acq)             "$caption(scanfast,acquisition)"
       set panneau(Scanfast,go0)             "$caption(scanfast,goccd)"
+      set panneau(Scanfast,stop)            "$caption(scanfast,stop)"
       set panneau(Scanfast,go1)             "$caption(scanfast,en_cours)"
       set panneau(Scanfast,go2)             "$caption(scanfast,visu)"
+      set panneau(Scanfast,go)              "$panneau(Scanfast,go0)"
       set panneau(Scanfast,attention)       "$caption(scanfast,attention)"
       set panneau(Scanfast,msg)             "$caption(scanfast,message)"
       set panneau(Scanfast,nom)             "$caption(scanfast,nom)"
@@ -129,7 +131,8 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,extension_image) "$conf(extension,defaut)"
       set panneau(Scanfast,indexer)         "0"
       set panneau(Scanfast,indice)          "1"
-      set panneau(Scanfast,go)              "$panneau(Scanfast,go0)"
+      set panneau(Scanfast,acquisition)     "0"
+      set panneau(Scanfast,stop1)           "0"
       #--- Construction de l'interface
       ScanfastBuildIF $This
    }
@@ -198,6 +201,8 @@ namespace eval ::Scanfast {
       if { $conf(confLink) == "ethernaude" } {
          pack forget $This.fra33
          pack $This.fra4 -side top -fill x
+         pack forget $This.fra4.but2
+         pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
          pack $This.fra5 -side top -fill x
          if { $panneau(Scanfast,binning) == "4x4" } {
             set panneau(Scanfast,binning) "2x2"
@@ -205,12 +210,15 @@ namespace eval ::Scanfast {
       } elseif { $conf(confLink) == "audinet" } {
          pack forget $This.fra33
          pack $This.fra4 -side top -fill x
+         pack forget $This.fra4.but2
+         pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
          pack $This.fra5 -side top -fill x
          #--- C'est bon, on ne fait rien pour le binning
       } elseif { $conf(confLink) == "parallelport" } {
          pack $This.fra33 -side top -fill x
          pack forget $This.fra4
          pack $This.fra4 -side top -fill x
+         pack forget $This.fra4.but2
          pack forget $This.fra5
          pack $This.fra5 -side top -fill x
          #--- C'est bon, on ne fait rien pour le binning
@@ -257,6 +265,10 @@ namespace eval ::Scanfast {
 
       if { [ ::cam::list ] != "" } {
          if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
+            #--- Initialisation des variables
+            set panneau(Scanfast,acquisition) "1"
+            set panneau(Scanfast,stop1)       "0"
+
             #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
             if { $panneau(Scanfast,col1) < "1" } {
                set panneau(Scanfast,col1) "1"
@@ -264,6 +276,10 @@ namespace eval ::Scanfast {
 
             #--- Gestion graphique du bouton GO CCD
             $This.fra4.but1 configure -relief groove -text $panneau(Scanfast,go1) -state disabled
+            update
+
+            #--- Gestion graphique du bouton STOP - Inactif avant le debut du scan
+            $This.fra4.but2 configure -relief groove -text $panneau(Scanfast,stop) -state disabled
             update
 
             #--- Definition du binning
@@ -308,17 +324,20 @@ namespace eval ::Scanfast {
                set conf(tempo_scan,delai) $attente
             }
 
+            #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
+            $This.fra4.but2 configure -relief raised -text $panneau(Scanfast,stop) -state normal
+            update
+
             #--- Sauvegarde de l'etat de l'obturateur
             set shutter_state [ cam$audace(camNo) shutter ]
             cam$audace(camNo) shutter synchro
 
-            #--- Destruction de la fenetre indiquant l'attente
-            if [ winfo exists $audace(base).progress_scan ] {
-               destroy $audace(base).progress_scan
-            }
-
             #--- Declenchement de l'acquisition
             if { $conf(confLink) == "parallelport" } {
+               #--- Destruction de la fenetre indiquant l'attente
+               if [ winfo exists $audace(base).progress_scan ] {
+                  destroy $audace(base).progress_scan
+               }
                #--- Calcul de l'heure TU de debut et de l'heure TU previsionnelle de fin du scan
                set date_beg [ ::audace::date_sys2ut now ]
                set sec [ expr int(floor([ lindex $date_beg 5 ])) ]
@@ -348,12 +367,28 @@ namespace eval ::Scanfast {
                #--- Focus
                update
                focus $audace(base).wintimeaudace
-               #--- Acquisition proprement dite
+               #--- Declenchement de l'acquisition
                cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $f -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
             } else {
+               #--- Calcul du nombre de lignes par seconde
+               set panneau(Scanfast,nblg1) [ expr 1000./$dt ]
+               set panneau(Scanfast,nblg)  [ expr int($panneau(Scanfast,nblg1)) + 1 ]
+               #--- Declenchement de l'acquisition
                cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,interligne) -firstpix $f -tmpfile -biny $bin
+               #--- Alarme sonore de fin de pose
+               set pseudoexptime [ expr $panneau(Scanfast,lig1)/$panneau(Scanfast,nblg1) ]
+               ::camera::alarme_sonore $pseudoexptime
+               #--- Appel du timer
+               if { $panneau(Scanfast,lig1) > "$panneau(Scanfast,nblg)" } {
+                  set t [ expr $panneau(Scanfast,lig1)/$panneau(Scanfast,nblg1) ]
+                  ::camera::dispLine $t $panneau(Scanfast,nblg1) $panneau(Scanfast,lig1) $panneau(Scanfast,stop1)
+               }
                #--- Attente de la fin de la pose
                vwait scan_result$audace(camNo)
+               #--- Destruction de la fenetre d'avancement du scan
+               if [ winfo exists $audace(base).progress_scan ] {
+                  destroy $audace(base).progress_scan
+               }
             }
 
             #--- Restauration de l'etat initial de l'obturateur
@@ -378,10 +413,44 @@ namespace eval ::Scanfast {
             }
 
             #--- Gestion graphique du bouton GO CCD
+            set panneau(Scanfast,acquisition) "0"
             $This.fra4.but1 configure -relief raised -text $panneau(Scanfast,go0) -state normal
             update
          } else {
             tk_messageBox -title $panneau(Scanfast,attention) -type ok -message $panneau(Scanfast,msg)
+         }
+      } else {
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
+   }
+
+   proc cmdStop { } {
+      variable This
+      global audace
+      global panneau
+
+      if { [ ::cam::list ] != "" } {
+         if { $panneau(Scanfast,acquisition) == "1" } {
+            catch {
+               #--- Changement de la valeur de la variable
+               set panneau(Scanfast,stop1) "1"
+               #--- Annulation de l'alarme de fin de pose
+               catch { after cancel bell }
+               #--- Annulation de la pose
+               cam$audace(camNo) breakscan
+               after 200
+               #--- Visualisation de l'image
+               ::audace::autovisu $audace(visuNo)
+               #--- Gestion du moteur d'A.D.
+               if { [ ::tel::list ] != "" } {
+                  #--- Remise en marche du moteur d'AD
+                  tel$audace(telNo) radec motor on
+               }
+               #--- Gestion du graphisme du bouton
+               $This.fra4.but1 configure -relief raised -text $panneau(Scanfast,go1) -state disabled
+               update
+            }
          }
       } else {
          ::confCam::run
@@ -711,7 +780,7 @@ proc ScanfastBuildIF { This } {
       #--- Frame de l'acquisition
       frame $This.fra4 -borderwidth 1 -relief groove
 
-         #--- Label pour GO
+         #--- Label pour l'acquisition
          label $This.fra4.lab1 -text $panneau(Scanfast,acq) -relief flat
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1
 
@@ -719,6 +788,11 @@ proc ScanfastBuildIF { This } {
          button $This.fra4.but1 -borderwidth 2 -text $panneau(Scanfast,go) \
             -command { ::Scanfast::cmdGo motoroff }
          pack $This.fra4.but1 -in $This.fra4 -anchor center -fill x -padx 5 -ipadx 10 -ipady 3
+
+         #--- Bouton STOP
+         button $This.fra4.but2 -borderwidth 2 -text $panneau(Scanfast,stop) \
+            -command "::Scanfast::cmdStop"
+         pack $This.fra4.but2 -in $This.fra4 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
 
       pack $This.fra4 -side top -fill x
 

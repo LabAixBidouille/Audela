@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.11 2006-08-26 14:57:21 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.12 2006-08-29 20:46:36 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -67,8 +67,8 @@ namespace eval ::Dscan {
       set panneau(Dscan,extension_image) "$conf(extension,defaut)"
       set panneau(Dscan,indexer)         "0"
       set panneau(Dscan,indice)          "1"
-      set panneau(Dscan,stop1)           "0"
       set panneau(Dscan,acquisition)     "0"
+      set panneau(Dscan,stop1)           "0"
       #--- Construction de l'interface
       DscanBuildIF $This
    }
@@ -286,7 +286,7 @@ namespace eval ::Dscan {
       #--- Petit raccourci
       set camera cam$audace(camNo)
 
-      #--- Calcul du nombre de ligne par seconde
+      #--- Calcul du nombre de lignes par seconde
       set panneau(Dscan,nblg1) [ expr 1000./$dt ]
       set panneau(Dscan,nblg)  [ expr int($panneau(Dscan,nblg1)) + 1 ]
 
@@ -308,7 +308,7 @@ namespace eval ::Dscan {
       #--- Appel du timer
       if { $panneau(Dscan,lig1) > "$panneau(Dscan,nblg)" } {
          set t [ expr $panneau(Dscan,lig1)/$panneau(Dscan,nblg1) ]
-         ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1)
+         ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1) $panneau(Dscan,stop1)
       }
 
       #--- Attente de la fin de la pose
@@ -706,7 +706,7 @@ proc DscanBuildIF { This } {
       #--- Frame de l'acquisition
       frame $This.fra4 -borderwidth 1 -relief groove
 
-         #--- Label pour interligne
+         #--- Label pour l'acquisition
          label $This.fra4.lab1 -text $panneau(Dscan,acq) -relief flat
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1
 

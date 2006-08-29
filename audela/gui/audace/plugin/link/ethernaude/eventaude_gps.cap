@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.9 2006-08-12 21:05:10 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.10 2006-08-29 20:45:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,9 +23,9 @@ set caption(eventaude_gps,nord)                       "N"
 set caption(eventaude_gps,sud)                        "S"
 set caption(eventaude_gps,altitude)                   "Altitude:"
 set caption(eventaude_gps,maj_long+lat)               "Updating the Observer's Position (longitude and latitude)"
-set caption(eventaude_gps,maj_long+lat-)              "# Mise à jour de la longitude et de la latitude"
+set caption(eventaude_gps,maj_long+lat-)              "Longitude and latitude update"
 set caption(eventaude_gps,maj_alt)                    "Updating the Observer's Position (altitude)"
-set caption(eventaude_gps,maj_alt-)                   "# Mise à jour de l'altitude"
+set caption(eventaude_gps,maj_alt-)                   "Altitude update"
 set caption(eventaude_gps,confirm)                    "Continue?"
 set caption(eventaude_gps,ok)                         "OK"
 set caption(eventaude_gps,appliquer)                  "Apply"
@@ -158,9 +158,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eventaude_gps,sud)                     "S"
    set caption(eventaude_gps,altitude)                "Altitude:"
    set caption(eventaude_gps,maj_long+lat)            "Updating the Observer's Position (longitude and latitude)"
-   set caption(eventaude_gps,maj_long+lat-)           "# Mise à jour de la longitude et de la latitude"
+   set caption(eventaude_gps,maj_long+lat-)           "Longitude and latitude update"
    set caption(eventaude_gps,maj_alt)                 "Updating the Observer's Position (altitude)"
-   set caption(eventaude_gps,maj_alt-)                "# Mise à jour de l'altitude"
+   set caption(eventaude_gps,maj_alt-)                "Altitude update"
    set caption(eventaude_gps,confirm)                 "Continue?"
    set caption(eventaude_gps,ok)                      "OK"
    set caption(eventaude_gps,appliquer)               "Apply"

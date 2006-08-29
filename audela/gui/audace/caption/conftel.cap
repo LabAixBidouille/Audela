@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.7 2006-07-11 16:31:41 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.8 2006-08-29 20:45:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -93,7 +93,7 @@ set caption(conftel,temma_ctl_mobile:)                "Tracking Speed Control:"
 set caption(conftel,temma_mobile_ad)                  "Right Ascension Speed"
 set caption(conftel,temma_mobile_dec)                 "Declination Speed"
 
-set caption(conftel,driver_ascom)                     "# Driver ASCOM"
+set caption(conftel,driver_ascom)                     "ASCOM Driver"
 
 set caption(conftel,ra)                               "RA"
 set caption(conftel,dec)                              "Dec."
@@ -688,7 +688,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Right Ascension Speed"
    set caption(conftel,temma_mobile_dec)              "Declination Speed"
 
-   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+   set caption(conftel,driver_ascom)                  "ASCOM Driver"
 
    set caption(conftel,ra)                            "RA"
    set caption(conftel,dec)                           "Dec."
