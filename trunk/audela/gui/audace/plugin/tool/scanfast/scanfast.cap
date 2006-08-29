@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.4 2006-08-12 21:12:15 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.5 2006-08-29 20:44:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -39,6 +39,7 @@ set caption(scanfast,calibration)         "Calibration"
 set caption(scanfast,boucles)             "loops"
 set caption(scanfast,acquisition)         "Acquisition"
 set caption(scanfast,goccd)               "GO CCD\non/off"
+set caption(scanfast,stop)                "Stop"
 set caption(scanfast,en_cours)            "In Progress..."
 set caption(scanfast,visu)                "View"
 set caption(scanfast,tempsuniversel)      "UT"
@@ -60,7 +61,7 @@ set caption(scanfast,confirmation)        "Confirm"
 set caption(scanfast,fichier_existe)      "This file already exists.\nAre you sure you want to save?"
 
 set caption(scanfast,attention)           "Warning"
-set caption(scanfast,message)             "# Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+set caption(scanfast,message)             "This tool can only be used with an Audine camera driven through\na parallel port, an AudiNet interface or an EthernAude interface."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -93,6 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,boucles)          "boucles"
    set caption(scanfast,acquisition)      "Acquisition"
    set caption(scanfast,goccd)            "GO CCD\non/off"
+   set caption(scanfast,stop)             "Stop"
    set caption(scanfast,en_cours)         "En cours..."
    set caption(scanfast,visu)             "Visu"
    set caption(scanfast,tempsuniversel)   "TU"
@@ -147,6 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,boucles)          "ripetizioni"
    set caption(scanfast,acquisition)      "Acquisizione"
    set caption(scanfast,goccd)            "GO CCD\non/off"
+   set caption(scanfast,stop)             "Stop"
    set caption(scanfast,en_cours)         "In corso..."
    set caption(scanfast,visu)             "Vista"
    set caption(scanfast,tempsuniversel)   "TU"
@@ -201,6 +204,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,boucles)          "bucles"
    set caption(scanfast,acquisition)      "Adquisición"
    set caption(scanfast,goccd)            "GO CCD\non/off"
+   set caption(scanfast,stop)             "Stop"
    set caption(scanfast,en_cours)         "En curso..."
    set caption(scanfast,visu)             "Ver"
    set caption(scanfast,tempsuniversel)   "TU"
@@ -255,6 +259,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,boucles)          "Schleifen"
    set caption(scanfast,acquisition)      "Anschaffung"
    set caption(scanfast,goccd)            "GO CCD\nan/aus"
+   set caption(scanfast,stop)             "Stop"
    set caption(scanfast,en_cours)         "Laufend..."
    set caption(scanfast,visu)             "Visu"
    set caption(scanfast,tempsuniversel)   "WZ"
@@ -309,6 +314,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,boucles)          "loops"
    set caption(scanfast,acquisition)      "Acquisition"
    set caption(scanfast,goccd)            "GO CCD\non/off"
+   set caption(scanfast,stop)             "Stop"
    set caption(scanfast,en_cours)         "In Progress..."
    set caption(scanfast,visu)             "View"
    set caption(scanfast,tempsuniversel)   "UT"
@@ -330,7 +336,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,fichier_existe)   "This file already exists.\nAre you sure you want to save?"
 
    set caption(scanfast,attention)        "Warning"
-   set caption(scanfast,message)          "# Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+   set caption(scanfast,message)          "This tool can only be used with an Audine camera driven through\na parallel port, an AudiNet interface or an EthernAude interface."
 
 }
 

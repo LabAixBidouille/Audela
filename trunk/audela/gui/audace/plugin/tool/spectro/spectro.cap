@@ -1,6 +1,6 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.2 2006-08-22 20:44:47 robertdelmas Exp $
+# Mise a jour $Id: spectro.cap,v 1.3 2006-08-29 20:44:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,29 +12,29 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(spectro,titre,outil)                        "Spectroscopy"
-set caption(spectro,help,titre)                         "Help for this tool"
+set caption(spectro,help,titre)                         "Help For This Tool"
 set caption(spectro,configure)                          "Set up"
-set caption(spectro,editeur_profil)                     "# Editeur de profil"
+set caption(spectro,editeur_profil)                     "Profile Editor"
 set caption(spectro,lhires)                             "LHIRES III Be"
-set caption(spectro,BeSS)                               "# Accès BeSS"
+set caption(spectro,BeSS)                               "BeSS Access"
 
-set caption(spectro,configure,titre)                    "# Spectroscopie : Configuration"
-set caption(spectro,configure,titre2)                   "# Spectroscopie : Configuration"
-set caption(spectro,configure,load_button)              "# Charge la configuration"
-set caption(spectro,configure,save_button)              "# Enregistre la configuration"
+set caption(spectro,configure,titre)                    "Spectroscopy: Setup"
+set caption(spectro,configure,titre2)                   "Spectroscopy: Setup"
+set caption(spectro,configure,load_button)              "Load Setup"
+set caption(spectro,configure,save_button)              "Save Setup"
 set caption(spectro,configure,return_button)            "OK"
-set caption(spectro,configure,load)                     "# Charge la configuration"
-set caption(spectro,configure,save)                     "# Enregistre la configuration"
-set caption(spectro,configure,config,code_obs)          "# Code UAI de l'observatoire"
-set caption(spectro,configure,config,longitude)         "# Longitude de l'observatoire (deg.)"
-set caption(spectro,configure,config,sens)              "# Longitude de l'observatoire (E|W)"
-set caption(spectro,configure,config,latitude)          "# Latitude de l'observatoire (deg.)"
-set caption(spectro,configure,config,altitude)          "# Altitude de l'observatoire (m)"
-set caption(spectro,configure,config,desc_location)     "# Nom de l'observatoire"
-set caption(spectro,configure,config,desc_camera)       "# Description de la caméra"
-set caption(spectro,configure,config,desc_telescope)    "# Description du télescope"
-set caption(spectro,configure,config,tel_diam)          "# Diamètre du télescope (m)"
-set caption(spectro,configure,config,tel_fd)            "# F/D du télescope"
+set caption(spectro,configure,load)                     "Load Setup"
+set caption(spectro,configure,save)                     "Save Setup"
+set caption(spectro,configure,config,code_obs)          "UAI Code for the observatory"
+set caption(spectro,configure,config,longitude)         "Observatory Longitude (deg.)"
+set caption(spectro,configure,config,sens)              "Observatory Longitude (E|W)"
+set caption(spectro,configure,config,latitude)          "Observatory Latitude (deg.)"
+set caption(spectro,configure,config,altitude)          "Observatory Altitude (m)"
+set caption(spectro,configure,config,desc_location)     "Observatory Name"
+set caption(spectro,configure,config,desc_camera)       "Camera Description"
+set caption(spectro,configure,config,desc_telescope)    "Telescope Description"
+set caption(spectro,configure,config,tel_diam)          "Telescope Diameter (m)"
+set caption(spectro,configure,config,tel_fd)            "Telescope F/D"
 set caption(spectro,configure,config,comment)           "Comments"
 
 # *************** Version française ***************************
@@ -156,30 +156,30 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "# Spectroscopie"
+   set caption(spectro,titre,outil)                     "Spectroscopy"
    set caption(spectro,help,titre)                      "Help For This Tool"
    set caption(spectro,configure)                       "Set up"
-   set caption(spectro,editeur_profil)                  "# Editeur de profil"
+   set caption(spectro,editeur_profil)                  "Profile Editor"
    set caption(spectro,lhires)                          "LHIRES III Be"
-   set caption(spectro,BeSS)                            "# Accès BeSS"
+   set caption(spectro,BeSS)                            "BeSS Access"
 
-   set caption(spectro,configure,titre)                 "# Spectroscopie : Configuration"
-   set caption(spectro,configure,titre2)                "# Spectroscopie : Configuration"
-   set caption(spectro,configure,load_button)           "# Charge la configuration"
-   set caption(spectro,configure,save_button)           "# Enregistre la configuration"
+   set caption(spectro,configure,titre)                 "Spectroscopy: Setup"
+   set caption(spectro,configure,titre2)                "Spectroscopy: Setup"
+   set caption(spectro,configure,load_button)           "Load Setup"
+   set caption(spectro,configure,save_button)           "Save Setup"
    set caption(spectro,configure,return_button)         "OK"
-   set caption(spectro,configure,load)                  "# Charge la configuration"
-   set caption(spectro,configure,save)                  "# Enregistre la configuration"
-   set caption(spectro,configure,config,code_obs)       "# Code UAI de l'observatoire"
-   set caption(spectro,configure,config,longitude)      "# Longitude de l'observatoire (deg.)"
-   set caption(spectro,configure,config,sens)           "# Longitude de l'observatoire (E|W)"
-   set caption(spectro,configure,config,latitude)       "# Latitude de l'observatoire (deg.)"
-   set caption(spectro,configure,config,altitude)       "# Altitude de l'observatoire (m)"
-   set caption(spectro,configure,config,desc_location)  "# Nom de l'observatoire"
-   set caption(spectro,configure,config,desc_camera)    "# Description de la caméra"
-   set caption(spectro,configure,config,desc_telescope) "# Description du télescope"
-   set caption(spectro,configure,config,tel_diam)       "# Diamètre du télescope (m)"
-   set caption(spectro,configure,config,tel_fd)         "# F/D du télescope"
+   set caption(spectro,configure,load)                  "Load Setup"
+   set caption(spectro,configure,save)                  "Save Setup"
+   set caption(spectro,configure,config,code_obs)       "UAI Code for the observatory"
+   set caption(spectro,configure,config,longitude)      "Observatory Longitude (deg.)"
+   set caption(spectro,configure,config,sens)           "Observatory Longitude (E|W)"
+   set caption(spectro,configure,config,latitude)       "Observatory Latitude (deg.)"
+   set caption(spectro,configure,config,altitude)       "Observatory Altitude (m)"
+   set caption(spectro,configure,config,desc_location)  "Observatory Name"
+   set caption(spectro,configure,config,desc_camera)    "Camera Description"
+   set caption(spectro,configure,config,desc_telescope) "Telescope Description"
+   set caption(spectro,configure,config,tel_diam)       "Telescope Diameter (m)"
+   set caption(spectro,configure,config,tel_fd)         "Telescope F/D"
    set caption(spectro,configure,config,comment)        "Comments"
 
 }

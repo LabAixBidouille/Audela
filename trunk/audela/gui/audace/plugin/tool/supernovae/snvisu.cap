@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.4 2006-08-24 19:06:55 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.5 2006-08-29 20:44:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -47,7 +47,7 @@ set caption(snvisu,east)               "E"
 set caption(snvisu,west)               "W"
 set caption(snvisu,invert,mirror)      "Invert Right/Left"
 set caption(snvisu,magnitude)          "Magnitude"
-set caption(snvisu,page_html)          "# Page html"
+set caption(snvisu,page_html)          "HTML Page"
 
 set caption(snvisu,secondary_title)    "Sn View - Go to"
 set caption(snvisu,image_numero)       "Go to Image Number:"
@@ -119,7 +119,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,west)            "W"
    set caption(snvisu,invert,mirror)   "Inverser droite/gauche"
    set caption(snvisu,magnitude)       "Magnitude"
-   set caption(snvisu,page_html)       "Page html"
+   set caption(snvisu,page_html)       "Page HTML"
 
    set caption(snvisu,secondary_title) "Sn Visu - Aller à"
    set caption(snvisu,image_numero)    "Aller à l'image numéro :"
@@ -191,7 +191,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,west)            "W"
    set caption(snvisu,invert,mirror)   "Inversione sinistra/destra"
    set caption(snvisu,magnitude)       "Magnitudine"
-   set caption(snvisu,page_html)       "# Page html"
+   set caption(snvisu,page_html)       "# Page HTML"
 
    set caption(snvisu,secondary_title) "Vista Sn - Vai a"
    set caption(snvisu,image_numero)    "Vai a all'immagine numero:"
@@ -263,7 +263,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,west)            "W"
    set caption(snvisu,invert,mirror)   "Invertir derecha/izquierda"
    set caption(snvisu,magnitude)       "Magnitud"
-   set caption(snvisu,page_html)       "# Page html"
+   set caption(snvisu,page_html)       "# Page HTML"
 
    set caption(snvisu,secondary_title) "Sn Ver - Ir a"
    set caption(snvisu,image_numero)    "Ir a imágen número:"
@@ -335,7 +335,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,west)            "W"
    set caption(snvisu,invert,mirror)   "Rechts/links umkehren"
    set caption(snvisu,magnitude)       "Größeklasse"
-   set caption(snvisu,page_html)       "# Page html"
+   set caption(snvisu,page_html)       "# Page HTML"
 
    set caption(snvisu,secondary_title) "Sn Visu - Gehen zu"
    set caption(snvisu,image_numero)    "Zu Bild Nummer ... gehen:"
@@ -407,7 +407,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,west)            "W"
    set caption(snvisu,invert,mirror)   "Invert Right/Left"
    set caption(snvisu,magnitude)       "Magnitude"
-   set caption(snvisu,page_html)       "# Page html"
+   set caption(snvisu,page_html)       "HTML Page"
 
    set caption(snvisu,secondary_title) "Sn View - Go to"
    set caption(snvisu,image_numero)    "Go to Image Number:"

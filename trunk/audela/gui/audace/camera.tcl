@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.5 2006-08-26 21:24:23 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.6 2006-08-29 20:46:21 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -42,15 +42,14 @@ namespace eval camera {
    }
 
    #
-   # ::camera::dispLine t Nb_Line_sec Nb_Line_Total
+   # ::camera::dispLine t Nb_Line_sec Nb_Line_Total Stop_Scan
    # Decompte du nombre de lignes du scan
    #
-   proc dispLine { t Nb_Line_sec Nb_Line_Total } {
-      global panneau
+   proc dispLine { t Nb_Line_sec Nb_Line_Total Stop_Scan } {
 
       set t [ expr $t-1 ]
       set tt [ expr $t*$Nb_Line_sec ]
-      if { $panneau(Dscan,stop1) != "1" } {
+      if { $Stop_Scan != "1" } {
          if { $t > "1" } {
             after 1000 ::camera::dispLine $t $Nb_Line_sec $Nb_Line_Total
             if { $Nb_Line_Total >= "30" } {
