@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.12 2006-08-29 20:46:36 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.13 2006-08-29 21:39:31 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -68,7 +68,7 @@ namespace eval ::Dscan {
       set panneau(Dscan,indexer)         "0"
       set panneau(Dscan,indice)          "1"
       set panneau(Dscan,acquisition)     "0"
-      set panneau(Dscan,stop1)           "0"
+      set panneau(Scan,Stop)             "0"
       #--- Construction de l'interface
       DscanBuildIF $This
    }
@@ -187,7 +187,7 @@ namespace eval ::Dscan {
          if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
             #--- Initialisation des variables
             set panneau(Dscan,acquisition) "1"
-            set panneau(Dscan,stop1)       "0"
+            set panneau(Scan,Stop)         "0"
 
             #--- La premiere colonne ne peut pas etre inferieure a 1
             if { $panneau(Dscan,col1) < "1" } {
@@ -308,7 +308,7 @@ namespace eval ::Dscan {
       #--- Appel du timer
       if { $panneau(Dscan,lig1) > "$panneau(Dscan,nblg)" } {
          set t [ expr $panneau(Dscan,lig1)/$panneau(Dscan,nblg1) ]
-         ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1) $panneau(Dscan,stop1)
+         ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1)
       }
 
       #--- Attente de la fin de la pose
@@ -332,7 +332,7 @@ namespace eval ::Dscan {
          if { $panneau(Dscan,acquisition) == "1" } {
             catch {
                #--- Changement de la valeur de la variable
-               set panneau(Dscan,stop1) "1"
+               set panneau(Scan,Stop) "1"
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
                #--- Annulation de la pose
