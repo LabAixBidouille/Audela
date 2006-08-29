@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.11 2006-08-29 20:46:50 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.12 2006-08-29 21:39:46 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -132,7 +132,7 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,indexer)         "0"
       set panneau(Scanfast,indice)          "1"
       set panneau(Scanfast,acquisition)     "0"
-      set panneau(Scanfast,stop1)           "0"
+      set panneau(Scan,Stop)                "0"
       #--- Construction de l'interface
       ScanfastBuildIF $This
    }
@@ -267,7 +267,7 @@ namespace eval ::Scanfast {
          if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
             #--- Initialisation des variables
             set panneau(Scanfast,acquisition) "1"
-            set panneau(Scanfast,stop1)       "0"
+            set panneau(Scan,Stop)            "0"
 
             #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
             if { $panneau(Scanfast,col1) < "1" } {
@@ -371,7 +371,7 @@ namespace eval ::Scanfast {
                cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $f -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
             } else {
                #--- Calcul du nombre de lignes par seconde
-               set panneau(Scanfast,nblg1) [ expr 1000./$dt ]
+               set panneau(Scanfast,nblg1) [ expr 1000./$panneau(Scanfast,dt) ]
                set panneau(Scanfast,nblg)  [ expr int($panneau(Scanfast,nblg1)) + 1 ]
                #--- Declenchement de l'acquisition
                cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,interligne) -firstpix $f -tmpfile -biny $bin
@@ -381,7 +381,7 @@ namespace eval ::Scanfast {
                #--- Appel du timer
                if { $panneau(Scanfast,lig1) > "$panneau(Scanfast,nblg)" } {
                   set t [ expr $panneau(Scanfast,lig1)/$panneau(Scanfast,nblg1) ]
-                  ::camera::dispLine $t $panneau(Scanfast,nblg1) $panneau(Scanfast,lig1) $panneau(Scanfast,stop1)
+                  ::camera::dispLine $t $panneau(Scanfast,nblg1) $panneau(Scanfast,lig1)
                }
                #--- Attente de la fin de la pose
                vwait scan_result$audace(camNo)
@@ -434,7 +434,7 @@ namespace eval ::Scanfast {
          if { $panneau(Scanfast,acquisition) == "1" } {
             catch {
                #--- Changement de la valeur de la variable
-               set panneau(Scanfast,stop1) "1"
+               set panneau(Scan,Stop) "1"
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
                #--- Annulation de la pose
