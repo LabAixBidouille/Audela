@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.3 2006-06-20 21:28:44 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.4 2006-08-30 17:16:54 robertdelmas Exp $
 #
 
 package provide supernovae 1.0
@@ -23,15 +23,15 @@ namespace eval ::Snaude {
       global panneau
       global caption
 
+      #--- Initialisation du nom de la fenetre
       set This $this
-      #---
+      #--- Initialisation des captions
       set panneau(menu_name,Snaude) "$caption(supernovae_go,supernovae)"
       set panneau(Snaude,aide)      "$caption(supernovae_go,help,titre)"
       set panneau(Snaude,recherche) "$caption(supernovae_go,recherche_sn)"
       set panneau(Snaude,snacq)     "$caption(supernovae_go,sn_acq)"
       set panneau(Snaude,snvisu)    "$caption(supernovae_go,sn_visu)"
-      set panneau(Snaude,photom)    "$caption(supernovae_go,photometrie)"
-
+      #--- Construction de l'interface
       SnaudeBuildIF $This
    }
 
@@ -60,17 +60,16 @@ proc SnaudeBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Snaude) \
-            -command {
-               ::audace::showHelpPlugin tool supernovae supernovae_go.htm
-            }
+            -command { ::audace::showHelpPlugin tool supernovae supernovae_go.htm }
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Snaude,aide)
 
       pack $This.fra1 -side top -fill x
-      
+
       #--- Frame de Recherche
       frame $This.fra2 -borderwidth 1 -relief groove
 
+         #--- Label du frame
          label $This.fra2.lab1 -borderwidth 0 -text $panneau(Snaude,recherche)
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top
 
@@ -85,15 +84,7 @@ proc SnaudeBuildIF { This } {
          pack $This.fra2.but2 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
       pack $This.fra2 -side top -fill x
-      
-      #--- Frame de Photometrie
-      frame $This.fra3 -borderwidth 1 -relief groove
 
-         label $This.fra3.lab1 -borderwidth 0 -text $panneau(Snaude,photom)
-         pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand 1 -fill both -side top
-
-      pack $This.fra3 -side top -fill x
-      
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
