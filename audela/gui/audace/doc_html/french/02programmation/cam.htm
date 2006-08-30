@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 18 novembre 2005</p>
+<p class="date">Date de mise &agrave; jour : 30 ao&ucirc;t 2006</p>
 <h1>Cam&eacute;ra </h1>
 <p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS. </p>
 <p>Il est important de savoir que les auteurs ne disposent pas personnellement de ces cam&eacute;ras, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
@@ -107,7 +107,7 @@
  name="test2" id="test2"></a>cam1 set0, cam1 set255, cam1 test, cam1 test2</h3>
 <p>Ces quatre commandes sont celles qui permettent de tester la cam&eacute;ra Audine, comme d&eacute;crit dans sa documentation de montage.</p>
 <h3> <a name="scan" id="scan"></a>cam1 scan <em>width height bin dt ?-firstpix index? ?-fast speed? ?-perfo? ?-tmpfile?</em></h3>
-<p>D&eacute;clenche le mode drift-scan pour Audine. L'image cr&eacute;&eacute;e aura une dimension de <em>width*height</em>, en binning <em>bin</em>. Le param&egrave;tre <em>dt</em> correspond &agrave; l'intervalle de temps entre deux d&eacute;calages de lignes, exprim&eacute; en millisecondes. </p>
+<p>D&eacute;clenche le mode scan pour une Audine. L'image cr&eacute;&eacute;e aura une dimension de <em>width*height</em>, en binning <em>bin</em>. Le param&egrave;tre <em>dt</em> correspond &agrave; l'intervalle de temps entre deux d&eacute;calages de lignes, exprim&eacute; en millisecondes. </p>
 <p>L'option <em>-firstpix</em> permet de d&eacute;caler la colonne de d&eacute;marrage de l'image (&agrave; indiquer avec la valeur de <em>index</em>). Pour faire une image de 100 pixels de large commen&ccedil;ant &agrave; la colonne 207, il faut entrer la commande : <em>cam1 scan 100 ... -firstpix 207</em>. La largeur effective de l'image sur le CCD vaut <em>largeur </em>* <em>bin</em>. </p>
 <p>L'option <em>-fast</em>, permet d'activer le mode rapide du scan. Dans ce cas, l'ensemble du scan bloquera les interruptions de l'ordinateur. Dans ce cas, l'horloge de Windows ne peut plus servir de base de temps. On se sert alors de boucles de calculs pour calibrer la milliseconde. La valeur du param&egrave;tre <em>speed</em> correspond aux nombres de boucles &agrave; effectuer pour r&eacute;aliser une attente d'une milliseconde. Cette valeur d&eacute;pend de l'ordinateur. Il faut bien entendu calibrer cette valeur. Cela peut &ecirc;tre r&eacute;alis&eacute; par la fonction cam1 scanloop. </p>
 <p>L'option <em>-perfo</em> permet d'obtenir un fichier texte, &agrave; la fin du scan, qui montre les dur&eacute;es d'attente effectivement r&eacute;alis&eacute;es pour obtenir un d&eacute;calage r&eacute;gulier des lignes. Cette option ne fonctionne que dans le cas o&ugrave; l'option -fast n'est pas activ&eacute;e. </p>
@@ -123,11 +123,11 @@
   <li>dt = 86164*atan(9e-6*bin/(2*f))/180, o&ugrave; f = focale de l'instrument et bin le facteur de binning. </li>
   <li>ex: f=1m, bin=2 =&gt; dt = 246.8 ms (pensez &agrave; basculer la calculatrice en degr&eacute;s !) </li>
 </ul>
-<p>La fonction de drift-scan met &agrave; jour la variable scan_result1 pour la cam&eacute;ra cam1, etc. &agrave; la fin de la pose, de telle sorte qu'un vwait permette de la d&eacute;tecter.</p>
+<p>La fonction scan met &agrave; jour la variable scan_result1 pour la cam&eacute;ra cam1, etc. &agrave; la fin de la pose, de telle sorte qu'un vwait permette de la d&eacute;tecter.</p>
 <h3> <a name="scanloop" id="scanloop"></a>cam1 scanloop</h3>
-<p>Calibre la valeur du param&egrave;tre <em>speed</em> pour la fonction cam1 scan.</p>
+<p>Calibre la valeur du param&egrave;tre <em>speed</em> pour la fonction cam1 scan dans le cas d'une cam&eacute;ra Audine pilot&eacute;e par un port parall&egrave;le.</p>
 <h3> <a name="breakscan" id="breakscan"></a>cam1 breakscan</h3>
-<p>Arr&ecirc;te un drift-scan en cours. L'image en cours d'&eacute;laboration est conserv&eacute;e.</p>
+<p>Arr&ecirc;te un scan en cours. L'image en cours d'&eacute;laboration est conserv&eacute;e.</p>
 <h3> <a name="shuttertype" id="shuttertype"></a>cam1 shuttertype <em>?audine|thierry? ?options?</em></h3>
 <p>Permet de s&eacute;lectionner le type d'obturateur. Le param&egrave;tre value peut avoir l'une des valeurs suivantes : </p>
 <ul>
