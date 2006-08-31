@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.12 2006-08-29 21:39:46 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.13 2006-08-31 20:39:58 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -195,7 +195,7 @@ namespace eval ::Scanfast {
             -indicatoron "1" \
             -value "$valbin" \
             -variable panneau(Scanfast,binning) \
-            -command { }
+            -command " "
       }
       #--- Cas particulier
       if { $conf(confLink) == "ethernaude" } {
@@ -371,7 +371,7 @@ namespace eval ::Scanfast {
                cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,dt) -firstpix $f -fast $panneau(Scanfast,speed) -tmpfile -biny $bin
             } else {
                #--- Calcul du nombre de lignes par seconde
-               set panneau(Scanfast,nblg1) [ expr 1000./$panneau(Scanfast,dt) ]
+               set panneau(Scanfast,nblg1) [ expr 1000./$panneau(Scanfast,interligne) ]
                set panneau(Scanfast,nblg)  [ expr int($panneau(Scanfast,nblg1)) + 1 ]
                #--- Declenchement de l'acquisition
                cam$audace(camNo) scan $w $h $bin $panneau(Scanfast,interligne) -firstpix $f -tmpfile -biny $bin
@@ -643,9 +643,7 @@ proc ScanfastBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Scanfast) \
-            -command {
-               ::audace::showHelpPlugin tool scanfast scanfast.htm
-            }
+            -command "::audace::showHelpPlugin tool scanfast scanfast.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Scanfast,aide)
 
@@ -671,7 +669,7 @@ proc ScanfastBuildIF { This } {
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent2 -in $This.fra2.fra1 -side right -fill none -padx 4 -pady 2
 
-         pack   $This.fra2.fra1 -in $This.fra2 -anchor center -fill none
+         pack $This.fra2.fra1 -in $This.fra2 -anchor center -fill none
 
          #--- Label pour lignes
          label $This.fra2.lab2 -text $panneau(Scanfast,lig) -relief flat
@@ -709,7 +707,7 @@ proc ScanfastBuildIF { This } {
                   -indicatoron "1" \
                   -value "$valbin" \
                   -variable panneau(Scanfast,binning) \
-                  -command { }
+                  -command " "
             }
 
             #--- Entry pour binning
@@ -744,7 +742,7 @@ proc ScanfastBuildIF { This } {
 
          #--- Bouton Calcul
          button $This.fra33.but1 -borderwidth 2 -text $panneau(Scanfast,calcul) \
-            -command { ::Scanfast::cmdCalcul }
+            -command "::Scanfast::cmdCalcul"
          pack $This.fra33.but1 -in $This.fra33 -anchor center -fill none -ipadx 13 -pady 1
 
          #--- Frame des entry & label de DT
@@ -786,7 +784,7 @@ proc ScanfastBuildIF { This } {
 
          #--- Bouton GO
          button $This.fra4.but1 -borderwidth 2 -text $panneau(Scanfast,go) \
-            -command { ::Scanfast::cmdGo motoroff }
+            -command "::Scanfast::cmdGo motoroff"
          pack $This.fra4.but1 -in $This.fra4 -anchor center -fill x -padx 5 -ipadx 10 -ipady 3
 
          #--- Bouton STOP
