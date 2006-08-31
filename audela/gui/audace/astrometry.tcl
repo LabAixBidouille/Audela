@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.8 2006-08-25 21:56:06 alainklotz Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.9 2006-08-31 21:23:02 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -225,7 +225,7 @@ namespace eval ::astrometry {
       button $astrom(This).but2 -text "$caption(astrometry,cal,[lindex $astrom(typecal) 0])" \
          -command {::astrometry::cal_pack +}
       pack $astrom(This).but2 -in $astrom(This) -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
-      #--- Frames from the differents tpye of methods of calibration
+      #--- Frames from the differents type of methods of calibration
       frame $astrom(This).cal
       pack $astrom(This).cal -in $astrom(This) -anchor center -fill x
       foreach cal $astrom(typecal) {
@@ -250,7 +250,7 @@ namespace eval ::astrometry {
          set list_combobox $astrom(list_combobox)
          ComboBox $astrom(This).cal.${cal}.fra_0.cat \
             -width 15         \
-            -height [llength $list_combobox ]  \
+            -height [llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \
             -editable 0       \
