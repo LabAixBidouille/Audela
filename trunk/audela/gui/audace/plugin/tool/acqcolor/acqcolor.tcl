@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.6 2006-08-26 21:24:39 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.7 2006-09-01 22:42:18 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -716,13 +716,13 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image1) create image 1 1 -image image1000 -anchor nw -tag img1  
+   $zone(image1) create image 0 0 -image image1000 -anchor nw -tag img1  
    image delete image1000
 }
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image2) create image 1 1 -image image1001 -anchor nw -tag img1  
+   $zone(image2) create image 0 0 -image image1001 -anchor nw -tag img1  
    image delete image1001
 }
 

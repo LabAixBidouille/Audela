@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : panneau d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.3 2006-06-20 21:03:16 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.4 2006-09-01 22:40:55 robertdelmas Exp $
 #
 
 package provide methking 1.14
@@ -1889,7 +1889,9 @@ namespace eval ::MethKing {
 #--- Fin modif Robert
 
         # Par rapport à la façon "normale", image2 est créée dans la routine ::visu::create grace au 2ème paramètre de cette routine
-        $audace(base).fenreglages.image1 create image 1 1 -image image$num_buf -anchor nw -tag image_ref
+#--- Debut modif Robert
+        $audace(base).fenreglages.image1 create image 0 0 -image image$num_buf -anchor nw -tag image_ref
+#--- Fin modif Robert
         tkwait visibility $audace(base).fenreglages
 
         #--- Mise a jour dynamique des couleurs
@@ -2110,7 +2112,9 @@ namespace eval ::MethKing {
         bind $audace(base).fenreglages2 <Destroy> {}
 
         # Par rapport à la façon "normale", image3 est créée dans la routine ::visu::create grace au 2ème paramètre de cette routine
-        $audace(base).fenreglages2.image1 create image 1 1 -image image$num_buf -anchor nw -tag image_reglage
+#--- Debut modif Robert
+        $audace(base).fenreglages2.image1 create image 0 0 -image image$num_buf -anchor nw -tag image_reglage
+#--- Fin modif Robert
         $audace(base).fenreglages2.image1 create oval [expr $cx-15] [expr $cy-15] [expr $cx+16] [expr $cy+16] -outline $color(red) -width 2 -tag cercle_1
         $audace(base).fenreglages2.image1 create oval [expr $cx-5] [expr $cy-5] [expr $cx+6] [expr $cy+6] -outline $color(red) -width 2 -tag cercle_2
 

@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.3 2006-08-12 21:16:47 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.tcl,v 1.4 2006-09-01 22:41:30 robertdelmas Exp $
 #
 
 #--- Chargement des captions
@@ -16,6 +16,7 @@ proc sn_visuzoom_g { { zoom 3 } } {
    global conf
    global snvisu
    global zone
+   global num
 
    #---
    if { ! [ info exists conf(snvisuzoom_g,position) ] } { set conf(snvisuzoom_g,position) "+125+340" }
@@ -50,12 +51,14 @@ proc sn_visuzoom_g { { zoom 3 } } {
    set zone(image1_zoom) $audace(base).snvisuzoom_g.image1.canvas
 
    #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
-   ::visu::create 3 4 4
+   #--- ::visu::create bufNo imageNo [ visuNo ]
+   set num(loupeGaucheVisuNo) "2000"
+   ::visu::create $num(buffer1) $num(loupeGaucheVisuNo) $num(loupeGaucheVisuNo)
 
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
-   $zone(image1_zoom) create image 1 1 -image image4 -anchor nw -tag img4
+   $zone(image1_zoom) create image 0 0 -image image$num(loupeGaucheVisuNo) -anchor nw -tag img4
 
-   visu4 zoom $zoom
+   visu$num(loupeGaucheVisuNo) zoom $zoom
    set zone(naxis1_zoom) [expr int($zone(naxis1)*$zoom)]
    set zone(naxis2_zoom) [expr int($zone(naxis2)*$zoom)]
    $zone(image1_zoom) configure -scrollregion [list 0 0 $zone(naxis1_zoom) $zone(naxis2_zoom)]
@@ -81,6 +84,7 @@ proc recup_position_snvisuzoom_g { } {
 proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
    global audace
    global zone
+   global num
 
    set disp "0"
    if {[string length [info commands $audace(base).snvisuzoom_g.*]]==0} {
@@ -94,7 +98,7 @@ proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
    $audace(base).snvisuzoom_g.image1.canvas xview moveto $fracx
    $audace(base).snvisuzoom_g.image1.canvas yview moveto $fracy
    if { $disp == "1" } {
-      visu4 disp
+      visu$num(loupeGaucheVisuNo) disp
       catch { destroy $audace(base).snvisuzoom_g.label }
       pack $audace(base).snvisuzoom_g.image1 \
          -in $audace(base).snvisuzoom_g -expand 1 -side top -anchor center -fill both
@@ -108,6 +112,7 @@ proc sn_visuzoom_d { { zoom 3 } } {
    global conf
    global snvisu
    global zone
+   global num
 
    #---
    if { ! [ info exists conf(snvisuzoom_d,position) ] } { set conf(snvisuzoom_d,position) "+525+340" }
@@ -142,12 +147,14 @@ proc sn_visuzoom_d { { zoom 3 } } {
    set zone(image2_zoom) $audace(base).snvisuzoom_d.image2.canvas
 
    #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
-   ::visu::create 4 5 5
+   #--- ::visu::create bufNo imageNo [ visuNo ]
+   set num(loupeDroiteVisuNo) "2001"
+   ::visu::create $num(buffer2) $num(loupeDroiteVisuNo) $num(loupeDroiteVisuNo)
 
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
-   $zone(image2_zoom) create image 1 1 -image image5 -anchor nw -tag img5
+   $zone(image2_zoom) create image 0 0 -image image$num(loupeDroiteVisuNo) -anchor nw -tag img5
 
-   visu5 zoom $zoom
+   visu$num(loupeDroiteVisuNo) zoom $zoom
    set zone(naxis1_zoom_2) [expr int($zone(naxis1_2)*$zoom)]
    set zone(naxis2_zoom_2) [expr int($zone(naxis2_2)*$zoom)]
    $zone(image2_zoom) configure -scrollregion [list 0 0 $zone(naxis1_zoom_2) $zone(naxis2_zoom_2)]
@@ -173,6 +180,7 @@ proc recup_position_snvisuzoom_d { } {
 proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
    global audace
    global zone
+   global num
 
    set disp "0"
    if {[string length [info commands $audace(base).snvisuzoom_d.*]]==0} {
@@ -186,7 +194,7 @@ proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
    $audace(base).snvisuzoom_d.image2.canvas xview moveto $fracx
    $audace(base).snvisuzoom_d.image2.canvas yview moveto $fracy
    if { $disp == "1" } {
-      visu5 disp
+      visu$num(loupeDroiteVisuNo) disp
       catch { destroy $audace(base).snvisuzoom_d.label }
       pack $audace(base).snvisuzoom_d.image2 \
          -in $audace(base).snvisuzoom_d -expand 1 -side top -anchor center -fill both
