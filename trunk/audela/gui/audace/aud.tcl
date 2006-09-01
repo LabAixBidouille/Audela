@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.22 2006-08-12 21:23:01 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.23 2006-09-01 19:22:00 michelpujol Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -2459,18 +2459,23 @@ proc getVisuNo { tkpath } {
 #     le Ramdebugger doit être installé dans le répertoire
 #      audace/lib/RamDebugger
 #------------------------------------------------------------
-proc ramdebugger { } {
+proc startdebug { } {
    global audace
 
-   if { [info exists audace(rep_install) ] } {
-      lappend ::auto_path "$audace(rep_install)/lib/RamDebugger/addons"
-   } else {
-      lappend ::auto_path "[pwd]/../../lib/RamDebugger/addons"
+   #if { [info exists audace(rep_install) ] } {
+   #   lappend ::auto_path "$audace(rep_install)/lib/RamDebugger/addons"
+   #} else {
+   #   lappend ::auto_path "[pwd]/../../lib/RamDebugger/addons"
+   #}
+   #package require commR
+   #comm::register audela 1
+   #comm::register audela 1
+   #comm::register audela 1
+   
+   catch {
+      load ../bin/tk84.dll
    }
-   package require commR
-   comm::register audela 1
-   comm::register audela 1
-   comm::register audela 1
+   package require RamDebugger
 }
 
 #
