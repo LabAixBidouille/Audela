@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.7 2006-06-20 19:34:43 robertdelmas Exp $
+# Mise a jour $Id: tuto.firstlight.tcl,v 1.8 2006-09-01 22:41:17 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -198,7 +198,7 @@ pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor ce
 # === Setting the astronomical devices ===
 # ========================================
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image_a) create image 1 1 -image image100 -anchor nw -tag img1
+$zone(image_a) create image 0 0 -image image100 -anchor nw -tag img1
 #
 
 frame .second.textFrame

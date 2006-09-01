@@ -1,7 +1,7 @@
 #
 # Fichier : test.tcl
 # Description : Script pour lancer une application de test a partir d'AudeLA
-# Mise a jour $Id: test.tcl,v 1.5 2006-08-12 20:56:31 robertdelmas Exp $
+# Mise a jour $Id: test.tcl,v 1.6 2006-09-01 22:38:33 robertdelmas Exp $
 #
 
 #--- definition des variables globales
@@ -224,7 +224,7 @@ bind $zone(image1) <Motion> {
 #--- declare un nouvel objet de visualisation pour afficher le contenu du buffer
    visu::create 1 1
 #--- cree un widget image dans un canvas pour afficher l'objet de visualisation
-   $zone(image1) create image 1 1 -image image1 -anchor nw -tag img1
+   $zone(image1) create image 0 0 -image image1 -anchor nw -tag img1
 
 proc testacq { } {
    #--- acquisition de l'image

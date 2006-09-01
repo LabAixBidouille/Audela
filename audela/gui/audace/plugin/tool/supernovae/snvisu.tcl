@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.6 2006-08-24 19:07:16 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.7 2006-09-01 22:41:47 robertdelmas Exp $
 #
 
 global audace
@@ -539,16 +539,12 @@ if {[info exists audace]==1} {
    buf$num(buffer2) compress [buf$audace(bufNo) compress]
 }
 
-#--- Declare a new visu space to display the buffer
-catch {image delete image100}
-catch {image delete image200}
-
 set num(visu_1) [visu::create $num(buffer1) 100 ]
 set num(visu_2) [visu::create $num(buffer2) 200 ]
 
 #--- Create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 1 1 -image image100 -anchor nw -tag display
-$zone(image2) create image 1 1 -image image200 -anchor nw -tag display
+$zone(image1) create image 0 0 -image image100 -anchor nw -tag display
+$zone(image2) create image 0 0 -image image200 -anchor nw -tag display
 
 # ===================================
 # === It is the end of the script ===
@@ -566,12 +562,27 @@ proc sn_delete { } {
    }
    #---
    snconfvisu_save
-   buf::delete $num(buffer1)
-   buf::delete $num(buffer2)
+   #--- Supprime les images et les visu
+   if { [ info exists num(loupeGaucheVisuNo) ] } {
+      image delete image$num(loupeGaucheVisuNo)
+      visu::delete $num(loupeGaucheVisuNo)
+      unset num(loupeGaucheVisuNo)
+   }
+   if { [ info exists num(loupeDroiteVisuNo) ] } {
+      image delete image$num(loupeDroiteVisuNo)
+      visu::delete $num(loupeDroiteVisuNo)
+      unset num(loupeDroiteVisuNo)
+   }
+   #--- Supprime les images
+   image delete image100
+   image delete image200
+   #--- Supprime les visu
    visu::delete $num(visu_1)
    visu::delete $num(visu_2)
-   visu::delete 4
-   visu::delete 5
+   #--- Supprime les buffer
+   buf::delete $num(buffer1)
+   buf::delete $num(buffer2)
+   #---
    destroy $audace(base).snvisu
    #--- Effacement des fenetres des zooms si elles existent
    if { [ winfo exists $audace(base).snvisuzoom_g ] } {
@@ -662,7 +673,6 @@ proc no_cosmic { } {
          -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       #---
       set result [buf$num(buffer1) load $filename]
-     ### ::audace::autovisu $num(visu_1)
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
    }
@@ -700,7 +710,6 @@ proc subsky { } {
          -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       #---
       set result [buf$num(buffer1) load $filename]
-     ### ::audace::autovisu $num(visu_1)
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
 
@@ -719,7 +728,6 @@ proc subsky { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          set result [buf$num(buffer2) load $filename]
-        ### ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
       } elseif { ( $snvisu(ima_rep3_exist) == "1" ) && ( $snconfvisu(num_rep2_3) == "1" ) } { 
@@ -737,7 +745,6 @@ proc subsky { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
          #---
          set result [buf$num(buffer2) load $filename]
-        ### ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
       }
@@ -868,7 +875,6 @@ proc affimages { } {
       if {$a==1} {
          return
       }
-     ### ::audace::autovisu $num(visu_1)
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
@@ -1017,7 +1023,6 @@ proc affimages { } {
       }
       #---
       if {$result==""} {
-        ### ::audace::autovisu $num(visu_2)
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
          $zone(labelh2) configure -text "$caption(snvisu,reference) : [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]"
@@ -1537,7 +1542,9 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
       #visu$num(bufDSS) cut "$hight $low" 
       #visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
       #visu$num(bufDSS) disp
-      set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
+      if { [ file exist "$rep1/${shortname}\-DSS\.jpg" ] == "1" } {
+         set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
+      }
       buf::delete $num(bufDSS)
    }
 }
@@ -1621,71 +1628,7 @@ proc htmlimage { } {
       #--- Cree le bouton 'GO'
       button $audace(base).snvisu_2.fra_button.but_go \
          -text $caption(snvisu,go) -borderwidth 2 \
-         -command {
-             global htmlp
-             #--- Ici on fabrique les images Jpeg
-             saveimages_jpeg $htmlp(invew) $htmlp(invns)
-             #--- Ici on fabrique la page html
-             set texte "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">\n"
-             append texte "<html>\n"
-             append texte "<head>\n"
-             append texte "   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n"
-             append texte "   <meta name=\"Author\" content=\"SNVisu script\">\n"
-             append texte "   <title>A possible supernova</title>\n"
-             append texte "</head>\n"
-             append texte "<body>\n"
-             append texte "<center>\n"
-             append texte "<h1>\n"
-             append texte "Possible Supernova in $htmlp(name) </h1></center>\n"
-      #--- You should adapt text from this section...
-             append texte "<center><b>by <a href=\"mailto:alain.klotz@free.fr\">Alain Klotz</a></b></center>\n"
-             append texte "<h2>\n"
-             append texte "1. Instrumental design</h2>\n"
-             append texte "I observed about 300 galaxies by clear night since 1 feb 2000 with a fully "
-             append texte "automatized LX200 telescope (8\" diameter). The CCD is an Audine equiped "
-             append texte "by an Kaf-401E chip (grade 0 quality). The camera has no shutter. An \"unsmearing\" "
-             append texte "algorithm is used after the dark correction. The flat correction is not "
-             append texte "performed. Each image is integrated 60 seconds with a binning 2x2 (sampling "
-             append texte "is 4.4 arcsec/pixel). About 300 to 400 fields are recorded each night. "
-             append texte "A quick visu software, named SNVisu, was created with the AudeLA platform. "
-             append texte "It allows to see the night image (at left) and the reference image (at "
-             append texte "right) on the same screen.\n"
-             append texte "<h2>\n"
-             append texte "2. Images</h2>\n"
-             append texte "The screen copy below indicate the DATE-OBS of the images (UT). North is "
-             append texte "up and East is left (no inversion).\n"
-      #--- ... until this section
-             append texte "<table COLS=2 WIDTH=\"100%\" ><tr><td>"
-             append texte "<center><img SRC=\"$rep(jpeg1)\" height=$rep(jpeg1_naxis2) width=$rep(jpeg1_naxis1)></center>"
-             append texte "</td><td>"
-             append texte "<center><img SRC=\"$rep(jpeg2)\" height=$rep(jpeg2_naxis2) width=$rep(jpeg2_naxis1)></center>"
-             append texte "</td></tr><tr><td>"
-             append texte "<center>Candidate : $rep(jpeg1_dateobs)</center>"
-             append texte "</td><td>"
-             append texte "<center>Reference : $rep(jpeg2_dateobs)</center>"
-             append texte "</td></tr></table>"
-             append texte "<br>The possible supernova is located at about $htmlp(posns)\" $htmlp(dirns), $htmlp(posew)\" $htmlp(direw) from the nucleus of "
-             append texte "the galaxy. The magnitude is estimated to $htmlp(magest). Bellow, the DSS image :\n"
-             if { "$rep(jpg_dss)" != "" } {
-                append texte "<BR><center><img SRC=\"$rep(jpg_dss)\" height=300 width=300></center>"
-             } else {
-                append texte "<BR><center><img SRC=\"$rep(gif_dss)\" height=300 width=300></center>"
-             }
-             append texte "</body>\n"
-             append texte "</html>\n"
-             #--- Enregistre la page html
-             set fileId [open $htmlp(filenamehtml) w]
-             puts $fileId $texte
-             close $fileId
-             $audace(base).snvisu.lst1 insert end "$caption(snvisu,page_html) $htmlp(filenamehtml)"
-             $audace(base).snvisu.lst1 yview moveto 1.0
-             #--- Disparition du sautillement des widgets inferieurs
-             pack $audace(base).snvisu.lst1.scr1 \
-                -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
-             #---
-             destroy $audace(base).snvisu_2
-             return
-         }
+         -command { sn_makehtml }
       pack $audace(base).snvisu_2.fra_button.but_go \
          -in $audace(base).snvisu_2.fra_button -side left -anchor w \
          -padx 5 -pady 5 -ipadx 5 -ipady 5
@@ -1799,6 +1742,76 @@ proc htmlimage { } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).snvisu_2
+}
+
+proc sn_makehtml { } {
+   global audace
+   global caption
+   global htmlp
+   global rep
+
+   #--- Ici on fabrique les images Jpeg
+   saveimages_jpeg $htmlp(invew) $htmlp(invns)
+   #--- Ici on fabrique la page html
+   set texte "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">\n"
+   append texte "<html>\n"
+   append texte "<head>\n"
+   append texte "   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n"
+   append texte "   <meta name=\"Author\" content=\"SNVisu script\">\n"
+   append texte "   <title>A possible supernova</title>\n"
+   append texte "</head>\n"
+   append texte "<body>\n"
+   append texte "<center>\n"
+   append texte "<h1>\n"
+   append texte "Possible Supernova in $htmlp(name) </h1></center>\n"
+   #--- You should adapt text from this section...
+   append texte "<center><b>by <a href=\"mailto:alain.klotz@free.fr\">Alain Klotz</a></b></center>\n"
+   append texte "<h2>\n"
+   append texte "1. Instrumental design</h2>\n"
+   append texte "I observed about 300 galaxies by clear night since 1 feb 2000 with a fully "
+   append texte "automatized LX200 telescope (8\" diameter). The CCD is an Audine equiped "
+   append texte "by an Kaf-401E chip (grade 0 quality). The camera has no shutter. An \"unsmearing\" "
+   append texte "algorithm is used after the dark correction. The flat correction is not "
+   append texte "performed. Each image is integrated 60 seconds with a binning 2x2 (sampling "
+   append texte "is 4.4 arcsec/pixel). About 300 to 400 fields are recorded each night. "
+   append texte "A quick visu software, named SNVisu, was created with the AudeLA platform. "
+   append texte "It allows to see the night image (at left) and the reference image (at "
+   append texte "right) on the same screen.\n"
+   append texte "<h2>\n"
+   append texte "2. Images</h2>\n"
+   append texte "The screen copy below indicate the DATE-OBS of the images (UT). North is "
+   append texte "up and East is left (no inversion).\n"
+   #--- ... until this section
+   append texte "<table COLS=2 WIDTH=\"100%\" ><tr><td>"
+   append texte "<center><img SRC=\"$rep(jpeg1)\" height=$rep(jpeg1_naxis2) width=$rep(jpeg1_naxis1)></center>"
+   append texte "</td><td>"
+   append texte "<center><img SRC=\"$rep(jpeg2)\" height=$rep(jpeg2_naxis2) width=$rep(jpeg2_naxis1)></center>"
+   append texte "</td></tr><tr><td>"
+   append texte "<center>Candidate : $rep(jpeg1_dateobs)</center>"
+   append texte "</td><td>"
+   append texte "<center>Reference : $rep(jpeg2_dateobs)</center>"
+   append texte "</td></tr></table>"
+   append texte "<br>The possible supernova is located at about $htmlp(posns)\" $htmlp(dirns), $htmlp(posew)\" $htmlp(direw) from the nucleus of "
+   append texte "the galaxy. The magnitude is estimated to $htmlp(magest). Bellow, the DSS image :\n"
+   if { "$rep(jpg_dss)" != "" } {
+    append texte "<BR><center><img SRC=\"$rep(jpg_dss)\" height=300 width=300></center>"
+   } else {
+    append texte "<BR><center><img SRC=\"$rep(gif_dss)\" height=300 width=300></center>"
+   }
+   append texte "</body>\n"
+   append texte "</html>\n"
+   #--- Enregistre la page html
+   set fileId [open $htmlp(filenamehtml) w]
+   puts $fileId $texte
+   close $fileId
+   $audace(base).snvisu.lst1 insert end "$caption(snvisu,page_html) $htmlp(filenamehtml)"
+   $audace(base).snvisu.lst1 yview moveto 1.0
+   #--- Disparition du sautillement des widgets inferieurs
+   pack $audace(base).snvisu.lst1.scr1 \
+    -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
+   #---
+   destroy $audace(base).snvisu_2
+   return
 }
 
 proc sn_header { bufnum } {
