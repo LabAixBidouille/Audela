@@ -2732,6 +2732,12 @@ int tt_util_transima1(TT_IMA_SERIES *pseries,double trans_x,double trans_y)
    nulval=pseries->nullpix_value;
    imax=p_in->naxis1;
    jmax=p_in->naxis2;
+   if (jmax==1) {
+      trans_y=0;
+   }
+   if (imax==1) {
+      trans_x=0;
+   }
    /* - boucle du grand balayage en y -*/
    for (y2=0;y2<jmax;y2++) {
       yc1=(double)y2-trans_y;
@@ -2748,15 +2754,35 @@ int tt_util_transima1(TT_IMA_SERIES *pseries,double trans_x,double trans_y)
 	    coef_c=alpha*(1-beta);
 	    coef_d=alpha*beta;
 	 }
-	 if ((x1>=0)&&(x1<=(imax-1))&&(y1>=0)&&(y1<=(jmax-1))) {
-	    ka=x1+y1*imax;
-	    kb=x1+(y1+1)*imax;
-	    kc=x1+1+y1*imax;
-	    kd=x1+1+(y1+1)*imax;
-	    value=coef_a*p_in->p[ka]+coef_b*p_in->p[kb]+coef_c*p_in->p[kc]+coef_d*p_in->p[kd];
-	 } else {
-	    value=nulval;
-	 }
+    if (jmax==1) {
+   	 if ((x1>=0)&&(x1<(imax-1))) {
+	      ka=x1+y1*imax;
+	      kc=x1+1+y1*imax;
+	      value=coef_a*p_in->p[ka]+coef_c*p_in->p[kc];
+	   } else {
+	      value=nulval;
+	   }
+    } else if (imax==1) {
+   	 if ((y1>=0)&&(y1<(jmax-1))) {
+	      kb=x1+(y1+1)*imax;
+	      kd=x1+1+(y1+1)*imax;
+	      value=coef_b*p_in->p[kb]+coef_d*p_in->p[kd];
+	   } else {
+	      value=nulval;
+	   }
+    } else {
+   	 if ((x1>=0)&&(x1<(imax-1))&&(y1>=0)&&(y1<(jmax-1))) {
+	      ka=x1+y1*imax;
+	      kb=x1+(y1+1)*imax;
+	      kc=x1+1+y1*imax;
+	      kd=x1+1+(y1+1)*imax;
+	      value=coef_a*p_in->p[ka]+coef_b*p_in->p[kb]+coef_c*p_in->p[kc]+coef_d*p_in->p[kd];
+	   } else {
+	      value=nulval;
+	   }
+    }
+
+
 	 k2=x2+y2*imax;
 	 p_out->p[k2]=(TT_PTYPE)(value);
       }
