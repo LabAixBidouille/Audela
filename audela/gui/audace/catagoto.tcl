@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.3 2006-06-20 17:21:48 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.4 2006-09-01 14:18:51 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -640,13 +640,13 @@ namespace eval cataGoto {
          #--- Demande et extraction des ephemerides
          set erreur [ catch { vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) text basic 500 } liste ]
          if { $erreur == "0" } {
-            set liste_titres [ lindex $liste 0 ]
+            set liste_titres [ lindex [ lrange [ split $liste ";" ] 0 end ] 0 ]
             #--- Traitement d'une erreur particuliere, la requete repond 'item'
             if { $liste_titres == "item" } {
                set catalogue(asteroide_choisi) ""
                set catalogue(asteroide_mag)    ""
             } else {
-               set liste_objet [ split [ lindex $liste 1 ] "|" ]
+               set liste_objet [ split [ lindex [ lrange [ split $liste ";" ] 0 end ] 1 ] "|" ]
                set catalogue(asteroide_choisi) [ lindex $liste_objet 1 ]
                set catalogue(aster_ad) [ lindex $liste_objet 2 ]
                set catalogue(asteroide_ad_d) [ expr 15.0 * $catalogue(aster_ad) ]
