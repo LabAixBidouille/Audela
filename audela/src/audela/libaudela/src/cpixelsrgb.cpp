@@ -1443,22 +1443,34 @@ void CPixelsRgb::Rot(float x0, float y0, float angle)
  *    - '-2' si pas de mot-cle 'NAXIS1'
  *
  */
-void CPixelsRgb::SetPix(TYPE_PIXELS val,int x, int y)
+void CPixelsRgb::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 {
-   throw CError(ELIBSTD_NOT_IMPLEMENTED);
 
-/*
    if((x<0)||(x>=naxis1)) {
       throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
    } else if ((y<0)||(y>=naxis2)) {
       throw CError( ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);
    }
-   *(pix+y*naxis1+x+0) = (unsigned char)  val;
-   *(pix+y*naxis1+x+1) = (unsigned char)  val;
-   *(pix+y*naxis1+x+2) = (unsigned char)  val;
-*/
-}
+   switch ( plane ) {
+   case PLANE_R :
+      *(pix+(y*naxis1+x)*naxis+0) = (unsigned char)  val;
+      break;
+   case PLANE_G :
+      *(pix+(y*naxis1+x)*naxis+1) = (unsigned char)  val;
+      break;
+   case PLANE_B :
+      *(pix+(y*naxis1+x)*naxis+2) = (unsigned char)  val;
+      break;
+   case PLANE_GREY :
+      *(pix+(y*naxis1+x)*naxis+0) = (unsigned char)  val;
+      *(pix+(y*naxis1+x)*naxis+1) = (unsigned char)  val;
+      *(pix+(y*naxis1+x)*naxis+2) = (unsigned char)  val;
+      break;
+   default: 
+      throw CError("plane not authorized");
+   }
 
+}
 
 void CPixelsRgb::Sub(char *filename, float offset)
 {

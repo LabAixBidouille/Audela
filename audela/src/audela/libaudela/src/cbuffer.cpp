@@ -512,7 +512,7 @@ void CBuffer::Create3d(char *filename,int init, int nbtot, int index,int *naxis1
       }
       for (kx=0;kx<naxis1;kx++) {
          for (ky=0;ky<naxis2;ky++) {
-            pix->SetPix(ppix[naxis1*ky+kx],kx,ky+index*naxis2);
+            pix->SetPix(PLANE_GREY, ppix[naxis1*ky+kx],kx,ky+index*naxis2);
          }
       }
    } catch (const CError& e) {
@@ -1641,9 +1641,9 @@ void CBuffer::MergePixels(TColorPlane plane, int pixels)
  *    - '-2' si pas de mot-cle 'NAXIS1'
  *
  */
-void CBuffer::SetPix(TYPE_PIXELS val,int x, int y)
+void CBuffer::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 {
-    pix->SetPix(val, x, y);
+    pix->SetPix(plane, val, x, y);
 }
 
 
