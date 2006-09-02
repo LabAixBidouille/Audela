@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.13 2006-06-20 17:56:00 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.14 2006-09-02 09:32:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -148,7 +148,6 @@ set caption(confcam,port_starlight)             "Starlight Port - Model"
 set caption(confcam,port_kitty)                 "Kitty Port - Model"
 set caption(confcam,audinet)                    "AudiNet"
 set caption(confcam,audine)                     "with Audine"
-set caption(confcam,ethernaude)                 "EthernAude"
 set caption(confcam,port_th7852a)               "TH7852A Port"
 set caption(confcam,port_scr1300xtc)            "SCR1300XTC Port"
 set caption(confcam,port_andor)                 "Andor Port"
@@ -308,7 +307,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_kitty)              "Port Kitty"
    set caption(confcam,audinet)                 "AudiNet"
    set caption(confcam,audine)                  "avec Audine"
-   set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Port TH7852A"
    set caption(confcam,port_scr1300xtc)         "Port SCR1300XTC"
    set caption(confcam,port_andor)              "Port Andor"
@@ -468,7 +466,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_kitty)              "Porta Kitty"
    set caption(confcam,audinet)                 "AudiNet"
    set caption(confcam,audine)                  "con Audine"
-   set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Porta TH7852A"
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
@@ -628,7 +625,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_kitty)              "Puerto Kitty"
    set caption(confcam,audinet)                 "AudiNet"
    set caption(confcam,audine)                  "con Audine"
-   set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Puerto TH7852A"
    set caption(confcam,port_scr1300xtc)         "Puerto SCR1300XTC"
    set caption(confcam,port_andor)              "Puerto Andor"
@@ -788,7 +784,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_kitty)              "Kitty Port"
    set caption(confcam,audinet)                 "AudiNet"
    set caption(confcam,audine)                  "mit Audine"
-   set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "TH7852A Port"
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
@@ -948,7 +943,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_kitty)              "Kitty Port - Model"
    set caption(confcam,audinet)                 "AudiNet"
    set caption(confcam,audine)                  "with Audine"
-   set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "TH7852A Port"
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"

@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.14 2006-09-02 08:51:45 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.15 2006-09-02 09:32:57 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -120,6 +120,7 @@ namespace eval ::Dscan {
 
    proc Adapt_Outil_Scan { { a "" } { b "" } { c "" } } {
       variable This
+      global caption
       global conf
       global panneau
 
@@ -134,14 +135,16 @@ namespace eval ::Dscan {
             -command "::Dscan::cmdCalcul"
       }
       #--- Cas particulier
-      if { $conf(audine,port) == "ethernaude" } {
+      if { $conf(audine,port) == "$caption(confcam,ethernaude)" } {
          if { $panneau(Dscan,binning) == "4x4" } {
             set panneau(Dscan,binning) "2x2"
             ::Dscan::cmdCalcul
          }
-      } elseif { $conf(audine,port) == "audinet" } {
+      } elseif { $conf(audine,port) == "$caption(confcam,audinet)" } {
          #--- C'est bon, on ne fait rien pour le binning
-      } elseif { $conf(audine,port) == "parallelport" } {
+      } elseif { $conf(audine,port) == "$caption(confcam,lpt1)" } {
+         #--- C'est bon, on ne fait rien pour le binning
+      } elseif { $conf(audine,port) == "$caption(confcam,lpt2)" } {
          #--- C'est bon, on ne fait rien pour le binning
       } else {
          set panneau(Dscan,binning) "1x1"

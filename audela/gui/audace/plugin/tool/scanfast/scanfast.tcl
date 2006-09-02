@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.13 2006-08-31 20:39:58 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.14 2006-09-02 09:33:17 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -184,6 +184,7 @@ namespace eval ::Scanfast {
 
    proc Adapt_Outil_Scanfast { { a "" } { b "" } { c "" } } {
       variable This
+      global caption
       global conf
       global panneau
 
@@ -198,7 +199,7 @@ namespace eval ::Scanfast {
             -command " "
       }
       #--- Cas particulier
-      if { $conf(confLink) == "ethernaude" } {
+      if { $conf(audine,port) == "$caption(confcam,ethernaude)" } {
          pack forget $This.fra33
          pack $This.fra4 -side top -fill x
          pack forget $This.fra4.but2
@@ -207,14 +208,22 @@ namespace eval ::Scanfast {
          if { $panneau(Scanfast,binning) == "4x4" } {
             set panneau(Scanfast,binning) "2x2"
          }
-      } elseif { $conf(confLink) == "audinet" } {
+      } elseif { $conf(audine,port) == "$caption(confcam,audinet)" } {
          pack forget $This.fra33
          pack $This.fra4 -side top -fill x
          pack forget $This.fra4.but2
          pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
          pack $This.fra5 -side top -fill x
          #--- C'est bon, on ne fait rien pour le binning
-      } elseif { $conf(confLink) == "parallelport" } {
+      } elseif { $conf(audine,port) == "$caption(confcam,lpt1)" } {
+         pack $This.fra33 -side top -fill x
+         pack forget $This.fra4
+         pack $This.fra4 -side top -fill x
+         pack forget $This.fra4.but2
+         pack forget $This.fra5
+         pack $This.fra5 -side top -fill x
+         #--- C'est bon, on ne fait rien pour le binning
+      } elseif { $conf(audine,port) == "$caption(confcam,lpt2)" } {
          pack $This.fra33 -side top -fill x
          pack forget $This.fra4
          pack $This.fra4 -side top -fill x
@@ -233,7 +242,7 @@ namespace eval ::Scanfast {
       ::Scanfast::Chargement_Var
       ::Scanfast::Adapt_Outil_Scanfast
       ::confVisu::addCameraListener 1 ::Scanfast::Adapt_Outil_Scanfast
-      trace add variable ::conf(confLink) write ::Scanfast::Adapt_Outil_Scanfast
+      trace add variable ::conf(audine,port) write ::Scanfast::Adapt_Outil_Scanfast
       pack $This -side left -fill y
    }
 
@@ -242,7 +251,7 @@ namespace eval ::Scanfast {
 
       ::Scanfast::Enregistrement_Var
       ::confVisu::removeCameraListener 1 ::Scanfast::Adapt_Outil_Scanfast
-      trace remove variable ::conf(confLink) write ::Scanfast::Adapt_Outil_Scanfast
+      trace remove variable ::conf(audine,port) write ::Scanfast::Adapt_Outil_Scanfast
       pack forget $This
    }
 
@@ -333,7 +342,7 @@ namespace eval ::Scanfast {
             cam$audace(camNo) shutter synchro
 
             #--- Declenchement de l'acquisition
-            if { $conf(confLink) == "parallelport" } {
+            if { ( $conf(audine,port) == "$caption(confcam,lpt1)" ) || ( $conf(audine,port) == "$caption(confcam,lpt2)" ) } {
                #--- Destruction de la fenetre indiquant l'attente
                if [ winfo exists $audace(base).progress_scan ] {
                   destroy $audace(base).progress_scan
@@ -494,6 +503,7 @@ namespace eval ::Scanfast {
       variable This
       variable parametres
       global audace
+      global caption
       global conf
       global panneau
 
@@ -505,7 +515,9 @@ namespace eval ::Scanfast {
          $This.fra3.bin.lab_bin configure -textvariable panneau(Scanfast,binning)
          update
       }
-      if { $conf(confLink) == "parallelport" } {
+      if { $conf(audine,port) == "$caption(confcam,lpt1)" } {
+         ::Scanfast::cmdCalcul
+      } elseif { $conf(audine,port) == "$caption(confcam,lpt2)" } {
          ::Scanfast::cmdCalcul
       }
    }
