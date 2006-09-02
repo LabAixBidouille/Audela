@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.13 2006-08-29 21:39:31 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.14 2006-09-02 08:51:45 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -134,14 +134,14 @@ namespace eval ::Dscan {
             -command "::Dscan::cmdCalcul"
       }
       #--- Cas particulier
-      if { $conf(confLink) == "ethernaude" } {
+      if { $conf(audine,port) == "ethernaude" } {
          if { $panneau(Dscan,binning) == "4x4" } {
             set panneau(Dscan,binning) "2x2"
             ::Dscan::cmdCalcul
          }
-      } elseif { $conf(confLink) == "audinet" } {
+      } elseif { $conf(audine,port) == "audinet" } {
          #--- C'est bon, on ne fait rien pour le binning
-      } elseif { $conf(confLink) == "parallelport" } {
+      } elseif { $conf(audine,port) == "parallelport" } {
          #--- C'est bon, on ne fait rien pour le binning
       } else {
          set panneau(Dscan,binning) "1x1"
@@ -154,7 +154,7 @@ namespace eval ::Dscan {
       ::Dscan::Chargement_Var
       ::Dscan::Adapt_Outil_Scan
       ::confVisu::addCameraListener 1 ::Dscan::Adapt_Outil_Scan
-      trace add variable ::conf(confLink) write ::Dscan::Adapt_Outil_Scan
+      trace add variable ::conf(audine,port) write ::Dscan::Adapt_Outil_Scan
       pack $This -side left -fill y
    }
 
@@ -163,7 +163,7 @@ namespace eval ::Dscan {
 
       ::Dscan::Enregistrement_Var
       ::confVisu::removeCameraListener 1 ::Dscan::Adapt_Outil_Scan
-      trace remove variable ::conf(confLink) write ::Dscan::Adapt_Outil_Scan
+      trace remove variable ::conf(audine,port) write ::Dscan::Adapt_Outil_Scan
       pack forget $This
    }
 
