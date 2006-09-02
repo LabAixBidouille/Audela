@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : panneau d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.4 2006-09-01 22:40:55 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.5 2006-09-02 08:07:19 robertdelmas Exp $
 #
 
 package provide methking 1.14
@@ -1890,6 +1890,7 @@ namespace eval ::MethKing {
 
         # Par rapport à la façon "normale", image2 est créée dans la routine ::visu::create grace au 2ème paramètre de cette routine
 #--- Debut modif Robert
+       ### $audace(base).fenreglages.image1 create image 1 1 -image image$num_buf -anchor nw -tag image_ref
         $audace(base).fenreglages.image1 create image 0 0 -image image$num_buf -anchor nw -tag image_ref
 #--- Fin modif Robert
         tkwait visibility $audace(base).fenreglages
