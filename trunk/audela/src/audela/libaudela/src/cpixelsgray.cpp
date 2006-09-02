@@ -165,7 +165,7 @@ void CPixelsGray::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PI
  *    - '-2' si pas de mot-cle 'NAXIS1'
  *
  */
-void CPixelsGray::SetPix(TYPE_PIXELS val,int x, int y)
+void CPixelsGray::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 {
  
    if((x<0)||(x>=naxis1)) {
@@ -579,7 +579,7 @@ void CPixelsGray::MergePixels(TColorPlane plane, int pixels)
 void CPixelsGray::MirX()
 {
    int msg, datatype;
-   char * s;
+   char * s; 
 
 
    datatype = TFLOAT;

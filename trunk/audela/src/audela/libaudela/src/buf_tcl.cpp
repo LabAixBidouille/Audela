@@ -1581,13 +1581,18 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
    double val;
+   double valred, valgreen, valblue;
 
    ligne = (char*)calloc(1000,sizeof(char));
-   if(argc!=4) {
-      sprintf(ligne,"Usage: %s %s {x y} val",argv[0],argv[1]);
+   if(argc!=4 && argc != 6) {
+      sprintf(ligne,"Usage: %s %s {x y} [valgray | [valred valgreen valblue] ]",argv[0],argv[1]);
       retour = TCL_ERROR;
    } else {
-      if(Tcl_GetDouble(interp,argv[3],&val)!=TCL_OK) {
+      if( (argc == 4 && Tcl_GetDouble(interp,argv[3],&val)!=TCL_OK)
+          ||
+          //(argc == 6 && (Tcl_GetDouble(interp,argv[4],&valgreen)!=TCL_OK) && (Tcl_GetDouble(interp,argv[3],&valred) !=TCL_OK) && (Tcl_GetDouble(interp,argv[5],&valblue) !=TCL_OK) )
+          (argc == 6 && (Tcl_GetDouble(interp,argv[4],&valgreen)!=TCL_OK))
+         ) {
          sprintf(ligne,"Usage: %s %s {x y} val\nval must be a numerical value",argv[0],argv[1]);
          retour = TCL_ERROR;
       } else if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
@@ -1621,8 +1626,16 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                      x -= 1;
                      y -= 1;
                      try {
-                        buffer->SetPix((TYPE_PIXELS)val,x,y);
-                        retour = TCL_OK;
+                        if ( argc == 4 ) {
+                           buffer->SetPix(PLANE_GREY, (TYPE_PIXELS)val,x,y);
+                           retour = TCL_OK;
+                        } else {
+                           Tcl_GetDouble(interp,argv[3],&valred);
+                           Tcl_GetDouble(interp,argv[5],&valblue);
+                           buffer->SetPix(PLANE_R, (TYPE_PIXELS)valred,x,y);
+                           buffer->SetPix(PLANE_G, (TYPE_PIXELS)valgreen,x,y);
+                           buffer->SetPix(PLANE_B, (TYPE_PIXELS)valblue,x,y);
+                        }                          
                      } catch(const CError& e) {
                         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
                         Tcl_SetResult(interp,ligne,TCL_VOLATILE);

@@ -81,7 +81,7 @@ public:
    void Offset(float offset);
    void Opt(char *dark, char *offset);
    void Rot(float x0, float y0, float angle);
-   void SetPix(TYPE_PIXELS val,int x, int y);
+   void SetPix(TColorPlane plane,TYPE_PIXELS val,int x, int y);
    //void SetPixels(TYPE_PIXELS_RGB *pixelsR, TYPE_PIXELS_RGB *pixelsG, TYPE_PIXELS_RGB *pixelsB);
    void Sub(char *filename, float offset);
    CPixels * TtImaSeries(char *s,int *nb_keys,char ***pkeynames,char ***pkeyvalues,

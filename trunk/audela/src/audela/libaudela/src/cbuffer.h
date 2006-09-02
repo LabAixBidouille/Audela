@@ -196,7 +196,7 @@ public:
    void SetCompressType(int st);
    void SetExtension(char *ext);
    void SetKeyword(char *nom, char *data, char *datatype, char *comment, char *unit);
-   void SetPix(TYPE_PIXELS,int,int);
+   void SetPix(TColorPlane plane, TYPE_PIXELS,int,int);
    void SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, void * pixels, long pixelSize, int reverse_x, int reverse_y);
    void SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels);
    void SetSavingType(int st);
