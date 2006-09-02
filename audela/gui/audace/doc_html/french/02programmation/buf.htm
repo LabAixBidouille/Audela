@@ -68,33 +68,30 @@
 <h2> 4. Traitement d'image</h2>
 <p>Les fonctions de traitement d'images propos&eacute;es par AudeLA agissent au niveau du buffer.</p>
 <h3> <a name="getpix" id="getpix"></a>buf1 getpix <em>coord</em></h3>
-<p>Renvoie la valeur du pixel aux coordonn&eacute;es (x,y) pass&eacute;e en param&egrave;tre 
+<p>Renvoie la valeur du pixel ayant les coordonn&eacute;es (x,y) pass&eacute;es en param&egrave;tre 
   sous la forme d'une liste &agrave; deux &eacute;l&eacute;ments [list $x $y]. 
   Les coordonn&eacute;es de l'image vont de (1,1) &agrave; (NAXIS1,NAXIS2). getpix 
-  retourne une liste dont le premier &eacute;lement est le nombre de plan de couleurs 
-  , et les &eacute;l&eacute;ments suivants sont les intensit&eacute;s du pixel 
-  dans chaque plan.</p>
-<p>Exemple 1 : pour une image en niveau de gris, getpix retoune une seule intensit&eacute; 
+  retourne une liste dont le premier &eacute;l&eacute;ment est le nombre de plan couleur, et les &eacute;l&eacute;ments suivants sont les intensit&eacute;s du pixel dans chaque plan.</p>
+<p>Exemple 1 : Pour une image en niveaux de gris, getpix retoune une seule intensit&eacute;. 
 </p>
 <pre>loadima m57<br>buf1 getpix [list 100 100]<br># 1 330.000</pre>
-<p>Exemple 2 : pour une image couleur, getpix retourne les 3 intensit&eacute; 
-  pour les plans R,G,B</p>
+<p>Exemple 2 : Pour une image couleur, getpix retourne les 3 intensit&eacute;s pour les plans R, G et B.</p>
 <pre>loadima 47toucan.jpg<br>buf1 getpix [list 100 100]<br># 3 7.000 1.000 5.000</pre>
 <h3> <a name="setpix" id="setpix"></a>buf1 setpix <em>coord (valgray | valred 
   valgreen valblue)</em></h3>
-<p>Affecte la valeur du pixel aux coordonn&eacute;es (x,y) pass&eacute;e en param&egrave;tre 
+<p>Affecte la valeur du pixel ayant les coordonn&eacute;es (x,y) pass&eacute;es en param&egrave;tre 
   sous la forme d'une liste &agrave; deux &eacute;l&eacute;ments [list $x $y]. 
   Les coordonn&eacute;es de l'image vont de (1,1) &agrave; (NAXIS1,NAXIS2). La 
-  nouvelle valeur affect&eacute;e est valgrey pour une image en niveau de gris 
+  nouvelle valeur affect&eacute;e est valgrey pour une image en niveaux de gris 
   ou valred,valgreen,valblue pour une image couleur. </p>
-<p>Exemple 1 : pour une image en niveau de gris, affecte 51 au pixel (100,100) 
+<p>Exemple 1 : Pour une image en niveaux de gris, affecte 51 au pixel (100,100).
 </p>
 <pre>loadima m57<br>buf1 setpix [list 100 100] 51<br># </pre>
-<p>Exemple 2 : pour une image couleur, affecte rouge=51 vert=52 bleu=53 au pixel 
-  (100,100)</p>
+<p>Exemple 2 : Pour une image couleur, affecte rouge=51 vert=52 bleu=53 au pixel 
+  (100,100).</p>
 <pre>loadima 47toucan.jpg<br>buf1 setpix [list 100 100] 51 52 53<br>#</pre>
 <h3></h3>
-<p><a name="offset" id="offset"></a>buf1 offset <em>valeur</em></p>
+<h3> <p><a name="offset" id="offset"></a>buf1 offset <em>valeur</em></p></h3>
 <p>R&eacute;alise un offset sur l'image : tous les pixels de l'image sont d&eacute;cal&eacute;s de <code>valeur</code>.</p>
 <h3> <a name="sub" id="sub"></a>buf1 sub <em>fichier</em> <em>valeur</em></h3>
 <p>Soustrait l'image contenue dans <code>fichier</code> &agrave; l'image courante, et ajoute un offset de <code>valeur</code>. Le r&eacute;sultat est toujours stock&eacute; dans le buffer.</p>

@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.23 2006-09-01 19:22:00 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.24 2006-09-02 08:18:14 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -49,9 +49,6 @@ namespace eval ::audace {
    proc run { { this ".audace" } } {
       variable This
       global audace
-
-      #--- Active le debugger
-      ###ramdebugger
 
       set This $this
       set audace(base) $This
@@ -2338,7 +2335,7 @@ namespace eval ::audace {
    }
 
 }
-############# fin du namespace audace #############################################
+############################# fin du namespace audace #############################
 
 # Scrolled_Canvas
 # Cree un canvas scrollable, ainsi que les deux scrollbars pour le bouger
@@ -2437,15 +2434,14 @@ proc restore_cursor { } {
    }
 }
 
-
 #------------------------------------------------------------
 #  getVisuNo
-#     retourne le numero de visu associe un element tk
+#     retourne le numero de visu associe a un element tk
 #
 #    le numero de visu se trouve dans l'attribut "class"
 #    de la toplevel .audace ou .visu
 #  exemple :
-#    [getVisuNo  .audace.menubar.menu.windowseuil]
+#    [getVisuNo .audace.menubar.menu.windowseuil]
 #      => retourne "1"
 #------------------------------------------------------------
 proc getVisuNo { tkpath } {
@@ -2453,10 +2449,10 @@ proc getVisuNo { tkpath } {
 }
 
 #------------------------------------------------------------
-#  ramdebugger
-#     active le debugger "ramdebugger"
+#  startdebug
+#     active le debugger "RamDebugger"
 #
-#     le Ramdebugger doit être installé dans le répertoire
+#     le RamDebugger doit être installé dans le répertoire
 #      audace/lib/RamDebugger
 #------------------------------------------------------------
 proc startdebug { } {
@@ -2471,7 +2467,7 @@ proc startdebug { } {
    #comm::register audela 1
    #comm::register audela 1
    #comm::register audela 1
-   
+
    catch {
       load ../bin/tk84.dll
    }
