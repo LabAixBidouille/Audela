@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.9 2006-08-31 21:23:02 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.10 2006-09-02 20:57:48 denismarchais Exp $
 #
 
 namespace eval ::astrometry {
@@ -234,15 +234,6 @@ namespace eval ::astrometry {
       #--- Calibration from a catalog
       set ::astrometry::catvalues(cattype)   $astrom(cattype)
       set ::astrometry::catvalues(catfolder) $astrom(catfolder)
-      set len [ string length $::astrometry::catvalues(catfolder) ]
-      set folder "$::astrometry::catvalues(catfolder)"
-      if { $len > "0" } {
-         set car [ string index "$::astrometry::catvalues(catfolder)" [ expr $len-1 ] ]
-         if { $car != "/" } {
-            append folder "/"
-         }
-         set ::astrometry::catvalues(catfolder) $folder
-      }
       set cal catalog
       frame $astrom(This).cal.${cal}.fra_0
          label $astrom(This).cal.${cal}.fra_0.lab -text "$caption(astrometry,cal,catname)"
@@ -452,6 +443,9 @@ namespace eval ::astrometry {
       if {$astrom(currenttypecal)=="catalog"} {
          set cattype $::astrometry::catvalues(cattype)
          set cdpath "$::astrometry::catvalues(catfolder)"
+         if { ( [ string length $cdpath ] > 0 ) && ( [ string index "$cdpath" end ] != "/" ) } {
+            append cdpath "/"
+         }
          set sky dummy
          catch {buf$audace(bufNo) delkwd CATASTAR}
          buf$audace(bufNo) save "${mypath}/${sky0}$ext"
