@@ -205,7 +205,9 @@ int udp_init_connection()
 
     ret = bind(SocketHandle, (struct sockaddr *) &socket_address, sizeof(struct sockaddr));
     if (ret == -1) {
-	return -5;
+	if (errno != EADDRINUSE) {
+	    return -5;
+	}
     }
 
     ret = pthread_create(&ThreadReceiveSocketEvent, NULL, ThreadReceiveSocket, NULL);
