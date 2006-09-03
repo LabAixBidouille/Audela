@@ -364,7 +364,7 @@ return 0;
 /**********************************/
 QUICKA_EXPORT short QUICKA_API usb_init(void)
 {
-if (UsbOpen(7)!=0)
+if (UsbOpen(0)!=0)
    {
    // Error: USB interface not ready
    return 12;
