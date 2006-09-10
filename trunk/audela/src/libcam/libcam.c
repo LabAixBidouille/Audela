@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.8 2006-08-26 00:18:35 denismarchais Exp $
+ * $Id: libcam.c,v 1.9 2006-09-10 07:18:13 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -29,14 +29,13 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
-#if defined(_MSC_VER)
-#include <sys/timeb.h>
-#include <time.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>               /* time, ftime, strftime, localtime */
+#include <sys/timeb.h>          /* ftime, struct timebuffer */
+
 #include "camera.h"
 
 #include <libcam/libcam.h>
