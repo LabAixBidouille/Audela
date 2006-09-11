@@ -1,6 +1,6 @@
 #
 # Fichier : photometry.cap
-# Mise a jour $Id: photometry.cap,v 1.3 2006-08-29 20:45:12 robertdelmas Exp $
+# Mise a jour $Id: photometry.cap,v 1.4 2006-09-11 21:22:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -131,42 +131,42 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(photometry,titre,panneau)                   "# Photométrie"
+   set caption(photometry,titre,panneau)                   "Fotometría"
    set caption(photometry,help,titre)                      "Ayuda para esta herramienta"
-   set caption(photometry,2_3_couleur)                     "# 2 ou 3 couleurs"
-   set caption(photometry,configure)                       "Configurar"
-   set caption(photometry,prepare)                         "# Préparer"
-   set caption(photometry,calibre)                         "# Calibrer"
-   set caption(photometry,mesure)                          "# Mesurer"
+   set caption(photometry,2_3_couleur)                     "2 o 3 colores"
+   set caption(photometry,configure)                       "Configuración"
+   set caption(photometry,prepare)                         "Preparación"
+   set caption(photometry,calibre)                         "Calibrar"
+   set caption(photometry,mesure)                          "Medir"
 
-   set caption(photometry,configure,titre)                 "# Photométrie : Configuration"
-   set caption(photometry,configure,titre2)                "# Photométrie : Configuration"
-   set caption(photometry,configure,load_button)           "# Charge la configuration"
-   set caption(photometry,configure,save_button)           "# Enregistre la configuration"
+   set caption(photometry,configure,titre)                 "Fotometría: Configuración"
+   set caption(photometry,configure,titre2)                "Fotometría: Configuración"
+   set caption(photometry,configure,load_button)           "Cargar la configuración"
+   set caption(photometry,configure,save_button)           "Guardar la configuración"
    set caption(photometry,configure,return_button)         "OK"
-   set caption(photometry,configure,load)                  "# Charge la configuration"
-   set caption(photometry,configure,save)                  "# Enregistre la configuration"
-   set caption(photometry,configure,config,code_obs)       "# Code UAI de l'observatoire"
-   set caption(photometry,configure,config,longitude)      "# Longitude de l'observatoire (deg.)"
-   set caption(photometry,configure,config,sens)           "# Longitude de l'observatoire (E|W)"
-   set caption(photometry,configure,config,latitude)       "# Latitude de l'observatoire (deg.)"
-   set caption(photometry,configure,config,altitude)       "# Altitude de l'observatoire (m)"
-   set caption(photometry,configure,config,desc_location)  "# Nom de l'observatoire"
-   set caption(photometry,configure,config,desc_camera)    "# Description de la caméra"
-   set caption(photometry,configure,config,desc_telescope) "# Description du télescope"
-   set caption(photometry,configure,config,tel_diam)       "# Diamètre du télescope (m)"
-   set caption(photometry,configure,config,tel_fd)         "# F/D du télescope"
+   set caption(photometry,configure,load)                  "Cargar la configuración"
+   set caption(photometry,configure,save)                  "Guardar la configuración"
+   set caption(photometry,configure,config,code_obs)       "Código UAI del observatorio"
+   set caption(photometry,configure,config,longitude)      "Longitud del observatorio (grad.)"
+   set caption(photometry,configure,config,sens)           "Longitid del observatorio (E|W)"
+   set caption(photometry,configure,config,latitude)       "Latitud del observatorio (grad.)"
+   set caption(photometry,configure,config,altitude)       "Altura del observatorio (m)"
+   set caption(photometry,configure,config,desc_location)  "Nombre del observatorio"
+   set caption(photometry,configure,config,desc_camera)    "Descripción de la cámara"
+   set caption(photometry,configure,config,desc_telescope) "Descripción del telescopio"
+   set caption(photometry,configure,config,tel_diam)       "Diámetro del telescopio (m)"
+   set caption(photometry,configure,config,tel_fd)         "Relacion focal del telescopio"
    set caption(photometry,configure,config,comment)        "Comentarios"
 
-   set caption(photometry,prepare,titre)                   "# Photométrie : Configuration"
-   set caption(photometry,prepare,titre2)                  "# Photométrie : Configuration"
-   set caption(photometry,prepare,compute_button)          "# Calculer"
+   set caption(photometry,prepare,titre)                   "Fotometría: Configuración"
+   set caption(photometry,prepare,titre2)                  "Fotometría: Configuración"
+   set caption(photometry,prepare,compute_button)          "Calcular"
    set caption(photometry,prepare,return_button)           "OK"
-   set caption(photometry,prepare,config,file_cat)         "# Fichier du catalogue photométrique"
-   set caption(photometry,prepare,config,file_out)         "# Fichier de sortie des résultats"
-   set caption(photometry,prepare,config,date_night)       "# Date de la nuit à préparer"
-   set caption(photometry,prepare,config,ra)               "# Ascension Droite du champ à mesurer"
-   set caption(photometry,prepare,config,dec)              "# Déclinaison du champ à mesurer"
+   set caption(photometry,prepare,config,file_cat)         "Fichero del catálogo fotométrico"
+   set caption(photometry,prepare,config,file_out)         "Fichero de salida de resultados"
+   set caption(photometry,prepare,config,date_night)       "Fecha de la noche de observación"
+   set caption(photometry,prepare,config,ra)               "Ascensión Recta del campo a medir"
+   set caption(photometry,prepare,config,dec)              "Declinación del campo a medir"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {

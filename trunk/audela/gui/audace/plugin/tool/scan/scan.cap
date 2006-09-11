@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.7 2006-08-29 20:44:56 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.8 2006-09-11 21:22:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -158,7 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,fichier_existe) "Este fichero ya existe.\n¿Seguro que quiere guardar?"
 
    set caption(scan,attention)      "Aviso"
-   set caption(scan,message)        "# Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+   set caption(scan,message)        "Esta herramienta soli puede utilizarse con una Audine atacada\na traves de puerto paralelo, una interfaz AudiNet o EtherAude."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
