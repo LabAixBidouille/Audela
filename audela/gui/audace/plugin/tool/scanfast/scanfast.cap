@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.5 2006-08-29 20:44:41 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.6 2006-09-11 21:21:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -226,7 +226,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,fichier_existe)   "Este fichero ya existe.\n¿Seguro que quiere guardar?"
 
    set caption(scanfast,attention)        "Aviso"
-   set caption(scanfast,message)          "# Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+   set caption(scanfast,message)          "Esta herramienta soli puede utilizarse con una Audine atacada\na traves de puerto paralelo, una interfaz AudiNet o EtherAude."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
