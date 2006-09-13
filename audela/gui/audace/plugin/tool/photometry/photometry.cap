@@ -1,6 +1,6 @@
 #
 # Fichier : photometry.cap
-# Mise a jour $Id: photometry.cap,v 1.4 2006-09-11 21:22:25 robertdelmas Exp $
+# Mise a jour $Id: photometry.cap,v 1.5 2006-09-13 21:30:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,42 +91,42 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(photometry,titre,panneau)                   "# Photométrie"
+   set caption(photometry,titre,panneau)                   "Fotometria"
    set caption(photometry,help,titre)                      "Aiuto per questo tool"
-   set caption(photometry,2_3_couleur)                     "# 2 ou 3 couleurs"
+   set caption(photometry,2_3_couleur)                     "2 o 3 colori"
    set caption(photometry,configure)                       "Configurare"
-   set caption(photometry,prepare)                         "# Préparer"
-   set caption(photometry,calibre)                         "# Calibrer"
-   set caption(photometry,mesure)                          "# Mesurer"
+   set caption(photometry,prepare)                         "Preparare"
+   set caption(photometry,calibre)                         "Calibrare"
+   set caption(photometry,mesure)                          "Misurare"
 
-   set caption(photometry,configure,titre)                 "# Photométrie : Configuration"
-   set caption(photometry,configure,titre2)                "# Photométrie : Configuration"
-   set caption(photometry,configure,load_button)           "# Charge la configuration"
-   set caption(photometry,configure,save_button)           "# Enregistre la configuration"
+   set caption(photometry,configure,titre)                 "Fotometria: Configurazione"
+   set caption(photometry,configure,titre2)                "Fotometria: Configurazione"
+   set caption(photometry,configure,load_button)           "Caricamento della configurazione"
+   set caption(photometry,configure,save_button)           "Salvataggio della configurazione"
    set caption(photometry,configure,return_button)         "OK"
-   set caption(photometry,configure,load)                  "# Charge la configuration"
-   set caption(photometry,configure,save)                  "# Enregistre la configuration"
-   set caption(photometry,configure,config,code_obs)       "# Code UAI de l'observatoire"
-   set caption(photometry,configure,config,longitude)      "# Longitude de l'observatoire (deg.)"
-   set caption(photometry,configure,config,sens)           "# Longitude de l'observatoire (E|W)"
-   set caption(photometry,configure,config,latitude)       "# Latitude de l'observatoire (deg.)"
-   set caption(photometry,configure,config,altitude)       "# Altitude de l'observatoire (m)"
-   set caption(photometry,configure,config,desc_location)  "# Nom de l'observatoire"
-   set caption(photometry,configure,config,desc_camera)    "# Description de la caméra"
-   set caption(photometry,configure,config,desc_telescope) "# Description du télescope"
-   set caption(photometry,configure,config,tel_diam)       "# Diamètre du télescope (m)"
-   set caption(photometry,configure,config,tel_fd)         "# F/D du télescope"
-   set caption(photometry,configure,config,comment)        "Commento"
+   set caption(photometry,configure,load)                  "Caricamento della configurazione"
+   set caption(photometry,configure,save)                  "Salvataggio della configurazione"
+   set caption(photometry,configure,config,code_obs)       "Codice UAI dell'osservatorio"
+   set caption(photometry,configure,config,longitude)      "Longitudine dell'osservatorio (deg.)"
+   set caption(photometry,configure,config,sens)           "Longitudine dell'osservatorio (E|W)"
+   set caption(photometry,configure,config,latitude)       "Latitudine dell'osservatorio (deg.)"
+   set caption(photometry,configure,config,altitude)       "Altitudine dell'osservatorio (m)"
+   set caption(photometry,configure,config,desc_location)  "Nome dell'osservatorio"
+   set caption(photometry,configure,config,desc_camera)    "Descrizione della camera"
+   set caption(photometry,configure,config,desc_telescope) "Descrizione del telescopio"
+   set caption(photometry,configure,config,tel_diam)       "Diametro del telescopio (m)"
+   set caption(photometry,configure,config,tel_fd)         "F/D del telescopio"
+   set caption(photometry,configure,config,comment)        "Commenti"
 
-   set caption(photometry,prepare,titre)                   "# Photométrie : Configuration"
-   set caption(photometry,prepare,titre2)                  "# Photométrie : Configuration"
-   set caption(photometry,prepare,compute_button)          "# Calculer"
+   set caption(photometry,prepare,titre)                   "Fotometria: Configurazione"
+   set caption(photometry,prepare,titre2)                  "Fotometria: Configurazione"
+   set caption(photometry,prepare,compute_button)          "Calcolare"
    set caption(photometry,prepare,return_button)           "OK"
-   set caption(photometry,prepare,config,file_cat)         "# Fichier du catalogue photométrique"
-   set caption(photometry,prepare,config,file_out)         "# Fichier de sortie des résultats"
-   set caption(photometry,prepare,config,date_night)       "# Date de la nuit à préparer"
-   set caption(photometry,prepare,config,ra)               "# Ascension Droite du champ à mesurer"
-   set caption(photometry,prepare,config,dec)              "# Déclinaison du champ à mesurer"
+   set caption(photometry,prepare,config,file_cat)         "File del catalogo fotometrico"
+   set caption(photometry,prepare,config,file_out)         "File dei risultati"
+   set caption(photometry,prepare,config,date_night)       "Data della notte da preparare"
+   set caption(photometry,prepare,config,ra)               "Ascensione Retta del campo da misurare"
+   set caption(photometry,prepare,config,dec)              "Declinazione del campo da misurare"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

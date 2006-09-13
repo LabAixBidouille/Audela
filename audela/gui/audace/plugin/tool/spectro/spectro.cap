@@ -1,6 +1,6 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.4 2006-09-11 21:21:27 robertdelmas Exp $
+# Mise a jour $Id: spectro.cap,v 1.5 2006-09-13 21:29:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -69,31 +69,31 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "# Spectroscopie"
+   set caption(spectro,titre,outil)                     "Spettroscopia"
    set caption(spectro,help,titre)                      "Aiuto per questo tool"
    set caption(spectro,configure)                       "Configurare"
-   set caption(spectro,editeur_profil)                  "# Editeur de profil"
+   set caption(spectro,editeur_profil)                  "Editor del profilo"
    set caption(spectro,lhires)                          "LHIRES III Be"
-   set caption(spectro,BeSS)                            "# Accès BeSS"
+   set caption(spectro,BeSS)                            "Accesso BeSS"
 
-   set caption(spectro,configure,titre)                 "# Spectroscopie : Configuration"
-   set caption(spectro,configure,titre2)                "# Spectroscopie : Configuration"
-   set caption(spectro,configure,load_button)           "# Charge la configuration"
-   set caption(spectro,configure,save_button)           "# Enregistre la configuration"
+   set caption(spectro,configure,titre)                 "Spettroscopia: Configurazione"
+   set caption(spectro,configure,titre2)                "Spettroscopia: Configurazione"
+   set caption(spectro,configure,load_button)           "Caricamento della configurazione"
+   set caption(spectro,configure,save_button)           "Salvataggio della configurazione"
    set caption(spectro,configure,return_button)         "OK"
-   set caption(spectro,configure,load)                  "# Charge la configuration"
-   set caption(spectro,configure,save)                  "# Enregistre la configuration"
-   set caption(spectro,configure,config,code_obs)       "# Code UAI de l'observatoire"
-   set caption(spectro,configure,config,longitude)      "# Longitude de l'observatoire (deg.)"
-   set caption(spectro,configure,config,sens)           "# Longitude de l'observatoire (E|W)"
-   set caption(spectro,configure,config,latitude)       "# Latitude de l'observatoire (deg.)"
-   set caption(spectro,configure,config,altitude)       "# Altitude de l'observatoire (m)"
-   set caption(spectro,configure,config,desc_location)  "# Nom de l'observatoire"
-   set caption(spectro,configure,config,desc_camera)    "# Description de la caméra"
-   set caption(spectro,configure,config,desc_telescope) "# Description du télescope"
-   set caption(spectro,configure,config,tel_diam)       "# Diamètre du télescope (m)"
-   set caption(spectro,configure,config,tel_fd)         "# F/D du télescope"
-   set caption(spectro,configure,config,comment)        "Commento"
+   set caption(spectro,configure,load)                  "Caricamento della configurazione"
+   set caption(spectro,configure,save)                  "Salvataggio della configurazione"
+   set caption(spectro,configure,config,code_obs)       "Codice UAI dell'osservatorio"
+   set caption(spectro,configure,config,longitude)      "Longitudine dell'osservatorio (deg.)"
+   set caption(spectro,configure,config,sens)           "Longitudine dell'osservatorio (E|W)"
+   set caption(spectro,configure,config,latitude)       "Latitudine dell'osservatorio (deg.)"
+   set caption(spectro,configure,config,altitude)       "Altitudine dell'osservatorio (m)"
+   set caption(spectro,configure,config,desc_location)  "Nome dell'osservatorio"
+   set caption(spectro,configure,config,desc_camera)    "Descrizione della camera"
+   set caption(spectro,configure,config,desc_telescope) "Descrizione del telescopio"
+   set caption(spectro,configure,config,tel_diam)       "Diametro del telescopio (m)"
+   set caption(spectro,configure,config,tel_fd)         "F/D del telescopio"
+   set caption(spectro,configure,config,comment)        "Commenti"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
