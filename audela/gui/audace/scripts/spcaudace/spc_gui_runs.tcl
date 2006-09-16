@@ -7,7 +7,7 @@
 
 
 ########################################################################
-# Interface pour la calibration en longueur d'onde a partir de 2 raies
+# Interface pour l'appel du panneau de prétraitement de Francois Cochard
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -21,6 +21,24 @@ proc spc_pretraitementfc_w {} {
 
     # source $audace(rep_scripts)/../plugin/tool/pretrfc/pretrfc.ini
     ::pretraitFC::fenetrePretr
+}
+
+
+########################################################################
+# Interface pour la réduction des spectres du Lhires III
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 19-08-2006
+# Date de modification : 19-08-2006
+########################################################################
+
+proc spc_specLhIII_w {} {
+
+    global conf
+    global audace
+
+    # source $audace(rep_scripts)/../plugin/tool/pretrfc/pretrfc.ini
+    ::spbmfc::Demarragespbmfc
 }
 
 

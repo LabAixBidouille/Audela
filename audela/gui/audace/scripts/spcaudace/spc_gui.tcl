@@ -205,7 +205,9 @@ proc spc_winini { } {
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-2"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-3"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "::param_spc_audace_traite2calibre::run" -underline 0 -accelerator "Ctrl-4"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-5"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-5"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       bind .spc <Control-0> ::param_spc_audace_traitesimple2calibre::run
@@ -213,7 +215,9 @@ proc spc_winini { } {
       bind .spc <Control-2> ::param_spc_audace_geom2calibre::run
       bind .spc <Control-3> ::param_spc_audace_geom2rinstrum::run
       bind .spc <Control-4> ::param_spc_audace_traite2calibre::run
-      bind .spc <Control-5> ::param_spc_audace_traite2rinstrum::run
+      bind .spc <Control-5> ::param_spc_audace_traite2srinstrum::run
+      bind .spc <Control-6> ::param_spc_audace_traite2rinstrum::run
+      bind .spc <Control-7> ::spcmfc::Demarragespbmfc
 
       #--- Menu Analyse ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0

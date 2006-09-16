@@ -197,5 +197,106 @@ proc spc_ewcourbe { args } {
 #*******************************************************************************#
 
 
+####################################################################
+# Procédure de calcul d'intensité d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 1-09-2006
+# Date modification : 1-09-2006
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_ew2 { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 3 } {
+	set filename [ lindex $args 0 ]
+	set xdeb [ lindex $args 1 ]
+	set xfin [ lindex $args 2 ]
+
+	set listevals [ spc_fits2data $filename ]
+	set xvals [ lindex $listevals 0 ]
+	set yvals [ lindex $listevals 1 ]
+
+	foreach xval $xvals yval $yvals {
+	    if { $xval>=$xdeb && $xval<=$xfin } {
+		lappend xsel $xval
+		lappend ysel $yval
+	    }
+	}
+	set valsselect [ list $xsel $ysel ]
+	set intensity [ spc_aire $valsselect ]
+	set ew [ expr $intensity-($xfin-$xdeb) ]
+	::console::affiche_resultat "La largeur équivalente vaut $ew Anstrom\n"
+	return $ew
+    } else {
+	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies lanmba_dep lambda_fin\n"
+    }
+}
+#***************************************************************************#
 
 
+####################################################################
+# Procédure de calcul d'intensité d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 1-09-2006
+# Date modification : 1-09-2006
+# Arguments : nom_profil_raies lambda_raie
+####################################################################
+
+proc spc_autoew { args } {
+    global conf
+    global audace
+    set precision 0.01
+
+    if { [llength $args] == 2 } {
+	set filename [ lindex $args 0 ]
+	set lambda_raie [ lindex $args 1 ]
+
+	#--- Valeur par defaut des bornes :
+	set lambda_deb [ expr $lambda_raie-20 ]
+	set lambda_fin [ expr $lambda_raie+20 ]
+
+	#--- Extraction des valeurs :
+	set listevals [ spc_fits2data $filename ]
+	set lambdas [ lindex $listevals 0 ]
+	set intensities [ lindex $listevals 1 ]
+	set len [ llength $lambdas ]
+
+	#--- Trouve l'indice de la raie recherche dans la liste
+	set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
+	# ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
+
+	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
+	for { set i $i_lambda } { $i<$len } { incr i } { 
+	    set yval [ lindex $intensities $i ]
+	    if { [ expr $yval-1.0 ]<=$precision } {
+		set lambda_fin [ lindex $lambdas $i ]
+		break
+	    }
+	}
+
+	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
+	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+	    set yval [ lindex $intensities $i ]
+	    if { [ expr $yval-1.0 ]<=$precision } {
+		set lambda_deb [ lindex $lambdas $i ]
+		break
+	    }
+	    #::console::affiche_resultat "$diff\n"
+	}
+
+	#--- Affichage des bornes :
+	::console::affiche_resultat "Bornes de calcul de EW : $lambda_deb, $lambda_fin\n\n"
+
+	#--- Détermination de la largeur équivalente :
+	set ew [ spc_ew2 $filename $lambda_deb $lambda_fin ]
+	::console::affiche_resultat "La largeur équivalente vaut $ew Anstrom(s)\n"
+	return $ew
+    } else {
+	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie\n"
+    }
+}
+#***************************************************************************#

@@ -16,7 +16,7 @@
 
 global audace
 
-## Fonctions généralistes
+#--- Fonctions generalistes
 
 ###############################################################################
 #
@@ -36,9 +36,10 @@ proc spc_goodrep { } {
    return $repdflt
 }
 
-## Demarrage de SpcAudace :
+#--- Demarrage de SpcAudace :
 source [ file join $audace(rep_scripts) spcaudace spc_var.tcl ]
-## Chargement des plugins :
+
+#--- Chargement des fonctionalites :
 source [ file join $audace(rep_scripts) spcaudace spc_io.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_profil.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_calibrage.tcl ]
@@ -51,6 +52,9 @@ source [ file join $audace(rep_scripts) spcaudace spc_echelle.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_metaf.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_gui_boxes.tcl ]
 source [ file join $audace(rep_scripts) spcaudace spc_gui_runs.tcl ]
+
+#--- Chargement des plugins :
+#source [ file join $audace(rep_scripts) spcaudace plugins specLhIII specLhIII.tcl ]
 
 #--------- Lancement ---------------#
 
