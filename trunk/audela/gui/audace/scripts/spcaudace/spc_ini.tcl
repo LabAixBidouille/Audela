@@ -106,7 +106,9 @@ if {[string compare $langage french] ==0 } {
      set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"
      set captionspc(spc_geom2rinstrum_w) "Corrections géométriques -> correction instrumentale"
      set captionspc(spc_traite2calibre_w) "Prétraitement -> calibration"
+     set captionspc(spc_traite2srinstrum_w) "Prétraitement -> correction instrumentale (court)"
      set captionspc(spc_traite2rinstrum_w) "Prétraitement -> correction instrumentale"
+     set captionspc(spc_specLhIII_w) "Réduction des spectres Lhires III"
 
      #--- Menu Analyse ---#
      set captionspc(spc_analyse) "Analyse"

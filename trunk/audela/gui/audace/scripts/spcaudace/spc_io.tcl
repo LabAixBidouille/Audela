@@ -1240,6 +1240,7 @@ proc spc_fit2png { args } {
 proc spc_fit2pngbat { args } {
    global audace
    global conf
+   set ecart 0.005
 
    if { [llength $args] == 4 || [llength $args] == 2 } {
        if { [llength $args] == 2 } {
@@ -1250,12 +1251,12 @@ proc spc_fit2pngbat { args } {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	   set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
 	   #-- Demarre et fini le graphe en deçca de 3% des limites pour l'esthetique
-	   set largeur [ expr 0.03*$naxis1 ]
+	   set largeur [ expr $ecart*$naxis1 ]
 	   set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
 	   set xdeb [ expr $xdeb0+$largeur ]
 	   set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
 	   #set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
-	   set xfin [ expr $naxis1*$xincr+$xdeb-1*$largeur ]
+	   set xfin [ expr $naxis1*$xincr+$xdeb0-1*$largeur ]
        } elseif { [llength $args] == 4 } {
 	   set fichier [ lindex $args 0 ]
 	   set titre [ lindex $args 1 ]

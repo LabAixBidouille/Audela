@@ -192,9 +192,12 @@ proc spc_normaraie { args } {
 
    global audace
    global conf
+   #set coeffajust 1.1848
+   set coeffajust 1.0924
+
 
    if {[llength $args] == 4} {
-     set fichier [ lindex $args 0 ]
+     set fichier [ file rootname [ lindex $args 0 ] ]
      set ldeb [ expr int([lindex $args 1 ]) ]
      set lfin [ expr int([lindex $args 2]) ]
      set type [ lindex $args 3 ]
@@ -212,30 +215,85 @@ proc spc_normaraie { args } {
 	 buf$audace(bufNo) mult -1.0
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
 	 # Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
+	 # buf$audace(bufNo) mult -1.0
      } elseif { [string compare $type "e"] == 0 } {
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
-     # Le second element de la liste reponse est le centre X de la gaussienne
-     set continuum [lindex $lreponse 3]
+     #--- Le n°3 rendu par fitgauss est la valeur de fond selon X :
+     # set continuum [lindex $lreponse 3]
+     #--- Le n°7 rendu par fitgauss est la valeur de fond selon Y :
+     set continuum [lindex $lreponse 7]
      #set centre [ expr $xcentre*$cdelt+$crval ]
+     set continuum [ expr $continuum/$coeffajust ]
      ::console::affiche_resultat "Le continuum vaut $continuum\n"
 
-     #--- Division de chaque valeur du profil par la valeur du continuum
-     set coords [ spc_fits2data $fichier ]
-     set lambdas [ lindex $coords 0 ]
-     set intensites [ lindex $coords 1 ]
-     foreach intensite $intensites {
-	 lappend newintensites [ expr $intensite/$continuum ]
-     }
-     set pref_fichier [ file rootname $fichier ]
-     set newcoords [ list $lambdas $newintensites ]
-     set ${pref_fichier}_lnorm [ spc_data2fits ${pref_fichier}_lnorm $newcoords double ]
-     return ${pref_fichier}_lnorm
+     #--- Meth 1 : division de chaque valeur du profil par la valeur du continuum
+     #set coords [ spc_fits2data $fichier ]
+     #set lambdas [ lindex $coords 0 ]
+     #set intensites [ lindex $coords 1 ]
+     #foreach intensite $intensites {
+	 #lappend newintensites [ expr $intensite/$continuum ]
+     #}
+     #set pref_fichier [ file rootname $fichier ]
+     #set newcoords [ list $lambdas $newintensites ]
+     #set ${pref_fichier}_lnorm [ spc_data2fits ${pref_fichier}_lnorm $newcoords double ]
 
+     #--- Meth 2 (approuvé Buil) : coefmult=1/continuum
+     set coeff [ expr 1./$continuum ]
+     ::console::affiche_resultat "Coéfficient de normalisation : $coeff\n"
+     buf$audace(bufNo) mult $coeff
+     buf$audace(bufNo) save "$audace(rep_images)/${fichier}_lnorm"
+
+     #--- Fin du script :
+     ::console::affiche_resultat "Profil localement normalisé sauvé sous ${fichier}_lnorm.\n"
+     return ${fichier}_lnorm
    } else {
      ::console::affiche_erreur "Usage: spc_normaraie nom_fichier (de type fits) x_debut x_fin a/e\n\n"
    }
+}
+#****************************************************************#
+
+
+##########################################################
+# Normalisation automatique d'un profil sur le continuum au voisinage d'une raie
+# en tenant compte de la totalite du profil
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 26-08-2006
+# Date de mise à jour : 26-08-2006
+# Arguments : fichier .fit du profil de raies, type de raie
+##########################################################
+
+proc spc_autonormaraie { args } {
+
+    global audace
+    global conf
+    #-- Ecart de 10 A sur les bords d'un profil couvrant 180 A : 5,56%
+    set ecart 0.056
+
+    if { [llength $args] == 2 } {
+       set fichier [ file rootname [ lindex $args 0 ] ]
+       set typeraie [ lindex $args 1 ]
+
+       #--- Ramasse des renseignements :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+       set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+       set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+
+       #-- CAlcul Lambda deb et fin écartés du 10 A du bord
+       set ldeb [ expr $crval ]
+       set lfin [ expr $crval+$cdelt*$naxis1 ]
+       set ecartzone [ expr $ecart*($lfin-$ldeb) ]
+       set ldeb [ expr $ldeb+$ecartzone ]
+       set lfin [ expr $lfin-$ecartzone ]
+
+       #-- Normalise sur cette zone :
+       set fileout [ spc_normaraie $fichier $ldeb $lfin $typeraie ]
+       return $fileout
+    } else {
+	::console::affiche_erreur "Usage: spc_autonormaraie profil_de_raies type_raie (e/a)\n\n"
+    }
 }
 #****************************************************************#
 
@@ -332,7 +390,7 @@ proc spc_smooth { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 28-03-2006
-# Date de mise à jour : 28-03-2006
+# Date de mise à jour : 28-03-06/25-08-06
 # Arguments : fichier .fit du profil de raie, ?sigma gaussienne?
 ##########################################################
 
@@ -344,17 +402,19 @@ proc spc_bigsmooth { args } {
 
    if { [llength $args] <= 2 } {
        if { [llength $args] == 1 } {
-	   set infichier [ lindex $args 0 ]
+	   set infichier [ file rootname [ lindex $args 0 ] ]
 	   set sigma 20
        } elseif  { [llength $args] == 2 } {
-	   set infichier [ lindex $args 0 ]
+	   set infichier [ file rootname [ lindex $args 0 ] ]
 	   set sigma [ lindex $args 1 ]
        } else {
            ::console::affiche_erreur "Usage : spc_bigsmooth profil_de_raies_fits ?coefficient?\n\n"
 	   return 0
        }
        set file_out [ spc_smooth $infichier 20 ]
-       return $file_out
+       file rename -force "$audace(rep_images)/$file_out$conf(extension,defaut)" "$audace(rep_images)/${infichier}_bsmo$conf(extension,defaut)"
+       ::console::affiche_resultat "Fichier très adoucis sauvé sous ${infichier}_bsmo$conf(extension,defaut)\n"
+       return ${infichier}_bsmo
    } else {
        ::console::affiche_erreur "Usage : spc_bigsmooth profil_de_raies_fits ?coefficient?\n\n"
    }
@@ -579,10 +639,16 @@ proc spc_div { args } {
     if {[llength $args] == 2} {
 	set numerateur [ lindex $args 0 ]
 	set denominateur [lindex $args 1 ]
-	set fichier [ file rootname $numerateur ]
+	set fichier [ file tail [ file rootname $numerateur ] ]
 
 	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
 	if { [ spc_compare $numerateur $denominateur ] == 1 } {
+	    #--- Récupération des mots clef de l'entéte FITS :
+	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
+	    set dateobs [lindex [buf1 getkwd "DATE-OBS"] 1]
+	    set mjdobs [lindex [buf1 getkwd "MJD-OBS"] 1]
+	    set exposure [lindex [buf1 getkwd "EXPOSURE"] 1]
+
 	    #--- Création des listes de valeur
 	    set contenu1 [ spc_fits2data $numerateur ]
 	    set contenu2 [ spc_fits2data $denominateur ]
@@ -609,10 +675,20 @@ proc spc_div { args } {
 	    set lenl [ llength $nordos ]
 	    ::console::affiche_resultat "$lenl valeurs traitées.\n"
 	    set fichier_out [ spc_data2fits ${fichier}_div $ncontenu ]
+
+	    #--- Réintégration des mots clef FITS
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier_out"
+	    buf$audace(bufNo) setkwd [ list "DATE-OBS" "$dateobs" string "Start of exposure. FITS standard" "Iso 8601" ]
+	    buf$audace(bufNo) setkwd [ list "MJD-OBS" "$mjdobs" double "Start of exposure" "d" ]
+	    buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" double "Total time of exposure" "s" ]
+	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
+
+	    #--- Fin du script :
 	    ::console::affiche_resultat "Division des 2 profils sauvée sous ${fichier}_div$conf(extension,defaut)\n"
 	    return ${fichier}_div
 	} else {
 	    ::console::affiche_resultat "\nLes 2 profils de raies ne sont pas divisibles.\n"
+	    return 0
 	}
     } else {
 	::console::affiche_erreur "Usage : spc_div profil_de_raies_numérateur_fits profil_de_raies_dénominateur_fits\n\n"
@@ -872,3 +948,31 @@ proc spc_echant0 { args } {
    }
 }
 ##########################################################
+
+
+
+####################################################################
+# Procédure de calcul de la dérivée d'un profil de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 1-09-2006
+# Date modification : 1-09-2006
+# Arguments : nom_profil_raies
+####################################################################
+
+proc spc_derive { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 1 } {
+	set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	set listevals [ spc_fits2data $filename ]
+	set listevalsdervie [ spc_derivation $listevals ]
+	set filederive [ spc_data2fits ${filename}_deriv $listevalsdervie ]
+	::console::affiche_resultat "Dérivée du profil de raies sauvée sous $filederive\n"
+	return $filederive
+    } else {
+	::console::affiche_erreur "Usage: spc_derive nom_profil_raies\n"
+    }
+}
+#***************************************************************************#

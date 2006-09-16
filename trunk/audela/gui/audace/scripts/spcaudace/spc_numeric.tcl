@@ -85,8 +85,10 @@ proc bm_pil3c { { x0 ""} { y0 ""} { x1 ""} { y1 ""} { x2 ""} { y2 ""} { x3 ""} {
 }
 #****************************************************************#
 
+
+
 ####################################################################
-#  Procedure d'ajustement d'un nuage de points
+# Procedure d'ajustement d'un nuage de points
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-12-2005
@@ -561,6 +563,59 @@ proc spc_ajustfin { args } {
 	::console::affiche_erreur "Usage: spc_ajust fichier_profil.fit erreur (1)\n\n"
     }
 }
+#***************************************************************************#
+
+
+
+####################################################################
+# Procédure de calcul de la droite de régression linéaire par les moindres carrés
+# http://www.bibmath.net/dico/index.php3?action=affiche&quoi=./r/reglin.html
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 1-09-2006
+# Date modification : 1-09-2006
+# Arguments : {{liste xi} {liste yi}}
+# Exemple : spc_reglin {{0  0.1  0.4  1} {12 11 7 1}} doit trouver : -11.0699588477*x+11.9012345679 
+####################################################################
+
+proc spc_reglin { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 1 } {
+	set listevals [ lindex $args 0 ]
+	set valx [ lindex $listevals 0 ]
+	set valy [ lindex $listevals 1 ]
+	set len [ llength $valx ]
+
+	#--- Calcul des termes intervenant dans les coéfficients :
+	set somme_x 0
+	set somme_y 0
+	set somme_x2 0
+	set somme_xy 0
+	for {set i 0} { $i<$len } {incr i} {
+	    set xi [ lindex $valx $i ]
+	    set yi [ lindex $valy $i ]
+
+	    set somme_x [ expr $somme_x+$xi ]
+	    set somme_y [ expr $somme_y+$yi ]
+	    set somme_x2 [ expr $somme_x2+$xi*$xi ]
+	    set somme_xy [ expr $somme_xy+$xi*$yi ]
+	}
+
+	#--- Calcul des coéficients a et b :
+	set a [ expr ($len*$somme_xy-$somme_x*$somme_y)/($len*$somme_x2-$somme_x*$somme_x) ]
+	set b [ expr ($somme_y*$somme_x2-$somme_x*$somme_xy)/($len*$somme_x2-$somme_x*$somme_x) ]
+
+	#--- Fin du script :
+	::console::affiche_resultat "La droite de régression est : $a*x+$b\n"
+	set coeffs [ list $a $b ]
+	return $coeffs
+    } else {
+	::console::affiche_erreur "Usage: spc_reglin {{liste xi} {liste yi}}\n"
+    }
+}
+#***************************************************************************#
 
 
 
@@ -654,6 +709,7 @@ proc spc_spline { args } {
 #****************************************************************#
 
 
+
 ####################################################################
 #  Procédure de construction d'une gaussienne.
 #
@@ -663,7 +719,7 @@ proc spc_spline { args } {
 # Arguments : nom du fichier de sortie
 ####################################################################
 
-proc bm_gaussienne { args } {
+proc spc_gaussienne { args } {
     global conf
     global audace
     set len 100
@@ -698,6 +754,120 @@ proc bm_gaussienne { args } {
 	buf$audace(bufNo) save "$audace(rep_images)/$filename"
 	::console::affiche_resultat "Courbe gaussienne sauvée sous $filename\n"
     } else {
-	::console::affiche_erreur "Usage: bm_gaussienne nom_fichier_fit_sortie imax xmoy sigma.\n\n"
+	::console::affiche_erreur "Usage: spc_gaussienne nom_fichier_fit_sortie imax xmoy sigma.\n\n"
     }
 }
+#****************************************************************#
+
+
+
+####################################################################
+#  Procédure d'évaluation de la non-linéarité de la dispersion d'un spectre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 23-08-2006
+# Date modification : 23-08-2006
+# Arguments : nom_fichier_profil_de_raies liste_de_liste_intervalles_encadrant_raies
+####################################################################
+
+proc spc_dispverif { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 2 } {
+	set spectre [ lindex $args 0 ]
+	set raylist [ lindex $args 1 ]
+
+	foreach ray $raylist {
+	    set xdeb [ lindex $ray 0 ]
+	    set xfin [ lindex $ray 1 ]
+	    set lambda_cat [ lindex $ray 2 ]
+	    set lambda_mes [ spc_centergaussl $spectre $xdeb $xfin e ]
+	    set ldiff [ expr $lambda_cat-$lambda_mes ]
+	    lappend results [ list $lambda_cat $lambda_mes $ldiff ]
+	}
+
+	::console::affiche_resultat "Liste résultats (Lambda_cat Lambda_mes Diff) $results\n"
+    } else {
+	::console::affiche_erreur "Usage: spc_dispverif nom_fichier_profil_de_raies liste_de_liste_intervalles_encadrant_raies\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+####################################################################
+#  Procédure d'intégration d'une fonction numérique par la méthode des trapèzes
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 1-09-2006
+# Date modification : 1-09-2006
+# Arguments : {{liste xi} {liste yi}}
+####################################################################
+
+proc spc_aire { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 1 } {
+	set listevals [ lindex $args 0 ]
+	set valx [ lindex $listevals 0 ]
+	set valy [ lindex $listevals 1 ]
+	set len [ expr [ llength $valx ]-1 ]
+
+	set aire 0
+	for {set i 0} { $i<$len } {incr i} {
+	    set xi [ lindex $valx $i ]
+	    set xii [ lindex $valx [ expr $i+1 ] ]
+	    set yi [ lindex $valy $i ]
+	    set yii [ lindex $valy [ expr $i+1 ] ]
+	    set aire [ expr $aire+($xii-$xi)*0.5*($yii+$yi) ]
+	    # ::console::affiche_resultat "aire $i : $aire\n"
+	}
+	::console::affiche_resultat "L'aire vaut : $aire\n"
+	return $aire
+    } else {
+	::console::affiche_erreur "Usage: spc_aire {{liste xi} {liste yi}}\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Procédure de dérivation d'une fonction numérique
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 1-09-2006
+# Date modification : 1-09-2006
+# Arguments : {{liste xi} {liste yi}}
+####################################################################
+
+proc spc_derivation { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 1 } {
+	set listevals [ lindex $args 0 ]
+	set valx [ lindex $listevals 0 ]
+	set valy [ lindex $listevals 1 ]
+	set len [ expr [ llength $valx ]-1 ]
+
+	for {set i 0} { $i<$len } {incr i} {
+	    set xi [ lindex $valx $i ]
+	    set xii [ lindex $valx [ expr $i+1 ] ]
+	    set yi [ lindex $valy $i ]
+	    set yii [ lindex $valy [ expr $i+1 ] ]
+	    lappend derivey [ expr ($yii-$yi)/($xii-$xi) ]
+	    lappend valxi $xi
+	}
+	set derivee [ list $valxi $derivey ]
+	return $derivee
+    } else {
+	::console::affiche_erreur "Usage: spc_derivation {{liste xi} {liste yi}}\n"
+    }
+}
+#***************************************************************************#
+
+
+

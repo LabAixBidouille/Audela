@@ -729,7 +729,7 @@ proc spc_subsky { args } {
 	}
 
 	#--- Sauvegarde et netoyages :
-	::console::affiche_resultat "Spectre 2D netoyé du fond de ciel sauvé sous ${spectre}_zone_fc.\n"
+	::console::affiche_resultat "Spectre 2D nettoyé du fond de ciel sauvé sous ${spectre}_zone_fc.\n"
 	# file delete $audace(rep_images)/${spectre}_zone$conf(extension,defaut)
 	file delete $audace(rep_images)/${spectre}_zonesup$conf(extension,defaut)
 	file delete $audace(rep_images)/${spectre}_zoneinf$conf(extension,defaut)
@@ -1455,6 +1455,5 @@ proc spc_trace_profil {{filenamespc ""}} {
    .profil_ix.g axis configure y -stepsize $echelley
 }
 #****************************************************************#
-
 
 

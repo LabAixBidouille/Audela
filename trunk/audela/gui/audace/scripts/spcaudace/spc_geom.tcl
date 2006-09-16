@@ -1,6 +1,6 @@
 
 # Procedures des traitements géométriques
-# source $audace(rep_scripts)/spcaudace/spc_geom.tcl
+# Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
 
 ####################################################################
@@ -191,22 +191,25 @@ proc spc_register { args } {
        ::console::affiche_resultat "Recalage de $nb_file images...\n"
        set ycentre [ lindex $ycoords 0 ]
        set fichier ""
+       set rfichier ""
        foreach rfichier $fileliste {
-	   set fichier [file tail $rfichier]
+	   set fichier [ file rootname [file tail $rfichier] ]
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	   set yi [ lindex $ycoords $k ]
 	   set dy [ expr $ycentre-$yi ]
-	   trans 0 $dy
-	   set nomfichierlg [ file rootname $fichier ]
-	   regexp {(.+)\-[0-9]+} $nomfichierlg match nomfichier
-	   # set nomfichier [ file rootname $fichier ]
-	   buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_r-$kk$conf(extension,defaut)"
-	   #::console::affiche_resultat "Image $kk traitée\n"
+	   buf$audace(bufNo) imaseries "TRANS trans_x=0 trans_y=$dy"
+	   #-- EXpreqssion reguliere pouvant etre fragile !
+	   #regexp {(.+)\-?[0-9]+} $fichier match nomfichier
+	   #buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_r-$kk$conf(extension,defaut)"
+	   buf$audace(bufNo) save "$audace(rep_images)/${filename}-r-$kk$conf(extension,defaut)"
+	   ::console::affiche_resultat "Spectre redressé sauvé sous ${filename}-r-$kk\n"
 	   incr k
 	   incr kk
        }
-       ::console::affiche_resultat "Images sauvées sous ${nomfichier}_r-x$conf(extension,defaut)\n"
-       return ${nomfichier}_r-
+       #::console::affiche_resultat "Images sauvées sous ${nomfichier}-r-x$conf(extension,defaut)\n"
+       #return ${nomfichier}_r-
+       ::console::affiche_resultat "Images sauvées sous ${filename}-r-\n"
+       return ${filename}-r-
    } else {
        ::console::affiche_erreur "Usage: spc_register nom_générique_fichiers\n\n"
    }
@@ -927,7 +930,7 @@ proc spc_smilex2imgs { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 16-06-2006
-# Date modification : 15-08-2006
+# Date modification : 15-08-2006/24-08-06
 # Arguments : nom générique des spectres à traiter
 ####################################################################
 
@@ -936,8 +939,17 @@ proc spc_tiltautoimgs { args } {
     global audace
     global conf
 
-    if {[llength $args] == 1} {
-	set filename [ file rootname [ lindex $args 0 ] ]
+    
+    if { [llength $args] <= 2 } {
+	if { [llength $args] == 1 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set noreject "n"
+	} elseif { [llength $args] == 2 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set noreject [ lindex $args 1 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_noreject (o/n)?\n\n"
+	}
 
 	#--- Applique le smile au(x) spectre(s) incriminé(s)
 	set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
@@ -955,8 +967,18 @@ proc spc_tiltautoimgs { args } {
 		set spectre_tilte [ spc_tiltauto $fichier ]
 		#-- Cas des spectres dont la rotation excede une valeur seuil :
 		if { [ regexp {(.+)tilt0+} $spectre_tilte match spectrem ] } {
-		    file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt0-$i$conf(extension,defaut)"
-		    ::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt0-$i$conf(extension,defaut).\n\n"
+		    if { $noreject == "n" } {
+			file delete "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
+			file copy "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt0-$i$conf(extension,defaut)"
+			::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt0-$i$conf(extension,defaut).\n\n"
+		    } elseif { $noreject == "o" } {
+			file delete "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
+			file copy "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+			::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		    } else {
+			::console::affiche_resultat "Mauvaise option de rejet de spectre.\n"
+			return 0
+		    }
 		    incr nbspbad
 		} else {
 		    file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
