@@ -45,19 +45,19 @@ int Cmd_xxtcl_gzip(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    if (argc==1) {
       strcpy(lignetcl,"set gzip_argv1 *");
    } else {
-      sprintf(lignetcl,"set gzip_argv1 %s",argv[1]);
+      sprintf(lignetcl,"set gzip_argv1 \"%s\"",argv[1]);
    }
    Tcl_Eval(interp,lignetcl);
    /* --- verifie que les fichiers existent ---*/
-   sprintf(lignetcl,"set gzip_a [catch {set gzip_dir [glob $gzip_argv1]}]");
+   sprintf(lignetcl,"set gzip_a [catch {set gzip_dir \"[glob $gzip_argv1]\"}]");
    Tcl_Eval(interp,lignetcl);
    Tcl_GetInt(interp,interp->result,&errno); 
    if (errno==1) {
       /* --- les fichiers n'existent pas ---*/
       /* --- verifie que les fichiers argv[1].gz existent ---*/
-      strcpy(lignetcl,"set gzip_argv1 ${gzip_argv1}.gz");
+      strcpy(lignetcl,"set gzip_argv1 \"${gzip_argv1}.gz\"");
       Tcl_Eval(interp,lignetcl);
-      sprintf(lignetcl,"set gzip_a [catch {set gzip_dir [glob $gzip_argv1]}]");
+      sprintf(lignetcl,"set gzip_a \"[catch {set gzip_dir [glob $gzip_argv1]}]\"");
       Tcl_Eval(interp,lignetcl);
       Tcl_GetInt(interp,interp->result,&errno); 
       if (errno==1) {
@@ -73,15 +73,15 @@ int Cmd_xxtcl_gzip(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    Tcl_GetInt(interp,interp->result,&nbf); 
    nb=0;
    for (k=0;k<nbf;k++) {
-      sprintf(lignetcl,"set gzip_name [lindex $gzip_dir %d]",k);
+      sprintf(lignetcl,"set gzip_name \"[lindex $gzip_dir %d]\"",k);
       Tcl_Eval(interp,lignetcl);
-      strcpy(lignetcl,"set gzip_isfile [file isfile $gzip_name]");
+      strcpy(lignetcl,"set gzip_isfile [file isfile \"$gzip_name\"]");
       Tcl_Eval(interp,lignetcl);
       Tcl_GetInt(interp,interp->result,&isfile); 
       if (isfile==1) {
          strcpy(lignetcl,"set gzip_name");
          Tcl_Eval(interp,lignetcl);
-         sprintf(lignetcl,"%s %s",argv[0],Tcl_GetStringResult(interp));
+         sprintf(lignetcl,"%s \"%s\"",argv[0],Tcl_GetStringResult(interp));
          Tcl_SplitList(interp,lignetcl,&argcc,(const char***)&argvv);
          result=gzipmain(argcc,argvv);
          if (result!=2) {
