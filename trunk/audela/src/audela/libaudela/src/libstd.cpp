@@ -56,6 +56,10 @@
    #include <porttalk_interface.h>
 #endif
 
+/* Global variable which knows if Tk is loaded with succes */
+/* Else, only Tcl function will be activated */
+int withtk;
+
 //------------------------------------------------------------------------------
 // Prototypes
 //
@@ -517,10 +521,12 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::buf::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)buf_pool,NULL);
 
    // Gestion de la liste des visus
-   Tcl_CreateCommand(interp,"::visu::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)visu_pool,NULL);
-   Tcl_CreateCommand(interp,"::visu::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)visu_pool,NULL);
-   Tcl_CreateCommand(interp,"::visu::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)visu_pool,NULL);
-
+   if (withtk==1) {
+      Tcl_CreateCommand(interp,"::visu::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)visu_pool,NULL);
+      Tcl_CreateCommand(interp,"::visu::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)visu_pool,NULL);
+      Tcl_CreateCommand(interp,"::visu::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)visu_pool,NULL);
+   }
+   
    // Gestion de la liste des cameras
    Tcl_CreateCommand(interp,"::cam::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)cam_pool,NULL);
    Tcl_CreateCommand(interp,"::cam::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)cam_pool,NULL);
@@ -571,9 +577,11 @@ extern "C" int Audela_Init(Tcl_Interp*interp)
       Tcl_SetResult(interp,"Tcl Stubs initialization failed in libaudela.",TCL_STATIC);
       return TCL_ERROR;
    }
+   withtk=1;
    if(Tk_InitStubs(interp,"8.3",0)==NULL) {
       Tcl_SetResult(interp,"Tk Stubs initialization failed in libaudela.",TCL_STATIC);
-      return TCL_ERROR;
+      withtk=0;
+      /*return TCL_ERROR;*/
    }
 
    if((s=(char*)Tcl_GetVar(interp,"audelog_filename",0))==NULL) s = default_log_filename;
