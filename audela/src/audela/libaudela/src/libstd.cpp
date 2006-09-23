@@ -578,10 +578,14 @@ extern "C" int Audela_Init(Tcl_Interp*interp)
       return TCL_ERROR;
    }
    withtk=1;
-   if(Tk_InitStubs(interp,"8.3",0)==NULL) {
-      Tcl_SetResult(interp,"Tk Stubs initialization failed in libaudela.",TCL_STATIC);
+   try {
+      if(Tk_InitStubs(interp,"8.3",0)==NULL) {
+         Tcl_SetResult(interp,"Tk Stubs initialization failed in libaudela.",TCL_STATIC);
+         /*return TCL_ERROR;*/
+      }  
+   } catch (const CErrorLibstd& e) {
       withtk=0;
-      /*return TCL_ERROR;*/
+      throw e;
    }
 
    if((s=(char*)Tcl_GetVar(interp,"audelog_filename",0))==NULL) s = default_log_filename;
