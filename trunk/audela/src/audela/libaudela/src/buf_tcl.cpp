@@ -1055,7 +1055,7 @@ int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    CBuffer *Buffer;
    char **argvv=NULL;
    int argcc,naxis3,k,init,errcode;
-   int naxis1,naxis2,naxis10=0,naxis20=0;
+   int naxis1,naxis2;
 
    ligne = new char[1000];
 
@@ -1579,7 +1579,7 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int listArgc;             // Nombre d'elements dans la liste des coordonnees.
    int naxis1, naxis2, x, y; // Dimensions et coordonnees.
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
-   int retour;               // Code d'erreur de retour.
+   int retour = TCL_OK;               // Code d'erreur de retour.
    double val;
    double valred, valgreen, valblue;
 
@@ -1867,7 +1867,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       pixelData=0;
       if (argc>=8) {
          if((Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK)&&(retour==TCL_OK)) {
-            sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1],argv[2]);
             retour =  TCL_ERROR;
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          }
