@@ -224,6 +224,7 @@ void CBuffer::LoadFits(char *filename)
 
       // Chargement proprement dit de l'image.
       datatype = TFLOAT;
+
       msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&datatype,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
    	   &nb_keys,&keynames,&values,&comments,&units,&datatypes);
       if(msg) throw CErrorLibtt(msg);
@@ -451,6 +452,7 @@ void CBuffer::LoadRawFile(char * filename)
    } else {
       throw CError("LoadRawFile: libjpeg_decodeBuffer error=%d", result);
    } 
+   
 }
 
 /**
@@ -1655,7 +1657,7 @@ void CBuffer::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
  *
  */
 void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, void * pixels, long pixelSize, int reverseX, int reverseY) {
-   CPixels  * pixTemp;   
+   CPixels  * pixTemp = NULL ;   
 
    // j'efface le fichier temporaire de l'image précedente
    if( strlen(temporaryRawFileName) > 0 ) {
@@ -1681,6 +1683,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             int   width, height;
             int result = -1;
 
+            
             result  = libdcjpeg_decodeBuffer((char*) pixels, pixelSize, &decodedData, &decodedSize, &width, &height);            
             if (result == 0 )  {
                pixTemp = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, reverseX, reverseY);
@@ -1721,6 +1724,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             } else {
                throw CError("libdcraw_decodeBuffer error=%d", result);
             }
+
             break;
          }   
       default :
