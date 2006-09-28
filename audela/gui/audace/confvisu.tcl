@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.32 2006-08-20 17:09:44 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.33 2006-09-28 20:02:35 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -83,6 +83,9 @@ namespace eval ::confVisu {
       set private($visuNo,lastFileName)    "?"
       set private($visuNo,maxdyn)          "32767"
       set private($visuNo,mindyn)          "-32768"
+      set private($visuNo,hCanvas)     $private($visuNo,This).can1.canvas
+      set private($visuNo,hCrosshairH) $private($visuNo,hCanvas).crosshairH
+      set private($visuNo,hCrosshairV) $private($visuNo,hCanvas).crosshairV
       set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
       set private($visuNo,menu)            ""
 
@@ -137,7 +140,7 @@ namespace eval ::confVisu {
       if { $base == "" } {
          #--- je charge seulement les outils qui gérent les visu multiples
          ::AcqFC::Init $private($visuNo,This) $visuNo
-         ::Autoguider::Init $private($visuNo,This) $visuNo
+         ::autoguider::Init $private($visuNo,This) $visuNo
       }
 
       #--- je cree le menu
@@ -190,7 +193,7 @@ namespace eval ::confVisu {
          #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
          if { "$private($visuNo,This)" != "$audace(base).select" } {
             ::AcqFC::deletePanel $visuNo
-            ::Autoguider::deletePanel $visuNo
+            ::autoguider::deletePanel $visuNo
          }
       }
 
@@ -236,47 +239,42 @@ namespace eval ::confVisu {
       if { $force == "-novisu" } {
          return
       }
-
-      set bufNo [visu$visuNo buf]
-      set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
-      if { "$private($visuNo,picture_w)" == "" } {
-         set private($visuNo,picture_w) 0
-      }
       
-      if { [buf$bufNo getnaxis] == 1 } {
-         #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visue
-         set private($visuNo,picture_h) [visu$visuNo thickness]
-      } else {
-         #--- dans le cas d'une image 2D ou plus, la hauteur est la valeur retournee par le buffer
-         set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
-      }
-      if { "$private($visuNo,picture_h)" == "" } {
-         set private($visuNo,picture_h) 0
-      }
-
-      set width   $private($visuNo,picture_w)
-      set height  $private($visuNo,picture_h)
-      set zoom    $private($visuNo,zoom)
-      set imageNo [visu$visuNo image]
-
-      if { [ image type image$imageNo ] == "video" } {
-         #--- Je mets la fenetre a l'echelle
-         image$imageNo configure -scale "$zoom"
-
+      #--- petit raccourci pour la suite
+      set bufNo [visu$visuNo buf]
+      
+      if { [ image type image[visu$visuNo image] ] == "video" } {
+         #--- je recupere la largeur et la hauteur de la video
+         set videoSize [cam$private($visuNo,camNo) nbpix ]
+         set private($visuNo,picture_w)  [expr [lindex $videoSize 0] * $private($visuNo,zoom) ]
+         set private($visuNo,picture_h)  [expr [lindex $videoSize 1] * $private($visuNo,zoom) ]
          #--- Je mets a jour la taille les scrollbars
          setScrollbarSize $visuNo
-
          #--- Je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
-
       } else {
+         #--- je recupere la largeur et la hauteur de l'image
+         set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
+         if { "$private($visuNo,picture_w)" == "" } {
+            set private($visuNo,picture_w) 0
+         }
+         if { [buf$bufNo getnaxis] == 1 } {
+            #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visue
+            set private($visuNo,picture_h) [visu$visuNo thickness]
+         } else {
+            #--- dans le cas d'une image 2D ou plus, la hauteur est la valeur retournee par le buffer
+            set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
+         }
+   
+         set width   $private($visuNo,picture_w)
+         set height  $private($visuNo,picture_h)
+
          #--- je supprime l'item video s'il existe
          Movie::deleteMovieWindow $private($visuNo,hCanvas)
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
          #--- je supprime le fenetrage si la fenetre déborde de l'image
          set windowBox [visu$visuNo window]
-
          if { [lindex $windowBox 2] > $width 
             || [lindex $windowBox 3] > $height } {
             set private($visuNo,window) "0"
@@ -311,11 +309,13 @@ namespace eval ::confVisu {
                }
             }
          } else {
-            #--- nettoyage de l'affichage s'il n'y a pas d'image
+            #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
+            set private($visuNo,picture_w) 0
+            set private($visuNo,picture_h) 0
             visu $visuNo current
          }
 
-         #--- mise à jour des scrollbar
+         #--- Je mets a jour la taille les scrollbars
          setScrollbarSize $visuNo
 
          #--- Je mets a jour la taille du reticule
@@ -788,6 +788,10 @@ namespace eval ::confVisu {
          image create video image$imageNo
          #--- Je connecte la sortie de la camera a l'image
          set result [ catch { cam$private($visuNo,camNo) startvideoview $visuNo } msg ]
+         #---  je desactive le reglage des seuils
+         $private($visuNo,This).fra1.sca1 configure -state disabled 
+         $private($visuNo,This).fra1.sca2 configure -state disabled 
+         
       } else {
          #--- Je deconnecte la sortie de la camera
          set result [ catch { cam$private($visuNo,camNo) stopvideoview $visuNo } msg ]
@@ -795,6 +799,9 @@ namespace eval ::confVisu {
          image delete image$imageNo
          #--- Je cree une image de type "photo"
          image create photo image$imageNo
+         #---  j'active le reglage des seuils
+         $private($visuNo,This).fra1.sca1 configure -state normal 
+         $private($visuNo,This).fra1.sca2 configure -state normal 
       }
 
       if { $result != 1 } {
@@ -1082,9 +1089,6 @@ namespace eval ::confVisu {
       pack $This.can1 -in $This -anchor center -expand 1 -fill both -side right
       $This.can1.canvas configure -borderwidth 0
       $This.can1.canvas configure -relief flat
-
-      #--- petit raccouci vers le canvas
-      set private($visuNo,hCanvas) $private($visuNo,This).can1.canvas
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1926,8 +1930,6 @@ namespace eval ::confVisu {
       global conf
 
       set hCanvas $private($visuNo,hCanvas)
-      set private($visuNo,hCrosshairH) $hCanvas.crosshairH
-      set private($visuNo,hCrosshairV) $hCanvas.crosshairV
 
       #--- je cree le label representant la ligne horizontale
       if { ![winfo exists $private($visuNo,hCrosshairH)] } {
@@ -1971,7 +1973,6 @@ namespace eval ::confVisu {
          $hCanvas coords lineh 0 $ycCanvas
          $hCanvas itemconfigure lineh -width $widthCanvas
          $hCanvas itemconfigure lineh -state normal
-         raise $private($visuNo,hCrosshairH)
       }
 
       #--- j'affiche le trait vertical du reticule s'il est a l'interieur de la fenetre
@@ -1980,8 +1981,10 @@ namespace eval ::confVisu {
          $hCanvas coords linev $xcCanvas 0
          $hCanvas itemconfigure linev -height $heightCanvas
          $hCanvas itemconfigure linev -state normal
-         raise $private($visuNo,hCrosshairV)
       }
+         raise $private($visuNo,hCrosshairH)
+         raise $private($visuNo,hCrosshairV)
+
    }
 
    #------------------------------------------------------------
@@ -1994,6 +1997,13 @@ namespace eval ::confVisu {
 
       $private($visuNo,hCanvas) delete lineh
       $private($visuNo,hCanvas) delete linev
+      
+      if { ![winfo exists $private($visuNo,hCrosshairH)] } {
+         destroy $private($visuNo,hCrosshairH)
+      }
+      if { ![winfo exists $private($visuNo,hCrosshairV)] } {
+         destroy $private($visuNo,hCrosshairV)
+      }   
    }
 
 }
