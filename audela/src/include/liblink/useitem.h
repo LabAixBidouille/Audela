@@ -20,10 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Linkbridge, MA 02139, USA.
  */
 
-// $Id: liblink.h,v 1.3 2006-09-28 19:25:57 michelpujol Exp $
+// $Id: useitem.h,v 1.1 2006-09-28 19:25:57 michelpujol Exp $
 
-#ifndef __LIBLINK_H__
-#define __LIBLINK_H__
+#ifndef __USEITEM_H__
+#define __USEITEM_H__
 
 /*****************************************************************/
 /*             This part is common for all cam drivers.          */
@@ -36,47 +36,33 @@
 //#include "liblink.h"
 
 #include "tcl.h"
-#include "liblink/useitem.h"
 
 #define LINK_OK       0
 #define LINK_ERROR    -1
 
 
-class CLink {
+class CUseItem {
 
- public:
-   CLink();
-   virtual ~CLink();
-   virtual int openLink(int argc, char **argv)=0;
-   virtual int closeLink()=0;
-   int init_common(int argc, char **argv);
-   int addUse(char *deviceId, char *usage, char *comment);
-   int removeUse(char *deviceId, char *usage);
-   int getUse(char **list);
-
-   char * getLastMessage();
-   int getIndex();
-
-   void setAuthorized(int value);
-   void setLinkNo(int value);
-   void setLastMessage(char *value);
-
+public:
+   CUseItem(CUseItem *prev, char* deviceId, char *usage, char *comment);
+   virtual ~CUseItem();
+   
+   CUseItem * getNext();
+   CUseItem * getPrev();
+   char * getDeviceId();
+   char * getUsage();
+   char * getComment();
+   void setNext(CUseItem *item);
+   void setPrev(CUseItem *item);
 
  protected:
-	Tcl_Interp *interp;
-   int authorized;
-   int index;
-   char msg[1024];
-   int linkno;
-   CUseItem *useItem;
+   char * deviceId;
+   char *usage;
+   char *comment;
+   CUseItem *prev;
+   CUseItem *next;
 
 };
-
-struct cmditem {
-    char *cmd;
-    Tcl_CmdProc *func;
-};
-
 
 
 
