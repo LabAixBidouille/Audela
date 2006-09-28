@@ -1,6 +1,6 @@
 #
 # Fichier : parallelport.cap
-# Mise a jour $Id: parallelport.cap,v 1.5 2006-07-10 20:25:41 robertdelmas Exp $
+# Mise a jour $Id: parallelport.cap,v 1.6 2006-09-28 19:52:32 michelpujol Exp $
 #
 
 #=========================================================================
@@ -12,31 +12,43 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(parallelport,titre)           "Parallel Port"
+set caption(parallelport,available)       "# Ports parallèles disponibles"
+set caption(parallelport,refresh)         "# Rafraîchir"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(parallelport,titre)        "Port parallèle"
+   set caption(parallelport,available)    "Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "Rafraîchir"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(parallelport,titre)        "Porta parallela"
+   set caption(parallelport,available)    "# Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "# Rafraîchir"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(parallelport,titre)        "Puerto paralelo"
+   set caption(parallelport,available)    "# Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "# Rafraîchir"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(parallelport,titre)        "Parallele Schnittstelle"
+   set caption(parallelport,available)    "# Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "# Rafraîchir"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(parallelport,titre)        "# Port parallèle"
+   set caption(parallelport,available)    "# Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "# Rafraîchir"
 
 }
 

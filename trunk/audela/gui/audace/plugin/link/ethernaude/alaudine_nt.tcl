@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.6 2006-06-20 19:25:57 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.7 2006-09-28 19:50:09 michelpujol Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -183,7 +183,7 @@ namespace eval AlAudine_NT {
       scale $This.temp_ccd_souhaite_variant -from $tmp_ccd_min -to $tmp_ccd_max -length 300 \
          -orient horizontal -showvalue true -tickinterval 5 -resolution 0.1 \
          -borderwidth 2 -relief groove -variable confCam(alaudine_nt,temp_ccd_souhaite) -width 10 \
-         -command { catch { [ cam$confCam(camera,$confCam(cam_item),camNo) cooler check $confCam(alaudine_nt,temp_ccd_souhaite) ] } }
+         -command { catch { ::AlAudine_NT::ReglageTemp } }
       pack $This.temp_ccd_souhaite_variant -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
       entry $This.temp_ccd_souhaite -textvariable confCam(alaudine_nt,temp_ccd_souhaite) -width 5 -justify center
@@ -281,6 +281,17 @@ namespace eval AlAudine_NT {
    }
 
    #
+   # AlAudine_NT::ReglageTemp
+   # Fonction pour regler la temperature du CCD via l'AlAudine NT
+   #
+   proc ReglageTemp { } {
+      global confCam
+
+      set camNo $confCam($confCam(cam_item),camNo)
+      cam$camNo cooler check $confCam(alaudine_nt,temp_ccd_souhaite)
+   }
+
+   #
    # AlAudine_NT::AlAudine_NTDispTemp
    # Fonction de mesure de la temperature reelle du CCD via l'AlAudine NT
    #
@@ -292,13 +303,13 @@ namespace eval AlAudine_NT {
 
       catch {
          #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-         set camNo $confCam(camera,$confCam(cam_item),camNo)
+         set camNo $confCam($confCam(cam_item),camNo)
          set statusVariableName "::status_cam$camNo"
          if { [set $statusVariableName] == "exp" } {
             #--- Si on lit une image de la camera, il ne faut pas lire la temperature
             set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
          } else {
-            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam(camera,$confCam(cam_item),camNo) temperature ] } ] == "0" } {
+            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam($confCam(cam_item),camNo) temperature ] } ] == "0" } {
                set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
                $This.lab7 configure \
                   -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"

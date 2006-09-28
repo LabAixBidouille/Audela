@@ -2,7 +2,7 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.1 2006-08-12 21:03:47 robertdelmas Exp $
+# Mise a jour $Id: external.tcl,v 1.2 2006-09-28 19:49:34 michelpujol Exp $
 #
 
 package provide external 1.0
@@ -28,156 +28,214 @@ package provide external 1.0
 namespace eval external {
    variable This
    global external
+}
 
-   #==============================================================
-   # Procedures generiques de configuration des drivers
-   #==============================================================
+#------------------------------------------------------------
+#  configureDriver
+#     configure le driver
+#  
+#  return nothing
+#------------------------------------------------------------
+proc ::external::configureDriver { } {
+   global audace
 
-   #------------------------------------------------------------
-   #  init (est lance automatiquement au chargement de ce fichier tcl)
-   #     initialise le driver
-   #  
-   #  return namespace name
-   #------------------------------------------------------------
-   proc init { } {
-      global audace
+   #--- Affiche la liaison
+   ###external::run "$audace(base).external"
 
-      #--- Charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_plugin) link external external.cap ]\""
+   return
+}
 
-      #--- Cree les variables dans conf(...) si elles n'existent pas
-      initConf
-
-      #--- J'initialise les variables widget(..)
-      confToWidget
-
-      return [namespace current]
-   }
-
-   #------------------------------------------------------------
-   #  getDriverType 
-   #     retourne le type de driver
-   #  
-   #  return "link"
-   #------------------------------------------------------------
-   proc getDriverType { } {
-      return "link"
-   }
-
-   #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #  
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-   #------------------------------------------------------------
-   proc getLabel { } {
-      global caption
-
-      return "$caption(external,titre)"
-   }
-
-   #------------------------------------------------------------
-   #  getHelp
-   #     retourne la documentation du driver
-   #  
-   #  return "nom_driver.htm"
-   #------------------------------------------------------------
-   proc getHelp { } {
-
-      return "external.htm"
-   }
-
-   #------------------------------------------------------------
-   #  initConf
-   #     initialise les parametres dans le tableau conf()
-   #  
-   #  return rien
-   #------------------------------------------------------------
-   proc initConf { } {
-      global conf
-
-      return
-   }
-
-   #------------------------------------------------------------
-   #  confToWidget 
-   #     copie les parametres du tableau conf() dans les variables des widgets
-   #  
-   #  return rien
-   #------------------------------------------------------------
-   proc confToWidget { } {
-      variable widget
-      global conf
-
-   }
-
-   #------------------------------------------------------------
-   #  widgetToConf
-   #     copie les variables des widgets dans le tableau conf()
-   #  
-   #  return rien
-   #------------------------------------------------------------
-   proc widgetToConf { } {
-      variable widget
-      global conf
-
-   }
-
-   #------------------------------------------------------------
-   #  fillConfigPage 
-   #     fenetre de configuration du driver
-   #  
-   #  return nothing
-   #------------------------------------------------------------
-   proc fillConfigPage { frm } {
-      variable widget
-      global caption
-
-      #--- Je memorise la reference de la frame
-      set widget(frm) $frm
-
-   }
-
-   #------------------------------------------------------------
-   #  configureDriver
-   #     configure le driver
-   #  
-   #  return nothing
-   #------------------------------------------------------------
-   proc configureDriver { } {
-      global audace
-
-      #--- Affiche la liaison
-      external::run "$audace(base).external"
-
-      return
-   }
-
-   #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver et libere les ressources occupees
-   #  
-   #  return nothing
-   #------------------------------------------------------------
-   proc stopDriver { } {
-
-      #--- Ferme la liaison
-      fermer
-      return
-   }
-
-   #------------------------------------------------------------
-   #  isReady 
-   #     informe de l'etat de fonctionnement du driver
-   #  
-   #  return 0 (ready) , 1 (not ready)
-   #------------------------------------------------------------
-   proc isReady { } {
-
-      return0
-   }
+#------------------------------------------------------------
+#  confToWidget 
+#     copie les parametres du tableau conf() dans les variables des widgets
+#  
+#  return rien
+#------------------------------------------------------------
+proc ::external::confToWidget { } {
+   variable widget
+   global conf
 
 }
+
+#------------------------------------------------------------
+#  create
+#     demarre la liaison 
+#  
+#  return nothing
+#------------------------------------------------------------
+proc ::external::create { linkLabel deviceId usage comment } {
+   #--- pour l'instant, la liaison est demarree par le pilote de la camera
+   return
+}
+
+#------------------------------------------------------------
+#  delete
+#     arrete la liaison et libere les ressources occupees
+#  
+#  return nothing
+#------------------------------------------------------------
+proc ::external::delete { linkLabel deviceId usage } {
+   #--- pour l'instant, la liaison est arretee par le pilote de la camera
+   return
+}
+
+#------------------------------------------------------------
+#  fillConfigPage 
+#     fenetre de configuration du driver
+#  
+#  return nothing
+#------------------------------------------------------------
+proc ::external::fillConfigPage { frm } {
+   variable widget
+   global caption
+
+   #--- Je memorise la reference de la frame
+   set widget(frm) $frm
+
+}
+#------------------------------------------------------------
+#  getDriverType 
+#     retourne le type de driver
+#  
+#  return "link"
+#------------------------------------------------------------
+proc ::external::getDriverType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
+#  getHelp
+#     retourne la documentation du driver
+#  
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::external::getHelp { } {
+
+   return "external.htm"
+}
+
+#------------------------------------------------------------
+#  getLabel
+#     retourne le label du driver
+#  
+#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#------------------------------------------------------------
+proc ::external::getLabel { } {
+   global caption
+
+   return "$caption(external,titre)"
+}
+
+#------------------------------------------------------------
+# getLinkIndex 
+#   retourne l'index du link
+#   
+#   retourne une chaine vide si le link n'existe pas
+#
+#------------------------------------------------------------
+proc ::external::getLinkIndex { linkLabel } {
+   variable private 
+
+   #--- je recupere linkIndex qui est apres le linkType dans linkLabel
+   set linkIndex ""
+   if { [string first $private(genericName) $linkLabel]  == 0 } {   
+      scan $linkLabel "$private(genericName)%s" linkIndex
+   }
+   return $linkIndex
+}
+
+#------------------------------------------------------------
+# ::confLink::getLinkLabels 
+#    retourne la seule instance ethernaude
+#
+#------------------------------------------------------------
+proc ::external::getLinkLabels { } {
+   variable private 
+   return "$private(genericName)1"
+}
+
+#------------------------------------------------------------
+# getSelectedLinkLabel
+#    retourne le link choisi
+#
+#------------------------------------------------------------
+proc ::external::getSelectedLinkLabel { } {
+   variable private 
+   
+   #--- je retourne le label du seul link 
+   return "$private(genericName)1"
+}
+
+#------------------------------------------------------------
+#  init (est lance automatiquement au chargement de ce fichier tcl)
+#     initialise le driver
+#  
+#  return namespace name
+#------------------------------------------------------------
+proc ::external::init { } {
+   variable private 
+
+   #--- Charge le fichier caption
+   uplevel #0  "source \"[ file join $::audace(rep_plugin) link external external.cap ]\""
+
+   #--- je fixe le nom generique de la liaison  identique au namespace
+   set private(genericName) "external"
+
+   #--- Cree les variables dans conf(...) si elles n'existent pas
+   initConf
+
+   #--- J'initialise les variables widget(..)
+   confToWidget
+
+   return [namespace current]
+}
+
+
+#------------------------------------------------------------
+#  initConf
+#     initialise les parametres dans le tableau conf()
+#  
+#  return rien
+#------------------------------------------------------------
+proc ::external::initConf { } {
+   global conf
+
+   return
+}
+
+#------------------------------------------------------------
+#  isReady 
+#     informe de l'etat de fonctionnement du driver
+#  
+#  return 0 (ready) , 1 (not ready)
+#------------------------------------------------------------
+proc ::external::isReady { } {
+
+   return 0
+}
+
+#------------------------------------------------------------
+#  selectConfigItem
+#     selectionne un link dans la fenetre de configuration
+#  
+#  return nothing
+#------------------------------------------------------------
+proc ::external::selectConfigLink { linkLabel } {
+   #--- rien a faire
+}
+
+#------------------------------------------------------------
+#  widgetToConf
+#     copie les variables des widgets dans le tableau conf()
+#  
+#  return rien
+#------------------------------------------------------------
+proc ::external::widgetToConf { } {
+   variable widget
+   global conf
+
+}
+
 
 ::external::init
 

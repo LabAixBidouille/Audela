@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.5 2006-07-10 20:25:57 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.6 2006-09-28 19:53:08 michelpujol Exp $
 #
 
 #=========================================================================
@@ -12,31 +12,43 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(serialport,titre)           "Serial Port"
+set caption(serialport,available)       "# Ports séries disponibles"
+set caption(serialport,refresh)         "# Rafraîchir"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(serialport,titre)        "Port série"
+   set caption(serialport,available)    "Ports séries disponibles"
+   set caption(serialport,refresh)      "Rafraîchir"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(serialport,titre)        "Porta seriale"
+   set caption(serialport,available)    "# Ports séries disponibles"
+   set caption(serialport,refresh)      "# Rafraîchir"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(serialport,titre)        "Puerto serie"
+   set caption(serialport,available)    "# Ports séries disponibles"
+   set caption(serialport,refresh)      "# Rafraîchir"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(serialport,titre)        "Serielle Schnittstelle"
+   set caption(serialport,available)    "# Ports séries disponibles"
+   set caption(serialport,refresh)      "# Rafraîchir"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(serialport,titre)        "# Port série"
+   set caption(serialport,available)    "# Ports séries disponibles"
+   set caption(serialport,refresh)      "# Rafraîchir"
 
 }
 
