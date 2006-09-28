@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.7 2006-09-28 20:00:55 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.8 2006-09-28 21:37:16 robertdelmas Exp $
 #
 
 namespace eval confColor {
@@ -57,7 +57,7 @@ namespace eval confColor {
          if { "$value" == "" } continue
          set colorType [lindex [split $key ,] 2]
          set audace(color,$colorType) $value
-      }      
+      }
 
       #--- Couleurs des glissieres independantes de l'apparence
       set audace(color,cursor_rgb_red)    "red"
@@ -96,7 +96,7 @@ namespace eval confColor {
       global audace
       global conf
 
-      #--- Je change l'apparence 
+      #--- Je change l'apparence
       if { $conf(confcolor,appearance) == "day" } {
          set conf(confcolor,appearance) "night"
          set conf(confcolor,menu_night_vision) "1"
@@ -105,8 +105,8 @@ namespace eval confColor {
          set conf(confcolor,menu_night_vision) "0"
       }
 
-      #--- J'applique le changement 
-      #--- Je copie les couleurs  de l'apparence choisi dans audace (color,*)      
+      #--- J'applique le changement
+      #--- Je copie les couleurs de l'apparence choisi dans audace (color,*)
       foreach {key value} [array get conf confcolor,$conf(confcolor,appearance),*] {
          set colorType [lindex [split $key ,] 2]
          set audace(color,$colorType) $value
@@ -166,7 +166,7 @@ namespace eval confColor {
          set appearance [lindex [split $key ,] 1]
          set colorType [lindex [split $key ,] 2]
          set widget(color,$appearance,$colorType) $value
-      }      
+      }
    }
 
    #------------------------------------------------------------
@@ -178,7 +178,7 @@ namespace eval confColor {
       global audace
       global conf
 
-      #--- Je sauvegarde les couleurs  de widget() dans conf() 
+      #--- Je sauvegarde les couleurs  de widget() dans conf()
       set appearance $conf(confcolor,appearance)
       foreach {key value} [array get widget color,*,*] {
          set appearance [lindex [split $key ,] 1]
@@ -200,7 +200,7 @@ namespace eval confColor {
          set audace(color,$colorType) $value
       }
 
-      #--- Je mets la position actuelle de la fenetre dans conf()      
+      #--- Je mets la position actuelle de la fenetre dans conf()
       set geom [ winfo geometry [winfo toplevel $widget(frm) ] ]
       set deb [ expr 1 + [ string first + $geom ] ]
       set fin [ string length $geom ]
@@ -212,7 +212,7 @@ namespace eval confColor {
          ::confColor::applyColor $base
       }
       ::confColor::applyColor $audace(Console)
-   }   
+   }
 
    #------------------------------------------------------------
    #  ::confColor::fillConfigPage { }
@@ -224,11 +224,11 @@ namespace eval confColor {
       global conf
       global caption
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
-      #--- Je position la fenetre 
-      wm geometry [ winfo toplevel $widget(frm) ]  $conf(confcolor,position)
+      #--- Je position la fenetre
+      wm geometry [ winfo toplevel $widget(frm) ] $conf(confcolor,position)
 
       #--- J'initialise les variables des widgets
       confToWidget $visuNo
@@ -274,9 +274,9 @@ namespace eval confColor {
       global audace
       global conf
 
-      #--- Je restore les couleurs precedentes 
+      #--- Je restore les couleurs precedentes
       if { $widget(appearance) != $conf(confcolor,appearance) } {
-         #--- Je copie les couleurs initiales dans audace (color,*)      
+         #--- Je copie les couleurs initiales dans audace (color,*)
          foreach {key value} [array get conf confcolor,$conf(confcolor,appearance),*] {
             set colorType [lindex [split $key ,] 2]
             set audace(color,$colorType) $value
@@ -289,7 +289,7 @@ namespace eval confColor {
          ::confColor::applyColor $audace(Console)
       }
    }
-   
+
    #------------------------------------------------------------
    #  ::confColor::chooseAppearance
    #  est appele quand on change d'apparence jour/nuit
@@ -304,7 +304,7 @@ namespace eval confColor {
       #--- Je recupere l'apparence qui vient d'etre choisie
       set appearance $widget(appearance)
 
-      #--- Je copie les couleurs  de l'apparence choisi dans audace (color,*)      
+      #--- Je copie les couleurs  de l'apparence choisi dans audace (color,*)
       foreach {key value} [array get widget color,$appearance,*] {
          set colorType [lindex [split $key ,] 2]
          set audace(color,$colorType) $value
@@ -329,7 +329,7 @@ namespace eval confColor {
    #  ::confColor::chooseColor 
    #  est appelle quand on clique sur un bouton d'une couleur
    #     
-   #  param : type de couleur  ( background, foreground, ...)
+   #  param : type de couleur ( background, foreground, ...)
    #------------------------------------------------------------
    proc chooseColor { colorType buttonName } {
       variable widget
@@ -546,7 +546,7 @@ namespace eval confColor {
       }
 
       #--- Je recree les variables supprimees avec les valeurs par defaut
-      confColor::init        
+      confColor::init
 
       #--- Je mets a jour les couleurs de la fenetre audace
       foreach visuNo [ ::visu::list ] {
@@ -555,7 +555,7 @@ namespace eval confColor {
       }
       ::confColor::applyColor $audace(Console)
 
-      #--- Je mets a jour les couleurs de la fenetre de configuration 
+      #--- Je mets a jour les couleurs de la fenetre de configuration
       foreach {key value} [array get widget color,$appearance,*] {
          set i [lindex [split $key ,] 2]
          set widget(color,$appearance,$i) $conf(confcolor,$appearance,$i)
