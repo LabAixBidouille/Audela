@@ -20,10 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: link.h,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+// $Id: link.h,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
 
-#ifndef __LINK_H__
-#define __LINK_H__
+#ifndef __PARELLELPORT_H__
+#define __PARELLELPORT_H__
 
 #include "libname.h"
 #include <liblink/liblink.h>
@@ -37,14 +37,6 @@
  * If it is not defined, lpt port will be used like printer port, so you
  * will need "null printer" modified plug.
 */
-#define OS_WIN_USE_LPT_OLD_STYLE
-
-// appel au construteur specifique
-CLink * createLink();
-
-//  retourne la liste des peripherique de liaison presents
-int available(unsigned long *pnumDevices, char **list);
-
 
 class CParallel : public CLink {
    
@@ -60,21 +52,26 @@ public:
    int getBit(int numbit, int *value);
    void getLastError(char *message);
    int getIndex(int * index);
-   int getAddress( int *a_address);
+   int getAddress( unsigned short *a_address);
 
-   //static int available(unsigned long *numDevices, char **list);
+   static char * getGenericName();
+   static int getAvailableLinks(unsigned long *pnumDevices, char **list);
    
 protected :
    unsigned long lastStatus;
    char currentValue;
-   int address;
+   unsigned short address;
+
+   void bloquer();
+   void debloquer();
+
 
 #if defined(OS_LIN)
    int fileDescriptor;
 #endif   
 
 #if defined(OS_WIN)
-   void * hLongExposureDevice;
+   void * hDevice;
 #endif
    
 };

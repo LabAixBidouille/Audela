@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libname.h,v 1.2 2006-02-25 17:11:13 michelpujol Exp $
+// $Id: libname.h,v 1.3 2006-09-28 19:39:12 michelpujol Exp $
 
 #ifndef __LIBNAME_H__
 #define __LIBNAME_H__
@@ -43,5 +43,7 @@
  * Initialisation d'informations indispensables pour la librairie xx.
  */
 #define LINK_DRIVNAME "quickremote"
+#define LINK_CLASS CQuickremote
+
 
 #endif

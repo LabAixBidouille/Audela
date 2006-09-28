@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: linktcl.h,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+// $Id: linktcl.h,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
 
 #ifndef __LINKTCL_H__
 #define __LINKTCL_H__
@@ -35,8 +35,5 @@ int cmdParallelIndex  (ClientData clientData, Tcl_Interp *interp, int argc, char
    {"bit", (Tcl_CmdProc *)  cmdParallelBit},    \
    {"index", (Tcl_CmdProc *)  cmdParallelIndex},   \
    {"address", (Tcl_CmdProc *)  cmdParallelAddress},
-
- /* === Specific commands for that camera === */
-//int cmdParallelAddress(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif

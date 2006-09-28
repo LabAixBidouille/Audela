@@ -20,21 +20,24 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: linktcl.h,v 1.2 2006-02-25 17:11:13 michelpujol Exp $
+// $Id: linktcl.h,v 1.3 2006-09-28 19:39:12 michelpujol Exp $
 
 #ifndef __LINKTCL_H__
 #define __LINKTCL_H__
 
+// methodes statiques que doivent implementer toutes les librairies link.
+CLink * createLink();
+int available(unsigned long *pnumDevices, char **list);
+char * getGenericName();
+
+
 int cmdQuickremoteChar (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdQuickremoteBit  (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdQuickremoteIndex  (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #define SPECIFIC_CMDLIST \
    {"char", (Tcl_CmdProc *) cmdQuickremoteChar},   \
    {"bit", (Tcl_CmdProc *)  cmdQuickremoteBit},    \
-   {"index", (Tcl_CmdProc *)  cmdQuickremoteIndex},\
 
  /* === Specific commands for that camera === */
-//int cmdParallelAddress(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif

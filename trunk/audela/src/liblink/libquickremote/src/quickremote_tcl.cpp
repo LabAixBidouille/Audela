@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: quickremote_tcl.cpp,v 1.2 2006-02-25 17:11:13 michelpujol Exp $
+// $Id: quickremote_tcl.cpp,v 1.3 2006-09-28 19:39:12 michelpujol Exp $
 
 #ifdef WIN32
 #include <windows.h>
@@ -29,10 +29,7 @@
 #include <sysexp.h>
 #include <tcl.h>
 #include <stdlib.h>
-
-//#include "link.h"
-#include "cquickremote.h"
-
+#include "link.h"
 
 int cmdQuickremoteChar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    
@@ -98,7 +95,6 @@ int cmdQuickremoteBit(ClientData clientData, Tcl_Interp *interp, int argc, char 
          result = TCL_ERROR;
       } else {         
          if(argc==3) {
-            //visu = (CVisu*)clientData;
             if( quickremote->getBit(bit, &value) == LINK_OK) {
                sprintf(ligne, "%d", value); 
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -130,25 +126,6 @@ int cmdQuickremoteBit(ClientData clientData, Tcl_Interp *interp, int argc, char 
    return result;
 }
 
-
-int cmdQuickremoteIndex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   
-   int result ;
-   char message[256];
-   CQuickremote * quickremote = (CQuickremote*)clientData;
-   int index;
-   
-   result = quickremote->getIndex(&index);
-   if (result == LINK_OK) {
-      sprintf(message, "%d", index);
-      Tcl_SetResult(interp,message,TCL_VOLATILE);      
-      return TCL_OK;
-   } else {
-      quickremote->getLastError(message);
-      Tcl_SetResult(interp,message,TCL_VOLATILE);      
-      return TCL_ERROR;
-   }
-}
 
 
 
