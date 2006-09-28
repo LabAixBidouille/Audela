@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: parallel_tcl.cpp,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+// $Id: parallel_tcl.cpp,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
 
 
 #include <sysexp.h>
@@ -160,7 +160,7 @@ int cmdParallelAddress(ClientData clientData, Tcl_Interp *interp, int argc, char
    int result ;
    char message[256];
    CParallel * parallel = (CParallel*)clientData;
-   int address;
+   unsigned short address;
 
    result = parallel->getAddress(&address);
    if (result == LINK_OK) {

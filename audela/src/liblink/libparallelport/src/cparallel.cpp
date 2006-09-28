@@ -20,34 +20,32 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cparallel.cpp,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+// $Id: cparallel.cpp,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
 
 
 #include "sysexp.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
 #if defined(OS_WIN)
-#include <windows.h>
-#include <winspool.h>   // for EnumPorts
+
+   // J'active OS_WIN_USE_PARRALLEL_OLD_STYLE car le nouveau style ne fonctionne pas correctement :
+   // Le programme fonctionne sans erreur mais les brocches du port ne changent pas d'état.
+   // Inconveninent de l'ancien style : il ne fonctionne pas avec les adaptateurs USB->LPT
+   #define OS_WIN_USE_PARRALLEL_OLD_STYLE
+   #include <windows.h>
+   #include <winspool.h>   // for EnumPorts
 #endif
 
 #if defined(OS_LIN)
-#include <fcntl.h>              // O_RDWR
-#include <unistd.h>
-#include <linux/ppdev.h>
-#include <linux/parport.h>
-#include <sys/ioctl.h>
-#include <asm/io.h>     // outb
+   #define OS_LIN_USE_PARRALLEL_OLD_STYLE
+#   include <asm/io.h>     // for inb()
 #endif
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
 #include "link.h"
-
-#if defined(OS_WIN)
-#define OS_WIN_USE_PARRALLEL_OLD_STYLE
-#endif
+#include "util.h"
 
 // =========== local definiton and types ===========
 
@@ -60,24 +58,25 @@
 
 
 // ============= methodes statiques ====================================
-//  appel au construteur local
-CLink * createLink() {
-   return new CParallel();
-}
 
 /**
  * available
- *    retourn la liste des ports disponibles sur la machine
+ *    retourne la liste des ports disponibles sur la machine
+ *    attention : c'est une methode statique !
  */
 
-int available(unsigned long *pnumDevices, char **list) {
+int CParallel::getAvailableLinks(unsigned long *pnumDevices, char **list) {
    int result;
-   char ligne[1024];
 
 #ifdef OS_WIN
+   char ligne[1024];
    DWORD pcbNeeded;
    DWORD pcReturned;
    PORT_INFO_2 * portlist;
+   int ready;
+   #if !defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+      void * hDevice;
+   #endif
 
    *pnumDevices = 0;
 
@@ -91,9 +90,25 @@ int available(unsigned long *pnumDevices, char **list) {
             if(strncmp(portlist[i].pPortName, "LPT", 3) == 0 ) {
                int index =0;
                sscanf(portlist[i].pPortName,"LPT%d:", &index);
-               sprintf(ligne, "{ %d \"%s\" } ", index,  portlist[i].pPortName );
-               strcat(*list, ligne);
-               *pnumDevices++;
+               // je teste l'ouverture du port
+               #if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+               ready = 1;
+               #else
+               hDevice = CreateFile(portlist[i].pPortName,  GENERIC_WRITE|GENERIC_READ, 0, NULL,
+               OPEN_EXISTING, 0, NULL);               
+               if (hDevice != INVALID_HANDLE_VALUE) {
+                  CloseHandle(hDevice);
+                  ready = 1;
+               } else {
+                   ready = 0;
+               }
+               #endif
+               
+               if (ready == 1) {
+                  sprintf(ligne, "{ %d \"%s\" } ", index,  portlist[i].pPortName );
+                  strcat(*list, ligne);
+                  *pnumDevices++;
+               }
             }
          } 
          result = LINK_OK;
@@ -113,24 +128,44 @@ int available(unsigned long *pnumDevices, char **list) {
 #endif
 
 #ifdef OS_LIN
-  sprintf( ligne, "{ 0 \"/dev/parport0\" }");
+  *list = (char *) malloc(1024 * +1);
+  sprintf( *list, "{ 0 \"/dev/parport0\" }");
   result = LINK_OK;
 #endif
   
    return result;
 }
 
+/**
+ * getGenericName
+ *    retourne le nom generique de la liaison 
+ *    attention : c'est une methode statique !
+ */
+
+char * CParallel::getGenericName() {
+#ifdef OS_LIN
+   return "/dev/parport";
+#else
+   return "LPT";
+#endif
+}
+
 
 // ============ implementation des methodes de CParallel ==========================
 
-CParallel::CParallel()
+CParallel::CParallel() : CLink()
 {
 
 }
 
-CParallel::~CParallel()
-{
+/**
+* ~CParallel 
+*    ferme le port parallele
+*    ( le desctruteur de la classe mère ~Clink est appelé implicitement)
+*/
 
+CParallel::~CParallel() 
+{
 
 }
 
@@ -145,9 +180,7 @@ int CParallel::openLink(int argc, char **argv) {
 
 
 #if defined(OS_LIN)
-#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
-   printf("openLink OS_WIN_USE_PARRALLEL_OLD_STYLE \n");
-
+#if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
    address = 0x378;
 
 #else
@@ -187,21 +220,19 @@ int CParallel::openLink(int argc, char **argv) {
    DWORD nNumberOfBytesWritten = 0;
    char name[128];
 
-   sprintf(name, "LPT%d", index);
-   hLongExposureDevice =
-      CreateFile(name,  GENERIC_WRITE|GENERIC_READ, 0, NULL,
+   sprintf(name, "LPT%d:", index);
+   hDevice = CreateFile(name,  GENERIC_WRITE|GENERIC_READ, 0, NULL,
                  OPEN_EXISTING, 0, NULL);
-
-//      CreateFile(name, GENERIC_WRITE, 0, NULL,
+// hDevice =      CreateFile(name, GENERIC_WRITE|GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL,
 //                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING, NULL);
-   if (hLongExposureDevice == INVALID_HANDLE_VALUE) {
+   if (hDevice == INVALID_HANDLE_VALUE) {
       result = LINK_ERROR;
    }
 #endif
 #endif
    if( result == LINK_OK) {
       // j'initialise la sortie à 0
-      result = setChar((char)0);
+      //result = setChar((char)0);
    }
    return result;
 }
@@ -210,7 +241,7 @@ int CParallel::closeLink()
 {
 
 #if defined(OS_LIN)
-#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+#if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
 #else 
    close(fileDescriptor);
 #endif
@@ -220,8 +251,8 @@ int CParallel::closeLink()
 #if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
 
 #else 
-   if( hLongExposureDevice != INVALID_HANDLE_VALUE ) {
-      CloseHandle(hLongExposureDevice);
+   if( hDevice != INVALID_HANDLE_VALUE ) {
+      CloseHandle(hDevice);
    }
 #endif
 #endif
@@ -230,38 +261,20 @@ int CParallel::closeLink()
 }
 
 
-/*
- * Sortie sur un port donne.
- */
-void parallel_out(unsigned short a, unsigned char d)
-{
-#if defined(OS_WIN)
-/* *INDENT-OFF* */
-    _asm {
-        mov dx, a 
-        mov al, d 
-        out dx, al
-    }
-/* *INDENT-ON* */
-#elif defined(OS_LIN)
-printf("parallel_out OS_WIN_USE_PARRALLEL_OLD_STYLE %x\n", a);
-    outb(d, a);
-#elif defined(OS_MACOS)
-#endif
-}
-
-
 /**
-* ftdipapi_write 
+* setChar 
 *    ecrit un octet 
 */
 int CParallel::setChar(char c)
 {
    int result = LINK_OK;
+   unsigned short a = this->address;
 
 #if defined(OS_LIN)
-#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+#if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
+   parallel_bloquer();
    parallel_out(address, c);
+   parallel_debloquer();
 #else
    // Write a byte 
    if (ioctl(fileDescriptor, PPWDATA, &c)) {
@@ -276,14 +289,19 @@ int CParallel::setChar(char c)
 
 #if defined(OS_WIN)
 #if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
-   parallel_out(address, c);
+   // Write a byte 
+   _asm {
+        mov dx, a 
+        mov al, c 
+        out dx, al
+    }
 #else
    DWORD nNumberOfBytesWritten = 0;
-
-   if (!WriteFile (hLongExposureDevice,  &c, 1, &nNumberOfBytesWritten, NULL)
+   // Write a byte 
+   if (!WriteFile (hDevice,  &c, 1, &nNumberOfBytesWritten, NULL)
        || nNumberOfBytesWritten != 1) {
-      CloseHandle(hLongExposureDevice);
-      hLongExposureDevice = INVALID_HANDLE_VALUE;
+      CloseHandle(hDevice);
+      hDevice = INVALID_HANDLE_VALUE;
       result = LINK_ERROR;
    }
 #endif
@@ -296,20 +314,40 @@ int CParallel::setChar(char c)
 }
 
 /**
-* ftdipapi_write 
-*    ecrit un octet 
+* getChar 
+*    lit un octet 
 */
 int CParallel::getChar(char *c) {
    
-   
+#if defined(OS_WIN)
+#if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+   unsigned short a = this->address;
+   char c1;
+   // Read a byte
+   _asm {
+        mov dx, a
+        in al, dx
+        mov c1, al
+    }
+   *c = c1;
+   return LINK_OK;
+#else 
    // not implemented
    return LINK_ERROR;
+#endif
+#elif defined(OS_LIN)
+   // Read a byte
+   *c = inb(this->address);
+    return LINK_OK;
+#elif defined(OS_MACOS)
+	return LINK_ERROR;
+#endif
 
 }
 
 /**
-* ftdipapi_write 
-*    ecrit un octet 
+* setBit 
+*    modifie un bit et ecrit l'octet 
 */
 int CParallel::setBit(int numbit, int value)
 {
@@ -345,8 +383,8 @@ int CParallel::setBit(int numbit, int value)
 
 
 /**
-* ftdipapi_write 
-*    ecrit un octet 
+* getBit 
+*    lit un octet  et retourne la valeur d'un bit
 */
 int CParallel::getBit(int numbit, int *value)
 {
@@ -393,12 +431,11 @@ void CParallel::getLastError(char *message) {
 }
 
 
-
 /**
 *  getAdress
 *    retourne l'adress du port parallele
 */
-int CParallel::getAddress( int *a_address)
+int CParallel::getAddress( unsigned short *a_address)
 {
    *a_address = address;
    return LINK_OK;
@@ -413,3 +450,4 @@ int CParallel::getIndex( int *pindex)
    *pindex = index;
    return LINK_OK;
 }
+

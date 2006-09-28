@@ -106,6 +106,10 @@ SOURCE=.\libquickremote.def
 
 SOURCE=..\src\quickremote_tcl.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\useitem.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -125,6 +129,10 @@ SOURCE=..\src\libname.h
 # Begin Source File
 
 SOURCE=..\src\linktcl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\liblink\useitem.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

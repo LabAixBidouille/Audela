@@ -107,6 +107,10 @@ SOURCE=.\libparallelport.def
 
 SOURCE=..\src\parallel_tcl.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\useitem.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 

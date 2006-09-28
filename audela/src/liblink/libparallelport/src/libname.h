@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libname.h,v 1.2 2006-02-25 17:12:48 michelpujol Exp $
+// $Id: libname.h,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
 
 #ifndef __LIBNAME_H__
 #define __LIBNAME_H__
@@ -44,7 +44,9 @@
  */
 #define LINK_DRIVNAME "parallelport"
 
-#define LINK_INI parallelport_link_ini
-#define LINK_DRV parallelport_link_drv
+#define LINK_CLASS CParallel
+
+//#define LINK_INI parallelport_link_ini
+//#define LINK_DRV parallelport_link_drv
 
 #endif

@@ -20,29 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef __LINK_H__
-#define __LINK_H__
+#ifndef __QUICKREMOTE__H__
+#define __QUICKREMOTE__H__
 
+#include "ftd2xx.h"
 #include "libname.h"
 #include <liblink/liblink.h>
-
-/**
- * If you define OS_WIN_USE_LPT_OLD_STYLE, you will use
- * libcam_out function with your lpt port,
- * this function doesn’t work under WinXP and others
- * WinNT systems.
- *
- * If it is not defined, lpt port will be used like printer port, so you
- * will need "null printer" modified plug.
-*/
-#define OS_WIN_USE_LPT_OLD_STYLE
-
-// appel au construteur specifique
-CLink * createLink();
-
-//  retourne la liste des peripherique de liaison presents
-int available(unsigned long *pnumDevices, char **list);
-
 
 class CQuickremote : public CLink {
    
@@ -50,17 +33,19 @@ public:
    CQuickremote();
    virtual ~ CQuickremote();
    
-   int init(int argc, char **argv);
-   int close();
+   int openLink(int argc, char **argv);
+   int closeLink();
    int setChar(char c);
    int getChar(char *c);
    int setBit(int numbit, int value);
    int getBit(int numbit, int *value);
    void getLastError(char *message);
-   int getIndex(int * usb_index);
+
+   static char * getGenericName();
+   static int getAvailableLinks(unsigned long *pnumDevices, char **list);
    
 protected :
-   void * ftHandle ;
+   FT_HANDLE ftHandle ;
    char  currentValue;
    unsigned long lastStatus;
    

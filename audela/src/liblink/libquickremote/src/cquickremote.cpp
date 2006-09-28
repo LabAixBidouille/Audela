@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.2 2006-02-25 17:11:13 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.3 2006-09-28 19:39:12 michelpujol Exp $
 
 
 #ifdef WIN32
@@ -31,7 +31,9 @@
 #include <stdlib.h>
 #include <string.h>    /* pour strcat, strcpy */
 
-#include "cquickremote.h"
+#include "link.h"
+#include "ftd2xx.h"
+
 
 
 // =========== local definiton and types ===========
@@ -45,11 +47,7 @@
 
 // ============= methodes statiques ====================================
 //  appel au construteur local
-CLink * createLink() {
-   return new CQuickremote();
-}
-
-int available(unsigned long *pnumDevices, char **list) {
+int CQuickremote::getAvailableLinks(unsigned long *pnumDevices, char **list) {
    FT_HANDLE ftHandleTemp;
    DWORD Flags;
    DWORD ID;
@@ -64,12 +62,12 @@ int available(unsigned long *pnumDevices, char **list) {
    char Description[64];
    
    int i;
-   
+
    ftStatus = FT_CreateDeviceInfoList(pnumDevices);
    if (ftStatus != FT_OK) {
       return LINK_ERROR;
    }
-   
+
    // si *pnumDevices = 0, il faut reserver au moins un caractere 
    *list = (char *) malloc(1024 * *pnumDevices +1);
    strcpy ( *list, "");
@@ -88,10 +86,19 @@ int available(unsigned long *pnumDevices, char **list) {
    return result;
 }
 
+/**
+ * getGenericName
+ *    retourne le nom generique de la liaison 
+ *    attention : c'est une methode statique !
+ */
+
+char * CQuickremote::getGenericName() {
+   return "quickremote";
+}
 
 // ============ implementation des methodes de CQuickremote ==========================
 
-CQuickremote::CQuickremote()
+CQuickremote::CQuickremote() : CLink()
 {
    ftHandle = NULL;
    
@@ -111,27 +118,22 @@ CQuickremote::~CQuickremote()
 int CQuickremote::openLink(int argc, char **argv) 
 {
  
-fprintf(stderr, "init ftHandle=%d \n", ftHandle);
   if( ftHandle != NULL ) {
       return  LINK_ERROR;
    }
    
 
-if( argc >= 6) {
-  index = atoi(argv[5]);
-} else {
-      return  LINK_ERROR;
-}
+   if( argc >= 6) {
+     index = atoi(argv[5]);
+   } else {
+         return  LINK_ERROR;
+   }
 
-fprintf(stderr, "init before  FT_Open index=%d\n", index);
    lastStatus = FT_Open(index,&ftHandle);
    if (lastStatus != FT_OK) {
       getLastError(msg);
-fprintf(stderr, "init after FT_Open error=%s\n", msg);
-
       return  LINK_ERROR;
    }
-fprintf(stderr, "init before  FT_SetBitMode index=%d\n", index);
    
    // j'active le mode BitBang avec tous les bits en OUTPUT
    lastStatus = FT_SetBitMode(ftHandle, 0xff, 1);
@@ -139,7 +141,6 @@ fprintf(stderr, "init before  FT_SetBitMode index=%d\n", index);
       return LINK_ERROR;
    }
 
-fprintf(stderr, "init before  setChar \n");
    
    // j'initialise les sorties à 0
    setChar((char)0);
@@ -331,12 +332,3 @@ void CQuickremote::getLastError(char *message) {
 }
 
 
-/**
-* ftdipapi_write 
-*    ecrit un octet 
-*/
-int CQuickremote::getIndex(int * usb_index)
-{
-   *usb_index = index;
-   return LINK_OK;
-}
