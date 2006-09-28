@@ -2301,8 +2301,26 @@ int tt_util_statima(TT_IMA *p,double pixelsat_value,double *mean,double *sigma,d
       /* --- algo de la valeur moy et ecart type de Miller ---*/
       i=(double) (k+1);
       delta=valeur-mu_i;
+// debut modif michel
+      if ( fabs(delta) < 1.0e-300) {
+         if ( delta < 0 ) {
+            delta = -1.0e-300 ;
+         } else {
+            delta = 1.0e-300 ;
+         }
+      }
+// fin modif michel
       mu_ii=mu_i+delta/(i);
       sx_ii=sx_i+delta*(valeur-mu_ii);
+// debut modif michel
+      if ( fabs(sx_ii) < 1.0e-300) {
+         if ( sx_ii < 0 ) {
+            sx_ii = -1.0e-300 ;
+         } else {
+            sx_ii = 1.0e-300 ;
+         }
+      }
+// fin modif michel
       mu_i=mu_ii;
       sx_i=sx_ii;
    }
