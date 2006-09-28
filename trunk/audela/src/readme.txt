@@ -383,32 +383,39 @@ Vous pouvez tout compiler d'un coup :
 5.2.2.1 Installation ftd2xx
 ---------------------------
 
-   Ce driver est nécessaire seulement pour les liaisons avec quickremote
+   Ce driver est nécessaire seulement pour les liaisons avec quickremote 
+   et quickaudine.
 
-   telecharger la librairie libftd2xx
-   http://www.ftdichip.com/Drivers/D2XX/Linux/libftd2xx0.4.8.tar.gz
-   Pour installer, suivre les indications du fichier readme.dat .
- 
-   $ su root
-   # cp libftd2xx.so.0.4.8 /usr/local/lib
-   # cd /usr/local/lib
-   # ln -s libftd2xx.so.0.4.8 libftd2xx.so
-   # cd /usr/lib
-   # ln -s /usr/local/lib/libftd2xx.so.0.4.8 libftd2xx.so
-   
-   Add the following line to /etc/fstab:
-      none /proc/bus/usb usbdevfs defaults,devmode=0666 0 0
-      or
-      none /proc/bus/usb usbdevfs defaults,mode=0666 0 0 (use usbfs in 2.6 kernels)
+   Ce driver est livre avec AudeLA et il est installe automatiquement dans
+   audela/bin quand on installe les modules externes (voir ci-dessus).
 
-   Unload ftdi_sio and usbserial if it is attached to your device 
-   # rmmod ftdi_sio" 
-   # rmmod usbserial 
+   Recommandations pour l'execution de AudeLA :
+      - ajouter le repertoire audela/bin dans la variable d'environnement
+        LD_LIBRARY_PATH avant de demarrer AudeLA.
+
+      - verifier que D_LIBRARY_PATH est correctement valorise :
+            $ cd audela/bin
+            $ ldd libquicka.so
+            libftd2xx.so.0 => libftd2xx.so.0 (0xb7e25000)
+         Si cette commande retourne libftd2xx.so.0 => not found  , verifier
+         LD_LIBRARY_PATH
+
+      - demarrer AudeLA avec un compte ayant les droits d'acces sur 
+        les ports USB (root par exemple)
+
+      - pour eviter les confits avec d'autres drivers FTDI, desactiver 
+        les hotplugs : 
+         Unload ftdi_sio and usbserial if it is attached to your device 
+         # rmmod ftdi_sio 
+         # rmmod usbserial 
+
+   Ce driver est fourni par FTDI 
+       http://www.ftdichip.com/Drivers/D2XX/Linux/libftd2xx0.4.10.tar.gz
 
 5.2.2.2 Installation libgphoto2 2.1.6
 -------------------------------------
 
-   Ce driver est nécessaire seulement pour la camera DSC (appareil photo numérique).
+   Ce driver est nécessaire seulement pour la camera DSLR (appareil photo numérique).
    
    AudeLA founit un patch pour supporter les longues poses supérieures à 30 secondes
    pour les appareils Canon et Nikon.
@@ -426,7 +433,7 @@ Vous pouvez tout compiler d'un coup :
    # make install
 
    Remarque : 
-   il n'est pas necessaire d'installer gtkam ou gphoto2.
+   il n'est pas necessaire d'installer gtkam et gphoto2.
    Ne pas confondre gphoto2 avec libgphoto2 !!
 
 5.2.3 Pre-requis
