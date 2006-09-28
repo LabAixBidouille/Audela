@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.6 2006-06-26 16:51:03 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.7 2006-09-28 19:55:15 michelpujol Exp $
 #
 
    package provide acqapn 1.0
@@ -117,9 +117,9 @@
       proc SetOptions { } {
          global conf confCam 
 
-         foreach var { baud } { set confCam(conf_apn,$var) $conf(apn,$var) }
-        ### foreach var { baud video_port } { set confCam(conf_apn,$var) $conf(apn,$var) }
-         set confCam(conf_webcam,port) $conf(webcam,port)
+         foreach var { baud } { set confCam(apn,$var) $conf(apn,$var) }
+        ### foreach var { baud video_port } { set confCam(apn,$var) $conf(apn,$var) }
+         set confCam(webcam,port) $conf(webcam,port)
          foreach var { video_scale model adjust compression flash focus format lens\
             metering whitebalance exposure mode dzoom } { 
             set confCam(apn,$var) $conf(apn,$var) 
@@ -141,9 +141,9 @@
          #--- Sauvegarde si résolution valide
          if { $confCam(apn,resolution) > "0" } {
             #---Les seules variables de configuration sauvegardées
-            foreach var { baud } { set conf(apn,$var) $confCam(conf_apn,$var) }
-            ### foreach var { baud video_port } { set conf(apn,$var) $confCam(conf_apn,$var) }
-            set conf(webcam,port) $confCam(conf_webcam,port)
+            foreach var { baud } { set conf(apn,$var) $confCam(apn,$var) }
+            ### foreach var { baud video_port } { set conf(apn,$var) $confCam(apn,$var) }
+            set conf(webcam,port) $confCam(webcam,port)
             foreach var { video_scale model adjust format compression flash focus format lens\
                metering whitebalance exposure mode dzoom} {
                set conf(apn,$var) $confCam(apn,$var)
@@ -287,11 +287,11 @@
          #--- Recherche du port série sur lequel la caméra répond 
          set port [::AcqAPN::IdCom]
          if { $port!="no port" && $port!="not found" } {
-            set confCam(conf_apn,serial_port) $port
+            set confCam(apn,serial_port) $port
             set panneau(AcqAPN,cmd_usb)   "-l$port:"
             console::affiche_saut "\n"
-            console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,connect) $confCam(conf_apn,serial_port)\n"
-            console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(conf_apn,baud)\n"
+            console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,connect) $confCam(apn,serial_port)\n"
+            console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(apn,baud)\n"
             ::confVisu::setCamera $audace(visuNo) $audace(camNo) "$confCam(apn,model)"
          } else {
             $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::AcqAPN::Query }
@@ -305,7 +305,7 @@
 
          #--- Créé le fichier audace\audace\plugin\tool\acqapn\saveconf.log
          catch { set reponse [exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) clock -t -f 3\
-            -s $confCam(conf_apn,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
+            -s $confCam(apn,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
          if {![info exists reponse] || ( [info exists reponse] && $msg!="$reponse" ) } {
             ::AcqAPN::ErrComm $msg
             $This.fra4.connect configure -text $caption(acqapn,sw_connect,on)
@@ -370,7 +370,7 @@
          ::AcqAPN::ConfigEtat disabled
 
          #--- Remise en état des paramètres 
-         catch { exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) \
+         catch { exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud) \
             flash $confCam(apn_init,flash)\
             dzoom $confCam(apn_init,dzoom)\
             resolution $confCam(apn_init,resolution)\
@@ -461,7 +461,7 @@
          while { $panneau(AcqAPN,nb_poses) > 0 } {
             set msg ""
             catch {
-               exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
+               exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud)\
                flash $confCam(apn,flash)\
                dzoom $confCam(apn,dzoom)\
                resolution $confCam(apn,resolution)\
@@ -498,7 +498,7 @@
             #--- on l'éteint après un délai de 1 secondes
             if { $confCam(apn,mode)!="Off" } {
                after 1000 
-               exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) mode Off
+               exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud) mode Off
             }
 
             #--- Les paramètres avec des erreurs : shutter aperture color zoom
@@ -554,7 +554,7 @@
          $This.avance.efface.erase configure -text $caption(acqapn,sw,encours)
          ::AcqAPN::ConfigEtat disabled
 
-         catch { exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
+         catch { exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud)\
             erase$panneau(AcqAPN,a_effacer) } msg
 
          if { $msg!="eph_open failed" } { 
@@ -607,7 +607,7 @@
 
          if { $confCam(apn,nb_images)!="0" && $confCam(apn,nb_images)!="-" } {
             cd "$conf(rep_images)"
-            catch { exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud)\
+            catch { exec $panneau(AcqAPN,photopc) -q $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud)\
                "$panneau(AcqAPN,mini)" $panneau(AcqAPN,selection) "$panneau(AcqAPN,imagename)" } msg
             if { $msg=="" } {
                #--- Message sur la console
@@ -903,14 +903,14 @@
          if { $panneau(AcqAPN,initstate)=="1" } {
 
             #--- Mise à jour du nombre de poses en mémoire
-            catch { set infos [exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) count] }  msg       
+            catch { set infos [exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud) count] }  msg       
             if { $msg!="" && $msg!="$infos" } { ::AcqAPN::ErrComm $msg ; return }
             set confCam(apn,nb_images) [lindex $infos end]
 
             if { $confCam(apn,nb_images) > "0" } {
 
                #--- Crée le fichier saverep.log dans audace\audace\plugin\tool\acqapn\saverep.log
-               catch { set infos [exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(conf_apn,baud) list] } msg
+               catch { set infos [exec $panneau(AcqAPN,photopc) $panneau(AcqAPN,cmd_usb) -s $confCam(apn,baud) list] } msg
                if { $msg!="" && $msg!="$infos" } { ::AcqAPN::ErrComm $msg ; return }
                set rp [open $panneau(AcqAPN,saverep) w]
                puts $rp $infos
