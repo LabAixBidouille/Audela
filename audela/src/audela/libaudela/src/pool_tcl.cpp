@@ -32,6 +32,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
 int CmdListPoolItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int CmdGetGenericNamePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 int CmdListPoolItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -93,6 +94,37 @@ int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
    }
    free(ligne);
    return TCL_OK;
+}
+
+int CmdGetGenericNamePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result;
+   char *ligne;
+   CPool *pool;
+   char*classname;
+   pool = (CPool*)clientData;
+   classname = pool->GetClassname();
+   ligne = (char*)calloc(200,sizeof(char));
+   if(argc==2) {
+      // chargement de la lib'argv[1]'
+      sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
+      //Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
+         sprintf(ligne,"error when loading driver lib%s ", interp->result);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         free(ligne);
+         return TCL_ERROR;
+      } else {
+         sprintf(ligne,"%s genericname",argv[1]);
+         result = Tcl_Eval(interp,ligne);
+      }
+   } else {
+      sprintf(ligne,"Usage: %s liblink_driver ?options?",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   }
+   free(ligne);
+   return result;
 }
 
 int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -372,7 +404,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
                pool->Ajouter(0,toto);
                dontCreateCommand = 1;      
                // Cree la nouvelle commande par le biais de l'unique
-               // commande exportee de la librairie libtel.
+               // commande exportee de la librairie liblink.
                sprintf(ligne,"%s link%d %s ",argv[1],toto->no,argv[2]);
                for (kk=0;kk<argc;kk++) {
                   strcat(ligne,argv[kk]);
@@ -388,7 +420,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
                   break;
                } else {
                   strcpy(s,interp->result);
-                  sprintf(ligne,"::tel::delete %d",toto->no);
+                  sprintf(ligne,"::link::delete %d",toto->no);
                   Tcl_Eval(interp,ligne);
                   toto=NULL;
                   break;
