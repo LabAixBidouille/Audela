@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.23 2006-08-26 21:24:04 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.24 2006-09-28 20:05:43 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -521,10 +521,11 @@ namespace eval ::AcqFC {
                set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera11) }
             }
+         
             #---
             switch -exact -- $panneau(AcqFC,$visuNo,obt) {
                0  {
-                  set confCam(conf_$camProduct,foncobtu) $caption(acqfc,obtu_ouvert)
+                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ouvert)
                   catch {
                      $frm.foncobtu configure -height [ llength $ShutterOptionList ]
                      $frm.foncobtu configure -values $ShutterOptionList
@@ -532,7 +533,7 @@ namespace eval ::AcqFC {
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "opened"
                }
                1  {
-                  set confCam(conf_$camProduct,foncobtu) $caption(acqfc,obtu_ferme)
+                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ferme)
                   catch {
                      $frm.foncobtu configure -height [ llength $ShutterOptionList ]
                      $frm.foncobtu configure -values $ShutterOptionList
@@ -540,7 +541,7 @@ namespace eval ::AcqFC {
                   cam[ ::confVisu::getCamNo $visuNo ] shutter "closed"
                }
                2  {
-                  set confCam(conf_$camProduct,foncobtu) $caption(acqfc,obtu_synchro)
+                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_synchro)
                   catch {
                      $frm.foncobtu configure -height [ llength $ShutterOptionList ]
                      $frm.foncobtu configure -values $ShutterOptionList
