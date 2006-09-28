@@ -336,7 +336,7 @@ FT_STATUS WINAPI FT_GetModemStatus(
     FT_HANDLE ftHandle,
 	ULONG *pModemStatus
 	);
-
+	
 FTD2XX_API
 FT_STATUS WINAPI FT_SetChars(
     FT_HANDLE ftHandle,
@@ -480,6 +480,33 @@ typedef struct ft_program_data {
 	UCHAR IFBIsFifoTar;			// non-zero if interface is 245 FIFO CPU target
 	UCHAR IFBIsFastSer;			// non-zero if interface is Fast serial
 	UCHAR BIsVCP;				// non-zero if interface is to use VCP drivers
+	//
+	// FT232R extensions
+	//
+	UCHAR UseExtOsc;			// Use External Oscillator
+	UCHAR HighDriveIOs;			// High Drive I/Os
+	UCHAR EndpointSize;			// Endpoint size
+
+	UCHAR PullDownEnableR;		// non-zero if pull down enabled
+	UCHAR SerNumEnableR;		// non-zero if serial number to be used
+
+	UCHAR InvertTXD;			// non-zero if invert TXD
+	UCHAR InvertRXD;			// non-zero if invert RXD
+	UCHAR InvertRTS;			// non-zero if invert RTS
+	UCHAR InvertCTS;			// non-zero if invert CTS
+	UCHAR InvertDTR;			// non-zero if invert DTR
+	UCHAR InvertDSR;			// non-zero if invert DSR
+	UCHAR InvertDCD;			// non-zero if invert DCD
+	UCHAR InvertRI;				// non-zero if invert RI
+
+	UCHAR Cbus0;				// Cbus Mux control
+	UCHAR Cbus1;				// Cbus Mux control
+	UCHAR Cbus2;				// Cbus Mux control
+	UCHAR Cbus3;				// Cbus Mux control
+	UCHAR Cbus4;				// Cbus Mux control
+
+	UCHAR RIsVCP;				// zero if using VCP drivers
+	
 } FT_PROGRAM_DATA, *PFT_PROGRAM_DATA;
 
 
@@ -828,6 +855,59 @@ FT_STATUS WINAPI FT_GetDeviceInfoDetail(
 	LPVOID lpDescription,
 	FT_HANDLE *pftHandle
 	);
+
+//
+// Events
+//
+
+#define EV_RXCHAR           0x0001  // Any Character received
+#define EV_RXFLAG           0x0002  // Received certain character
+#define EV_TXEMPTY          0x0004  // Transmitt Queue Empty
+#define EV_CTS              0x0008  // CTS changed state
+#define EV_DSR              0x0010  // DSR changed state
+#define EV_RLSD             0x0020  // RLSD changed state
+#define EV_BREAK            0x0040  // BREAK received
+#define EV_ERR              0x0080  // Line status error occurred
+#define EV_RING             0x0100  // Ring signal detected
+#define EV_PERR             0x0200  // Printer error occured
+#define EV_RX80FULL         0x0400  // Receive buffer is 80 percent full
+#define EV_EVENT1           0x0800  // Provider specific event 1
+#define EV_EVENT2           0x1000  // Provider specific event 2
+
+//
+// Escape Functions
+//
+
+#define SETXOFF             1       // Simulate XOFF received
+#define SETXON              2       // Simulate XON received
+#define SETRTS              3       // Set RTS high
+#define CLRRTS              4       // Set RTS low
+#define SETDTR              5       // Set DTR high
+#define CLRDTR              6       // Set DTR low
+#define RESETDEV            7       // Reset device if possible
+#define SETBREAK            8       // Set the device break line.
+#define CLRBREAK            9       // Clear the device break line.
+
+//
+// PURGE function flags.
+//
+#define PURGE_TXABORT       0x0001  // Kill the pending/current writes to the comm port.
+#define PURGE_RXABORT       0x0002  // Kill the pending/current reads to the comm port.
+#define PURGE_TXCLEAR       0x0004  // Kill the transmit queue if there.
+#define PURGE_RXCLEAR       0x0008  // Kill the typeahead buffer if there.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifdef __cplusplus
 }
