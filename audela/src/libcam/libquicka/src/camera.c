@@ -37,7 +37,7 @@
 #include <math.h>
 
 #include "camera.h"
-#include <libcam/util.h>
+#include "ftd2xx.h"
 
 //#define LIBQUICKA_LOGFILE
 
@@ -153,10 +153,20 @@ struct cam_drv_t CAM_DRV = {
 
 static int quicka_start(struct camprop *cam);
 static int quicka_read(struct camprop *cam, unsigned short *p);
-static int open_quicka(void);
-static int close_quicka(void);
+short usb_start(short KAF,short x1,short y1,short x2,short y2,
+                                              short bin_x,short bin_y,short shutter,
+                                              short shutter_mode,short ampli_mode,
+                                              short acq_mode,short d1,short d2,short speed,
+                                              short *imax,short *jmax);
+short usb_readaudine(short imax,short jmax,short *p);
+short usb_write(short v);
 
+void libcam_sleep(int ms);
+void libcam_swap(int *a, int *b);
 
+FT_HANDLE ftHandle ;
+unsigned long lastStatus;
+   
 /* ========================================================= */
 /* ========================================================= */
 /* ===     Macro fonctions de pilotage de la camera      === */
@@ -176,45 +186,35 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 /* cam::create quicka usb */
 {
-    int rr;
-    short r;
-    rr = open_quicka();		/* load quicka.dll functions */
-    if (rr != 0) {
-	sprintf(cam->msg, "Can't open quicka.dll : Error number %d", rr);
-	return rr;
-    }
-    r = usb_loadlib();		/* ' Register the FTDI USB functions */
-    if (r != 0) {
-	sprintf(cam->msg,
-		"QuickAudine USB interface driver not found : Error number %d",
-		r);
-	return r;
-    }
-    r = usb_init();		/* ' Check physical presence of QuickAudine interface */
-    if (r != 0) {
-	sprintf(cam->msg,
-		"QuickAudine USB interface not connected : Error number %d",
-		r);
-	return r;
-    }
-    r = usb_end();		/* ' End of the check */
-    if (r != 0) {
-	sprintf(cam->msg,
-		"QuickAudine USB end check not done : Error number %d", r);
-	return r;
-    }
-    /*cam->delayshutter = 1.2; */
-    cam->delayshutter = 0.0;
-    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
-    cam->authorized = 1;
-    cam->speed = (short) 2;
-    return 0;
+   FT_STATUS status;
+
+   cam->portindex = 0; 
+
+   status = FT_Open(cam->portindex,&ftHandle);
+   if (status != FT_OK) {
+      sprintf(cam->msg, "Can't open FTDI device : Error number %ld", status);
+      return -1;
+   }
+
+   /*cam->delayshutter = 1.2; */
+   cam->delayshutter = 0.0;
+   cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+   cam->authorized = 1;
+   cam->speed = (short) 2;
+   return 0;
 }
 
 int cam_close(struct camprop *cam)
 {
-    close_quicka();
-    return 0;
+   FT_STATUS status;
+
+   if( ftHandle != NULL ) {
+      status = FT_Close(ftHandle);
+      if (status != FT_OK) {
+         return -1;
+      }
+   }
+   return 0;
 }
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
@@ -421,7 +421,8 @@ int quicka_start(struct camprop *cam)
 	sprintf(cam->msg,
 		"Dialog problem with the QuickAudine USB interface : Error number %d",
 		r);
-	usb_init();
+//  michel : a faire
+	//usb_init();
 	return r;
     }
     if (r == 17) {
@@ -438,129 +439,346 @@ int quicka_read(struct camprop *cam, unsigned short *p)
     short imax, jmax;
     imax = (short) cam->w;
     jmax = (short) cam->h;
-    r = usb_readaudine(imax, jmax, p);
-    return 0;
+// michel pourquoi changer le cast de *p ??
+    r = usb_readaudine(imax, jmax, (short*) p);
+    return r;
+}
+
+
+/************************* USB_START ******************************/
+/* Initiate image parameters, clear CCD and start exposure        */
+/* KAF=1 : KAF0400 CCD - KAF=2 : KAF1600 CCD                      */
+/* KAF=3 : KAF3200 CCD                                            */
+/* (x1,y1)-(x2,y2) : subframe coordinates                         */
+/* (bin_x, bin_y) : binning factors                               */
+/* shutter=0 : shutter always closed - shutter=1 : synchro        */
+/* shutter_mode=0 : no inverted - shutter_mode=1 : inverted       */
+/* ampli_mode=0 : amplifier on during exposure                    */
+/* ampli_mode=1 : amplifier off during exposure                   */
+/* acq_mode=1 (default mode)                                      */
+/* (d1, d2) : delay between shutter activation and image reading  */
+/*            duration = (d1+16.d2)*10 ms                         */
+/* speed=6 : speed of the interface (between 1...15)              */ 
+/* (imax, jmax) : pointers to calculated image format             */ 
+/* Note: overscan mode -> negative value for x1                   */
+/*                     -> y2>nx                                   */
+/******************************************************************/
+short usb_start(short KAF,short x1,short y1,short x2,short y2,
+                                              short bin_x,short bin_y,short shutter,
+                                              short shutter_mode,short ampli_mode,
+                                              short acq_mode,short d1,short d2,short speed,
+                                              short *imax,short *jmax)
+{
+   FT_STATUS status;
+   short nb_fastclear,tmp,k;
+   short X1_H_1,X1_L_2,X1_L_1;
+   short X2_H_1,X2_L_2,X2_L_1;
+   short Y1_H_1,Y1_L_2,Y1_L_1;
+   short Y2_H_1,Y2_L_2,Y2_L_1;
+   unsigned char tx[2],rx[2];
+   unsigned long Nb_RxOctets;
+   short nx=0;
+   
+   if (KAF==4) 
+      {
+      // Error: CCD not supported
+      return 13;
+      }
+   
+   nb_fastclear=2;  // number of clear CCD cycle - max. value: 15
+   
+   if (x1>x2)  // Protect bad entry
+      {
+      tmp=x1;
+      x1=x2;
+      x2=tmp;
+      }  
+   
+   if (y1>y2)  // Protect bad entry
+      {
+      tmp=y1;
+      y1=y2;
+      y2=tmp;
+      }  
+   
+   
+   if (KAF==1) nx=768; 
+   if (KAF==2) nx=1536; 
+   if (KAF==3) nx=2184; 
+   if (x2>nx) return 14; // Error: Bad image format  
+   if (y1<=0) return 14; 
+   if (speed>15) speed=15;
+   if (speed<1) speed=1;
+   
+   tmp=nx/bin_x-x2+1;  // Invert x1 & x2
+   x2=nx/bin_x-x1+1;
+   x1=tmp;
+   
+   *imax=x2-x1+1; // Actual size of the image
+   *jmax=y2-y1+1;
+   
+   // y2++; // first line purge procedure (add internaly one line)
+      
+   X1_H_1 = x1 / 256;
+   X1_L_2 = (x1 - X1_H_1 * 256) / 16;
+   X1_L_1 = x1-X1_H_1 * 256 - X1_L_2 * 16;
+   
+   X2_H_1 = x2 / 256;
+   X2_L_2 = (x2 - X2_H_1 * 256) / 16;
+   X2_L_1 = x2 - X2_H_1 * 256 - X2_L_2 * 16;
+   
+   Y1_H_1 = y1 / 256;
+   Y1_L_2 = (y1 - Y1_H_1 * 256) / 16;
+   Y1_L_1 = y1-Y1_H_1 * 256 - Y1_L_2 * 16;
+   
+   Y2_H_1 = y2 / 256;
+   Y2_L_2 = (y2 - Y2_H_1 * 256) / 16;
+   Y2_L_1 = y2 - Y2_H_1 * 256 - Y2_L_2 * 16;
+   
+   tx[0]=0;
+   tx[1]=acq_mode * 16;
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=KAF * 16;
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=bin_x * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=bin_y * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=X1_L_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=X1_L_2 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=X1_H_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=X2_L_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=X2_L_2 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=X2_H_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=Y1_L_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=Y1_L_2 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=Y1_H_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=Y2_L_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=Y2_L_2 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=Y2_H_1 * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=nb_fastclear * 16;      
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=shutter * 16;             
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=shutter_mode * 16;             
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=d1 * 16;         
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=d2 * 16;       
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=ampli_mode * 16;             
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=speed * 16;           
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=0 * 16;    // Reserved         
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=0 * 16;    // Reserved         
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   tx[0]=0;
+   tx[1]=0 * 16;   // Reserved                    
+   FT_Write(ftHandle,tx,2,&Nb_RxOctets);
+   
+   // Data ready ?
+   k=0;
+   FT_GetQueueStatus(ftHandle,&Nb_RxOctets);
+   while (Nb_RxOctets==0) 
+      {
+      FT_GetQueueStatus(ftHandle,&Nb_RxOctets);
+   #ifdef _WINDOWS
+      Sleep(10); // TimeOut
+   #endif
+   #ifdef __linux__
+      usleep(10000);
+   #endif
+      k++;
+      if (k==2000) /* 200 changed by 2000 by A. Klotz on Jul. 2003 18th (k=308) */ 
+         {
+         // Error: Dialog problem with the USB interface
+         return 16;  
+         }
+      }
+   status = FT_Read(ftHandle,rx,1,&Nb_RxOctets); // CheckSum
+   if ( status != FT_OK ||  (rx[0] & 240) / 16 != 11)
+      {
+      // Error: Data transmission error
+      return 17;
+      }
+
+   return 0;
+}
+
+
+/************* USB_READAUDINE *************/
+/* Transfer the image to the computer     */
+/* (imax, jmax) : image format            */
+/* p : pointer to the image               */
+/******************************************/
+short usb_readaudine(short imax,short jmax,short *p)
+{
+int j=0;
+int k=0;
+int v1,v2,v3,v4,v;
+int nb_pixel;
+int longueur_buffer=1024;  
+char ReadBuffer[1024];
+unsigned long Nb_RxOctets,i;
+
+nb_pixel=(unsigned long)imax*jmax;
+
+   while (j<=4*nb_pixel-longueur_buffer)  {
+      FT_GetQueueStatus(ftHandle, &Nb_RxOctets);
+   
+      while((int)Nb_RxOctets<longueur_buffer) {
+         FT_GetQueueStatus(ftHandle, &Nb_RxOctets);
+      }
+   
+      FT_Read(ftHandle,ReadBuffer,longueur_buffer,&Nb_RxOctets);
+   
+      for (i=0;i<Nb_RxOctets;i+=4)
+         { 
+         v1=(int)ReadBuffer[i] & 15;
+         v2=(int)ReadBuffer[i+1] & 15;
+         v3=(int)ReadBuffer[i+2] & 15;
+         v4=(int)ReadBuffer[i+3] & 15;
+         v=v1+16*v2+256*v3+4096*v4;
+         if (v>32767)
+            p[k]=32767;
+         else
+            p[k]=(short)v;
+         k++;
+         }
+      j=j+longueur_buffer;
+      } 
+   
+   if (j!=4*nb_pixel) {
+      FT_GetQueueStatus(ftHandle, &Nb_RxOctets);
+      while ((int)Nb_RxOctets<4*nb_pixel-j) {
+         FT_GetQueueStatus(ftHandle,&Nb_RxOctets);
+      }
+
+      FT_Read(ftHandle,ReadBuffer,4*nb_pixel-j,&Nb_RxOctets);
+ 
+      for (i=0;i<Nb_RxOctets;i+=4)
+         { 
+         v1=(int)ReadBuffer[i] & 15;
+         v2=(int)ReadBuffer[i+1] & 15;
+         v3=(int)ReadBuffer[i+2] & 15;
+         v4=(int)ReadBuffer[i+3] & 15;
+         v=v1+16*v2+256*v3+4096*v4;
+         if (v>32767)
+            p[k]=32767;
+         else
+            p[k]=(short)v;
+         k++;
+         }
+      }
+   return 0;
+}
+
+/********** USB_WRITE *************/
+/* Write onto USB interface       */
+/**********************************/
+short usb_write(short v) {
+   unsigned char tx[2];
+   unsigned long Nb_RxOctets;
+   FT_STATUS status;
+ 
+   tx[0]=0;
+   tx[1]=(unsigned char)v;  
+   status = FT_Write(ftHandle, tx, 2, &Nb_RxOctets);
+   if (lastStatus != FT_OK || Nb_RxOctets !=2 ) {
+      return -1;
+   }
+   return 0;
+}
+
+/*
+ * Attente en millisecondes.
+ */
+void libcam_sleep(int ms)
+{
+#if defined(OS_LIN)
+    usleep(ms * 1000);
+#elif defined(OS_WIN)
+    Sleep(ms);
+#elif defined(OS_MACOS)
+    usleep(ms * 1000);
+#endif
+}
+
+/*
+ * Echange deux entiers pointes par a et b.
+ */
+void libcam_swap(int *a, int *b)
+{
+    register int t;
+    t = *a;
+    *a = *b;
+    *b = t;
 }
 
 /***************************************************************************/
-/* open_quicka                                                         */
-/***************************************************************************/
-/* Returned integer value :                                                */
-/* =0 : library anb import function are well loaded.                       */
-/* =1 : error : did not find the library file.                             */
-/*              causes can be an invalid pathname or a LD_LIBRARY_PATH not */
-/*              initialized in the Unix environnements.                    */
-/* =2 : error : libray file is well loaded but not the import functions not*/
-/***************************************************************************/
-int open_quicka(void)
-{
-#if defined(OS_WIN)
-    quicka = LoadLibrary(QUICKA_NAME);
-    if ((quicka != NULL)) {
-	USB_LOADLIB =
-	    (QUICKA_USB_LOADLIB *) GetProcAddress(quicka, USB_LOADLIBQ);
-	if (USB_LOADLIB == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_CLOSELIB =
-	    (QUICKA_USB_CLOSELIB *) GetProcAddress(quicka, USB_CLOSELIBQ);
-	if (USB_CLOSELIB == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_INIT = (QUICKA_USB_INIT *) GetProcAddress(quicka, USB_INITQ);
-	if (USB_INIT == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_END = (QUICKA_USB_END *) GetProcAddress(quicka, USB_ENDQ);
-	if (USB_END == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_WRITE =
-	    (QUICKA_USB_WRITE *) GetProcAddress(quicka, USB_WRITEQ);
-	if (USB_WRITE == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_START =
-	    (QUICKA_USB_START *) GetProcAddress(quicka, USB_STARTQ);
-	if (USB_START == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_READAUDINE =
-	    (QUICKA_USB_READAUDINE *) GetProcAddress(quicka,
-						     USB_READAUDINEQ);
-	if (USB_READAUDINE == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-    } else {
-	return (1);
-    }
-#endif
-#if defined(OS_LIN)
-printf("QUICKA_NAME=%s\n",QUICKA_NAME);
-    quicka = dlopen(QUICKA_NAME, RTLD_LAZY);
-    if (quicka != NULL) {
-	USB_LOADLIB = dlsym(quicka, USB_LOADLIBQ);
-	if (USB_LOADLIB == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_CLOSELIB = dlsym(quicka, USB_CLOSELIBQ);
-	if (USB_CLOSELIB == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_INIT = dlsym(quicka, USB_INITQ);
-	if (USB_INIT == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_END = dlsym(quicka, USB_ENDQ);
-	if (USB_END == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_WRITE = dlsym(quicka, USB_WRITEQ);
-	if (USB_WRITE == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_START = dlsym(quicka, USB_STARTQ);
-	if (USB_START == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-	USB_READAUDINE = dlsym(quicka, USB_READAUDINEQ);
-	if (USB_READAUDINE == NULL) {
-	    close_quicka();
-	    return (2);
-	}
-    } else {
-	return (1);
-    }
-#endif
-    return (0);
-}
 
-/***************************************************************************/
-/* close_quicka                                                            */
-/***************************************************************************/
-/* Returned integer value :                                                */
-/* =0 : library anb import function are well closed.                       */
-/***************************************************************************/
-int close_quicka(void)
-{
-#if defined(OS_WIN)
-    FreeLibrary(quicka);
-#endif
-#if defined(OS_LIN)
-    dlclose(quicka);
-#endif
-    return 0;
-}
+
+
