@@ -31,6 +31,7 @@ Revision History:
 	11/02/05	awm		Added LocId to FT_DEVICE_LIST_INFO_NODE.
 	25/08/05	awm		Added FT_SetDeadmanTimeout.
 	02/12/05	awm		Removed obsolete references.
+	05/12/05	awm		Added FT_GetVersion, FT_GetVersionEx.
 	
 	
 --*/
@@ -845,6 +846,23 @@ FT_STATUS WINAPI FT_GetDeviceInfoDetail(
 	LPVOID lpDescription,
 	FT_HANDLE *pftHandle
 	);
+
+
+//
+// Version information
+//
+
+FTD2XX_API
+FT_STATUS WINAPI FT_GetDriverVersion(
+    FT_HANDLE ftHandle,
+	LPDWORD lpdwVersion
+	);
+
+FTD2XX_API
+FT_STATUS WINAPI FT_GetLibraryVersion(
+	LPDWORD lpdwVersion
+	);
+
 
 
 
