@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.4 2006-07-07 12:54:14 michelpujol Exp $
+// $Id: camtcl.c,v 1.5 2006-09-28 19:28:13 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -434,40 +434,6 @@ int cmdCamUseCf(ClientData clientData, Tcl_Interp * interp,
    }
    return result;
 }
-
-/**
- * cmdCamDebug
- * Change debug level log.
- *
- * param : 
- *    0=disable debug log, 1= enable debug log
- */
-int cmdCamDebug(ClientData clientData, Tcl_Interp * interp,
-                               int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK, pb = 0;
-   struct camprop *cam;
-   cam = (struct camprop *) clientData;
-   cam->interp = interp;
-
-   if (argc != 3) {
-      sprintf(ligne, "Usage: %s %s 0|1", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      if(argv[2][0] == '0' || argv[2][0] == '1' ) {
-         cam_setDebug(cam, atoi(argv[2]));
-         result = TCL_OK;
-      } else {
-         sprintf(ligne, "Usage: %s %s ?0|1?\n Invalid value. Must be 0 or 1", argv[0], argv[1]);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         result = TCL_ERROR;
-      }
-   }
-   return result;
-}
-
 
 /**
  * cmdCamLonguePose - Réglage du mode longue pose.
