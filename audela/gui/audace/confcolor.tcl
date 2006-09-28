@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.6 2006-07-03 17:55:50 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.7 2006-09-28 20:00:55 michelpujol Exp $
 #
 
 namespace eval confColor {
@@ -463,6 +463,10 @@ namespace eval confColor {
          Listbox {
             $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
          }
+         ListBox {
+            #--- listbox de Bwidget
+            $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
+         }
          Scrollbar {
             $w configure -activebackground $audace(color,backColor) \
                -background $audace(color,backColor) \
@@ -542,7 +546,7 @@ namespace eval confColor {
       }
 
       #--- Je recree les variables supprimees avec les valeurs par defaut
-      confColor::init	
+      confColor::init        
 
       #--- Je mets a jour les couleurs de la fenetre audace
       foreach visuNo [ ::visu::list ] {
