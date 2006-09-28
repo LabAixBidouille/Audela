@@ -103,6 +103,7 @@ extern int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc
 extern int CmdListPoolItems(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+extern int CmdGetGenericNamePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 //------------------------------------------------------------------------------
