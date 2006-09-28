@@ -543,6 +543,7 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::link::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::available",(Tcl_CmdProc *)CmdAvailablePoolItem,(void*)link_pool,NULL);
+   Tcl_CreateCommand(interp,"::link::genericname",(Tcl_CmdProc *)CmdGetGenericNamePoolItem,(void*)link_pool,NULL);
 //modif michel fin
 
    Tcl_CreateCommand(interp,"audela_version",(Tcl_CmdProc *)CmdAudelaVersion,(void*)NULL,NULL);
@@ -583,7 +584,7 @@ extern "C" int Audela_Init(Tcl_Interp*interp)
          Tcl_SetResult(interp,"Tk Stubs initialization failed in libaudela.",TCL_STATIC);
          /*return TCL_ERROR;*/
       }  
-   } catch (const CErrorLibstd& e) {
+   } catch (const CError &e) {
       withtk=0;
       throw e;
    }
