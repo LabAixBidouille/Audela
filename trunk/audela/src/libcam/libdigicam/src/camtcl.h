@@ -39,13 +39,11 @@
    {"longueposelinkbit",   (Tcl_CmdProc *)cmdCamLonguePoseLinkbit}, \
    {"longueposestartvalue",(Tcl_CmdProc *)cmdCamLonguePoseStartValue}, \
    {"longueposestopvalue", (Tcl_CmdProc *)cmdCamLonguePoseStopValue}, \
-   {"usecf",               (Tcl_CmdProc *)cmdCamUseCf},\
-   {"debug",               (Tcl_CmdProc *)cmdCamDebug},
+   {"usecf",               (Tcl_CmdProc *)cmdCamUseCf},
 
  /* === Specific commands for that camera === */
 int cmdCamAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
