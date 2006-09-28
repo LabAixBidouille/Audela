@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.24 2006-09-02 08:18:14 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.25 2006-09-28 19:59:29 michelpujol Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -896,9 +896,9 @@ namespace eval ::audace {
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {
-         if { $conf(confLink,start) == "1" } {
-            ::confLink::configureDriver
-         }
+         #if { $conf(confLink,start) == "1" } {
+         #   ::confLink::configureDriver
+         #}
          ::confTel::configureTelescope
       }
 
@@ -929,7 +929,7 @@ namespace eval ::audace {
          set kk "0"
          set kd "2"
       } else {
-         set port_com "com"
+         set port_com "COM"
          set kk "1"
          set kd "3"
       }
@@ -1971,8 +1971,6 @@ namespace eval ::audace {
       if {[winfo exists $audace(base).tjrsvisible]==1} {
          set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
       }
-      #--- Arrete le plugin liaison
-      ::confLink::stopDriver
       #--- Arrete les plugins camera
       ::confCam::stopDriver
       #--- Arrete le plugin monture

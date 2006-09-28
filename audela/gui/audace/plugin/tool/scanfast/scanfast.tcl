@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.15 2006-09-14 22:12:11 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.16 2006-09-28 19:58:57 michelpujol Exp $
 #
 
 package provide scanfast 1.0
@@ -202,40 +202,37 @@ namespace eval ::Scanfast {
             -command " "
       }
       #--- Cas particulier
-      if { $conf(audine,port) == "$caption(confcam,ethernaude)" } {
-         pack forget $This.fra33
-         pack $This.fra4 -side top -fill x
-         pack forget $This.fra4.but2
-         pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
-         pack $This.fra5 -side top -fill x
-         if { $panneau(Scanfast,binning) == "4x4" } {
-            set panneau(Scanfast,binning) "2x2"
+      switch [::confLink::getLinkNamespace $conf(audine,port)] {
+         ethernaude {
+            pack forget $This.fra33
+            pack $This.fra4 -side top -fill x
+            pack forget $This.fra4.but2
+            pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
+            pack $This.fra5 -side top -fill x
+            if { $panneau(Scanfast,binning) == "4x4" } {
+               set panneau(Scanfast,binning) "2x2"
+            }
+         } 
+         audinet {
+            pack forget $This.fra33
+            pack $This.fra4 -side top -fill x
+            pack forget $This.fra4.but2
+            pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
+            pack $This.fra5 -side top -fill x
+            #--- C'est bon, on ne fait rien pour le binning
+         } 
+         parallelport {
+            pack $This.fra33 -side top -fill x
+            pack forget $This.fra4
+            pack $This.fra4 -side top -fill x
+            pack forget $This.fra4.but2
+            pack forget $This.fra5
+            pack $This.fra5 -side top -fill x
+            #--- C'est bon, on ne fait rien pour le binning
          }
-      } elseif { $conf(audine,port) == "$caption(confcam,audinet)" } {
-         pack forget $This.fra33
-         pack $This.fra4 -side top -fill x
-         pack forget $This.fra4.but2
-         pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
-         pack $This.fra5 -side top -fill x
-         #--- C'est bon, on ne fait rien pour le binning
-      } elseif { $conf(audine,port) == "$caption(confcam,lpt1)" } {
-         pack $This.fra33 -side top -fill x
-         pack forget $This.fra4
-         pack $This.fra4 -side top -fill x
-         pack forget $This.fra4.but2
-         pack forget $This.fra5
-         pack $This.fra5 -side top -fill x
-         #--- C'est bon, on ne fait rien pour le binning
-      } elseif { $conf(audine,port) == "$caption(confcam,lpt2)" } {
-         pack $This.fra33 -side top -fill x
-         pack forget $This.fra4
-         pack $This.fra4 -side top -fill x
-         pack forget $This.fra4.but2
-         pack forget $This.fra5
-         pack $This.fra5 -side top -fill x
-         #--- C'est bon, on ne fait rien pour le binning
-      } else {
-         set panneau(Scanfast,binning) "1x1"
+         default {
+            set panneau(Scanfast,binning) "1x1"
+         }
       }
    }
 

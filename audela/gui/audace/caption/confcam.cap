@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.14 2006-09-02 09:32:26 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.15 2006-09-28 19:50:52 michelpujol Exp $
 #
 
 #=========================================================================
@@ -19,6 +19,9 @@ set caption(confcam,appliquer)                  "Apply"
 set caption(confcam,fermer)                     "Close"
 set caption(confcam,aide)                       "Help"
 set caption(confcam,arreter)                    "Stop"
+
+set caption(confcam,acquisition)                "Acquisition"
+set caption(confcam,audine)                     "Audine"
 
 set caption(confcam,port)                       "Port"
 set caption(confcam,port_liaison)               "Port / Link"
@@ -116,7 +119,7 @@ set caption(confcam,dslr_name)                  "Digital Camera"
 set caption(confcam,dslr_liaison)               "Link"
 set caption(confcam,dslr_photopc)               "PhotoPC"
 set caption(confcam,dslr_gphoto2)               "GPhoto2"
-set caption(confcam,dslr_longue_pose)           "Long Exposure"
+set caption(confcam,dslr_longuepose)           "Long Exposure"
 set caption(confcam,dslr_quickremote)           "QuickRemote"
 set caption(confcam,dslr_externe)               "Manual"
 set caption(confcam,dslr_longueposebit)         "Control Bit Number"
@@ -146,8 +149,6 @@ set caption(confcam,port_sbig)                  "SBIG Port"
 set caption(confcam,port_cookbook)              "CB245 Port"
 set caption(confcam,port_starlight)             "Starlight Port - Model"
 set caption(confcam,port_kitty)                 "Kitty Port - Model"
-set caption(confcam,audinet)                    "AudiNet"
-set caption(confcam,audine)                     "with Audine"
 set caption(confcam,port_th7852a)               "TH7852A Port"
 set caption(confcam,port_scr1300xtc)            "SCR1300XTC Port"
 set caption(confcam,port_andor)                 "Andor Port"
@@ -178,6 +179,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,fermer)                  "Fermer"
    set caption(confcam,aide)                    "Aide"
    set caption(confcam,arreter)                 "Arrêter"
+
+   set caption(confcam,acquisition)             "Acquisition"
+   set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Liaison"
@@ -275,7 +279,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Liaison"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longue_pose)        "Longue pose"
+   set caption(confcam,dslr_longuepose)        "Longue pose"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manuel"
    set caption(confcam,dslr_longueposebit)      "Numéro du bit de commande"
@@ -305,8 +309,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_cookbook)           "Port CB245"
    set caption(confcam,port_starlight)          "Port Starlight"
    set caption(confcam,port_kitty)              "Port Kitty"
-   set caption(confcam,audinet)                 "AudiNet"
-   set caption(confcam,audine)                  "avec Audine"
    set caption(confcam,port_th7852a)            "Port TH7852A"
    set caption(confcam,port_scr1300xtc)         "Port SCR1300XTC"
    set caption(confcam,port_andor)              "Port Andor"
@@ -337,6 +339,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,fermer)                  "Chiudi"
    set caption(confcam,aide)                    "Aiuto"
    set caption(confcam,arreter)                 "Ferma"
+
+   set caption(confcam,acquisition)             "Acquisizione"
+   set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Porte"
    set caption(confcam,port_liaison)            "Porte / Collegamento"
@@ -434,7 +439,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Collegamento"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longue_pose)        "Lunga posa"
+   set caption(confcam,dslr_longuepose)        "Lunga posa"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manuale"
    set caption(confcam,dslr_longueposebit)      "Numero bit del comando"
@@ -464,8 +469,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_cookbook)           "Porta CB245"
    set caption(confcam,port_starlight)          "Porta Starlight"
    set caption(confcam,port_kitty)              "Porta Kitty"
-   set caption(confcam,audinet)                 "AudiNet"
-   set caption(confcam,audine)                  "con Audine"
    set caption(confcam,port_th7852a)            "Porta TH7852A"
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
@@ -496,6 +499,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,fermer)                  "Cerrar"
    set caption(confcam,aide)                    "Ayuda"
    set caption(confcam,arreter)                 "Parar"
+
+   set caption(confcam,acquisition)             "Adquisición"
+   set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Puerto"
    set caption(confcam,port_liaison)            "Puerto / Enlace"
@@ -593,7 +599,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Enlace"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longue_pose)        "Exposición larga"
+   set caption(confcam,dslr_longuepose)        "Exposición larga"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manual"
    set caption(confcam,dslr_longueposebit)      "Número del bit de control"
@@ -623,8 +629,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_cookbook)           "Puerto CB245"
    set caption(confcam,port_starlight)          "Puerto Starlight"
    set caption(confcam,port_kitty)              "Puerto Kitty"
-   set caption(confcam,audinet)                 "AudiNet"
-   set caption(confcam,audine)                  "con Audine"
    set caption(confcam,port_th7852a)            "Puerto TH7852A"
    set caption(confcam,port_scr1300xtc)         "Puerto SCR1300XTC"
    set caption(confcam,port_andor)              "Puerto Andor"
@@ -655,6 +659,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,fermer)                  "Schließen"
    set caption(confcam,aide)                    "Hilfe"
    set caption(confcam,arreter)                 "Halten"
+
+   set caption(confcam,acquisition)             "Anschaffung"
+   set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -752,7 +759,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Link"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longue_pose)        "Lange Belichtung"
+   set caption(confcam,dslr_longuepose)        "Lange Belichtung"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manuell"
    set caption(confcam,dslr_longueposebit)      "Steuer Bit Nummer"
@@ -782,8 +789,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_cookbook)           "CB245 Port"
    set caption(confcam,port_starlight)          "Starlight Port"
    set caption(confcam,port_kitty)              "Kitty Port"
-   set caption(confcam,audinet)                 "AudiNet"
-   set caption(confcam,audine)                  "mit Audine"
    set caption(confcam,port_th7852a)            "TH7852A Port"
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
@@ -814,6 +819,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,fermer)                  "Close"
    set caption(confcam,aide)                    "Help"
    set caption(confcam,arreter)                 "Stop"
+
+   set caption(confcam,acquisition)             "Acquisition"
+   set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -911,7 +919,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Link"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longue_pose)        "Long Exposure"
+   set caption(confcam,dslr_longuepose)        "Long Exposure"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manual"
    set caption(confcam,dslr_longueposebit)      "Control Bit Number"
@@ -941,8 +949,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_cookbook)           "CB245 Port"
    set caption(confcam,port_starlight)          "Starlight Port - Model"
    set caption(confcam,port_kitty)              "Kitty Port - Model"
-   set caption(confcam,audinet)                 "AudiNet"
-   set caption(confcam,audine)                  "with Audine"
    set caption(confcam,port_th7852a)            "TH7852A Port"
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"

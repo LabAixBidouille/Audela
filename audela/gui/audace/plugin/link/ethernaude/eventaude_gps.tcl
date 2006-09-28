@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.5 2006-08-12 21:05:25 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.6 2006-09-28 19:50:09 michelpujol Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -256,25 +256,23 @@ namespace eval eventAude_GPS {
       global caption
       global confCam
 
-      catch {
-         #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-         set camNo $confCam(camera,$confCam(cam_item),camNo)
-         set statusVariableName "::status_cam$camNo"
-         if { [set $statusVariableName] != "exp" } {
-            set confCam(coord_GPS_Observateur) [ cam$confCam(camera,$confCam(cam_item),camNo) gps ]
-            set confCam(long_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 1 ] 180 ]
-            set longi_est_ouest [ lindex $confCam(coord_GPS_Observateur) 2 ]
-            if { $longi_est_ouest == "W" } {
-               set longi_est_ouest "$caption(eventaude_gps,ouest)"
-            } elseif { $longi_est_ouest == "E" } {
-               set longi_est_ouest "$caption(eventaude_gps,est)"
-            }
-            set confCam(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $confCam(long_GPS_Observateur) 0 ] [ lindex $confCam(long_GPS_Observateur) 1 ] [ lindex $confCam(long_GPS_Observateur) 2 ] ]"
-            set confCam(lat_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 3 ] 90 ]
-            set confCam(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $confCam(lat_GPS_Observateur) 0 ] [ lindex $confCam(lat_GPS_Observateur) 1 ] [ lindex $confCam(lat_GPS_Observateur) 2 ] ]
-            set confCam(alt_GPS_Observateur) [ lindex $confCam(coord_GPS_Observateur) 4 ]
-            set confCam(alti_GPS_Observateur) [ format "%5.0f m" $confCam(alt_GPS_Observateur) ]
+      #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
+      set camNo $confCam($confCam(cam_item),camNo)
+      set statusVariableName "::status_cam$camNo"
+      if { [set $statusVariableName] != "exp" } {
+         set confCam(coord_GPS_Observateur) [ cam$camNo gps ]
+         set confCam(long_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 1 ] 180 ]
+         set longi_est_ouest [ lindex $confCam(coord_GPS_Observateur) 2 ]
+         if { $longi_est_ouest == "W" } {
+            set longi_est_ouest "$caption(eventaude_gps,ouest)"
+         } elseif { $longi_est_ouest == "E" } {
+            set longi_est_ouest "$caption(eventaude_gps,est)"
          }
+         set confCam(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $confCam(long_GPS_Observateur) 0 ] [ lindex $confCam(long_GPS_Observateur) 1 ] [ lindex $confCam(long_GPS_Observateur) 2 ] ]"
+         set confCam(lat_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 3 ] 90 ]
+         set confCam(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $confCam(lat_GPS_Observateur) 0 ] [ lindex $confCam(lat_GPS_Observateur) 1 ] [ lindex $confCam(lat_GPS_Observateur) 2 ] ]
+         set confCam(alt_GPS_Observateur) [ lindex $confCam(coord_GPS_Observateur) 4 ]
+         set confCam(alti_GPS_Observateur) [ format "%5.0f m" $confCam(alt_GPS_Observateur) ]
       }
    }
 

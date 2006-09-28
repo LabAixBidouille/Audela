@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.9 2006-07-11 16:32:07 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.10 2006-09-28 19:59:56 michelpujol Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -692,11 +692,21 @@ namespace eval ::confTel {
       pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
       #--- Prise en compte des liaisons
-      set list_connexion [list ]
-      foreach item $audace(list_com) {
-         lappend list_connexion "$item"
-      }
-      lappend list_connexion "$caption(conftel,audinet)"
+      set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
+
+      #--- je verifie le contenu de la liste
+      if { [llength $list_connexion ] > 0 } {
+         #--- si la liste n'est pas vide, 
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_connexion $confTel(conf_lx200,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confTel(conf_lx200,port) [lindex $list_connexion 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }        
+
 
       ComboBox $frm.port \
          -width 14         \
@@ -708,15 +718,12 @@ namespace eval ::confTel {
          -values $list_connexion \
          -modifycmd {
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            if { $confTel(conf_lx200,port) == "$caption(conftel,audinet)" } {
-               set conf(confLink) "audinet"
-               ::confLink::run
-            }
+            ::confLink::run ::confTel(conf_lx200,port) { serialport audinet } "controle LX200" 
          }
       pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
 
       #--- Bouton de configuration des liaisons
-      button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command "::confLink::run"
+      button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command { ::confLink::run ::confTel(conf_lx200,port)  { serialport audinet } "controle LX200"  }
       pack $frm.configure -in $frm.frame6 -anchor n -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
       #--- Definition du LX200 ou du clone
@@ -1318,7 +1325,7 @@ namespace eval ::confTel {
 
       #--- Definition du port
       label $frm.lab1 -text "$caption(conftel,port)"
-	pack $frm.lab1 -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
+        pack $frm.lab1 -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
 
       ComboBox $frm.port \
          -width 14         \
@@ -2119,14 +2126,15 @@ namespace eval ::confTel {
                ::confTel::MatchOuranos
             }
          lx200 {
-               if { $confTel(conf_lx200,port) == "$caption(conftel,audinet)" } {
+            switch [::confLink::getLinkNamespace $conf(lx200,port)] {
+               audinet {    
                   set confTel(conf_lx200,connect) "1"
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
                   set confTel(conf_temma,connect) "0"
                   set confTel(conf_ascom,connect) "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-                  set erreur [ catch { set audace(telNo) [ tel::create lxnet "" -name lxnet \
+                  set erreur [ catch { set audace(telNo) [ tel::create lxnet $conf(lx200,port) -name lxnet \
                         -host $conf(audinet,host) \
                         -ipsetting $conf(audinet,ipsetting) \
                         -macaddress $conf(audinet,mac_address) \
@@ -2147,8 +2155,11 @@ namespace eval ::confTel {
                      } else {
                         tel$audace(telNo) longformat on
                      }
+                     #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+                     set linkNo [confLink::create $confTel(conf_lx200,port) "tel$audace(telNo)" "control" ""]     
                   }
-               } else {
+               }
+               serialport {
                   set confTel(conf_lx200,connect) "1"
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
@@ -2175,9 +2186,12 @@ namespace eval ::confTel {
                      if { $conf(lx200,modele) == "Ite-lente" } {
                         tel$audace(telNo) tempo $conf(lx200,ite-lente_tempo)
                      }
+                     #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+                     set linkNo [confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]     
                   }
                }
             }
+         }
          temma {
                set confTel(conf_lx200,connect) "0"
                set confTel(ouranos,connect)    "0"
@@ -2298,7 +2312,7 @@ namespace eval ::confTel {
 
       #--- Gestion du modele de telescope connecte
       if { $erreur == "1" } {
-         #--- En cas de probleme, je desactive le demarrage automatique	 
+         #--- En cas de probleme, je desactive le demarrage automatique         
          set conf(telescope,start) "0" 
          #--- En cas de probleme, telescope par defaut
          set conf(telescope)             "lx200"
@@ -2340,7 +2354,7 @@ namespace eval ::confTel {
 
       set nn $This.usr.book
       set conf(telescope)             $confTel(tel)
-      set conf(raquette)       	  $confTel(raquette)
+      set conf(raquette)                 $confTel(raquette)
       #--- Memorise la configuration du LX200 dans le tableau conf(lx200,...)
       set frm [ Rnotebook:frame $nn 1 ]
       set conf(lx200,port)            $confTel(conf_lx200,port)

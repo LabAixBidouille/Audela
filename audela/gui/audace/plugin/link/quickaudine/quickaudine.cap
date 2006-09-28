@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.2 2006-06-20 19:29:05 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.3 2006-09-28 19:52:32 michelpujol Exp $
 #
 
 #=========================================================================
@@ -12,31 +12,43 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(quickaudine,titre)           "QuickAudine"
+set caption(quickaudine,available)       "# QuickAudines disponibles"
+set caption(quickaudine,refresh)         "# Rafraîchir"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
+   set caption(quickaudine,available)    "QuickAudines disponibles"
+   set caption(quickaudine,refresh)      "Rafraîchir"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
+   set caption(quickaudine,available)    "# QuickAudines disponibles"
+   set caption(quickaudine,refresh)      "# Rafraîchir"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
+   set caption(quickaudine,available)    "# QuickAudines disponibles"
+   set caption(quickaudine,refresh)      "# Rafraîchir"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
+   set caption(quickaudine,available)    "# QuickAudines disponibles"
+   set caption(quickaudine,refresh)      "# Rafraîchir"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
+   set caption(quickaudine,available)    "# QuickAudines disponibles"
+   set caption(quickaudine,refresh)      "# Rafraîchir"
 
 }
 
