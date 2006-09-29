@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: liblink.cpp,v 1.1 2006-07-16 20:57:52 michelpujol Exp $
+// $Id: liblink.cpp,v 1.2 2006-09-29 19:57:25 michelpujol Exp $
 
 
 #include "sysexp.h"
@@ -39,9 +39,10 @@
 
 #include <tcl.h>
 #include "liblink/liblink.h"
+#include "liblink/useitem.h"
 #include "libname.h"
 #include "linktcl.h"
-//#include "link.h"
+#include "link.h"
 
 //  protype pour l'utilisation pour un programme C
 #if defined(OS_WIN)
@@ -59,15 +60,19 @@ extern struct linkini LINK_INI[];
 * votres ici.
 */
 /* === Common commands for all linkeras ===*/
-static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdLink(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-static int cmdLinkDrivername(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdLinkClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdLinkDriverName(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdLinkIndex(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdLinkUse(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #define COMMON_CMDLIST \
-   {"drivername", (Tcl_CmdProc *)cmdLinkDrivername},\
+   {"drivername", (Tcl_CmdProc *)cmdLinkDriverName},\
    {"close", (Tcl_CmdProc *)cmdLinkClose}, \
-
+   {"index", (Tcl_CmdProc *)cmdLinkIndex},\
+   {"use", (Tcl_CmdProc *)cmdLinkUse},\
+   
 
 static struct cmditem cmdlist[] = {
    /* === Common commands for all linkeras === */
@@ -77,8 +82,6 @@ static struct cmditem cmdlist[] = {
       /* === Last function terminated by NULL pointers === */
    {NULL, NULL}
 };
-
-//static struct linkprop *linkprops = NULL;
 
 #define LOG_ERROR   1
 #define LOG_WARNING 2
@@ -128,16 +131,15 @@ int LINK_ENTRYPOINT(Tcl_Interp * interp)
    struct cmditem *cmd;
    int i;
    
-   liblink_log(LOG_INFO, "Calling entrypoint for driver %s", LINK_DRIVNAME);
-   
+   liblink_log(LOG_INFO, "Calling entrypoint for driver %s LINK_ENTRYPOINT=%p", LINK_DRIVNAME, LINK_ENTRYPOINT);
    if (Tcl_InitStubs(interp, "8.3", 0) == NULL) {
       Tcl_SetResult(interp, "Tcl Stubs initialization failed in " LINK_LIBNAME " (" LINK_LIBVER ").", TCL_VOLATILE);
       liblink_log(LOG_ERROR, "Tcl Stubs initialization failed.");
       return TCL_ERROR;
    }
    
-   liblink_log(LOG_DEBUG, "cmdLinkCreate = %p", cmdLinkCreate);
-   liblink_log(LOG_DEBUG, "cmdLink = %p", cmdLink);
+   liblink_log(LOG_DEBUG, "cmdLinkCreate = %p interp=%p", cmdLinkCreate, interp);
+   liblink_log(LOG_DEBUG, "cmdLink = %p LINK_DRIVNAME=%s LINK_LIBNAME=%s LINK_LIBVER=%s", cmdLink, LINK_DRIVNAME, LINK_LIBNAME, LINK_LIBVER);
    
    Tcl_CreateCommand(interp, LINK_DRIVNAME, (Tcl_CmdProc *) cmdLinkCreate, NULL, NULL);
    Tcl_PkgProvide(interp, LINK_LIBNAME, LINK_LIBVER);
@@ -158,82 +160,78 @@ int LINK_ENTRYPOINT(Tcl_Interp * interp)
    return TCL_OK;
 }
 
+/*
+ * cmdLinkCreate
+ *    seule commande visible en TCL
+ *    drivername linkx       : cree le link numero x
+ *    drivername available   : retourne la liste des link disponibles
+ *    drivername genericname : retourne le prefixe du port du link
+ */
 static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    int result;
    char s[256];
-   int linkno, err, i;
-   CLink *link;
-   
+
    if (argc < 2) {
-      sprintf(s, "%s driver port ?options?", argv[0]);
+      sprintf(s, "%s linkx|available|genericname", argv[0]);
       Tcl_SetResult(interp, s, TCL_VOLATILE);
       return TCL_ERROR;
    } else if (argc == 2 && strcmp(argv[1], "available") ==0) {
       char * ligne = NULL;
       unsigned long numDevices;
-      // ligne is allocated by listUsbIndex()
-      if( available(&numDevices, &ligne) == LINK_OK) {
+      // ligne is allocated by available()
+     if( LINK_CLASS::getAvailableLinks(&numDevices, &ligne) == LINK_OK) {
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_OK;
       } else {
          result = TCL_ERROR;
       }
       free(ligne);
-   } else {
-      // On initialise la linkera sur le port. S'il y a une erreur, alors on
-      // renvoie le message qui va bien, en supprimant la structure cree.
-      // Si OK, la commande TCL est creee d'apres l'argv[1], et on garde
-      // trace de la structure creee.
-      
-      fprintf(stderr, "%s(%s): LinkCreate(argc=%d", LINK_LIBNAME, LINK_LIBVER, argc);
-      for (i = 0; i < argc; i++) {
-         fprintf(stderr, ",argv[%d]=%s", i, argv[i]);
-      }
-      fprintf(stderr, ")\n");
-      
-      link = createLink();
+   } else if (argc == 2 && strcmp(argv[1], "genericname") ==0) {
+         Tcl_SetResult(interp,LINK_CLASS::getGenericName(),TCL_VOLATILE);
+         result = TCL_OK;
+   } else if (argc >= 3 && strncmp(argv[1], "link",4) ==0) {
+      CLink *link;
+      int linkno;
+      int err;
+      // je cree l'objet c++
+      link = new LINK_CLASS();
 
-      fprintf(stderr, "cmdLinkCreate after createLink()\n");
-      
+      link->setAuthorized(1);
+      /*
       Tcl_Eval(interp, "set ::tcl_platform(os)");
       strcpy(s, interp->result);
       if ((strcmp(s, "Windows 95") == 0)
          || (strcmp(s, "Windows 98") == 0)
          || (strcmp(s, "Linux") == 0)) {
-         link->authorized = 1;
+         link->setAuthorized(1);
       } else {
-         link->authorized = 0;
+         link->setAuthorized(0);
       }
-
-      fprintf(stderr, "cmdLinkCreate after tcl_platform %s\n", s);
-      
-      link->interp = interp;
+      */
       sscanf(argv[1], "link%d", &linkno);
-      link->linkno = linkno;
-      strcpy(link->msg, "");
-      fprintf(stderr, "cmdLinkCreate after linkno=%d\n", linkno);
+      link->setLinkNo(linkno);
+      link->setLastMessage("");
       if ((err = link->init_common(argc, argv)) != 0) {
-        fprintf(stderr, "cmdLinkCreate after init_common error \n");
-         Tcl_SetResult(interp, link->msg, TCL_VOLATILE);
+         Tcl_SetResult(interp, link->getLastMessage(), TCL_VOLATILE);
          free(link);
          result = TCL_ERROR;
       } else {
-         fprintf(stderr, "cmdLinkCreate after init_common ok \n");
          if ((err = link->openLink(argc, argv)) != 0) {
-            fprintf(stderr, "cmdLinkCreate after init error \n");
-            Tcl_SetResult(interp, link->msg, TCL_VOLATILE);
-            free(link);
+            Tcl_SetResult(interp, link->getLastMessage(), TCL_VOLATILE);
+            delete link;
             result = TCL_ERROR;
          } else {
-            fprintf(stderr, "cmdLinkCreate after init ok \n");
             Tcl_CreateCommand(interp, argv[1], (Tcl_CmdProc *) cmdLink, (ClientData) link, NULL);            
-            fprintf(stderr, "cmdLinkCreate after Tcl_CreateCommand %s \n", argv[1]);
             liblink_log(LOG_DEBUG, "cmdLinkCreate: create link data at %p\n", link);
             result = TCL_OK;
          }
       }
-   }      
+   } else {      
+      sprintf(s, "unknown option %s \n usage : %s linkx|available|genericname", argv[1], argv[0]);
+      Tcl_SetResult(interp, s, TCL_VOLATILE);
+      return TCL_ERROR;
+   }
 
    return result;
 }
@@ -241,14 +239,8 @@ static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, c
 static int cmdLink(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char s[1024], ss[50];
-   int retour = TCL_OK, k, i;
+   int retour = TCL_OK, k;
    struct cmditem *cmd;
-   
-   fprintf(stderr, "%s(%s): enter cmdLink(argc=%d", LINK_LIBNAME, LINK_LIBVER, argc);
-   for (i = 0; i < argc; i++) {
-      fprintf(stderr, ",argv[%d]=%s", i, argv[i]);
-   }
-   fprintf(stderr, ")\n");
    
    if (argc == 1) {
       sprintf(s, "%s choose sub-command among ", argv[0]);
@@ -282,14 +274,41 @@ static int cmdLink(ClientData clientData, Tcl_Interp * interp, int argc, char *a
    return retour;
 }
 
-
-static int cmdLinkDrivername(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+/** 
+ * cmdLinkDriverName
+ *
+ *  retourne le nom du driver
+ *
+ */
+static int cmdLinkDriverName(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
-   sprintf(ligne, "%s {%s}", LINK_DRIVNAME, __DATE__);
+   sprintf(ligne, "%s", LINK_DRIVNAME);
    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    return TCL_OK;
 }
+
+/** 
+ * cmdLinkIndex
+ *
+ *  retourne l'index
+ *
+ */
+static int cmdLinkIndex(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   CLink * link = (CLink *) clientData;   
+   sprintf(ligne, "%d", link->getIndex() );
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   return TCL_OK;
+}
+
+/** 
+ * cmdLinkClose
+ *
+ *  ferme la liaison (libere les ressources
+ *
+ */
 
 static int cmdLinkClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
@@ -299,22 +318,87 @@ static int cmdLinkClose(ClientData clientData, Tcl_Interp * interp, int argc, ch
    return TCL_OK;
 }
 
-/*
-
-static int cmdLinkIndex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/** 
+ * cmdLinkUse
+ *
+ *  link1 use 
+ *     retourne la liste des peripheriques qui utilisent cette liaison
+ *     exemple : 
+ *     link1 use get
+ *      { { "cam1", "longuepose bit 1" } { "tel1", "bit 2 focus} }
+ *
+ *  link1 use add deviceId comment 
+ *     ajoute un peripherique à la liste 
+ *     exemple : 
+ *      link1 use add "cam1"  "longuepose bit 1" 
+ *
+ *  link1 use remove deviceId 
+ *     supprime un peripherique de la liste 
+ *     exemple : 
+ *      link1 remove "cam1"
+ */
+static int cmdLinkUse(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-   char ligne[64];
+   int result = TCL_OK;
+   char *ligne;
+   CLink * link = (CLink *) clientData;;
+   
+   ligne = (char*)calloc(200,sizeof(char));
+   if(argc<3) {
+      sprintf(ligne,"Usage: %s %s add|get|remove ?options?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      if( strcmp(argv[2],"add")==0) {
+         if(argc<6) {
+            sprintf(ligne,"Usage: %s %s add deviceId usage comment \n example: link1 add \"cam1\" \"longuepose\"  \"bit 1\"",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            link->addUse( argv[3], argv[4], argv[5]);
+            result = TCL_OK;
+         }
+      } else if( strcmp(argv[2],"remove")==0) {
+         if(argc<5) {
+            sprintf(ligne,"Usage: %s %s add deviceId \n example: link1 remove \"cam1\" \"longuepose\" ",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            link->removeUse(argv[3],argv[4]);
+            result = TCL_OK;
 
-   CLink * link = (CLink *) clientData;
-   sprintf(ligne, "%d", link->index);
-   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-   return TCL_OK;
+         }
+
+      } else if( strcmp(argv[2],"get")==0) {
+         char *useList;
+         // useList is allocated by getUse()
+         if( link->getUse(&useList) == LINK_OK) {
+            Tcl_SetResult(interp,useList,TCL_VOLATILE);
+            result = TCL_OK;
+         } else {
+            result = TCL_ERROR;
+         }
+         free(useList);
+      }
+   }
+   free(ligne);
+   return result;
 }
-*/
+
+CLink::CLink()
+{
+   this->useItem = NULL;
+}
 
 
 CLink::~CLink()
 {
+   CUseItem *item;
+
+   // je supprime toutes les  utilisations
+   for(item= this->useItem ; item != NULL; item = item->getNext()) {
+         delete item;
+   }
 }
 
 int CLink::init_common(int argc, char **argv)
@@ -327,11 +411,9 @@ int CLink::init_common(int argc, char **argv)
 /* --------------------------------------------------------- */
 {
    int result;
-   //int k;
-   //int kk;
    char *ligne;
    
-   ligne = (char*)calloc(200,sizeof(char));
+   ligne = (char*)calloc(1024,sizeof(char));
    if(argc>2) {     
       if(Tcl_GetInt(interp,argv[2],&index)!=TCL_OK) {
          sprintf(ligne,"Usage: %s %s ?index?\nindex = must be an integer 0 to 255",argv[0],argv[1]);
@@ -345,24 +427,80 @@ int CLink::init_common(int argc, char **argv)
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
    }
-   /* --- Decode les options de link::create en fonction de argv[>=3] --- */
-   /*
-   if (argc >= 5) {
-      for (kk = 3; kk < argc - 1; kk++) {
-         if (strcmp(argv[kk], "-name") == 0) {
-            k = 0;
-            while (strcmp(LINK_INI[k].name, "") != 0) {
-               if (strcmp(LINK_INI[k].name, argv[kk + 1]) == 0) {
-                  link->index_link = k;
-                  break;
-               }
-               k++;
-            }
-         }
-      }
-   }*/
-
    free(ligne);
 
    return result;
 }
+
+
+
+int CLink::getIndex() {
+   return index;
+}
+
+char * CLink::getLastMessage() {
+   return msg;
+}
+
+int CLink::addUse(char* deviceId, char *usage, char *comment) {
+   // je cree l'item 
+   CUseItem * item = new CUseItem(this->useItem, deviceId, usage, comment);
+   // je l'ajoute au debut de la liste
+   this->useItem = item;
+   return 0;
+}
+
+int CLink::getUse(char **useList) {
+
+   int len=1;
+   CUseItem *item;
+   
+   for(item= this->useItem ; item != NULL; item = item->getNext()) {
+      len += strlen(item->getDeviceId()) + strlen(item->getUsage()) + strlen(item->getComment()) + 12;      
+   }
+
+   *useList = (char*) calloc(len, 1) ;
+   strcpy(*useList,"");
+
+   for(item= this->useItem ; item != NULL; item = item->getNext()) {
+      strcat(*useList,"{ ");
+      strcat(*useList,item->getDeviceId());
+      strcat(*useList," \"");
+      strcat(*useList,item->getUsage());
+      strcat(*useList,"\" \"");
+      strcat(*useList,item->getComment());
+      strcat(*useList,"\" } ");
+   }
+   return 0;
+}
+
+int CLink::removeUse(char* deviceId, char* usage) {
+   CUseItem *item;
+
+   for(item= this->useItem ; item != NULL; item = item->getNext()) {
+      if( strcmp( deviceId, item->getDeviceId())==0 
+          && strcmp( usage, item->getUsage())==0 ) {
+         // j'enleve l'item de la liste
+         if ( item == this->useItem ) this->useItem = item->getNext();
+         // je detruis l'item
+         delete item;
+         break;
+      }
+   }
+
+   return 0;
+}
+
+
+void CLink::setAuthorized(int value) {
+   authorized = value;
+}
+
+void CLink::setLinkNo(int value) {
+   authorized = value;
+}
+
+void CLink::setLastMessage(char *value) {
+   strcpy( msg , value);
+}
+
