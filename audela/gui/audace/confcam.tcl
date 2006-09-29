@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.29 2006-09-28 19:50:52 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.30 2006-09-29 14:42:02 robertdelmas Exp $
 #
 
 global confCam
@@ -3978,7 +3978,7 @@ namespace eval ::confCam {
                }
                #--- je cree la camera en fonction de la liaison choisie
                #--- A MODIFER: creer d'abord la liaison, puis la camera audine
-               switch [::confLink::getLinkNamespace $conf(audine,port)] { 
+               switch [::confLink::getLinkNamespace $conf(audine,port)] {
                   parallelport {
                      set camNo [cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
                      cam$camNo cantype $conf(audine,can)
@@ -3989,7 +3989,7 @@ namespace eval ::confCam {
                      set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
                      set linkNo [confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
-                  }   
+                  }
                   ethernaude {
                      ### set conf(ethernaude,host) [ ::audace::verifip $conf(ethernaude,host) ]
                      set eth_canspeed "0"

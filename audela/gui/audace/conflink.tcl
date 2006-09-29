@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.8 2006-09-28 19:55:46 michelpujol Exp $
+# Mise a jour $Id: conflink.tcl,v 1.9 2006-09-29 14:42:27 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -30,7 +30,7 @@ proc ::confLink::init { } {
    if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
 
    #--- charge le fichier caption
-   uplevel #0 "source \"[ file join $audace(rep_caption) confLink.cap ]\""
+   uplevel #0 "source \"[ file join $audace(rep_caption) conflink.cap ]\""
    findDriver
 
    #--- configure le driver selectionne par defaut
@@ -141,7 +141,7 @@ proc ::confLink::getLabel { } {
 #------------------------------------------------------------
 # ok
 # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-# la configuration, et fermer la fenetre de reglage 
+# la configuration, et fermer la fenetre de reglage
 #------------------------------------------------------------
 proc ::confLink::ok { } {
    variable private
@@ -189,8 +189,8 @@ proc ::confLink::recup_position { } {
 #    Affiche la fenetre a onglet
 # 
 # Parametres : 
-#    authorizedNamespaces : liste des onglets a afficher 
-#        si la chaine est vide  tous les onglets sont affichés 
+#    authorizedNamespaces : liste des onglets a afficher
+#        si la chaine est vide tous les onglets sont affichés
 #    configurationTitle : titre complémentaire de la fenetres de dialogue
 # return 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
@@ -298,20 +298,20 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 }
 
 #------------------------------------------------------------
-# ::confLink::create 
-#    cree une liaison 
+# ::confLink::create
+#    cree une liaison
 #   
 #    retourne le numero du link
-#      le numero du link est attribue automatiquement.
+#      le numero du link est attribue automatiquement
 #      si ce link est deja cree, on retourne le numero du link existant
 #
 #   retourne une chaine vide si le type du lien n'existe pas
-#   exemple : 
-#   ::confLink::create "Quickaudine0" "cam1" "acquisition" "bit 1" 
+#   exemple :
+#   ::confLink::create "Quickaudine0" "cam1" "acquisition" "bit 1"
 #   1  
-#   ::confLink::create "QuickRemote1" "cam1" "longuepose" "bit 1" 
+#   ::confLink::create "QuickRemote1" "cam1" "longuepose" "bit 1"
 #   2  
-#   ::confLink::create "QuickRemote1" "cam2" "longuepose" "bit 2" 
+#   ::confLink::create "QuickRemote1" "cam2" "longuepose" "bit 2"
 #   2  
 #------------------------------------------------------------
 proc ::confLink::create { linkLabel deviceId usage comment } {
@@ -326,12 +326,12 @@ proc ::confLink::create { linkLabel deviceId usage comment } {
 
 #------------------------------------------------------------
 # ::confLink::delete 
-#    supprime une utilisation d'une liaison .
-#    et supprime la liaison si elle n'est plus utilisés par aucun autre péripherique
+#    supprime une utilisation d'une liaison
+#    et supprime la liaison si elle n'est plus utilisée par aucun autre péripherique
 #   
 #    retourne rien
 #
-#   exemple : 
+#   exemple :
 #   ::confLink::delete  "QuickRemote0"  "cam1" "longuepose"
 #------------------------------------------------------------
 proc ::confLink::delete { linkLabel deviceId usage } {
@@ -378,17 +378,17 @@ proc ::confLink::configureDriver { } {
    #--- je charge les drivers si ce n'était pas deja fait
    #--- (cas de l'ouverture automatique au demerrage de Audela)
    #if { [llength $private(namespacelist)] <1 } {
-   #   findDriver   
+   #   findDriver
    #}
 
-   #--- je configure le driver 
+   #--- je configure le driver
    [getLinkNamespace $private(linkLabel)]\:\:configureDriver
 }
 
 #------------------------------------------------------------
 # stopDriver
-#    arrete un link , si le nom d'un link est donne en parametre
-#    arrete tous les link , si aucun link est donne en parametre
+#    arrete un link, si le nom d'un link est donne en parametre
+#    arrete tous les links, si aucun link est donne en parametre
 # return rien
 #------------------------------------------------------------
 proc ::confLink::stopDriver { { linkLabel "" } } {
@@ -402,14 +402,14 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 
 #------------------------------------------------------------
 # findDriver
-# recherche les fichiers .tcl presents dans driverPattern 
+# recherche les fichiers .tcl presents dans driverPattern
 #
-# conditions : 
+# conditions :
 #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
 #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
 #  - le driver doit avoir une procedure getlabel
 # 
-# si le driver remplit les conditions 
+# si le driver remplit les conditions
 #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
 #    sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
 #
@@ -516,9 +516,9 @@ proc ::confLink::displayConnectMessage { } {
 #   
 #    retourne une liste vide si namespace n'existe pas
 #
-#   exemple : 
+#   exemple :
 #   getInstanceLabels  { quickremote parallelport }
-#     { "QuickRemote0" "QuickRemote1" "Port_parallèle1" "Port_parallèle2" } 
+#     { "QuickRemote0" "QuickRemote1" "Port_parallèle1" "Port_parallèle2" }
 #------------------------------------------------------------
 proc ::confLink::getLinkLabels { namespaces } {
    variable private
@@ -542,9 +542,9 @@ proc ::confLink::getLinkLabels { namespaces } {
 #   
 #    retourne une chaine vide si namespace n'existe pas
 #
-#   exemple : 
+#   exemple :
 #   getInstanceLabels "parallelport"
-#     { "Port parallèle" } 
+#     { "Port parallèle" }
 #------------------------------------------------------------
 proc ::confLink::getNamespaceLabel { namespace } {
    variable private
@@ -559,12 +559,12 @@ proc ::confLink::getNamespaceLabel { namespace } {
 }
 
 #------------------------------------------------------------
-# ::confLink::getLinkNamespace 
+# ::confLink::getLinkNamespace
 #  retourne le namespace du link
 #   
 #  retourne une chaine vide si le link n'existe pas
 #
-#  exemple : 
+#  exemple :
 #  getInstanceLabels "QuickRemote1"
 #     quickremote
 #------------------------------------------------------------
@@ -587,7 +587,7 @@ proc ::confLink::getLinkNamespace { linkLabel } {
 #   
 #    retourne une chaine vide si la liaison est fermee
 #
-#   exemple : 
+#   exemple :
 #   getInstanceLabels "QuickRemote1"
 #     1
 #------------------------------------------------------------
@@ -614,9 +614,9 @@ proc ::confLink::getLinkNo { linkLabel } {
 
 #------------------------------------------------------------
 # run
-# Affiche la fenetre de choix et de configuration 
+# Affiche la fenetre de choix et de configuration
 # 
-#  parametres : 
+#  parametres :
 #    linkLabel : link pre-sélectionné
 #    authorizedNamespaces : namespaces autorisés (optionel)
 #    configurationTitle : titre de la fenetre de configuration (optionel)
