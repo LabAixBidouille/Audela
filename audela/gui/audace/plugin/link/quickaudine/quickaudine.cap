@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.3 2006-09-28 19:52:32 michelpujol Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.4 2006-09-29 15:47:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,8 +12,8 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(quickaudine,titre)           "QuickAudine"
-set caption(quickaudine,available)       "# QuickAudines disponibles"
-set caption(quickaudine,refresh)         "# Rafraîchir"
+set caption(quickaudine,available)       "QuickAudines available"
+set caption(quickaudine,refresh)         "Reload"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -33,8 +33,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "# QuickAudines disponibles"
-   set caption(quickaudine,refresh)      "# Rafraîchir"
+   set caption(quickaudine,available)    "QuickAudines disponibles"
+   set caption(quickaudine,refresh)      "Recargar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
