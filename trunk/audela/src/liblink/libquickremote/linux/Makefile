@@ -2,7 +2,7 @@ LIBLINK = 1
 
 OUTPUT = libquickremote.so
 
-SRC = $(LIBLINKDIR)/liblink.cpp $(SRCDIR)/cquickremote.cpp $(SRCDIR)/quickremote_tcl.cpp $(SRCDIR)/useitem.cpp
+SRC = $(LIBLINKDIR)/liblink.cpp $(SRCDIR)/cquickremote.cpp $(SRCDIR)/quickremote_tcl.cpp $(SRCDIR)/../../useitem.cpp
 
 OBJ = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 OBJ += $(patsubst $(LIBLINKDIR)/%.cpp, %.o, $(filter $(LIBLINKDIR)/%.cpp, $(SRC)))
