@@ -170,3 +170,12 @@ CErrorLibtt::CErrorLibtt(const int errnum) throw(){
 	buf = new char[1024];
    Libtt_main(TT_ERROR_MESSAGE,2,&errnum,buf);
 }
+
+//=====================================================================
+//
+//  class CErrorLibtt
+//
+//=====================================================================
+
+CErrorLibstd::CErrorLibstd(void) throw(){
+}
