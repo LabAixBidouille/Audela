@@ -11,6 +11,7 @@ install:
 	cp -f include/linux/*.h ../include/linux
 	cp -f lib/libftd2xx.so.0.4.10    ../lib/libftd2xx.so
 	cp -f lib/libftd2xx.so.0.4.10    ../../../bin/libftd2xx.so.0
+	chmod +x ../../../bin/libftd2xx.so.0
 
 clean:
 	rm -f ../include/linux/ftd2xx.h
