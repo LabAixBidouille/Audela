@@ -106,4 +106,18 @@ public:
 	CErrorLibtt(const int errnum)  throw();
 };
 
+//=====================================================================
+//
+//  class CErrorLibstd
+//
+//=====================================================================
+
+class CErrorLibstd : public CError{
+private:
+	const CErrorLibstd& operator=(const CErrorLibstd&);		// protect against accidents
+
+public:
+	CErrorLibstd(void)  throw();
+};
+
 #endif
