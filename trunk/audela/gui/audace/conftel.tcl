@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.10 2006-09-28 19:59:56 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.11 2006-10-01 17:50:28 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2022,7 +2022,6 @@ namespace eval ::confTel {
                   tk_messageBox -message "$msg" -icon error
                   set confTel(audecom,connect) "0"
                } else {
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(conftel,port_audecom) $caption(conftel,2points)\
                      $conf(audecom,port)\n"
                   set audace(telNo) $msg
@@ -2031,6 +2030,7 @@ namespace eval ::confTel {
                   set v_firmware [ tel$audace(telNo) firmware ]
                   set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
                   console::affiche_erreur "$caption(conftel,audecom_ver_firmware)$v_firmware\n"
+                  console::affiche_saut "\n"
                   #--- Transfere les parametres des moteurs dans le microcontroleur
                   tel$audace(telNo) slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
                   tel$audace(telNo) pulse $conf(audecom,limp)
@@ -2104,13 +2104,13 @@ namespace eval ::confTel {
                   }
                   tk_messageBox -message "$msg" -icon error
                } else {
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(conftel,port_ouranos) $caption(conftel,2points)\
                      $conf(ouranos,port)\n"
                   console::affiche_erreur "$caption(conftel,ouranos_res_codeurs)\n"
                   console::affiche_erreur "$caption(conftel,ra) $caption(conftel,2points)\
                      $conf(ouranos,cod_ra) $caption(conftel,ouranos_pas) $caption(conftel,et) $caption(conftel,dec)\
-                     $caption(conftel,2points) $conf(ouranos,cod_dec) $caption(conftel,ouranos_pas)\n\n"
+                     $caption(conftel,2points) $conf(ouranos,cod_dec) $caption(conftel,ouranos_pas)\n"
+                  console::affiche_saut "\n"
                   set audace(telNo) $msg
                   set ouranoscom(tty) [ tel$audace(telNo) channel ]
                   #--- Initialisation de l'interface Ouranos
@@ -2146,9 +2146,9 @@ namespace eval ::confTel {
                   if { $erreur == "1" } {
                      tk_messageBox -message "$msg" -icon error
                   } else {
-                     console::affiche_saut "\n"
                      console::affiche_erreur "$caption(conftel,host_audinet) $caption(conftel,2points)\
-                        $conf(audinet,host)\n"  
+                        $conf(audinet,host)\n"
+                     console::affiche_saut "\n"
                      set audace(telNo) $msg
                      if { $conf(lx200,format) == "0" } {
                         tel$audace(telNo) longformat off
@@ -2174,9 +2174,9 @@ namespace eval ::confTel {
                      }
                      tk_messageBox -message "$msg" -icon error
                   } else {
-                     console::affiche_saut "\n"
                      console::affiche_erreur "$caption(conftel,port_lx200) ($conf(lx200,modele))\
                         $caption(conftel,2points) $conf(lx200,port)\n"
+                     console::affiche_saut "\n"
                      set audace(telNo) $msg
                      if { $conf(lx200,format) == "0" } {
                         tel$audace(telNo) longformat off
@@ -2214,13 +2214,13 @@ namespace eval ::confTel {
                   } else {
                      set confTel(conf_temma,modele) $caption(conftel,temma_modele_3)
                   }
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(conftel,port_temma) ($confTel(conf_temma,modele)) \
                      $caption(conftel,2points) $conf(temma,port)\n"
                   set audace(telNo) $msg
                   #--- Lit et affiche la version du Temma
                   set version [ tel$audace(telNo) firmware ]
                   console::affiche_erreur "$caption(conftel,temma_version) $version\n"
+                  console::affiche_saut "\n"
                   #--- Demande et recoit la latitude
                   set latitude_temma [ tel$audace(telNo) getlatitude ]
                   #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
@@ -2284,9 +2284,9 @@ namespace eval ::confTel {
                   }
                   tk_messageBox -message "$msg" -icon error
                } else {
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(conftel,driver_ascom) \
                      $caption(conftel,2points) [ lindex $conf(ascom,driver) 1 ] \n"
+                  console::affiche_saut "\n"
                   set audace(telNo) $msg
                }
             }

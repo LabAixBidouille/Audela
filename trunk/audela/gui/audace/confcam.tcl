@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.30 2006-09-29 14:42:02 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.31 2006-10-01 17:50:04 robertdelmas Exp $
 #
 
 global confCam
@@ -3471,9 +3471,9 @@ namespace eval ::confCam {
             hisis {
                if { $conf(hisis,modele) == "11" } {
                   set camNo  [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(hisis,mirh)
@@ -3481,9 +3481,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 4096 0
                } elseif { $conf(hisis,modele) == "22" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele) ($conf(hisis,res))\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3504,9 +3504,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "23" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3526,9 +3526,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "24" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3548,9 +3548,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "33" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3570,9 +3570,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "36" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3592,9 +3592,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "39" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3614,9 +3614,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "43" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3636,9 +3636,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "44" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3658,9 +3658,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(hisis,modele) == "48" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
@@ -3684,9 +3684,9 @@ namespace eval ::confCam {
               ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
                set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
                set confCam($cam_item,camNo) $camNo
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(confcam,port_sbig) ([ cam$camNo name ]) \
                   $caption(confcam,2points) $conf(sbig,port)\n"
+               console::affiche_saut "\n"
                set foncobtu $conf(sbig,foncobtu)
                switch -exact -- $foncobtu {
                   0 {
@@ -3715,8 +3715,8 @@ namespace eval ::confCam {
             }
             cookbook {
                set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(confcam,port_cookbook) $caption(confcam,2points) $conf(cookbook,port)\n"
+               console::affiche_saut "\n"
                set confCam($cam_item,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(cookbook,mirh)
@@ -3727,9 +3727,9 @@ namespace eval ::confCam {
                set starlight_accelerator $conf(starlight,acc)
                if { $conf(starlight,modele) == "MX516" } {
                   set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                      $caption(confcam,2points) $conf(starlight,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo accelerator $starlight_accelerator
                   cam$camNo buf $bufNo
@@ -3738,9 +3738,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(starlight,modele) == "MX916" } {
                   set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                      $caption(confcam,2points) $conf(starlight,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo accelerator $starlight_accelerator
                   cam$camNo buf $bufNo
@@ -3749,9 +3749,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 32767 -32768
                } elseif { $conf(starlight,modele) == "HX516" } {
                   set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                      $caption(confcam,2points) $conf(starlight,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo accelerator $starlight_accelerator
                   cam$camNo buf $bufNo
@@ -3764,9 +3764,9 @@ namespace eval ::confCam {
                if { $conf(kitty,modele) == "237" } {
                   set camNo [ cam::create kitty $conf(kitty,port) -name KITTY237 \
                      -canbits [ lindex $conf(kitty,res) 0 ] ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
                      $caption(confcam,2points) $conf(kitty,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo canbits [ lindex $conf(kitty,res) 0 ]
                   if { $conf(kitty,captemp) == "0" } {
@@ -3781,9 +3781,9 @@ namespace eval ::confCam {
                } elseif { $conf(kitty,modele) == "255" } {
                   set camNo [ cam::create kitty $conf(kitty,port) -name KITTY255 \
                      -canbits [ lindex $conf(kitty,res) 0 ] ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
                      $caption(confcam,2points) $conf(kitty,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo canbits [ lindex $conf(kitty,res) 0 ]
                   if { $conf(kitty,captemp) == "0" } {
@@ -3797,9 +3797,9 @@ namespace eval ::confCam {
                   ::confVisu::visuDynamix $visuNo 4096 -4096
                } elseif { $conf(kitty,modele) == "K2" } {
                   set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ]
-                  console::affiche_saut "\n"
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele)\
                      $caption(confcam,2points) $conf(kitty,port)\n"
+                  console::affiche_saut "\n"
                   set confCam($cam_item,camNo) $camNo
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(kitty,mirh)
@@ -3821,11 +3821,11 @@ namespace eval ::confCam {
             webcam {
                set camNo [ cam::create webcam usb -channel $conf(webcam,channel) \
                   -lpport $conf(webcam,longueposeport) -name WEBCAM  ]
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(confcam,webcam_canal_usb) ($caption(confcam,webcam))\
                   $caption(confcam,2points) channel=$conf(webcam,channel)\n"
                console::affiche_erreur "$caption(confcam,webcam_longuepose) $caption(confcam,2points)\
                   $conf(webcam,longuepose)\n"
+               console::affiche_saut "\n"
                set confCam($cam_item,camNo) $camNo
                cam$camNo buf [visu$visuNo buf]
                cam$camNo mirrorh $conf(webcam,mirh)
@@ -3844,9 +3844,9 @@ namespace eval ::confCam {
             }
             th7852a {
                set camNo [ cam::create camth $conf(th7852a,port) -name TH7852A  ]
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(confcam,port_th7852a) $caption(confcam,2points)\
                   $conf(th7852a,port)\n"
+               console::affiche_saut "\n"
                set confCam($cam_item,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(th7852a,mirh)
@@ -3856,9 +3856,9 @@ namespace eval ::confCam {
             }
             scr1300xtc {
                set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(confcam,port_scr1300xtc) $caption(confcam,2points)\
                   $conf(scr1300xtc,port)\n"
+               console::affiche_saut "\n"
                set confCam($cam_item,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(scr1300xtc,mirh)
@@ -3870,9 +3870,9 @@ namespace eval ::confCam {
                   gphoto2 {
                      set camNo [ cam::create digicam -name DSLR ]
                      set confCam($cam_item,camNo) $camNo
-                     console::affiche_saut "\n"
                      console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$camNo name ]\n"
+                     console::affiche_saut "\n"
                      cam$camNo buf $bufNo
                      cam$camNo mirrorh $conf(dslr,mirh)
                      cam$camNo mirrorv $conf(dslr,mirv)
@@ -3935,9 +3935,9 @@ namespace eval ::confCam {
             andor {
                set camNo [ cam::create andor "$conf(andor,config)" ]
                set confCam($cam_item,camNo) $camNo
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
                   $caption(confcam,2points) $conf(andor,config)\n"
+               console::affiche_saut "\n"
                set foncobtu $conf(andor,foncobtu)
                switch -exact -- $foncobtu {
                   0 {
@@ -4065,8 +4065,11 @@ namespace eval ::confCam {
                ::confVisu::visuDynamix $visuNo 32767 -32768
 
                #--- j'affiche un message d'information
+               console::affiche_erreur "$caption(confcam,camera) $caption(confcam,audine) ($conf(audine,ccd))\n"
+               console::affiche_erreur "$caption(confcam,port_liaison)\
+                  ([::[::confLink::getLinkNamespace $conf(audine,port)]::getLabel])\
+                  $caption(confcam,2points) $conf(audine,port)\n"
                console::affiche_saut "\n"
-               console::affiche_erreur "$caption(confcam,port_audine) ($conf(audine,ccd)) $caption(confcam,2points) $conf(audine,port)\n"
             }
          }
          #--- <= fin du switch sur les cameras

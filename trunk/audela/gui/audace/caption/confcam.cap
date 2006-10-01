@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.15 2006-09-28 19:50:52 michelpujol Exp $
+# Mise a jour $Id: confcam.cap,v 1.16 2006-10-01 17:49:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,6 +21,7 @@ set caption(confcam,aide)                       "Help"
 set caption(confcam,arreter)                    "Stop"
 
 set caption(confcam,acquisition)                "Acquisition"
+set caption(confcam,camera)                     "Camera:"
 set caption(confcam,audine)                     "Audine"
 
 set caption(confcam,port)                       "Port"
@@ -119,7 +120,7 @@ set caption(confcam,dslr_name)                  "Digital Camera"
 set caption(confcam,dslr_liaison)               "Link"
 set caption(confcam,dslr_photopc)               "PhotoPC"
 set caption(confcam,dslr_gphoto2)               "GPhoto2"
-set caption(confcam,dslr_longuepose)           "Long Exposure"
+set caption(confcam,dslr_longuepose)            "Long Exposure"
 set caption(confcam,dslr_quickremote)           "QuickRemote"
 set caption(confcam,dslr_externe)               "Manual"
 set caption(confcam,dslr_longueposebit)         "Control Bit Number"
@@ -181,6 +182,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,arreter)                 "Arrêter"
 
    set caption(confcam,acquisition)             "Acquisition"
+   set caption(confcam,camera)                  "Caméra :"
    set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Port"
@@ -279,7 +281,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Liaison"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longuepose)        "Longue pose"
+   set caption(confcam,dslr_longuepose)         "Longue pose"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manuel"
    set caption(confcam,dslr_longueposebit)      "Numéro du bit de commande"
@@ -341,6 +343,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,arreter)                 "Ferma"
 
    set caption(confcam,acquisition)             "Acquisizione"
+   set caption(confcam,camera)                  "Camera:"
    set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Porte"
@@ -439,7 +442,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Collegamento"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longuepose)        "Lunga posa"
+   set caption(confcam,dslr_longuepose)         "Lunga posa"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manuale"
    set caption(confcam,dslr_longueposebit)      "Numero bit del comando"
@@ -501,6 +504,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,arreter)                 "Parar"
 
    set caption(confcam,acquisition)             "Adquisición"
+   set caption(confcam,camera)                  "Cámara:"
    set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Puerto"
@@ -599,7 +603,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Enlace"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longuepose)        "Exposición larga"
+   set caption(confcam,dslr_longuepose)         "Exposición larga"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manual"
    set caption(confcam,dslr_longueposebit)      "Número del bit de control"
@@ -661,6 +665,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,arreter)                 "Halten"
 
    set caption(confcam,acquisition)             "Anschaffung"
+   set caption(confcam,camera)                  "Kamera:"
    set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Port"
@@ -759,7 +764,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Link"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longuepose)        "Lange Belichtung"
+   set caption(confcam,dslr_longuepose)         "Lange Belichtung"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manuell"
    set caption(confcam,dslr_longueposebit)      "Steuer Bit Nummer"
@@ -821,6 +826,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,arreter)                 "Stop"
 
    set caption(confcam,acquisition)             "Acquisition"
+   set caption(confcam,camera)                  "Camera:"
    set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Port"
@@ -919,7 +925,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_liaison)            "Link"
    set caption(confcam,dslr_photopc)            "PhotoPC"
    set caption(confcam,dslr_gphoto2)            "GPhoto2"
-   set caption(confcam,dslr_longuepose)        "Long Exposure"
+   set caption(confcam,dslr_longuepose)         "Long Exposure"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
    set caption(confcam,dslr_externe)            "Manual"
    set caption(confcam,dslr_longueposebit)      "Control Bit Number"
