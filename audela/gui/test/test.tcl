@@ -1,7 +1,7 @@
 #
 # Fichier : test.tcl
 # Description : Script pour lancer une application de test a partir d'AudeLA
-# Mise a jour $Id: test.tcl,v 1.6 2006-09-01 22:38:33 robertdelmas Exp $
+# Mise a jour $Id: test.tcl,v 1.7 2006-10-01 21:34:19 robertdelmas Exp $
 #
 
 #--- definition des variables globales
@@ -21,6 +21,9 @@ set caption(load)       "Ouvrir"
 set caption(save)       "Enregistrer"
 set caption(exit)       "Quitter"
 set caption(wait)       "En cours..."
+set caption(rouge)      "R : "
+set caption(vert)       "V : "
+set caption(bleu)       "B : "
 
 #--- definition des couleurs
 set color(back)       #123456
@@ -212,7 +215,14 @@ bind $zone(image1) <Motion> {
    set yi [lindex $xyi 1]
    #--- Intens contiendra l'intensite du pixel pointe
    set intens -
-   catch { set intens [ lindex [ buf1 getpix [ list $xi $yi ] ] 1 ] }
+   catch {
+      set ii [ buf1 getpix [ list $xi $yi ] ]
+      if { [ lindex $ii 0 ] == "1" } {
+         set intens [ lindex $ii 1 ]
+      } elseif { [ lindex $ii 0 ] == "3" } {
+         set intens "$caption(rouge)[ lindex $ii 1 ] - $caption(vert)[ lindex $ii 2 ] - $caption(bleu)[ lindex $ii 3 ]"
+      }
+   }
    #--- Affichage des coordonnees
    wm title .test "Test : ($xi,$yi) = $intens    "
 }
