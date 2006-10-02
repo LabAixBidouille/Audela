@@ -5238,7 +5238,7 @@ fi
 
 LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
 
-LIBLINKS="libparallelport"
+LIBLINKS="libparallelport libquickremote"
 
 echo "$as_me:$LINENO: result: EXTERNAL = $EXTERNAL" >&5
 echo "${ECHO_T}EXTERNAL = $EXTERNAL" >&6
