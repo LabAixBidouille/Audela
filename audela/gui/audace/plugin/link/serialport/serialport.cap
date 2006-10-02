@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.7 2006-09-29 15:48:07 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.8 2006-10-02 15:41:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -39,9 +39,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(serialport,titre)        "Serielle Schnittstelle"
-   set caption(serialport,available)    "# Ports séries disponibles"
-   set caption(serialport,refresh)      "# Rafraîchir"
+   set caption(serialport,titre)        "Serial Anschlüss"
+   set caption(serialport,available)    "Serial Anschlüssen verfügbar"
+   set caption(serialport,refresh)      "Aktualisieren"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

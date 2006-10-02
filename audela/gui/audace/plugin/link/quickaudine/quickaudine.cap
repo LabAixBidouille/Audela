@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.4 2006-09-29 15:47:42 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.5 2006-10-02 15:40:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,8 +40,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "# QuickAudines disponibles"
-   set caption(quickaudine,refresh)      "# Rafraîchir"
+   set caption(quickaudine,available)    "QuickAudinen verfügbar"
+   set caption(quickaudine,refresh)      "Aktualisieren"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

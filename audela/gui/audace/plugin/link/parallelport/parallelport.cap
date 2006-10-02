@@ -1,6 +1,6 @@
 #
 # Fichier : parallelport.cap
-# Mise a jour $Id: parallelport.cap,v 1.7 2006-09-29 15:47:30 robertdelmas Exp $
+# Mise a jour $Id: parallelport.cap,v 1.8 2006-10-02 15:40:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -39,9 +39,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(parallelport,titre)        "Parallele Schnittstelle"
-   set caption(parallelport,available)    "# Ports parallèles disponibles"
-   set caption(parallelport,refresh)      "# Rafraîchir"
+   set caption(parallelport,titre)        "Parallel Anschlüss"
+   set caption(parallelport,available)    "Parallel Anschlüssen verfügbar"
+   set caption(parallelport,refresh)      "Aktualisieren"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
