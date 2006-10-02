@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.9 2006-09-13 21:29:51 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.10 2006-10-02 15:43:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -196,7 +196,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,fichier_existe) "Diese Datei ist schon auf die Platte.\nBestätigen sie die Speicherung?"
 
    set caption(scan,attention)      "Achtung"
-   set caption(scan,message)        "# Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+   set caption(scan,message)        "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.7 2006-09-13 21:29:23 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.8 2006-10-02 15:41:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -335,7 +335,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,west)            "W"
    set caption(snvisu,invert,mirror)   "Rechts/links umkehren"
    set caption(snvisu,magnitude)       "Größeklasse"
-   set caption(snvisu,page_html)       "# Page HTML"
+   set caption(snvisu,page_html)       "HTML Seite"
 
    set caption(snvisu,secondary_title) "Sn Visu - Gehen zu"
    set caption(snvisu,image_numero)    "Zu Bild Nummer ... gehen:"

@@ -1,6 +1,6 @@
 #
 # Fichier : photometry.cap
-# Mise a jour $Id: photometry.cap,v 1.5 2006-09-13 21:30:14 robertdelmas Exp $
+# Mise a jour $Id: photometry.cap,v 1.6 2006-10-02 15:42:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -171,42 +171,42 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(photometry,titre,panneau)                   "# Photométrie"
+   set caption(photometry,titre,panneau)                   "Lichtmessung"
    set caption(photometry,help,titre)                      "Hilfe für dieses Gerät"
-   set caption(photometry,2_3_couleur)                     "# 2 ou 3 couleurs"
+   set caption(photometry,2_3_couleur)                     "2 oder 3 Farben"
    set caption(photometry,configure)                       "Konfigurieren"
-   set caption(photometry,prepare)                         "# Préparer"
-   set caption(photometry,calibre)                         "# Calibrer"
-   set caption(photometry,mesure)                          "# Mesurer"
+   set caption(photometry,prepare)                         "Vorbereiten"
+   set caption(photometry,calibre)                         "Kalibrieren"
+   set caption(photometry,mesure)                          "Messen"
 
-   set caption(photometry,configure,titre)                 "# Photométrie : Configuration"
-   set caption(photometry,configure,titre2)                "# Photométrie : Configuration"
-   set caption(photometry,configure,load_button)           "# Charge la configuration"
-   set caption(photometry,configure,save_button)           "# Enregistre la configuration"
+   set caption(photometry,configure,titre)                 "Lichtmessung: Konfiguration"
+   set caption(photometry,configure,titre2)                "Lichtmessung: Konfiguration"
+   set caption(photometry,configure,load_button)           "Konfiguration laden"
+   set caption(photometry,configure,save_button)           "Konfiguration speichern"
    set caption(photometry,configure,return_button)         "OK"
-   set caption(photometry,configure,load)                  "# Charge la configuration"
-   set caption(photometry,configure,save)                  "# Enregistre la configuration"
-   set caption(photometry,configure,config,code_obs)       "# Code UAI de l'observatoire"
-   set caption(photometry,configure,config,longitude)      "# Longitude de l'observatoire (deg.)"
-   set caption(photometry,configure,config,sens)           "# Longitude de l'observatoire (E|W)"
-   set caption(photometry,configure,config,latitude)       "# Latitude de l'observatoire (deg.)"
-   set caption(photometry,configure,config,altitude)       "# Altitude de l'observatoire (m)"
-   set caption(photometry,configure,config,desc_location)  "# Nom de l'observatoire"
-   set caption(photometry,configure,config,desc_camera)    "# Description de la caméra"
-   set caption(photometry,configure,config,desc_telescope) "# Description du télescope"
-   set caption(photometry,configure,config,tel_diam)       "# Diamètre du télescope (m)"
-   set caption(photometry,configure,config,tel_fd)         "# F/D du télescope"
+   set caption(photometry,configure,load)                  "Konfiguration laden"
+   set caption(photometry,configure,save)                  "Konfiguration speichern"
+   set caption(photometry,configure,config,code_obs)       "Sternwarte UAI Code"
+   set caption(photometry,configure,config,longitude)      "Länge der Sternwarte (deg.)"
+   set caption(photometry,configure,config,sens)           "Länge der Sternwarte (E/W)"
+   set caption(photometry,configure,config,latitude)       "Breite der Sternwarte (deg.)"
+   set caption(photometry,configure,config,altitude)       "Höhe der Sternwarte (m)"
+   set caption(photometry,configure,config,desc_location)  "Nahmen der Sternwarte"
+   set caption(photometry,configure,config,desc_camera)    "Kamera Beschreibung"
+   set caption(photometry,configure,config,desc_telescope) "Teleskop Beschreibung"
+   set caption(photometry,configure,config,tel_diam)       "Teleskop Durchmesser (m)"
+   set caption(photometry,configure,config,tel_fd)         "Teleskop F/D"
    set caption(photometry,configure,config,comment)        "Kommentar"
 
-   set caption(photometry,prepare,titre)                   "# Photométrie : Configuration"
-   set caption(photometry,prepare,titre2)                  "# Photométrie : Configuration"
-   set caption(photometry,prepare,compute_button)          "# Calculer"
+   set caption(photometry,prepare,titre)                   "Lichtmessung: Konfiguration"
+   set caption(photometry,prepare,titre2)                  "Lichtmessung: Konfiguration"
+   set caption(photometry,prepare,compute_button)          "Berechnen"
    set caption(photometry,prepare,return_button)           "OK"
-   set caption(photometry,prepare,config,file_cat)         "# Fichier du catalogue photométrique"
-   set caption(photometry,prepare,config,file_out)         "# Fichier de sortie des résultats"
-   set caption(photometry,prepare,config,date_night)       "# Date de la nuit à préparer"
-   set caption(photometry,prepare,config,ra)               "# Ascension Droite du champ à mesurer"
-   set caption(photometry,prepare,config,dec)              "# Déclinaison du champ à mesurer"
+   set caption(photometry,prepare,config,file_cat)         "Datei vom Lichtmessung Katalog"
+   set caption(photometry,prepare,config,file_out)         "Output Datei für die Resultate"
+   set caption(photometry,prepare,config,date_night)       "Datum der Nacht zu präparieren"
+   set caption(photometry,prepare,config,ra)               "Rektaszension des Feld zu messen"
+   set caption(photometry,prepare,config,dec)              "Deklination des Feld zu messen"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

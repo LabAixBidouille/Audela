@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.10 2006-09-13 21:30:49 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.11 2006-10-02 15:41:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -569,7 +569,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,temma_mobile_ad)               "Rektaszension Tempo"
    set caption(conftel,temma_mobile_dec)              "Deklination Tempo"
 
-   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+   set caption(conftel,driver_ascom)                  "ASCOM Treiber"
 
    set caption(conftel,ra)                            "RA"
    set caption(conftel,dec)                           "Dek."

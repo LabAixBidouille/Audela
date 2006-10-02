@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.7 2006-09-13 21:29:37 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.8 2006-10-02 15:43:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -281,7 +281,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,fichier_existe)   "Diese Datei ist schon auf die Platte.\nBestätigen sie die Speicherung?"
 
    set caption(scanfast,attention)        "Achtung"
-   set caption(scanfast,message)          "# Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+   set caption(scanfast,message)          "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
