@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.9 2006-09-29 14:42:27 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.10 2006-10-07 10:30:11 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -190,8 +190,8 @@ proc ::confLink::recup_position { } {
 # 
 # Parametres : 
 #    authorizedNamespaces : liste des onglets a afficher
-#        si la chaine est vide tous les onglets sont affichés
-#    configurationTitle : titre complémentaire de la fenetres de dialogue
+#        si la chaine est vide tous les onglets sont affiches
+#    configurationTitle : titre complementaire de la fenetres de dialogue
 # return 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
@@ -327,7 +327,7 @@ proc ::confLink::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 # ::confLink::delete 
 #    supprime une utilisation d'une liaison
-#    et supprime la liaison si elle n'est plus utilisée par aucun autre péripherique
+#    et supprime la liaison si elle n'est plus utilisee par aucun autre peripherique
 #   
 #    retourne rien
 #
@@ -375,7 +375,7 @@ proc ::confLink::configureDriver { } {
       return
    }
 
-   #--- je charge les drivers si ce n'était pas deja fait
+   #--- je charge les drivers si ce n'etait pas deja fait
    #--- (cas de l'ouverture automatique au demerrage de Audela)
    #if { [llength $private(namespacelist)] <1 } {
    #   findDriver
@@ -410,7 +410,7 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 #  - le driver doit avoir une procedure getlabel
 # 
 # si le driver remplit les conditions
-#    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
+#    son label est ajoute dans la liste driverlist, et son namespace est ajoute dans namespacelist
 #    sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
 #
 # retrun 0 = OK , 1 = error (no driver found)
@@ -617,8 +617,8 @@ proc ::confLink::getLinkNo { linkLabel } {
 # Affiche la fenetre de choix et de configuration
 # 
 #  parametres :
-#    linkLabel : link pre-sélectionné
-#    authorizedNamespaces : namespaces autorisés (optionel)
+#    linkLabel : link pre-selectionne
+#    authorizedNamespaces : namespaces autorises (optionel)
 #    configurationTitle : titre de la fenetre de configuration (optionel)
 #------------------------------------------------------------
 proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { configurationTitle "" } } {

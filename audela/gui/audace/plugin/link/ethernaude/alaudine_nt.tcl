@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.7 2006-09-28 19:50:09 michelpujol Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.8 2006-10-07 10:27:17 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -183,7 +183,7 @@ namespace eval AlAudine_NT {
       scale $This.temp_ccd_souhaite_variant -from $tmp_ccd_min -to $tmp_ccd_max -length 300 \
          -orient horizontal -showvalue true -tickinterval 5 -resolution 0.1 \
          -borderwidth 2 -relief groove -variable confCam(alaudine_nt,temp_ccd_souhaite) -width 10 \
-         -command { catch { ::AlAudine_NT::ReglageTemp } }
+         -command { ::AlAudine_NT::ReglageTemp }
       pack $This.temp_ccd_souhaite_variant -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
       entry $This.temp_ccd_souhaite -textvariable confCam(alaudine_nt,temp_ccd_souhaite) -width 5 -justify center
@@ -275,20 +275,19 @@ namespace eval AlAudine_NT {
       #--- Temperatures minimale et maximale possibles
       set tmp_ccd_max $conf(alaudine_nt,evaluation)
       set tmp_ccd_min [ expr $conf(alaudine_nt,evaluation) - $conf(alaudine_nt,delta_t_max) ]
-      #---
-      $This.temp_ccd_souhaite_variant configure \
-         -from $tmp_ccd_min -to $tmp_ccd_max
+      #--- Configuration de la glissiere de reglage de la temperature
+      $This.temp_ccd_souhaite_variant configure -from $tmp_ccd_min -to $tmp_ccd_max
    }
 
    #
    # AlAudine_NT::ReglageTemp
    # Fonction pour regler la temperature du CCD via l'AlAudine NT
    #
-   proc ReglageTemp { } {
+   proc ReglageTemp { temp_ccd_souhaite } {
       global confCam
 
       set camNo $confCam($confCam(cam_item),camNo)
-      cam$camNo cooler check $confCam(alaudine_nt,temp_ccd_souhaite)
+      cam$camNo cooler check $temp_ccd_souhaite
    }
 
    #
