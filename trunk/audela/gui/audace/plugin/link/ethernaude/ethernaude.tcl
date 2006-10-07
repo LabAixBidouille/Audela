@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.8 2006-09-28 19:50:09 michelpujol Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.9 2006-10-07 10:29:24 robertdelmas Exp $
 #
 
 package provide ethernaude 1.0
@@ -80,6 +80,7 @@ proc ::ethernaude::confToWidget { } {
 
    set widget(conf_ethernaude,host)      $conf(ethernaude,host)
    set widget(conf_ethernaude,ipsetting) $conf(ethernaude,ipsetting)
+   set widget(conf_ethernaude,debug)     $conf(ethernaude,debug)
    set widget(conf_ethernaude,canspeed)  $conf(ethernaude,canspeed)
 }
 
@@ -165,6 +166,11 @@ proc ::ethernaude::fillConfigPage { frm } {
    checkbutton $frm.ipsetting -text "$caption(ethernaude,envoyer_adresse_eth)" -highlightthickness 0 \
       -variable ::ethernaude::widget(conf_ethernaude,ipsetting)
    pack $frm.ipsetting -in $frm.frame2 -anchor center -side left -padx 10 -pady 2
+
+   #--- EthernAude en mode debug ou non
+   checkbutton $frm.debug -text "$caption(ethernaude,debug)" -highlightthickness 0 \
+      -variable ::ethernaude::widget(conf_ethernaude,debug)
+   pack $frm.debug -in $frm.frame2 -anchor center -side right -padx 10 -pady 2
 
    #--- Definition de la vitesse de lecture d'un pixel
    label $frm.lab2 -text "$caption(ethernaude,lecture_pixel)"
@@ -300,7 +306,7 @@ proc ::ethernaude::init { } {
    #--- Charge le fichier caption
    uplevel #0  "source \"[ file join $audace(rep_plugin) link ethernaude ethernaude.cap ]\""
 
-   #--- je fixe le nom generique de la liaison  identique au namespace
+   #--- Je fixe le nom generique de la liaison identique au namespace
    set private(genericName) "ethernaude"
    set private(started) "0"
 
@@ -328,6 +334,7 @@ proc ::ethernaude::initConf { } {
 
    if { ! [ info exists conf(ethernaude,host) ] }       { set conf(ethernaude,host)       "169.254.164.70" }
    if { ! [ info exists conf(ethernaude,ipsetting) ] }  { set conf(ethernaude,ipsetting)  "0" }
+   if { ! [ info exists conf(ethernaude,debug) ] }      { set conf(ethernaude,debug)      "0" }
    if { ! [ info exists conf(ethernaude,canspeed) ] }   { set conf(ethernaude,canspeed)   "7" }
 
    return
@@ -386,6 +393,7 @@ proc ::ethernaude::widgetToConf { } {
 
    set conf(ethernaude,host)             $widget(conf_ethernaude,host)
    set conf(ethernaude,ipsetting)        $widget(conf_ethernaude,ipsetting)
+   set conf(ethernaude,debug)            $widget(conf_ethernaude,debug)
    set conf(ethernaude,canspeed)         $widget(conf_ethernaude,canspeed)
 }
 

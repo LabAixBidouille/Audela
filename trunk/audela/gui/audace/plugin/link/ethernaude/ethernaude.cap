@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Mise a jour $Id: ethernaude.cap,v 1.6 2006-06-20 19:26:52 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.cap,v 1.7 2006-10-07 10:27:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,6 +16,7 @@ set caption(ethernaude,titre)                      "EthernAude"
 set caption(ethernaude,host_ethernaude)            "Host EthernAude"
 set caption(ethernaude,test_ethernaude)            "Test IP Address (ping)"
 set caption(ethernaude,envoyer_adresse_eth)        "Send this IP number to EthernAude before the connection"
+set caption(ethernaude,debug)                      "# Mode débug"
 set caption(ethernaude,lecture_pixel)              "Reading of One Pixel:"
 set caption(ethernaude,micro_sec_bornes)           "microseconds (choose a value between 5.0 and 15.0 µs)"
 set caption(ethernaude,tutorial_ethernaude)        "Overview and Tutorial"
@@ -37,6 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Tester l'adresse IP (ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Envoyer ce numéro IP à l'EthernAude avant la connexion"
+   set caption(ethernaude,debug)                   "Mode débug"
    set caption(ethernaude,lecture_pixel)           "Lecture d'un pixel :"
    set caption(ethernaude,micro_sec_bornes)        "microsecondes (choisir une valeur comprise entre 5.0 et 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Présentation et tutorial"
@@ -58,6 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Prova dell'indirizzo IP (ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Inviare questo numero IP all' EthernAude prima della connessione"
+   set caption(ethernaude,debug)                   "# Mode débug"
    set caption(ethernaude,lecture_pixel)           "Lettura di un pixel:"
    set caption(ethernaude,micro_sec_bornes)        "microsecondi (scegliere un valore compreso tra 5.0 e 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Presentazione e tutorial"
@@ -79,6 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Porbar la dirección IP (ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Envia esta dirección IP a EthernAude antes de la conexión"
+   set caption(ethernaude,debug)                   "# Mode débug"
    set caption(ethernaude,lecture_pixel)           "Lectura de un píxel:"
    set caption(ethernaude,micro_sec_bornes)        "microsegundos (escoger un valor comprendido entre 5.0 y 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Introducción y Tutorial"
@@ -100,6 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "IP Adresse prüfen (Ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Diese IP Nummer zu EthernAude vor den Zusammenhang schicken"
+   set caption(ethernaude,debug)                   "# Mode débug"
    set caption(ethernaude,lecture_pixel)           "Ein Rasterpunkt abtasten:"
    set caption(ethernaude,micro_sec_bornes)        "Mikrosekunden (Ein Wert zwischen 5.0 und 15.0 µs wählen)"
    set caption(ethernaude,tutorial_ethernaude)     "Vorstellung und Tutorial"
@@ -121,6 +126,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Test IP Address (ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Send this IP number to EthernAude before the connection"
+   set caption(ethernaude,debug)                   "# Mode débug"
    set caption(ethernaude,lecture_pixel)           "Reading of One Pixel:"
    set caption(ethernaude,micro_sec_bornes)        "microseconds (choose a value between 5.0 and 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Overview and Tutorial"

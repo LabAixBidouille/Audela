@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.31 2006-10-01 17:50:04 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.32 2006-10-07 10:31:37 robertdelmas Exp $
 #
 
 global confCam
@@ -2970,6 +2970,7 @@ namespace eval ::confCam {
             ::confVisu::setCamera $confCam($cam_item,visuNo) 0
             set confCam($cam_item,visuNo) "0"
          }
+
          #--- Je ferme la liaison d'acquisition de la camera
          ::confLink::delete $conf($confCam($cam_item,camName),port) "cam$camNo" "acquisition"
 
@@ -2993,6 +2994,7 @@ namespace eval ::confCam {
                }
             }
             dlsr {
+               #--- Si la fenetre Telechargement d'images est affichee, je la ferme
                if { [ winfo exists $audace(base).telecharge_image ] } {
                   destroy $audace(base).telecharge_image
                }
@@ -4005,16 +4007,25 @@ namespace eval ::confCam {
                            set shutterinvert "1"
                         }
                      }
-                     ###
-                     ### Attention : Ajout de 2 fois -debug dans le cam::create
-                     ###
-                     if { $conf(ethernaude,ipsetting) == "1" } {
-                        set camNo [cam::create ethernaude udp -ip $conf(ethernaude,host) \
-                           -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
-                           -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] -debug ]
+                     #--- Gestion du mode debug ou non de l'EthernAude
+                     if { $conf(ethernaude,debug) == "0" } {
+                        if { $conf(ethernaude,ipsetting) == "1" } {
+                           set camNo [cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                              -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
+                              -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] ]
+                        } else {
+                           set camNo [ cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                              -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
+                        }
                      } else {
-                        set camNo [ cam::create ethernaude udp -ip $conf(ethernaude,host) \
-                           -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug ]
+                        if { $conf(ethernaude,ipsetting) == "1" } {
+                           set camNo [cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                              -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
+                              -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] -debug ]
+                        } else {
+                           set camNo [ cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                              -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug ]
+                        }
                      }
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
                      set linkNo [confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
