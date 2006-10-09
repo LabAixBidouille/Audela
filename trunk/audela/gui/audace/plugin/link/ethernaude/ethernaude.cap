@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Mise a jour $Id: ethernaude.cap,v 1.7 2006-10-07 10:27:49 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.cap,v 1.8 2006-10-09 15:43:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,7 +16,7 @@ set caption(ethernaude,titre)                      "EthernAude"
 set caption(ethernaude,host_ethernaude)            "Host EthernAude"
 set caption(ethernaude,test_ethernaude)            "Test IP Address (ping)"
 set caption(ethernaude,envoyer_adresse_eth)        "Send this IP number to EthernAude before the connection"
-set caption(ethernaude,debug)                      "# Mode débug"
+set caption(ethernaude,debug)                      "Debug Mode"
 set caption(ethernaude,lecture_pixel)              "Reading of One Pixel:"
 set caption(ethernaude,micro_sec_bornes)           "microseconds (choose a value between 5.0 and 15.0 µs)"
 set caption(ethernaude,tutorial_ethernaude)        "Overview and Tutorial"
@@ -82,7 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Porbar la dirección IP (ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Envia esta dirección IP a EthernAude antes de la conexión"
-   set caption(ethernaude,debug)                   "# Mode débug"
+   set caption(ethernaude,debug)                   "Modo depuracion"
    set caption(ethernaude,lecture_pixel)           "Lectura de un píxel:"
    set caption(ethernaude,micro_sec_bornes)        "microsegundos (escoger un valor comprendido entre 5.0 y 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Introducción y Tutorial"
@@ -126,7 +126,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Test IP Address (ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Send this IP number to EthernAude before the connection"
-   set caption(ethernaude,debug)                   "# Mode débug"
+   set caption(ethernaude,debug)                   "Debug Mode"
    set caption(ethernaude,lecture_pixel)           "Reading of One Pixel:"
    set caption(ethernaude,micro_sec_bornes)        "microseconds (choose a value between 5.0 and 15.0 µs)"
    set caption(ethernaude,tutorial_ethernaude)     "Overview and Tutorial"
