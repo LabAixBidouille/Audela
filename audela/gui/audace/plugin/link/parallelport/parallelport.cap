@@ -1,6 +1,6 @@
 #
 # Fichier : parallelport.cap
-# Mise a jour $Id: parallelport.cap,v 1.8 2006-10-02 15:40:31 robertdelmas Exp $
+# Mise a jour $Id: parallelport.cap,v 1.9 2006-10-12 21:21:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,8 +26,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(parallelport,titre)        "Porta parallela"
-   set caption(parallelport,available)    "# Ports parallèles disponibles"
-   set caption(parallelport,refresh)      "# Rafraîchir"
+   set caption(parallelport,available)    "Porta parallela disponibile"
+   set caption(parallelport,refresh)      "Rinfresca"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -46,9 +46,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(parallelport,titre)        "# Port parallèle"
-   set caption(parallelport,available)    "# Ports parallèles disponibles"
-   set caption(parallelport,refresh)      "# Rafraîchir"
+   set caption(parallelport,titre)        "Parallelle porte"
+   set caption(parallelport,available)    "Disponible parallelle porte"
+   set caption(parallelport,refresh)      "Genindlæs"
 
 }
 

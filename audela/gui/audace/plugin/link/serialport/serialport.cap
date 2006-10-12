@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.8 2006-10-02 15:41:12 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.9 2006-10-12 21:21:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,8 +26,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(serialport,titre)        "Porta seriale"
-   set caption(serialport,available)    "# Ports séries disponibles"
-   set caption(serialport,refresh)      "# Rafraîchir"
+   set caption(serialport,available)    "Porta seriale disponibile"
+   set caption(serialport,refresh)      "Rinfresca"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -46,9 +46,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(serialport,titre)        "# Port série"
-   set caption(serialport,available)    "# Ports séries disponibles"
-   set caption(serialport,refresh)      "# Rafraîchir"
+   set caption(serialport,titre)        "Serielle porte"
+   set caption(serialport,available)    "Serielle porte disponible"
+   set caption(serialport,refresh)      "Genindlæs"
 
 }
 
