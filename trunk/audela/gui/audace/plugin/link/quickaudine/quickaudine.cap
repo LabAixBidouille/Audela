@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.5 2006-10-02 15:40:46 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.6 2006-10-12 21:21:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,43 +12,43 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(quickaudine,titre)           "QuickAudine"
-set caption(quickaudine,available)       "QuickAudines available"
+set caption(quickaudine,available)       "QuickAudine available"
 set caption(quickaudine,refresh)         "Reload"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "QuickAudines disponibles"
+   set caption(quickaudine,available)    "QuickAudine disponibles"
    set caption(quickaudine,refresh)      "Rafraîchir"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "# QuickAudines disponibles"
-   set caption(quickaudine,refresh)      "# Rafraîchir"
+   set caption(quickaudine,available)    "QuickAudine disponibile"
+   set caption(quickaudine,refresh)      "Rinfresca"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "QuickAudines disponibles"
+   set caption(quickaudine,available)    "QuickAudine disponibles"
    set caption(quickaudine,refresh)      "Recargar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "QuickAudinen verfügbar"
+   set caption(quickaudine,available)    "QuickAudine verfügbar"
    set caption(quickaudine,refresh)      "Aktualisieren"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(quickaudine,titre)        "QuickAudine"
-   set caption(quickaudine,available)    "# QuickAudines disponibles"
-   set caption(quickaudine,refresh)      "# Rafraîchir"
+   set caption(quickaudine,available)    "QuickAudine disponible"
+   set caption(quickaudine,refresh)      "Genindlæs"
 
 }
 
