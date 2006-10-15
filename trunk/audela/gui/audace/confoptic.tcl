@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.4 2006-06-20 17:26:32 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.5 2006-10-15 21:57:48 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -321,7 +321,7 @@ namespace eval ::confOptic {
       set list_combobox [ list 0.33 0.5 0.66 1.0 1.5 2.0 2.5 3.0 3.5 4.0 5.0 ]
       ComboBox $widget(frm).comboboxBarlow_Reduc \
          -width 5          \
-         -height [ llength $list_combobox ]  \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 2    \
          -editable 1       \
@@ -350,13 +350,15 @@ namespace eval ::confOptic {
 
       #--- Informations liees a la camera CCD
       if { [ ::cam::list ] != "" } {
-         set camera "[ lindex [ cam$audace(camNo) info ] 1 ]"
-         set capteur "[ lindex [ cam$audace(camNo) info ] 2 ]"
-         set fg $color(blue)
+         set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
+         set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
+         set cell_dim "[ lindex [ cam$audace(camNo) celldim ] 0 ] x [ lindex [ cam$audace(camNo) celldim ] 1 ]"
+         set fg       "$color(blue)"
       } else {
-         set camera $caption(confoptic,nocam)
-         set capteur ""
-         set fg $color(red)
+         set camera   "$caption(confoptic,nocam)"
+         set capteur  ""
+         set cell_dim ""
+         set fg       "$color(red)"
       }
 
       label $widget(frm).labCamera -text "$caption(confoptic,camera)" -relief flat
@@ -370,6 +372,12 @@ namespace eval ::confOptic {
 
       label $widget(frm).labURL_typeCapteur -text $capteur
       pack $widget(frm).labURL_typeCapteur -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
+
+      label $widget(frm).labCellDim -text "$caption(confoptic,cell_dim)" -relief flat
+      pack $widget(frm).labCellDim -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
+
+      label $widget(frm).labURL_CellDim -text $cell_dim
+      pack $widget(frm).labURL_CellDim -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labChamp -text "$caption(confoptic,champ)" -relief flat
       pack $widget(frm).labChamp -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
@@ -400,18 +408,23 @@ namespace eval ::confOptic {
          ::confCam::run
          tkwait window $audace(base).confCam
          if { [ ::cam::list ] != "" } {
-            set camera "[ lindex [ cam$audace(camNo) info ] 1 ]"
-            set capteur "[ lindex [ cam$audace(camNo) info ] 2 ]"
-            set fg $color(blue)
+            set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
+            set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
+            set cell_dim "[ lindex [ cam$audace(camNo) celldim ] 0 ] x [ lindex [ cam$audace(camNo) celldim ] 1 ]"
+            set fg       "$color(blue)"
          } else {
-            set camera $caption(confoptic,nocam)
-            set capteur ""
-            set fg $color(red)
+            set camera   "$caption(confoptic,nocam)"
+            set capteur  ""
+            set cell_dim ""
+            set fg       "$color(red)"
          }
-         $::confOptic::widget(frm).labURL_nomCamera configure -text $camera -fg $fg
-         $::confOptic::widget(frm).labURL_typeCapteur configure -text $capteur
-         ::confOptic::Calculette
-         update
+         if { [ winfo exists $audace(base).confOptic ] } {
+            $::confOptic::widget(frm).labURL_nomCamera configure -text $camera -fg $fg
+            $::confOptic::widget(frm).labURL_typeCapteur configure -text $capteur
+            $::confOptic::widget(frm).labURL_CellDim configure -text $cell_dim
+            ::confOptic::Calculette
+            update
+         }
       }
    }
 
