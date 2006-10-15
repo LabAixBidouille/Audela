@@ -1651,7 +1651,9 @@ void CBuffer::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 
 /*
  * SetPixels
- *  Affecte le tableau de pixels 
+ *  Affecte le tableau de pixels dans buffer->pix
+ *  
+ *  Si une erreur survient pendant le traitement, buffer->pix conserve l'ancien tableau de pixels
  *  
  *  Return : 0
  *
@@ -1667,7 +1669,46 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    if( plane == PLANE_GREY) {
       // cas d'une image grise
-      pixTemp = new CPixelsGray(width, height, pixelFormat, pixels, reverseX, reverseY);
+      switch (compression) {
+      case COMPRESS_NONE:
+         {            
+            pixTemp = new CPixelsGray(width, height, pixelFormat, pixels, reverseX, reverseY);
+            break;
+         }         
+      case COMPRESS_RAW :
+         {
+            int width, height;
+            int result = -1;
+            unsigned short * decodedData;
+            struct DataInfo dataInfo;
+
+            
+            result = libdcraw_bufferRaw2Cfa ( (unsigned short *)pixels, pixelSize, &dataInfo, &decodedData);
+            if (result == 0 )  {
+               width  = dataInfo.width;
+               height = dataInfo.height;
+               pixTemp = new CPixelsGray( width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
+               libdcraw_freeBuffer(decodedData);               
+               // j'enregistre l'image brute RAW dans un fichier temporaire
+               {
+                  FILE * ofp;
+                  size_t sizeWritten;
+                  sprintf(temporaryRawFileName,"rawFileBuf%ld.dat",this);
+                  ofp = fopen (temporaryRawFileName, "wb");
+                  if (ofp) {
+                     sizeWritten = fwrite ( pixels, pixelSize, 1, ofp);
+                     fclose(ofp);
+                  }
+               }
+
+            } else {
+               throw CError("libdcraw_decodeBuffer error=%d", result);
+            }
+
+            break;
+         }   
+      }
+
    } else {
       // cas d'un image couleur
       switch (compression) {
@@ -1687,46 +1728,13 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             result  = libdcjpeg_decodeBuffer((char*) pixels, pixelSize, &decodedData, &decodedSize, &width, &height);            
             if (result == 0 )  {
                pixTemp = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, reverseX, reverseY);
-               // l'espace memoire cree par la librairie doit etre desalloué par cette meme librairie.
+               // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
                libdcjpeg_freeBuffer(decodedData);
             } else {
                throw CError("libjpeg_decodeBuffer error=%d", result);
             }
             break;
          } 
-      case COMPRESS_RAW :
-         {
-            int width, height;
-            int result = -1;
-            unsigned short * decodedData;
-            struct DataInfo dataInfo;
-
-            
-            result = libdcraw_bufferRaw2Cfa ( (unsigned short *)pixels, pixelSize, &dataInfo, &decodedData);
-            if (result == 0 )  {
-               width  = dataInfo.width;
-               height = dataInfo.height;
-               pixTemp = new CPixelsGray( width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
-               libdcraw_freeBuffer(decodedData);
-               
-               // j'enregistre l'image dans un fichier temporaire
-               {
-                  FILE * ofp;
-                  size_t sizeWritten;
-                  sprintf(temporaryRawFileName,"rawFileBuf%ld.dat",this);
-                  ofp = fopen (temporaryRawFileName, "wb");
-                  if (ofp) {
-                     sizeWritten = fwrite ( pixels, pixelSize, 1, ofp);
-                     fclose(ofp);
-                  }
-               }
-
-            } else {
-               throw CError("libdcraw_decodeBuffer error=%d", result);
-            }
-
-            break;
-         }   
       default :
          {
             throw CError("SetPixels not implemented for compression=%s", CPixels::getPixelCompressionName(compression));
@@ -1748,6 +1756,15 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 }
 
 
+/*
+ * SetPixels
+ *  Affecte le tableau de pixels dans buffer->pix
+ *  
+ *  Si une erreur survient pendant le traitement, buffer->pix conserve l'ancien tableau de pixels
+ *  
+ *  Return : 0
+ *
+ */
 void CBuffer::SetPixels(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels) {
    CPixels  * pixTemp;   
 
