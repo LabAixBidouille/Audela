@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.5 2006-08-26 14:58:31 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.6 2006-10-15 15:58:28 robertdelmas Exp $
 #
 
 namespace eval cameraDSLR {
@@ -16,8 +16,8 @@ namespace eval cameraDSLR {
 
       #--- Initialisation de la position de la fenetre
       if { ! [ info exists conf(dslr,telecharge_mode) ] } { set conf(dslr,telecharge_mode) "2" }
-      if { ! [ info exists conf(dslr,utiliser_cf) ] }     { set conf(dslr,utiliser_cf)     "0" }
-      if { ! [ info exists conf(dslr,supprimer_image) ] } { set conf(dslr,supprimer_image) "1" }
+      if { ! [ info exists conf(dslr,utiliser_cf) ] }     { set conf(dslr,utiliser_cf)     "1" }
+      if { ! [ info exists conf(dslr,supprimer_image) ] } { set conf(dslr,supprimer_image) "0" }
    }
 
    proc setLoadParameters { visuNo} {
@@ -54,8 +54,8 @@ namespace eval cameraDSLR {
       }
 
       #--- utilise carte memoire CF
-      checkbutton $audace(base).telecharge_image.utiliserCF -text "$caption(dslr,utiliser_cf)" -highlightthickness 0 \
-         -variable conf(dslr,utiliser_cf) \
+      checkbutton $audace(base).telecharge_image.utiliserCF -text "$caption(dslr,utiliser_cf)" \
+         -highlightthickness 0 -variable conf(dslr,utiliser_cf) \
          -command "::cameraDSLR::utiliserCF $visuNo"
       pack $audace(base).telecharge_image.utiliserCF -anchor w -side top -padx 20 -pady 10
 
@@ -79,8 +79,8 @@ namespace eval cameraDSLR {
          -side top -padx 30 -pady 5
 
       #--- supprime l'image sur la carte memoire apres le chargement
-      checkbutton $audace(base).telecharge_image.supprime_image -text "$caption(dslr,supprimer_image)" -highlightthickness 0 \
-         -variable conf(dslr,supprimer_image) \
+      checkbutton $audace(base).telecharge_image.supprime_image -text "$caption(dslr,supprimer_image)" \
+         -highlightthickness 0 -variable conf(dslr,supprimer_image) \
          -command "::cameraDSLR::supprimerImage $visuNo"
       pack $audace(base).telecharge_image.supprime_image -anchor w -side top -padx 20 -pady 10
 
