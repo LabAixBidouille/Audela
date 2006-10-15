@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.21 2006-10-02 15:42:54 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.22 2006-10-15 14:30:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -1829,7 +1829,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_sortie)             "Vælg output-billeder."
    set caption(audace,definir,operande)               "Vælg et C billede brugt som operand."
    set caption(audace,definir,entree_generique)       "# Choisissez l'image générique d'entrée."
-   set caption(audace,definir,sortie_generique)       "# Choisissez l'image générique de sortie."
+   set caption(audace,definir,sortie_generique)       "Vælg serie-navn til output-billedet."
    set caption(audace,definir,image_sortie)           "# Choisissez l'image de sortie."
    set caption(audace,definir,flat-field)             "# Choisissez l'image de flat-field."
    set caption(audace,definir,noir)                   "Vælg dark-frame."
@@ -1876,10 +1876,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,images,sortie)                  "Output billeder:"
    set caption(audace,image,entree)                   "Indlæs billede:"
    set caption(audace,image,sortie)                   "Output billede:"
-   set caption(audace,image_generique,entree)         "# Image générique d'entrée :"
+   set caption(audace,image_generique,entree)         "Input image-serie:"
    set caption(audace,image_generique,sortie)         "# Image générique de sortie :"
    set caption(audace,valeur_par_defaut)              "Default værdier"
-   set caption(audace,valeur_normalisation)           "# Valeur de normalisation :"
+   set caption(audace,valeur_normalisation)           "Normaliseret værdi:"
    set caption(audace,coef,etalement)                 "Spredningsfaktor:"
    set caption(audace,coef,mult)                      "Multiplikationsfaktor:"
    set caption(audace,coef,efficacite)                "Virkegrad:"
