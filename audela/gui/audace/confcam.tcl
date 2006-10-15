@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.32 2006-10-07 10:31:37 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.33 2006-10-15 16:34:53 michelpujol Exp $
 #
 
 global confCam
@@ -4090,6 +4090,11 @@ namespace eval ::confCam {
 
       } errorMessage ]
       #--- <= fin du catch
+
+      if { $cam_item == "A" } {
+         #--- mise a jour de la variable audace pour compatibilite
+         set ::audace(camNo) $confCam($cam_item,camNo)
+      }
 
       #--- Traitement des erreurs detectees par le catch
       if { $erreur == "1" } {
