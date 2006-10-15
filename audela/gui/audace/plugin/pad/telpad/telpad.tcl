@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.3 2006-06-20 19:46:14 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.4 2006-10-15 11:14:52 robertdelmas Exp $
 #
 
 package provide telpad 1.0
@@ -11,22 +11,22 @@ package provide telpad 1.0
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
 #     init              : initialise le namespace (appelee pendant le chargement de ce source)
 #     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver 
+#     getLabel          : retourne le nom affichable du driver
 #     getHelp           : retourne la documentation htm associee
 #     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
 #     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver
 #     confToWidget      : copie le tableau conf() dans les variables des widgets
 #     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver 
+#     configureDriver   : configure le driver
 #     stopDriver        : arrete le driver et libere les ressources occupees
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
-# Procedures specifiques a ce driver :  
-#     run               : affiche la raquette 
+# Procedures specifiques a ce driver :
+#     run               : affiche la raquette
 #     fermer            : ferme la raquette
 #     createDialog      : creation de l'interface graphique
-#    
+#
 
 namespace eval telpad {
    variable This
@@ -38,27 +38,27 @@ namespace eval telpad {
 
    #------------------------------------------------------------
    #  init (est lance automatiquement au chargement de ce fichier tcl)
-   #     initialise le driver 
+   #     initialise le driver
    #  
    #  return namespace name
    #------------------------------------------------------------
-   proc init { } {   
-      global audace    
+   proc init { } {
+      global audace
 
       #--- Charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_plugin) pad telpad telpad.cap ]\"" 
+      uplevel #0  "source \"[ file join $audace(rep_plugin) pad telpad telpad.cap ]\""
 
       #--- Cree les variables dans conf(...) si elles n'existent pas
-      initConf   
+      initConf
 
-      #--- J'initialise les variables widget(..) 
+      #--- J'initialise les variables widget(..)
       confToWidget
 
       return [namespace current]
    }
 
    #------------------------------------------------------------
-   #  getDriverType 
+   #  getDriverType
    #     retourne le type de driver
    #  
    #  return "pad"
@@ -91,7 +91,7 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  initConf 
+   #  initConf
    #     initialise les parametres dans le tableau conf()
    #  
    #  return rien
@@ -102,21 +102,21 @@ namespace eval telpad {
       if { ! [ info exists conf(telpad,padsize) ] }    { set conf(telpad,padsize)    "0.6" }
       if { ! [ info exists conf(telpad,visible) ] }    { set conf(telpad,visible)    "1" }
       if { ! [ info exists conf(telpad,wmgeometry) ] } { set conf(telpad,wmgeometry) "157x254+657+252" }
-      
+
       return
    }
 
    #------------------------------------------------------------
-   #  confToWidget 
+   #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
    #  
    #  return rien
    #------------------------------------------------------------
-   proc confToWidget {  } {   
-      variable widget  
+   proc confToWidget { } {
+      variable widget
       global conf
 
-      set widget(padsize) $conf(telpad,padsize) 
+      set widget(padsize) $conf(telpad,padsize)
       set widget(visible) $conf(telpad,visible)
    }
 
@@ -126,16 +126,16 @@ namespace eval telpad {
    #  
    #  return rien
    #------------------------------------------------------------
-   proc widgetToConf {  } {   
-      variable widget  
+   proc widgetToConf { } {
+      variable widget
       global conf
-      
+
       set conf(telpad,padsize) $widget(padsize)
       set conf(telpad,visible) $widget(visible)
-   }	
+   }
 
    #------------------------------------------------------------
-   #  fillConfigPage 
+   #  fillConfigPage
    #     fenetre de configuration du driver
    #  
    #  return nothing
@@ -145,7 +145,7 @@ namespace eval telpad {
       variable private
       global caption
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
       
       #--- Creation des differents frames
@@ -158,12 +158,12 @@ namespace eval telpad {
       #--- Label pad size
       label $frm.labSize -text "$caption(telpad,taille)"
       pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
-      
+
       #--- Definition de la taille de la raquette 
       set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $frm.taille \
          -width 7          \
-         -height [llength $list_combobox ]  \
+         -height [llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -183,12 +183,12 @@ namespace eval telpad {
    #  
    #  return nothing
    #------------------------------------------------------------
-   proc configureDriver { } { 
+   proc configureDriver { } {
       global audace
 
-      #--- Affiche la raquette  
+      #--- Affiche la raquette
       telpad::run "$audace(base).telpad"
-      return 
+      return
    }
 
    #------------------------------------------------------------
@@ -197,11 +197,11 @@ namespace eval telpad {
    #  
    #  return nothing
    #------------------------------------------------------------
-   proc stopDriver { } { 
+   proc stopDriver { } {
 
-      #--- Ferme la raquette 
+      #--- Ferme la raquette
       fermer
-      return 
+      return
    }
 
    #------------------------------------------------------------
@@ -210,17 +210,16 @@ namespace eval telpad {
    #  
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
-   proc isReady { } {   
-
-      return  0
+   proc isReady { } {
+      return 0
    }
 
    #==============================================================
-   # Procedures specifiques du driver 
+   # Procedures specifiques du driver
    #==============================================================
 
    #------------------------------------------------------------
-   #  run this 
+   #  run this
    #     cree la fenetre de la raquette
    #     this = chemin de la fenetre
    #------------------------------------------------------------
@@ -228,10 +227,10 @@ namespace eval telpad {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       #tkwait visibility $This
 
-      #--- Je refraichis l'affichage des coordonnees      
+      #--- Je refraichis l'affichage des coordonnees
       ::telescope::afficheCoord
 
    }
@@ -266,7 +265,7 @@ namespace eval telpad {
          destroy $This
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(telpad,titre)
       if { [ info exists conf(telpad,wmgeometry) ] == "1" } {
@@ -276,9 +275,6 @@ namespace eval telpad {
       }
       wm resizable $This 1 1
       wm protocol $This WM_DELETE_WINDOW ::telpad::fermer
-      if { $widget(visible) == "1" } {
-         wm transient $This $audace(base)
-      }
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -378,13 +374,13 @@ namespace eval telpad {
       bind $This.frame3.we.lab <ButtonPress-1> { ::telescope::incrementSpeed }
 
       #--- Cardinal moves
-      bind $zone(e) <ButtonPress-1> { catch { ::telescope::move e } }
+      bind $zone(e) <ButtonPress-1>   { catch { ::telescope::move e } }
       bind $zone(e) <ButtonRelease-1> { ::telescope::stop e }
-      bind $zone(w) <ButtonPress-1> { catch { ::telescope::move w  } }
+      bind $zone(w) <ButtonPress-1>   { catch { ::telescope::move w } }
       bind $zone(w) <ButtonRelease-1> { ::telescope::stop w }
-      bind $zone(s) <ButtonPress-1> { catch { ::telescope::move s  } }
+      bind $zone(s) <ButtonPress-1>   { catch { ::telescope::move s } }
       bind $zone(s) <ButtonRelease-1> { ::telescope::stop s }
-      bind $zone(n) <ButtonPress-1> { catch { ::telescope::move n } }
+      bind $zone(n) <ButtonPress-1>   { catch { ::telescope::move n } }
       bind $zone(n) <ButtonRelease-1> { ::telescope::stop n }
 
       #--- Label pour moteur focus
@@ -425,10 +421,10 @@ namespace eval telpad {
       bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed }
 
       #--- Cardinal moves
-      bind $zone(moins) <ButtonPress-1> { catch { ::focus::move - } }
+      bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move - } }
       bind $zone(moins) <ButtonRelease-1> { ::focus::move stop }
-      bind $zone(plus) <ButtonPress-1> { catch { ::focus::move + } }
-      bind $zone(plus) <ButtonRelease-1> { ::focus::move stop }
+      bind $zone(plus)  <ButtonPress-1>   { catch { ::focus::move + } }
+      bind $zone(plus)  <ButtonRelease-1> { ::focus::move stop }
 
       #--- La fenetre est active
       focus $This

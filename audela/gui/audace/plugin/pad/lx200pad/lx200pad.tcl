@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.3 2006-06-20 19:44:38 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.4 2006-10-15 11:16:32 robertdelmas Exp $
 #
 
 package provide lx200pad 1.0
@@ -11,19 +11,19 @@ package provide lx200pad 1.0
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
 #     init                : initialise le namespace (appelee pendant le chargement de ce source)
 #     getDriverName       : retourne le nom du driver
-#     getLabel            : retourne le nom affichable du driver 
+#     getLabel            : retourne le nom affichable du driver
 #     getHelp             : retourne la documentation htm associee
 #     getDriverType       : retourne le type de driver (pour classer le driver dans le menu principal)
 #     initConf            : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage      : affiche la fenetre de configuration de ce driver 
+#     fillConfigPage      : affiche la fenetre de configuration de ce driver
 #     confToWidget        : copie le tableau conf() dans les variables des widgets
 #     widgetToConf        : copie les variables des widgets dans le tableau conf()
 #     configureDriver     : configure le driver et reserve les ressources
 #     stopDriver          : arrete le driver et libere les ressources occupees
 #     isReady             : informe de l'etat de fonctionnement du driver
 #
-# Procedures specifiques a ce driver :  
-#     run                 : affiche la raquette 
+# Procedures specifiques a ce driver :
+#     run                 : affiche la raquette
 #     startSurveilleSpeed : lance la surveillance de la vitesse
 #     surveilleSpeed      : surveillance de la vitesse
 #     lx200_set_slew      : vitesse slew
@@ -39,28 +39,28 @@ namespace eval ::lx200pad {
    #==============================================================
    
    #------------------------------------------------------------
-   #  init 
-   #     initialise le driver 
+   #  init
+   #     initialise le driver
    #  
    #  return namespace name
    #------------------------------------------------------------
-   proc init { } {   
-      global audace    
+   proc init { } {
+      global audace
 
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_plugin) pad lx200pad lx200pad.cap ]\"" 
+      uplevel #0 "source \"[ file join $audace(rep_plugin) pad lx200pad lx200pad.cap ]\""
 
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
 
-      #--- J'initialise les variables widget(..) 
+      #--- J'initialise les variables widget(..)
       confToWidget
 
       return [namespace current]
    }
 
    #------------------------------------------------------------
-   #  getDriverType 
+   #  getDriverType
    #     retourne le type de driver
    #  
    #  return "pad"
@@ -109,14 +109,14 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  confToWidget 
+   #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
    #  
    #  return rien
    #
    #------------------------------------------------------------
-   proc confToWidget {  } {   
-      variable widget  
+   proc confToWidget { } {
+      variable widget
       global conf
 
       set widget(padsize) $conf(lx200pad,padsize)
@@ -130,16 +130,16 @@ namespace eval ::lx200pad {
    #  return rien
    #
    #------------------------------------------------------------
-   proc widgetToConf {  } {   
-      variable widget  
+   proc widgetToConf { } {
+      variable widget
       global conf
-      
+
       set conf(lx200pad,padsize) $widget(padsize)
       set conf(lx200pad,visible) $widget(visible)
   }
 
    #------------------------------------------------------------
-   #  fillConfigPage 
+   #  fillConfigPage
    #     fenetre de configuration du driver
    #  
    #  return nothing
@@ -149,9 +149,9 @@ namespace eval ::lx200pad {
       variable private
       global caption
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
-      
+
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
       pack $frm.frame1 -side top -fill both -expand 0
@@ -167,7 +167,7 @@ namespace eval ::lx200pad {
       set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $frm.taille \
          -width 7          \
-         -height [llength $list_combobox ]  \
+         -height [llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -187,12 +187,12 @@ namespace eval ::lx200pad {
    #  
    #  return nothing
    #------------------------------------------------------------
-   proc configureDriver {  } { 
+   proc configureDriver { } {
       global conf
 
-      #--- Affiche la raquette  
+      #--- Affiche la raquette
       lx200pad::run $conf(lx200pad,padsize) $conf(lx200pad,position)
-      return 
+      return
    }
 
    #------------------------------------------------------------
@@ -201,45 +201,44 @@ namespace eval ::lx200pad {
    #  
    #  return nothing
    #------------------------------------------------------------
-   proc stopDriver {  } { 
+   proc stopDriver { } {
       global conf
       global audace
 
       if { [ winfo exists .lx200pad ] } {
-         #--- Enregistre la position de la raquette 
+         #--- Enregistre la position de la raquette
          set geom [wm geometry .lx200pad]
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
-         set conf(lx200pad,position) "[string range  $geom $deb $fin]"     
+         set conf(lx200pad,position) "[string range  $geom $deb $fin]"
       }
 
-      #--- Supprime la raquette 
-      destroy .lx200pad 
-            
-   
+      #--- Supprime la raquette
+      destroy .lx200pad
+
       #--- J'arrete la surveillance de audace(telescope,speed) et je modifie pour débloquer la boucle d'attente
-      set temp $audace(telescope,speed) 
+      set temp $audace(telescope,speed)
       set audace(telescope,speed) $temp
 
-      return 
+      return
    }
 
    #------------------------------------------------------------
-   #  isReady 
+   #  isReady
    #     informe de l'etat de fonctionnement du driver
    #  
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
-   proc isReady {  } {
-      return  0
+   proc isReady { } {
+      return 0
    }
-               
+
    #==============================================================
-   # Procedures specifiques du driver 
+   # Procedures specifiques du driver
    #==============================================================
 
    #------------------------------------------------------------
-   #  run 
+   #  run
    #     cree la fenetre de la raquette
    #------------------------------------------------------------
    proc run { {zoom .5} {positionxy 0+0} } {
@@ -252,21 +251,21 @@ namespace eval ::lx200pad {
       global color
 
       if { [ string length [ info commands .lx200pad.display* ] ] != "0" } {
-         destroy .lx200pad 
+         destroy .lx200pad
       }
-      
+
       if { $zoom <= "0" } {
          destroy .lx200pad
          return
       }
-      
+
       # =======================================
       # === Initialisation of the variables
       # === Initialisation des variables
       # =======================================
-      
+
       set statustel(speed) "0"
-      
+
       #--- Definition of colorlx200s
       #--- Definition des couleurs
       set colorlx200(backkey)  $color(gray_pad)
@@ -274,7 +273,7 @@ namespace eval ::lx200pad {
       set colorlx200(backdisp) $color(red_pad)
       set colorlx200(textkey)  $color(white)
       set colorlx200(textdisp) $color(black)
-      
+
       #--- Definition des geomlx200etries
       #--- Definition of geometry
       set geomlx200(larg)       [ expr int(300*$zoom) ]
@@ -295,8 +294,8 @@ namespace eval ::lx200pad {
       set geomlx200(lighty1)    [ expr int(30*$zoom) ]
       set geomlx200(lightx2)    [ expr int(20*$zoom) ]
       set geomlx200(lighty2)    [ expr int(40*$zoom) ]
-      if { $geomlx200(linewidth0) <= "1" } { set geomlx200(textthick) "" } else { set geomlx200(textthick) "bold" } 
-      
+      if { $geomlx200(linewidth0) <= "1" } { set geomlx200(textthick) "" } else { set geomlx200(textthick) "bold" }
+
       # =========================================
       # === Setting the graphic interface
       # === Met en place l'interface graphique
@@ -308,9 +307,6 @@ namespace eval ::lx200pad {
       wm resizable .lx200pad 0 0
       wm title .lx200pad $caption(lx200pad,titre)
       wm protocol .lx200pad WM_DELETE_WINDOW "::lx200pad::stopDriver"
-      if { $widget(visible) == "1" } {
-         wm transient .lx200pad $audace(base)
-      }
 
       #--- Create the title
       #--- Cree le titre
@@ -320,22 +316,22 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       pack .lx200pad.meade \
          -in .lx200pad -fill x -side top
-      
-      frame .lx200pad.display -borderwidth 4  -relief sunken -bg $colorlx200(backdisp) 
-   
+
+      frame .lx200pad.display -borderwidth 4  -relief sunken -bg $colorlx200(backdisp)
+
       #--- Label pour RA
-      label  .lx200pad.display.ra  \
+      label .lx200pad.display.ra \
          -font [ list {Courier} $geomlx200(fontsize20) $geomlx200(textthick) ] \
          -textvariable audace(telescope,getra) -bg $colorlx200(backdisp) \
          -fg $colorlx200(textdisp) -relief flat -height 1 -width 12  
-      pack   .lx200pad.display.ra -in .lx200pad.display  -anchor center  -pady 0 
+      pack .lx200pad.display.ra -in .lx200pad.display  -anchor center  -pady 0 
       
       #--- Label pour DEC
-      label  .lx200pad.display.dec \
+      label .lx200pad.display.dec \
          -font [ list {Courier} $geomlx200(fontsize20) $geomlx200(textthick) ] \
          -textvariable audace(telescope,getdec) -bg $colorlx200(backdisp) \
          -fg $colorlx200(textdisp) -relief flat -height 1 -width 12
-      pack   .lx200pad.display.dec -in .lx200pad.display  -anchor center -pady 0  
+      pack .lx200pad.display.dec -in .lx200pad.display  -anchor center -pady 0  
 
       pack .lx200pad.display -in .lx200pad  -fill x -side top -pady $geomlx200(10pixels) -padx 12
 
@@ -343,7 +339,7 @@ namespace eval ::lx200pad {
       bind .lx200pad.display.ra  <ButtonPress-1> { ::telescope::afficheCoord  }
       bind .lx200pad.display.dec <ButtonPress-1> { ::telescope::afficheCoord  }
       bind .lx200pad.display     <ButtonPress-1> { ::telescope::afficheCoord  }
-      
+
       #--- Create a dummy space
       #--- Cree un espace inutile
       frame .lx200pad.dum1 \
@@ -351,7 +347,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.dum1 \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create a frame for the function buttons
       #--- Cree un espace pour les boutons de fonction
       frame .lx200pad.func \
@@ -359,7 +355,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.func \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create the button 'enter'
       frame .lx200pad.func.enter \
          -width $geomlx200(larg2) \
@@ -384,7 +380,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.func.enter.canv1.lab \
          -in .lx200pad.func.enter.canv1 -x [ expr int(11*$zoom) ] -y [ expr int(22*$zoom) ]
-      
+
       #--- Create the button 'go to'
       frame .lx200pad.func.goto \
          -width $geomlx200(larg2) \
@@ -409,7 +405,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.func.goto.canv1.lab \
          -in .lx200pad.func.goto.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(22*$zoom) ]
-      
+
       #--- Create the button 'mode'
       frame .lx200pad.func.mode \
          -width $geomlx200(larg2) \
@@ -434,7 +430,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.func.mode.canv1.lab \
          -in .lx200pad.func.mode.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(22*$zoom) ]
-      
+
       #--- Create a frame for the cardinal buttons
       #--- Cree un espace pour les boutons cardinaux
       frame .lx200pad.card \
@@ -442,7 +438,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.card \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create a dummy space
       #--- Cree un espace inutile
       frame .lx200pad.card.dumw \
@@ -450,7 +446,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.card.dumw \
          -in .lx200pad.card -side left -fill y
-      
+
       #--- Create the button 'W'
       set geomlx200(larg2) $geomlx200(haut2)
       frame .lx200pad.card.w \
@@ -477,7 +473,7 @@ namespace eval ::lx200pad {
       place .lx200pad.card.w.canv1.lab \
          -in .lx200pad.card.w.canv1 -x [ expr int(17*$zoom) ] -y [ expr int(15*$zoom) ]
       set zonelx200(w) .lx200pad.card.w.canv1
-      
+
       #--- Create a dummy space
       #--- Cree un espace inutile
       frame .lx200pad.card.dume \
@@ -485,7 +481,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.card.dume \
          -in .lx200pad.card -side right -fill y
-      
+
       #--- Create the button 'E'
       frame .lx200pad.card.e \
          -width $geomlx200(larg2) \
@@ -511,7 +507,7 @@ namespace eval ::lx200pad {
       place .lx200pad.card.e.canv1.lab \
          -in .lx200pad.card.e.canv1 -x [ expr int(22*$zoom) ] -y [ expr int(15*$zoom) ]
       set zonelx200(e) .lx200pad.card.e.canv1
-      
+
       #--- Create the button 'N'
       frame .lx200pad.card.n \
          -width $geomlx200(larg2) \
@@ -537,7 +533,7 @@ namespace eval ::lx200pad {
       place .lx200pad.card.n.canv1.lab \
          -in .lx200pad.card.n.canv1 -x [ expr int(22*$zoom) ] -y [ expr int(15*$zoom) ]
       set zonelx200(n) .lx200pad.card.n.canv1
-      
+
       #--- Create the button 'S'
       frame .lx200pad.card.s \
          -width $geomlx200(larg2) \
@@ -563,7 +559,7 @@ namespace eval ::lx200pad {
       place .lx200pad.card.s.canv1.lab \
          -in .lx200pad.card.s.canv1 -x [ expr int(22*$zoom) ] -y [ expr int(15*$zoom) ]
       set zonelx200(s) .lx200pad.card.s.canv1
-      
+
       #--- Create a frame for the 789 buttons
       #--- Cree un espace pour les boutons 789
       frame .lx200pad.789 \
@@ -571,7 +567,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.789 \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create the light 'slew'
       frame .lx200pad.789.slew \
          -width $geomlx200(20pixels) \
@@ -587,7 +583,7 @@ namespace eval ::lx200pad {
       pack .lx200pad.789.slew.canv1 \
          -in .lx200pad.789.slew -expand 1
       set zonelx200(slew) .lx200pad.789.slew.canv1
-      
+
       #--- Create the button '7'
       frame .lx200pad.789.7 \
          -width $geomlx200(larg2) \
@@ -620,14 +616,14 @@ namespace eval ::lx200pad {
       place .lx200pad.789.7.canv1.lab2 \
          -in .lx200pad.789.7.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(7) .lx200pad.789.7.canv1
-      
+
       #--- Create a dummy frame
       frame .lx200pad.789.dume \
          -width $geomlx200(20pixels) \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.789.dume \
          -in .lx200pad.789 -side right -fill y
-      
+
       #--- Create the button '9'
       frame .lx200pad.789.9 \
          -width $geomlx200(larg2) \
@@ -659,7 +655,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.789.9.canv1.lab2 \
          -in .lx200pad.789.9.canv1 -x [ expr int(28*$zoom) ] -y [ expr int(10*$zoom) ]
-      
+
       #--- Create the button '8'
       frame .lx200pad.789.8 \
          -width $geomlx200(larg2) \
@@ -691,7 +687,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.789.8.canv1.lab2 \
          -in .lx200pad.789.8.canv1 -x [ expr int(20*$zoom) ] -y [ expr int(10*$zoom) ]
-      
+
       #--- Create a frame for the 456 buttons
       #--- Cree un espace pour les boutons 456
       frame .lx200pad.456 \
@@ -699,7 +695,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.456 \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create the light 'find'
       frame .lx200pad.456.find \
          -width $geomlx200(20pixels) \
@@ -715,7 +711,7 @@ namespace eval ::lx200pad {
       pack .lx200pad.456.find.canv1 \
          -in .lx200pad.456.find -expand 1
       set zonelx200(find) .lx200pad.456.find.canv1
-      
+
       #--- Create the button '4'
       frame .lx200pad.456.4 \
          -width $geomlx200(larg2) \
@@ -733,7 +729,7 @@ namespace eval ::lx200pad {
          -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
       pack .lx200pad.456.4.canv1 \
          -in .lx200pad.456.4 -expand 1
-      
+
       #--- Write the label
       label .lx200pad.456.4.canv1.lab1 \
          -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 4 \
@@ -749,14 +745,14 @@ namespace eval ::lx200pad {
       place .lx200pad.456.4.canv1.lab2 \
          -in .lx200pad.456.4.canv1 -x [ expr int(18*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(4) .lx200pad.456.4.canv1
-      
+
       #--- Create a dummy frame
       frame .lx200pad.456.dume \
          -width $geomlx200(20pixels) \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.456.dume \
          -in .lx200pad.456 -side right -fill y
-      
+
       #--- Create the button '6'
       frame .lx200pad.456.6 \
          -width $geomlx200(larg2) \
@@ -788,7 +784,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.456.6.canv1.lab2 \
          -in .lx200pad.456.6.canv1 -x [ expr int(16*$zoom) ] -y [ expr int(10*$zoom) ]
-      
+
       #--- Create the button '5'
       frame .lx200pad.456.5 \
          -width $geomlx200(larg2) \
@@ -820,7 +816,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.456.5.canv1.lab2 \
          -in .lx200pad.456.5.canv1 -x [ expr int(10*$zoom) ] -y [ expr int(10*$zoom) ]
-      
+
       #--- Create a frame for the 123 buttons
       #--- Cree un espace pour les boutons 123
       frame .lx200pad.123 \
@@ -828,7 +824,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.123 \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create the light 'cntr'
       frame .lx200pad.123.cntr \
          -width $geomlx200(20pixels) \
@@ -844,7 +840,7 @@ namespace eval ::lx200pad {
       pack .lx200pad.123.cntr.canv1 \
          -in .lx200pad.123.cntr -expand 1
       set zonelx200(cntr) .lx200pad.123.cntr.canv1
-      
+
       #--- Create the button '1'
       set larg2 65
       set haut2 65
@@ -879,14 +875,14 @@ namespace eval ::lx200pad {
       place .lx200pad.123.1.canv1.lab2 \
          -in .lx200pad.123.1.canv1 -x [ expr int(16*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(1) .lx200pad.123.1.canv1
-      
+
       #--- Create a dummy frame
       frame .lx200pad.123.dume \
          -width $geomlx200(20pixels) \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.123.dume \
          -in .lx200pad.123 -side right -fill y
-      
+
       #--- Create the button '3'
       frame .lx200pad.123.3 \
          -width $geomlx200(larg2) \
@@ -918,7 +914,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.123.3.canv1.lab2 \
          -in .lx200pad.123.3.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(10*$zoom) ]
-      
+
       #--- Create the button '2'
       frame .lx200pad.123.2 \
          -width $geomlx200(larg2) \
@@ -950,7 +946,7 @@ namespace eval ::lx200pad {
          -fg $colorlx200(textkey)
       place .lx200pad.123.2.canv1.lab2 \
          -in .lx200pad.123.2.canv1 -x [ expr int(19*$zoom) ] -y [ expr int(10*$zoom) ]
-      
+
       #--- Create a frame for the 000 buttons
       #--- Cree un espace pour les boutons 000
       frame .lx200pad.000 \
@@ -958,7 +954,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.000 \
          -in .lx200pad -side top -fill x
-      
+
       #--- Create the light 'guide'
       frame .lx200pad.000.guide \
          -width $geomlx200(20pixels) \
@@ -974,7 +970,7 @@ namespace eval ::lx200pad {
       pack .lx200pad.000.guide.canv1 \
          -in .lx200pad.000.guide -expand 1
       set zonelx200(guide) .lx200pad.000.guide.canv1
-      
+
       #--- Create the button '0'
       set larg2 65
       set haut2 65
@@ -1009,14 +1005,14 @@ namespace eval ::lx200pad {
       place .lx200pad.000.0.canv1.lab2 \
          -in .lx200pad.000.0.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(0) .lx200pad.000.0.canv1
-      
+
       #--- Create a dummy frame
       frame .lx200pad.000.dume \
          -width $geomlx200(20pixels) \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.000.dume \
          -in .lx200pad.000 -side right -fill y
-      
+
       #--- Create the button 'next'
       frame .lx200pad.000.next \
          -width $geomlx200(larg2) \
@@ -1049,7 +1045,7 @@ namespace eval ::lx200pad {
       place .lx200pad.000.next.canv1.lab2 \
          -in .lx200pad.000.next.canv1 -x [ expr int(16*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(next) .lx200pad.000.next.canv1
-      
+
       #--- Create the button 'prev'
       frame .lx200pad.000.prev \
          -width $geomlx200(larg2) \
@@ -1082,7 +1078,7 @@ namespace eval ::lx200pad {
       place .lx200pad.000.prev.canv1.lab2 \
          -in .lx200pad.000.prev.canv1 -x [ expr int(15*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(prev) .lx200pad.000.prev.canv1
-      
+
       #--- La fenetre est active
       focus .lx200pad
 
@@ -1093,33 +1089,33 @@ namespace eval ::lx200pad {
       # === Setting the binding
       # === Met en place les liaisons
       # =========================================
-      
+
       # ========================================
       # === Setting the astronomical devices ===
       # ========================================
-      
+
       if { [ string compare $audace(telNo) 0 ] != "0" } {
          #--- Cardinal moves
-         bind $zonelx200(e) <ButtonPress-1>     { ::telescope::move e }
-         bind $zonelx200(e).lab <ButtonPress-1> { ::telescope::move e }
-         bind $zonelx200(e) <ButtonRelease-1>   { ::telescope::stop e }
-         bind $zonelx200(e).lab <ButtonRelease-1> {::telescope::stop e  }
+         bind $zonelx200(e) <ButtonPress-1>       { ::telescope::move e }
+         bind $zonelx200(e).lab <ButtonPress-1>   { ::telescope::move e }
+         bind $zonelx200(e) <ButtonRelease-1>     { ::telescope::stop e }
+         bind $zonelx200(e).lab <ButtonRelease-1> { ::telescope::stop e }
          
-         bind $zonelx200(w) <ButtonPress-1>     { ::telescope::move w }
-         bind $zonelx200(w).lab <ButtonPress-1> { ::telescope::move w }
-         bind $zonelx200(w) <ButtonRelease-1>   { ::telescope::stop w }
-         bind $zonelx200(w).lab <ButtonRelease-1> {::telescope::stop w }
+         bind $zonelx200(w) <ButtonPress-1>       { ::telescope::move w }
+         bind $zonelx200(w).lab <ButtonPress-1>   { ::telescope::move w }
+         bind $zonelx200(w) <ButtonRelease-1>     { ::telescope::stop w }
+         bind $zonelx200(w).lab <ButtonRelease-1> { ::telescope::stop w }
          
-         bind $zonelx200(s) <ButtonPress-1>     { ::telescope::move s }
-         bind $zonelx200(s).lab <ButtonPress-1> { ::telescope::move s }
-         bind $zonelx200(s) <ButtonRelease-1>   { ::telescope::stop s  }
-         bind $zonelx200(s).lab <ButtonRelease-1> {::telescope::stop s }
+         bind $zonelx200(s) <ButtonPress-1>       { ::telescope::move s }
+         bind $zonelx200(s).lab <ButtonPress-1>   { ::telescope::move s }
+         bind $zonelx200(s) <ButtonRelease-1>     { ::telescope::stop s }
+         bind $zonelx200(s).lab <ButtonRelease-1> { ::telescope::stop s }
          
-         bind $zonelx200(n) <ButtonPress-1>     { ::telescope::move n }
-         bind $zonelx200(n).lab <ButtonPress-1> { ::telescope::move n }
-         bind $zonelx200(n) <ButtonRelease-1>   { ::telescope::stop n }
-         bind $zonelx200(n).lab <ButtonRelease-1> {::telescope::stop n }
-         
+         bind $zonelx200(n) <ButtonPress-1>       { ::telescope::move n }
+         bind $zonelx200(n).lab <ButtonPress-1>   { ::telescope::move n }
+         bind $zonelx200(n) <ButtonRelease-1>     { ::telescope::stop n }
+         bind $zonelx200(n).lab <ButtonRelease-1> { ::telescope::stop n }
+
          #--- Focus moves
          bind $zonelx200(next) <ButtonPress-1> { tel$audace(telNo) focus move + $statustel(speed) }
          bind $zonelx200(next).lab1 <ButtonPress-1> { tel$audace(telNo) focus move + $statustel(speed) }
@@ -1129,20 +1125,20 @@ namespace eval ::lx200pad {
          bind $zonelx200(prev).lab1 <ButtonPress-1> { tel$audace(telNo) focus move - $statustel(speed) }
          bind $zonelx200(prev) <ButtonRelease-1> { tel$audace(telNo) focus stop }
          bind $zonelx200(prev).lab1 <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         
+
          #--- Set speeds
          bind $zonelx200(7) <ButtonPress-1>      {::telescope::setSpeed "4"}
          bind $zonelx200(7).lab1 <ButtonPress-1> {::telescope::setSpeed "4"}
          bind $zonelx200(7).lab2 <ButtonPress-1> {::telescope::setSpeed "4"}
-         
+
          bind $zonelx200(4) <ButtonPress-1>      {::telescope::setSpeed "3"}
          bind $zonelx200(4).lab1 <ButtonPress-1> {::telescope::setSpeed "3"}
          bind $zonelx200(4).lab2 <ButtonPress-1> {::telescope::setSpeed "3"}
-         
+
          bind $zonelx200(1) <ButtonPress-1>      {::telescope::setSpeed "2"}
          bind $zonelx200(1).lab1 <ButtonPress-1> {::telescope::setSpeed "2"}
          bind $zonelx200(1).lab2 <ButtonPress-1> {::telescope::setSpeed "2"}
-         
+
          bind $zonelx200(0) <ButtonPress-1>      {::telescope::setSpeed "1"}
          bind $zonelx200(0).lab1 <ButtonPress-1> {::telescope::setSpeed "1"}
          bind $zonelx200(0).lab2 <ButtonPress-1> {::telescope::setSpeed "1"}
@@ -1160,38 +1156,37 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  startSurveilleSpeed 
+   #  startSurveilleSpeed
    #   lance ::lx200pad::surveilleSpeed si ce n'est pas deja fait
    #    
    #  return rien
    #------------------------------------------------------------
-   proc startSurveilleSpeed {} {
+   proc startSurveilleSpeed { } {
       global suveilleSpeedActif
 
-      #--- Je cree la variable globale si elle n'existe pas     
-      if { [info exists suveilleSpeedActif] == "0"  } {
+      #--- Je cree la variable globale si elle n'existe pas
+      if { [info exists suveilleSpeedActif] == "0" } {
          set suveilleSpeedActif "0"
-      } 
-          
+      }
+
       if { $suveilleSpeedActif == "0" } {
          after 100 ::lx200pad::surveilleSpeed
          set suveilleSpeedActif "1"
       }
-
    }
 
    #------------------------------------------------------------
-   #  surveilleSpeed 
-   #   surveille les modifications de audace(telescope,speed) en tache de fond 
-   #   car les canvas qui sont mis a jour en fonction audace(telescope,speed) 
+   #  surveilleSpeed
+   #   surveille les modifications de audace(telescope,speed) en tache de fond
+   #   car les canvas qui sont mis a jour en fonction audace(telescope,speed)
    #   ne possedent pas le parametre -textvariable pour se mettre a jour automatiquement
    #    
    #  return rien
    #------------------------------------------------------------
-   proc surveilleSpeed {} {
+   proc surveilleSpeed { } {
       global audace
       global suveilleSpeedActif
-      
+
       #--- J'attends un changement de la valeur de audace(telescope,speed)
       vwait audace(telescope,speed)
 
@@ -1211,11 +1206,10 @@ namespace eval ::lx200pad {
       } else {
          set suveilleSpeedActif "0"
       }
-
    }
 
    #------------------------------------------------------------
-   #  lx200_set_slew 
+   #  lx200_set_slew
    #     affiche la vitesse slew sur la raquette
    #------------------------------------------------------------
    proc lx200_set_slew { } {
@@ -1227,7 +1221,7 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  lx200_set_find 
+   #  lx200_set_find
    #     affiche la vitesse find sur la raquette
    #------------------------------------------------------------
    proc lx200_set_find { } {
@@ -1239,7 +1233,7 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  lx200_set_cntr 
+   #  lx200_set_cntr
    #     affiche la vitesse cntr sur la raquette
    #------------------------------------------------------------
    proc lx200_set_cntr { } {
@@ -1251,7 +1245,7 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  lx200_set_guide 
+   #  lx200_set_guide
    #     affiche la vitesse guide sur la raquette
    #------------------------------------------------------------
    proc lx200_set_guide { } {
