@@ -2,14 +2,14 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.5 2006-10-15 21:57:48 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.6 2006-10-16 16:49:41 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
 
    #------------------------------------------------------------
-   #  init 
-   #     initialise le driver 
+   #  init
+   #     initialise le driver
    #  
    #  return namespace name
    #------------------------------------------------------------
@@ -24,10 +24,12 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  initConf{ }
    #     initialise les parametres dans le tableau conf()
+   #  
    #------------------------------------------------------------
    proc initConf { } {
-      global conf
+      variable widget
       global caption
+      global conf
 
       if { ! [ info exists conf(confoptic,position) ] } { set conf(confoptic,position) "+150+75" }
 
@@ -38,40 +40,40 @@ namespace eval ::confOptic {
          set combinaison_optique(diametre)         "203.0"
          set combinaison_optique(focale)           "2000.0"
          set combinaison_optique(barlow_reduc)     "1.0"
-        
+
          set conf(confoptic,combinaison_optique,0) [ array get combinaison_optique ]
       }
 
-      if { ! [ info exists conf(confoptic,combinaison_optique,1) ] } { 
+      if { ! [ info exists conf(confoptic,combinaison_optique,1) ] } {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique { }
          set combinaison_optique(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
          set combinaison_optique(diametre)         "203.0"
          set combinaison_optique(focale)           "2000.0"
          set combinaison_optique(barlow_reduc)     "0.66"
-         
+
          set conf(confoptic,combinaison_optique,1) [ array get combinaison_optique ]
       }
 
-      if { ! [ info exists conf(confoptic,combinaison_optique,2) ] } { 
+      if { ! [ info exists conf(confoptic,combinaison_optique,2) ] } {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique { }
          set combinaison_optique(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
          set combinaison_optique(diametre)         "203.0"
          set combinaison_optique(focale)           "2000.0"
          set combinaison_optique(barlow_reduc)     "0.33"
-         
+
          set conf(confoptic,combinaison_optique,2) [ array get combinaison_optique ]
       }
 
-      if { ! [ info exists conf(confoptic,combinaison_optique,3) ] } { 
+      if { ! [ info exists conf(confoptic,combinaison_optique,3) ] } {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique { }
          set combinaison_optique(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
          set combinaison_optique(diametre)         "203.0"
          set combinaison_optique(focale)           "2000.0"
          set combinaison_optique(barlow_reduc)     "2.5"
-         
+
          set conf(confoptic,combinaison_optique,3) [ array get combinaison_optique ]
       }
 
@@ -81,6 +83,10 @@ namespace eval ::confOptic {
       if { ! [ info exists conf(confoptic,combinaison_optique,7) ] } { set conf(confoptic,combinaison_optique,7) "" }
       if { ! [ info exists conf(confoptic,combinaison_optique,8) ] } { set conf(confoptic,combinaison_optique,8) "" }
       if { ! [ info exists conf(confoptic,combinaison_optique,9) ] } { set conf(confoptic,combinaison_optique,9) "" }
+
+      #--- J'initialise la combobox du binning
+      set widget(binning) "1x1"
+
    }
 
    #==============================================================
@@ -97,7 +103,6 @@ namespace eval ::confOptic {
    #     retourne le nom et le label du driver
    #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"]
-   #
    #------------------------------------------------------------
    proc getLabel { } {
       global caption
@@ -108,12 +113,13 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  confToWidget { }
    #     copie les parametres du tableau conf() dans les variables des widgets
+   #  
    #------------------------------------------------------------
    proc confToWidget { visuNo } {
-      variable widget 
+      variable widget
       global conf
 
-      #--- Je prepare les valeurs de la combobox
+      #--- Je prepare les valeurs de la combobox de configuration de l'instrumentation
       set widget(config_instrument) ""
       foreach {key value} [ array get conf confoptic,combinaison_optique,* ] {
          if { "$value" == "" } continue
@@ -121,7 +127,7 @@ namespace eval ::confOptic {
          array set combinaison_optique $value
          #--- Je prepare la ligne a afficher dans la combobox
          set line "$combinaison_optique(instrument) - $combinaison_optique(diametre) - $combinaison_optique(focale) -\
-            $combinaison_optique(barlow_reduc)"         
+            $combinaison_optique(barlow_reduc)"
          #--- J'ajoute la ligne
          lappend widget(config_instrument) "$line"
       }
@@ -133,10 +139,11 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  widgetToConf { }
    #     copie les variables des widgets dans le tableau conf()
+   #  
    #------------------------------------------------------------
    proc widgetToConf { visuNo } {
-      variable widget
       variable private
+      variable widget
       global conf
 
       #--- Je formate les entry pour permettre le calcul decimal
@@ -146,7 +153,7 @@ namespace eval ::confOptic {
       set confOptic::widget(focale) [ format "%.1f" $confOptic::widget(focale) ]
       $confOptic::widget(frm).entFocale configure -textvariable confOptic::widget(focale)
 
-      #--- Je mets a jour la combobox
+      #--- Je mets a jour la combobox de configuration de l'instrumentation
       set confOptic::widget(config_instrument) "$confOptic::widget(instrument) - $confOptic::widget(diametre) -\
          $confOptic::widget(focale) - $confOptic::widget(barlow_reduc)"
       $confOptic::widget(frm).comboboxModele configure -textvariable confOptic::widget(config_instrument)
@@ -160,7 +167,7 @@ namespace eval ::confOptic {
       set private(focale)       $widget(focale)
       set private(barlow_reduc) $widget(barlow_reduc)
 
-      #--- J'ajoute linstrument en tete dans le tableau des instruments precedents si elle n'y est pas deja 
+      #--- J'ajoute linstrument en tete dans le tableau des instruments precedents si elle n'y est pas deja
       array set combinaison_optique { }
       set combinaison_optique(instrument)   "$private(instrument)"
       set combinaison_optique(diametre)     "$private(diametre)"
@@ -198,8 +205,8 @@ namespace eval ::confOptic {
 
    #------------------------------------------------------------
    #  cbCommand { }
-   #  (appelee par la combobox a chaque changement de selection)
-   #  affiche les valeurs dans les widgets
+   #     (appelee par la combobox a chaque changement de selection)
+   #     affiche les valeurs dans les widgets
    #  
    #  return rien
    #------------------------------------------------------------
@@ -213,7 +220,7 @@ namespace eval ::confOptic {
          set index 0
       }
 
-      #--- Je recupere les attributs de la configuration optique de conf()     
+      #--- Je recupere les attributs de la configuration optique de conf()
       array set combinaison_optique $conf(confoptic,combinaison_optique,$index)
 
       #--- Je copie les valeurs dans les widgets
@@ -228,7 +235,6 @@ namespace eval ::confOptic {
    #     fenetre de configuration du driver
    #  
    #  return rien
-   #
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
       variable widget
@@ -240,7 +246,7 @@ namespace eval ::confOptic {
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
-      #--- Je position la fenetre 
+      #--- Je position la fenetre
       wm geometry [ winfo toplevel $widget(frm) ] $conf(confoptic,position)
 
       #--- J'initialise les valeurs
@@ -348,16 +354,23 @@ namespace eval ::confOptic {
       label $widget(frm).labVal_PS -text "" -relief flat
       pack $widget(frm).labVal_PS -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
+      #--- Prise en compte du binning choisi
+      if { [ ::cam::list ] != "" } {
+         cam$audace(camNo) bin [list [string range $::confOptic::widget(binning) 0 0] [string range $::confOptic::widget(binning) 2 2]]
+      }
+
       #--- Informations liees a la camera CCD
       if { [ ::cam::list ] != "" } {
          set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
          set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
          set cell_dim "[ lindex [ cam$audace(camNo) celldim ] 0 ] x [ lindex [ cam$audace(camNo) celldim ] 1 ]"
+         set pix_dim  "[ lindex [ cam$audace(camNo) pixdim ] 0 ] x [ lindex [ cam$audace(camNo) pixdim ] 1 ]"
          set fg       "$color(blue)"
       } else {
          set camera   "$caption(confoptic,nocam)"
          set capteur  ""
          set cell_dim ""
+         set pix_dim  ""
          set fg       "$color(red)"
       }
 
@@ -379,6 +392,27 @@ namespace eval ::confOptic {
       label $widget(frm).labURL_CellDim -text $cell_dim
       pack $widget(frm).labURL_CellDim -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
+      label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
+      pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
+
+      set list_combobox { 1x1 2x2 3x3 4x4 5x5 6x6 }
+      ComboBox $widget(frm).labURL_Binning \
+         -width 5          \
+         -height [ llength $list_combobox ] \
+         -relief sunken    \
+         -borderwidth 2    \
+         -editable 1       \
+         -textvariable confOptic::widget(binning) \
+         -modifycmd "::confOptic::Impact_Binning" \
+         -values $list_combobox
+      pack $widget(frm).labURL_Binning -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
+
+      label $widget(frm).labPixDim -text "$caption(confoptic,pix_dim)" -relief flat
+      pack $widget(frm).labPixDim -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
+
+      label $widget(frm).labURL_PixDim -text $pix_dim
+      pack $widget(frm).labURL_PixDim -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
+
       label $widget(frm).labChamp -text "$caption(confoptic,champ)" -relief flat
       pack $widget(frm).labChamp -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
@@ -391,14 +425,15 @@ namespace eval ::confOptic {
       label $widget(frm).labVal_Echantillonnage -text "" -relief flat
       pack $widget(frm).labVal_Echantillonnage -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
-      #--- Je selectionne le premier element de la combobox
+      #--- Je selectionne le premier element de la combobox de configuration de l'instrument
       $widget(frm).comboboxModele setvalue first
-      cbCommand $widget(frm).comboboxModele 
+      cbCommand $widget(frm).comboboxModele
 
       #--- Calcul
       button $widget(frm).but_Calcul -text "$caption(confoptic,calcul)" -relief raised -width 15 \
          -command "::confOptic::Calculette"
-      pack $widget(frm).but_Calcul -in $widget(frm).frame4 -anchor center -side left -expand true -padx 10 -pady 5 -ipady 5
+      pack $widget(frm).but_Calcul -in $widget(frm).frame4 -anchor center -side left -expand true \
+         -padx 10 -pady 5 -ipady 5
 
       #--- Calcul des parametres du systeme optique
       ::confOptic::Calculette
@@ -407,21 +442,29 @@ namespace eval ::confOptic {
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> {
          ::confCam::run
          tkwait window $audace(base).confCam
+         #--- Prise en compte du binning choisi
+         if { [ ::cam::list ] != "" } {
+            cam$audace(camNo) bin [list [string range $::confOptic::widget(binning) 0 0] [string range $::confOptic::widget(binning) 2 2]]
+         }
+         #--- Mise a jour des informations concernant la camera
          if { [ ::cam::list ] != "" } {
             set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
             set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
             set cell_dim "[ lindex [ cam$audace(camNo) celldim ] 0 ] x [ lindex [ cam$audace(camNo) celldim ] 1 ]"
+            set pix_dim  "[ lindex [ cam$audace(camNo) pixdim ] 0 ] x [ lindex [ cam$audace(camNo) pixdim ] 1 ]"
             set fg       "$color(blue)"
          } else {
             set camera   "$caption(confoptic,nocam)"
             set capteur  ""
             set cell_dim ""
+            set pix_dim  ""
             set fg       "$color(red)"
          }
          if { [ winfo exists $audace(base).confOptic ] } {
             $::confOptic::widget(frm).labURL_nomCamera configure -text $camera -fg $fg
             $::confOptic::widget(frm).labURL_typeCapteur configure -text $capteur
             $::confOptic::widget(frm).labURL_CellDim configure -text $cell_dim
+            $::confOptic::widget(frm).labURL_PixDim configure -text $pix_dim
             ::confOptic::Calculette
             update
          }
@@ -429,13 +472,41 @@ namespace eval ::confOptic {
    }
 
    #==============================================================
-   # Fonctions specifiques 
+   # Fonctions specifiques
    #==============================================================
 
    #------------------------------------------------------------
+   #  Impact_Binning
+   #     prise en compte du binning choisi
+   #  
+   #------------------------------------------------------------
+   proc Impact_Binning { } {
+      variable widget
+      global audace
+
+      #--- Prise en compte du binning choisi
+      if { [ ::cam::list ] != "" } {
+         cam$audace(camNo) bin [list [string range $::confOptic::widget(binning) 0 0] [string range $::confOptic::widget(binning) 2 2]]
+      }
+      #--- Mise a jour des informations concernant la camera
+      if { [ ::cam::list ] != "" } {
+         set pix_dim  "[ lindex [ cam$audace(camNo) pixdim ] 0 ] x [ lindex [ cam$audace(camNo) pixdim ] 1 ]"
+      } else {
+         set pix_dim  ""
+      }
+      if { [ winfo exists $audace(base).confOptic ] } {
+         $::confOptic::widget(frm).labURL_PixDim configure -text $pix_dim
+         ::confOptic::Calculette
+         update
+      }
+      #--- Calcul des parametres du systeme optique
+      ::confOptic::Calculette
+   }
+
+   #------------------------------------------------------------
    #  Calculette
-   #  calcule les differents parametres de l'instrument 
-   #   
+   #     calcule les differents parametres de l'instrument
+   #  
    #------------------------------------------------------------
    proc Calculette { } {
       variable widget
@@ -471,10 +542,10 @@ namespace eval ::confOptic {
          #--- Nombres de pixels en x et en y
          set nb_xy [ cam$audace(camNo) nbpix ]
          #--- Dimensions des pixels en x et en y
-         set dim_pix_xy [ cam$audace(camNo) pixdim ]
+         set pix_dim_xy [ cam$audace(camNo) pixdim ]
          #--- Dimensions du CCD en x et en y
-         set dim_x [ expr [ lindex $nb_xy 0 ] * [ lindex $dim_pix_xy 0 ] * 1000. ]
-         set dim_y [ expr [ lindex $nb_xy 1 ] * [ lindex $dim_pix_xy 1 ] * 1000. ]
+         set dim_x [ expr [ lindex $nb_xy 0 ] * [ lindex $pix_dim_xy 0 ] * 1000. ]
+         set dim_y [ expr [ lindex $nb_xy 1 ] * [ lindex $pix_dim_xy 1 ] * 1000. ]
          #--- Champ en x et en y en minutes d'arc
          set champ_x [ format "%.1f" [ expr 206265 * $dim_x / ( $confOptic::widget(focale_resultante) * 60. ) ] ]
          set champ_y [ format "%.1f" [ expr 206265 * $dim_y / ( $confOptic::widget(focale_resultante) * 60. ) ] ]
@@ -488,8 +559,8 @@ namespace eval ::confOptic {
 
    #------------------------------------------------------------
    #  showHelp
-   #  aide 
-   #   
+   #     aide
+   #  
    #------------------------------------------------------------
    proc showHelp { } {
       global help
