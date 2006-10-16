@@ -1,6 +1,6 @@
 #
 # Fichier : confoptic.cap
-# Mise a jour $Id: confoptic.cap,v 1.4 2006-10-15 21:57:34 robertdelmas Exp $
+# Mise a jour $Id: confoptic.cap,v 1.5 2006-10-16 16:49:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,7 +26,9 @@ set caption(confoptic,pouvoir_separateur)    "Resolving Power (''):"
 set caption(confoptic,camera)                "Camera:"
 set caption(confoptic,nocam)                 "No Camera"
 set caption(confoptic,capteur_ccd)           "CCD Sensor:"
-set caption(confoptic,cell_dim)              "# Dimensions d'un photosite (m x m) :"
+set caption(confoptic,cell_dim)              "Size of a sensor cell (m x m):"
+set caption(confoptic,binning)               "Binning:"
+set caption(confoptic,pix_dim)               "Size of a pixel (m x m):"
 set caption(confoptic,champ)                 "CCD Field (' x '):"
 set caption(confoptic,echantillonnage)       "Sampling (''/pixel):"
 set caption(confoptic,calcul)                "Calculate"
@@ -50,6 +52,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,nocam)              "Pas de caméra"
    set caption(confoptic,capteur_ccd)        "Capteur CCD :"
    set caption(confoptic,cell_dim)           "Dimensions d'un photosite (m x m) :"
+   set caption(confoptic,binning)            "Binning :"
+   set caption(confoptic,pix_dim)            "Dimensions d'un pixel (m x m) :"
    set caption(confoptic,champ)              "Champ du CCD (' x ') :"
    set caption(confoptic,echantillonnage)    "Echantillonnage (''/pixel) :"
    set caption(confoptic,calcul)             "Calculer"
@@ -75,6 +79,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,nocam)              "Nessuna camera"
    set caption(confoptic,capteur_ccd)        "Sensore CCD:"
    set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (m x m) :"
+   set caption(confoptic,binning)            "Binning:"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (m x m) :"
    set caption(confoptic,champ)              "Campo del CCD (' x '):"
    set caption(confoptic,echantillonnage)    "Campionamento (''/pixel):"
    set caption(confoptic,calcul)             "Calcolàre"
@@ -98,6 +104,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,nocam)              "No hay cámara"
    set caption(confoptic,capteur_ccd)        "Sensor CCD:"
    set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (m x m) :"
+   set caption(confoptic,binning)            "Binning:"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (m x m) :"
    set caption(confoptic,champ)              "Campo de la CCD (' x '):"
    set caption(confoptic,echantillonnage)    "Resolución (''/píxel):"
    set caption(confoptic,calcul)             "Calcular"
@@ -121,6 +129,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,nocam)              "Keine Kamera"
    set caption(confoptic,capteur_ccd)        "CCD Sensor:"
    set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (m x m) :"
+   set caption(confoptic,binning)            "Binning:"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (m x m) :"
    set caption(confoptic,champ)              "CCD Feld (' x '):"
    set caption(confoptic,echantillonnage)    "Entnehmung (''/Rasterpunkt):"
    set caption(confoptic,calcul)             "Rechnen"
@@ -144,6 +154,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,nocam)              "Ingen kamera!"
    set caption(confoptic,capteur_ccd)        "CCD-sensor:"
    set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (m x m) :"
+   set caption(confoptic,binning)            "Binning:"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (m x m) :"
    set caption(confoptic,champ)              "CCD-felt (' x '):"
    set caption(confoptic,echantillonnage)    "Sampling (''/pixel):"
    set caption(confoptic,calcul)             "Beregn"

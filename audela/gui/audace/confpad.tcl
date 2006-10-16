@@ -2,51 +2,51 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.3 2006-06-20 17:26:47 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.4 2006-10-16 16:49:15 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
-   
+
    #--- variables locales de ce namespace
    array set private {
       namespace      "confPad"
-      frm            ""              
-      driverType     "pad"               
-      driverPattern  ""   
-      namespacelist  ""     
+      frm            ""
+      driverType     "pad"
+      driverPattern  ""
+      namespacelist  ""
       driverlist     ""
    }
 
    #------------------------------------------------------------
    # init  ( est lance automatiquement au chargement de ce fichier tcl)
-   # initialise les variable conf(..) et caption(..) 
+   # initialise les variable conf(..) et caption(..)
    # demarrer le driver selectionne par defaut
    #------------------------------------------------------------
    proc init { } {
       variable private
-      global audace   
+      global audace
       global conf
 
       #---
       set private(driverPattern) [ file join audace plugin pad * pkgIndex.tcl ]
       set private(frm)           "$audace(base).confPad"
       #--- cree les variables dans conf(..) si elles n'existent pas
-      if { ! [ info exists conf(confPad) ] }          { set conf(confPad)       "" }
-      if { ! [ info exists conf(confPad,start) ] }    { set conf(confPad,start) "0" }
+      if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
+      if { ! [ info exists conf(confPad,start) ] }    { set conf(confPad,start)    "0" }
       if { ! [ info exists conf(confPad,position) ] } { set conf(confPad,position) "+155+100" }
 
       #--- charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_caption) confpad.cap ]\"" 
+      uplevel #0  "source \"[ file join $audace(rep_caption) confpad.cap ]\""
 
       findDriver
 
       #--- configure le driver selectionne par defaut
-      #if { $conf(confPad,start) == "1" } {  
+      #if { $conf(confPad,start) == "1" } {
       #   configureDriver
       #}
 
    }
-    
+
    #------------------------------------------------------------
    #  getLabel
    #     retourne le titre de la fenetre
@@ -61,7 +61,7 @@ namespace eval ::confPad {
 
    #------------------------------------------------------------
    # run
-   # Affiche la fenetre de choix et de configuration 
+   # Affiche la fenetre de choix et de configuration
    # 
    #------------------------------------------------------------
    proc run { } {
@@ -77,7 +77,7 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    # ok
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-   # la configuration, et fermer la fenetre de reglage 
+   # la configuration, et fermer la fenetre de reglage
    #------------------------------------------------------------
    proc ok { } {
       variable private
@@ -116,14 +116,14 @@ namespace eval ::confPad {
 
       #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
       foreach name $private(namespacelist) {
-         set drivername [ $name\:\:widgetToConf ]    
+         set drivername [ $name\:\:widgetToConf ]
       }
 
       #--- je mets a jour le nom de la raquette
       getLabelPad
 
       #--- je demarre le driver selectionne
-      configureDriver    
+      configureDriver
 
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -145,10 +145,10 @@ namespace eval ::confPad {
       $private(frm).cmd.aide configure -relief groove -state disabled
 
       #--- je recupere le label de l'onglet selectionne
-      set private(conf_confPad) [Rnotebook:currentName $private(frm).usr.book ] 
-      #--- je recupere le namespace correspondant au label  
+      set private(conf_confPad) [Rnotebook:currentName $private(frm).usr.book ]
+      #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ] 
+      set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
          set private(conf_confPad) [ lindex $private(namespacelist) $index ]
       } else {
@@ -180,7 +180,7 @@ namespace eval ::confPad {
 
    #------------------------------------------------------------
    # confPad::recup_position
-   # Permet de recuperer et de sauvegarder la position de la 
+   # Permet de recuperer et de sauvegarder la position de la
    # fenetre de configuration de la raquette
    #------------------------------------------------------------
    proc recup_position { } {
@@ -244,15 +244,15 @@ namespace eval ::confPad {
       frame $private(frm).usr -borderwidth 0 -relief raised
 
       #--- creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book   
+      set mainFrame $private(frm).usr.book
 
       #--- j'affiche les onglets dans la fenetre
       Rnotebook:create $mainFrame -tabs "$private(driverlist)" -borderwidth 1
 
-      #--- je demande a chaque driver d'afficher sa page de config 
+      #--- je demande a chaque driver d'afficher sa page de config
       set indexOnglet 1
       foreach name $private(namespacelist) {
-         set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]    
+         set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
          incr indexOnglet
       }
 
@@ -275,7 +275,7 @@ namespace eval ::confPad {
       button $private(frm).cmd.aide -text "$caption(confpad,aide)" -relief raised -state normal -width 8 \
          -command " ::confPad::afficheAide "
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $private(frm).cmd -side top -fill x    
+      pack $private(frm).cmd -side top -fill x
 
       #---
       focus $private(frm)
@@ -297,18 +297,18 @@ namespace eval ::confPad {
    proc select { { name "" } } {
       variable private
  
-      #--- je recupere le label correspondant au namespace  
-      set index [ lsearch -exact $private(namespacelist) "$name" ] 
+      #--- je recupere le label correspondant au namespace
+      set index [ lsearch -exact $private(namespacelist) "$name" ]
       if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ] 
-      } 
+         Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ]
+      }
    }
 
    #------------------------------------------------------------
    # configureDriver
    # configure le driver dont le label est dans $conf(confPad)
    #------------------------------------------------------------
-   proc configureDriver {  } {
+   proc configureDriver { } {
       variable private
       global conf
 
@@ -316,26 +316,26 @@ namespace eval ::confPad {
          #--- pas de driver selectionne par defaut
          return
       }
-            
+
       #--- je charge les drivers 
       if { [llength $private(namespacelist)] <1 } {
-         findDriver   
+         findDriver
       }
 
-      #--- je configure le driver 
+      #--- je configure le driver
       catch { $conf(confPad)\:\:stopDriver }
-      #--- je configure le driver 
+      #--- je configure le driver
       catch { $conf(confPad)\:\:configureDriver }
 
    }
 
    #------------------------------------------------------------
    #  stopDriver
-   #     arrete le driver selectionne 
+   #     arrete le driver selectionne
    #  
    #  return rien
    #------------------------------------------------------------
-   proc stopDriver {  } {
+   proc stopDriver { } {
       global conf
 
       if { "$conf(confPad)" != "" } {
@@ -345,16 +345,16 @@ namespace eval ::confPad {
 
    #------------------------------------------------------------
    # findDriver
-   # recherche les fichiers .tcl presents dans driverPattern 
+   # recherche les fichiers .tcl presents dans driverPattern
    #
    # conditions : 
    #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
    #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
    #  - le driver doit avoir une procedure getlabel
    # 
-   # si le driver remplit les conditions 
+   # si le driver remplit les conditions
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
-   # sinon le fichier tcl est ignore car ce n'est pas un driver 
+   # sinon le fichier tcl est ignore car ce n'est pas un driver
    #
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
@@ -368,10 +368,10 @@ namespace eval ::confPad {
       set private(driverlist)     ""
 
       #--- chargement des differentes fenetres de configuration des drivers
-      set error [catch { glob -nocomplain $private(driverPattern) } filelist ]  
+      set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
       
-      if { "$filelist" == "" } {  
-         #--- aucun fichier correct 
+      if { "$filelist" == "" } {
+         #--- aucun fichier correct
          return 1
       }
 
@@ -382,13 +382,13 @@ namespace eval ::confPad {
             set padname [ file tail [ file dirname "$fichier" ] ]
             package require $padname
             if { [$padname\:\:getDriverType] == $private(driverType) } {
-               set driverlabel "[$padname\:\:getLabel]" 
+               set driverlabel "[$padname\:\:getLabel]"
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $padname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#$caption(confpad,raquette) $driverlabel v[package present $padname]\n"                 
+               $audace(console)::affiche_prompt "#$caption(confpad,raquette) $driverlabel v[package present $padname]\n"
             }
-         }        
+         }
       }
       $audace(console)::affiche_prompt "\n"
 
@@ -397,7 +397,7 @@ namespace eval ::confPad {
          return 1
       } else {
          #--- tout est ok
-         return 0       
+         return 0
       }
    }
 
@@ -405,13 +405,13 @@ namespace eval ::confPad {
       global audace conf
 
       set erreur [catch { set nom_raquette [$conf(confPad)::getLabel] } msg ]
-      
+
       if { $erreur == "1" } {
          set audace(nom_raquette) ""
       } else {
          set audace(nom_raquette) "$nom_raquette"
-      }         
-  }
+      }
+   }
 
 }
 
