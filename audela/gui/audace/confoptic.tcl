@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.6 2006-10-16 16:49:41 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.7 2006-10-16 17:48:14 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -363,8 +363,10 @@ namespace eval ::confOptic {
       if { [ ::cam::list ] != "" } {
          set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
          set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
-         set cell_dim "[ lindex [ cam$audace(camNo) celldim ] 0 ] x [ lindex [ cam$audace(camNo) celldim ] 1 ]"
-         set pix_dim  "[ lindex [ cam$audace(camNo) pixdim ] 0 ] x [ lindex [ cam$audace(camNo) pixdim ] 1 ]"
+         set cell_dim "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e6 ] x \
+            [ expr [ lindex [ cam$audace(camNo) celldim ] 1 ] * 1e6 ]"
+         set pix_dim  "[ expr [ lindex [ cam$audace(camNo) pixdim ] 0 ] * 1e6 ] x \
+            [ expr [ lindex [ cam$audace(camNo) pixdim ] 1 ] * 1e6 ]"
          set fg       "$color(blue)"
       } else {
          set camera   "$caption(confoptic,nocam)"
@@ -450,8 +452,10 @@ namespace eval ::confOptic {
          if { [ ::cam::list ] != "" } {
             set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
             set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
-            set cell_dim "[ lindex [ cam$audace(camNo) celldim ] 0 ] x [ lindex [ cam$audace(camNo) celldim ] 1 ]"
-            set pix_dim  "[ lindex [ cam$audace(camNo) pixdim ] 0 ] x [ lindex [ cam$audace(camNo) pixdim ] 1 ]"
+            set cell_dim "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e6 ] x \
+               [ expr [ lindex [ cam$audace(camNo) celldim ] 1 ] * 1e6 ]"
+            set pix_dim  "[ expr [ lindex [ cam$audace(camNo) pixdim ] 0 ] * 1e6 ] x \
+               [ expr [ lindex [ cam$audace(camNo) pixdim ] 1 ] * 1e6 ]"
             set fg       "$color(blue)"
          } else {
             set camera   "$caption(confoptic,nocam)"
@@ -490,7 +494,8 @@ namespace eval ::confOptic {
       }
       #--- Mise a jour des informations concernant la camera
       if { [ ::cam::list ] != "" } {
-         set pix_dim  "[ lindex [ cam$audace(camNo) pixdim ] 0 ] x [ lindex [ cam$audace(camNo) pixdim ] 1 ]"
+         set pix_dim  "[ expr [ lindex [ cam$audace(camNo) pixdim ] 0 ] * 1e6 ] x \
+            [ expr [ lindex [ cam$audace(camNo) pixdim ] 1 ] * 1e6 ]"
       } else {
          set pix_dim  ""
       }
