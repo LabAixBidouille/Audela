@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.33 2006-10-15 16:34:53 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.34 2006-10-18 17:20:40 robertdelmas Exp $
 #
 
 global confCam
@@ -4076,7 +4076,7 @@ namespace eval ::confCam {
                ::confVisu::visuDynamix $visuNo 32767 -32768
 
                #--- j'affiche un message d'information
-               console::affiche_erreur "$caption(confcam,camera) $caption(confcam,audine) ($conf(audine,ccd))\n"
+               console::affiche_erreur "$caption(confcam,camera) [ cam$camNo name ] ([ cam$camNo ccd ])\n"
                console::affiche_erreur "$caption(confcam,port_liaison)\
                   ([::[::confLink::getLinkNamespace $conf(audine,port)]::getLabel])\
                   $caption(confcam,2points) $conf(audine,port)\n"
