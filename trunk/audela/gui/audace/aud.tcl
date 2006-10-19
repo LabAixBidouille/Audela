@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.25 2006-09-28 19:59:29 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.26 2006-10-19 18:55:12 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -628,6 +628,11 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
          { ::traiteImage::run "$caption(audace,menu,scale)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
+         { ::traiteImage::run "$caption(audace,menu,subsky)" "$audace(base).traiteImage" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
+         { ::traiteImage::run "$caption(audace,menu,clip)" "$audace(base).traiteImage" }
+      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
          { ::traiteImage::run "$caption(audace,menu,offset)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
@@ -642,34 +647,13 @@ namespace eval ::audace {
          { ::traiteImage::run "$caption(audace,menu,soust)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,division)..." \
          { ::traiteImage::run "$caption(audace,menu,division)" "$audace(base).traiteImage" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
-         { ::traiteImage::run "$caption(audace,menu,subsky)" "$audace(base).traiteImage" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
-         { ::traiteImage::run "$caption(audace,menu,clip)" "$audace(base).traiteImage" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,optimisation,noir)..." \
+         { ::traiteImage::run "$caption(audace,optimisation,noir)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
-     ### Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,raw2cfa)..." \
-     ###    { ::faireImageRef::run "$caption(audace,menu,raw2cfa)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_offset)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_offset)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_dark)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_dark)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_flat_field)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_flat_field)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,pretraite)..." \
-         { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
-     ### Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
-     ###    { ::faireImageRef::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
-      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,run,median)..." \
-         { ::traiteWindow::run "$caption(audace,run,median)" "$audace(base).traiteWindow" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,somme)..." \
-         { ::traiteWindow::run "$caption(audace,image,somme)" "$audace(base).traiteWindow" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,moyenne)..." \
-         { ::traiteWindow::run "$caption(audace,image,moyenne)" "$audace(base).traiteWindow" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,ecart_type)..." \
-         { ::traiteWindow::run "$caption(audace,image,ecart_type)" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
          { ::traiteWindow::run "$caption(audace,menu,offset)" "$audace(base).traiteWindow" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
+         { ::traiteWindow::run "$caption(audace,menu,mult_cte)" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
          { ::traiteWindow::run "$caption(audace,menu,noffset)" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
@@ -682,6 +666,28 @@ namespace eval ::audace {
          { ::traiteWindow::run "$caption(audace,menu,division)" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,optimisation,noir)..." \
          { ::traiteWindow::run "$caption(audace,optimisation,noir)" "$audace(base).traiteWindow" }
+      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,run,median)..." \
+         { ::traiteWindow::run "$caption(audace,run,median)" "$audace(base).traiteWindow" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,somme)..." \
+         { ::traiteWindow::run "$caption(audace,image,somme)" "$audace(base).traiteWindow" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,moyenne)..." \
+         { ::traiteWindow::run "$caption(audace,image,moyenne)" "$audace(base).traiteWindow" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,image,ecart_type)..." \
+         { ::traiteWindow::run "$caption(audace,image,ecart_type)" "$audace(base).traiteWindow" }
+      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,raw2cfa)..." \
+         { ::faireImageRef::run "$caption(audace,menu,raw2cfa)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_offset)..." \
+         { ::faireImageRef::run "$caption(audace,menu,faire_offset)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_dark)..." \
+         { ::faireImageRef::run "$caption(audace,menu,faire_dark)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_flat_field)..." \
+         { ::faireImageRef::run "$caption(audace,menu,faire_flat_field)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,pretraite)..." \
+         { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
+         { ::faireImageRef::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
 
       Menu           $visuNo "$caption(audace,menu,traitement)"
       Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,masque_flou)..." \

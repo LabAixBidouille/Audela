@@ -4,8 +4,9 @@
 #                 - scaleWindow
 #                 - offsetWindow  - multcteWindow  - noffsetWindow
 #                 - ngainWindow   - addWindow      - subWindow
-#                 - divWindow     - subskyWindow   - clipWindow
-# Mise a jour $Id: aud2.tcl,v 1.3 2006-06-20 17:19:37 robertdelmas Exp $
+#                 - divWindow     - optWindow      - subskyWindow
+#                 - clipWindow
+# Mise a jour $Id: aud2.tcl,v 1.4 2006-10-19 18:55:30 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -239,16 +240,34 @@ namespace eval ::traiteImage {
                   -command { ::traiteImage::val_defaut }
                pack $This.usr.2.17.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
            # pack $This.usr.2.17 -side top -fill both
+            frame $This.usr.2.18 -borderwidth 0 -relief flat
+               button $This.usr.2.18.btn1 -text "$caption(script,parcourir)" -command { ::traiteImage::parcourir 1 }
+               pack $This.usr.2.18.btn1 -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.2.18.lab5 -text "$caption(audace,image,noir:)"
+               pack $This.usr.2.18.lab5 -side left -padx 5 -pady 5
+               entry $This.usr.2.18.ent5 -textvariable traiteImage(optWindow_dark_filename) -width 20 \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.2.18.ent5 -side right -padx 10 -pady 5
+           # pack $This.usr.2.19 -side top -fill both 
+            frame $This.usr.2.19 -borderwidth 0 -relief flat
+               button $This.usr.2.19.btn1 -text "$caption(script,parcourir)" -command { ::traiteImage::parcourir 2 }
+               pack $This.usr.2.19.btn1 -side left -padx 10 -pady 5 -ipady 5
+               label $This.usr.2.19.lab5 -text "$caption(audace,log,offset)"
+               pack $This.usr.2.19.lab5 -side left -padx 5 -pady 5
+               entry $This.usr.2.19.ent5 -textvariable traiteImage(optWindow_offset_filename) -width 20 \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.2.19.ent5 -side right -padx 10 -pady 5
+           # pack $This.usr.2.19 -side top -fill both 
          pack $This.usr.2 -side bottom -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             label $This.usr.1.lab1 -textvariable "traiteImage(image_A)"
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
-            set list_traiteImage [ list $caption(audace,menu,scale) $caption(audace,menu,offset) \
-               $caption(audace,menu,mult_cte) $caption(audace,menu,noffset) $caption(audace,menu,ngain) \
-               $caption(audace,menu,addition) $caption(audace,menu,soust) $caption(audace,menu,division) \
-               $caption(audace,menu,subsky) $caption(audace,menu,clip) ]
+            set list_traiteImage [ list $caption(audace,menu,scale) $caption(audace,menu,subsky) \
+               $caption(audace,menu,clip) $caption(audace,menu,offset) $caption(audace,menu,mult_cte) \
+               $caption(audace,menu,noffset) $caption(audace,menu,ngain) $caption(audace,menu,addition) \
+               $caption(audace,menu,soust) $caption(audace,menu,division) $caption(audace,optimisation,noir) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteImage(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -359,6 +378,83 @@ namespace eval ::traiteImage {
                } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,scale) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+               #---
+               restore_cursor
+            } \
+            "$caption(audace,menu,subsky)" {
+               #---
+               set conf(back_kernel)    $traiteImage(subskyWindow_back_kernel)
+               set conf(back_threshold) $traiteImage(subskyWindow_back_threshold)
+               #---
+               if { $traiteImage(subskyWindow_back_kernel) == "" && $traiteImage(subskyWindow_back_threshold) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+                  return
+               }
+               if { $traiteImage(subskyWindow_back_kernel) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+                  return
+               }
+               if { $traiteImage(subskyWindow_back_threshold) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+                  return
+               }
+               #---
+               save_cursor
+               all_cursor watch
+               #---
+               catch {
+                  set k $traiteImage(subskyWindow_back_kernel)
+                  set t $traiteImage(subskyWindow_back_threshold)
+                  if { [ expr $t ] < "0" } { set t "0" }
+                  if { [ expr $t ] > "1" } { set t "1" }
+                  if { [ expr $k ] < "4" } { set k "3" }
+                  if { [ expr $k ] > "50" } { set k "50" }
+                  buf$audace(bufNo) imaseries "back back_kernel=$k back_threshold=$t sub"
+                  ::audace::autovisu $audace(visuNo)
+               } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,subsky) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+               #---
+               restore_cursor
+            } \
+            "$caption(audace,menu,clip)" {
+               #---
+               set conf(clip_mini) $traiteImage(clipWindow_mini)
+               set conf(clip_maxi) $traiteImage(clipWindow_maxi)
+               #---
+               if { $traiteImage(clipWindow_mini) == "" && $traiteImage(clipWindow_maxi) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+                  return
+               }
+               if { $traiteImage(clipWindow_mini) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+                  return
+               }
+               if { $traiteImage(clipWindow_maxi) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+                  return
+               }
+               #---
+               save_cursor
+               all_cursor watch
+               #---
+               catch {
+                  if { $traiteImage(clipWindow_mini) != "" } {
+                     buf$audace(bufNo) clipmin $traiteImage(clipWindow_mini)
+                  }
+                  if { $traiteImage(clipWindow_maxi) != "" } {
+                     buf$audace(bufNo) clipmax $traiteImage(clipWindow_maxi)
+                  }
+                  ::audace::autovisu $audace(visuNo)
+               } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,clip) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
@@ -521,77 +617,24 @@ namespace eval ::traiteImage {
                #---
                restore_cursor
             } \
-            "$caption(audace,menu,subsky)" {
-               #---
-               set conf(back_kernel)    $traiteImage(subskyWindow_back_kernel)
-               set conf(back_threshold) $traiteImage(subskyWindow_back_threshold)
-               #---
-               if { $traiteImage(subskyWindow_back_kernel) == "" && $traiteImage(subskyWindow_back_threshold) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+            "$caption(audace,optimisation,noir)" {
+               #--- Il faut une image de dark
+               if { $traiteImage(optWindow_dark_filename) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
                   return
                }
-               if { $traiteImage(subskyWindow_back_kernel) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               if { $traiteImage(subskyWindow_back_threshold) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               #--- Il faut une image d'offset
+               if { $traiteImage(optWindow_offset_filename) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
                   return
                }
                #---
                save_cursor
                all_cursor watch
                #---
-               catch {
-                  set k $traiteImage(subskyWindow_back_kernel)
-                  set t $traiteImage(subskyWindow_back_threshold)
-                  if { [ expr $t ] < "0" } { set t "0" }
-                  if { [ expr $t ] > "1" } { set t "1" }
-                  if { [ expr $k ] < "4" } { set k "3" }
-                  if { [ expr $k ] > "50" } { set k "50" }
-                  buf$audace(bufNo) imaseries "back back_kernel=$k back_threshold=$t sub"
-                  ::audace::autovisu $audace(visuNo)
-               } m
+               catch { opt $traiteImage(optWindow_dark_filename) $traiteImage(optWindow_offset_filename) } m
                if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,subsky) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,clip)" {
-               #---
-               set conf(clip_mini) $traiteImage(clipWindow_mini)
-               set conf(clip_maxi) $traiteImage(clipWindow_maxi)
-               #---
-               if { $traiteImage(clipWindow_mini) == "" && $traiteImage(clipWindow_maxi) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
-                  return
-               }
-               if { $traiteImage(clipWindow_mini) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               if { $traiteImage(clipWindow_maxi) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch {
-                  if { $traiteImage(clipWindow_mini) != "" } {
-                     buf$audace(bufNo) clipmin $traiteImage(clipWindow_mini)
-                  }
-                  if { $traiteImage(clipWindow_maxi) != "" } {
-                     buf$audace(bufNo) clipmax $traiteImage(clipWindow_maxi)
-                  }
-                  ::audace::autovisu $audace(visuNo)
-               } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,clip) -type ok -message $caption(audace,fin_traitement)
+                  tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
@@ -617,6 +660,10 @@ namespace eval ::traiteImage {
       #---
       if { $traiteImage(operation) == $caption(audace,menu,scale) } {
          set traiteImage(page_web) "1020reechantillonner"
+      } elseif { $traiteImage(operation) == $caption(audace,menu,subsky) } {
+         set traiteImage(page_web) "1100soust_fond_ciel"
+      } elseif { $traiteImage(operation) == $caption(audace,menu,clip) } {
+         set traiteImage(page_web) "1110ecreter"
       } elseif { $traiteImage(operation) == $caption(audace,menu,offset) } {
          set traiteImage(page_web) "1030ajouter_cte"
       } elseif { $traiteImage(operation) == $caption(audace,menu,mult_cte) } {
@@ -631,10 +678,8 @@ namespace eval ::traiteImage {
          set traiteImage(page_web) "1080soustraction"
       } elseif { $traiteImage(operation) == $caption(audace,menu,division) } {
          set traiteImage(page_web) "1090division"
-      } elseif { $traiteImage(operation) == $caption(audace,menu,subsky) } {
-         set traiteImage(page_web) "1100soust_fond_ciel"
-      } elseif { $traiteImage(operation) == $caption(audace,menu,clip) } {
-         set traiteImage(page_web) "1110ecreter"
+      } elseif { $traiteImage(operation) == $caption(audace,optimisation,noir) } {
+         set traiteImage(page_web) "1095opt_noir"
       }
 
       #---
@@ -673,146 +718,8 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.15
             pack forget $This.usr.2.16
             pack  $This.usr.2.17 -in $This.usr.2 -side top -fill both
-         } \
-         "$caption(audace,menu,offset)" {
-            pack $This.usr.0 -side top -fill both
-            pack $This.usr.2.1 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.2
-            pack forget $This.usr.2.3
-            pack forget $This.usr.2.4
-            pack forget $This.usr.2.5
-            pack forget $This.usr.2.6
-            pack forget $This.usr.2.7
-            pack forget $This.usr.2.8
-            pack forget $This.usr.2.9
-            pack forget $This.usr.2.10
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-         } \
-         "$caption(audace,menu,mult_cte)" {
-            pack $This.usr.0 -side top -fill both
-            pack forget $This.usr.2.1
-            pack $This.usr.2.2 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.3
-            pack forget $This.usr.2.4
-            pack forget $This.usr.2.5
-            pack forget $This.usr.2.6
-            pack forget $This.usr.2.7
-            pack forget $This.usr.2.8
-            pack forget $This.usr.2.9
-            pack forget $This.usr.2.10
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-         } \
-         "$caption(audace,menu,noffset)" {
-            pack forget $This.usr.0
-            pack forget $This.usr.2.1
-            pack forget $This.usr.2.2
-            pack $This.usr.2.3 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.4
-            pack forget $This.usr.2.5
-            pack forget $This.usr.2.6
-            pack forget $This.usr.2.7
-            pack forget $This.usr.2.8
-            pack forget $This.usr.2.9
-            pack forget $This.usr.2.10
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-        } \
-         "$caption(audace,menu,ngain)" {
-            pack forget $This.usr.0
-            pack forget $This.usr.2.1
-            pack forget $This.usr.2.2
-            pack forget $This.usr.2.3
-            pack $This.usr.2.4 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.5
-            pack forget $This.usr.2.6
-            pack forget $This.usr.2.7
-            pack forget $This.usr.2.8
-            pack forget $This.usr.2.9
-            pack forget $This.usr.2.10
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-         } \
-         "$caption(audace,menu,addition)" {
-            pack $This.usr.0 -side top -fill both
-            pack forget $This.usr.2.1
-            pack forget $This.usr.2.2
-            pack forget $This.usr.2.3
-            pack forget $This.usr.2.4
-            pack $This.usr.2.5 -in $This.usr.2 -side top -fill both
-            pack $This.usr.2.6 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.7
-            pack forget $This.usr.2.8
-            pack forget $This.usr.2.9
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.10
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-         } \
-         "$caption(audace,menu,soust)" {
-            pack $This.usr.0 -side top -fill both
-            pack forget $This.usr.2.1
-            pack forget $This.usr.2.2
-            pack forget $This.usr.2.3
-            pack forget $This.usr.2.4
-            pack forget $This.usr.2.5
-            pack forget $This.usr.2.6
-            pack $This.usr.2.7 -in $This.usr.2 -side top -fill both
-            pack $This.usr.2.8 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.9
-            pack forget $This.usr.2.10
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-         } \
-         "$caption(audace,menu,division)" {
-            pack $This.usr.0 -side top -fill both
-            pack forget $This.usr.2.1
-            pack forget $This.usr.2.2
-            pack forget $This.usr.2.3
-            pack forget $This.usr.2.4
-            pack forget $This.usr.2.5
-            pack forget $This.usr.2.6
-            pack forget $This.usr.2.7
-            pack forget $This.usr.2.8
-            pack $This.usr.2.9 -in $This.usr.2 -side top -fill both
-            pack $This.usr.2.10 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.11
-            pack forget $This.usr.2.12
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
          } \
          "$caption(audace,menu,subsky)" {
             pack forget $This.usr.0
@@ -833,6 +740,8 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.15
             pack forget $This.usr.2.16
             pack $This.usr.2.17 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
          } \
          "$caption(audace,menu,clip)" {
             pack forget $This.usr.0
@@ -853,11 +762,189 @@ namespace eval ::traiteImage {
             pack $This.usr.2.15 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.16 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.17 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,menu,offset)" {
+            pack $This.usr.0 -side top -fill both
+            pack $This.usr.2.1 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.2
+            pack forget $This.usr.2.3
+            pack forget $This.usr.2.4
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,menu,mult_cte)" {
+            pack $This.usr.0 -side top -fill both
+            pack forget $This.usr.2.1
+            pack $This.usr.2.2 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.3
+            pack forget $This.usr.2.4
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,menu,noffset)" {
+            pack forget $This.usr.0
+            pack forget $This.usr.2.1
+            pack forget $This.usr.2.2
+            pack $This.usr.2.3 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.4
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+        } \
+         "$caption(audace,menu,ngain)" {
+            pack forget $This.usr.0
+            pack forget $This.usr.2.1
+            pack forget $This.usr.2.2
+            pack forget $This.usr.2.3
+            pack $This.usr.2.4 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,menu,addition)" {
+            pack $This.usr.0 -side top -fill both
+            pack forget $This.usr.2.1
+            pack forget $This.usr.2.2
+            pack forget $This.usr.2.3
+            pack forget $This.usr.2.4
+            pack $This.usr.2.5 -in $This.usr.2 -side top -fill both
+            pack $This.usr.2.6 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,menu,soust)" {
+            pack $This.usr.0 -side top -fill both
+            pack forget $This.usr.2.1
+            pack forget $This.usr.2.2
+            pack forget $This.usr.2.3
+            pack forget $This.usr.2.4
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack $This.usr.2.7 -in $This.usr.2 -side top -fill both
+            pack $This.usr.2.8 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,menu,division)" {
+            pack $This.usr.0 -side top -fill both
+            pack forget $This.usr.2.1
+            pack forget $This.usr.2.2
+            pack forget $This.usr.2.3
+            pack forget $This.usr.2.4
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack $This.usr.2.9 -in $This.usr.2 -side top -fill both
+            pack $This.usr.2.10 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.18
+            pack forget $This.usr.2.19
+         } \
+         "$caption(audace,optimisation,noir)" {
+            pack forget $This.usr.0
+            pack forget $This.usr.2.1
+            pack forget $This.usr.2.2
+            pack forget $This.usr.2.3
+            pack forget $This.usr.2.4
+            pack forget $This.usr.2.5
+            pack forget $This.usr.2.6
+            pack forget $This.usr.2.7
+            pack forget $This.usr.2.8
+            pack forget $This.usr.2.9
+            pack forget $This.usr.2.10
+            pack forget $This.usr.2.11
+            pack forget $This.usr.2.12
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack $This.usr.2.18 -in $This.usr.2 -side top -fill both
+            pack $This.usr.2.19 -in $This.usr.2 -side top -fill both
          }
      # ::console::affiche_erreur "$n1,$n2,$op,$traiteImage(operation)\n"
    }
 
-   proc parcourir { } {
+   proc parcourir { { option } } {
       global audace
       global caption
       global traiteImage
@@ -873,6 +960,10 @@ namespace eval ::traiteImage {
          set traiteImage(subWindow_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,division)" } {
          set traiteImage(divWindow_filename) [ file rootname [ file tail $filename ] ]
+      } elseif { $traiteImage(operation) == "$caption(audace,optimisation,noir)" && $option == "1" } {
+         set traiteImage(optWindow_dark_filename) [ file rootname [ file tail $filename ] ]
+      } elseif { $traiteImage(operation) == "$caption(audace,optimisation,noir)" && $option == "2" } {
+         set traiteImage(optWindow_offset_filename) [ file rootname [ file tail $filename ] ]
       }
    }
 
