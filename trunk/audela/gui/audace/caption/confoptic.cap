@@ -1,6 +1,6 @@
 #
 # Fichier : confoptic.cap
-# Mise a jour $Id: confoptic.cap,v 1.7 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: confoptic.cap,v 1.8 2006-10-20 16:43:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -58,8 +58,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,echantillonnage)    "Echantillonnage (''/pixel) :"
    set caption(confoptic,calcul)             "Calculer"
 
-
-
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -78,9 +76,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,camera)             "Camera:"
    set caption(confoptic,nocam)              "Nessuna camera"
    set caption(confoptic,capteur_ccd)        "Sensore CCD:"
-   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm) :"
+   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm):"
    set caption(confoptic,binning)            "Binning:"
-   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm) :"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm):"
    set caption(confoptic,champ)              "Campo del CCD ( ' ):"
    set caption(confoptic,echantillonnage)    "Campionamento (''/pixel):"
    set caption(confoptic,calcul)             "Calcolàre"
@@ -103,9 +101,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,camera)             "Cámara:"
    set caption(confoptic,nocam)              "No hay cámara"
    set caption(confoptic,capteur_ccd)        "Sensor CCD:"
-   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm) :"
+   set caption(confoptic,cell_dim)           "Dimensión de un fotosito (µm):"
    set caption(confoptic,binning)            "Binning:"
-   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm) :"
+   set caption(confoptic,pix_dim)            "Dimensión de un pixel (µm):"
    set caption(confoptic,champ)              "Campo de la CCD ( ' ):"
    set caption(confoptic,echantillonnage)    "Resolución (''/píxel):"
    set caption(confoptic,calcul)             "Calcular"
@@ -128,9 +126,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,camera)             "Kamera:"
    set caption(confoptic,nocam)              "Keine Kamera"
    set caption(confoptic,capteur_ccd)        "CCD Sensor:"
-   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm) :"
+   set caption(confoptic,cell_dim)           "Sensor Zelle Größe (µm):"
    set caption(confoptic,binning)            "Binning:"
-   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm) :"
+   set caption(confoptic,pix_dim)            "Pixel Größe (µm):"
    set caption(confoptic,champ)              "CCD Feld ( ' ):"
    set caption(confoptic,echantillonnage)    "Entnehmung (''/Rasterpunkt):"
    set caption(confoptic,calcul)             "Rechnen"
@@ -138,24 +136,27 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-set caption(confoptic,config_optique)        "Configuração do sistema óptico"
-set caption(confoptic,modele_instrument)     "Modelo de instrumento:"
-set caption(confoptic,sans_accessoire)       "Sem barlow/redutor focal"
-set caption(confoptic,reducteur)             "Redutor focal"
-set caption(confoptic,barlow)                "Barlow"
-set caption(confoptic,instrument)            "Instrumento:"
-set caption(confoptic,diametre)              "Diametro (mm):"
-set caption(confoptic,focale)                "Distância focal (mm):"
-set caption(confoptic,barlow_reduc)          "Barlow/Redutor focal:"
-set caption(confoptic,focale_result)         "Distância focal resultante (mm):"
-set caption(confoptic,rapport_F/D)           "Razão F/D:"
-set caption(confoptic,pouvoir_separateur)    "Poder resolvente (''):"
-set caption(confoptic,camera)                "Câmara:"
-set caption(confoptic,nocam)                 "Sem Câmara"
-set caption(confoptic,capteur_ccd)           "Sensor CCD:"
-set caption(confoptic,champ)                 "Campo do CCD (' x '):"
-set caption(confoptic,echantillonnage)       "Amostragem (''/pixel):"
-set caption(confoptic,calcul)                "Calcular"
+   set caption(confoptic,config_optique)     "Configuração do sistema óptico"
+   set caption(confoptic,modele_instrument)  "Modelo de instrumento:"
+   set caption(confoptic,sans_accessoire)    "Sem barlow/redutor focal"
+   set caption(confoptic,reducteur)          "Redutor focal"
+   set caption(confoptic,barlow)             "Barlow"
+   set caption(confoptic,instrument)         "Instrumento:"
+   set caption(confoptic,diametre)           "Diametro (mm):"
+   set caption(confoptic,focale)             "Distância focal (mm):"
+   set caption(confoptic,barlow_reduc)       "Barlow/Redutor focal:"
+   set caption(confoptic,focale_result)      "Distância focal resultante (mm):"
+   set caption(confoptic,rapport_F/D)        "Razão F/D:"
+   set caption(confoptic,pouvoir_separateur  "Poder resolvente (''):"
+   set caption(confoptic,camera)             "Câmara:"
+   set caption(confoptic,nocam)              "Sem Câmara"
+   set caption(confoptic,capteur_ccd)        "Sensor CCD:"
+   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm) :"
+   set caption(confoptic,binning)            "# Binning :"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm) :"
+   set caption(confoptic,champ)              "Campo do CCD (' x '):"
+   set caption(confoptic,echantillonnage)    "Amostragem (''/pixel):"
+   set caption(confoptic,calcul)             "Calcular"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -175,9 +176,9 @@ set caption(confoptic,calcul)                "Calcular"
    set caption(confoptic,camera)             "Kamera:"
    set caption(confoptic,nocam)              "Ingen kamera!"
    set caption(confoptic,capteur_ccd)        "CCD-sensor:"
-   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm) :"
+   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm):"
    set caption(confoptic,binning)            "Binning:"
-   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm) :"
+   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm):"
    set caption(confoptic,champ)              "CCD-felt ( ' ):"
    set caption(confoptic,echantillonnage)    "Sampling (''/pixel):"
    set caption(confoptic,calcul)             "Beregn"
