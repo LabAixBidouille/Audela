@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.6 2006-07-11 16:08:46 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.7 2006-10-20 13:26:15 alainklotz Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -67,16 +67,16 @@ proc basecaption { {langage ""} } {
 
 #--- Call the language initialisation
 global caption
-set caption(lg) { "french" "italian" "spanish" "german" "danish" "english" }
+set caption(lg) { "french" "italian" "spanish" "german" "danish" "english" "portuguese" }
 set langage [basecaption]
 
 #--- Create the toplevel window
 set base .choice
 toplevel $base -class Toplevel
-wm geometry $base 470x280+10+10
+wm geometry $base 510x280+10+10
 wm focusmodel $base passive
-wm maxsize $base 470 280
-wm minsize $base 470 280
+wm maxsize $base 510 280
+wm minsize $base 510 280
 wm overrideredirect $base 0
 wm resizable $base 1 1
 wm deiconify $base
@@ -122,6 +122,11 @@ frame $base.fra1
    imageflag6 configure -file gb.gif -format gif
    label $base.fra1.flag6 -image imageflag6
    pack $base.fra1.flag6 -side left -padx 5 -pady 5
+   #--- Portuguese
+   image create photo imageflag7
+   imageflag7 configure -file pt.gif -format gif
+   label $base.fra1.flag7 -image imageflag7
+   pack $base.fra1.flag7 -side left -padx 5 -pady 5
 pack $base.fra1 -side top -in $base
 
 #--- Create the buttons
@@ -170,6 +175,7 @@ bind $base.fra1.flag3 <ButtonPress-1> { set langage "[lindex $caption(lg) 2]"  }
 bind $base.fra1.flag4 <ButtonPress-1> { set langage "[lindex $caption(lg) 3]"  }
 bind $base.fra1.flag5 <ButtonPress-1> { set langage "[lindex $caption(lg) 4]"  }
 bind $base.fra1.flag6 <ButtonPress-1> { set langage "[lindex $caption(lg) 5]"  }
+bind $base.fra1.flag7 <ButtonPress-1> { set langage "[lindex $caption(lg) 6]"  }
 
 #--- An infinite loop to change the language interactively
 while {1==1} {

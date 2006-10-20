@@ -1,6 +1,6 @@
 #
 # Fichier : confoptic.cap
-# Mise a jour $Id: confoptic.cap,v 1.6 2006-10-16 17:47:57 robertdelmas Exp $
+# Mise a jour $Id: confoptic.cap,v 1.7 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -134,6 +134,28 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,champ)              "CCD Feld ( ' ):"
    set caption(confoptic,echantillonnage)    "Entnehmung (''/Rasterpunkt):"
    set caption(confoptic,calcul)             "Rechnen"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+set caption(confoptic,config_optique)        "Configuração do sistema óptico"
+set caption(confoptic,modele_instrument)     "Modelo de instrumento:"
+set caption(confoptic,sans_accessoire)       "Sem barlow/redutor focal"
+set caption(confoptic,reducteur)             "Redutor focal"
+set caption(confoptic,barlow)                "Barlow"
+set caption(confoptic,instrument)            "Instrumento:"
+set caption(confoptic,diametre)              "Diametro (mm):"
+set caption(confoptic,focale)                "Distância focal (mm):"
+set caption(confoptic,barlow_reduc)          "Barlow/Redutor focal:"
+set caption(confoptic,focale_result)         "Distância focal resultante (mm):"
+set caption(confoptic,rapport_F/D)           "Razão F/D:"
+set caption(confoptic,pouvoir_separateur)    "Poder resolvente (''):"
+set caption(confoptic,camera)                "Câmara:"
+set caption(confoptic,nocam)                 "Sem Câmara"
+set caption(confoptic,capteur_ccd)           "Sensor CCD:"
+set caption(confoptic,champ)                 "Campo do CCD (' x '):"
+set caption(confoptic,echantillonnage)       "Amostragem (''/pixel):"
+set caption(confoptic,calcul)                "Calcular"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

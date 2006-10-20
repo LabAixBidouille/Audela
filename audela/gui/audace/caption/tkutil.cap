@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.3 2006-06-20 17:54:46 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -172,6 +172,39 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_tous)       "Alle"
    set caption(tkutil,fichier_pdf)        "Hinweisen"
    set caption(tkutil,fichier_html)       "HTML Datei"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Abrir imagem"
+   set caption(tkutil,sauver_image)       "Guardar imagem"
+   set caption(tkutil,sauver_image_jpeg)  "Guardar imagem JPEG"
+   set caption(tkutil,editer_script)      "Editar um script"
+   set caption(tkutil,lancer_script)      "Executar um script"
+   set caption(tkutil,editer_notice)      "Manuais de Utilizador (.pdf)"
+   set caption(tkutil,editer_site_web)    "WebSite"
+   set caption(tkutil,editer_catalogue)   "Abrir um catálogo de utilizador"
+   set caption(tkutil,editeur_script)     "Editor de scripts:"
+   set caption(tkutil,editeur_pdf)        "Ver guia de utilizador (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Navegador Web:"
+   set caption(tkutil,editeur_image)      "Visualizador de imagens:"
+
+   set caption(tkutil,image_file)         "Ficheiros Imagens"
+   set caption(tkutil,image_fits)         "Ficheiros FITS"
+   set caption(tkutil,image_bmp)          "Ficheiros BMP"
+   set caption(tkutil,image_gif)          "Ficheiros GIF"
+   set caption(tkutil,image_jpeg)         "Ficheiros JPEG"
+   set caption(tkutil,image_png)          "Ficheiros PNG"
+   set caption(tkutil,image_tiff)         "Ficheiros TIFF"
+   set caption(tkutil,image_xbm)          "Ficheiros XBM"
+   set caption(tkutil,image_xpm)          "Ficheiros XPM"
+   set caption(tkutil,image_postscript)   "Ficheiros Postscript"
+   set caption(tkutil,image_raw)          "Ficheiros RAW"
+   set caption(tkutil,fichier_tcl)        "Scripts TCL"
+   set caption(tkutil,fichier_txt)        "Ficheiros de texto"
+   set caption(tkutil,fichier_tous)       "Todos"
+   set caption(tkutil,fichier_pdf)        "Guias de utilizador"
+   set caption(tkutil,fichier_html)       "Ficheiros HTML"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

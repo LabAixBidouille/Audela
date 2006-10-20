@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.3 2006-06-20 17:55:14 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -125,6 +125,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Umdrehung für den folgenden Untersatz: "
    set caption(divers,erreur,serie_existe)            "Irrtum, die Folgende Serie existiert nicht: "
    set caption(divers,nom_invalide)                   "Der Name dieser Datei ist inkorrekt (Gegenwart von betonten Buchstaben): "
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   # Autres
+   set caption(divers,audace)                         "Aud'ACE"
+   set caption(divers,oubli_param_opt)                "Falta um parâmetro para a seguinte opção: "
+   set caption(divers,invalide_opt)                   "Esta opção não é válida: "
+   set caption(divers,tracebox)                       "Por favor, desenhe um quadrado com o rato."
+   set caption(divers,series_trreg_cadre-ref)         "A definir o quadrado de referência para a sub-série seguinte: "
+   set caption(divers,series_trreg_cadre-a-rec)       "A definir o quadrado para alinhar as seguintes sub-serie: "
+   set caption(divers,series_trreg_transl)            "Translação para a seguinte sub-série: "
+   set caption(divers,series_trreg_rot)               "Rotação para a seguinte sub-série: "
+   set caption(divers,erreur,serie_existe)            "Erro, não existe a série seguinte: "
+   set caption(divers,nom_invalide)                   "O seguinte nome de ficheiro não é válido (contém caracteres com acento): "
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

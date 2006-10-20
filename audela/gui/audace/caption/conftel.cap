@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.11 2006-10-02 15:41:44 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.12 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -602,6 +602,124 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
    set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+set caption(conftel,config)                           "Configuração da montagem"
+set caption(conftel,creer_au_demarrage)               "Ligar a montagem automáticamente da próxima vez que o software for executado"
+set caption(conftel,ok)                               "OK"
+set caption(conftel,appliquer)                        "Aplicar"
+set caption(conftel,fermer)                           "Fechar"
+set caption(conftel,aide)                             "Ajuda"
+
+set caption(conftel,raquette_tel)                     "Controlador de mão no ecrã:"
+set caption(conftel,config_raquette)                  "Configuração do controlador de mão"
+
+set caption(conftel,port)                             "Porta"
+set caption(conftel,port_liaison)                     "Porta / Ligação"
+set caption(conftel,audinet)                          "AudiNet"
+set caption(conftel,link_configure)                   "Configuração"
+set caption(conftel,format)                           "Formato"
+set caption(conftel,format_court_long)                "Curto Longo"
+set caption(conftel,modele)                           "Modelo"
+set caption(conftel,modele_lx200)                     "LX200"
+set caption(conftel,modele_audecom)                   "AudeCom"
+set caption(conftel,modele_skysensor)                 "SkySensor 2000 PC"
+set caption(conftel,modele_gemini)                    "Losmandy Gemini"
+set caption(conftel,modele_ite-lente)                 "Ite-lente"
+set caption(conftel,maj_lx200)                        "Actualizar tempo, longitude, latitude e altitude do LX200"
+set caption(conftel,ite-lente_tempo)                  "Tempo"
+
+set caption(conftel,ouranos_unites)                   "Coordinadas"
+set caption(conftel,ouranos_visible)                  "Sempre visível no ecrã"
+set caption(conftel,ouranos_on)                       "on"
+set caption(conftel,ouranos_inv)                      "Reverso"
+set caption(conftel,ouranos_init1)                    "Dec. = 0°"
+set caption(conftel,ouranos_init2)                    "Dec. = 90°"
+set caption(conftel,ouranos_frequence)                "todos"
+set caption(conftel,ouranos_pas)                      "passos"
+set caption(conftel,ouranos_seconde)                  "seg."
+set caption(conftel,ouranos_res_codeur)               "Resolução do encoder"
+set caption(conftel,ouranos_res_codeurs)              "Resolução dos encoders:"
+set caption(conftel,ouranos_reglage)                  "Ajustar"
+set caption(conftel,ouranos_stop)                     "Parar"
+set caption(conftel,ouranos_lire)                     "Ler"
+set caption(conftel,ouranos_match)                    "MATCH"
+set caption(conftel,ouranos_etoile)                   "Estrelas"
+set caption(conftel,ouranos_messier)                  "Messier"
+set caption(conftel,ouranos_ngc)                      "NGC"
+set caption(conftel,ouranos_ic)                       "IC"
+
+set caption(conftel,audecom_pec)                      "Ligar PEC"
+set caption(conftel,audecom_king)                     "Ligar guiagem utilizando velocidade King"
+set caption(conftel,audecom_mobile)                   "Liga a guiagem de objectos em movimento"
+set caption(conftel,audecom_mont_allemande)           "Montagem Equatorial Alemã"
+set caption(conftel,audecom_para_moteur)              "Parâmetros do Motor"
+set caption(conftel,audecom_para_foc)                 "Parâmetros da Focagem"
+set caption(conftel,audecom_prog_pec)                 "Programação PEC"
+set caption(conftel,audecom_ctl_king)                 "Controlo da Velocidade King"
+set caption(conftel,audecom_ctl_mobile)               "Controlo da Velocidade de Seguimento"
+set caption(conftel,audecom_ver_firmware)             "Software do Microcontrolador Software: V"
+
+set caption(conftel,host_audinet)                     "Servidor AudiNet/LXnet"
+set caption(conftel,envoyer_adresse_lxnet)            "Envie este numero IP para LXnet antes da ligação"
+set caption(conftel,test_lxnet)                       "Testar o endereço IP (ping)"
+set caption(conftel,mac_address)                      "Endereço MAC"
+set caption(conftel,autoflush)                        "Autoflush da Com série"
+set caption(conftel,focuser_type)                     "Tipo de focador"
+set caption(conftel,focuser_i2c_address)              "Porta I2C"
+
+set caption(conftel,temma_version)                    "Versão:"
+set caption(conftel,temma_modele_1)                   "EM-10/200-Temma-PC-Jr"
+set caption(conftel,temma_modele_2)                   "EM-200/500-NJP-Temma-PC"
+set caption(conftel,temma_modele_3)                   "Series-Temma2"
+set caption(conftel,temma_init_module)                "Configuração do Interface Temma:"
+set caption(conftel,temma_latitude)                   "Latitude:"
+set caption(conftel,temma_correc_AD)                  "Ajuste da velocidade normal de ascenção recta (AR)"
+set caption(conftel,temma_correc_Dec)                 "Ajuste da velocidade normal de declinação (DEC)"
+set caption(conftel,temma_liaison_AD_Dec)             "Ajustes em AR e DEC efectuados"
+set caption(conftel,position_telescope)               "Posição do Telescópio:"
+set caption(conftel,change_position_telescope)        "Mudar a Posição Inicial do Telescópio:"
+set caption(conftel,temma_init_zenith)                "Inicialização Zenith"
+set caption(conftel,temma_ctl_mobile)                 "Controlo da Velocidade de Guiagem"
+
+set caption(conftel,mcmt_nbre_dents_roue_ad)          "Numero de dentes para o motor de Ascenção Recta:"
+set caption(conftel,mcmt_nbre_dents_roue_dec)         "Numero de dentes para o motor de Declinação:"
+
+
+set caption(conftel,ra)                               "AR"
+set caption(conftel,dec)                              "Dec."
+set caption(conftel,et)                               "e"
+set caption(conftel,hms_angle)                        "( h m s )"
+set caption(conftel,dms_angle)                        "( d m s )"
+
+set caption(conftel,attention)                        "Aviso"
+set caption(conftel,connexion_texte1)                 "Ligação da Montagem em progresso..."
+set caption(conftel,connexion_texte2)                 "Por favor aguarde alguns segundos."
+
+set caption(conftel,ouranos_formataddec1)             "Formato para a Ascenção Recta:"
+set caption(conftel,ouranos_formataddec2)             "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+set caption(conftel,ouranos_formataddec3)             "Formato para a Declinação:"
+set caption(conftel,ouranos_formataddec4)             "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+set caption(conftel,ouranos_formataddec5)             "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+set caption(conftel,2points)                          ":"
+set caption(conftel,tiret)                            "-"
+set caption(conftel,port_audecom)                     "Porta AudeCom"
+set caption(conftel,port_ouranos)                     "Porta Ouranos"
+set caption(conftel,port_lx200)                       "Porta LX200"
+set caption(conftel,port_temma)                       "Porta Temma"
+set caption(conftel,port_mcmt)                        "Porta MCMT"
+
+set caption(conftel,site_web_ref)                     "Site Web de referência:"
+set caption(conftel,document_ref)                     "Documento de referência:"
+set caption(conftel,site_lx200)                       "http://www.meade.com/support/CommandSet.html"
+set caption(conftel,site_ouranos)                     "http://www.microtec.net/~pdufour/ouranosa.htm"
+set caption(conftel,doc_audecom)                      "AudeCom-V41.pdf"
+set caption(conftel,site_lxnet)                       "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
+set caption(conftel,site_temma)                       "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+set caption(conftel,site_mcmt)                        "http://astrosurf.com/mcmtii/"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
