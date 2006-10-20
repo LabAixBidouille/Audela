@@ -1,6 +1,6 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: confcat.cap,v 1.5 2006-10-20 17:40:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -66,13 +66,13 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-set caption(confcat,carte)                  "Mapa:"
-set caption(confcat,config)                 "Configuração do Mapa"
-set caption(confcat,creer_au_demarrage)     "Ligar este mapa automáticamente da próxima vez que o software for executado"
-set caption(confcat,ok)                     "OK"
-set caption(confcat,appliquer)              "Aplicar"
-set caption(confcat,fermer)                 "Fechar"
-set caption(confcat,aide)                   "Ajuda"
+   set caption(confcat,carte)               "Mapa:"
+   set caption(confcat,config)              "Configuração do Mapa"
+   set caption(confcat,creer_au_demarrage)  "Ligar este mapa automáticamente da próxima vez que o software for executado"
+   set caption(confcat,ok)                  "OK"
+   set caption(confcat,appliquer)           "Aplicar"
+   set caption(confcat,fermer)              "Fechar"
+   set caption(confcat,aide)                "Ajuda"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

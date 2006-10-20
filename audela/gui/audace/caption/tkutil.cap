@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: tkutil.cap,v 1.5 2006-10-20 17:39:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -215,7 +215,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editer_script)      "Rediger en skript"
    set caption(tkutil,lancer_script)      "Kør en skript"
    set caption(tkutil,editer_notice)      "Brugsanvisning (.pdf)"
-   set caption(tkutil,editer_site_web)     "Hjemmeside"
+   set caption(tkutil,editer_site_web)    "Hjemmeside"
    set caption(tkutil,editer_catalogue)   "Åbn et bruger-katalog"
    set caption(tkutil,editeur_script)     "Script Editor:"
    set caption(tkutil,editeur_pdf)        "Se brugsanvisning (.pdf):"

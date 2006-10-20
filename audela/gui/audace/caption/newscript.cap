@@ -1,6 +1,6 @@
 #
 # Fichier : newscript.cap
-# Mise a jour $Id: newscript.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: newscript.cap,v 1.5 2006-10-20 17:38:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -66,13 +66,13 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-set caption(newscript,nouveau_script)     "Novo Script"
-set caption(newscript,pas_de_nom)         "noname.tcl"
-set caption(newscript,parcourir)          "..."
-set caption(newscript,nom_script)         "Nome do Ficheiro"
-set caption(newscript,ok)                 "OK"
-set caption(newscript,annuler)            "Cancelar"
-set caption(newscript,aide)               "Ajuda"
+   set caption(newscript,nouveau_script)  "Novo Script"
+   set caption(newscript,pas_de_nom)      "noname.tcl"
+   set caption(newscript,parcourir)       "..."
+   set caption(newscript,nom_script)      "Nome do Ficheiro"
+   set caption(newscript,ok)              "OK"
+   set caption(newscript,annuler)         "Cancelar"
+   set caption(newscript,aide)            "Ajuda"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
