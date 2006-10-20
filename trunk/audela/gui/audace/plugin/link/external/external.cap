@@ -1,6 +1,6 @@
 #
 # Fichier : external.cap
-# Mise a jour $Id: external.cap,v 1.1 2006-08-12 21:03:37 robertdelmas Exp $
+# Mise a jour $Id: external.cap,v 1.2 2006-10-20 16:27:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -36,7 +36,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(external,titre)        "# Manuel"
+   set caption(external,titre)        "Manuel"
 
 }
 
