@@ -96,11 +96,11 @@ extern "C"
 struct camini CAM_INI[] = {
    {"WEBCAM",        /* camera name */
     "webcam",        /* camera product */
-    "webcam",        /* ccd name */
+    "ICX098BQ-A",        /* ccd name */
     640, 480,        /* maxx maxy */
     0, 0,            /* overscans x */
     0, 0,            /* overscans y*/
-    7.9375e-6, 7.9375e-6,        /* photosite dim (m) */
+    5.6e-6, 5.6e-6,        /* photosite dim (m) */
     255.,            /* observed saturation */
     1.,              /* filling factor */
     250.,            /* gain (e/adu) */
@@ -877,8 +877,8 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
    cam->biny = 1;
    cam->imax = cam->nb_photox / cam->binx;      /* valeurs par défauts */
    cam->jmax = cam->nb_photoy / cam->biny;
-   cam->celldimx = 5080. / cam->nb_photox;
-   cam->celldimy = 3810. / cam->nb_photoy;
+   //cam->celldimx = 5080. / cam->nb_photox;
+   //cam->celldimy = 3810. / cam->nb_photoy;
 
 #endif
 
@@ -1663,6 +1663,7 @@ int webcam_setWhiteBalance(struct camprop *cam, char *mode, int red, int blue)
  */
 int startVideoPreview(struct camprop *cam, int previewRate) {
    int result;
+   RECT rect;
 
    // je fixe la frequence de images 
    cam->capture->setPreviewRate(previewRate); 
@@ -1670,6 +1671,13 @@ int startVideoPreview(struct camprop *cam, int previewRate) {
    cam->capture->setPreviewScale(TRUE);
    // je desactive le mode overlay, au cas ou il serait actif
    cam->capture->setOverlay(FALSE);
+   // j'adapte la taille de la fenetre
+   rect.left = 0;          // position relative par rapport à la fenetre parent
+   rect.top  = 0;
+   rect.right = cam->capture->getImageWidth();
+   rect.bottom = cam->capture->getImageHeight();
+   cam->capture->setWindowPosition(&rect);
+
    // j'active la prévisualisation
    result = cam->capture->setPreview(TRUE);
    return result;
