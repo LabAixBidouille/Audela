@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.9 2006-08-12 21:23:43 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.10 2006-10-20 18:01:28 robertdelmas Exp $
 #
 
 #
@@ -2551,6 +2551,10 @@ namespace eval confVersion {
       label $This.lab14 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright10)" \
          -font $audace(font,arial_8_n)
       pack $This.lab14 -in $This.frame1 -padx 30 -pady 5
+
+      label $This.lab15 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright11)" \
+         -font $audace(font,arial_8_n)
+      pack $This.lab15 -in $This.frame1 -padx 30 -pady 5
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
