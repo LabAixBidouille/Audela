@@ -1,6 +1,6 @@
 #
 # Fichier : confcolor.cap
-# Mise a jour $Id: confcolor.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: confcolor.cap,v 1.5 2006-10-20 17:40:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -71,14 +71,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-set caption(confcolor,title)              "Aparência"
-set caption(confcolor,selection)          "Selecção de cor: "
-set caption(confcolor,vision)             "Visão:"
-set caption(confcolor,diurne)             "Dia"
-set caption(confcolor,nocturne)           "Noite"
-set caption(confcolor,couleur_defaut)     "Voltar às Cores Padrão"
-set caption(confcolor,confirmation)       "Tem a certeza que quer voltar às cores padrão?"
-set caption(confcolor,button_restore)     "Cores Padrão"
+   set caption(confcolor,title)           "Aparência"
+   set caption(confcolor,selection)       "Selecção de cor: "
+   set caption(confcolor,vision)          "Visão:"
+   set caption(confcolor,diurne)          "Dia"
+   set caption(confcolor,nocturne)        "Noite"
+   set caption(confcolor,couleur_defaut)  "Voltar às Cores Padrão"
+   set caption(confcolor,confirmation)    "Tem a certeza que quer voltar às cores padrão?"
+   set caption(confcolor,button_restore)  "Cores Padrão"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

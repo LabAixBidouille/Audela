@@ -1,6 +1,6 @@
 #
 # Fichier : fullscreen.cap
-# Mise a jour $Id: fullscreen.cap,v 1.7 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: fullscreen.cap,v 1.8 2006-10-20 17:38:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -151,27 +151,27 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-#--- Menu
-set caption(fullscreen,next_image)          "Próxima Imagem"
-set caption(fullscreen,previous_image)      "Imagem Anterior"
-set caption(fullscreen,slide_show)          "Slideshow"
-set caption(fullscreen,configure)           "Configuração..."
-set caption(fullscreen,close)               "Fechar (Esc)"
-set caption(fullscreen,zoom_auto)           "Auto"
-set caption(fullscreen,animation)           "Animação"
-set caption(fullscreen,zoom)                "Zoom"
-set caption(fullscreen,zoom_0.125)          "x 0.125"
-set caption(fullscreen,zoom_0.25)           "x 0.25"
-set caption(fullscreen,zoom_0.5)            "x 0.5"
-set caption(fullscreen,zoom_1)              "x 1"
-set caption(fullscreen,zoom_2)              "x 2"
-set caption(fullscreen,zoom_4)              "x 4"
-set caption(fullscreen,help)                "Ajuda..."
+   #--- Menu
+   set caption(fullscreen,next_image)       "Próxima Imagem"
+   set caption(fullscreen,previous_image)   "Imagem Anterior"
+   set caption(fullscreen,slide_show)       "Slideshow"
+   set caption(fullscreen,configure)        "Configuração..."
+   set caption(fullscreen,close)            "Fechar (Esc)"
+   set caption(fullscreen,zoom_auto)        "Auto"
+   set caption(fullscreen,animation)        "Animação"
+   set caption(fullscreen,zoom)             "Zoom"
+   set caption(fullscreen,zoom_0.125)       "x 0.125"
+   set caption(fullscreen,zoom_0.25)        "x 0.25"
+   set caption(fullscreen,zoom_0.5)         "x 0.5"
+   set caption(fullscreen,zoom_1)           "x 1"
+   set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
+   set caption(fullscreen,help)             "Ajuda..."
 
-#--- Interface de configuration
-set caption(fullscreen,title)               "Configurações da janela em ecrã inteiro"
-set caption(fullscreen,color_label)         "Cor de fundo"
-set caption(fullscreen,auto_start_anim)     "Começar Animação Automaticamente"
+   #--- Interface de configuration
+   set caption(fullscreen,title)            "Configurações da janela em ecrã inteiro"
+   set caption(fullscreen,color_label)      "Cor de fundo"
+   set caption(fullscreen,auto_start_anim)  "Começar Animação Automaticamente"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

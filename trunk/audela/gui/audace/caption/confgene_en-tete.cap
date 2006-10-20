@@ -1,6 +1,6 @@
 #
 # Fichier : confgene_en-tete.cap
-# Mise a jour $Id: confgene_en-tete.cap,v 1.6 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: confgene_en-tete.cap,v 1.7 2006-10-20 17:40:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -125,25 +125,25 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugais ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-set caption(en-tete,interface_audace_audela)          "Interface Aud'ACE Para AudeLA"
+   set caption(en-tete,interface_audace_audela)       "Interface Aud'ACE Para AudeLA"
 
-set caption(en-tete,a_propos_de)                      "Sobre..."
-set caption(en-tete,a_propos_de_version)              "AudeLA/Aud'ACE"
-set caption(en-tete,a_propos_de_version_Tcl/Tk)       "Tcl/Tk Versão Encontrada: V"
-set caption(en-tete,a_propos_de_maj)                  "Versão de 14 de Julho de 2005."
-set caption(en-tete,a_propos_de_libre)                "Este software é do tipo freeware e open source."
-set caption(en-tete,a_propos_de_site)                 "http://software.audela.free.fr/"
-set caption(en-tete,a_propos_de_copyright1)           "Copyright (C) 1999-2006"
-set caption(en-tete,a_propos_de_copyright2)           "Equipa de desenvolvimento: D. Marchais, A. Klotz, R. Delmas,"
-set caption(en-tete,a_propos_de_copyright3)           "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
-set caption(en-tete,a_propos_de_copyright4)           "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
-set caption(en-tete,a_propos_de_copyright5)           "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
-set caption(en-tete,a_propos_de_copyright6)           "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-set caption(en-tete,a_propos_de_copyright7)           "J. Berthier, S. Girard, J. Cadien"
-set caption(en-tete,a_propos_de_copyright8)           "Traduções: (GB) C. Jasinski + D. Futak + D. Holler"
-set caption(en-tete,a_propos_de_copyright9)           "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
-set caption(en-tete,a_propos_de_copyright10)          "(P) L. Gouveia + L. Fonseca"
-set caption(en-tete,a_propos_de_copyright11)          "(D) Ph. Kauffmann + J. Hoebelmann, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de)                   "Sobre..."
+   set caption(en-tete,a_propos_de_version)           "AudeLA/Aud'ACE"
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Versão Encontrada: V"
+   set caption(en-tete,a_propos_de_maj)               "Versão de 14 de Julho de 2005."
+   set caption(en-tete,a_propos_de_libre)             "Este software é do tipo freeware e open source."
+   set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2006"
+   set caption(en-tete,a_propos_de_copyright2)        "Equipa de desenvolvimento: D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Traduções: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(P) L. Gouveia + L. Fonseca"
+   set caption(en-tete,a_propos_de_copyright11)       "(D) Ph. Kauffmann + J. Hoebelmann, (DK) K. Strandbaek"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

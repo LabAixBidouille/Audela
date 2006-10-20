@@ -1,6 +1,6 @@
 #
 # Fichier : filtrage.cap
-# Mise a jour $Id: filtrage.cap,v 1.3 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: filtrage.cap,v 1.4 2006-10-20 17:41:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -121,24 +121,24 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-set caption(filtrage,chargement)            "A carregar ficheiro:"
-set caption(filtrage,fin_traitement)        "Fim do processamento.\n"
-set caption(filtrage,pas_de_fichier)        "O Ficheiro Não Existe.\n"
-set caption(filtrage,charge_image)          "É Necessário Carregar Uma Imagem.\n"
-set caption(filtrage,attention)             "Aviso"
-set caption(filtrage,pas_image_memoire)     "Sem Imagem em Memoria."
-set caption(filtrage,tracer)                "Por favor desenhe um quadrado com o rato."
+   set caption(filtrage,chargement)         "A carregar ficheiro:"
+   set caption(filtrage,fin_traitement)     "Fim do processamento.\n"
+   set caption(filtrage,pas_de_fichier)     "O Ficheiro Não Existe.\n"
+   set caption(filtrage,charge_image)       "É Necessário Carregar Uma Imagem.\n"
+   set caption(filtrage,attention)          "Aviso"
+   set caption(filtrage,pas_image_memoire)  "Sem Imagem em Memoria."
+   set caption(filtrage,tracer)             "Por favor desenhe um quadrado com o rato."
 
-set caption(filtrage,masque_flou)           "Máscara de focagem"
-set caption(filtrage,filtre_passe-bas)      "Filtro Passa Baixo"
-set caption(filtrage,filtre_passe-haut)     "Filtro Passa Alto"
-set caption(filtrage,filtre_median)         "Filtro Médio"
-set caption(filtrage,filtre_minimum)        "Filtro Mínimo"
-set caption(filtrage,filtre_maximum)        "Filtro Máximo"
-set caption(filtrage,filtre_gaussien)       "Filtro Gaussiano"
-set caption(filtrage,ond_morlet)            "Wavelet do Tipo Morlet"
-set caption(filtrage,ond_mexicain)          "Wavelet do Tipo Chapéu Mexicano"
-set caption(filtrage,log)                   "Logarítmo"
+   set caption(filtrage,masque_flou)        "Máscara de focagem"
+   set caption(filtrage,filtre_passe-bas)   "Filtro Passa Baixo"
+   set caption(filtrage,filtre_passe-haut)  "Filtro Passa Alto"
+   set caption(filtrage,filtre_median)      "Filtro Médio"
+   set caption(filtrage,filtre_minimum)     "Filtro Mínimo"
+   set caption(filtrage,filtre_maximum)     "Filtro Máximo"
+   set caption(filtrage,filtre_gaussien)    "Filtro Gaussiano"
+   set caption(filtrage,ond_morlet)         "Wavelet do Tipo Morlet"
+   set caption(filtrage,ond_mexicain)       "Wavelet do Tipo Chapéu Mexicano"
+   set caption(filtrage,log)                "Logarítmo"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
