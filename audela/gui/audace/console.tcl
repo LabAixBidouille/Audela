@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.3 2006-06-20 17:27:44 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.4 2006-10-20 18:01:56 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -74,6 +74,7 @@ namespace eval ::console {
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright8)\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright9)\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright10)\n" style_entete
+      $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright11)\n" style_entete
       $This.txt1 insert end "#\n" style_entete
       $This.txt1 insert end "\n" 
 
