@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Mise a jour $Id: confeqt.cap,v 1.3 2006-06-20 17:50:00 robertdelmas Exp $
+# Mise a jour $Id: confeqt.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -82,6 +82,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,attention)           "Achtung"
    set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"
    set caption(confeqt,connexion_texte2)    "während das Ausrüstung Anschluß."
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(confeqt,equipement)          "Equipamento:"
+   set caption(confeqt,config)              "Configuração do equipamento"
+   set caption(confeqt,creer_au_demarrage)  "O equipamento conecta-se automaticamente na próxima execução do programa"
+   set caption(confeqt,ok)                  "OK"
+   set caption(confeqt,appliquer)           "Aplicar"
+   set caption(confeqt,fermer)              "Fechar"
+   set caption(confeqt,aide)                "Ajuda"
+
+   set caption(confeqt,attention)           "Atenção"
+   set caption(confeqt,connexion_texte1)    "A conectar-se ao equipamento..."
+   set caption(confeqt,connexion_texte2)    "Por favor, aguarde uns segundos."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

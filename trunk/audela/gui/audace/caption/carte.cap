@@ -1,6 +1,6 @@
 #
 # Fichier : carte.cap
-# Mise a jour $Id: carte.cap,v 1.3 2006-06-20 17:56:42 robertdelmas Exp $
+# Mise a jour $Id: carte.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -47,6 +47,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carte,error_no_image)      "Bitte ein Bild erst anzeigen."
    set caption(carte,error_no_map)        "Keine ‰uﬂere Karte gew‰hlt.\nWollen sie eine ‰uﬂere Karte w‰hlen ?"
    set caption(carte,error_image_buffer)  "Dieses Bild hat keinen Himmel Koordinaten."
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(carte,title)               "Mapa externo"
+   set caption(carte,error_no_image)      "Por favor, mostre primeiro uma imagem."
+   set caption(carte,error_no_map)        "Nenhum mapa externo seleccionado.\nDeseja escolher um mapa externo?"
+   set caption(carte,error_image_buffer)  "Esta imagem n„o tem coordenadas celestes."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.4 2006-06-20 17:49:34 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.5 2006-10-20 13:27:20 alainklotz Exp $
 #
 
 #=========================================================================
@@ -228,6 +228,50 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(astrometry,RA)             "RA"
    set caption(astrometry,DEC)            "Dek."
+   set caption(astrometry,egale)          "="
+   set caption(astrometry,tiret)          "-"
+   set caption(astrometry,X)              "X"
+   set caption(astrometry,Y)              "Y"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(astrometry,title)          "Calibração Astrométrica"
+   set caption(astrometry,wcs,optic)      "A partir das palavras-chave da configuração óptica"
+   set caption(astrometry,wcs,classic)    "A partir das palavras-chave WCS"
+   set caption(astrometry,wcs,matrix)     "A partir da matriz WCS"
+   set caption(astrometry,cal,catalog)    "Método: Comparação com um catálogo"
+   set caption(astrometry,cal,file)       "Método: Cópia de palavras-chave WCS de outra imagem"
+   set caption(astrometry,cal,manual)     "Método: Actualização manual das palavras-chave WCS desta imagem"
+   set caption(astrometry,cal,delwcs)     "Apagar palavras-chave WCS"
+   set caption(astrometry,cal,filename)   "Nome do ficheiro"
+   set caption(astrometry,cal,catfolder)  "Caminho para o catálogo"
+   set caption(astrometry,cal,catname)    "Nome do catálogo"
+   set caption(astrometry,cat,usno)       "USNO"
+   set caption(astrometry,cat,microcat)   "MicroCat"
+   set caption(astrometry,cat,personal)   "Pessoal"
+   set caption(astrometry,start)          "Iniciar a calibração"
+   set caption(astrometry,start,0)        "A calibrar..."
+   set caption(astrometry,start,1)        "Extrair objectos da imagem"
+   set caption(astrometry,start,2)        "Primeira extracção das estrelas do catálogo"
+   set caption(astrometry,start,3)        "Primeiro cálculo astrométrico..."
+   set caption(astrometry,start,4)        "Segunda extracção de estrelas do catálogo"
+   set caption(astrometry,start,5)        "Segunda calibração astrométrica..."
+   set caption(astrometry,start,6)        "A utilizar calibrado"
+   set caption(astrometry,start,6a)       "estrelas."
+   set caption(astrometry,start,7)        "Falha na calibração."
+   set caption(astrometry,start,8)        "Calibrada com imagem:"
+   set caption(astrometry,start,9)        "Calibrada com as palavras-chave a lista."
+   set caption(astrometry,start,10)       "Teste de Calibração"
+   set caption(astrometry,start,11)       "Palavras-chave WCS apagadas"
+   set caption(astrometry,help)           "Ajuda"
+
+   set caption(astrometry,comment)        "A calibração astrométrica foi bem sucedida quando cada estrela é sobreposta por um ponto vermelho."
+   set caption(astrometry,erreur_catalog) "Verifique se o catálogo seleccionado está disponível."
+   set caption(astrometry,erreur_file)    "Verifique se a imagem seleccionada está disponível."
+
+   set caption(astrometry,RA)             "RA"
+   set caption(astrometry,DEC)            "Dec."
    set caption(astrometry,egale)          "="
    set caption(astrometry,tiret)          "-"
    set caption(astrometry,X)              "X"

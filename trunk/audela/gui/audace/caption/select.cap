@@ -1,6 +1,6 @@
 #
 # Fichier : select.cap
-# Mise a jour $Id: select.cap,v 1.3 2006-06-20 17:54:22 robertdelmas Exp $
+# Mise a jour $Id: select.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -102,6 +102,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(select,tiret)        "-"
    set caption(select,pas_image)    "Kein Bild hat diesen Namen."
    set caption(select,titre_menu)   "Bilder Auswahl"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(select,titre)        "Selecção manual de imagens"
+   set caption(select,entree)       "Imagem de entrada"
+   set caption(select,nom)          "Nome:"
+   set caption(select,parcourir)    "..."
+   set caption(select,index)        "Índice:"
+   set caption(select,sortie)       "Imagens de saída"
+   set caption(select,demarrer)     "Iniciar"
+   set caption(select,inf)          "<"
+   set caption(select,sup)          ">"
+   set caption(select,auto)         "Automático"
+   set caption(select,aide)         "Ajuda"
+   set caption(select,record)       "Guardar"
+   set caption(select,tiret)        "-"
+   set caption(select,pas_image)    "Não existe imagem com este nome."
+   set caption(select,titre_menu)   "Selecção de imagem"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

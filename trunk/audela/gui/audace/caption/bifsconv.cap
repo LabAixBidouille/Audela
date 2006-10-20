@@ -1,6 +1,6 @@
 #
 # Fichier : bifsconv.cap
-# Mise a jour $Id: bifsconv.cap,v 1.3 2006-06-20 17:56:15 robertdelmas Exp $
+# Mise a jour $Id: bifsconv.cap,v 1.4 2006-10-20 13:27:20 alainklotz Exp $
 #
 
 #=========================================================================
@@ -47,6 +47,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bifsconv,imaencours)    "FITS Konversion des Bildes:"
    set caption(bifsconv,repencours)    "FITS Konversion in einen Register:"
    set caption(bifsconv,pasdefichier)  "Unmögliche Verwandlung: "
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+set caption(bifsconv,audace)           "Aud'ACE"
+set caption(bifsconv,imaencours)       "Conversão da imagem em FITS:"
+set caption(bifsconv,repencours)       "Conversão FITS na pasta:"
+set caption(bifsconv,pasdefichier)     "Impossível de converter por inexistência do seguinte ficheiro: "
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

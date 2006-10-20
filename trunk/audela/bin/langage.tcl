@@ -1,1 +1,1 @@
-set langage "french"
+set langage "portuguese"

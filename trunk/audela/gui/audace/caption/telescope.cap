@@ -1,6 +1,6 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.4 2006-06-20 17:54:34 robertdelmas Exp $
+# Mise a jour $Id: telescope.cap,v 1.5 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -252,6 +252,48 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,mobile_dec)      "Deklination Tempo"
 
    set caption(telescope,2points)         ":"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+set caption(telescope,interro)            "?"
+set caption(telescope,init)               "Inicialização do Telescópio"
+set caption(telescope,suivi_marche)       "Guiagem Ligada"
+set caption(telescope,suivi_arret)        "Guiagem Desligada"
+
+set caption(telescope,inittelscp0)        "Initialização do Telescópio"
+set caption(telescope,inittelscp1)        "Depois de ter apontado o seu telescópio para Gamma"
+set caption(telescope,inittelscp2)        "Cassiopeia, inicialize o telescópio fazendo"
+set caption(telescope,inittelscp3)        "duplo-clique no botão de baixa velocidade do"
+set caption(telescope,inittelscp4)        "controlador de mão. Se escolher Alioth na"
+set caption(telescope,inittelscp5)        "Ursa Maior, clique no botão de Velocidade Média"
+set caption(telescope,inittelscp6)        "com duplo-clique."
+set caption(telescope,inittelscp7)        "Quando a janela é fechada, o"
+set caption(telescope,inittelscp8)        "display das coordenadas AR e DEC"
+set caption(telescope,inittelscp9)        "é actualizado."
+
+set caption(telescope,match)              "MATCH"
+set caption(telescope,match_confirm)      "Continuar?"
+set caption(telescope,match_alg_init)     "Alinhamento Inicial"
+set caption(telescope,match_alg_add)      "Alinhamento Adicional"
+set caption(telescope,match_cancel)       "Cancelar"
+set caption(telescope,soleil)             "Soleil"
+set caption(telescope,lune)               "Lua"
+set caption(telescope,tel)                "Montagem"
+set caption(telescope,non_connecte)       "Disconectado"
+set caption(telescope,pas_coord1)         "Não"
+set caption(telescope,pas_coord2)         "Coordenada"
+set caption(telescope,astre_est)          "O alvo é"
+set caption(telescope,pas_leve)           "abaixo do horizonte."
+set caption(telescope,x1)                 "x1"
+set caption(telescope,x5)                 "x5"
+set caption(telescope,200)                "200"
+set caption(telescope,NS)                 "NS"
+set caption(telescope,HS)                 "HS"
+set caption(telescope,modele_audecom)     "AudeCom"
+set caption(telescope,modele_gemini)      "Losmandy Gemini"
+set caption(telescope,cote_est)           "Lado este"
+set caption(telescope,cote_ouest)         "Lado oeste"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

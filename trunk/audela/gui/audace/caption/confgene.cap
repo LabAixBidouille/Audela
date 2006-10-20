@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.3 2006-06-20 17:50:18 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -492,6 +492,103 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,general_porttalk)                   "Porttalk Fehlermeldung (falls es existiert)"
    set caption(confgene,general_oui)                        "Ja"
    set caption(confgene,general_non)                        "Nein"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(confgene,ok)                                 "OK"
+   set caption(confgene,appliquer)                          "Aplicar"
+   set caption(confgene,fermer)                             "Fechar"
+   set caption(confgene,aide)                               "Ajuda"
+
+   set caption(confgene,type_fenetre)                       "Tipo de janela"
+
+   set caption(confgene,fichier_image)                      "Ficheiros de imagens"
+   set caption(confgene,fichier_image_ext_defaut)           "Extensão por defeito do ficheiro:"
+   set caption(confgene,fichier_image_new_ext)              "Pode escolher a extensão do fichero:"
+   set caption(confgene,fichier_image_compres)              "Ficheiros de imagem comprimidos (.gz)"
+   set caption(confgene,fichier_image_jpeg_quality)         "Qualidade JPEG por defeito:"
+   set caption(confgene,fichier_image_jpeg_newquality)      "Pode escolher uma qualidade (5 a 100):"
+
+   set caption(confgene,alarme)                             "Alarme sonoro no fim da exposição"
+   set caption(confgene,alarme_active)                      "Activar alarme sonoro"
+   set caption(confgene,alarme_delai)                       "seg. antes do fim de exposição"
+
+   set caption(confgene,tempo_scan)                         "Drift scan e fast scan"
+   set caption(confgene,tempo_scan_titre)                   "Intervalo entre a paragem do motor de AR e o início da exposição:"
+   set caption(confgene,tempo_scan_sans)                    "Atraso desactivado"
+   set caption(confgene,tempo_scan_avec)                    "Atraso activado"
+   set caption(confgene,tempo_scan_delai)                   "Tempo de atraso"
+   set caption(confgene,tempo_scan_seconde)                 "seg."
+
+   set caption(confgene,position)                           "Posição do observador"
+   set caption(confgene,position_longitude)                 "Longitude:"
+   set caption(confgene,position_est)                       "E"
+   set caption(confgene,position_ouest)                     "W"
+   set caption(confgene,position_latitude)                  "Latitude:"
+   set caption(confgene,position_nord)                      "N"
+   set caption(confgene,position_sud)                       "S"
+   set caption(confgene,position_altitude)                  "Altitude:"
+   set caption(confgene,position_metre)                     "m"
+   set caption(confgene,position_ref_geodesique)            "Referência geodésica:"
+   set caption(confgene,position_ref_geodesique_ed50)       "ED50"
+   set caption(confgene,position_ref_geodesique,wgs84)      "WGS84"
+   set caption(confgene,position_miseajour_gps)             "Actualizar formato GPS (WGS84)"
+   set caption(confgene,position_gps)                       "Formato GPS (WGS84):"
+   set caption(confgene,position_station_uai)               "Número IAU do sítio:"
+   set caption(confgene,position_miseajour_mpc)             "Actualizar os formatos MPC"
+   set caption(confgene,position_fichier_station_uai)       "Ficheiro dos sítio IAU:"
+   set caption(confgene,position_miseajour)                 "Actualizar"
+   set caption(confgene,position_mpc)                       "Formato MPC:"
+   set caption(confgene,position_mpcstation)                "Formato MPCSTATION:"
+   set caption(confgene,position_non_station_uai)           "Sítio não registado na IAU"
+   set caption(confgene,fichier_uai_maj1)                   "Actualização do ficheiro"
+   set caption(confgene,fichier_uai_maj2)                   "(directório 'audace/etc') pode ser actualizado por download"
+   set caption(confgene,fichier_uai_maj3)                   "a partir da seguinte direcção Web:"
+   set caption(confgene,fichier_uai_maj4)                   "http://cfa-www.harvard.edu/iau/lists/ObsCodes.html"
+   set caption(confgene,fichier_uai_maj5)                   "Atenção: Utilizar 'Salvar como...' --->"
+   set caption(confgene,fichier_uai_erreur1)                "O número do sítio IAU deve"
+   set caption(confgene,fichier_uai_erreur2)                "ter, pelo menos, 3 dígitos"
+   set caption(confgene,fichier_uai_erreur3)                "(ex.:  000, 008, 013, 104, A05)."
+   set caption(confgene,caractere_E)                        "E"
+   set caption(confgene,caractere_W)                        "W"
+   set caption(confgene,caractere_tiret)                    "-"
+
+   set caption(confgene,temps)                              "Tempo"
+   set caption(confgene,temps_heure_legale1)                "HL"
+   set caption(confgene,temps_heure_legale2)                "Hora Legal (a do relógio)"
+   set caption(confgene,temps_universel1)                   "HU"
+   set caption(confgene,temps_universel2)                   "Hora Universal"
+   set caption(confgene,temps_hsysteme)                     "Hora do computador (HL ou HU):"
+   set caption(confgene,temps_universel)                    "HU"
+   set caption(confgene,temps_heurelegale)                  "HL"
+   set caption(confgene,temps_fushoraire1)                  "Seleccionar zona horária:"
+   set caption(confgene,temps_hhiverete)                    "Horário de Inverno / Horário de Verão:"
+   set caption(confgene,temps_aucune)                       "Nenhum"
+   set caption(confgene,temps_hiver)                        "Inverno"
+   set caption(confgene,temps_ete)                          "Verão"
+   set caption(confgene,temps_tu)                           "Hora Universal (TU):"
+   set caption(confgene,temps_tsl)                          "Tempo Sideral Local (TSL):"
+   set caption(confgene,caractere_2points)                  ":"
+
+   set caption(confgene,choix_outils)                       "Selecção de ferramenta"
+   set caption(confgene,choix_outils_1)                     "Escolha as ferramentas pretendidas e que estejam disponíveis"
+   set caption(confgene,choix_outils_2)                     "no menu Ferramentas com os respectivos atalhos:"
+   set caption(confgene,choix_outils_3)                     "A ferramenta associada com a tecla F2 abre automaticamente."
+
+   set caption(confgene,messages_console)                   "Mensagens de Consola"
+   set caption(confgene,messages_console_1)                 "Indique se prefere mostrar mensagens na"
+   set caption(confgene,messages_console_2)                 "Consola para as seguintes ferramentas:"
+   set caption(confgene,messages_console_oui)               "Sim"
+   set caption(confgene,messages_console_non)               "Não"
+
+   set caption(confgene,general_titre)                      "Geral"
+   set caption(confgene,general_texte)                      "Na próxima vez que executar o programa, terá acesso a:"
+   set caption(confgene,general_langues)                    "Selecção de idioma"
+   set caption(confgene,general_tutorial)                   "Tutorial"
+   set caption(confgene,general_porttalk)                   "Mensagem de erro de Porttalk (se existir)"
+   set caption(confgene,general_oui)                        "Sim"
+   set caption(confgene,general_non)                        "Não"
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

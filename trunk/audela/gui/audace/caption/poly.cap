@@ -1,6 +1,6 @@
 #
 # Fichier : poly.cap
-# Mise a jour $Id: poly.cap,v 1.3 2006-06-20 17:53:45 robertdelmas Exp $
+# Mise a jour $Id: poly.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
 #
 
 #=========================================================================
@@ -30,7 +30,7 @@ set caption(poly,series_trreg_cadre-ref)        "Defining the reference square f
 set caption(poly,series_trreg_cadre-a-rec)      "Defining the square to register the following sub-series:"
 set caption(poly,series_trreg_transl)           "Translation for the following sub-series:"
 set caption(poly,series_trreg_rot)              "Rotation for the following sub-series:"
-   
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -78,6 +78,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(poly,series_trreg_cadre-a-rec)   "Bestimmung der Referenz Rahmen für die Registration der folgenden Untersatz:"
    set caption(poly,series_trreg_transl)        "Translation für den folgenden Untersatz:"
    set caption(poly,series_trreg_rot)           "Umsatz für den folgenden Untersatz:"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   # Autres
+   set caption(poly,erreur_seriesApoly)            "Erro em seriesApoly: A série que devia ser transformada numa série multicolor não tem índices compatíveis.\n"
+   set caption(poly,erreur_polyAseries)            "Erro em polyAseries: O número de cores na série multicolor não é compatível com a série monocromática.\n"
+   set caption(poly,tracebox)                      "Por favor desenho um quadrado com o rato."
+   set caption(poly,series_trreg_cadre-ref)        "A definir o quadrado de referência para as seguintes sub-séries:"
+   set caption(poly,series_trreg_cadre-a-rec)      "A definir o quadrado para registar as seguintes sub-séries:"
+   set caption(poly,series_trreg_transl)           "Translação para as seguintes sub-séries:"
+   set caption(poly,series_trreg_rot)              "Rotação para as seguintes sub-séries:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
