@@ -1,6 +1,6 @@
 #
 # Fichier : parallelport.cap
-# Mise a jour $Id: parallelport.cap,v 1.9 2006-10-12 21:21:15 robertdelmas Exp $
+# Mise a jour $Id: parallelport.cap,v 1.10 2006-10-20 16:28:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -46,7 +46,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(parallelport,titre)        "Parallelle porte"
+   set caption(parallelport,titre)        "Parallel port"
    set caption(parallelport,available)    "Disponible parallelle porte"
    set caption(parallelport,refresh)      "Genindlæs"
 

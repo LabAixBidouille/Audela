@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.12 2006-10-19 18:55:51 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.13 2006-10-20 16:28:35 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -732,21 +732,21 @@ namespace eval ::traiteWindow {
          set traiteWindow(nombre)    "$caption(audace,image,nombre-) ( n ) :"
          set traiteWindow(image_B)   "$caption(audace,images,sortie-) ( B ) :"
          set traiteWindow(constante) "$caption(image,constante,ajouter)"
-         set traiteWindow(operande)  "$caption(audace,image,operande-) ( C ) :"
+         set traiteWindow(operande)  "$caption(nom,image,ajouter-) ( C ) :"
          set traiteWindow(formule)   "$caption(audace,formule) Bn = An + C + Cte"
       } elseif { $traiteWindow(operation) == "$caption(audace,menu,soust)" } {
          set traiteWindow(image_A)   "$caption(audace,images,entree-) ( A ) :"
          set traiteWindow(nombre)    "$caption(audace,image,nombre-) ( n ) :"
          set traiteWindow(image_B)   "$caption(audace,images,sortie-) ( B ) :"
          set traiteWindow(constante) "$caption(image,constante,ajouter)"
-         set traiteWindow(operande)  "$caption(audace,image,operande-) ( C ) :"
+         set traiteWindow(operande)  "$caption(nom,image,soustraire-) ( C ) :"
          set traiteWindow(formule)   "$caption(audace,formule) Bn = An - C + Cte"
       } elseif { $traiteWindow(operation) == "$caption(audace,menu,division)" } {
          set traiteWindow(image_A)   "$caption(audace,images,entree-) ( A ) :"
          set traiteWindow(nombre)    "$caption(audace,image,nombre-) ( n ) :"
          set traiteWindow(image_B)   "$caption(audace,images,sortie-) ( B ) :"
          set traiteWindow(constante) "$caption(image,constante,multiplicative)"
-         set traiteWindow(operande)  "$caption(audace,image,operande-) ( C ) :"
+         set traiteWindow(operande)  "$caption(image,nom,diviser-) ( C ) :"
          set traiteWindow(formule)   "$caption(audace,formule) Bn = ( An / C ) x Cte"
       } elseif { $traiteWindow(operation) == "$caption(audace,image,somme)" } {
          set traiteWindow(image_A)   "$caption(audace,images,entree-) ( A ) :"
