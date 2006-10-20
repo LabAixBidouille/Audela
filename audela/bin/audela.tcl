@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.7 2006-10-20 13:26:15 alainklotz Exp $
+# Update $Id: audela.tcl,v 1.8 2006-10-20 17:07:16 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -67,7 +67,7 @@ proc basecaption { {langage ""} } {
 
 #--- Call the language initialisation
 global caption
-set caption(lg) { "french" "italian" "spanish" "german" "danish" "english" "portuguese" }
+set caption(lg) { "french" "italian" "spanish" "german" "portuguese" "danish" "english" }
 set langage [basecaption]
 
 #--- Create the toplevel window
@@ -112,19 +112,19 @@ frame $base.fra1
    imageflag4 configure -file de.gif -format gif
    label $base.fra1.flag4 -image imageflag4
    pack $base.fra1.flag4 -side left -padx 5 -pady 5
-   #--- Danish
+   #--- Portuguese
    image create photo imageflag5
-   imageflag5 configure -file da.gif -format gif
+   imageflag5 configure -file pt.gif -format gif
    label $base.fra1.flag5 -image imageflag5
    pack $base.fra1.flag5 -side left -padx 5 -pady 5
-   #--- English
+   #--- Danish
    image create photo imageflag6
-   imageflag6 configure -file gb.gif -format gif
+   imageflag6 configure -file da.gif -format gif
    label $base.fra1.flag6 -image imageflag6
    pack $base.fra1.flag6 -side left -padx 5 -pady 5
-   #--- Portuguese
+   #--- English
    image create photo imageflag7
-   imageflag7 configure -file pt.gif -format gif
+   imageflag7 configure -file gb.gif -format gif
    label $base.fra1.flag7 -image imageflag7
    pack $base.fra1.flag7 -side left -padx 5 -pady 5
 pack $base.fra1 -side top -in $base
