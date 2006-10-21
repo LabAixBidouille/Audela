@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: confgene.cap,v 1.5 2006-10-21 20:06:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,6 +24,7 @@ set caption(confgene,fichier_image_new_ext)                 "You can choose the 
 set caption(confgene,fichier_image_compres)                 "Compressed Image Files (.gz)"
 set caption(confgene,fichier_image_jpeg_quality)            "Default Jpeg Quality:"
 set caption(confgene,fichier_image_jpeg_newquality)         "You can choose a new quality (5 to 100):"
+set caption(confgene,fichier_images_seuils_visu)            "# Enregistrer les images avec les seuils de la visu"
 
 set caption(confgene,alarme)                                "Aural warning when exposure ends"
 set caption(confgene,alarme_active)                         "Enable Aural Warning"
@@ -121,6 +122,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Fichiers image compressés (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Qualité Jpeg par défaut :"
    set caption(confgene,fichier_image_jpeg_newquality)      "Vous pouvez choisir une qualité (5 à 100) :"
+   set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu"
 
    set caption(confgene,alarme)                             "Alarme sonore de fin de pose"
    set caption(confgene,alarme_active)                      "Active l'alarme sonore"
@@ -218,6 +220,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Files immagini compresse (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Qualita` Jpeg di default:"
    set caption(confgene,fichier_image_jpeg_newquality)      "E' possibile scegliere il fattore qualitativo (5 ... 100):"
+   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
 
    set caption(confgene,alarme)                             "Segnale acustico di fine posa"
    set caption(confgene,alarme_active)                      "Segnale acustico attivo"
@@ -315,6 +318,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Ficheros de imágenes comprimidos (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Calidad JPEG por defecto:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Puede elegir una calidad (5 to 100):"
+   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
 
    set caption(confgene,alarme)                             "Alarma sonora en fin de exposición"
    set caption(confgene,alarme_active)                      "Activar alarma sonora"
@@ -412,6 +416,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Verminderte Bild Datei (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Mangel JPEG Qualität:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Sie können eine Qualität wählen (5 bis 100):"
+   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
 
    set caption(confgene,alarme)                             "Bildleuchtungsende ton Alarm"
    set caption(confgene,alarme_active)                      "Aktiviert die Ton Alarm"
@@ -509,6 +514,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Ficheiros de imagem comprimidos (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Qualidade JPEG por defeito:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Pode escolher uma qualidade (5 a 100):"
+   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
 
    set caption(confgene,alarme)                             "Alarme sonoro no fim da exposição"
    set caption(confgene,alarme_active)                      "Activar alarme sonoro"
@@ -606,6 +612,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Komprimeret billedfil(.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Standard JPEG kvalitet:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Valg af kvalitet(5 til 100):"
+   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
 
    set caption(confgene,alarme)                             "Lydadvarsel når eksponering slutter"
    set caption(confgene,alarme_active)                      "Aktiver lydadvarsel"

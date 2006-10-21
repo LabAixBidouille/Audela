@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.10 2006-10-20 18:01:28 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.11 2006-10-21 20:06:52 robertdelmas Exp $
 #
 
 #
@@ -1022,6 +1022,7 @@ namespace eval confFichierIma {
       if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut)   ".fit" }
       if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)    "0" }
       if { ! [ info exists conf(jpegquality,defaut) ] } { set conf(jpegquality,defaut) "80" }
+      if { ! [ info exists conf(save_seuils_visu) ] }   { set conf(save_seuils_visu)   "1" }
       #---
       set conf(extension,new)   $conf(extension,defaut)
       set conf(jpegquality,new) $conf(jpegquality,defaut)
@@ -1044,9 +1045,10 @@ namespace eval confFichierIma {
       }
 
       #--- confToWidget
-      set confgene(extension,new)   $conf(extension,new)
-      set confgene(fichier,compres) $conf(fichier,compres)
-      set confgene(jpegquality,new) $conf(jpegquality,new)
+      set confgene(extension,new)            $conf(extension,new)
+      set confgene(fichier,compres)          $conf(fichier,compres)
+      set confgene(jpegquality,new)          $conf(jpegquality,new)
+      set confgene(fichier,save_seuils_visu) $conf(save_seuils_visu)
 
       #---
       if { [winfo exists $This] } {
@@ -1092,16 +1094,24 @@ namespace eval confFichierIma {
       frame $This.frame8 -borderwidth 0 -relief raised
       pack $This.frame8 -in $This.frame1 -side top -fill both -expand 1
 
+      frame $This.frame9 -borderwidth 0 -relief raised
+      pack $This.frame9 -in $This.frame1 -side top -fill both -expand 1
+
+      #--- Enregistrer une image en conservant ou non les seuils de la visu
+      checkbutton $This.save_seuils_visu -text "$caption(confgene,fichier_images_seuils_visu)" -highlightthickness 0 \
+         -variable confgene(fichier,save_seuils_visu)
+      pack $This.save_seuils_visu -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+
       #--- Rappelle l'extension par defaut des fichiers image
       label $This.lab1 -text "$caption(confgene,fichier_image_ext_defaut)"
-      pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab1 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
 
       label $This.labURL2 -text "$conf(extension,defaut)" -fg $color(blue)
-      pack $This.labURL2 -in $This.frame3 -anchor center -side right -padx 10 -pady 5
+      pack $This.labURL2 -in $This.frame4 -anchor center -side right -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la nouvelle extension par defaut
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
-      pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab3 -in $This.frame5 -anchor center -side left -padx 10 -pady 5
 
       ComboBox $This.newext \
          -width 7          \
@@ -1112,28 +1122,28 @@ namespace eval confFichierIma {
          -justify center   \
          -textvariable confgene(extension,new) \
          -values $confgene(liste_extension)
-      pack $This.newext -in $This.frame4 -anchor center -side right -padx 10 -pady 5
+      pack $This.newext -in $This.frame5 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
       checkbutton $This.compress -text "$caption(confgene,fichier_image_compres)" -highlightthickness 0 \
          -variable confgene(fichier,compres)
-      pack $This.compress -in $This.frame5 -anchor center -side left -padx 10 -pady 5
+      pack $This.compress -in $This.frame6 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle le taux de qualite d'enregistrement par defaut des fichiers Jpeg
       label $This.lab4 -text "$caption(confgene,fichier_image_jpeg_quality)"
-      pack $This.lab4 -in $This.frame6 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab4 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
 
       label $This.labURL5 -text "$conf(jpegquality,defaut)" -fg $color(blue)
-      pack $This.labURL5 -in $This.frame6 -anchor center -side right -padx 10 -pady 5
+      pack $This.labURL5 -in $This.frame7 -anchor center -side right -padx 10 -pady 5
 
       #--- Cree la glissiere de reglage pour la nouvelle valeur de qualite par defaut
       label $This.lab6 -text "$caption(confgene,fichier_image_jpeg_newquality)"
-      pack $This.lab6 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab6 -in $This.frame8 -anchor center -side left -padx 10 -pady 5
 
-      scale $This.frame8.efficacite_variant -from 5 -to 100 -length 300 -orient horizontal \
+      scale $This.efficacite_variant -from 5 -to 100 -length 300 -orient horizontal \
          -showvalue true -tickinterval 10 -resolution 1 -borderwidth 2 -relief groove \
          -variable confgene(jpegquality,new) -width 10
-      pack $This.frame8.efficacite_variant -side top -padx 10 -pady 5
+      pack $This.efficacite_variant -in $This.frame9 -side top -padx 10 -pady 5
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
@@ -1180,6 +1190,7 @@ namespace eval confFichierIma {
       set conf(fichier,compres)    $confgene(fichier,compres)
       set conf(jpegquality,defaut) $confgene(jpegquality,new)
       set conf(jpegquality,new)    $confgene(jpegquality,new)
+      set conf(save_seuils_visu)   $confgene(fichier,save_seuils_visu)
    }
 
    proc MAJ_Extension { } {
