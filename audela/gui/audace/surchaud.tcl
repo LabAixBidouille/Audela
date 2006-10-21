@@ -2,21 +2,21 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.5 2006-10-21 01:17:52 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.6 2006-10-21 13:51:09 robertdelmas Exp $
 #
-# offset  val
-# offset2  in out const nb
-# ngain2  in out const nb
-# noffset2  in out const nb
+# offset  value
+# offset2  in out const number
+# ngain2  in out const number
+# noffset2  in out const number
 # add  operand value
-# add2  in operand out const nb
+# add2  in operand out const number
 # sub  operand value
-# sub2  in operand out const nb
+# sub2  in operand out const number
 # div  operand value
-# div2  in operand out const nb
-# opt  dark bias
-# opt2  in dark bias out const nb
-# delete2  in nb
+# div2  in operand out const number
+# opt  dark offset
+# opt2  in dark offset out const number
+# delete2  in number
 # register  in out number
 # register2  in out number
 # registerwcs  in out number
@@ -24,21 +24,23 @@
 # sadd  in out number
 # ssigma  in out number
 # smean  in out number
-# ssk  in out number
-# ssort  in out number
+# ssk  in out number kappa
+# ssort  in out number percent
 # uncosmic  coef
 # uncosmic2  in out number coef
 # convgauss  sigma
 # convgauss2  in out number sigma
-# mult  constant
-# mult2  in out const nb
+# mult  const
+# mult2  in out const number
 # trans  dx dy
-# trans2  in out number dx dy
+# trans2  in out dx dy number
 # scale2  in out number scale_x scale_y
-#
+# raw2cfa  in out number
+# cfa2rgb  in out number
+"
 
 proc offset {args} {
-   # constant
+   # value
    global audace
    global caption
 
@@ -47,12 +49,12 @@ proc offset {args} {
       buf$audace(bufNo) imaseries "OFFSET offset=[lindex $args 0]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : offset val"
+      error "Usage : offset value"
    }
 }
 
 proc offset2 {args} {
-   # in out const nb
+   # in out const number
    global audace
    global caption
 
@@ -61,12 +63,12 @@ proc offset2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" OFFSET offset=[lindex $args 2]"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : offset2 in out const nb"
+      error "Usage : offset2 in out const number"
    }
 }
 
 proc ngain2 {args} {
-   # in out const nb
+   # in out const number
    global audace
    global caption
 
@@ -75,12 +77,12 @@ proc ngain2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" NORMGAIN normgain_value=[lindex $args 2]"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : ngain2 in out const nb"
+      error "Usage : ngain2 in out const number"
    }
 }
 
 proc noffset2 {args} {
-   # in out const nb
+   # in out const number
    global audace
    global caption
 
@@ -89,12 +91,12 @@ proc noffset2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" NORMOFFSET normoffset_value=[lindex $args 2]"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : noffset2 in out const nb"
+      error "Usage : noffset2 in out const number"
    }
 }
 
 proc add {args} {
-   # image val
+   # operand value
    global audace
    global caption
 
@@ -117,12 +119,12 @@ proc add {args} {
       buf$audace(bufNo) add "$operand" [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : add image val"
+      error "Usage : add operand value"
    }
 }
 
 proc add2 {args} {
-   # in operand out const nb
+   # in operand out const number
    global audace
    global caption
 
@@ -152,12 +154,12 @@ proc add2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" ADD \"file=$operand\" offset=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : add2 in operand out const nb ?tt_options?"
+      error "Usage : add2 in operand out const number ?tt_options?"
    }
 }
 
 proc sub {args} {
-   # image val
+   # operand value
    global audace
    global caption
 
@@ -180,12 +182,12 @@ proc sub {args} {
       buf$audace(bufNo) sub "$operand" [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : sub image val"
+      error "Usage : sub operand value"
    }
 }
 
 proc sub2 {args} {
-   # in operand out const nb
+   # in operand out const number
    global audace
    global caption
 
@@ -210,12 +212,12 @@ proc sub2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3]"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : sub2 in operand out const nb"
+      error "Usage : sub2 in operand out const number"
    }
 }
 
 proc div {args} {
-   # image val
+   # operand value
    global audace
    global caption
 
@@ -238,12 +240,12 @@ proc div {args} {
       buf$audace(bufNo) div "$operand" [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : div image val"
+      error "Usage : div operand value"
    }
 }
 
 proc div2 {args} {
-   # in operand out const nb
+   # in operand out const number
    global audace
    global caption
 
@@ -273,7 +275,7 @@ proc div2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" DIV \"file=$operand\" constant=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : div2 in operand out const nb ?tt_options?"
+      error "Usage : div2 in operand out const number ?tt_options?"
    }
 }
 
@@ -320,7 +322,7 @@ proc opt {args} {
 }
 
 proc opt2 {args} {
-   # in dark offset out nb
+   # in dark offset out number
    global audace
    global caption
 
@@ -363,12 +365,12 @@ proc opt2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" OPT \"dark=$dark\" \"bias=$offset\" "
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : opt2 in dark offset out nb"
+      error "Usage : opt2 in dark offset out number"
    }
 }
 
 proc delete2 {args} {
-   # in nb
+   # in number
    global audace
    global caption
 
@@ -389,7 +391,7 @@ proc delete2 {args} {
          }
       }
    } else {
-      error "Usage : delete2 in nb"
+      error "Usage : delete2 in number"
    }
 }
 
@@ -641,7 +643,7 @@ proc convgauss2 {args} {
 }
 
 proc mult {args} {
-   # constant
+   # const
    global audace
    global caption
 
@@ -650,12 +652,12 @@ proc mult {args} {
       buf$audace(bufNo) imaseries "MULT constant=[lindex $args 0]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : mult constant"
+      error "Usage : mult const"
    }
 }
 
 proc mult2 {args} {
-   # in out const nb
+   # in out const number
    global audace
    global caption
 
@@ -669,7 +671,7 @@ proc mult2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" MULT constant=[lindex $args 2] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : mult2 in out const nb ?tt_options?"
+      error "Usage : mult2 in out const number ?tt_options?"
    }
 }
 
@@ -688,7 +690,7 @@ proc trans {args} {
 }
 
 proc trans2 {args} {
-   # in out dx dy nb
+   # in out dx dy number
    global audace
    global caption
 
@@ -702,7 +704,7 @@ proc trans2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" TRANS trans_x=[lindex $args 2] trans_y=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
-      error "Usage : trans2 in out dx dy nb ?tt_options?"
+      error "Usage : trans2 in out dx dy number ?tt_options?"
    }
 }
 
