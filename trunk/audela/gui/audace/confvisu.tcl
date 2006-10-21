@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.33 2006-09-28 20:02:35 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.34 2006-10-21 16:34:35 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -1947,7 +1947,7 @@ namespace eval ::confVisu {
       set centerCoord [ picture2Canvas $visuNo [list $xc $yc ] ]
       set xcCanvas [lindex $centerCoord 0]
       set ycCanvas [lindex $centerCoord 1]
-      
+
       #--- longueur des traits du reticule dans le repere canvas
       #--- en fonction de la fenetre et du zoom
       set windowBox [visu$visuNo window] 
@@ -1968,7 +1968,7 @@ namespace eval ::confVisu {
       set heightCanvas [expr [lindex $coord0Canvas 1] - [lindex $coord1Canvas 1] + 1]
 
       #--- j'affiche le trait horizontal du reticule s'il est a l'interieur de la fenetre
-      if { $yc >= $y0 && $yc <= $y1  } {
+      if { $yc >= $y0 && $yc <= $y1 } {
          $hCanvas create window 1 1 -tag lineh -anchor nw -window $private($visuNo,hCrosshairH) -height 1
          $hCanvas coords lineh 0 $ycCanvas
          $hCanvas itemconfigure lineh -width $widthCanvas
@@ -1976,14 +1976,14 @@ namespace eval ::confVisu {
       }
 
       #--- j'affiche le trait vertical du reticule s'il est a l'interieur de la fenetre
-      if { $xc >= $x0 && $xc <= $x1  } {
+      if { $xc >= $x0 && $xc <= $x1 } {
          $hCanvas create window 1 1 -tag linev -anchor nw -window $private($visuNo,hCrosshairV) -width 1
          $hCanvas coords linev $xcCanvas 0
          $hCanvas itemconfigure linev -height $heightCanvas
          $hCanvas itemconfigure linev -state normal
       }
-         raise $private($visuNo,hCrosshairH)
-         raise $private($visuNo,hCrosshairV)
+      raise $private($visuNo,hCrosshairH)
+      raise $private($visuNo,hCrosshairV)
 
    }
 

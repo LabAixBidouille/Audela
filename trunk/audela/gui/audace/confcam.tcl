@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.34 2006-10-18 17:20:40 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.35 2006-10-21 16:35:02 robertdelmas Exp $
 #
 
 global confCam
@@ -4124,6 +4124,12 @@ namespace eval ::confCam {
       catch {
          cam$camNo interrupt 0
       }
+
+      #--- Mise a jour des parametres de la camera de la boite de configuration optique
+      if { [ winfo exists $audace(base).confOptic ] } {
+         ::confOptic::MAJ_Conf_Camera
+      }
+
    }
 
    #

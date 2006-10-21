@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.7 2006-10-16 17:48:14 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.8 2006-10-21 16:35:20 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -431,6 +431,17 @@ namespace eval ::confOptic {
       $widget(frm).comboboxModele setvalue first
       cbCommand $widget(frm).comboboxModele
 
+      #--- Je configure la combobox et le binning
+      if { [ ::cam::list ] != "" } {
+         if { [ cam$audace(camNo) product ] == "webcam" } {
+            #--- J'inhibe la combobox s'il s'agit d'une webcam
+            $::confOptic::widget(frm).labURL_Binning configure -state disabled -textvariable "1x1"
+         } else {
+            #--- Je restaure la combobox
+            $::confOptic::widget(frm).labURL_Binning configure -state normal
+         }
+      }
+
       #--- Calcul
       button $widget(frm).but_Calcul -text "$caption(confoptic,calcul)" -relief raised -width 15 \
          -command "::confOptic::Calculette"
@@ -444,34 +455,8 @@ namespace eval ::confOptic {
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> {
          ::confCam::run
          tkwait window $audace(base).confCam
-         #--- Prise en compte du binning choisi
-         if { [ ::cam::list ] != "" } {
-            cam$audace(camNo) bin [list [string range $::confOptic::widget(binning) 0 0] [string range $::confOptic::widget(binning) 2 2]]
-         }
-         #--- Mise a jour des informations concernant la camera
-         if { [ ::cam::list ] != "" } {
-            set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
-            set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
-            set cell_dim "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e6 ] x \
-               [ expr [ lindex [ cam$audace(camNo) celldim ] 1 ] * 1e6 ]"
-            set pix_dim  "[ expr [ lindex [ cam$audace(camNo) pixdim ] 0 ] * 1e6 ] x \
-               [ expr [ lindex [ cam$audace(camNo) pixdim ] 1 ] * 1e6 ]"
-            set fg       "$color(blue)"
-         } else {
-            set camera   "$caption(confoptic,nocam)"
-            set capteur  ""
-            set cell_dim ""
-            set pix_dim  ""
-            set fg       "$color(red)"
-         }
-         if { [ winfo exists $audace(base).confOptic ] } {
-            $::confOptic::widget(frm).labURL_nomCamera configure -text $camera -fg $fg
-            $::confOptic::widget(frm).labURL_typeCapteur configure -text $capteur
-            $::confOptic::widget(frm).labURL_CellDim configure -text $cell_dim
-            $::confOptic::widget(frm).labURL_PixDim configure -text $pix_dim
-            ::confOptic::Calculette
-            update
-         }
+         #--- Mise a jour des parametres de la camera
+         ::confOptic::MAJ_Conf_Camera
       }
    }
 
@@ -502,7 +487,6 @@ namespace eval ::confOptic {
       if { [ winfo exists $audace(base).confOptic ] } {
          $::confOptic::widget(frm).labURL_PixDim configure -text $pix_dim
          ::confOptic::Calculette
-         update
       }
       #--- Calcul des parametres du systeme optique
       ::confOptic::Calculette
@@ -559,6 +543,53 @@ namespace eval ::confOptic {
          set echantillonnage_x [ format "%.1f"  [ expr $champ_x * 60. / [ lindex $nb_xy 0 ] ] ]
          set echantillonnage_y [ format "%.1f"  [ expr $champ_y * 60. / [ lindex $nb_xy 1 ] ] ]
          $confOptic::widget(frm).labVal_Echantillonnage configure -text "$echantillonnage_x x $echantillonnage_y"
+      }
+   }
+
+   #------------------------------------------------------------
+   #  MAJ_Conf_Camera
+   #     mise a jour des parametres de la camera
+   #  
+   #------------------------------------------------------------
+   proc MAJ_Conf_Camera { } {
+      variable widget
+      global audace
+      global color
+
+      #--- Je configure la combobox et le binning
+      if { [ ::cam::list ] != "" } {
+         if { [ cam$audace(camNo) product ] == "webcam" } {
+            #--- J'inhibe la combobox s'il s'agit d'une webcam
+            $::confOptic::widget(frm).labURL_Binning configure -state disabled -text "1x1"
+         } else {
+            #--- Je restaure la combobox
+            $::confOptic::widget(frm).labURL_Binning configure -state normal
+            #--- Prise en compte du binning choisi
+            cam$audace(camNo) bin [list [string range $::confOptic::widget(binning) 0 0] [string range $::confOptic::widget(binning) 2 2]]
+         }
+      }
+      #--- Je mets a jour les parametres de la camera
+      if { [ ::cam::list ] != "" } {
+         set camera   "[ lindex [ cam$audace(camNo) info ] 1 ]"
+         set capteur  "[ lindex [ cam$audace(camNo) info ] 2 ]"
+         set cell_dim "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e6 ] x \
+            [ expr [ lindex [ cam$audace(camNo) celldim ] 1 ] * 1e6 ]"
+         set pix_dim  "[ expr [ lindex [ cam$audace(camNo) pixdim ] 0 ] * 1e6 ] x \
+            [ expr [ lindex [ cam$audace(camNo) pixdim ] 1 ] * 1e6 ]"
+         set fg       "$color(blue)"
+      } else {
+         set camera   "$caption(confoptic,nocam)"
+         set capteur  ""
+         set cell_dim ""
+         set pix_dim  ""
+         set fg       "$color(red)"
+      }
+      if { [ winfo exists $audace(base).confOptic ] } {
+         $::confOptic::widget(frm).labURL_nomCamera configure -text $camera -fg $fg
+         $::confOptic::widget(frm).labURL_typeCapteur configure -text $capteur
+         $::confOptic::widget(frm).labURL_CellDim configure -text $cell_dim
+         $::confOptic::widget(frm).labURL_PixDim configure -text $pix_dim
+         ::confOptic::Calculette
       }
    }
 

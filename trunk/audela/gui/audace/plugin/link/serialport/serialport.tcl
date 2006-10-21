@@ -2,10 +2,28 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.3 2006-09-28 19:53:08 michelpujol Exp $
+# Mise a jour $Id: serialport.tcl,v 1.4 2006-10-21 16:34:13 robertdelmas Exp $
 #
 
 package provide serialport 1.0
+
+#
+# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
+#     init              : initialise le namespace (appelee pendant le chargement de ce source)
+#     getDriverName     : retourne le nom du driver
+#     getLabel          : retourne le nom affichable du driver
+#     getHelp           : retourne la documentation htm associee
+#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver
+#     confToWidget      : copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : copie les variables des widgets dans le tableau conf()
+#     configureDriver   : configure le driver
+#     stopDriver        : arrete le driver et libere les ressources occupees
+#     isReady           : informe de l'etat de fonctionnement du driver
+#
+# Procedures specifiques a ce driver :
+#     
 
 namespace eval serialport {
 }
@@ -30,7 +48,7 @@ proc ::serialport::configureDriver { } {
 }
 
 #------------------------------------------------------------
-#  confToWidget 
+#  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
 #  
 #  return rien
@@ -43,18 +61,17 @@ proc ::serialport::confToWidget { } {
 
 #------------------------------------------------------------
 #  create
-#     demarre la liaison 
+#     demarre la liaison
 #  
 #  return nothing
 #------------------------------------------------------------
 proc ::serialport::create { linkLabel deviceId usage comment } {
-   variable private 
+   variable private
 
-   #--- pour l'instant, la liaison est cree par la librairie du périphérique
+   #--- pour l'instant, la liaison est cree par la librairie du peripherique
 
    #--- je stocke le commentaire d'utilisation
-   set private($linkLabel,$deviceId,$usage) "$comment" 
-       
+   set private($linkLabel,$deviceId,$usage) "$comment"
 
    return
 }
@@ -66,7 +83,7 @@ proc ::serialport::create { linkLabel deviceId usage comment } {
 #  return nothing
 #------------------------------------------------------------
 proc ::serialport::delete { linkLabel deviceId usage } {
-   #--- pour l'instant, la liaison est arretee par le pilote du périphérique
+   #--- pour l'instant, la liaison est arretee par le pilote du peripherique
 
    #--- je supprime le commentaire d'utilisation
    if { [info exists private($linklabel,$deviceId,$usage) } {
@@ -77,7 +94,7 @@ proc ::serialport::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-#  fillConfigPage 
+#  fillConfigPage
 #     fenetre de configuration du driver
 #  
 #  return nothing
@@ -91,19 +108,22 @@ proc ::serialport::fillConfigPage { frm } {
 
    #---  j'afffiche la liste des link
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
-      listbox $frm.available.list  
-      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true        
+      listbox $frm.available.list
+      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
+      Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
+         -text "$caption(serialport,refresh)" -command { ::audace::Recherche_Ports ; ::serialport::refreshAvailableList }
+      pack $frm.available.refresh -in [$frm.available getframe] -side left
 
-   pack $frm.available -side left  -fill both -expand true
+   pack $frm.available -side left -fill both -expand true
 
    #--- je mets  a jour la liste
    refreshAvailableList
 
-   ::confColor::applyColor $private(frm)   
+   ::confColor::applyColor $private(frm)
 }
 
 #------------------------------------------------------------
-#  getDriverType 
+#  getDriverType
 #     retourne le type de driver
 #  
 #  return "link"
@@ -119,31 +139,29 @@ proc ::serialport::getDriverType { } {
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::serialport::getHelp { } {
-
    return "serialport.htm"
 }
 
 #------------------------------------------------------------
-# getLinkIndex 
+# getLinkIndex
 #   retourne l'index du link
 #   
 #   retourne une chaine vide si le link n'existe pas
 #
-#   exemple : 
+#   exemple :
 #   getLinkIndex "QuickRemote1"
-#     1 
+#     1
 #------------------------------------------------------------
 proc ::serialport::getLinkIndex { linkLabel } {
-   variable private 
+   variable private
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
-   if { [string first $private(genericName) $linkLabel]  == 0 } {   
+   if { [string first $private(genericName) $linkLabel]  == 0 } {
       scan $linkLabel "$private(genericName)%s" linkIndex
    }
    return $linkIndex
 }
-
 
 #------------------------------------------------------------
 #  getLabel
@@ -158,27 +176,27 @@ proc ::serialport::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels 
+# getLinkLabels
 #    retourne les libelles des ports series disponibles
 #
-#   exemple : 
+#   exemple :
 #   getLinkLabels
-#     { "COM1" "COM2" } 
+#     { "COM1" "COM2" }
 #------------------------------------------------------------
 proc ::serialport::getLinkLabels { } {
-   variable private 
+   variable private
 
    set labels [list]
-   
+
    if { $::tcl_platform(os) == "Linux" } {
       #--- je recherche les index des ports disponibles
-      foreach port $::audace(list_com) {   
+      foreach port $::audace(list_com) {
          lappend labels "$port"
       }
    } else {
-      foreach port $::audace(list_com) {   
-         set linkIndex ""      
-         lappend  labels "$port"
+      foreach port $::audace(list_com) {
+         set linkIndex ""
+         lappend labels "$port"
       }
    }
    return $labels
@@ -188,14 +206,14 @@ proc ::serialport::getLinkLabels { } {
 # getSelectedLinkLabel
 #    retourne le link choisi
 #
-#   exemple : 
-#   getLinkLabels 
-#     "serialport1" 
+#   exemple :
+#   getLinkLabels
+#     "serialport1"
 #------------------------------------------------------------
 proc ::serialport::getSelectedLinkLabel { } {
-   variable private 
-   
-   #--- je memorise le linkLabel selectionné
+   variable private
+
+   #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
    if  { $i == "" } {
       set i 0
@@ -211,12 +229,12 @@ proc ::serialport::getSelectedLinkLabel { } {
 #  return namespace name
 #------------------------------------------------------------
 proc ::serialport::init { } {
-   variable private 
-   
+   variable private
+
    #--- Charge le fichier caption
    uplevel #0  "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
 
-   #--- je fixe le nom generique de la liaison 
+   #--- je fixe le nom generique de la liaison
    if {  $::tcl_platform(os) == "Linux" } {
       set private(genericName) "/dev/tty"
    } else {
@@ -229,7 +247,6 @@ proc ::serialport::init { } {
    return [namespace current]
 }
 
-
 #------------------------------------------------------------
 #  refreshAvailableList
 #      rafraichit la liste des link disponibles
@@ -238,8 +255,8 @@ proc ::serialport::init { } {
 #------------------------------------------------------------
 proc ::serialport::refreshAvailableList { } {
    variable private
-      
-   #--- je memorise le linkLabel selectionné
+
+   #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
    if  { $i == "" } {
       set i 0
@@ -251,14 +268,14 @@ proc ::serialport::refreshAvailableList { } {
 
    #--- je recupere les linkNo ouverts
    set linkNoList [link::list]
-   
-   #--- je remplis la liste 
-   foreach linkLabel  [::serialport::getLinkLabels] {
+
+   #--- je remplis la liste
+   foreach linkLabel [::serialport::getLinkLabels] {
       set linkText ""
       #--- si le link est ferme , j'affiche son label seulement
       if { $linkText == "" } {
          set linkText "$linkLabel"
-      }      
+      }
       #--- je recherche si ce link est ouvert
       foreach { key value } [array get ::serialport::private $linkLabel,*] {
           set deviceId [lindex [split $key ","] 1] 
@@ -266,7 +283,7 @@ proc ::serialport::refreshAvailableList { } {
           set comment  $value
           append linkText " { $deviceId $usage $comment } "
       }
-            
+
       $private(frm).available.list insert end $linkText 
    }
 
@@ -292,12 +309,12 @@ proc ::serialport::selectConfigLink { linkLabel } {
       if { [lindex [$private(frm).available.list get $i] 0] == $linkLabel } {
          $private(frm).available.list selection set $i
          return
-      }      
+      }
    }
    if { [$private(frm).available.list size] > 0 } {
       #--- sinon je selectionne le premier linkLabel
       $private(frm).available.list selection set 0
-   } 
+   }
 }
 
 #------------------------------------------------------------
