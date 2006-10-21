@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.13 2006-10-20 17:41:23 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.14 2006-10-21 12:56:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -683,6 +683,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,change_position_telescope)     "Mudar a Posição Inicial do Telescópio:"
    set caption(conftel,temma_init_zenith)             "Inicialização Zenith"
    set caption(conftel,temma_ctl_mobile)              "Controlo da Velocidade de Guiagem"
+   set caption(conftel,temma_mobile_etoile)           "# Suivi sidéral"
+   set caption(conftel,temma_ctl_mobile:)             "# Contrôle de la vitesse de suivi :"
+   set caption(conftel,temma_mobile_ad)               "# Vitesse en ascension droite"
+   set caption(conftel,temma_mobile_dec)              "# Vitesse en déclinaison"
 
    set caption(conftel,driver_ascom)                  "# Driver ASCOM"
 
@@ -708,7 +712,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,port_ouranos)                  "Porta Ouranos"
    set caption(conftel,port_lx200)                    "Porta LX200"
    set caption(conftel,port_temma)                    "Porta Temma"
-   set caption(conftel,port_mcmt)                     "Porta MCMT"
 
    set caption(conftel,site_web_ref)                  "Site Web de referência:"
    set caption(conftel,document_ref)                  "Documento de referência:"
@@ -717,7 +720,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,doc_audecom)                   "AudeCom-V41.pdf"
    set caption(conftel,site_lxnet)                    "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
    set caption(conftel,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
-   set caption(conftel,site_mcmt)                     "http://astrosurf.com/mcmtii/"
+   set caption(conftel,site_ascom)                    "http://ascom-standards.org/"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

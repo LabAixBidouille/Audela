@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.5 2006-10-20 13:27:20 alainklotz Exp $
+# Mise a jour $Id: astrometry.cap,v 1.6 2006-10-21 12:55:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -265,6 +265,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Teste de Calibração"
    set caption(astrometry,start,11)       "Palavras-chave WCS apagadas"
    set caption(astrometry,help)           "Ajuda"
+   set caption(astrometry,error_no_image) "Por favor, mostre primeiro uma imagem."
 
    set caption(astrometry,comment)        "A calibração astrométrica foi bem sucedida quando cada estrela é sobreposta por um ponto vermelho."
    set caption(astrometry,erreur_catalog) "Verifique se o catálogo seleccionado está disponível."

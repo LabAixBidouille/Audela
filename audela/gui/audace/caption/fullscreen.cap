@@ -1,6 +1,6 @@
 #
 # Fichier : fullscreen.cap
-# Mise a jour $Id: fullscreen.cap,v 1.8 2006-10-20 17:38:34 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.cap,v 1.9 2006-10-21 12:56:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -172,6 +172,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,title)            "Configurações da janela em ecrã inteiro"
    set caption(fullscreen,color_label)      "Cor de fundo"
    set caption(fullscreen,auto_start_anim)  "Começar Animação Automaticamente"
+   set caption(fullscreen,slide_show1)      "Slideshow:"
+   set caption(fullscreen,slide_show_delai) "Atraso"
+   set caption(fullscreen,seconde)          "segundo"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

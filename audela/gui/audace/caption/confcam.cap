@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.18 2006-10-20 17:39:55 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.19 2006-10-21 12:55:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,8 +13,8 @@ global caption
 
 set caption(confcam,config)                     "Camera Setup"
 set caption(confcam,creer_au_demarrage)         "Next time software is run connect this camera automatically"
-set caption(confcam,ok)                         "OK"
 set caption(confcam,nouvelle_visu)              "new"
+set caption(confcam,ok)                         "OK"
 set caption(confcam,appliquer)                  "Apply"
 set caption(confcam,fermer)                     "Close"
 set caption(confcam,aide)                       "Help"
@@ -818,12 +818,16 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,config)                  "Configuração da câmara"
    set caption(confcam,creer_au_demarrage)      "Conectar a câmara automaticamente na próxima vez que o software for executado"
-   set caption(confcam,ok)                      "OK"
    set caption(confcam,nouvelle_visu)           "novo"
+   set caption(confcam,ok)                      "OK"
    set caption(confcam,appliquer)               "Aplicar"
    set caption(confcam,fermer)                  "Fechar"
    set caption(confcam,aide)                    "Ajuda"
    set caption(confcam,arreter)                 "Parar"
+
+   set caption(confcam,acquisition)             "Acquisição"
+   set caption(confcam,camera)                  "Câmara:"
+   set caption(confcam,audine)                  "Audine"
 
    set caption(confcam,port)                    "Porto"
    set caption(confcam,port_liaison)            "Porto / Ligação"
@@ -903,7 +907,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,refroidissement_off)     "desligado"
    set caption(confcam,temperature_CCD)         "Temperatura do CCD:"
    set caption(confcam,test)                    "Teste SX28"
-   
+
    set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "Canal Video USB"
    set caption(confcam,webcam_longuepose)       "Opção de Longa Exposição S. Chambers"
@@ -951,9 +955,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_cookbook)           "Porta CB245"
    set caption(confcam,port_starlight)          "Porta modelo - Starlight"
    set caption(confcam,port_kitty)              "Porta modelo - Kitty"
-   set caption(confcam,audinet)                 "AudiNet"
-   set caption(confcam,audine)                  "com Audine"
-   set caption(confcam,ethernaude)              "EthernAude"
    set caption(confcam,port_th7852a)            "Porta TH7852A"
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
