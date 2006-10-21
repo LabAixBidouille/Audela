@@ -397,6 +397,16 @@ Lut_Cut CVisu::GetGrayLocut()
    return locutRed;
 }
 
+void CVisu::GetRgbCuts(Lut_Cut *hcRed, Lut_Cut *lcRed, Lut_Cut *hcGreen, Lut_Cut *lcGreen, Lut_Cut *hcBlue, Lut_Cut *lcBlue)
+{
+   *hcRed = hicutRed;
+   *lcRed = locutRed;
+   *hcGreen = hicutGreen;
+   *lcGreen = locutGreen;
+   *hcBlue = hicutBlue;
+   *lcBlue = locutBlue;
+}
+
 void CVisu::SetGrayCuts(Lut_Cut hc, Lut_Cut lc)
 {
    hicutRed = hc;

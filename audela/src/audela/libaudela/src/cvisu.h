@@ -90,6 +90,7 @@ class CVisu : public CDevice {
    char* GetPaletteDir();
    int GetThickness();
    int GetWindow(int *xx1, int *yy1, int *xx2, int *yy2);
+   void GetRgbCuts(Lut_Cut *hcRed, Lut_Cut *lcRed, Lut_Cut *hcGreen, Lut_Cut *lcGreen, Lut_Cut *hcBlue, Lut_Cut *lcBlue);
    void GetZoom(double *zoom);
    void SetGrayCuts(Lut_Cut hc, Lut_Cut lc);
    void SetRgbCuts(Lut_Cut hcRed, Lut_Cut lcRed, Lut_Cut hcGreen, Lut_Cut lcGreen, Lut_Cut hcBlue, Lut_Cut lcBlue);
