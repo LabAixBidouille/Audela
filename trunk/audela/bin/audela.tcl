@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.8 2006-10-20 17:07:16 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.9 2006-10-21 13:00:22 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -134,20 +134,22 @@ label $base.lab1 \
    -borderwidth 1 -text "$caption(audela,description)" -font $font
 pack $base.lab1 \
    -in $base -anchor center -expand 1 -fill both -side top
+
 button $base.but1 -text $caption(audela,soft1) -width 12 -font $font -command \
-   { unset caption; wm withdraw $base ; cd ../gui/tutorial; source tuto.tcl }
+   { unset caption ; wm withdraw $base ; cd ../gui/tutorial ; source tuto.tcl }
 pack $base.but1 -anchor center -side top -fill x -padx 4 -pady 4 \
    -in $base -anchor center -expand 1 -fill both -side top
+
 button $base.but2 -text $caption(audela,soft2) -width 12 -font $font -command \
-   { if {$direct==1} { catch { set f [open audace.txt w]; close $f} } ; unset caption; wm withdraw $base ; \
-      cd ../gui/audace; source aud.tcl }
+   { if {$direct==1} { catch { set f [open audace.txt w] ; close $f} } ; unset caption ; wm withdraw $base ; \
+     cd ../gui/audace ; source aud.tcl }
 pack $base.but2 -anchor center -side top -fill x -padx 4 -pady 4 \
    -in $base -anchor center -expand 1 -fill both -side top
 
 frame $base.frame1
    button $base.frame1.but3 -text "$caption(audela,launch)" -width 12 -font $font -command \
       { wm withdraw $base ; cd [lindex [split $caption(audela,dirtcl) " "] 0] ; \
-        set name [lindex [split $caption(audela,dirtcl) " "] 1]; unset caption; \
+        set name [lindex [split $caption(audela,dirtcl) " "] 1] ; unset caption ; \
         source $name }
    pack $base.frame1.but3 -anchor center -side top -fill x -padx 4 -pady 4 \
       -anchor center -expand 1 -fill both -side left

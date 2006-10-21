@@ -1,6 +1,6 @@
 #
 # Fichier : iris.cap
-# Mise a jour $Id: iris.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: iris.cap,v 1.5 2006-10-21 12:55:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -32,44 +32,44 @@ set caption(iris,nb_select)            "Number of Selected Images:"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-  set caption(iris,subdir)             "Création du répertoire où seront enregistrées les composantes R, V et B :\n"
-  set caption(iris,selectmsg)          "Chargement de la première image maître dans Iris pour sélectionner le centre de la planète...\n"
-  set caption(iris,select)             "Sélectionner le centre dans Iris\n"
-  set caption(iris,normoffset_maitre)  "Normalisation de l'offset de la séquence maître...\n"
-  set caption(iris,mf)                 "Réhaussement du contraste de la séquence maître par masque flou...\n"
-  set caption(iris,bestof)             "Bestof sur la séquence maître de contraste réhaussé...\n"
-  set caption(iris,registr_maitre)     "Registration des images maîtres triées...\n"
-  set caption(iris,ima_r)              "Traitement des images rouges...\n"
-  set caption(iris,ima_v)              "Traitement des images vertes...\n"
-  set caption(iris,ima_b)              "Traitement des images bleues...\n"
-  set caption(iris,nom_maitre)         "Nom générique des images maîtres :"
-  set caption(iris,nom_rouge)          "Nom générique des images rouges :"
-  set caption(iris,nom_vert)           "Nom générique des images vertes :"
-  set caption(iris,nom_bleu)           "Nom générique des images bleues :"
-  set caption(iris,taille_pregistr)    "Taille de fenêtre pour la registration (pregister) :"
-  set caption(iris,nb_tot)             "Nombre d'images total :"
-  set caption(iris,nb_select)          "Nombre d'images sélectionnées :"
+   set caption(iris,subdir)            "Création du répertoire où seront enregistrées les composantes R, V et B :\n"
+   set caption(iris,selectmsg)         "Chargement de la première image maître dans Iris pour sélectionner le centre de la planète...\n"
+   set caption(iris,select)            "Sélectionner le centre dans Iris\n"
+   set caption(iris,normoffset_maitre) "Normalisation de l'offset de la séquence maître...\n"
+   set caption(iris,mf)                "Réhaussement du contraste de la séquence maître par masque flou...\n"
+   set caption(iris,bestof)            "Bestof sur la séquence maître de contraste réhaussé...\n"
+   set caption(iris,registr_maitre)    "Registration des images maîtres triées...\n"
+   set caption(iris,ima_r)             "Traitement des images rouges...\n"
+   set caption(iris,ima_v)             "Traitement des images vertes...\n"
+   set caption(iris,ima_b)             "Traitement des images bleues...\n"
+   set caption(iris,nom_maitre)        "Nom générique des images maîtres :"
+   set caption(iris,nom_rouge)         "Nom générique des images rouges :"
+   set caption(iris,nom_vert)          "Nom générique des images vertes :"
+   set caption(iris,nom_bleu)          "Nom générique des images bleues :"
+   set caption(iris,taille_pregistr)   "Taille de fenêtre pour la registration (pregister) :"
+   set caption(iris,nb_tot)            "Nombre d'images total :"
+   set caption(iris,nb_select)         "Nombre d'images sélectionnées :"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-  set caption(iris,subdir)             "Creazione della cartella dove verranno salvate le componenti R, V, B dell' immagine:\n"
-  set caption(iris,selectmsg)          "Caricamento dell' immagine master in Iris per selezionare i centro del pianeta ...\n"
-  set caption(iris,select)             "Selezionare il centro in Iris\n"
-  set caption(iris,normoffset_maitre)  "Normalizzazione del bias della sequenza master...\n"
-  set caption(iris,mf)                 "Incremento del contrasto della sequenza master tramite Unsharp Masking...\n"
-  set caption(iris,bestof)             "Scelta delle immagini contrastate migliori della sequenza master...\n"
-  set caption(iris,registr_maitre)     "Registrazione delle immagini selezionate...\n"
-  set caption(iris,ima_r)              "Trattamento delle immagini nel rosso...\n"
-  set caption(iris,ima_v)              "Trattamento delle immagini nel verde...\n"
-  set caption(iris,ima_b)              "Trattamento delle immagini nel blu...\n"
-  set caption(iris,nom_maitre)         "Nome generico delle immagini master:"
-  set caption(iris,nom_rouge)          "Nome generico delle immagini nel rosso:"
-  set caption(iris,nom_vert)           "Nome generico delle immagini nel verde:"
-  set caption(iris,nom_bleu)           "Nome generico delle immagini nel blu:"
-  set caption(iris,taille_pregistr)    "Dimensioni della finestra per registrazioni(pregister):"
-  set caption(iris,nb_tot)             "Numero immagini totali:"
-  set caption(iris,nb_select)          "Numero immagini selezionate:"
+   set caption(iris,subdir)            "Creazione della cartella dove verranno salvate le componenti R, V, B dell' immagine:\n"
+   set caption(iris,selectmsg)         "Caricamento dell' immagine master in Iris per selezionare i centro del pianeta ...\n"
+   set caption(iris,select)            "Selezionare il centro in Iris\n"
+   set caption(iris,normoffset_maitre) "Normalizzazione del bias della sequenza master...\n"
+   set caption(iris,mf)                "Incremento del contrasto della sequenza master tramite Unsharp Masking...\n"
+   set caption(iris,bestof)            "Scelta delle immagini contrastate migliori della sequenza master...\n"
+   set caption(iris,registr_maitre)    "Registrazione delle immagini selezionate...\n"
+   set caption(iris,ima_r)             "Trattamento delle immagini nel rosso...\n"
+   set caption(iris,ima_v)             "Trattamento delle immagini nel verde...\n"
+   set caption(iris,ima_b)             "Trattamento delle immagini nel blu...\n"
+   set caption(iris,nom_maitre)        "Nome generico delle immagini master:"
+   set caption(iris,nom_rouge)         "Nome generico delle immagini nel rosso:"
+   set caption(iris,nom_vert)          "Nome generico delle immagini nel verde:"
+   set caption(iris,nom_bleu)          "Nome generico delle immagini nel blu:"
+   set caption(iris,taille_pregistr)   "Dimensioni della finestra per registrazioni(pregister):"
+   set caption(iris,nb_tot)            "Numero immagini totali:"
+   set caption(iris,nb_select)         "Numero immagini selezionate:"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

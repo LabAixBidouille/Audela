@@ -1,6 +1,6 @@
 #
 # Fichier : confgene_touche.cap
-# Mise a jour $Id: confgene_touche.cap,v 1.5 2006-10-20 17:40:51 robertdelmas Exp $
+# Mise a jour $Id: confgene_touche.cap,v 1.6 2006-10-21 12:56:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -421,7 +421,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(touche,F10)                "F10"
    set caption(touche,F11)                "F11"
    set caption(touche,F12)                "F12"
-   
+
    set caption(touche,controle,A)         "Ctrl+A"
    set caption(touche,controle,B)         "Ctrl+B"
    set caption(touche,controle,C)         "Ctrl+C"
