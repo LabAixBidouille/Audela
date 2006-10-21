@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.17 2006-10-21 01:17:38 robertdelmas Exp $
+# Mise a jour $Id: aud1.tcl,v 1.18 2006-10-21 20:06:31 robertdelmas Exp $
 #
 
 #
@@ -123,6 +123,7 @@ proc saveima { { filename "?" } { visuNo 1 } } {
    global conf
    global audace
    global caption
+   global conf
 
    #---
    set bufNo [ visu$visuNo buf ]
@@ -142,10 +143,12 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       buf$bufNo compress none
    }
 
-   #--- j'affecte au buffer les seuils de la visu 
-   set cuts [visu$visuNo cut]
-   buf$bufNo setkwd [list "MIPS-HI" [lindex $cuts 0] float "" ""]
-   buf$bufNo setkwd [list "MIPS-LO" [lindex $cuts 1] float "" ""]
+   #--- J'affecte au buffer les seuils de la visu
+   if { $conf(save_seuils_visu) == "1" } {
+      set cuts [visu$visuNo cut]
+      buf$bufNo setkwd [list "MIPS-HI" [lindex $cuts 0] float "" ""]
+      buf$bufNo setkwd [list "MIPS-LO" [lindex $cuts 1] float "" ""]
+   }
 
    #--- Fenetre parent
    set fenetre [::confVisu::getBase $visuNo]
