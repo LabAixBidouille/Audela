@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.7 2006-09-01 22:42:18 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.8 2006-10-21 01:18:15 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -10,9 +10,9 @@ proc testexit { } {
 
    ::cam::delete 1000
    ::buf::delete 1000
-   ::buf::delete 1001
+  # ::buf::delete 1001
    ::visu::delete 1000
-   ::visu::delete 1001
+  # ::visu::delete 1001
    destroy $audace(base).test
 }
 
@@ -92,7 +92,7 @@ proc color_Scrolled_Canvas { c args } {
 }
 
 #--- Raz de l'image et de l'en-tete FITS
-catch { buf1001 clear }
+catch { buf1000 clear }
 
 #--- Cree la fenetre $audace(base).test de niveau le plus haut
 if { [ winfo exists $audace(base).test ] } {
@@ -329,6 +329,7 @@ pack $audace(base).test.frame2 \
 
       #--- Cree un frame pour y mettre les glissieres
       set smax 100000
+     # set smax 255
       set smin 0
       for { set k 1 } { $k <= 3 } { incr k } {
       #--- Selectionne la couleur
@@ -560,10 +561,10 @@ bind $audace(base).test <Destroy> { testexit }
 #--- Declare un buffer pour placer les images en mémoire
 global conf
 
+#buf::create 1000
+#buf1000 extension "$conf(extension,defaut)"
 buf::create 1000
 buf1000 extension "$conf(extension,defaut)"
-buf::create 1001
-buf1001 extension "$conf(extension,defaut)"
 
 #--- Re-affiche l'image si on relache les curseurs des glissieres
 for { set k 1 } { $k <= 3 } { incr k } {
@@ -628,9 +629,9 @@ bind $audace(base).test <Key-space> {
 
 #--- Revisu des seuils auto
 bind $audace(base).test <Key-F1> {
-   buf1001 stat
-   buf1002 stat
-   buf1003 stat
+   buf1000 stat
+  # buf1002 stat
+  # buf1003 stat
    testvisu
 }
 
@@ -641,12 +642,12 @@ bind $audace(base).test <Key-Return> {
 }
 
 #--- Modifie les limites des barres de seuil
-bind $zone(smax1) <ButtonPress-1> { testmodifseuillimites 1001 1 + }
-bind $zone(smin1) <ButtonPress-1> { testmodifseuillimites 1001 1 - }
-bind $zone(smax2) <ButtonPress-1> { testmodifseuillimites 1002 2 + }
-bind $zone(smin2) <ButtonPress-1> { testmodifseuillimites 1002 2 - }
-bind $zone(smax3) <ButtonPress-1> { testmodifseuillimites 1003 3 + }
-bind $zone(smin3) <ButtonPress-1> { testmodifseuillimites 1003 3 - }
+bind $zone(smax1) <ButtonPress-1> { testmodifseuillimites 1000 1 + }
+bind $zone(smin1) <ButtonPress-1> { testmodifseuillimites 1000 1 - }
+bind $zone(smax2) <ButtonPress-1> { testmodifseuillimites 1000 2 + }
+bind $zone(smin2) <ButtonPress-1> { testmodifseuillimites 1000 2 - }
+bind $zone(smax3) <ButtonPress-1> { testmodifseuillimites 1000 3 + }
+bind $zone(smin3) <ButtonPress-1> { testmodifseuillimites 1000 3 - }
 
 #--- Affiche la valeur du pixel pointe dans l'image
 bind $zone(image1) <Motion> {
@@ -664,9 +665,9 @@ bind $zone(image1) <Motion> {
    set intens -
    if { $infos(type_image) == "couleur" } {
       catch {
-         set intens1 [ buf1001 getpix [ list $xi $yi ] ]
-         set intens2 [ buf1002 getpix [ list $xi $yi ] ]
-         set intens3 [ buf1003 getpix [ list $xi $yi ] ]
+         set intens1 [ lindex [ buf1000 getpix [ list $xi $yi ] ] 1 ]
+         set intens2 [ lindex [ buf1000 getpix [ list $xi $yi ] ] 2 ]
+         set intens3 [ lindex [ buf1000 getpix [ list $xi $yi ] ] 3 ]
          set intens1 [ expr round($intens1) ]
          set intens2 [ expr round($intens2) ]
          set intens3 [ expr round($intens3) ]
@@ -712,7 +713,7 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
 
 #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
 ::visu::create 1000 1000 1000
-::visu::create 1000 1001 1001
+#::visu::create 1000 1001 1001
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
@@ -722,8 +723,8 @@ catch {
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image2) create image 0 0 -image image1001 -anchor nw -tag img1  
-   image delete image1001
+   $zone(image2) create image 0 0 -image image1000 -anchor nw -tag img1  
+   image delete image1000
 }
 
 proc testcopy1to2 { } {
@@ -731,27 +732,27 @@ proc testcopy1to2 { } {
    global infos
 
    #--- Nettoyage de l'ecran zone(image2)
-   image delete image1001
-   image create photo image1001
+   image delete image1000
+   image create photo image1000
 
    if { $infos(type_image) == "couleur" } {
       catch {
          #--- Ajuste les scroll bars
-         set zone(image2,naxis1) [ lindex [buf1001 getkwd NAXIS1] 1 ]
-         set zone(image2,naxis2) [ lindex [buf1001 getkwd NAXIS2] 1 ]
+         set zone(image2,naxis1) [ lindex [buf1000 getkwd NAXIS1] 1 ]
+         set zone(image2,naxis2) [ lindex [buf1000 getkwd NAXIS2] 1 ]
          $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
-         visu1001 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
+         visu1000 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
 
       }
    }
    if { $infos(type_image) == "noiretblanc" } {
       catch {
-         visu1001 cut [ visu1000 cut ]
+         visu1000 cut [ visu1000 cut ]
          #--- Ajuste les scroll bars
          set zone(image2,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
          set zone(image2,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
          $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
-         visu1001 disp
+         visu1000 disp
       }
    }
 }
@@ -867,9 +868,9 @@ proc testacqfen { } {
    } else {
       rgb_split 1000 -rgb cfa
    }
-   buf1001 extension "$conf(extension,defaut)"
-   buf1002 extension "$conf(extension,defaut)"
-   buf1003 extension "$conf(extension,defaut)"
+   buf1000 extension "$conf(extension,defaut)"
+  # buf1002 extension "$conf(extension,defaut)"
+  # buf1003 extension "$conf(extension,defaut)"
    testvisu
    #--- Affichage du status
    $audace(base).test.frame2.fra0.labURL_decompte configure -text ""
@@ -981,20 +982,23 @@ proc testvisu { } {
    image create photo image1000
 
    if { $infos(type_image) == "couleur" } {
-      set zone(image1,naxis1) [ lindex [ buf1001 getkwd NAXIS1 ] 1 ]
-      set zone(image1,naxis2) [ lindex [ buf1001 getkwd NAXIS2 ] 1 ]
+      set zone(image1,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
+      set zone(image1,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
       #--- Statistiques pour calculer les seuils de visu
-      set mycuts1 [ testgetseuils 1001 ]
-      set mycuts2 [ testgetseuils 1002 ]
-      set mycuts3 [ testgetseuils 1003 ]
+      set mycuts1 [ testgetseuils 1000 ]
+      set mycuts2 [ testgetseuils 1000 ]
+      set mycuts3 [ testgetseuils 1000 ]
       set infos(rgbcuts) [ list $mycuts1 $mycuts2 $mycuts3 ]
       #--- Definit les limites de seuils bas et haut et place les
       #--- curseurs des barres de seuil au bon endroit 
-      set lohi [ testseuillimites 1001 1 ]
+      set lohi [ testseuillimites 1000 1 ]
+::console::disp "lohi-1 = $lohi \n"
       testsetscales $lohi 1
-      set lohi [ testseuillimites 1002 2 ]
+      set lohi [ testseuillimites 1000 2 ]
+::console::disp "lohi-2 = $lohi \n"
       testsetscales $lohi 2
-      set lohi [ testseuillimites 1003 3 ]
+      set lohi [ testseuillimites 1000 3 ]
+::console::disp "lohi-3 = $lohi \n"
       testsetscales $lohi 3
       #--- Ajuste les scroll bars
       $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
@@ -1010,6 +1014,7 @@ proc testvisu { } {
       #--- Definit les limites de seuils bas et haut
       set lohi [ testseuillimites 1000 1 ]
       #--- Place les curseurs des barres de seuil au bon endroit
+::console::disp "lohi-N&B = $lohi \n"
       testsetscales $lohi 1
       #--- Ajuste les scroll bars
       $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
@@ -1136,12 +1141,13 @@ proc testload { } {
       } else {
          append infos(dir) "/"
       }
-      set error [ catch { rgb_load $filename } message ]
-      if { $message == "" } {
+     # set error [ catch { rgb_load $filename } message ]
+      buf1000 load $filename
+      if { [ buf1000 getnaxis ] == "3" } {
          set infos(type_image) "couleur"
          testvisu
       } else {
-         buf1000 load $filename
+        # buf1000 load $filename
          set infos(type_image) "noiretblanc"
          testvisu
       }
@@ -1258,6 +1264,8 @@ proc testchangeHiCut1 { foo } {
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh1 [ list $s [ lindex $sbh1 1 ] ]
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
+      set seuils_rgb [ visu1000 cut ]
+      visu1000 cut [ lreplace $seuils_rgb 0 0 $s ]
    }
 }
 
@@ -1283,6 +1291,8 @@ proc testchangeHiCut2 { foo } {
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh2 [ list $s [ lindex $sbh2 1 ] ]
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
+      set seuils_rgb [ visu1000 cut ]
+      visu1000 cut [ lreplace $seuils_rgb 2 2 $s ]
    }
 }
 
@@ -1308,6 +1318,8 @@ proc testchangeHiCut3 { foo } {
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh3 [ list $s [ lindex $sbh3 1 ] ]
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
+      set seuils_rgb [ visu1000 cut ]
+      visu1000 cut [ lreplace $seuils_rgb 4 4 $s ]
    }
 }
 
@@ -1335,7 +1347,11 @@ proc testchangeLoCut1 { foo } {
       set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh1 [ list [ lindex $sbh1 0 ] $s ]
+::console::disp "s = $s \n"
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
+      set seuils_rgb [ visu1000 cut ]
+::console::disp "seuils_rgb = $seuils_rgb \n"
+      visu1000 cut [ lreplace $seuils_rgb 1 1 $s ]
    }
 }
 
@@ -1361,6 +1377,8 @@ proc testchangeLoCut2 { foo } {
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh2 [ list [ lindex $sbh2 0 ] $s ]
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
+      set seuils_rgb [ visu1000 cut ]
+      visu1000 cut [ lreplace $seuils_rgb 3 3 $s ]
    }
 }
 
@@ -1386,6 +1404,8 @@ proc testchangeLoCut3 { foo } {
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh3 [ list [ lindex $sbh3 0 ] $s ]
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
+      set seuils_rgb [ visu1000 cut ]
+      visu1000 cut [ lreplace $seuils_rgb 5 5 $s ]
    }
 }
 
@@ -1515,8 +1535,8 @@ proc testjpeg { } {
             buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
          }
          rgb_save [ file join $infos(dir) rgbdummy ]
-         fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1001 extension ]" $filename
-         catch { file delete [ file join $infos(dir) rgbdummy ][ buf1001 extension ] }
+         fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1000 extension ]" $filename
+         catch { file delete [ file join $infos(dir) rgbdummy ][ buf1000 extension ] }
       }
       if { $infos(type_image) == "noiretblanc" } {
          buf1000 sauve_jpeg $filename
@@ -1535,12 +1555,12 @@ proc header_color { } {
    }
    toplevel $audace(base).header_color
    wm transient $audace(base).header_color $audace(base).test
-   if { [ buf1001 imageready ] == "1" } {
+   if { [ buf1000 imageready ] == "1" } {
       wm minsize $audace(base).header_color 632 303
    }
    wm resizable $audace(base).header_color 0 1
-   if { [ buf1001 imageready ] == "1" } {
-      set rgbfiltr [ string trimright [ lindex [ buf1001 getkwd RGBFILTR ] 1 ] " " ]
+   if { [ buf1000 imageready ] == "1" } {
+      set rgbfiltr [ string trimright [ lindex [ buf1000 getkwd RGBFILTR ] 1 ] " " ]
    } else {
       set rgbfiltr ""
    }
@@ -1555,7 +1575,7 @@ proc header_color { } {
    }
    wm geometry $audace(base).header_color +3+75
 
-   if { [ buf1001 imageready ] == "1" } {
+   if { [ buf1000 imageready ] == "1" } {
       Scrolled_Text $audace(base).header_color.slb -width 87 -font $audace(font,en_tete_1) -height 20
       pack $audace(base).header_color.slb -fill y -expand true
       $audace(base).header_color.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
@@ -1563,8 +1583,8 @@ proc header_color { } {
       $audace(base).header_color.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
       $audace(base).header_color.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
       $audace(base).header_color.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
-      foreach kwd [lsort -dictionary [buf1001 getkwds]] {
-         set liste [buf1001 getkwd $kwd]
+      foreach kwd [lsort -dictionary [buf1000 getkwds]] {
+         set liste [buf1000 getkwd $kwd]
          set koff 0
          if {[llength $liste]>5} {
             #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)

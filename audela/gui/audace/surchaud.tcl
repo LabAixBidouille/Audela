@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.4 2006-07-07 21:03:18 michelpujol Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.5 2006-10-21 01:17:52 robertdelmas Exp $
 #
 # offset  val
 # offset2  in out const nb
@@ -34,6 +34,7 @@
 # mult2  in out const nb
 # trans  dx dy
 # trans2  in out number dx dy
+# scale2  in out number scale_x scale_y
 #
 
 proc offset {args} {
@@ -702,6 +703,19 @@ proc trans2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT"
    } else {
       error "Usage : trans2 in out dx dy nb ?tt_options?"
+   }
+}
+
+proc scale2 {args} {
+   # in out number scale_x scale_y
+   global audace
+   global caption
+
+   if {[llength $args] == 5} {
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" RESAMPLE \"paramresample=[lindex $args 3] 0 0 0 [lindex $args 4] 0\" "
+   } else {
+      error "Usage : scale2 in out number scale_x scale_y"
    }
 }
 
