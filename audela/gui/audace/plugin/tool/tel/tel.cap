@@ -1,6 +1,6 @@
 #
 # Fichier : tel.cap
-# Mise a jour $Id: tel.cap,v 1.3 2006-06-20 21:30:27 robertdelmas Exp $
+# Mise a jour $Id: tel.cap,v 1.4 2006-10-22 09:57:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -235,6 +235,52 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec1)       "Format für die Rektaszension zu nützen:"
    set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
    set caption(tel,formataddec3)       "Format für die Deklination zu nützen:"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(tel,telescope)          "Télescope"
+   set caption(tel,help_titre)         "Aide pour cet outil"
+   set caption(tel,coord)              "Coord."
+   set caption(tel,planete)            "Planètes"
+   set caption(tel,asteroide)          "Astéroïdes"
+   set caption(tel,etoile)             "Etoiles"
+   set caption(tel,messier)            "Messier"
+   set caption(tel,ngc)                "NGC"
+   set caption(tel,ic)                 "IC"
+   set caption(tel,utilisateur)        "Utilisateur"
+   set caption(tel,zenith)             "Zénith"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Caméra"
+   set caption(tel,non_connectee)      "non connectée"
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "E"
+   set caption(tel,ouest)              "O"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "sec."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problème"
+   set caption(tel,entier_positif)     "Temps de pose invalide\n(doit être un nombre positif)"
+
+   set caption(tel,coord_catalogue)    "Coordonnées catalogue (J2000) :"
+   set caption(tel,coord_corrigees)    "Coordonnées corrigées (aberration, \nprécession et nutation) :"
+   set caption(tel,coord_pointees)     "Coordonnées pointées par le télescope :"
+   set caption(tel,ad)                 "    AD :"
+   set caption(tel,dec)                "    Déc. :"
+
+   set caption(tel,attention)          "Attention"
+   set caption(tel,pluslong1)          "Vous venez de sélectionner l'option :"
+   set caption(tel,pluslong2)          "Déplacement du télescope par le parcours"
+   set caption(tel,pluslong3)          "le plus long en ascencion droite."
+
+   set caption(tel,formataddec1)       "Format à utiliser pour l'Ascension Droite :"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Format à utiliser pour la Déclinaison :"
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
 

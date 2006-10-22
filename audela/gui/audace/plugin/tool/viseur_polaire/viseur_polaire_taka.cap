@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_taka.cap
-# Mise a jour $Id: viseur_polaire_taka.cap,v 1.3 2006-06-20 22:03:34 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.cap,v 1.4 2006-10-22 10:03:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,6 +87,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(viseur_taka,appliquer)        "Anwenden"
    set caption(viseur_taka,aide)             "Hilfe"
    set caption(viseur_taka,fermer)           "Schließen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(viseur_taka,titre)            "Viseur polaire de type Takahashi"
+   set caption(viseur_taka,texte)            "Viseur polaire avec niveau à bulle"
+   set caption(viseur_taka,long)             "Longitude :"
+   set caption(viseur_taka,ah_polaire)       "Angle horaire de la Polaire :"
+   set caption(viseur_taka,taille)           "Sa taille"
+   set caption(viseur_taka,couleur_fond)     "Couleur du fond"
+   set caption(viseur_taka,couleur_reticule) "Couleur du réticule"
+   set caption(viseur_taka,couleur_etoile)   "Couleur de la Polaire"
+   set caption(viseur_taka,ok)               "OK"
+   set caption(viseur_taka,appliquer)        "Appliquer"
+   set caption(viseur_taka,aide)             "Aide"
+   set caption(viseur_taka,fermer)           "Fermer"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

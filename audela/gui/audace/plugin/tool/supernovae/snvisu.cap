@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.8 2006-10-02 15:41:27 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.9 2006-10-22 09:56:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -367,6 +367,78 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,0image)          "Kein Bild."
    set caption(snvisu,fits_header)     "FITS Vorsatz"
    set caption(snvisu,header,noimage)  "Kein Bild zur Zeit in Speicher."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(snvisu,main_title)      "Sn Visu"
+   set caption(snvisu,rep1)            "Dossier nuit"
+   set caption(snvisu,prev)            "Précédente"
+   set caption(snvisu,next)            "Suivante\n(F1)"
+   set caption(snvisu,background)      "Fond du ciel\n(F2)"
+   set caption(snvisu,blink_go)        "GO Blink\n(F3)"
+   set caption(snvisu,blink_stop)      "Stop Blink"
+   set caption(snvisu,save)            "Enregistrer\n(F4)"
+   set caption(snvisu,html)            "Html"
+   set caption(snvisu,goto)            "Aller à"
+   set caption(snvisu,exit)            "Quitter"
+   set caption(snvisu,carte)           "Carte"
+   set caption(snvisu,configuration)   "Configuration"
+   set caption(snvisu,raccourcis)      "Aide"
+   set caption(snvisu,rep2)            "Dossier référence"
+   set caption(snvisu,perso)           "Personnel"
+   set caption(snvisu,dss)             "DSS"
+
+   set caption(snvisu,image1)          "Image 1"
+   set caption(snvisu,image2)          "Image 2"
+
+   set caption(snvisu,save1)           "Enregistrer"
+   set caption(snvisu,confirm)         "Voulez-vous poursuivre ?"
+
+   set caption(snvisu,html_title)      "Sn Visu - Html"
+   set caption(snvisu,cancel)          "Annuler"
+   set caption(snvisu,go)              "GO"
+   set caption(snvisu,offsetns)        "Offset N/S"
+   set caption(snvisu,north)           "N"
+   set caption(snvisu,south)           "S"
+   set caption(snvisu,invert,flip)     "Inverser haut/bas"
+   set caption(snvisu,offsetew)        "Offset E/W"
+   set caption(snvisu,east)            "E"
+   set caption(snvisu,west)            "W"
+   set caption(snvisu,invert,mirror)   "Inverser droite/gauche"
+   set caption(snvisu,magnitude)       "Magnitude"
+   set caption(snvisu,page_html)       "Page HTML"
+
+   set caption(snvisu,secondary_title) "Sn Visu - Aller à"
+   set caption(snvisu,image_numero)    "Aller à l'image numéro :"
+
+   set caption(snvisu,config_title)    "Sn Visu - Configuration"
+   set caption(snvisu,rafraich_images) "Rafraîchissement de la visualisation :"
+   set caption(snvisu,motion)          "Option 'motion'"
+   set caption(snvisu,release)         "Option 'release'"
+   set caption(snvisu,blink_delai)     "Blink   -   Délai (ms) :"
+   set caption(snvisu,blink_nbre)      "Nombre de boucles :"
+   set caption(snvisu,scrollbar)       "Affichage des barres de défilement :"
+   set caption(snvisu,scroollbar_on)   "Avec"
+   set caption(snvisu,scroollbar_off)  "Sans"
+   set caption(snvisu,image_gzip)      "Enregistrement des images de référence :"
+   set caption(snvisu,dss_dvd)         "Images de référence (NGC et PGC) du DSS au format .cpa sur DVD"
+   set caption(snvisu,parcourir)       "..."
+   set caption(snvisu,rep_dss_dvd)     "Images DSS sur DVD"
+   set caption(snvisu,priorite_dvd)    "Affichage des images de référence (NGC et PGC) du DSS - Priorité au DVD"
+   set caption(snvisu,aide)            "Aide"
+
+   set caption(snvisu,attention)       "Attention"
+   set caption(snvisu,alerte1)         "Certains changements de la configuration ne prendront\neffet qu'au prochain démarrage de SN Visu.\nC'est le cas pour :"
+   set caption(snvisu,alerte2)         "        - Le rafraîchissement de la visualisation."
+   set caption(snvisu,alerte3)         "        - L'affichage des barres de défilement."
+
+   set caption(snvisu,reference)       "Référence"
+   set caption(snvisu,newref)          "Nouvelle référence Image 1"
+   set caption(snvisu,filter)          "Filtrage de"
+   set caption(snvisu,0image)          "Pas d'image."
+   set caption(snvisu,fits_header)     "En-tête FITS"
+   set caption(snvisu,header,noimage)  "Il n'y a pas d'image actuellement en mémoire."
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

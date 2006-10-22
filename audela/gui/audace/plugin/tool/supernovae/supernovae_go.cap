@@ -1,6 +1,6 @@
 #
 # Fichier : supernovae_go.cap
-# Mise a jour $Id: supernovae_go.cap,v 1.4 2006-08-30 17:16:43 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.cap,v 1.5 2006-10-22 09:57:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -51,6 +51,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(supernovae_go,help,titre)     "Hilfe für dieses Gerät"
    set caption(supernovae_go,recherche_sn)   "Supernovae\nsuchen"
    set caption(supernovae_go,sn_acq)         "Sn Anschaf."
+   set caption(supernovae_go,sn_visu)        "Sn Visu"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,help,titre)     "Aide pour cet outil"
+   set caption(supernovae_go,recherche_sn)   "Recherche\nsupernovae"
+   set caption(supernovae_go,sn_acq)         "Sn Acq."
    set caption(supernovae_go,sn_visu)        "Sn Visu"
 
 # *************** Version danoise *****************************

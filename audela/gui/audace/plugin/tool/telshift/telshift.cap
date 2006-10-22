@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.3 2006-06-20 21:32:30 robertdelmas Exp $
+# Mise a jour $Id: telshift.cap,v 1.4 2006-10-22 09:57:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -197,6 +197,44 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telshift,erreurfocale2) "'Namen der Grundlage des Bild Datei' und 'Brennweite von"
    set caption(telshift,erreurfocale3) "Teleskop' bevor auf den Knopf 'OK' zu drücken."
    set caption(telshift,numerisation)  "CCD Lesen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(telshift,titre)         "Imagerie avec déplacement du télescope"
+   set caption(telshift,ok)            "OK"
+   set caption(telshift,annuler)       "Annuler"
+   set caption(telshift,aide)          "Aide"
+   set caption(telshift,nomfichier)    "Nom de base du fichier image :"
+   set caption(telshift,parametres)    "Paramètres des poses :"
+   set caption(telshift,nbposes)       "Nombre de poses : "
+   set caption(telshift,status)        "Statut"
+   set caption(telshift,dureepose)     "Durée de chaque pose : "
+   set caption(telshift,secondes)      " secondes"
+   set caption(telshift,binning)       "Facteur de binning :"
+   set caption(telshift,binning1)      "Binning 1x1"
+   set caption(telshift,binning2)      "Binning 2x2"
+   set caption(telshift,binning4)      "Binning 4x4"
+   set caption(telshift,focale)        "Focale du télescope :"
+   set caption(telshift,mm)            "mm"
+   set caption(telshift,imagerie)      "Imagerie :"
+   set caption(telshift,imagenormale)  "Image normale"
+   set caption(telshift,superflat)     "PLU sur ciel nocturne"
+   set caption(telshift,mosaique4)     "Mosaïque de 4 images"
+   set caption(telshift,mosaique9)     "Mosaïque de 9 images"
+   set caption(telshift,nbposesmosa)   "Nombre de poses par image de la mosaïque : "
+   set caption(telshift,aideutil)      "Aide à l'utilisateur"
+   set caption(telshift,erreuraide)    "Fichier telshift_fr.txt introuvable. Pour voir l'aide, il doit y avoir ce fichier dans le répertoire 'aide_telshift'."
+   set caption(telshift,pointevers)    "Pointe vers"
+   set caption(telshift,pointesur)     "Pointe sur"
+   set caption(telshift,lancepose)     "Lance la pose n°"
+   set caption(telshift,termine)       "Traitement terminé !"
+   set caption(telshift,anticipee)     "Sortie anticipée !"
+   set caption(telshift,attention)     "Attention !"
+   set caption(telshift,erreurfocale1) "Vous devez obligatoirement renseigner les champs"
+   set caption(telshift,erreurfocale2) "'Nom de base du fichier image' et 'Focale du"
+   set caption(telshift,erreurfocale3) "télescope' avant de cliquer sur le boutton 'OK'."
+   set caption(telshift,numerisation)  "Lecture CCD"
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

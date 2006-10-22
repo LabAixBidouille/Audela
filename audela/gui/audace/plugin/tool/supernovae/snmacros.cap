@@ -1,6 +1,6 @@
 #
 # Fichier : snmacros.cap
-# Mise a jour $Id: snmacros.cap,v 1.3 2006-06-20 21:26:59 robertdelmas Exp $
+# Mise a jour $Id: snmacros.cap,v 1.4 2006-10-22 09:56:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -102,6 +102,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snmacros,synthesedarkfini) "Dark Zusammenfassung beendet"
    set caption(snmacros,acqdark_stop)     "Dark Anschaffung unterbrecht"
    set caption(snmacros,est)              "O"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(snmacros,obscurite)        "La caméra doit être placée dans l'obscurité complète."
+   set caption(snmacros,acqde1)           "Acquisition de"
+   set caption(snmacros,bias)             "bias"
+   set caption(snmacros,acqbias)          "Acquisition du bias"
+   set caption(snmacros,synthesebias)     "Synthèse du bias final..."
+   set caption(snmacros,synthesebiasfini) "Synthèse du bias terminée"
+   set caption(snmacros,acqbias_stop)     "Acquisition des bias suspendue"
+   set caption(snmacros,acqde2)           "Acquisition de"
+   set caption(snmacros,darkde)           "darks de"
+   set caption(snmacros,seconde)          "secondes"
+   set caption(snmacros,acqdark)          "Acquisition du dark"
+   set caption(snmacros,synthesedark)     "Synthèse du dark final..."
+   set caption(snmacros,synthesedarkfini) "Synthèse du dark terminée"
+   set caption(snmacros,acqdark_stop)     "Acquisition des darks suspendue"
+   set caption(snmacros,est)              "E"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
