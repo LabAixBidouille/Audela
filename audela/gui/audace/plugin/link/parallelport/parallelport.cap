@@ -1,6 +1,6 @@
 #
 # Fichier : parallelport.cap
-# Mise a jour $Id: parallelport.cap,v 1.10 2006-10-20 16:28:01 robertdelmas Exp $
+# Mise a jour $Id: parallelport.cap,v 1.11 2006-10-22 08:55:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -42,6 +42,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(parallelport,titre)        "Parallel Anschlüss"
    set caption(parallelport,available)    "Parallel Anschlüssen verfügbar"
    set caption(parallelport,refresh)      "Aktualisieren"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(parallelport,titre)        "Port parallèle"
+   set caption(parallelport,available)    "Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "Rafraîchir"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

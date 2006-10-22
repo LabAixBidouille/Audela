@@ -1,6 +1,6 @@
 #
 # Fichier : lx200pad.cap
-# Mise a jour $Id: lx200pad.cap,v 1.3 2006-06-20 19:44:23 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.cap,v 1.4 2006-10-22 09:04:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -42,6 +42,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Ihre Größe"
    set caption(lx200pad,pad_visible)   "Immer Sichtbar"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Sa taille"
+   set caption(lx200pad,pad_visible)   "Toujours visible"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

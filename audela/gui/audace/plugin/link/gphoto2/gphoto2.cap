@@ -1,6 +1,6 @@
 #
 # Fichier : gphoto2.cap
-# Mise a jour $Id: gphoto2.cap,v 1.2 2006-06-20 19:27:44 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.cap,v 1.3 2006-10-22 08:55:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -30,6 +30,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(gphoto2,titre)        "GPhoto2"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(gphoto2,titre)        "GPhoto2"
 

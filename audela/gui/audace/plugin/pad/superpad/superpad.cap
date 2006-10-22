@@ -1,6 +1,6 @@
 #
 # Fichier : superpad.cap
-# Mise a jour $Id: superpad.cap,v 1.3 2006-06-20 19:45:34 robertdelmas Exp $
+# Mise a jour $Id: superpad.cap,v 1.4 2006-10-22 09:04:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -97,6 +97,24 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonCenter)        "Zentrum"
    set caption(superpad,buttonAlign)         "Ausrichtung"
    set caption(superpad,StarWindowTitle)     "Ein Stern wählen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Sa taille"
+   set caption(superpad,pad_visible)         "Toujours visible"
+   set caption(superpad,center_speed)        "Coefficient de centrage"
+   set caption(superpad,telescope)           "Monture"
+   set caption(superpad,non_connecte)        "non connectée"
+   set caption(superpad,ErrorMessageTitle)   "Erreur"
+   set caption(superpad,CenterStarErrMsg)    "Impossible de centrer tant qu'il n'y a pas d'image affichée."
+   set caption(superpad,buttonSkyMap)        "Carte"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Centrer"
+   set caption(superpad,buttonAlign)         "Alignement"
+   set caption(superpad,StarWindowTitle)     "Sélectionner une étoile"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
