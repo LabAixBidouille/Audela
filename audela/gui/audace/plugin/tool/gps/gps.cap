@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.3 2006-06-20 21:01:13 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.4 2006-10-22 09:36:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -297,6 +297,64 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(gps,intervalle_synchro)       "Synchro (s)"
    set caption(gps,help,titre)               "Hilfe für dieses Gerät"
    set caption(gps,non_rs232)                "Diesen Anschluss ist nicht ein RS232 Anschluss."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(gps,titre)                    "GPS"
+   set caption(gps,parametre)                "Paramètres"
+   set caption(gps,port)                     "Port série"
+   set caption(gps,lancement_gps)            "Com. GPS"
+   set caption(gps,arret_gps)                "Arrêt"
+   set caption(gps,titre_gps)                "GPS"
+   set caption(gps,synchro_temps)            "Temps"
+   set caption(gps,synchro_position)         "Position"
+   set caption(gps,titre_fenetre_gps)        "Informations GPS"
+   set caption(gps,temps_gps)                "Temps GPS (UTC)"
+   set caption(gps,temps_pc)                 "Temps PC (UTC)"
+   set caption(gps,diff_temps)               "Différence (s)"
+   set caption(gps,moyenne)                  "Moyenne (s)"
+   set caption(gps,etat)                     "Décalage constant (s)"
+   set caption(gps,correction)               "Correction temps PC (s)"
+   set caption(gps,latitude)                 "Latitude"
+   set caption(gps,longitude)                "Longitude"
+   set caption(gps,altitude)                 "Altitude (m)"
+   set caption(gps,ouverture_serie)          "Ouverture liaison série"
+   set caption(gps,fermeture_serie)          "Fermeture liaison série"
+   set caption(gps,titre_reglage_fin)        "Réglage"
+   set caption(gps,ecoute_horloge)           "Bip-Bip"
+   set caption(gps,arret_horloge)            "Arrêt"
+   set caption(gps,avance)                   "Avance"
+   set caption(gps,retard)                   "Retard"
+   set caption(gps,m_synchro_temps_1)        "Recalage de l'heure PC de"
+   set caption(gps,m_synchro_temps_2)        " s"
+   set caption(gps,m_synchro_position_1)     "Enregistrement de la position"
+   set caption(gps,m_synchro_position_2)     "Latitude : "
+   set caption(gps,m_synchro_position_3)     "Longitude : "
+   set caption(gps,m_synchro_position_4)     "Altitude : "
+   set caption(gps,decalage_horloge)         "Horloge recalée de"
+   set caption(gps,derive)                   "Dérive de l'horloge :"
+   set caption(gps,attente_nmea)             "Attente GPS ..."
+   set caption(gps,divers)                   "Divers"
+   set caption(gps,titre_parametres)         "Paramètres divers"
+   set caption(gps,decalage)                 "Décalage constant (ms)"
+   set caption(gps,reglage)                  "Valeur d'ajustage (ms)"
+   set caption(gps,seuil_ok)                 "Précision horaire (ms)"
+   set caption(gps,valider)                  "Valider"
+   set caption(gps,erreur)                   "ERREUR"
+   set caption(gps,type_non_entier)          "Au moins une valeur n'est pas entière"
+   set caption(gps,bienvenue)                "GPS"
+   set caption(gps,copyright)                "(C)2001-2005   J. Michelet"
+   set caption(gps,tchao)                    "Fin de GPS"
+   set caption(gps,conseil_serie)            "Problème à l'ouverture de la liaison série.\nPensez à vérifier si le télescope n'est pas configuré pour utiliser le même port."
+   set caption(gps,mauvaise_version)         "Libjm doit être de version supérieure ou égale à 3.0"
+   set caption(gps,manuel)                   "Manuel"
+   set caption(gps,automatique)              "Automatique"
+   set caption(gps,demarrage_auto)           "Synchro"
+   set caption(gps,arret_auto)               "Arrêt"
+   set caption(gps,intervalle_synchro)       "Synchro (s)"
+   set caption(gps,help,titre)               "Aide pour cet outil"
+   set caption(gps,non_rs232)                "Ce port n'est pas un port série de type RS232."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
