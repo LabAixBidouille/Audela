@@ -1,6 +1,6 @@
 #
 # Fichier : foc.cap
-# Mise a jour $Id: foc.cap,v 1.3 2006-06-20 20:55:19 robertdelmas Exp $
+# Mise a jour $Id: foc.cap,v 1.4 2006-10-22 09:36:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -207,6 +207,46 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc3)      "weil kleiner als -32767."
    set caption(foc,probleme)        "Problem"
    set caption(foc,entier_positif)  "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(foc,focalisation)    "Focalisation"
+   set caption(foc,help_titre)      "Aide pour cet outil"
+   set caption(foc,acquisition)     "Acquisition"
+   set caption(foc,centrage)        "Centrage"
+   set caption(foc,fenetre)         "Fenêtre"
+   set caption(foc,seconde)         "sec."
+   set caption(foc,go)              "GO CCD"
+   set caption(foc,raz)             "R.A.Z."
+   set caption(foc,stop)            "Stop"
+   set caption(foc,moteur_focus)    "Moteur de foc."
+   set caption(foc,pos_focus)       "Position de la foc."
+   set caption(foc,se_trouve)       "Se trouve à"
+   set caption(foc,pas)             "pas"
+   set caption(foc,aller_a)         "Aller à"
+   set caption(foc,init)            "Initialisation"
+   set caption(foc,graphe)          "Graphe"
+   set caption(foc,on)              "on"
+   set caption(foc,off)             "off"
+   set caption(foc,titre_graphe)    "Aud'ACE : Focalisation"
+   set caption(foc,intensite_adu)   "Intensite (ADU)"
+   set caption(foc,fwhm_x)          "Fwhm X (pixel)"
+   set caption(foc,fwhm_y)          "Fwhm Y (pixel)"
+   set caption(foc,contrast_adu)    "Contraste (ADU)"
+   set caption(foc,intensite)       "Intensité"
+   set caption(foc,fwhm__x)         "Fwhm X"
+   set caption(foc,fwhm__y)         "Fwhm Y"
+   set caption(foc,contraste)       "Contraste"
+   set caption(foc,egale)           "="
+   set caption(foc,attention)       "Attention"
+   set caption(foc,formatfoc1)      "La valeur à saisir doit être"
+   set caption(foc,formatfoc2)      "comprise entre -32767 et 32767."
+   set caption(foc,limitefoc1)      "Déplacement impossible"
+   set caption(foc,limitefoc2)      "car limité à 32767."
+   set caption(foc,limitefoc3)      "car limité à -32767."
+   set caption(foc,probleme)        "Problème"
+   set caption(foc,entier_positif)  "Temps de pose invalide\n(doit être un nombre positif)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.3 2006-06-20 21:06:06 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.4 2006-10-22 09:37:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -667,6 +667,139 @@ Messung Erfolgen nach Rechnungen."
    set caption(modpoi,shift_n)               "Nach Nord schieben:"
    set caption(modpoi,shift-e)               "Nach Ost schieben:"
    set caption(modpoi,iteration)             "Schlingung"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(modpoi,modele_existe)         "Modèle de pointage opérationnel."
+   set caption(modpoi,modele_existe_pas)     "Il n'existe pas de modèle de pointage."
+
+   set caption(modpoi,modele,editer)         "Pour éditer un modèle de pointage, il faut d'abord l'ouvrir."
+
+   set caption(modpoi,wiz1,title)            "Modèle de pointage"
+   set caption(modpoi,wiz1,title2)           "Détermination du\nmodèle de pointage"
+   set caption(modpoi,wiz1,next)             "Suivant >>"
+   set caption(modpoi,wiz1,desc)             "\
+Procédure de mesure des défauts\n\
+de pointage de votre télescope et\n\
+calcul de la fonction de passage\n\
+entre les coordonnées J2000.0 et \n\
+les coordonnées à pointer.\n\n\
+Ce modèle est adapté de TPOINT.\n\
+Il prend en compte les défauts\n\
+d'initialisation des codeurs,\n\
+de perpendicularité des axes\n\
+(horaire, de déclinaison et optique)\n\
+de la mise en station\n\
+et de la flexion mécanique de la fourche.\n\n\
+La détermination des paramètres du modèle\n\
+se réalise en pointant des étoiles de\n\
+part et d'autre du méridien."
+
+   set caption(modpoi,wiz1b,title)           "Modèle de pointage : Paramètres des pointages"
+   set caption(modpoi,wiz1b,title2)          "Paramètres des pointages"
+   set caption(modpoi,wiz1b,prev)            "<< Précédent"
+   set caption(modpoi,wiz1b,next)            "Suivant >>"
+   set caption(modpoi,wiz1b,heast)           "Angles horaires limites : Est"
+   set caption(modpoi,wiz1b,hwest)           "Ouest"
+   set caption(modpoi,wiz1b,decinf)          "Déclinaisons limites : Sud"
+   set caption(modpoi,wiz1b,decsup)          "Nord"
+   set caption(modpoi,wiz1b,nstars)          "Nombre d'étoiles ( >= 6 )"
+   set caption(modpoi,wiz1b,warning)         "Attention"
+   set caption(modpoi,wiz1b,nstars1)         "Nombre d'étoiles >= 6"
+   set caption(modpoi,wiz1b,catalog)         "Catalogue d'étoiles"
+   set caption(modpoi,wiz1b,acqauto)         "Centrage automatique"
+   set caption(modpoi,wiz1b,refraction_1)    "Nota : Ce télescope tient compte de la\ncorrection de réfraction pour les GoTo."
+   set caption(modpoi,wiz1b,refraction_2)    "Nota : Ce télescope ne tient pas compte de\nla correction de réfraction pour les GoTo.\n\
+Aud'ACE se charge de ce calcul pour lui."
+
+   set caption(modpoi,wiz1c,title)           "Modèle de pointage : Centrage automatique"
+   set caption(modpoi,wiz1c,title2)          "Centrage automatique"
+   set caption(modpoi,wiz1c,prev)            "<< Précédent"
+   set caption(modpoi,wiz1c,next)            "Suivant >>"
+   set caption(modpoi,wiz1c,xyc)             "Positionner l'étoile sur les coordonnées :"
+   set caption(modpoi,wiz1c,xc)              "x ="
+   set caption(modpoi,wiz1c,yc)              "y ="
+   set caption(modpoi,wiz1c,binning)         "Binning"
+   set caption(modpoi,wiz1c,exptime)         "Pose (sec.)"
+   set caption(modpoi,wiz1c,accuracy)        "Précision du centrage (pixels)"
+   set caption(modpoi,wiz1c,initial_delay)   "Dérive de calibration (microsec.)"
+   set caption(modpoi,wiz1c,compositage)     "Nombre d'images à moyenner"
+
+   set caption(modpoi,wiz2,title)            "Modèle de pointage : Mesure des écarts de pointage"
+   set caption(modpoi,wiz2,title2)           "Séquence de mesure des écarts\nentre la position pointée\net la position observée"
+   set caption(modpoi,wiz2,star)             "Etoile"
+   set caption(modpoi,wiz2,next)             "Calcul >>"
+   set caption(modpoi,wiz2,prev)             "<< Précédent"
+
+   set caption(modpoi,wiz3,title)            "Modèle de pointage : Pointage de l'étoile numéro "
+   set caption(modpoi,wiz3,title2)           "\
+Pointage de l'étoile numéro "
+   set caption(modpoi,wiz3,j2000)            "\
+Coordonnées catalogue J2000.0 : "
+   set caption(modpoi,wiz3,tel)              "\
+Coordonnées envoyées au télescope :"
+   set caption(modpoi,wiz3,comment_1)        "\
+Les coordonnées\n\
+envoyées au télescope incluent\n\
+les corrections de précession,\n\
+d'aberration, de nutation\n\
+et de réfraction."
+   set caption(modpoi,wiz3,comment_2)        "\
+Les coordonnées\n\
+envoyées au télescope incluent\n\
+les corrections de précession,\n\
+d'aberration et de nutation."
+   set caption(modpoi,wiz3,next)             "Pointer >>"
+   set caption(modpoi,wiz3,cannot)           "Si un obstacle ne permet pas de pointer cette étoile,\ncliquer sur ce bouton pour en choisir une autre."
+   set caption(modpoi,wiz3,prev)             "<< Précédent"
+   set caption(modpoi,wiz3,pas_etoile)       "Il n'y a plus d'étoile. Vous devez\nfermer l'outil 'Modèle de pointage'."
+
+   set caption(modpoi,wiz4,title)            "Modèle de pointage : Centrage de l'étoile numéro "
+   set caption(modpoi,wiz4,title2)           "\
+Centrage de l'étoile numéro "
+   set caption(modpoi,wiz4,center)           "\
+Centrer "
+   set caption(modpoi,wiz4,comment)          "\
+Placer l'étoile au centre du champ (vérifier\n\
+éventuellement avec une image CCD) en agissant\n\
+sur les boutons de la raquette de commande\n\
+des directions :"
+   set caption(modpoi,wiz4,next)             "Etoile centrée >>"
+   set caption(modpoi,wiz4,prev)             "<< Précédent"
+   set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
+   set caption(modpoi,wiz4,comment_auto)     "Centrage automatique en cours..."
+
+   set caption(modpoi,wiz5,title)            "Modèle de pointage : Résultat des calculs"
+   set caption(modpoi,wiz5,title2)           "\
+Résultats de la mesure après calculs."
+
+   set caption(modpoi,wiz5,IH)               "décalage du codeur h"
+   set caption(modpoi,wiz5,ID)               "décalage du codeur d"
+   set caption(modpoi,wiz5,NP)               "non perpendicularité h/d"
+   set caption(modpoi,wiz5,CH)               "erreur de collimation"
+   set caption(modpoi,wiz5,ME)               "désalignement N/S de l'axe polaire"
+   set caption(modpoi,wiz5,MA)               "désalignement E/O de l'axe polaire"
+   set caption(modpoi,wiz5,FO)               "flexion de la fourche"
+   set caption(modpoi,wiz5,MT)               "flexion de la monture"
+   set caption(modpoi,wiz5,DAF)              "flexion de l'axe delta"
+   set caption(modpoi,wiz5,TF)               "flexion du tube"
+   set caption(modpoi,wiz5,next)             "Terminer >>"
+   set caption(modpoi,wiz5,prev)             "<< Précédent"
+
+   set caption(modpoi,north)                 "N"
+   set caption(modpoi,east)                  "E"
+   set caption(modpoi,west)                  "O"
+   set caption(modpoi,south)                 "S"
+
+   set caption(modpoi,non_centree)           "Problème : Etoile non centrée."
+   set caption(modpoi,consignes)             "Positionner l'étoile sur les coordonnées :"
+   set caption(modpoi,fichier)               "Fichier :"
+   set caption(modpoi,etalonnage)            "Etalonnage :"
+   set caption(modpoi,etat_initial)          "Position initiale de l'étoile :"
+   set caption(modpoi,shift_n)               "Déplacement vers le nord :"
+   set caption(modpoi,shift-e)               "Déplacement vers l'est :"
+   set caption(modpoi,iteration)             "Itération"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
