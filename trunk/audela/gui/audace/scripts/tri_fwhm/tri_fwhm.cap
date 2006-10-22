@@ -1,6 +1,6 @@
 #
 # Fichier : tri_fwhm.cap
-# Mise a jour $Id: tri_fwhm.cap,v 1.3 2006-06-21 18:39:39 robertdelmas Exp $
+# Mise a jour $Id: tri_fwhm.cap,v 1.4 2006-10-22 08:31:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -297,6 +297,64 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(graphe_fwhm)         "FWHM Graph"
    set cap_tri(nombre_graphe)       "Zahl"
    set cap_tri(images)              "Bilder"
+
+# *************** Version portugaise **************************
+if { [string compare $langage "portuguese"] == 0 } {
+
+   set cap_tri(titre)               "-------------Tri_FWHM-------------"
+   set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
+   set cap_tri(selection_mode)      "Sélection du mode"
+   set cap_tri(arret_procedure)     "Arrêt de la procédure"
+   set cap_tri(fin)                 "---------Fin de Tri_FWHM----------"
+   set cap_tri(verification)        "Vérification de l'existence des fichiers"
+   set cap_tri(erreur_verif_1)      "Le fichier"
+   set cap_tri(erreur_verif_2)      "n'existe pas"
+   set cap_tri(calcul_principal)    "Calcul principal de tous les FWHM"
+   set cap_tri(analyse)             "Analyse de chaque image"
+   set cap_tri(fwhm_image)          "FWHM de l'image"
+   set cap_tri(titre_saisie)        "Saisie des paramètres"
+   set cap_tri(extension)           "Extension des noms des fichiers"
+   set cap_tri(source)              "Nom générique des fichiers sources (à trier)"
+   set cap_tri(nombre)              "Nombre d'images source"
+   set cap_tri(indice_source)       "Indice de la première image source"
+   set cap_tri(destination)         "Nom générique des fichiers copiés"
+   set cap_tri(indice_destination)  "Indice de la première image à copier"
+   set cap_tri(mode_tri)            "Mode de tri des images"
+   set cap_tri(automatique)         "Automatique"
+   set cap_tri(manuel)              "Manuel"
+   set cap_tri(valider)             "Valider et lancer"
+   set cap_tri(annuler)             "Annuler la procédure"
+   set cap_tri(validation_seuil)    "Validez vous la valeur de "
+   set cap_tri(validation_fwhm)     "Validation du seuil de FWHM"
+   set cap_tri(recopie_1)           "Recopie des images"
+   set cap_tri(recopie_2)           "ayant un fwhm inférieur ou égal à"
+   set cap_tri(recopie_3)           "en"
+   set cap_tri(fin_recopie_1)       "images nommées"
+   set cap_tri(fin_recopie_2)       "ont été créées"
+   set cap_tri(verification_nom)    "Vérification de ce que les noms des fichiers à trier et triés diffèrent"
+   set cap_tri(erreur_verification) "Les fichiers source et destination ont le même nom"
+   set cap_tri(recalage_1)          "Recalage des"
+   set cap_tri(recalage_2)          "images"
+   set cap_tri(recalage_3)          "en"
+   set cap_tri(recherche_decalage)  "Recherche du décalage entre première et dernière image."
+   set cap_tri(recherche_taille)    "Recherche de la taille de l'image"
+   set cap_tri(determination_cadre) "Détermination du cadre"
+   set cap_tri(selection)           "Sélection"
+   set cap_tri(selection_etoile)    "Sélection des étoiles"
+   set cap_tri(lancement_calcul)    "Lancement du calcul"
+   set cap_tri(annulation_calcul)   "Annulation du calcul"
+   set cap_tri(probleme)            "Probleme"
+   set cap_tri(etoile_hors_cadre)   "Etoile hors cadre !"
+   set cap_tri(etoile)              "Etoile"
+   set cap_tri(etoile_erreur_1)     "Rapport S/B insuffisant"
+   set cap_tri(etoile_erreur_2)     "Etoile non isolée\n(ou trop étendue)"
+   set cap_tri(etoile_erreur_3)     "Pixel chaud, ou trop peu\nde pixels significatifs"
+   set cap_tri(etoile_non_valide)   "Etoile non valide"
+   set cap_tri(non_selection)       "Vous n'avez pas sélectionné d'étoiles !!"
+   set cap_tri(etoiles_select)      "étoile(s) sélectionnée(s)"
+   set cap_tri(graphe_fwhm)         "Graphe_FWHM"
+   set cap_tri(nombre_graphe)       "Nombre"
+   set cap_tri(images)              "images"
 
 # *************** Version danoise *****************************
 } elseif { [string compare $langage "danish"] == 0 } {
