@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.4 2006-06-20 20:49:33 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.5 2006-10-22 09:25:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -137,6 +137,32 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,lecture)               "Abstattung"
    set caption(autoguider,attente)               "Warten"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(autoguider,menu)                  "Autoguidage"
+   set caption(autoguider,titre)                 "Autoguidage"
+   set caption(autoguider,help_titre)            "Aide pour cet outil"
+   set caption(autoguider,pb)                    "Problème"
+   set caption(autoguider,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+
+   set caption(autoguider,ctrl_monture)          "Suivi actif"
+   set caption(autoguider,config_guidage)        "Configuration..."
+   set caption(autoguider,init_position)         "Initialiser"
+   set caption(autoguider,coord_origine)         "Origine"
+   set caption(autoguider,coord_etoile)          "Etoile"
+   set caption(autoguider,ecart_origine_etoile)  "Ecart"
+
+   set caption(autoguider,pose)                  "Pose"
+   set caption(autoguider,sec)                   "sec."
+   set caption(autoguider,binning)               "Binning"
+   set caption(autoguider,GO)                    "GO CCD"
+   set caption(autoguider,STOP)                  "STOP\nCCD"
+   set caption(autoguider,intervalle)            "Intervalle"
+
+   set caption(autoguider,lecture)               "Lecture"
+   set caption(autoguider,attente)               "Attente"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {

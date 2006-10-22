@@ -1,6 +1,6 @@
 #
 # Fichier : cmanimate.cap
-# Mise a jour $Id: cmanimate.cap,v 1.4 2006-08-12 21:09:23 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.cap,v 1.5 2006-10-22 09:22:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -292,6 +292,63 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmanimate,non)                   "Nein"
    set caption(cmanimate,oui)                   "Ja"
    set caption(cmanimate,paranal)               "Paranal Option"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(cmanimate,titre)                 "Animation (MASCOT)"
+   set caption(cmanimate,help_titre)            "Aide pour cet outil"
+   set caption(cmanimate,nom_generique)         "Nom générique"
+   set caption(cmanimate,parcourir)             "..."
+   set caption(cmanimate,nbre_images)           "Nombre d'images"
+   set caption(cmanimate,delai_ms)              "Délai (ms)"
+   set caption(cmanimate,nbre_boucles)          "Nombre de boucles"
+   set caption(cmanimate,animation_totale)      "Animation complète"
+   set caption(cmanimate,animation_fin)         "Animer"
+   set caption(cmanimate,image)                 "dern. img."
+   set caption(cmanimate,aller_derniere_image)  "Aller à la dernière image"
+   set caption(cmanimate,image_suivante)        "Suivante =>>"
+   set caption(cmanimate,image_precedante)      "<<= Précédente"
+   set caption(cmanimate,status)                "Statut"
+   set caption(cmanimate,status1)               "---"
+   set caption(cmanimate,aller_image)           "Aller à l'image"
+   set caption(cmanimate,en_tete_1)             "-------------------------\n"
+   set caption(cmanimate,en_tete_2)             "| Animation (MASCOT)\n"
+   set caption(cmanimate,en_tete_3)             "-------------------------\n"
+   set caption(cmanimate,en_tete_4)             "| Mini\n"
+   set caption(cmanimate,en_tete_5)             "| All\n"
+   set caption(cmanimate,en_tete_6)             "| Sky\n"
+   set caption(cmanimate,en_tete_7)             "| Cloud\n"
+   set caption(cmanimate,en_tete_8)             "| Observation\n"
+   set caption(cmanimate,en_tete_9)             "| Tool\n"
+   set caption(cmanimate,en_tete_10)            "-------------------------\n\n"
+   set caption(cmanimate,animation_en_cours)    "Animation en cours..."
+   set caption(cmanimate,animation_terminee)    "Animation terminée"
+   set caption(cmanimate,image_numero)          "Image n°"
+   set caption(cmanimate,dessine_grille)        "Dessine la grille AltAz\n\n"
+   set caption(cmanimate,efface_grille)         "Efface la grille AltAz\n\n"
+   set caption(cmanimate,dessine_position)      "Dessine la position du télescope\n\n"
+   set caption(cmanimate,efface_position)       "Efface la position du télescope\n\n"
+   set caption(cmanimate,dessine_positions)     "Dessine la position des UTs\n\n"
+   set caption(cmanimate,efface_positions)      "Efface la position des UTs\n\n"
+   set caption(cmanimate,attention)             "Attention"
+   set caption(cmanimate,erreur1)               "Le nom générique des images n'existe"
+   set caption(cmanimate,erreur2)               "pas ou elles ne sont pas dans le"
+   set caption(cmanimate,erreur3)               "répertoire de travail ou n'existent pas."
+   set caption(cmanimate,grille_sur_image)      "Dessine la grille AltAz"
+   set caption(cmanimate,telescope_sur_image)   "Dessine la position"
+   set caption(cmanimate,degres)                "°"
+   set caption(cmanimate,vent)                  "Vent"
+   set caption(cmanimate,pas_instrument)        "Pas de télescope"
+   set caption(cmanimate,ut1)                   "UT1"
+   set caption(cmanimate,ut2)                   "UT2"
+   set caption(cmanimate,ut3)                   "UT3"
+   set caption(cmanimate,ut4)                   "UT4"
+   set caption(cmanimate,instrument)            "Votre télescope"
+   set caption(cmanimate,position_tel)          "Visualiser le pointage des télescopes"
+   set caption(cmanimate,non)                   "Non"
+   set caption(cmanimate,oui)                   "Oui"
+   set caption(cmanimate,paranal)               "Option Paranal"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
