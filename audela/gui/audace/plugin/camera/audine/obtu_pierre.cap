@@ -1,6 +1,6 @@
 #
 # Fichier : obtu_pierre.cap
-# Mise a jour $Id: obtu_pierre.cap,v 1.3 2006-06-20 19:19:16 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.cap,v 1.4 2006-10-22 08:39:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -92,6 +92,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obtu_pierre,e)             "Frei"
    set caption(obtu_pierre,t)             "15"
    set caption(obtu_pierre,flag)          "Tiefhimmel (1) oder Planeten (2)"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(obtu_pierre,title)         "Réglage des paramètres de l'obturateur"
+   set caption(obtu_pierre,title_pth)     "Obturateur de Pierre Thierry"
+   set caption(obtu_pierre,valider)       "Valider ces valeurs"
+   set caption(obtu_pierre,fermer)        "Fermer"
+   set caption(obtu_pierre,synchro)       "Synchro"
+   set caption(obtu_pierre,ouvert)        "Ouvert"
+   set caption(obtu_pierre,ferme)         "Fermé"
+   set caption(obtu_pierre,a)             "Fermé : 1080"
+   set caption(obtu_pierre,b)             "Ouvert : 1180"
+   set caption(obtu_pierre,c)             "Fermé : 1280"
+   set caption(obtu_pierre,e)             "Libre"
+   set caption(obtu_pierre,t)             "15"
+   set caption(obtu_pierre,flag)          "Ciel Profond (1) ou Planètes (2)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
