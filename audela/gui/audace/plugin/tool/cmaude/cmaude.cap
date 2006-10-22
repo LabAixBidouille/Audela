@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.4 2006-10-22 09:22:58 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.5 2006-10-22 09:31:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,6 +76,22 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(cmaude,titre_mascot)    "Acquisition (MASCOT)"
+   set caption(cmaude,help_titre)      "Help For This Tool"
+   set caption(cmaude,bias)            "Bias File"
+   set caption(cmaude,dark)            "Dark File"
+   set caption(cmaude,overlay)         "Overlay File"
+   set caption(cmaude,nom_image)       "Image File"
+   set caption(cmaude,binning)         "Binning"
+   set caption(cmaude,temps_pose)      "Exposure Time (sec.)"
+   set caption(cmaude,entre_2_images)  "Time between 2 Img. (sec.)"
+   set caption(cmaude,go_acquisition)  "GO CCD"
+   set caption(cmaude,stop)            "STOP"
+   set caption(cmaude,ephemerides)     "Ephemeris"
+   set caption(cmaude,status)          "Status"
+   set caption(cmaude,status1)         "GO to run script"
+   set caption(cmaude,status2)         "---"
 
 }
 
