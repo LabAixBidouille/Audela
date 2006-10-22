@@ -1,6 +1,6 @@
 #
 # Fichier : testaudine.cap
-# Mise a jour $Id: testaudine.cap,v 1.3 2006-06-20 19:19:42 robertdelmas Exp $
+# Mise a jour $Id: testaudine.cap,v 1.4 2006-10-22 08:39:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,6 +87,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudine,test2)    "Test 2"
    set caption(testaudine,text4)    "Wie viel Transfer Zyklen schnell lesen"
    set caption(testaudine,fermer)   "Schließen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(testaudine,titre)    "Tests pour la fabrication de la caméra"
+   set caption(testaudine,voltm)    "Tests avec un voltmètre :"
+   set caption(testaudine,set0)     "Set 0"
+   set caption(testaudine,text1)    "Mesure de tensions et réglage des potentiomètres P1, P3 et P4"
+   set caption(testaudine,set255)   "Set 255"
+   set caption(testaudine,text2)    "Mesure de tensions et réglage du potentiomètre P2"
+   set caption(testaudine,oscillo)  "Tests avec un oscilloscope :"
+   set caption(testaudine,test1)    "Test 1"
+   set caption(testaudine,text3)    "Nombre de cycles de transfert zone image/registre horizontal"
+   set caption(testaudine,test2)    "Test 2"
+   set caption(testaudine,text4)    "Nombre de cycles de lecture rapide"
+   set caption(testaudine,fermer)   "Fermer"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
