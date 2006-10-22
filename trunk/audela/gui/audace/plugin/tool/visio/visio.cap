@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.3 2006-06-20 22:04:01 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.4 2006-10-22 10:03:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -282,6 +282,61 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,achtung)             "ACHTUNG: Alle Dateien anfänglich auf diese Diskette werden beseitigt."
    set caption(visio,full1)               "Die Ziel Diskette ist voll."
    set caption(visio,full2)               "Eine neue DIskette Bitte in das A Laufwerk einschieben."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   #--- Textes interface principale
+   set caption(visio,audace)              "Aud'ACE"
+   set caption(visio,titre)               "Visionneuse"
+   set caption(visio,help_titre)          "Aide pour cet outil"
+   set caption(visio,visu)                "Visu"
+   set caption(visio,arr1)                "-1"
+   set caption(visio,avt1)                "+1"
+   set caption(visio,arr-)                "--"
+   set caption(visio,avt+)                "++"
+   set caption(visio,charger)             "Go"
+   set caption(visio,suppr_fichier)       "Suppr fichier"
+   set caption(visio,modeserie)           "Mode série"
+   set caption(visio,serie)               "Série"
+   set caption(visio,suppr_lacunes)       "Renuméroter"
+   set caption(visio,renommer)            "Renommer"
+   set caption(visio,suppr_serie)         "Supprimer"
+   set caption(visio,save_toA)            "Sauver des\nfichiers zip sur A:"
+   set caption(visio,copie_fromA)         "Copier des fichiers\nzip depuis A:"
+   set caption(visio,annuler)             "Annuler"
+   set caption(visio,nom_invalide)        "Le nom de fichier suivant est invalide (présence de caractères accentués) : "
+   set caption(visio,rep_images_audace)   "Répertoire images d'Aud'ACE"
+
+   #--- Textes boutons
+   set caption(visio,aide)                "Aide"
+   set caption(visio,ok)                  "OK"
+   set caption(visio,quitter)             "Quitter"
+   
+   #--- Textes fenêtres renommer série  
+   set caption(visio,renommer2)           "Renommer la série courante"
+   set caption(visio,oldserie)            "Nom actuel :"
+   set caption(visio,newserie)            "Nouveau nom :"
+   set caption(visio,confirmrenom)        "Le nom proposé existe déjà. Les deux séries seront réindexées.\nVoulez-vous poursuivre ?"
+   
+   #--- Textes fenêtre supprimer série
+   set caption(visio,oui)                 "Oui"
+   set caption(visio,non)                 "Non"
+   set caption(visio,confirmsuppr)        "Confirmer la suppression de la série courante ?"
+   
+   #--- Textes fenêtre copie ZIP
+   set caption(visio,zip)           "ZIP"
+   set caption(visio,feninidisket)        "Sauvegarde zip sur disquette"
+   set caption(visio,fenfulldisket)       "Copie terminée sur la disquette n°"
+   set caption(visio,fenfulldisket1)      ""
+   set caption(visio,saveserie_toA)       "Sauve la série courante sur A:"
+   set caption(visio,saverep_toA)         "Sauve le répertoire courant sur A:"
+   set caption(visio,save_continue)       "Continuer"
+   set caption(visio,save_stop)           "Arrêter"
+   set caption(visio,init1)               "Veuillez introduire une disquette dans le lecteur A:."
+   set caption(visio,achtung)             "ATTENTION : Tous les fichiers initialement présents sur cette disquette seront détruits."
+   set caption(visio,full1)               "La disquette de destination est pleine."
+   set caption(visio,full2)               "Veuillez introduire une nouvelle disquette dans le lecteur A:."
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

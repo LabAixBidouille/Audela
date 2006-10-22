@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.4 2006-08-13 21:47:04 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.5 2006-10-22 09:56:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -287,6 +287,62 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,texte2)                 "Sn Anschaf. schließen warten."
    set caption(snacq,texte3)                 "Bitte während das"
    set caption(snacq,texte4)                 "Anschaffungen Stillstehen warten."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(snacq,main_title)             "Sn Acq."
+   set caption(snacq,nocam)                  "Pas de caméra"
+   set caption(snacq,typecam)                "Caméra "
+   set caption(snacq,notel)                  "Pas de télescope"
+   set caption(snacq,typetel)                "Télescope "
+   set caption(snacq,dossier)                "Dossier images"
+   set caption(snacq,localite)               "Lieu"
+   set caption(snacq,haurore)                "Hauteur du Soleil pour observer"
+   set caption(snacq,houest)                 "Angle horaire limite ouest"
+   set caption(snacq,hest)                   "est"
+   set caption(snacq,decinf)                 "Déclinaison limite inférieure"
+   set caption(snacq,decsup)                 "supérieure"
+   set caption(snacq,exptime)                "Exposition (sec.)"
+   set caption(snacq,nbimages)               "Nbre d'images par champ"
+   set caption(snacq,unsmearing)             "Unsmearing"
+   set caption(snacq,fichier_sn)             "Fichier de base de données"
+   set caption(snacq,magsup)                 "Magnitude sup."
+   set caption(snacq,maginf)                 "inf."
+   set caption(snacq,binning)                "Binning"
+   set caption(snacq,foclen)                 "Longueur focale (m)"
+   set caption(snacq,fits,OBSERVER)          "Observateur"
+   set caption(snacq,go2)                    "Simulation"
+   set caption(snacq,go)                     "Acquisition"
+   set caption(snacq,stop)                   "Stop"
+   set caption(snacq,exit)                   "Quitter"
+   set caption(snacq,godark)                 "Dark"
+   set caption(snacq,gobias)                 "Bias"
+   set caption(snacq,help)                   "Aide"
+
+   set caption(snacq,status_1)               "         Acquisition automatique d'images de galaxies"
+   set caption(snacq,status_2)               "                pour découvrir des supernovae."
+   set caption(snacq,status_nodark)          "Pas de dark trouvé (appuyer sur Dark)."
+   set caption(snacq,status_nobias)          "Pas de bias trouvé (appuyer sur Bias)."
+   set caption(snacq,status_importemacros)   "Importe les macros"
+   set caption(snacq,status_hdebfin)         "Calcule les heures de début et de fin de nuit"
+   set caption(snacq,status_debnuit)         "Début de nuit"
+   set caption(snacq,status_finnuit)         "Fin de nuit  "
+   set caption(snacq,status_obsjusqua)       "On va observer jusqu'à"
+   set caption(snacq,status_loaddb)          "Charge la base de données"
+   set caption(snacq,status_galadb)          "galaxies sont dans la base de données."
+   set caption(snacq,status_seledb)          "Sélectionne les galaxies dans la base de données"
+   set caption(snacq,status_galobs)          "galaxies sont observables cette nuit."
+   set caption(snacq,status_ilfaitjour)      "Il fait jour."
+   set caption(snacq,status_telpointe)       "Le télescope pointe"
+   set caption(snacq,status_nightend)        "La nuit est terminée :"
+   set caption(snacq,status_alerterror)      "ERREUR dans l'alerte"
+
+   set caption(snacq,attention)              "Attention"
+   set caption(snacq,texte1)                 "Veuillez patienter pendant"
+   set caption(snacq,texte2)                 "la fermeture de Sn Acq."
+   set caption(snacq,texte3)                 "Veuillez patienter pendant"
+   set caption(snacq,texte4)                 "l'arrêt des acquisitions."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

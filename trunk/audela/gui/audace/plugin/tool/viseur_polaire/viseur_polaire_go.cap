@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_go.cap
-# Mise a jour $Id: viseur_polaire_go.cap,v 1.3 2006-06-20 22:03:09 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_go.cap,v 1.4 2006-10-22 10:02:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -47,6 +47,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(viseur_polaire_go,help_titre) "Hilfe für dieses Gerät"
    set caption(viseur_polaire_go,taka)       "Takahashi\nModell"
    set caption(viseur_polaire_go,eq6)        "EQ6\nModell"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Viseur polaire"
+   set caption(viseur_polaire_go,help_titre) "Aide pour cet outil"
+   set caption(viseur_polaire_go,taka)       "Type\nTakahashi"
+   set caption(viseur_polaire_go,eq6)        "Type\nEQ6"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
