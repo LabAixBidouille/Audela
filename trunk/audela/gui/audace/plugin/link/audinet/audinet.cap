@@ -1,6 +1,6 @@
 #
 # Fichier : audinet.cap
-# Mise a jour $Id: audinet.cap,v 1.4 2006-06-20 19:26:11 robertdelmas Exp $
+# Mise a jour $Id: audinet.cap,v 1.5 2006-10-22 08:54:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -137,6 +137,32 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audinet,site_web_ref)            "Referenz Webseite:"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audinet,titre)                   "AudiNet"
+
+   set caption(audinet,host_audinet)            "Host AudiNet/LXnet"
+   set caption(audinet,protocole_audinet)       "Protocole"
+   set caption(audinet,protocole_udp)           "udp"
+   set caption(audinet,protocole_tcp)           "tcp"
+   set caption(audinet,tempo_udp)               "Temporisation udp"
+   set caption(audinet,test_audinet)            "Tester l'adresse IP (ping)"
+   set caption(audinet,envoyer_adresse_aud)     "Envoyer ce numéro IP à l'AudiNet/LXnet avant la connexion"
+   set caption(audinet,mac_address)             "Adresse MAC"
+
+   set caption(audinet,autoflush)               "Purge du buffer série"
+   set caption(audinet,focuser_type)            "Type de focaliseur"
+   set caption(audinet,focuser_i2c_address)     "Port I2C"
+
+   set caption(audinet,appareil_connecte)       "Il y a un appareil à l'adresse IP :"
+   set caption(audinet,pas_appareil_connecte)   "Il n'y a pas d'appareil à l'adresse IP :"
+   set caption(audinet,message_ping)            "Message de retour de la fonction ping :"
+   set caption(audinet,erreur_setip)            "Réseau non trouvé."
+
+   set caption(audinet,site_web_ref)            "Site Web de référence :"
+   set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

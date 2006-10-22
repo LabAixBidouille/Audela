@@ -1,6 +1,6 @@
 #
 # Fichier : quickremote.cap
-# Mise a jour $Id: quickremote.cap,v 1.7 2006-10-21 16:33:24 robertdelmas Exp $
+# Mise a jour $Id: quickremote.cap,v 1.8 2006-10-22 08:56:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -42,6 +42,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickremote,titre)        "QuickRemote"
    set caption(quickremote,available)    "QuickRemote verfügbar"
    set caption(quickremote,refresh)      "Aktualisieren"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(quickremote,titre)        "QuickRemote"
+   set caption(quickremote,available)    "QuickRemote disponibles"
+   set caption(quickremote,refresh)      "Rafraîchir"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

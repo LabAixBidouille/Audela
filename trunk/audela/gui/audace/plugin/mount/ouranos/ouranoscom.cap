@@ -1,6 +1,6 @@
 #
 # Fichier : ouranoscom.cap
-# Mise a jour $Id: ouranoscom.cap,v 1.3 2006-06-20 19:41:40 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.cap,v 1.4 2006-10-22 09:01:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -161,6 +161,37 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranoscom,hms_angle)            "(in S M S)"
    set caption(ouranoscom,dms_angle)            "(in G M S)"
    set caption(ouranoscom,port)                 "Ouranos Port"
+   set caption(ouranoscom,2points)              ":"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(ouranoscom,pas)                  "pas"
+   set caption(ouranoscom,reglage)              "Régler"
+   set caption(ouranoscom,lire)                 "Lire"
+   set caption(ouranoscom,match)                "MATCH"
+   set caption(ouranoscom,etoile)               "Etoiles"
+   set caption(ouranoscom,messier)              "Messier"
+   set caption(ouranoscom,ngc)                  "NGC"
+   set caption(ouranoscom,ic)                   "IC"
+   set caption(ouranoscom,on)                   "on"
+   set caption(ouranoscom,off)                  "off"
+   set caption(ouranoscom,pas_de_reponse)       "Pas de réponse"
+   set caption(ouranoscom,reponse)              "Réponse"
+   set caption(ouranoscom,emis)                 "Emis :"
+   set caption(ouranoscom,recu)                 "Reçu :"
+   set caption(ouranoscom,ferme)                "Fermé"
+   set caption(ouranoscom,pos_tel)              "Ouranos - Position du télescope"
+   set caption(ouranoscom,ad)                   "Ascension Droite :"
+   set caption(ouranoscom,dec)                  "Déclinaison :"
+   set caption(ouranoscom,x1)                   "x1"
+   set caption(ouranoscom,x5)                   "x5"
+   set caption(ouranoscom,:5)                   ":5"
+   set caption(ouranoscom,ad1)                  "AD"
+   set caption(ouranoscom,dec1)                 "Déc."
+   set caption(ouranoscom,hms_angle)            "(en h m s)"
+   set caption(ouranoscom,dms_angle)            "(en d m s)"
+   set caption(ouranoscom,port)                 "Port Ouranos"
    set caption(ouranoscom,2points)              ":"
 
 # *************** Version danoise *****************************

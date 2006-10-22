@@ -1,6 +1,6 @@
 #
 # Fichier : alaudine_nt.cap
-# Mise a jour $Id: alaudine_nt.cap,v 1.3 2006-06-20 19:25:39 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.cap,v 1.4 2006-10-22 08:54:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,6 +91,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,aide)                "Hilfe"
 
    set caption(alaudine_nt,site_web_ref)        "Referenz Webseite:"
+   set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(alaudine_nt,titre)               "Alimentation AlAudine NT avec port I2C"
+   set caption(alaudine_nt,evaluation)          "Estimation de la température ambiante autour de la caméra CCD :"
+   set caption(alaudine_nt,degres)              "°C"
+   set caption(alaudine_nt,delta_t)             "Delta t (température ambiante - température CCD) maximum possible :"
+   set caption(alaudine_nt,temp_ccd_souhaite)   "Température du CCD souhaitée :"
+   set caption(alaudine_nt,temp_ccd_mesure)     "Température du CCD mesurée :"
+   set caption(alaudine_nt,ok)                  "OK"
+   set caption(alaudine_nt,appliquer)           "Appliquer"
+   set caption(alaudine_nt,fermer)              "Fermer"
+   set caption(alaudine_nt,aide)                "Aide"
+
+   set caption(alaudine_nt,site_web_ref)        "Site Web de référence :"
    set caption(alaudine_nt,site_alaudine_nt)    "http://www.astrosurf.com/soubie/alaudine.htm"
 
 # *************** Version danoise *****************************
