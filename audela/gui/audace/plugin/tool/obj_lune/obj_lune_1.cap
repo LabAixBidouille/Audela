@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune_1.cap
-# Mise a jour $Id: obj_lune_1.cap,v 1.3 2006-06-20 21:09:12 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.cap,v 1.4 2006-10-22 09:46:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -82,6 +82,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune1,sud)                   "Sud"
    set caption(obj_lune1,est)                   "Ost"
    set caption(obj_lune1,ouest)                 "West"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(obj_lune1,pourcentage)           "%"
+   set caption(obj_lune1,jour)                  "jour"
+   set caption(obj_lune1,jours)                 "jours"
+   set caption(obj_lune1,km)                    "km"
+   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,minute_arc)            "'"
+
+   set caption(obj_lune1,nord)                  "Nord"
+   set caption(obj_lune1,sud)                   "Sud"
+   set caption(obj_lune1,est)                   "Est"
+   set caption(obj_lune1,ouest)                 "Ouest"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

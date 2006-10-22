@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune_2.cap
-# Mise a jour $Id: obj_lune_2.cap,v 1.3 2006-06-20 21:09:45 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.cap,v 1.4 2006-10-22 09:47:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,6 +72,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu_eng.htm#lune"
    set caption(obj_lune2,manque_cartes_3)    "Für Linux und Windows Systeme ist eine gemeinsame Datei vorhanden."
    set caption(obj_lune2,manque_cartes_4)    "Diese Datei muß im Ordner 'gui\\audace\\plugin\\tool\\obj_lune' entpackt werden."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(obj_lune2,cartographie)       "Cartographie"
+
+   set caption(obj_lune2,visible_ombre)      "Site observable, mais non éclairé."
+   set caption(obj_lune2,face_cachee)        "Site inobservable."
+
+   set caption(obj_lune2,manque_cartes_1)    "Vous devez télécharger les cartes de la Lune à l'adresse :"
+   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu.htm#lune"
+   set caption(obj_lune2,manque_cartes_3)    "Il existe un fichier unique pour la version Windows et la version Linux."
+   set caption(obj_lune2,manque_cartes_4)    "Ce fichier doit être dézippé dans le répertoire 'gui\\audace\\plugin\\tool\\obj_lune'."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

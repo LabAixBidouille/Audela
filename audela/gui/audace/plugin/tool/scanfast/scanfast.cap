@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.8 2006-10-02 15:43:31 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.9 2006-10-22 09:48:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -282,6 +282,61 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Achtung"
    set caption(scanfast,message)          "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(scanfast,comment1)         "Procédure de calibration du SCAN en mode FAST :"
+   set caption(scanfast,comment2)         "Durée totale du calcul estimée à"
+   set caption(scanfast,secondes)         "secondes..."
+   set caption(scanfast,comment3)         "Détermination du temps mort :"
+   set caption(scanfast,comment4)         "Temps mort"
+   set caption(scanfast,ms/ligne)         "ms/ligne"
+   set caption(scanfast,comment5)         "Vous ne pourrez pas utiliser"
+   set caption(scanfast,ms)               "ms"
+   set caption(scanfast,comment6)         "Détermination du 'nombre de boucles' nécessaires :"
+   set caption(scanfast,iteration)        "Itération"
+   set caption(scanfast,comment7)         "Attendre environ"
+   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment8)         "Nombre de boucles"
+   set caption(scanfast,comment9)         "Valeur conseillée"
+   set caption(scanfast,comment10)        "Vous pouvez désormais lancer la commande :"
+
+   set caption(scanfast,scanfast)         "Scan rapide"
+   set caption(scanfast,help_titre)       "Aide pour cet outil"
+   set caption(scanfast,colonnes)         "Colonnes"
+   set caption(scanfast,lignes)           "Lignes"
+   set caption(scanfast,interligne)       "Interligne"
+   set caption(scanfast,binning)          "Binning"
+   set caption(scanfast,calcul)           "Calcul"
+   set caption(scanfast,milliseconde)     "millisec."
+   set caption(scanfast,calibration)      "Calibration"
+   set caption(scanfast,boucles)          "boucles"
+   set caption(scanfast,acquisition)      "Acquisition"
+   set caption(scanfast,goccd)            "GO CCD\non/off"
+   set caption(scanfast,stop)             "Stop"
+   set caption(scanfast,en_cours)         "En cours..."
+   set caption(scanfast,visu)             "Visu"
+   set caption(scanfast,tempsuniversel)   "TU"
+   set caption(scanfast,debut)            "Début du scan :"
+   set caption(scanfast,fin)              "Fin du scan prévue :"
+
+   set caption(scanfast,nom)              "Nom"
+   set caption(scanfast,extension)        "Extension"
+   set caption(scanfast,index)            "Index"
+   set caption(scanfast,sauvegarde)       "Sauvegarder"
+
+   set caption(scanfast,pb)               "Problème"
+   set caption(scanfast,nom_fichier)      "Donnez un nom de fichier."
+   set caption(scanfast,nom_blanc)        "Le nom du fichier ne doit pas contenir de blanc."
+   set caption(scanfast,mauvais_car)      "Le nom du fichier contient des caractères invalides."
+   set caption(scanfast,saisir_indice)    "Saisissez une valeur d'index."
+   set caption(scanfast,indice_entier)    "Index invalide (doit être un entier positif)."
+   set caption(scanfast,confirmation)     "Confirmer"
+   set caption(scanfast,fichier_existe)   "Ce fichier existe déjà sur le disque.\nConfirmez-vous l'enregistrement ?"
+
+   set caption(scanfast,attention)        "Attention"
+   set caption(scanfast,message)          "Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

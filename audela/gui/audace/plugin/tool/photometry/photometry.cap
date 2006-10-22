@@ -1,6 +1,6 @@
 #
 # Fichier : photometry.cap
-# Mise a jour $Id: photometry.cap,v 1.6 2006-10-02 15:42:16 robertdelmas Exp $
+# Mise a jour $Id: photometry.cap,v 1.7 2006-10-22 09:47:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -207,6 +207,46 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(photometry,prepare,config,date_night)       "Datum der Nacht zu präparieren"
    set caption(photometry,prepare,config,ra)               "Rektaszension des Feld zu messen"
    set caption(photometry,prepare,config,dec)              "Deklination des Feld zu messen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(photometry,titre,panneau)                   "Photométrie"
+   set caption(photometry,help,titre)                      "Aide pour cet outil"
+   set caption(photometry,2_3_couleur)                     "2 ou 3 couleurs"
+   set caption(photometry,configure)                       "Configurer"
+   set caption(photometry,prepare)                         "Préparer"
+   set caption(photometry,calibre)                         "Calibrer"
+   set caption(photometry,mesure)                          "Mesurer"
+
+   set caption(photometry,configure,titre)                 "Photométrie : Configuration"
+   set caption(photometry,configure,titre2)                "Photométrie : Configuration"
+   set caption(photometry,configure,load_button)           "Charge la configuration"
+   set caption(photometry,configure,save_button)           "Enregistre la configuration"
+   set caption(photometry,configure,return_button)         "OK"
+   set caption(photometry,configure,load)                  "Charge la configuration"
+   set caption(photometry,configure,save)                  "Enregistre la configuration"
+   set caption(photometry,configure,config,code_obs)       "Code UAI de l'observatoire"
+   set caption(photometry,configure,config,longitude)      "Longitude de l'observatoire (deg.)"
+   set caption(photometry,configure,config,sens)           "Longitude de l'observatoire (E|W)"
+   set caption(photometry,configure,config,latitude)       "Latitude de l'observatoire (deg.)"
+   set caption(photometry,configure,config,altitude)       "Altitude de l'observatoire (m)"
+   set caption(photometry,configure,config,desc_location)  "Nom de l'observatoire"
+   set caption(photometry,configure,config,desc_camera)    "Description de la caméra"
+   set caption(photometry,configure,config,desc_telescope) "Description du télescope"
+   set caption(photometry,configure,config,tel_diam)       "Diamètre du télescope (m)"
+   set caption(photometry,configure,config,tel_fd)         "F/D du télescope"
+   set caption(photometry,configure,config,comment)        "Commentaire"
+
+   set caption(photometry,prepare,titre)                   "Photométrie : Configuration"
+   set caption(photometry,prepare,titre2)                  "Photométrie : Configuration"
+   set caption(photometry,prepare,compute_button)          "Calculer"
+   set caption(photometry,prepare,return_button)           "OK"
+   set caption(photometry,prepare,config,file_cat)         "Fichier du catalogue photométrique"
+   set caption(photometry,prepare,config,file_out)         "Fichier de sortie des résultats"
+   set caption(photometry,prepare,config,date_night)       "Date de la nuit à préparer"
+   set caption(photometry,prepare,config,ra)               "Ascension Droite du champ à mesurer"
+   set caption(photometry,prepare,config,dec)              "Déclinaison du champ à mesurer"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

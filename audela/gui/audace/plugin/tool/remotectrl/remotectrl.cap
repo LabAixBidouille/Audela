@@ -1,6 +1,6 @@
 #
 # Fichier : remotectrl.cap
-# Mise a jour $Id: remotectrl.cap,v 1.3 2006-06-20 21:21:21 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.cap,v 1.4 2006-10-22 09:48:07 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -342,6 +342,73 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(rmctrl,binning)                        "Binning"
    set caption(rmctrl,goccd)                          "GO CCD"
    set caption(rmctrl,numerisation)                   "CCD Lesen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(rmctrl,title)                          "Contrôle à distance"
+   set caption(rmctrl,help_titre)                     "Aide pour cet outil"
+   set caption(rmctrl,configuration)                  "Configuration"
+   set caption(rmctrl,none)                           "Non connecté"
+   set caption(rmctrl,home)                           "Maison"
+   set caption(rmctrl,backyard)                       "Jardin"
+   set caption(rmctrl,port_ftp)                       "Port FTP"
+   set caption(rmctrl,port_rcp)                       "Port RCP"
+   set caption(rmctrl,ip)                             "IP"
+   set caption(rmctrl,connect)                        "Connecter"
+   set caption(rmctrl,unconnect)                      "Déconnecter"
+   set caption(rmctrl,wiz_con1,title)                 "Configuration de la connexion"
+   set caption(rmctrl,wiz_con1,title2)                "Configuration de la connexion"
+   set caption(rmctrl,wiz_con1,toconnect)             "Choisissez votre localisation :"
+   set caption(rmctrl,wiz_con1,tounconnect_backyard)  "Assurez-vous\nque l'ordinateur Maison\nest déconnecté ?"
+   set caption(rmctrl,wiz_con1,tounconnect_home)      "Etes-vous sûr de vouloir\ncouper la communication ?"
+   set caption(rmctrl,wiz_con1,home)                  "Maison >>"
+   set caption(rmctrl,wiz_con1,backyard)              "Jardin >>"
+   set caption(rmctrl,wiz_con1,unconnect_backyard)    "Déconnexion >>"
+   set caption(rmctrl,wiz_con1,unconnect_home)        "Déconnexion >>"
+   set caption(rmctrl,wiz_con1,cancel)                "<< Annuler"
+   set caption(rmctrl,wiz_con_client,title)           "Configuration de la connexion"
+   set caption(rmctrl,wiz_con_client,title2)          "Numéros IP et port"
+   set caption(rmctrl,wiz_con_client,title3)          "Numéro port"
+   set caption(rmctrl,wiz_con_client,connect)         "Connexion >>"
+   set caption(rmctrl,delay)                          "Durée :"
+   set caption(rmctrl,ms)                             "ms"
+   set caption(rmctrl,path_img)                       "Port FTP pour les images"
+   set caption(rmctrl,attention)                      "Attention"
+   set caption(rmctrl,port_utilise)                   "Ce port est déjà utilisé.\nVeuillez en choisir un autre."
+
+   set caption(rmctrl,coord)                          "Coord."
+   set caption(rmctrl,planete)                        "Planètes"
+   set caption(rmctrl,asteroide)                      "Astéroïdes"
+   set caption(rmctrl,etoile)                         "Etoiles"
+   set caption(rmctrl,messier)                        "Messier"
+   set caption(rmctrl,ngc)                            "NGC"
+   set caption(rmctrl,ic)                             "IC"
+   set caption(rmctrl,utilisateur)                    "Utilisateur"
+   set caption(rmctrl,zenith)                         "Zénith"
+   set caption(rmctrl,match)                          "MATCH"
+   set caption(rmctrl,match_confirm)                  "Voulez-vous poursuivre ?"
+   set caption(rmctrl,goto)                           "GOTO"
+   set caption(rmctrl,tel)                            "Monture"
+   set caption(rmctrl,non_connecte)                   "non connectée"
+   set caption(rmctrl,astre_est)                      "L'astre n'est"
+   set caption(rmctrl,pas_leve)                       "pas levé."
+   set caption(rmctrl,camera)                         "Caméra"
+   set caption(rmctrl,non_connectee)                  "non connectée"
+   set caption(rmctrl,nord)                           "N"
+   set caption(rmctrl,est)                            "E"
+   set caption(rmctrl,ouest)                          "O"
+   set caption(rmctrl,sud)                            "S"
+   set caption(rmctrl,x1)                             "x1"
+   set caption(rmctrl,x5)                             "x5"
+   set caption(rmctrl,200)                            "200"
+   set caption(rmctrl,NS)                             "NS"
+   set caption(rmctrl,HS)                             "HS"
+   set caption(rmctrl,interro)                        "?"
+   set caption(rmctrl,seconde)                        "sec."
+   set caption(rmctrl,binning)                        "Binning"
+   set caption(rmctrl,goccd)                          "GO CCD"
+   set caption(rmctrl,numerisation)                   "Lecture CCD"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
