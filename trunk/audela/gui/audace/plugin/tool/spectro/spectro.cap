@@ -1,6 +1,6 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.6 2006-10-02 15:42:31 robertdelmas Exp $
+# Mise a jour $Id: spectro.cap,v 1.7 2006-10-22 09:48:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -152,6 +152,35 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,configure,config,tel_diam)       "Teleskop Durchmesser (m)"
    set caption(spectro,configure,config,tel_fd)         "Teleskop F/D"
    set caption(spectro,configure,config,comment)        "Kommentar"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Spectroscopie"
+   set caption(spectro,help,titre)                      "Aide pour cet outil"
+   set caption(spectro,configure)                       "Configurer"
+   set caption(spectro,editeur_profil)                  "Editeur de profil"
+   set caption(spectro,lhires)                          "LHIRES III Be"
+   set caption(spectro,BeSS)                            "Accès BeSS"
+
+   set caption(spectro,configure,titre)                 "Spectroscopie : Configuration"
+   set caption(spectro,configure,titre2)                "Spectroscopie : Configuration"
+   set caption(spectro,configure,load_button)           "Charge la configuration"
+   set caption(spectro,configure,save_button)           "Enregistre la configuration"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Charge la configuration"
+   set caption(spectro,configure,save)                  "Enregistre la configuration"
+   set caption(spectro,configure,config,code_obs)       "Code UAI de l'observatoire"
+   set caption(spectro,configure,config,longitude)      "Longitude de l'observatoire (deg.)"
+   set caption(spectro,configure,config,sens)           "Longitude de l'observatoire (E|W)"
+   set caption(spectro,configure,config,latitude)       "Latitude de l'observatoire (deg.)"
+   set caption(spectro,configure,config,altitude)       "Altitude de l'observatoire (m)"
+   set caption(spectro,configure,config,desc_location)  "Nom de l'observatoire"
+   set caption(spectro,configure,config,desc_camera)    "Description de la caméra"
+   set caption(spectro,configure,config,desc_telescope) "Description du télescope"
+   set caption(spectro,configure,config,tel_diam)       "Diamètre du télescope (m)"
+   set caption(spectro,configure,config,tel_fd)         "F/D du télescope"
+   set caption(spectro,configure,config,comment)        "Commentaire"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

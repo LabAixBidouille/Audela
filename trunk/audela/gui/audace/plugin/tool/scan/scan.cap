@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.10 2006-10-02 15:43:16 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.11 2006-10-22 09:48:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -197,6 +197,44 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,attention)      "Achtung"
    set caption(scan,message)        "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(scan,drift_scan)     "Drift scan"
+   set caption(scan,help_titre)     "Aide pour cet outil"
+   set caption(scan,colonnes)       "Colonnes"
+   set caption(scan,lignes)         "Lignes"
+   set caption(scan,pixel)          "Pixel"
+   set caption(scan,micron)         "µm"
+   set caption(scan,interligne)     "Interligne"
+   set caption(scan,focale)         "Focale"
+   set caption(scan,metre)          "m"
+   set caption(scan,declinaison)    "Déc."
+   set caption(scan,calcul)         "Calcul"
+   set caption(scan,milliseconde)   "millisec."
+   set caption(scan,acquisition)    "Acquisition"
+   set caption(scan,goccd)          "GO CCD\non/off"
+   set caption(scan,stop)           "Stop"
+   set caption(scan,en_cours)       "En cours..."
+   set caption(scan,visu)           "Visu"
+   set caption(scan,binning)        "Binning"
+   set caption(scan,nom)            "Nom"
+   set caption(scan,extension)      "Extension"
+   set caption(scan,index)          "Index"
+   set caption(scan,sauvegarde)     "Sauvegarder"
+
+   set caption(scan,pb)             "Problème"
+   set caption(scan,nom_fichier)    "Donnez un nom de fichier."
+   set caption(scan,nom_blanc)      "Le nom du fichier ne doit pas contenir de blanc."
+   set caption(scan,mauvais_car)    "Le nom du fichier contient des caractères invalides."
+   set caption(scan,saisir_indice)  "Saisissez une valeur d'index."
+   set caption(scan,indice_entier)  "Index invalide (doit être un entier positif)."
+   set caption(scan,confirmation)   "Confirmer"
+   set caption(scan,fichier_existe) "Ce fichier existe déjà sur le disque.\nConfirmez-vous l'enregistrement ?"
+
+   set caption(scan,attention)      "Attention"
+   set caption(scan,message)        "Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.3 2006-06-20 21:08:24 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.4 2006-10-22 09:46:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -367,6 +367,78 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(obj_lune,nom)                 "Namen:"
    set caption(obj_lune,calculer)            "Rechnen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(obj_lune,titre)               "Objectif Lune"
+   set caption(obj_lune,goto)                "GOTO"
+   set caption(obj_lune,ephemerides)         "Ephémérides"
+   set caption(obj_lune,cartographie)        "Cartographie"
+   set caption(obj_lune,carte_libration)     "Cartes des librations"
+   set caption(obj_lune,meilleur_moment)     "Meilleure période pour l'observation"
+   set caption(obj_lune,match)               "MATCH"
+   set caption(obj_lune,fermer)              "Fermer"
+   set caption(obj_lune,match_confirm)       "Voulez-vous poursuivre ?"
+
+   set caption(obj_lune,reference)           "Référence"
+   set caption(obj_lune,crateres)            "Cratères"
+   set caption(obj_lune,chaines_crateres)    "Chaînes de cratères"
+   set caption(obj_lune,montagnes_isolees)   "Montagnes isolées"
+   set caption(obj_lune,chaines_montagnes)   "Chaînes de montagnes"
+   set caption(obj_lune,vallees)             "Vallées"
+   set caption(obj_lune,rainures)            "Rainures"
+   set caption(obj_lune,systemes_rainures)   "Systèmes de rainures"
+   set caption(obj_lune,failles)             "Failles"
+   set caption(obj_lune,dorsales)            "Dorsales"
+   set caption(obj_lune,systemes_dorsales)   "Systèmes de dorsales"
+   set caption(obj_lune,domes)               "Dômes"
+   set caption(obj_lune,caps)                "Caps"
+   set caption(obj_lune,marais)              "Marais"
+   set caption(obj_lune,lacs)                "Lacs"
+   set caption(obj_lune,golfes)              "Golfes"
+   set caption(obj_lune,mers)                "Mers"
+   set caption(obj_lune,ocean)               "Océan"
+   set caption(obj_lune,plaine_basse)        "Plaine basse"
+   set caption(obj_lune,sites_alunissage)    "Sites d'alunissage"
+   set caption(obj_lune,zone_albedo)         "Zone d'albédo remarquable"
+   set caption(obj_lune,pheno_transitoires)  "Phénomènes transitoires"
+   set caption(obj_lune,origine)             "Origine du nom"
+   set caption(obj_lune,pos_caract)          "Positionnement et caractéristiques"
+   set caption(obj_lune,latitude)            "Latitude sélène :"
+   set caption(obj_lune,longitude)           "Longitude sélène :"
+   set caption(obj_lune,dimension)           "Dimension (en km) :"
+   set caption(obj_lune,carte_atlas)         "Carte Atlas Gründ :"
+   set caption(obj_lune,objectif)            "Coordonnées du GoTo :"
+   set caption(obj_lune,ad)                  "AD (J2000) :"
+   set caption(obj_lune,dec)                 "Déc. (J2000) :"
+
+   set caption(obj_lune,date)                "Date :"
+   set caption(obj_lune,heure)               "Temps Universel (TU) :"
+   set caption(obj_lune,pos_centre)          "Coordonnées topocentriques de la Lune :"
+   set caption(obj_lune,hauteur)             "Hauteur :"
+   set caption(obj_lune,azimut)              "Azimut :"
+   set caption(obj_lune,anglehoraire)        "Angle horaire :"
+   set caption(obj_lune,diametre_apparent)   "Diamètre apparent :"
+   set caption(obj_lune,magnitude)           "Magnitude :"
+   set caption(obj_lune,fraction_eclairee)   "Fraction illuminée du disque lunaire :"
+   set caption(obj_lune,age)                 "Age de la Lune :"
+   set caption(obj_lune,distance_terre)      "Distance à la Terre :"
+   set caption(obj_lune,libration,n_s)       "Libration topocentrique en latitude (N/S) :"
+   set caption(obj_lune,libration,e_o)       "Libration topocentrique en longitude (E/O) :"
+   set caption(obj_lune,long_terminateur)    "Longitude du terminateur :"
+   set caption(obj_lune,nl)                  "Nouvelle Lune :"
+   set caption(obj_lune,pq)                  "Premier Quartier :"
+   set caption(obj_lune,pl)                  "Pleine Lune :"
+   set caption(obj_lune,dq)                  "Dernier Quartier :"
+
+   set caption(obj_lune,atlas)               "Atlas lunaire d'Antonin RUKL"
+   set caption(obj_lune,carte_choisies)      "Cartes du site :"
+   set caption(obj_lune,carte_choisie)       "Carte choisie :"
+   set caption(obj_lune,carte_courante)      "Carte courante :"
+
+   set caption(obj_lune,nom)                 "Nom :"
+   set caption(obj_lune,calculer)            "Calculer"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
