@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.8 2006-10-21 01:18:15 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.9 2006-10-22 09:21:26 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -717,13 +717,13 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image1) create image 0 0 -image image1000 -anchor nw -tag img1  
+   $zone(image1) create image 0 0 -image image1000 -anchor nw -tag img1
    image delete image1000
 }
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image2) create image 0 0 -image image1000 -anchor nw -tag img1  
+   $zone(image2) create image 0 0 -image image1000 -anchor nw -tag img1
    image delete image1000
 }
 
@@ -992,19 +992,15 @@ proc testvisu { } {
       #--- Definit les limites de seuils bas et haut et place les
       #--- curseurs des barres de seuil au bon endroit 
       set lohi [ testseuillimites 1000 1 ]
-::console::disp "lohi-1 = $lohi \n"
       testsetscales $lohi 1
       set lohi [ testseuillimites 1000 2 ]
-::console::disp "lohi-2 = $lohi \n"
       testsetscales $lohi 2
       set lohi [ testseuillimites 1000 3 ]
-::console::disp "lohi-3 = $lohi \n"
       testsetscales $lohi 3
       #--- Ajuste les scroll bars
       $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
       #--- Affiche l'image
       visu1000 disp $mycuts1 $mycuts2 $mycuts3
-
    } else {
       set zone(image1,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
       set zone(image1,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
@@ -1014,7 +1010,6 @@ proc testvisu { } {
       #--- Definit les limites de seuils bas et haut
       set lohi [ testseuillimites 1000 1 ]
       #--- Place les curseurs des barres de seuil au bon endroit
-::console::disp "lohi-N&B = $lohi \n"
       testsetscales $lohi 1
       #--- Ajuste les scroll bars
       $zone(image1) configure -scrollregion [ list 0 0 $zone(image1,naxis1) $zone(image1,naxis2) ]
@@ -1141,16 +1136,13 @@ proc testload { } {
       } else {
          append infos(dir) "/"
       }
-     # set error [ catch { rgb_load $filename } message ]
       buf1000 load $filename
       if { [ buf1000 getnaxis ] == "3" } {
          set infos(type_image) "couleur"
-         testvisu
       } else {
-        # buf1000 load $filename
          set infos(type_image) "noiretblanc"
-         testvisu
       }
+      testvisu
    }
 }
 
@@ -1182,7 +1174,7 @@ proc testsave { } {
          rgb_save $filename
       }
       if { $infos(type_image) == "noiretblanc" } {
-       buf1000 save $filename
+         buf1000 save $filename
       }
    }
 }
@@ -1222,7 +1214,7 @@ proc testgetseuils { bufnum } {
       set hi [ lindex [ buf$bufnum getkwd DATAMAX ] 1 ]
    }
    if { $hi == "" } {
-      #--- Sinon on fait une stat sur l'image
+      #--- Sinon on fait un stat sur l'image
       buf$bufnum stat 
       set hi [ lindex [ buf$bufnum getkwd MIPS-HI ] 1 ]
       set lo [ lindex [ buf$bufnum getkwd MIPS-LO ] 1 ]
@@ -1347,10 +1339,8 @@ proc testchangeLoCut1 { foo } {
       set s [ expr 1.*($foo-$mini)/($maxi-$mini) ]
       set s [ expr (1.-$s)*($maxi-$mini)+$mini ]
       set sbh1 [ list [ lindex $sbh1 0 ] $s ]
-::console::disp "s = $s \n"
       set infos(rgbcuts) [ list $sbh1 $sbh2 $sbh3 ]
       set seuils_rgb [ visu1000 cut ]
-::console::disp "seuils_rgb = $seuils_rgb \n"
       visu1000 cut [ lreplace $seuils_rgb 1 1 $s ]
    }
 }

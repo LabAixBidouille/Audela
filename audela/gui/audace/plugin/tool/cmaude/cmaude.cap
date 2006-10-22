@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.3 2006-06-20 20:53:52 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.4 2006-10-22 09:22:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -54,6 +54,25 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(cmaude,titre_mascot)    "Acquisition (MASCOT)"
+   set caption(cmaude,help_titre)      "Aide pour cet outil"
+   set caption(cmaude,bias)            "Image du bias"
+   set caption(cmaude,dark)            "Image du dark"
+   set caption(cmaude,overlay)         "Image d'overlay"
+   set caption(cmaude,nom_image)       "Nom de l'image"
+   set caption(cmaude,binning)         "Binning"
+   set caption(cmaude,temps_pose)      "Pose (sec.)"
+   set caption(cmaude,entre_2_images)  "Temps entre 2 img. (sec.)"
+   set caption(cmaude,go_acquisition)  "GO CCD"
+   set caption(cmaude,stop)            "STOP"
+   set caption(cmaude,ephemerides)     "Ephémérides"
+   set caption(cmaude,status)          "Statut"
+   set caption(cmaude,status1)         "Statut de l'acquisition"
+   set caption(cmaude,status2)         "---"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

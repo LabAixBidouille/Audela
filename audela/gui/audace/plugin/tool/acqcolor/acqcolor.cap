@@ -1,6 +1,6 @@
 #
 # Fichier : acqcolor.cap
-# Mise a jour $Id: acqcolor.cap,v 1.4 2006-06-20 20:35:43 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.cap,v 1.5 2006-10-22 09:21:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -180,6 +180,41 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,2_fenetre)           "2 oder"
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
    set caption(acqcolor,entete_fits_noimage) "Es ist jetzt kein Bild im Speicher."
+
+   set caption(acqcolor,tiret)         "-"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(acqcolor,main_title)          "Imagerie couleur"
+   set caption(acqcolor,load)                "Ouvrir"
+   set caption(acqcolor,save)                "Enregistrer sous..."
+   set caption(acqcolor,saveauto)            "Enregistrer"
+   set caption(acqcolor,pointage)            "Pointage 2x2"
+   set caption(acqcolor,acqfen)              "Acq. fenêtre"
+   set caption(acqcolor,obtu)                "Régler l'obturateur"
+   set caption(acqcolor,jpeg)                "Enregistrer en Jpeg"
+   set caption(acqcolor,sec)                 "sec. :"
+   set caption(acqcolor,raz)                 "Rinçage CCD"
+   set caption(acqcolor,lecture)             "Lecture CCD"
+   set caption(acqcolor,total)               "Acquisition 1x1"
+   set caption(acqcolor,acqserie)            "Acq. série"
+   set caption(acqcolor,nbimage)             "Nombre :"
+   set caption(acqcolor,attente)             "Délai (ms) :"
+   set caption(acqcolor,seprvb)              "Séparation RVB"
+   set caption(acqcolor,trichro)             "Trichromie"
+   set caption(acqcolor,smedianrvb)          "Médiane"
+   set caption(acqcolor,entete_fits)         "En-tête FITS"
+   set caption(acqcolor,entete_fits_B)       "En-tête FITS - Image bleue"
+   set caption(acqcolor,entete_fits_V)       "En-tête FITS - Image verte"
+   set caption(acqcolor,entete_fits_R)       "En-tête FITS - Image rouge"
+   set caption(acqcolor,luminosite)          "Luminosité"
+   set caption(acqcolor,vert)                "Vert"
+   set caption(acqcolor,bleu)                "Bleu"
+   set caption(acqcolor,1_fenetre)           "1 zone d'affichage ou"
+   set caption(acqcolor,2_fenetre)           "2 ou"
+   set caption(acqcolor,2_fenetre_pth)       "2 PTh"
+   set caption(acqcolor,entete_fits_noimage) "Il n'y a pas d'image actuellement en mémoire."
 
    set caption(acqcolor,tiret)         "-"
 

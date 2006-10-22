@@ -1,6 +1,6 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.4 2006-08-12 21:08:10 robertdelmas Exp $
+# Mise a jour $Id: animate.cap,v 1.5 2006-10-22 09:22:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,6 +87,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,erreur_fichier1)   "Der Gattungsnamen der Bilder"
    set caption(animate,erreur_fichier2)   "existiert nicht oder ist nicht"
    set caption(animate,erreur_fichier3)   "in das laufendes Register."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(animate,animation)         "Animation"
+   set caption(animate,help_titre)        "Aide pour cet outil"
+   set caption(animate,nom_generique)     "Nom générique"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Nombre\nd'images"
+   set caption(animate,delai_ms)          "Délai (ms)"
+   set caption(animate,nb_boucles)        "Nombre de\nboucles"
+   set caption(animate,go_animation)      "Go Animation"
+   set caption(animate,attention)         "Attention"
+   set caption(animate,erreur_fichier1)   "Le nom générique des images"
+   set caption(animate,erreur_fichier2)   "n'existe pas ou elles ne sont pas"
+   set caption(animate,erreur_fichier3)   "dans le répertoire de travail."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
