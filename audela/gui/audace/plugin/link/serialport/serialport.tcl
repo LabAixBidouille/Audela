@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.4 2006-10-21 16:34:13 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.5 2006-10-23 18:33:34 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -57,6 +57,7 @@ proc ::serialport::confToWidget { } {
    variable widget
    global conf
 
+   set widget(port_exclus) "$conf(serialport,port_exclus)"
 }
 
 #------------------------------------------------------------
@@ -101,6 +102,7 @@ proc ::serialport::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::serialport::fillConfigPage { frm } {
    variable private
+   variable widget
    global caption
 
    #--- Je memorise la reference de la frame
@@ -113,8 +115,14 @@ proc ::serialport::fillConfigPage { frm } {
       Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(serialport,refresh)" -command { ::audace::Recherche_Ports ; ::serialport::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
+   pack $frm.available -side top -fill both -expand true
 
-   pack $frm.available -side left -fill both -expand true
+   frame $frm.port_exclus -borderwidth 0 -relief ridge
+      label $frm.port_exclus_lab -text "$caption(serialport,port_exclus)"
+      pack $frm.port_exclus_lab -in $frm.port_exclus -side left -padx 5 -pady 5
+      entry $frm.port_exclus_ent -textvariable serialport::widget(port_exclus) -width 25
+      pack $frm.port_exclus_ent -in $frm.port_exclus -side left
+   pack $frm.port_exclus -side top -fill x
 
    #--- je mets  a jour la liste
    refreshAvailableList
@@ -140,6 +148,20 @@ proc ::serialport::getDriverType { } {
 #------------------------------------------------------------
 proc ::serialport::getHelp { } {
    return "serialport.htm"
+}
+
+#------------------------------------------------------------
+#  initConf 
+#     initialise les parametres dans le tableau conf()
+#  
+#  return rien
+#------------------------------------------------------------
+proc initConf { } {
+   global conf
+
+   if { ! [ info exists conf(serialport,port_exclus) ] } { set conf(serialport,port_exclus) "COM3" }
+
+   return
 }
 
 #------------------------------------------------------------
@@ -234,6 +256,9 @@ proc ::serialport::init { } {
    #--- Charge le fichier caption
    uplevel #0  "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
 
+   #--- Je charge les variables d'environnement
+   initConf
+
    #--- je fixe le nom generique de la liaison
    if {  $::tcl_platform(os) == "Linux" } {
       set private(genericName) "/dev/tty"
@@ -327,6 +352,7 @@ proc ::serialport::widgetToConf { } {
    variable widget
    global conf
 
+   set conf(serialport,port_exclus) $widget(port_exclus)
 }
 
 ::serialport::init
