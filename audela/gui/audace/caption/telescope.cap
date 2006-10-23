@@ -1,6 +1,6 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.7 2006-10-21 12:55:46 robertdelmas Exp $
+# Mise a jour $Id: telescope.cap,v 1.8 2006-10-23 17:27:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -295,10 +295,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,cote_est)        "Lado este"
    set caption(telescope,cote_ouest)      "Lado oeste"
 
-   set caption(telescope,mobile_etoile)   "# Suivi sidéral"
-   set caption(telescope,ctl_mobile:)     "# Contrôle de la vitesse de suivi :"
-   set caption(telescope,mobile_ad)       "# Vitesse en ascension droite"
-   set caption(telescope,mobile_dec)      "# Vitesse en déclinaison"
+   set caption(telescope,mobile_etoile)   "Seguimento sideral"
+   set caption(telescope,ctl_mobile:)     "Controlo da velocidade de seguimento:"
+   set caption(telescope,mobile_ad)       "Velocidade em ascensão recta"
+   set caption(telescope,mobile_dec)      "Velocidade em declinação"
 
    set caption(telescope,2points)         ":"
 

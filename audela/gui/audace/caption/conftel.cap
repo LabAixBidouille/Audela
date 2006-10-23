@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.14 2006-10-21 12:56:52 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.15 2006-10-23 17:27:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -683,12 +683,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,change_position_telescope)     "Mudar a Posição Inicial do Telescópio:"
    set caption(conftel,temma_init_zenith)             "Inicialização Zenith"
    set caption(conftel,temma_ctl_mobile)              "Controlo da Velocidade de Guiagem"
-   set caption(conftel,temma_mobile_etoile)           "# Suivi sidéral"
-   set caption(conftel,temma_ctl_mobile:)             "# Contrôle de la vitesse de suivi :"
-   set caption(conftel,temma_mobile_ad)               "# Vitesse en ascension droite"
-   set caption(conftel,temma_mobile_dec)              "# Vitesse en déclinaison"
+   set caption(conftel,temma_mobile_etoile)           "Seguimento sideral"
+   set caption(conftel,temma_ctl_mobile:)             "Controlo da velocidade de seguimento:"
+   set caption(conftel,temma_mobile_ad)               "Velocidade em ascensão recta"
+   set caption(conftel,temma_mobile_dec)              "Velocidade em declinação"
 
-   set caption(conftel,driver_ascom)                  "# Driver ASCOM"
+   set caption(conftel,driver_ascom)                  "Driver ASCOM"
 
    set caption(conftel,ra)                            "AR"
    set caption(conftel,dec)                           "Dec."
