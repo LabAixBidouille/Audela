@@ -1,6 +1,6 @@
 #
 # Fichier : confoptic.cap
-# Mise a jour $Id: confoptic.cap,v 1.8 2006-10-20 16:43:11 robertdelmas Exp $
+# Mise a jour $Id: confoptic.cap,v 1.9 2006-10-23 17:27:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -151,9 +151,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,camera)             "Câmara:"
    set caption(confoptic,nocam)              "Sem Câmara"
    set caption(confoptic,capteur_ccd)        "Sensor CCD:"
-   set caption(confoptic,cell_dim)           "# Dimensions d'un photosite (µm) :"
-   set caption(confoptic,binning)            "# Binning :"
-   set caption(confoptic,pix_dim)            "# Dimensions d'un pixel (µm) :"
+   set caption(confoptic,cell_dim)           "Dimensões de um foto-sensor (µm):"
+   set caption(confoptic,binning)            "Binning:"
+   set caption(confoptic,pix_dim)            "Dimensões de um pixel (µm):"
    set caption(confoptic,champ)              "Campo do CCD (' x '):"
    set caption(confoptic,echantillonnage)    "Amostragem (''/pixel):"
    set caption(confoptic,calcul)             "Calcular"

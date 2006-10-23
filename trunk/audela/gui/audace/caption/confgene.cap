@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.5 2006-10-21 20:06:15 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.6 2006-10-23 17:29:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,7 +24,7 @@ set caption(confgene,fichier_image_new_ext)                 "You can choose the 
 set caption(confgene,fichier_image_compres)                 "Compressed Image Files (.gz)"
 set caption(confgene,fichier_image_jpeg_quality)            "Default Jpeg Quality:"
 set caption(confgene,fichier_image_jpeg_newquality)         "You can choose a new quality (5 to 100):"
-set caption(confgene,fichier_images_seuils_visu)            "# Enregistrer les images avec les seuils de la visu"
+set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds"
 
 set caption(confgene,alarme)                                "Aural warning when exposure ends"
 set caption(confgene,alarme_active)                         "Enable Aural Warning"
@@ -514,7 +514,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Ficheiros de imagem comprimidos (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Qualidade JPEG por defeito:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Pode escolher uma qualidade (5 a 100):"
-   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
+   set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização"
 
    set caption(confgene,alarme)                             "Alarme sonoro no fim da exposição"
    set caption(confgene,alarme_active)                      "Activar alarme sonoro"
