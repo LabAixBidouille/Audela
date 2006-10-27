@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.26 2006-10-23 17:28:23 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.27 2006-10-27 15:31:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -1220,8 +1220,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,formule)                        "Formula:"
    set caption(audace,image,image_affichee:)          "En la imagen mostrada:"
    set caption(audace,image,image_affichee)           "En la imagen mostrada"
-   set caption(audace,image,image_a_choisir:)         "# U otra imagen en el disco duro:"
-   set caption(audace,image,image_a_choisir)          "# U otra imagen en el disco duro"
+   set caption(audace,image,image_a_choisir:)         "A una imagen en el disco duro:"
+   set caption(audace,image,image_a_choisir)          "A una imagen en el disco duro"
    set caption(audace,filtre_image_affichee)          "(en la imagen mostrada)"
    set caption(audace,images,entree-)                 "Imágenes de entrada"
    set caption(audace,images,entree)                  "Imágenes de entrada:"
@@ -1553,8 +1553,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,formule)                        "Formel:"
    set caption(audace,image,image_affichee:)          "In ezeigtes Bild:"
    set caption(audace,image,image_affichee)           "In ezeigtes Bild"
-   set caption(audace,image,image_a_choisir:)         "# Auf ein anderes Bild des Festplatte:"
-   set caption(audace,image,image_a_choisir)          "# Auf ein anderes Bild des Festplatte"
+   set caption(audace,image,image_a_choisir:)         "Von eine Festplatte Bild:"
+   set caption(audace,image,image_a_choisir)          "Von eine Festplatte Bild"
    set caption(audace,filtre_image_affichee)          "(in ezeigtes Bild)"
    set caption(audace,images,entree-)                 "Eingang Bilder"
    set caption(audace,images,entree)                  "Eingang Bilder:"
