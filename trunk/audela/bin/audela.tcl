@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.9 2006-10-21 13:00:22 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.10 2006-10-27 20:37:58 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -61,7 +61,7 @@ proc basecaption { {langage ""} } {
       }
    }
    #--- Definition of captions
-   source [ file join ../gui/audace/caption audela.cap ]
+   source [ file join $::audela_start_dir ../gui/audace/caption audela.cap ]
    return $langage
 }
 
