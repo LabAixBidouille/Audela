@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.5 2006-10-23 18:33:34 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.6 2006-10-27 15:30:38 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -57,7 +57,7 @@ proc ::serialport::confToWidget { } {
    variable widget
    global conf
 
-   set widget(port_exclus) "$conf(serialport,port_exclus)"
+   set widget(conf_serial,port_exclus) "$conf(serial,port_exclus)"
 }
 
 #------------------------------------------------------------
@@ -120,7 +120,7 @@ proc ::serialport::fillConfigPage { frm } {
    frame $frm.port_exclus -borderwidth 0 -relief ridge
       label $frm.port_exclus_lab -text "$caption(serialport,port_exclus)"
       pack $frm.port_exclus_lab -in $frm.port_exclus -side left -padx 5 -pady 5
-      entry $frm.port_exclus_ent -textvariable serialport::widget(port_exclus) -width 25
+      entry $frm.port_exclus_ent -textvariable serialport::widget(conf_serial,port_exclus) -width 25
       pack $frm.port_exclus_ent -in $frm.port_exclus -side left
    pack $frm.port_exclus -side top -fill x
 
@@ -159,7 +159,7 @@ proc ::serialport::getHelp { } {
 proc initConf { } {
    global conf
 
-   if { ! [ info exists conf(serialport,port_exclus) ] } { set conf(serialport,port_exclus) "COM3" }
+   if { ! [ info exists conf(serial,port_exclus) ] } { set conf(serial,port_exclus) "COM3" }
 
    return
 }
@@ -352,7 +352,7 @@ proc ::serialport::widgetToConf { } {
    variable widget
    global conf
 
-   set conf(serialport,port_exclus) $widget(port_exclus)
+   set conf(serial,port_exclus) $widget(conf_serial,port_exclus)
 }
 
 ::serialport::init

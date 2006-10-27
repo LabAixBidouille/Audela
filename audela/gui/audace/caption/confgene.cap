@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.6 2006-10-23 17:29:38 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.7 2006-10-27 15:31:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -318,7 +318,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Ficheros de imágenes comprimidos (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Calidad JPEG por defecto:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Puede elegir una calidad (5 to 100):"
-   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
+   set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización"
 
    set caption(confgene,alarme)                             "Alarma sonora en fin de exposición"
    set caption(confgene,alarme_active)                      "Activar alarma sonora"
@@ -416,7 +416,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_compres)              "Verminderte Bild Datei (.gz)"
    set caption(confgene,fichier_image_jpeg_quality)         "Mangel JPEG Qualität:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Sie können eine Qualität wählen (5 bis 100):"
-   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
+   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern"
 
    set caption(confgene,alarme)                             "Bildleuchtungsende ton Alarm"
    set caption(confgene,alarme_active)                      "Aktiviert die Ton Alarm"

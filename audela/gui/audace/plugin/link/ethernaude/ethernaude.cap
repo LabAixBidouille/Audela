@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Mise a jour $Id: ethernaude.cap,v 1.9 2006-10-22 08:54:50 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.cap,v 1.10 2006-10-27 15:30:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -104,7 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "IP Adresse prüfen (Ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Diese IP Nummer zu EthernAude vor den Zusammenhang schicken"
-   set caption(ethernaude,debug)                   "# Mode débug"
+   set caption(ethernaude,debug)                   "Debug Modus"
    set caption(ethernaude,lecture_pixel)           "Ein Rasterpunkt abtasten:"
    set caption(ethernaude,micro_sec_bornes)        "Mikrosekunden (Ein Wert zwischen 5.0 und 15.0 µs wählen)"
    set caption(ethernaude,tutorial_ethernaude)     "Vorstellung und Tutorial"
