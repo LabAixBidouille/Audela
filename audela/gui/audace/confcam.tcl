@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.35 2006-10-21 16:35:02 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.36 2006-10-28 13:49:18 robertdelmas Exp $
 #
 
 global confCam
@@ -3179,13 +3179,13 @@ namespace eval ::confCam {
       #---
       if { $result == 0 } {
          switch -exact -- $camProduct {
-            audine  {
-                switch -exact [::confLink::getLinkNamespace $confCam(audine,port)] {
-                   "parallelport" { return 1 }
-                   "audinet"      { return 1 }
-                   "ethernaude"   { return 1 }
-                   default        { return 0 }
-                }
+            audine {
+               switch -exact [::confLink::getLinkNamespace $confCam(audine,port)] {
+                  "parallelport" { return 1 }
+                  "audinet"      { return 1 }
+                  "ethernaude"   { return 1 }
+                  default        { return 0 }
+               }
             }
             default { 
                return 0 
@@ -3884,7 +3884,7 @@ namespace eval ::confCam {
                      #--- Parametrage des longues poses 
                      if { $conf(dslr,longuepose) == "1" } {
                         switch [::confLink::getLinkNamespace $conf(dslr,longueposeport)] {
-                            quickremote {
+                           quickremote {
                               #--- Je cree la liaison
                               set linkNo [::confLink::create $conf(dslr,longueposeport) cam$camNo longuepose "bit $conf(dslr,longueposelinkbit)"]
                               #---
@@ -4057,7 +4057,7 @@ namespace eval ::confCam {
                   "$caption(confcam,obtu_audine)"   { cam$camNo shuttertype audine }
                   "$caption(confcam,obtu_i2c)"      { cam$camNo shuttertype audine }
                   "$caption(confcam,obtu_thierry)"  { 
-                    cam$camNo shuttertype thierry
+                     cam$camNo shuttertype thierry
                      set confcolor(obtu_pierre) "1"
                      ::Obtu_Pierre::run
                   }
