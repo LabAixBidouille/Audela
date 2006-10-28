@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.26 2006-10-19 18:55:12 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.27 2006-10-28 20:39:49 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -89,8 +89,6 @@ namespace eval ::audace {
       set audace(rep_audela) "[pwd]"
       #--- Repertoire d'installation
       set audace(rep_install) [ file normalize [ file join $audace(rep_audela) .. ] ]
-      #--- Recherche des ports com
-      ::audace::Recherche_Ports
       #--- Chargement de la configuration (config.ini)
       Recup_Config
       #--- Chargement du repertoire des images
@@ -826,9 +824,9 @@ namespace eval ::audace {
 
       #--- Affichage des ports com disponibles
       if { [ llength $audace(list_com) ] != "0" } {
-              $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $audace(list_com) \n\n"
+         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $audace(list_com) \n\n"
       } else {
-              $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port) \n\n"
+         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port) \n\n"
       }
 
       #--- Définition d'un fichier palette temporaire, modifiable dynamiquement
@@ -921,58 +919,6 @@ namespace eval ::audace {
       #--- Connexion au demarrage du driver de carte
       if { $conf(confCat,start) == "1" } {
          ::confCat::configureDriver
-      }
-   }
-
-   proc Recherche_Ports { } {
-      global audace
-      global caption
-
-      #--- Suivant l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set port_com "/dev/ttyS"
-         set port_com_usb "/dev/ttyUSB"
-         set kk "0"
-         set kd "2"
-      } else {
-         set port_com "COM"
-         set kk "1"
-         set kd "3"
-      }
-
-      #--- Recherche des ports com
-      set comlist              ""
-      set comlist_usb          ""
-      set audace(list_com)     ""
-
-      for { set k $kk } { $k < 20 } { incr k } {
-         if { $k != "$kd" } {
-            set errnum [ catch { open $port_com$k r+ } msg ]
-            if { $errnum == "0" } {
-               lappend comlist $k
-               close $msg
-            }
-         }
-      }
-      set long_com [ llength $comlist ]
-
-      for { set k 0 } { $k < $long_com } { incr k } {
-         lappend audace(list_com) "$port_com[ lindex $comlist $k ]"
-      }
-
-      if { $::tcl_platform(os) == "Linux" } {
-         for { set k $kk } { $k < 20 } { incr k } {
-            set errnum [ catch { open $port_com_usb$k r+ } msg ]
-            if { $errnum == "0" } {
-               lappend comlist_usb $k
-               close $msg
-            }
-         }
-         set long_com_usb [ llength $comlist_usb ]
-
-         for { set k 0 } { $k < $long_com_usb } { incr k } {
-            lappend audace(list_com) "$port_com_usb[ lindex $comlist_usb $k ]"
-         }
       }
    }
 
