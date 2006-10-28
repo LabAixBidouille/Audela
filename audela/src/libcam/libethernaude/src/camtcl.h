@@ -18,8 +18,9 @@
     {"directclear", (Tcl_CmdProc *) cmdEthernaudeDirectClear}, \
     {"directreset", (Tcl_CmdProc *) cmdEthernaudeDirectReset}, \
     {"directidentity", (Tcl_CmdProc *) cmdEthernaudeDirectIdentity}, \
-    {"debug", (Tcl_CmdProc *) cmdEthernaudeDebug}, \
-    {"gps", (Tcl_CmdProc *) cmdEthernaudeGPS},
+    {"debug_eth", (Tcl_CmdProc *) cmdEthernaudeDebug}, \
+    {"gps", (Tcl_CmdProc *) cmdEthernaudeGPS}, \
+    {"getccd_infos", (Tcl_CmdProc *) cmdEthernaudeGetCCDInfos},
 
 
  /* === Specific commands for that camera === */
@@ -34,5 +35,6 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
 int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdEthernaudeDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif
