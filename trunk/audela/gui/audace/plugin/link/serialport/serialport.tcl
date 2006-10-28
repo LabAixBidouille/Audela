@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.6 2006-10-27 15:30:38 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.7 2006-10-28 20:39:28 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -36,7 +36,7 @@ namespace eval serialport {
 #  configureDriver
 #     configure le driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::serialport::configureDriver { } {
    global audace
@@ -64,7 +64,7 @@ proc ::serialport::confToWidget { } {
 #  create
 #     demarre la liaison
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::serialport::create { linkLabel deviceId usage comment } {
    variable private
@@ -81,7 +81,7 @@ proc ::serialport::create { linkLabel deviceId usage comment } {
 #  delete
 #     arrete la liaison et libere les ressources occupees
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::serialport::delete { linkLabel deviceId usage } {
    #--- pour l'instant, la liaison est arretee par le pilote du peripherique
@@ -98,7 +98,7 @@ proc ::serialport::delete { linkLabel deviceId usage } {
 #  fillConfigPage
 #     fenetre de configuration du driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::serialport::fillConfigPage { frm } {
    variable private
@@ -113,7 +113,7 @@ proc ::serialport::fillConfigPage { frm } {
       listbox $frm.available.list
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
       Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
-         -text "$caption(serialport,refresh)" -command { ::audace::Recherche_Ports ; ::serialport::refreshAvailableList }
+         -text "$caption(serialport,refresh)" -command { ::serialport::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
    pack $frm.available -side top -fill both -expand true
 
@@ -124,7 +124,7 @@ proc ::serialport::fillConfigPage { frm } {
       pack $frm.port_exclus_ent -in $frm.port_exclus -side left
    pack $frm.port_exclus -side top -fill x
 
-   #--- je mets  a jour la liste
+   #--- je mets a jour la liste
    refreshAvailableList
 
    ::confColor::applyColor $private(frm)
@@ -156,7 +156,7 @@ proc ::serialport::getHelp { } {
 #  
 #  return rien
 #------------------------------------------------------------
-proc initConf { } {
+proc ::serialport::initConf { } {
    global conf
 
    if { ! [ info exists conf(serial,port_exclus) ] } { set conf(serial,port_exclus) "COM3" }
@@ -171,7 +171,7 @@ proc initConf { } {
 #   retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
-#   getLinkIndex "QuickRemote1"
+#   getLinkIndex "COM1"
 #     1
 #------------------------------------------------------------
 proc ::serialport::getLinkIndex { linkLabel } {
@@ -229,8 +229,8 @@ proc ::serialport::getLinkLabels { } {
 #    retourne le link choisi
 #
 #   exemple :
-#   getLinkLabels
-#     "serialport1"
+#   getSelectedLinkLabel
+#     "COM1"
 #------------------------------------------------------------
 proc ::serialport::getSelectedLinkLabel { } {
    variable private
@@ -248,10 +248,11 @@ proc ::serialport::getSelectedLinkLabel { } {
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #  
-#  return namespace name
+#  return namespace
 #------------------------------------------------------------
 proc ::serialport::init { } {
    variable private
+   global audace
 
    #--- Charge le fichier caption
    uplevel #0  "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
@@ -263,8 +264,11 @@ proc ::serialport::init { } {
    if {  $::tcl_platform(os) == "Linux" } {
       set private(genericName) "/dev/tty"
    } else {
-      set private(genericName)  "COM"
+      set private(genericName) "COM"
    }
+
+   #--- Recherche des ports com
+   Recherche_Ports
 
    #--- J'initialise les variables widget(..)
    confToWidget
@@ -276,7 +280,7 @@ proc ::serialport::init { } {
 #  refreshAvailableList
 #      rafraichit la liste des link disponibles
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::serialport::refreshAvailableList { } {
    variable private
@@ -293,6 +297,12 @@ proc ::serialport::refreshAvailableList { } {
 
    #--- je recupere les linkNo ouverts
    set linkNoList [link::list]
+
+   #--- je tiens compte des ports com exclus
+   widgetToConf
+
+   #--- je recherche les ports com
+   Recherche_Ports
 
    #--- je remplis la liste
    foreach linkLabel [::serialport::getLinkLabels] {
@@ -322,7 +332,7 @@ proc ::serialport::refreshAvailableList { } {
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::serialport::selectConfigLink { linkLabel } {
    variable private
@@ -354,6 +364,82 @@ proc ::serialport::widgetToConf { } {
 
    set conf(serial,port_exclus) $widget(conf_serial,port_exclus)
 }
+
+#------------------------------------------------------------
+#  Recherche_Ports
+#     recherche les ports com disponible sur le PC
+#  
+#  return rien
+#------------------------------------------------------------
+   proc ::serialport::Recherche_Ports { } {
+      global audace
+      global conf
+
+      #--- Recherche le ou les ports COM exclus
+      set kd ""
+      set port_exclus $conf(serial,port_exclus)
+      set nbr_port_exclus [ llength $port_exclus ]
+      if { $nbr_port_exclus == "1" } {
+         set kd [string index $port_exclus [expr [string length $port_exclus]-1]]
+      } else {
+         for { set i 0 } { $i < $nbr_port_exclus } { incr i } {
+            set a [ lindex $port_exclus $i ]
+            set kdd [string index $a [expr [string length $a]-1]]
+            lappend kd $kdd
+            set kd [ lsort $kd ]
+         }
+      }
+
+      #--- Suivant l'OS
+      if { $::tcl_platform(os) == "Linux" } {
+         set port_com     "/dev/ttyS"
+         set port_com_usb "/dev/ttyUSB"
+         set kk  "0"
+         set kkt "20"
+      } else {
+         set port_com "COM"
+         set kk  "1"
+         set kkt "20"
+      }
+
+      #--- Recherche des ports com
+      set comlist              ""
+      set comlist_usb          ""
+      set audace(list_com)     ""
+
+      set i "0"
+      for { set k $kk } { $k < $kkt } { incr k } {
+         if { $k != "[ lindex $kd $i]" } {
+            set errnum [ catch { open $port_com$k r+ } msg ]
+            if { $errnum == "0" } {
+               lappend comlist $k
+               close $msg
+            }
+         } else {
+            incr i
+         }
+      }
+      set long_com [ llength $comlist ]
+
+      for { set k 0 } { $k < $long_com } { incr k } {
+         lappend audace(list_com) "$port_com[ lindex $comlist $k ]"
+      }
+
+      if { $::tcl_platform(os) == "Linux" } {
+         for { set k $kk } { $k < 20 } { incr k } {
+            set errnum [ catch { open $port_com_usb$k r+ } msg ]
+            if { $errnum == "0" } {
+               lappend comlist_usb $k
+               close $msg
+            }
+         }
+         set long_com_usb [ llength $comlist_usb ]
+
+         for { set k 0 } { $k < $long_com_usb } { incr k } {
+            lappend audace(list_com) "$port_com_usb[ lindex $comlist_usb $k ]"
+         }
+      }
+   }
 
 ::serialport::init
 

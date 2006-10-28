@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.36 2006-10-28 13:49:18 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.37 2006-10-28 20:40:33 robertdelmas Exp $
 #
 
 global confCam
@@ -4021,10 +4021,10 @@ namespace eval ::confCam {
                         if { $conf(ethernaude,ipsetting) == "1" } {
                            set camNo [cam::create ethernaude udp -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
-                              -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] -debug ]
+                              -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] -debug_eth ]
                         } else {
                            set camNo [ cam::create ethernaude udp -ip $conf(ethernaude,host) \
-                              -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug ]
+                              -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
                         }
                      }
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
