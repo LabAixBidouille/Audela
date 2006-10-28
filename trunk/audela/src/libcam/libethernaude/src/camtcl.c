@@ -929,3 +929,61 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return TCL_OK;
 }
+
+int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char s[200];
+   int retour = TCL_ERROR;
+   char keywordk[MAXLENGTH + 1], valuek[MAXLENGTH + 1];
+   int k, paramtypek;
+   Tcl_DString dsptr;
+   struct camprop *cam;
+   
+   cam = (struct camprop *) clientData;
+   paramCCD_clearall(&ParamCCDIn, 1);
+   paramCCD_put(-1, "GetCCD_infos", &ParamCCDIn, 1);
+   paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+   util_log("", 1);
+   for (k = 0; k < ParamCCDIn.NbreParam; k++) {
+      paramCCD_get(k, s, &ParamCCDIn);
+      util_log(s, 0);
+   }
+   AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+   util_log("", 2);
+   for (k = 0; k < ParamCCDOut.NbreParam; k++) {
+      paramCCD_get(k, s, &ParamCCDOut);
+      util_log(s, 0);
+   }
+   util_log("\n", 0);
+   if (ParamCCDOut.NbreParam >= 1) {
+      paramCCD_get(0, s, &ParamCCDOut);
+      strcpy(cam->msg, "");
+      if (strcmp(s, "FAILED") == 0) {
+         if (ParamCCDOut.NbreParam >= 2) {
+            paramCCD_get(1, s, &ParamCCDOut);
+            sprintf(cam->msg, "GetCCD_infos failed : %s", s);
+         } else {
+            strcpy(cam->msg, "GetCCD_infos Failed");
+         }
+         Tcl_SetResult(interp,cam->msg,TCL_VOLATILE);
+      } else {
+         Tcl_DStringInit(&dsptr);
+         paramCCD_get(0, s, &ParamCCDOut);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringAppend(&dsptr," ",-1);
+         
+         for (k=1;k<ParamCCDOut.NbreParam;k++) {
+            /* Decoder chaque argument ici */
+            paramCCD_get(k, s, &ParamCCDOut);
+            util_param_decode(s, keywordk, valuek, &paramtypek);
+            sprintf(s,"{%s %s} ",keywordk, valuek);
+            Tcl_DStringAppend(&dsptr,s,-1);
+         }
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         retour = TCL_OK;
+      }
+   }
+
+   return retour;
+}
