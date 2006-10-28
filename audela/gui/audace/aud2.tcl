@@ -6,7 +6,7 @@
 #                 - ngainWindow   - addWindow      - subWindow
 #                 - divWindow     - optWindow      - subskyWindow
 #                 - clipWindow
-# Mise a jour $Id: aud2.tcl,v 1.4 2006-10-19 18:55:30 robertdelmas Exp $
+# Mise a jour $Id: aud2.tcl,v 1.5 2006-10-28 10:03:23 michelpujol Exp $
 #
 
 namespace eval ::traiteImage {
@@ -944,7 +944,7 @@ namespace eval ::traiteImage {
      # ::console::affiche_erreur "$n1,$n2,$op,$traiteImage(operation)\n"
    }
 
-   proc parcourir { { option } } {
+   proc parcourir { { option 1 } } {
       global audace
       global caption
       global traiteImage
