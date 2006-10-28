@@ -136,7 +136,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     cam->shuttertypeindex = 0;
     cam->shutteraudinereverse = 0;
     strcpy(cam->ipsetting_filename, "IPSetting.exe");
-    if (argc >= 1) {
+    ethernaude_debug = 0;
+	if (argc >= 1) {
 	for (kk = 0; kk < argc; kk++) {
 	    if (strcmp(argv[kk], "-ip") == 0) {
 		if ((kk + 1) <= (argc - 1)) {
@@ -159,7 +160,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 		    cam->canspeed = atoi(argv[kk + 1]);
 		}
 	    }
-	    if (strcmp(argv[kk], "-debug") == 0) {
+	    if (strcmp(argv[kk], "-debug_eth") == 0) {
 	       ethernaude_debug = 1;
 	    }
 	}
