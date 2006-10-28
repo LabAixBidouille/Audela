@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.9 2006-10-22 09:21:26 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.10 2006-10-28 15:36:44 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -10,9 +10,9 @@ proc testexit { } {
 
    ::cam::delete 1000
    ::buf::delete 1000
-  # ::buf::delete 1001
    ::visu::delete 1000
-  # ::visu::delete 1001
+   ::buf::delete 1001
+   ::visu::delete 1001
    destroy $audace(base).test
 }
 
@@ -561,10 +561,10 @@ bind $audace(base).test <Destroy> { testexit }
 #--- Declare un buffer pour placer les images en mémoire
 global conf
 
-#buf::create 1000
-#buf1000 extension "$conf(extension,defaut)"
 buf::create 1000
 buf1000 extension "$conf(extension,defaut)"
+buf::create 1001
+buf1001 extension "$conf(extension,defaut)"
 
 #--- Re-affiche l'image si on relache les curseurs des glissieres
 for { set k 1 } { $k <= 3 } { incr k } {
@@ -630,8 +630,7 @@ bind $audace(base).test <Key-space> {
 #--- Revisu des seuils auto
 bind $audace(base).test <Key-F1> {
    buf1000 stat
-  # buf1002 stat
-  # buf1003 stat
+   buf1001 stat
    testvisu
 }
 
@@ -713,7 +712,7 @@ if {$audace(acqvisu,ccd)=="kac1310"} {
 
 #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
 ::visu::create 1000 1000 1000
-#::visu::create 1000 1001 1001
+::visu::create 1000 1001 1001
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
@@ -723,8 +722,8 @@ catch {
 
 #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
 catch {
-   $zone(image2) create image 0 0 -image image1000 -anchor nw -tag img1
-   image delete image1000
+   $zone(image2) create image 0 0 -image image1001 -anchor nw -tag img1
+   image delete image1001
 }
 
 proc testcopy1to2 { } {
@@ -732,8 +731,8 @@ proc testcopy1to2 { } {
    global infos
 
    #--- Nettoyage de l'ecran zone(image2)
-   image delete image1000
-   image create photo image1000
+   image delete image1001
+   image create photo image1001
 
    if { $infos(type_image) == "couleur" } {
       catch {
@@ -741,18 +740,18 @@ proc testcopy1to2 { } {
          set zone(image2,naxis1) [ lindex [buf1000 getkwd NAXIS1] 1 ]
          set zone(image2,naxis2) [ lindex [buf1000 getkwd NAXIS2] 1 ]
          $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
-         visu1000 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
+         visu1001 disp [ lindex $infos(rgbcuts) 0 ] [ lindex $infos(rgbcuts) 1 ] [ lindex $infos(rgbcuts) 2 ]
 
       }
    }
    if { $infos(type_image) == "noiretblanc" } {
       catch {
-         visu1000 cut [ visu1000 cut ]
+         visu1001 cut [ visu1000 cut ]
          #--- Ajuste les scroll bars
          set zone(image2,naxis1) [ lindex [ buf1000 getkwd NAXIS1 ] 1 ]
          set zone(image2,naxis2) [ lindex [ buf1000 getkwd NAXIS2 ] 1 ]
          $zone(image2) configure -scrollregion [ list 0 0 $zone(image2,naxis1) $zone(image2,naxis2) ]
-         visu1000 disp
+         visu1001 disp
       }
    }
 }
@@ -869,8 +868,6 @@ proc testacqfen { } {
       rgb_split 1000 -rgb cfa
    }
    buf1000 extension "$conf(extension,defaut)"
-  # buf1002 extension "$conf(extension,defaut)"
-  # buf1003 extension "$conf(extension,defaut)"
    testvisu
    #--- Affichage du status
    $audace(base).test.frame2.fra0.labURL_decompte configure -text ""

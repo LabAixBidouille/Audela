@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.27 2006-10-27 15:31:39 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.28 2006-10-28 15:43:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -261,6 +261,7 @@ set caption(audace,seuil,manuel)                      "Manual"
 set caption(audace,intensite)                         "Intensity:"
 set caption(audace,avec_zero)                         "104.000000 - R:104.000000 V:175.000000 B:179.000000"
 set caption(audace,sans_zero)                         "104 - R:104 V:175 B:179"
+set caption(audace,calculer)                          "Calculate"
 set caption(audace,fwhm,x)                            "Fwhmx"
 set caption(audace,fwhm,y)                            "Fwhmy"
 set caption(audace,fwhm,xy)                           "Fwhm"
@@ -594,6 +595,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,intensite)                      "Intensité :"
    set caption(audace,avec_zero)                      "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(audace,sans_zero)                      "104 - R:104 V:175 B:179"
+   set caption(audace,calculer)                       "Calculer"
    set caption(audace,fwhm,x)                         "Fwhmx"
    set caption(audace,fwhm,y)                         "Fwhmy"
    set caption(audace,fwhm,xy)                        "Fwhm"
@@ -887,8 +889,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,formule)                        "Formula:"
    set caption(audace,image,image_affichee:)          "Sull'immagine visualizzata:"
    set caption(audace,image,image_affichee)           "Sull'immagine visualizzata"
-   set caption(audace,image,image_a_choisir:)         "# Su di un'altra immagine su disco fisso:"
-   set caption(audace,image,image_a_choisir)          "# Su di un'altra immagine su disco fisso"
+   set caption(audace,image,image_a_choisir:)         "Su una immagine del disco fisso:"
+   set caption(audace,image,image_a_choisir)          "Su una immagine del disco fisso"
    set caption(audace,filtre_image_affichee)          "(sull'immagine visualizzata)"
    set caption(audace,images,entree-)                 "Immagini iniziali"
    set caption(audace,images,entree)                  "Immagini iniziali:"
@@ -927,6 +929,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,intensite)                      "Intensita`:"
    set caption(audace,avec_zero)                      "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(audace,sans_zero)                      "104 - R:104 V:175 B:179"
+   set caption(audace,calculer)                       "Calcolàre"
    set caption(audace,fwhm,x)                         "Fwhmx"
    set caption(audace,fwhm,y)                         "Fwhmy"
    set caption(audace,fwhm,xy)                        "Fwhm"
@@ -1260,6 +1263,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,intensite)                      "Intensidad:"
    set caption(audace,avec_zero)                      "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(audace,sans_zero)                      "104 - R:104 V:175 B:179"
+   set caption(audace,calculer)                       "Calcular"
    set caption(audace,fwhm,x)                         "Fwhmx"
    set caption(audace,fwhm,y)                         "Fwhmy"
    set caption(audace,fwhm,xy)                        "Fwhm"
@@ -1593,6 +1597,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,intensite)                      "Lichtstärke:"
    set caption(audace,avec_zero)                      "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(audace,sans_zero)                      "104 - R:104 V:175 B:179"
+   set caption(audace,calculer)                       "Rechnen"
    set caption(audace,fwhm,x)                         "Fwhmx"
    set caption(audace,fwhm,y)                         "Fwhmy"
    set caption(audace,fwhm,xy)                        "Fwhm"
@@ -1926,6 +1931,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,intensite)                      "Intensidade:"
    set caption(audace,avec_zero)                      "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(audace,sans_zero)                      "104 - R:104 V:175 B:179"
+   set caption(audace,calculer)                       "Calcular"
    set caption(audace,fwhm,x)                         "Fwhmx"
    set caption(audace,fwhm,y)                         "Fwhmy"
    set caption(audace,fwhm,xy)                        "Fwhm"
@@ -2259,6 +2265,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,intensite)                      "Intensitet:"
    set caption(audace,avec_zero)                      "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(audace,sans_zero)                      "104 - R:104 V:175 B:179"
+   set caption(audace,calculer)                       "Beregn"
    set caption(audace,fwhm,x)                         "Fwhmx"
    set caption(audace,fwhm,y)                         "Fwhmy"
    set caption(audace,fwhm,xy)                        "Fwhm"

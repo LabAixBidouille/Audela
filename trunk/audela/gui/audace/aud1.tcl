@@ -1,7 +1,7 @@
 #
 # Fichier : aud1.tcl
 # Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.18 2006-10-21 20:06:31 robertdelmas Exp $
+# Mise a jour $Id: aud1.tcl,v 1.19 2006-10-28 15:43:28 robertdelmas Exp $
 #
 
 #
@@ -322,6 +322,9 @@ proc statwin { visuNo } {
    pack $This.lab5 -padx 10 -pady 2
    label $This.lab6 -text "$caption(ecart,type,fond) [ lindex $valeurs 7 ]"
    pack $This.lab6 -padx 10 -pady 2
+   #--- Cree le bouton pour recalculer les statistiques
+   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "statwin $visuNo"
+   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -365,6 +368,9 @@ proc fwhm { visuNo } {
    pack $This.lab1 -padx 10 -pady 2
    label $This.lab2 -text "$caption(audace,fwhm,y) : [ lindex $valeurs 1 ]"
    pack $This.lab2 -padx 10 -pady 2
+   #--- Cree le bouton pour recalculer les fwhm
+   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "fwhm $visuNo"
+   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -586,6 +592,9 @@ proc fitgauss { visuNo } {
       ::console::affiche_resultat "Use ::astrometry::mpc_provisional2packed to convert designation to MPC packed form.\n"
       ::console::affiche_saut "\n"
    }
+   #--- Cree le bouton pour recalculer l'ajustement de la gaussienne
+   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "fitgauss $visuNo"
+   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -627,6 +636,9 @@ proc center { visuNo } {
    pack $This.lab0 -padx 10 -pady 2
    label $This.lab1 -text "$caption(audace,center,xy) : ( [ format "%.2f" [ lindex $valeurs 0 ] ] / [ format "%.2f" [ lindex $valeurs 1 ] ] )"
    pack $This.lab1 -padx 10 -pady 2
+   #--- Cree le bouton pour recalculer le photocentre
+   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "center $visuNo"
+   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -668,6 +680,9 @@ proc photom { visuNo } {
    pack $This.lab0 -padx 10 -pady 2
    label $This.lab1 -text "$caption(audace,integflux) : [ lindex $valeurs 0 ]"
    pack $This.lab1 -padx 10 -pady 2
+   #--- Cree le bouton pour recalculer la photometrie integrale
+   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "photom $visuNo"
+   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
    #--- La fenetre est active
    focus $This
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
