@@ -1,12 +1,11 @@
 #
 # Fichier : aud2.tcl
 # Description : Interfaces graphiques pour les fonctions de traitement d'images :
-#                 - scaleWindow
+#                 - scaleWindow   - subskyWindow   - clipWindow
 #                 - offsetWindow  - multcteWindow  - noffsetWindow
 #                 - ngainWindow   - addWindow      - subWindow
-#                 - divWindow     - optWindow      - subskyWindow
-#                 - clipWindow
-# Mise a jour $Id: aud2.tcl,v 1.5 2006-10-28 10:03:23 michelpujol Exp $
+#                 - divWindow     - optWindow
+# Mise a jour $Id: aud2.tcl,v 1.6 2006-10-28 13:06:38 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -337,310 +336,310 @@ namespace eval ::traiteImage {
          return
       }
 
-      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
-         switch $traiteImage(operation) \
-            "$caption(audace,menu,scale)" {
-               #---
-               set conf(multx) $traiteImage(scaleWindow_multx)
-               set conf(multy) $traiteImage(scaleWindow_multy)
-               #---
-               if { $traiteImage(scaleWindow_multx) == "" && $traiteImage(scaleWindow_multy) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
-                  return
-               }
-               if { $traiteImage(scaleWindow_multx) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               if { $traiteImage(scaleWindow_multy) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch {
-                  set x $traiteImage(scaleWindow_multx)
-                  set y $traiteImage(scaleWindow_multy)
-                  set maxi "50"
-                  if { [ expr $x ] == "0" } { set x "1" }
-                  if { [ expr $x ] > "$maxi" } { set x "$maxi" }
-                  if { [ expr $x ] < "-$maxi" } { set x "-$maxi" }
-                  if { [ expr $y ] == "0" } { set y "1" }
-                  if { [ expr $y ] > "$maxi" } { set y "$maxi" }
-                  if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
-                  buf$audace(bufNo) scale [ list $x $y ] 1
-                  ::audace::autovisu $audace(visuNo)
-               } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,scale) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,subsky)" {
-               #---
-               set conf(back_kernel)    $traiteImage(subskyWindow_back_kernel)
-               set conf(back_threshold) $traiteImage(subskyWindow_back_threshold)
-               #---
-               if { $traiteImage(subskyWindow_back_kernel) == "" && $traiteImage(subskyWindow_back_threshold) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
-                  return
-               }
-               if { $traiteImage(subskyWindow_back_kernel) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               if { $traiteImage(subskyWindow_back_threshold) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch {
-                  set k $traiteImage(subskyWindow_back_kernel)
-                  set t $traiteImage(subskyWindow_back_threshold)
-                  if { [ expr $t ] < "0" } { set t "0" }
-                  if { [ expr $t ] > "1" } { set t "1" }
-                  if { [ expr $k ] < "4" } { set k "3" }
-                  if { [ expr $k ] > "50" } { set k "50" }
-                  buf$audace(bufNo) imaseries "back back_kernel=$k back_threshold=$t sub"
-                  ::audace::autovisu $audace(visuNo)
-               } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,subsky) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,clip)" {
-               #---
-               set conf(clip_mini) $traiteImage(clipWindow_mini)
-               set conf(clip_maxi) $traiteImage(clipWindow_maxi)
-               #---
-               if { $traiteImage(clipWindow_mini) == "" && $traiteImage(clipWindow_maxi) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
-                  return
-               }
-               if { $traiteImage(clipWindow_mini) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               if { $traiteImage(clipWindow_maxi) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch {
-                  if { $traiteImage(clipWindow_mini) != "" } {
-                     buf$audace(bufNo) clipmin $traiteImage(clipWindow_mini)
-                  }
-                  if { $traiteImage(clipWindow_maxi) != "" } {
-                     buf$audace(bufNo) clipmax $traiteImage(clipWindow_maxi)
-                  }
-                  ::audace::autovisu $audace(visuNo)
-               } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,clip) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,offset)" {
-               #--- Il faut saisir la constante
-               if { $traiteImage(offsetWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               if { [ string is double -strict $traiteImage(offsetWindow_value) ] == "1" } {
-                  catch { offset $traiteImage(offsetWindow_value) } m
-               } else {
-                  set m "error"
-               }
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,offset) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,mult_cte)" {
-               #--- Il faut saisir la constante
-               if { $traiteImage(multWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               if { [ string is double -strict $traiteImage(multWindow_value) ] == "1" } {
-                  catch { mult $traiteImage(multWindow_value) } m
-               } else {
-                  set m "error"
-               }
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,mult_cte) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,noffset)" {
-               #--- Il faut saisir une valeur
-               if { $traiteImage(noffsetWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch { noffset $traiteImage(noffsetWindow_value) } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,noffset) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,ngain)" {
-               #--- Il faut saisir une valeur
-               if { $traiteImage(ngainWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch { ngain $traiteImage(ngainWindow_value) } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,ngain) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,addition)" {
-               #--- Il faut une image B
-               if { $traiteImage(addWindow_filename) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_B)
-                  return
-               }
-               #--- Il faut saisir la constante
-               if { $traiteImage(addWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch { add $traiteImage(addWindow_filename) $traiteImage(addWindow_value) } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,addition) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,soust)" {
-               #--- Il faut une image B
-               if { $traiteImage(subWindow_filename) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_B)
-                  return
-               }
-               #--- Il faut saisir la constante
-               if { $traiteImage(subWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch { sub $traiteImage(subWindow_filename) $traiteImage(subWindow_value) } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,soust) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,menu,division)" {
-               #--- Il faut une image B
-               if { $traiteImage(divWindow_filename) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_B)
-                  return
-               }
-               #--- Il faut saisir la constante
-               if { $traiteImage(divWindow_value) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch { div $traiteImage(divWindow_filename) $traiteImage(divWindow_value) } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,menu,division) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
-            } \
-            "$caption(audace,optimisation,noir)" {
-               #--- Il faut une image de dark
-               if { $traiteImage(optWindow_dark_filename) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
-                  return
-               }
-               #--- Il faut une image d'offset
-               if { $traiteImage(optWindow_offset_filename) == "" } {
-                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
-                  return
-               }
-               #---
-               save_cursor
-               all_cursor watch
-               #---
-               catch { opt $traiteImage(optWindow_dark_filename) $traiteImage(optWindow_offset_filename) } m
-               if { $m == "" } {
-                  tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
-               } else {
-                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-               }
-               #---
-               restore_cursor
+      switch $traiteImage(operation) \
+         "$caption(audace,menu,scale)" {
+            #---
+            set conf(multx) $traiteImage(scaleWindow_multx)
+            set conf(multy) $traiteImage(scaleWindow_multy)
+            #---
+            if { $traiteImage(scaleWindow_multx) == "" && $traiteImage(scaleWindow_multy) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+               return
             }
+            if { $traiteImage(scaleWindow_multx) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            if { $traiteImage(scaleWindow_multy) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch {
+               set x $traiteImage(scaleWindow_multx)
+               set y $traiteImage(scaleWindow_multy)
+               set maxi "50"
+               if { [ expr $x ] == "0" } { set x "1" }
+               if { [ expr $x ] > "$maxi" } { set x "$maxi" }
+               if { [ expr $x ] < "-$maxi" } { set x "-$maxi" }
+               if { [ expr $y ] == "0" } { set y "1" }
+               if { [ expr $y ] > "$maxi" } { set y "$maxi" }
+               if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
+               buf$audace(bufNo) scale [ list $x $y ] 1
+               ::audace::autovisu $audace(visuNo)
+            } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,scale) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,subsky)" {
+            #---
+            set conf(back_kernel)    $traiteImage(subskyWindow_back_kernel)
+            set conf(back_threshold) $traiteImage(subskyWindow_back_threshold)
+            #---
+            if { $traiteImage(subskyWindow_back_kernel) == "" && $traiteImage(subskyWindow_back_threshold) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+               return
+            }
+            if { $traiteImage(subskyWindow_back_kernel) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            if { $traiteImage(subskyWindow_back_threshold) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch {
+               set k $traiteImage(subskyWindow_back_kernel)
+               set t $traiteImage(subskyWindow_back_threshold)
+               if { [ expr $t ] < "0" } { set t "0" }
+               if { [ expr $t ] > "1" } { set t "1" }
+               if { [ expr $k ] < "4" } { set k "3" }
+               if { [ expr $k ] > "50" } { set k "50" }
+               buf$audace(bufNo) imaseries "back back_kernel=$k back_threshold=$t sub"
+               ::audace::autovisu $audace(visuNo)
+            } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,subsky) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,clip)" {
+            #---
+            set conf(clip_mini) $traiteImage(clipWindow_mini)
+            set conf(clip_maxi) $traiteImage(clipWindow_maxi)
+            #---
+            if { $traiteImage(clipWindow_mini) == "" && $traiteImage(clipWindow_maxi) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+               return
+            }
+            if { $traiteImage(clipWindow_mini) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            if { $traiteImage(clipWindow_maxi) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch {
+               if { $traiteImage(clipWindow_mini) != "" } {
+                  buf$audace(bufNo) clipmin $traiteImage(clipWindow_mini)
+               }
+               if { $traiteImage(clipWindow_maxi) != "" } {
+                  buf$audace(bufNo) clipmax $traiteImage(clipWindow_maxi)
+               }
+               ::audace::autovisu $audace(visuNo)
+            } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,clip) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,offset)" {
+            #--- Il faut saisir la constante
+            if { $traiteImage(offsetWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            if { [ string is double -strict $traiteImage(offsetWindow_value) ] == "1" } {
+               catch { offset $traiteImage(offsetWindow_value) } m
+            } else {
+               set m "error"
+            }
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,offset) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,mult_cte)" {
+            #--- Il faut saisir la constante
+            if { $traiteImage(multWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            if { [ string is double -strict $traiteImage(multWindow_value) ] == "1" } {
+               catch { mult $traiteImage(multWindow_value) } m
+            } else {
+               set m "error"
+            }
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,mult_cte) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,noffset)" {
+            #--- Il faut saisir une valeur
+            if { $traiteImage(noffsetWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch { noffset $traiteImage(noffsetWindow_value) } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,noffset) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,ngain)" {
+            #--- Il faut saisir une valeur
+            if { $traiteImage(ngainWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch { ngain $traiteImage(ngainWindow_value) } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,ngain) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,addition)" {
+            #--- Il faut une image B
+            if { $traiteImage(addWindow_filename) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_B)
+               return
+            }
+            #--- Il faut saisir la constante
+            if { $traiteImage(addWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch { add $traiteImage(addWindow_filename) $traiteImage(addWindow_value) } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,addition) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,soust)" {
+            #--- Il faut une image B
+            if { $traiteImage(subWindow_filename) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_B)
+               return
+            }
+            #--- Il faut saisir la constante
+            if { $traiteImage(subWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch { sub $traiteImage(subWindow_filename) $traiteImage(subWindow_value) } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,soust) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,menu,division)" {
+            #--- Il faut une image B
+            if { $traiteImage(divWindow_filename) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_B)
+               return
+            }
+            #--- Il faut saisir la constante
+            if { $traiteImage(divWindow_value) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch { div $traiteImage(divWindow_filename) $traiteImage(divWindow_value) } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,division) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         } \
+         "$caption(audace,optimisation,noir)" {
+            #--- Il faut une image de dark
+            if { $traiteImage(optWindow_dark_filename) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
+               return
+            }
+            #--- Il faut une image d'offset
+            if { $traiteImage(optWindow_offset_filename) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+               return
+            }
+            #---
+            save_cursor
+            all_cursor watch
+            #---
+            catch { opt $traiteImage(optWindow_dark_filename) $traiteImage(optWindow_offset_filename) } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
+            } else {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+            }
+            #---
+            restore_cursor
+         }
       ::traiteImage::recup_position
    }
 
@@ -694,9 +693,9 @@ namespace eval ::traiteImage {
       #---
       ::traiteImage::formule
       #---
-      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteImage(operation) \
          "$caption(audace,menu,scale)" {
@@ -941,7 +940,6 @@ namespace eval ::traiteImage {
             pack $This.usr.2.18 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.19 -in $This.usr.2 -side top -fill both
          }
-     # ::console::affiche_erreur "$n1,$n2,$op,$traiteImage(operation)\n"
    }
 
    proc parcourir { { option 1 } } {

@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.13 2006-10-20 16:28:35 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.14 2006-10-28 13:07:00 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -272,251 +272,251 @@ namespace eval ::traiteWindow {
          tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
          return
       }
-      #--- Switch passe au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
-       switch $traiteWindow(operation) \
-          "$caption(audace,menu,offset)" {
-             #--- Il faut saisir la constante
-             if { $traiteWindow(1,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set const $traiteWindow(1,const)
-             ::console::affiche_resultat "offset2 $in $out $const $nb\n\n"
-             catch { offset2 $in $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,offset) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,mult_cte)" {
-             #--- Il faut saisir la constante
-             if { $traiteWindow(1,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set const $traiteWindow(1,const)
-             ::console::affiche_resultat "mult2 $in $out $const $nb\n\n"
-             catch { mult2 $in $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,mult_cte) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,noffset)" {
-             #--- Il faut saisir une valeur
-             if { $traiteWindow(1,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set const $traiteWindow(1,const)
-             ::console::affiche_resultat "noffset2 $in $out $const $nb\n\n"
-             catch { noffset2 $in $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,noffset) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,ngain)" {
-             #--- Il faut saisir une valeur
-             if { $traiteWindow(1,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set const $traiteWindow(1,const)
-             ::console::affiche_resultat "ngain2 $in $out $const $nb\n\n"
-             catch { ngain2 $in $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,ngain) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,addition)" {
-             #--- Il faut saisir l'operande C
-             if { $traiteWindow(2,operand) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
-                return
-             }
-             #--- Il faut saisir la constante
-             if { $traiteWindow(2,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set operand $traiteWindow(2,operand)
-             set const $traiteWindow(2,const)
-             ::console::affiche_resultat "add2 $in $operand $out $const $nb\n\n"
-             catch { add2 $in $operand $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,addition) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,soust)" {
-             #--- Il faut saisir l'operande C
-             if { $traiteWindow(2,operand) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
-                return
-             }
-             #--- Il faut saisir la constante
-             if { $traiteWindow(2,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set operand $traiteWindow(2,operand)
-             set const $traiteWindow(2,const)
-             ::console::affiche_resultat "sub2 $in $operand $out $const $nb\n\n"
-             catch { sub2 $in $operand $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,soust) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,division)" {
-             #--- Il faut saisir l'operande C
-             if { $traiteWindow(2,operand) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
-                return
-             }
-             #--- Il faut saisir la constante
-             if { $traiteWindow(2,const) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                return
-             }
-             #---
-             if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set operand $traiteWindow(2,operand)
-             set const $traiteWindow(2,const)
-             ::console::affiche_resultat "div2 $in $operand $out $const $nb\n\n"
-             catch { div2 $in $operand $out $const $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,division) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,optimisation,noir)" {
-             #--- Il faut saisir le noir
-             if { $traiteWindow(3,dark) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
-                return
-             }
-             #--- Il faut saisir l'offset
-             if { $traiteWindow(3,offset) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
-                return
-             }
-             #---
-             set dark $traiteWindow(3,dark)
-             set offset $traiteWindow(3,offset)
-             ::console::affiche_resultat "opt2 $in $dark $offset $out $nb\n\n"
-             catch { opt2 $in $dark $offset $out $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,run,median)" {
-             ::console::affiche_resultat "smedian $in $out $nb\n\n"
-             catch { smedian $in $out $nb } m
-             if { $m == "" } {
-                if { $traiteWindow(4,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,run,median) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,image,somme)" {
-             ::console::affiche_resultat "sadd $in $out $nb\n\n"
-             catch { sadd $in $out $nb } m
-             if { $m == "" } {
-                if { $traiteWindow(4,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,image,somme) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,image,moyenne)" {
-             ::console::affiche_resultat "smean $in $out $nb\n\n"
-             catch { smean $in $out $nb } m
-             if { $m == "" } {
-                if { $traiteWindow(4,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,image,moyenne) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,image,ecart_type)" {
-             ::console::affiche_resultat "ssigma $in $out $nb bitpix=-32\n\n"
-             catch { ssigma $in $out $nb "bitpix=-32" } m
-             if { $m == "" } {
-                if { $traiteWindow(4,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,image,ecart_type) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          }
+         switch $traiteWindow(operation) \
+            "$caption(audace,menu,offset)" {
+               #--- Il faut saisir la constante
+               if { $traiteWindow(1,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set const $traiteWindow(1,const)
+               ::console::affiche_resultat "offset2 $in $out $const $nb\n\n"
+               catch { offset2 $in $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,offset) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,mult_cte)" {
+               #--- Il faut saisir la constante
+               if { $traiteWindow(1,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set const $traiteWindow(1,const)
+               ::console::affiche_resultat "mult2 $in $out $const $nb\n\n"
+               catch { mult2 $in $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,mult_cte) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,noffset)" {
+               #--- Il faut saisir une valeur
+               if { $traiteWindow(1,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set const $traiteWindow(1,const)
+               ::console::affiche_resultat "noffset2 $in $out $const $nb\n\n"
+               catch { noffset2 $in $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,noffset) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,ngain)" {
+               #--- Il faut saisir une valeur
+               if { $traiteWindow(1,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set const $traiteWindow(1,const)
+               ::console::affiche_resultat "ngain2 $in $out $const $nb\n\n"
+               catch { ngain2 $in $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,ngain) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,addition)" {
+               #--- Il faut saisir l'operande C
+               if { $traiteWindow(2,operand) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
+                  return
+               }
+               #--- Il faut saisir la constante
+               if { $traiteWindow(2,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set operand $traiteWindow(2,operand)
+               set const $traiteWindow(2,const)
+               ::console::affiche_resultat "add2 $in $operand $out $const $nb\n\n"
+               catch { add2 $in $operand $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,addition) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,soust)" {
+               #--- Il faut saisir l'operande C
+               if { $traiteWindow(2,operand) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
+                  return
+               }
+               #--- Il faut saisir la constante
+               if { $traiteWindow(2,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set operand $traiteWindow(2,operand)
+               set const $traiteWindow(2,const)
+               ::console::affiche_resultat "sub2 $in $operand $out $const $nb\n\n"
+               catch { sub2 $in $operand $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,soust) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,division)" {
+               #--- Il faut saisir l'operande C
+               if { $traiteWindow(2,operand) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
+                  return
+               }
+               #--- Il faut saisir la constante
+               if { $traiteWindow(2,const) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                  return
+               }
+               #---
+               if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set operand $traiteWindow(2,operand)
+               set const $traiteWindow(2,const)
+               ::console::affiche_resultat "div2 $in $operand $out $const $nb\n\n"
+               catch { div2 $in $operand $out $const $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,division) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,optimisation,noir)" {
+               #--- Il faut saisir le noir
+               if { $traiteWindow(3,dark) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
+                  return
+               }
+               #--- Il faut saisir l'offset
+               if { $traiteWindow(3,offset) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                  return
+               }
+               #---
+               set dark $traiteWindow(3,dark)
+               set offset $traiteWindow(3,offset)
+               ::console::affiche_resultat "opt2 $in $dark $offset $out $nb\n\n"
+               catch { opt2 $in $dark $offset $out $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,run,median)" {
+               ::console::affiche_resultat "smedian $in $out $nb\n\n"
+               catch { smedian $in $out $nb } m
+               if { $m == "" } {
+                  if { $traiteWindow(4,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,run,median) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,image,somme)" {
+               ::console::affiche_resultat "sadd $in $out $nb\n\n"
+               catch { sadd $in $out $nb } m
+               if { $m == "" } {
+                  if { $traiteWindow(4,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,image,somme) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,image,moyenne)" {
+               ::console::affiche_resultat "smean $in $out $nb\n\n"
+               catch { smean $in $out $nb } m
+               if { $m == "" } {
+                  if { $traiteWindow(4,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,image,moyenne) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,image,ecart_type)" {
+               ::console::affiche_resultat "ssigma $in $out $nb bitpix=-32\n\n"
+               catch { ssigma $in $out $nb "bitpix=-32" } m
+               if { $m == "" } {
+                  if { $traiteWindow(4,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,image,ecart_type) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            }
       }
       ::traiteWindow::recup_position
    }
@@ -573,120 +573,119 @@ namespace eval ::traiteWindow {
       #---
       ::traiteWindow::formule
       #---
-      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteWindow(operation) \
-       "$caption(audace,menu,offset)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack $This.usr.3 -in $This.usr -side top -fill both
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,menu,mult_cte)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack $This.usr.3 -in $This.usr -side top -fill both
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,menu,noffset)" {
-          pack forget $This.usr.0
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack $This.usr.3 -in $This.usr -side top -fill both
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,menu,ngain)" {
-          pack forget $This.usr.0
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack $This.usr.3 -in $This.usr -side top -fill both
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,menu,addition)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack $This.usr.4 -in $This.usr -side top -fill both
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,menu,soust)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack $This.usr.4 -in $This.usr -side top -fill both
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,menu,division)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack $This.usr.4 -in $This.usr -side top -fill both
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,optimisation,noir)" {
-          pack forget $This.usr.0
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack $This.usr.5 -in $This.usr -side top -fill both
-          pack forget $This.usr.6
-       } \
-       "$caption(audace,run,median)" {
-          pack forget $This.usr.0
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack $This.usr.6 -in $This.usr -side top -fill both
-       } \
-       "$caption(audace,image,somme)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack $This.usr.6 -in $This.usr -side top -fill both
-       } \
-       "$caption(audace,image,moyenne)" {
-          pack $This.usr.0 -in $This.usr -side top -fill both
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack $This.usr.6 -in $This.usr -side top -fill both
-       } \
-       "$caption(audace,image,ecart_type)" {
-          pack forget $This.usr.0
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack $This.usr.6 -in $This.usr -side top -fill both
-       }
-     # ::console::affiche_erreur "$n1,$n2,$op,$traiteWindow(operation)\n"
+         "$caption(audace,menu,offset)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,menu,mult_cte)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,menu,noffset)" {
+            pack forget $This.usr.0
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,menu,ngain)" {
+            pack forget $This.usr.0
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,menu,addition)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack $This.usr.4 -in $This.usr -side top -fill both
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,menu,soust)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack $This.usr.4 -in $This.usr -side top -fill both
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,menu,division)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack $This.usr.4 -in $This.usr -side top -fill both
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,optimisation,noir)" {
+            pack forget $This.usr.0
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack $This.usr.5 -in $This.usr -side top -fill both
+            pack forget $This.usr.6
+         } \
+         "$caption(audace,run,median)" {
+            pack forget $This.usr.0
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+         } \
+         "$caption(audace,image,somme)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+         } \
+         "$caption(audace,image,moyenne)" {
+            pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+         } \
+         "$caption(audace,image,ecart_type)" {
+            pack forget $This.usr.0
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+         }
    }
 
    proc parcourir { In_Out } {
@@ -1079,165 +1078,165 @@ namespace eval ::faireImageRef {
          tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
          return
       }
-      #--- Switch passe au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
-       switch $faireImageRef(operation) \
-          "$caption(audace,menu,raw2cfa)" {
-             catch { raw2cfa $in $out $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,raw2cfa) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,faire_offset)" {
-             catch { smedian $in $out $nb } m
-             if { $m == "" } {
-                if { $faireImageRef(1,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,menu,faire_offset) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,faire_dark)" {
-             #--- Il faut saisir l'offset
-             if { $faireImageRef(1,offset) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
-                return
-             }
-             #---
-             set offset $faireImageRef(1,offset)
-             set const "0"
-             set temp "temp"
-             catch { sub2 $in $offset $temp $const $nb } m
-             if { $faireImageRef(1,methode) == "0" } {
-                #--- Somme
-                catch { sadd $temp $out $nb } m
-             } elseif { $faireImageRef(1,methode) == "1" } {
-                #--- Moyenne
-                catch { smean $temp $out $nb } m
-             } elseif { $faireImageRef(1,methode) == "2" } {
-                #--- Mediane
-                catch { smedian $temp $out $nb } m
-             }
-             catch { delete2 $temp $nb } m
-             if { $m == "" } {
-                if { $faireImageRef(1,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,menu,faire_dark) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,faire_flat_field)" {
-             #--- Il faut saisir l'offset
-             if { $faireImageRef(1,offset) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
-                return
-             }
-             #--- Il faut saisir la valeur de normalisation
-             if { $faireImageRef(1,norm) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
-                return
-             }
-             #--- Il faut tester la validite de la valeur de normalisation
-             if { [ string is double -strict $faireImageRef(1,norm) ] == "0" } {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
-                return
-             }
-             #---
-             set offset $faireImageRef(1,offset)
-             set norm   $faireImageRef(1,norm)
-             set const  "0"
-             set temp   "temp"
-             set tempo  "tempo"
-             catch { sub2 $in $offset $temp $const $nb } m
-             catch { noffset2 $temp $tempo $norm $nb } m
-             catch { smedian $tempo $out $nb } m
-             catch { delete2 $temp $nb } m
-             catch { delete2 $tempo $nb } m
-             if { $m == "" } {
-                if { $faireImageRef(1,disp) == 1 } {
-                   loadima $out
-                   ::audace::autovisu $audace(visuNo)
-                }
-                tk_messageBox -title $caption(audace,menu,faire_flat_field) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,pretraite)" {
-             #--- Il faut saisir l'offset
-             if { $faireImageRef(1,offset) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
-                return
-             }
-             #--- Il faut saisir le dark
-             if { $faireImageRef(1,dark) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
-                return
-             }
-             #--- Il faut saisir le flat-field
-             if { $faireImageRef(1,flat-field) == "" } {
-                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,flat-field)
-                return
-             }
-             #---
-             set offset     $faireImageRef(1,offset)
-             set dark       $faireImageRef(1,dark)
-             set flat       $faireImageRef(1,flat-field)
-             set const      "0"
-             set const_mult "1"
-             set temp       "temp"
-             #--- Deux possibilites de pretraitement
-             if { $faireImageRef(1,opt) == "0" } {
-                #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
-                #--- Realisation de X = ( Offset + Dark )
-                catch {
-                   set buf_pretrait [::buf::create]
-                   buf$buf_pretrait load $audace(rep_images)/$offset
-                   buf$buf_pretrait add $audace(rep_images)/$dark $const
-                   buf$buf_pretrait save $audace(rep_images)/offset+dark
-                   ::buf::delete $buf_pretrait
-                } m
-                #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                catch { sub2 $in offset+dark $temp $const $nb } m
-                #--- Realisation de Z = Y / Flat-field
-                catch { div2 $temp $flat $out $const_mult $nb } m
-                #--- Suppression des fichiers intermediaires
-                catch { delete2 $temp $nb } m
-                catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
-             } else {
-                #--- Optimisation du noir
-                catch { opt2 $in $dark $offset $temp $nb } m
-                #--- Division par le flat
-                catch { div2 $temp $flat $out $const_mult $nb } m
-                #--- Suppression des fichiers intermediaires
-                catch { delete2 $temp $nb } m
-             }
-             #---
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,pretraite) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          } \
-          "$caption(audace,menu,cfa2rgb)" {
-             catch { cfa2rgb $in $out $nb } m
-             if { $m == "" } {
-                tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok -message $caption(audace,fin_traitement)
-             } else {
-                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
-             }
-          }
+         switch $faireImageRef(operation) \
+            "$caption(audace,menu,raw2cfa)" {
+               catch { raw2cfa $in $out $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,raw2cfa) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,faire_offset)" {
+               catch { smedian $in $out $nb } m
+               if { $m == "" } {
+                  if { $faireImageRef(1,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,menu,faire_offset) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,faire_dark)" {
+               #--- Il faut saisir l'offset
+               if { $faireImageRef(1,offset) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                  return
+               }
+               #---
+               set offset $faireImageRef(1,offset)
+               set const "0"
+               set temp "temp"
+               catch { sub2 $in $offset $temp $const $nb } m
+               if { $faireImageRef(1,methode) == "0" } {
+                  #--- Somme
+                  catch { sadd $temp $out $nb } m
+               } elseif { $faireImageRef(1,methode) == "1" } {
+                  #--- Moyenne
+                  catch { smean $temp $out $nb } m
+               } elseif { $faireImageRef(1,methode) == "2" } {
+                  #--- Mediane
+                  catch { smedian $temp $out $nb } m
+               }
+               catch { delete2 $temp $nb } m
+               if { $m == "" } {
+                  if { $faireImageRef(1,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,menu,faire_dark) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,faire_flat_field)" {
+               #--- Il faut saisir l'offset
+               if { $faireImageRef(1,offset) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                  return
+               }
+               #--- Il faut saisir la valeur de normalisation
+               if { $faireImageRef(1,norm) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
+                  return
+               }
+               #--- Il faut tester la validite de la valeur de normalisation
+               if { [ string is double -strict $faireImageRef(1,norm) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               set offset $faireImageRef(1,offset)
+               set norm   $faireImageRef(1,norm)
+               set const  "0"
+               set temp   "temp"
+               set tempo  "tempo"
+               catch { sub2 $in $offset $temp $const $nb } m
+               catch { noffset2 $temp $tempo $norm $nb } m
+               catch { smedian $tempo $out $nb } m
+               catch { delete2 $temp $nb } m
+               catch { delete2 $tempo $nb } m
+               if { $m == "" } {
+                  if { $faireImageRef(1,disp) == 1 } {
+                     loadima $out
+                     ::audace::autovisu $audace(visuNo)
+                  }
+                  tk_messageBox -title $caption(audace,menu,faire_flat_field) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,pretraite)" {
+               #--- Il faut saisir l'offset
+               if { $faireImageRef(1,offset) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
+                  return
+               }
+               #--- Il faut saisir le dark
+               if { $faireImageRef(1,dark) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
+                  return
+               }
+               #--- Il faut saisir le flat-field
+               if { $faireImageRef(1,flat-field) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,flat-field)
+                  return
+               }
+               #---
+               set offset     $faireImageRef(1,offset)
+               set dark       $faireImageRef(1,dark)
+               set flat       $faireImageRef(1,flat-field)
+               set const      "0"
+               set const_mult "1"
+               set temp       "temp"
+               #--- Deux possibilites de pretraitement
+               if { $faireImageRef(1,opt) == "0" } {
+                  #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
+                  #--- Realisation de X = ( Offset + Dark )
+                  catch {
+                     set buf_pretrait [::buf::create]
+                     buf$buf_pretrait load $audace(rep_images)/$offset
+                     buf$buf_pretrait add $audace(rep_images)/$dark $const
+                     buf$buf_pretrait save $audace(rep_images)/offset+dark
+                     ::buf::delete $buf_pretrait
+                  } m
+                  #--- Realisation de Y = [ Generique d'entree - ( X ) ]
+                  catch { sub2 $in offset+dark $temp $const $nb } m
+                  #--- Realisation de Z = Y / Flat-field
+                  catch { div2 $temp $flat $out $const_mult $nb } m
+                  #--- Suppression des fichiers intermediaires
+                  catch { delete2 $temp $nb } m
+                  catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
+               } else {
+                  #--- Optimisation du noir
+                  catch { opt2 $in $dark $offset $temp $nb } m
+                  #--- Division par le flat
+                  catch { div2 $temp $flat $out $const_mult $nb } m
+                  #--- Suppression des fichiers intermediaires
+                  catch { delete2 $temp $nb } m
+               }
+               #---
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,pretraite) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
+            "$caption(audace,menu,cfa2rgb)" {
+               catch { cfa2rgb $in $out $nb } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            }
       }
       ::faireImageRef::recup_position
    }
@@ -1282,66 +1281,65 @@ namespace eval ::faireImageRef {
       #---
       ::faireImageRef::formule
       #---
-      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $faireImageRef(operation) \
-       "$caption(audace,menu,raw2cfa)" {
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-       } \
-       "$caption(audace,menu,faire_offset)" {
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack $This.usr.6 -in $This.usr -side top -fill both
-          pack forget $This.usr.7
-       } \
-       "$caption(audace,menu,faire_dark)" {
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack $This.usr.3 -in $This.usr -side top -fill both
-          pack forget $This.usr.4
-          pack $This.usr.5 -in $This.usr -side top -fill both
-          pack $This.usr.6 -in $This.usr -side top -fill both
-          pack forget $This.usr.7
-       } \
-       "$caption(audace,menu,faire_flat_field)" {
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack $This.usr.4 -in $This.usr -side top -fill both
-          pack forget $This.usr.5
-          pack $This.usr.6 -in $This.usr -side top -fill both
-          pack forget $This.usr.7
-       } \
-       "$caption(audace,menu,pretraite)" {
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-          pack $This.usr.7 -in $This.usr -side top -fill both
-       } \
-       "$caption(audace,menu,cfa2rgb)" {
-          pack $This.usr.1 -in $This.usr -side top -fill both
-          pack $This.usr.2 -in $This.usr -side top -fill both
-          pack forget $This.usr.3
-          pack forget $This.usr.4
-          pack forget $This.usr.5
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-       }
-     # ::console::affiche_erreur "$n1,$n2,$op,$faireImageRef(operation)\n"
+         "$caption(audace,menu,raw2cfa)" {
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+         } \
+         "$caption(audace,menu,faire_offset)" {
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.7
+         } \
+         "$caption(audace,menu,faire_dark)" {
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.4
+            pack $This.usr.5 -in $This.usr -side top -fill both
+            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.7
+         } \
+         "$caption(audace,menu,faire_flat_field)" {
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack $This.usr.4 -in $This.usr -side top -fill both
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.7
+         } \
+         "$caption(audace,menu,pretraite)" {
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+            pack $This.usr.7 -in $This.usr -side top -fill both
+         } \
+         "$caption(audace,menu,cfa2rgb)" {
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+         }
    }
 
    proc parcourir { In_Out } {
@@ -1686,226 +1684,226 @@ namespace eval ::traiteFilters {
             return
          }
       }
-      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteFilters(operation) \
-       "$caption(audace,menu,masque_flou)" {
-          #---
-          if { ( $traiteFilters(coef_etal) == "" ) && ( $traiteFilters(coef_mult) == "" ) } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
-             return
-          }
-          #---
-          if { $traiteFilters(coef_etal) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { $traiteFilters(coef_mult) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { ( [ string is double -strict $traiteFilters(coef_etal) ] == "0" ) && ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalides)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_masque_flou $image $coef_etal $coef_mult\n\n"
-             bm_masque_flou $image $coef_etal $coef_mult
-          } else {
-             ::console::affiche_resultat "bm_masque_flou $caption(audace,filtre_image_affichee) $coef_etal $coef_mult\n\n"
-             bm_masque_flou "$audace(artifice)" $coef_etal $coef_mult
-          }
-       } \
-       "$caption(audace,menu,filtre_passe-bas)" {
-          #---
-          if { $traiteFilters(efficacite) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_passe_bas $image $efficacite\n\n"
-             bm_passe_bas $image $efficacite
-          } else {
-             ::console::affiche_resultat "bm_passe_bas $caption(audace,filtre_image_affichee) $efficacite\n\n"
-             bm_passe_bas "$audace(artifice)" $efficacite
-          }
-       } \
-       "$caption(audace,menu,filtre_passe-haut)" {
-          #---
-          if { $traiteFilters(efficacite) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_passe_haut $image $efficacite\n\n"
-             bm_passe_haut $image $efficacite
-          } else {
-             ::console::affiche_resultat "bm_passe_haut $caption(audace,filtre_image_affichee) $efficacite\n\n"
-             bm_passe_haut "$audace(artifice)" $efficacite
-          }
-       } \
-       "$caption(audace,menu,filtre_median)" {
-          #---
-          if { $traiteFilters(efficacite) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_filtre_median $image $efficacite\n\n"
-             bm_filtre_median $image $efficacite
-          } else {
-             ::console::affiche_resultat "bm_filtre_median $caption(audace,filtre_image_affichee) $efficacite\n\n"
-             bm_filtre_median "$audace(artifice)" $efficacite
-          }
-       } \
-       "$caption(audace,menu,filtre_minimum)" {
-          #---
-          if { $traiteFilters(efficacite) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_filtre_min $image $efficacite\n\n"
-             bm_filtre_min $image $efficacite
-          } else {
-             ::console::affiche_resultat "bm_filtre_min $caption(audace,filtre_image_affichee) $efficacite\n\n"
-             bm_filtre_min "$audace(artifice)" $efficacite
-          }
-       } \
-       "$caption(audace,menu,filtre_maximum)" {
-          #---
-          if { $traiteFilters(efficacite) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_filtre_max $image $efficacite\n\n"
-             bm_filtre_max $image $efficacite
-          } else {
-             ::console::affiche_resultat "bm_filtre_max $caption(audace,filtre_image_affichee) $efficacite\n\n"
-             bm_filtre_max "$audace(artifice)" $efficacite
-          }
-       } \
-       "$caption(audace,menu,filtre_gaussien)" {
-          #---
-          if { $traiteFilters(coef_etal) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_filtre_gauss $image $coef_etal\n\n"
-             bm_filtre_gauss $image $coef_etal
-          } else {
-             ::console::affiche_resultat "bm_filtre_gauss $caption(audace,filtre_image_affichee) $coef_etal\n\n"
-             bm_filtre_gauss "$audace(artifice)" $coef_etal
-          }
-       } \
-       "$caption(audace,menu,ond_morlet)" {
-          #---
-          if { $traiteFilters(coef_etal) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_ondelette_mor $image $coef_etal\n\n"
-             bm_ondelette_mor $image $coef_etal
-          } else {
-             ::console::affiche_resultat "bm_ondelette_mor $caption(audace,filtre_image_affichee) $coef_etal\n\n"
-             bm_ondelette_mor "$audace(artifice)" $coef_etal
-          }
-       } \
-       "$caption(audace,menu,ond_mexicain)" {
-          #---
-          if { $traiteFilters(coef_etal) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-          #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_ondelette_mex $image $coef_etal\n\n"
-             bm_ondelette_mex $image $coef_etal
-          } else {
-             ::console::affiche_resultat "bm_ondelette_mex $caption(audace,filtre_image_affichee) $coef_etal\n\n"
-             bm_ondelette_mex "$audace(artifice)" $coef_etal
-          }
-       } \
-       "$caption(audace,menu,log)" {
-          #---
-          if { ( $traiteFilters(coef_mult) == "" ) && ( $traiteFilters(offset) == "" ) } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
-             return
-          }
-          #---
-          if { $traiteFilters(coef_mult) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { $traiteFilters(offset) == "" } {
-             tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
-             return
-          }
-          #---
-          if { ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) && ( [ string is double -strict $traiteFilters(offset) ] == "0" ) } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalides)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-          #---
-          if { [ string is double -strict $traiteFilters(offset) ] == "0" } {
-             tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
-             return
-          }
-         #---
-          if { $traiteFilters(choix) == "1" } {
-             ::console::affiche_resultat "bm_logima $image $coef_mult $offset\n\n"
-             bm_logima $image $coef_mult $offset
-          } else {
-             ::console::affiche_resultat "bm_logima $caption(audace,filtre_image_affichee) $coef_mult $offset\n\n"
-             bm_logima "$audace(artifice)" $coef_mult $offset
-          }
-       }
+         "$caption(audace,menu,masque_flou)" {
+            #---
+            if { ( $traiteFilters(coef_etal) == "" ) && ( $traiteFilters(coef_mult) == "" ) } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+               return
+            }
+            #---
+            if { $traiteFilters(coef_etal) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { $traiteFilters(coef_mult) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { ( [ string is double -strict $traiteFilters(coef_etal) ] == "0" ) && ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalides)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_masque_flou $image $coef_etal $coef_mult\n\n"
+               bm_masque_flou $image $coef_etal $coef_mult
+            } else {
+               ::console::affiche_resultat "bm_masque_flou $caption(audace,filtre_image_affichee) $coef_etal $coef_mult\n\n"
+               bm_masque_flou "$audace(artifice)" $coef_etal $coef_mult
+            }
+         } \
+         "$caption(audace,menu,filtre_passe-bas)" {
+            #---
+            if { $traiteFilters(efficacite) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_passe_bas $image $efficacite\n\n"
+               bm_passe_bas $image $efficacite
+            } else {
+               ::console::affiche_resultat "bm_passe_bas $caption(audace,filtre_image_affichee) $efficacite\n\n"
+               bm_passe_bas "$audace(artifice)" $efficacite
+            }
+         } \
+         "$caption(audace,menu,filtre_passe-haut)" {
+            #---
+            if { $traiteFilters(efficacite) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_passe_haut $image $efficacite\n\n"
+               bm_passe_haut $image $efficacite
+            } else {
+               ::console::affiche_resultat "bm_passe_haut $caption(audace,filtre_image_affichee) $efficacite\n\n"
+               bm_passe_haut "$audace(artifice)" $efficacite
+            }
+         } \
+         "$caption(audace,menu,filtre_median)" {
+            #---
+            if { $traiteFilters(efficacite) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_filtre_median $image $efficacite\n\n"
+               bm_filtre_median $image $efficacite
+            } else {
+               ::console::affiche_resultat "bm_filtre_median $caption(audace,filtre_image_affichee) $efficacite\n\n"
+               bm_filtre_median "$audace(artifice)" $efficacite
+            }
+         } \
+         "$caption(audace,menu,filtre_minimum)" {
+            #---
+            if { $traiteFilters(efficacite) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_filtre_min $image $efficacite\n\n"
+               bm_filtre_min $image $efficacite
+            } else {
+               ::console::affiche_resultat "bm_filtre_min $caption(audace,filtre_image_affichee) $efficacite\n\n"
+               bm_filtre_min "$audace(artifice)" $efficacite
+            }
+         } \
+         "$caption(audace,menu,filtre_maximum)" {
+            #---
+            if { $traiteFilters(efficacite) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficient)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_filtre_max $image $efficacite\n\n"
+               bm_filtre_max $image $efficacite
+            } else {
+               ::console::affiche_resultat "bm_filtre_max $caption(audace,filtre_image_affichee) $efficacite\n\n"
+               bm_filtre_max "$audace(artifice)" $efficacite
+            }
+         } \
+         "$caption(audace,menu,filtre_gaussien)" {
+            #---
+            if { $traiteFilters(coef_etal) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_filtre_gauss $image $coef_etal\n\n"
+               bm_filtre_gauss $image $coef_etal
+            } else {
+               ::console::affiche_resultat "bm_filtre_gauss $caption(audace,filtre_image_affichee) $coef_etal\n\n"
+               bm_filtre_gauss "$audace(artifice)" $coef_etal
+            }
+         } \
+         "$caption(audace,menu,ond_morlet)" {
+            #---
+            if { $traiteFilters(coef_etal) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_ondelette_mor $image $coef_etal\n\n"
+               bm_ondelette_mor $image $coef_etal
+            } else {
+               ::console::affiche_resultat "bm_ondelette_mor $caption(audace,filtre_image_affichee) $coef_etal\n\n"
+               bm_ondelette_mor "$audace(artifice)" $coef_etal
+            }
+         } \
+         "$caption(audace,menu,ond_mexicain)" {
+            #---
+            if { $traiteFilters(coef_etal) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+            #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_ondelette_mex $image $coef_etal\n\n"
+               bm_ondelette_mex $image $coef_etal
+            } else {
+               ::console::affiche_resultat "bm_ondelette_mex $caption(audace,filtre_image_affichee) $coef_etal\n\n"
+               bm_ondelette_mex "$audace(artifice)" $coef_etal
+            }
+         } \
+         "$caption(audace,menu,log)" {
+            #---
+            if { ( $traiteFilters(coef_mult) == "" ) && ( $traiteFilters(offset) == "" ) } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+               return
+            }
+            #---
+            if { $traiteFilters(coef_mult) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { $traiteFilters(offset) == "" } {
+               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+               return
+            }
+            #---
+            if { ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) && ( [ string is double -strict $traiteFilters(offset) ] == "0" ) } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalides)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+            #---
+            if { [ string is double -strict $traiteFilters(offset) ] == "0" } {
+               tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,coef_invalide)
+               return
+            }
+           #---
+            if { $traiteFilters(choix) == "1" } {
+               ::console::affiche_resultat "bm_logima $image $coef_mult $offset\n\n"
+               bm_logima $image $coef_mult $offset
+            } else {
+               ::console::affiche_resultat "bm_logima $caption(audace,filtre_image_affichee) $coef_mult $offset\n\n"
+               bm_logima "$audace(artifice)" $coef_mult $offset
+            }
+         }
       ::traiteFilters::recup_position
    }
 
@@ -1960,141 +1958,141 @@ namespace eval ::traiteFilters {
       #--- Initialisation des variables
       set traiteFilters(coef_etal) $conf(coef_etal)
       set traiteFilters(coef_mult) $conf(coef_mult)
-      #--- Switch passé au format sur une seule ligne logique : les accolades englobant la liste
+      #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
-      #--- a l'intérieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
+      #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteFilters(operation) \
-       "$caption(audace,menu,masque_flou)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3a -in $This.usr.2 -side top -fill both
-          pack $This.usr.4 -in $This.usr.2 -side top -fill both
-          pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-          pack $This.usr.5 -in $This.usr.2 -side top -fill both
-       } \
-       "$caption(audace,menu,filtre_passe-bas)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3b -in $This.usr.2 -side top -fill both
-          pack $This.usr.6 -in $This.usr.2 -side top -fill both
-       } \
-       "$caption(audace,menu,filtre_passe-haut)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3b -in $This.usr.2 -side top -fill both
-          pack $This.usr.6 -in $This.usr.2 -side top -fill both
-       } \
-       "$caption(audace,menu,filtre_median)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3b -in $This.usr.2 -side top -fill both
-          pack $This.usr.6 -in $This.usr.2 -side top -fill both
-       } \
-       "$caption(audace,menu,filtre_minimum)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3b -in $This.usr.2 -side top -fill both
-          pack $This.usr.6 -in $This.usr.2 -side top -fill both
-       } \
-       "$caption(audace,menu,filtre_maximum)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3b -in $This.usr.2 -side top -fill both
-          pack $This.usr.6 -in $This.usr.2 -side top -fill both
-       } \
-       "$caption(audace,menu,filtre_gaussien)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3a -in $This.usr.2 -side top -fill both
-          pack $This.usr.4 -in $This.usr.2 -side top -fill both
-          pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-       } \
-       "$caption(audace,menu,ond_morlet)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3a -in $This.usr.2 -side top -fill both
-          pack $This.usr.4 -in $This.usr.2 -side top -fill both
-          pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-       } \
-       "$caption(audace,menu,ond_mexicain)" {
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3a -in $This.usr.2 -side top -fill both
-          pack $This.usr.4 -in $This.usr.2 -side top -fill both
-          pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-       } \
-       "$caption(audace,menu,log)" {
-          if { [ buf$audace(bufNo) imageready ] == "1" } {
-             set traiteFilters(offset) [ lindex [ buf$audace(bufNo) autocuts ] 1 ]
-          }
-          pack forget $This.usr.3a
-          pack forget $This.usr.3b
-          pack forget $This.usr.4
-          pack forget $This.usr.4.1.but_defaut
-          pack forget $This.usr.5
-          pack forget $This.usr.5.1.but_defaut
-          pack forget $This.usr.6
-          pack forget $This.usr.7
-          pack $This.usr.3a -in $This.usr.2 -side top -fill both
-          pack $This.usr.5 -in $This.usr.2 -side top -fill both
-          pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-          pack $This.usr.7 -in $This.usr.2 -side top -fill both
-       }
+         "$caption(audace,menu,masque_flou)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3a -in $This.usr.2 -side top -fill both
+            pack $This.usr.4 -in $This.usr.2 -side top -fill both
+            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            pack $This.usr.5 -in $This.usr.2 -side top -fill both
+         } \
+         "$caption(audace,menu,filtre_passe-bas)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3b -in $This.usr.2 -side top -fill both
+            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+         } \
+         "$caption(audace,menu,filtre_passe-haut)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3b -in $This.usr.2 -side top -fill both
+            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+         } \
+         "$caption(audace,menu,filtre_median)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3b -in $This.usr.2 -side top -fill both
+            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+         } \
+         "$caption(audace,menu,filtre_minimum)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3b -in $This.usr.2 -side top -fill both
+            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+         } \
+         "$caption(audace,menu,filtre_maximum)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3b -in $This.usr.2 -side top -fill both
+            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+         } \
+         "$caption(audace,menu,filtre_gaussien)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3a -in $This.usr.2 -side top -fill both
+            pack $This.usr.4 -in $This.usr.2 -side top -fill both
+            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+         } \
+         "$caption(audace,menu,ond_morlet)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3a -in $This.usr.2 -side top -fill both
+            pack $This.usr.4 -in $This.usr.2 -side top -fill both
+            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+         } \
+         "$caption(audace,menu,ond_mexicain)" {
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3a -in $This.usr.2 -side top -fill both
+            pack $This.usr.4 -in $This.usr.2 -side top -fill both
+            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+         } \
+         "$caption(audace,menu,log)" {
+            if { [ buf$audace(bufNo) imageready ] == "1" } {
+               set traiteFilters(offset) [ lindex [ buf$audace(bufNo) autocuts ] 1 ]
+            }
+            pack forget $This.usr.3a
+            pack forget $This.usr.3b
+            pack forget $This.usr.4
+            pack forget $This.usr.4.1.but_defaut
+            pack forget $This.usr.5
+            pack forget $This.usr.5.1.but_defaut
+            pack forget $This.usr.6
+            pack forget $This.usr.7
+            pack $This.usr.3a -in $This.usr.2 -side top -fill both
+            pack $This.usr.5 -in $This.usr.2 -side top -fill both
+            pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            pack $This.usr.7 -in $This.usr.2 -side top -fill both
+         }
    }
 
    proc parcourir { } {
@@ -2517,7 +2515,7 @@ namespace eval ::seuilWindow {
       set tmp(seuils,histoautohaut)     $conf(seuils,histoautohaut)
       set tmp(seuils,histoautobas)      $conf(seuils,histoautobas)
 
-      #--- Sauveagarde des réglages courants
+      #--- Sauveagarde des reglages courants
       set tmp(seuils,visu$visuNo,mode_) $conf(seuils,visu$visuNo,mode)
       set tmp(seuils,irisautohaut_)     $conf(seuils,irisautohaut)
       set tmp(seuils,irisautobas_)      $conf(seuils,irisautobas)
@@ -2801,7 +2799,7 @@ namespace eval ::seuilWindow {
             ::confVisu::autovisu $num(visu_2)
          }
       }
-      #--- Récupération de la position de la fenêtre de réglages
+      #--- Recuperation de la position de la fenetre de reglages
       seuils_recup_position $visuNo
       #---
       restore_cursor
@@ -2817,7 +2815,7 @@ namespace eval ::seuilWindow {
    proc cmdClose { visuNo } {
       global seuilWindow
 
-      #--- Récupération de la position de la fenêtre de réglages
+      #--- Recuperation de la position de la fenetre de reglages
       seuils_recup_position $visuNo
       #---
       destroy $seuilWindow($visuNo,This)
