@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.28 2006-10-28 15:43:08 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.29 2006-10-29 16:39:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -2076,11 +2076,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,clip)                      "Klip"
    set caption(audace,menu,window1)                   "Beskære"
    set caption(audace,menu,operation_serie)           "Billedserie:"
-   set caption(audace,menu,raw2cfa)                   "# Conversion RAW ---> CFA"
-   set caption(audace,menu,faire_offset)              "# Faire un offset"
-   set caption(audace,menu,faire_dark)                "# Faire un dark"
-   set caption(audace,menu,faire_flat_field)          "# Faire un flat-field"
-   set caption(audace,menu,cfa2rgb)                   "# Conversion CFA ---> RVB"
+   set caption(audace,menu,raw2cfa)                   "Konvertering: RAW ---> CFA"
+   set caption(audace,menu,faire_offset)              "Optag en Bias frame"
+   set caption(audace,menu,faire_dark)                "Optag en Dark frame"
+   set caption(audace,menu,faire_flat_field)          "Optag en flat-field frame"
+   set caption(audace,menu,cfa2rgb)                   "Konvertering: CFA ---> RGB"
 
    set caption(audace,menu,traitement)                "Billedbehandling"
    set caption(audace,menu,filtres)                   "Filter:"
@@ -2182,7 +2182,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_nbre_images)              "Definer antallet af billeder."
    set caption(audace,choix_image_sortie)             "Vælg output-billeder."
    set caption(audace,definir,operande)               "Vælg et C billede brugt som operand."
-   set caption(audace,definir,entree_generique)       "# Choisissez l'image générique d'entrée."
+   set caption(audace,definir,entree_generique)       "Vælg serie-navn til input-billedet."
    set caption(audace,definir,sortie_generique)       "Vælg serie-navn til output-billedet."
    set caption(audace,definir,image_sortie)           "Vælg output image."
    set caption(audace,definir,flat-field)             "Vælg flat-field frame."
@@ -2225,8 +2225,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,formule)                        "Formel:"
    set caption(audace,image,image_affichee:)          "På det viste billede:"
    set caption(audace,image,image_affichee)           "På det viste billede"
-   set caption(audace,image,image_a_choisir:)         "# På et andet billede på harddisken:"
-   set caption(audace,image,image_a_choisir)          "# På et andet billede på harddisken"
+   set caption(audace,image,image_a_choisir:)         "På et billede på harddisken:"
+   set caption(audace,image,image_a_choisir)          "På et billede på harddisken"
    set caption(audace,filtre_image_affichee)          "(på det viste billede)"
    set caption(audace,images,entree-)                 "Indlæs billeder"
    set caption(audace,images,entree)                  "Indlæs billeder:"
@@ -2246,7 +2246,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,log,offset)                     "Offset:"
    set caption(audace,image,offset)                   "Bias frame:"
    set caption(audace,image,dark)                     "Dark frame:"
-   set caption(audace,image,flat-field)               "Flat-Field frame:"
+   set caption(audace,image,flat-field)               "Flat-field frame:"
    set caption(audace,image,operande)                 "Operand:"
    set caption(audace,image,noir:)                    "Dark Frame:"
    set caption(afficher,image,fin)                    "Vis billede når behandling er udført"
@@ -2277,7 +2277,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,integflux)                      "Integreret Flux"
    set caption(audace,mag_instrument)                 "Instrument magnitude -2.5*log10(Flux)"
    set caption(audace,MPC_format)                     "MPC Format:"
-   set caption(audace,largequiv,xy)                   "# Largeur équivalente"
+   set caption(audace,largequiv,xy)                   "Ækvivalent bredde"
    set caption(audace,UAI_site_image)                 "Stedet UAI %s må være hvorfra billedet blev hentet."
    set caption(superposer,carte,champ)                "Læg Feltkort på"
    set caption(catalogue,recherche)                   "Sti til katalog"
