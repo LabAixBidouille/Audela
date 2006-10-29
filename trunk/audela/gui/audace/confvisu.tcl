@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.34 2006-10-21 16:34:35 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.35 2006-10-29 14:32:57 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -1934,10 +1934,15 @@ namespace eval ::confVisu {
       #--- je cree le label representant la ligne horizontale
       if { ![winfo exists $private($visuNo,hCrosshairH)] } {
          label $private($visuNo,hCrosshairH) -bg $conf(crosshair,color)
+      } else {
+         $private($visuNo,hCrosshairH) configure -bg $conf(crosshair,color)
       }
+
       #--- je cree le label representant la ligne verticale
       if { ![winfo exists $private($visuNo,hCrosshairV)] } {
          label $private($visuNo,hCrosshairV) -bg $conf(crosshair,color)
+      } else {
+         $private($visuNo,hCrosshairV) configure -bg $conf(crosshair,color)
       }
 
       #--- coordonnees du centre du reticule dans le repere canvas
