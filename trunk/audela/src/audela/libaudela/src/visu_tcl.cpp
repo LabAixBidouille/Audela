@@ -290,8 +290,6 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    double dSh, dSb;
    CVisu *visu;
    CBuffer *buffer;
-   CFitsKeyword *kwd;
-   CFitsKeywords *keywords;
    int listArgc;
    char **listArgv;
 
@@ -302,24 +300,27 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       result = TCL_ERROR;
    } else if(argc==2) {
       visu = (CVisu*)clientData;
+
       buffer = (CBuffer*)buf_pool->Chercher(visu->bufnum);
-      keywords = buffer->GetKeywords();
-      if((keywords!=NULL)&&((kwd=keywords->FindKeyword("MIPS-HI"))!=NULL)) fsh = kwd->GetFloatValue();
-      else fsh = 32767.0;
-      if((keywords!=NULL)&&((kwd=keywords->FindKeyword("MIPS-LO"))!=NULL)) fsb = kwd->GetFloatValue();
-      else fsb = 0.0;
-      sprintf(ligne,"%f %f",fsh,fsb);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      if( buffer->GetNaxis() == 2 || buffer->GetNaxis() == 1) {
+         fsh= visu->GetGrayHicut();
+         fsb= visu->GetGrayLocut();
+
+         sprintf(ligne,"%f %f",fsh,fsb);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      } else {
+         float fshR, fsbR, fshG, fsbG, fshB, fsbB;
+         visu->GetRgbCuts(&fshR, &fsbR, &fshG, &fsbG, &fshB, &fsbB);
+         sprintf(ligne,"%f %f %f %f %f %f", fshR, fsbR, fshG, fsbG, fshB, fsbB);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      }
+
    } else {
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
          sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
-      } else if(listArgc!=2) {
-         sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
-      } else {
+      } else if (listArgc == 2 ){
          if(Tcl_GetDouble(interp,listArgv[0],&dSh)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s {hicut locut}\nhicut = must be a number",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -330,18 +331,53 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
             result = TCL_ERROR;
          } else {
             fsh = (float)dSh;
-            fsb = (float)dSb;
+            fsb = (float)dSb;            
             visu = (CVisu*)clientData;
-            buffer = (CBuffer*)buf_pool->Chercher(visu->bufnum);
-            if(buffer) {
-               keywords = buffer->GetKeywords();
-               if(keywords) {
-                  keywords->Add("MIPS-HI",&fsh,TFLOAT,NULL,NULL);
-                  keywords->Add("MIPS-LO",&fsb,TFLOAT,NULL,NULL);
-               }
-            }
+            visu->SetGrayCuts(fsh, fsb);            
          }
          Tcl_Free((char*)listArgv);
+      } else if (listArgc == 6 ){
+         double dShR, dSbR, dShG, dSbG, dShB, dSbB;
+         float fshR, fsbR, fshG, fsbG, fshB, fsbB;
+         if(Tcl_GetDouble(interp,listArgv[0],&dShR)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {hicutR locutR hicutG locutG hicutB locutB}\nhicutR = must be a number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else if(Tcl_GetDouble(interp,listArgv[1],&dSbR)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {hicutR locutR hicutG locutG hicutB locutB}\nlocutR = must be a number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else if(Tcl_GetDouble(interp,listArgv[2],&dShG)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {hicutR locutR hicutG locutG hicutB locutB}\nhicutG = must be a number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else if(Tcl_GetDouble(interp,listArgv[3],&dSbG)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {hicutR locutR hicutG locutG hicutB locutB}\nlocutG = must be a number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else if(Tcl_GetDouble(interp,listArgv[4],&dShB)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {hicutR locutR hicutG locutG hicutB locutB}\nhicutB = must be a number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else if(Tcl_GetDouble(interp,listArgv[5],&dSbB)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {hicutR locutR hicutG locutG hicutB locutB}\nlocutB = must be a number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            fshR = (float)dShR;
+            fsbR = (float)dSbR;
+            fshG = (float)dShG;
+            fsbG = (float)dSbG;
+            fshB = (float)dShB;
+            fsbB = (float)dSbB;
+            visu = (CVisu*)clientData;
+            visu->SetRgbCuts(fshR, fsbR, fshG, fsbG, fshB, fsbB);
+         }
+         Tcl_Free((char*)listArgv);
+      } else {
+         sprintf(ligne,"Threshold struct not valid: must be { hicut locut } or {hicutR locutR hicutG locutG hicutB locutB}");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
       }
    }
    free(ligne);
@@ -362,44 +398,18 @@ int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    int listArgc;
    int i;
    char **listArgv;
-   CBuffer *buffer;
    CVisu *visu;
-   CFitsKeywords *keywords;
-   CFitsKeyword *kwd;
 
    ligne = (char*)calloc(200,sizeof(char));
-   if((argc!=2)&&(argc!=3)&&(argc!=5)) {
+   if( argc!=2 && argc!=3 && argc!=5) {
       sprintf(ligne,"Usage: %s %s ?cut?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       free(ligne);
       return TCL_ERROR;
    } else {
       visu = (CVisu*)clientData;
-      buffer = (CBuffer*)buf_pool->Chercher(visu->bufnum);
-
-      if(buffer==NULL) {
-         sprintf(ligne,"buf%d does not exist",visu->bufnum);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         free(ligne);
-         return TCL_ERROR;
-      }
-
-      keywords = buffer->GetKeywords();
-      if(keywords==NULL) {
-         sprintf(ligne,"buf%d is empty",visu->bufnum);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         free(ligne);
-         return TCL_ERROR;
-      }
-
       if(argc==2) {
-         // Il faut recuperer les mots cles qui sont dans l'entete FITS.
-         if((kwd=keywords->FindKeyword("MIPS-HI"))!=NULL) sh = (Lut_Cut)(kwd->GetIntValue());
-         else sh = (float)32767;
-         if((kwd=keywords->FindKeyword("MIPS-LO"))!=NULL) sb = (Lut_Cut)(kwd->GetIntValue());
-         else sb = (float)0;
-
-         visu->SetGrayCuts(sh, sb);
+         // rien a faire
       } else if(argc==3) {
          if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
             sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
@@ -427,29 +437,28 @@ int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                sb = (float)dSb;
             }
             Tcl_Free((char*)listArgv);
-
             visu->SetGrayCuts(sh, sb);
          }
 
       } else if(argc==5) {
          if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
-            sprintf(ligne,"Threshold struct not valid: must be { hicutRed locutRed } { hicutGreen locutGreen } { hicutBlue locutBlue }");
+            sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\ninvalid {hicutRed locutRed}");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
             return TCL_ERROR;
          } else if(listArgc!=2) {
-            sprintf(ligne,"Threshold struct not valid: must be { hicutRed locutRed }");
+            sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\ninvalid {hicutRed locutRed}");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
             return TCL_ERROR;
          } else {
             if(Tcl_GetDouble(interp,listArgv[0],&dSh)!=TCL_OK) {
-               sprintf(ligne,"Usage: %s %s {hicut locut}\nhicut = must be a number",argv[0],argv[1]);
+               sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\nhicutRed = must be a number",argv[0],argv[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_ERROR;
             } else if(Tcl_GetDouble(interp,listArgv[1],&dSb)!=TCL_OK) {
-               sprintf(ligne,"Usage: %s %s {hicut locut}\nlocut = must be a number",argv[0],argv[1]);
+               sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\nlocutRed = must be a number",argv[0],argv[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_OK;
@@ -460,23 +469,23 @@ int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             Tcl_Free((char*)listArgv);
          }
          if(Tcl_SplitList(interp,argv[3],&listArgc,&listArgv)!=TCL_OK) {
-            sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
+            sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\ninvalid {hicutGreen locutGreen}");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
             return TCL_ERROR;
          } else if(listArgc!=2) {
-            sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
+            sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\ninvalid {hicutGreen locutGreen}");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
             return TCL_ERROR;
          } else {
             if(Tcl_GetDouble(interp,listArgv[0],&dSh)!=TCL_OK) {
-               sprintf(ligne,"Usage: %s %s {hicut locut}\nhicut = must be a number",argv[0],argv[1]);
+               sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\nhicutGreen = must be a number",argv[0],argv[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_ERROR;
             } else if(Tcl_GetDouble(interp,listArgv[1],&dSb)!=TCL_OK) {
-               sprintf(ligne,"Usage: %s %s {hicut locut}\nlocut = must be a number",argv[0],argv[1]);
+               sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\nlocutGreen = must be a number",argv[0],argv[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_ERROR;
@@ -486,24 +495,25 @@ int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             }
             Tcl_Free((char*)listArgv);
          }
+
          if(Tcl_SplitList(interp,argv[4],&listArgc,&listArgv)!=TCL_OK) {
-            sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
+            sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\ninvalid {hicutBlue locutBlue}");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
             return TCL_ERROR;
          } else if(listArgc!=2) {
-            sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
+            sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\ninvalid {hicutBlue locutBlue}");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
             return TCL_ERROR;
          } else {
             if(Tcl_GetDouble(interp,listArgv[0],&dSh)!=TCL_OK) {
-               sprintf(ligne,"Usage: %s %s {hicut locut}\nhicut = must be a number",argv[0],argv[1]);
+               sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\nhicutBlue = must be a number",argv[0],argv[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_OK;
             } else if(Tcl_GetDouble(interp,listArgv[1],&dSb)!=TCL_OK) {
-               sprintf(ligne,"Usage: %s %s {hicut locut}\nlocut = must be a number",argv[0],argv[1]);
+               sprintf(ligne,"Usage: %s %s {hicutRed locutRed} {hicutGreen locutGreen} {hicutBlue locutBlue}\nlocutBlue = must be a number",argv[0],argv[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_ERROR;
