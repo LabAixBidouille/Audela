@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.9 2006-09-10 07:18:13 michelpujol Exp $
+ * $Id: libcam.c,v 1.10 2006-10-29 14:52:04 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -133,6 +133,7 @@ static int cmdCamBuf(ClientData clientData, Tcl_Interp * interp, int argc, char 
 static int cmdCamWindow(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamShutter(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamCooler(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -720,6 +721,45 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
 }
 
 /*
+ * cmdCamTel
+ * Lecture/ecriture de l'incateur pour recuperer ou non les coordonnee du telescope
+ */
+static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int value, result = TCL_OK;
+   struct camprop *cam;
+   
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%d", cam->radecFromTel);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   } else {
+      if (Tcl_GetInt(interp, argv[2], &value) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?0|1?\n Value must be an integer 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         if ( value !=0 && value != 1 ) {
+            sprintf(ligne, "Usage: %s %s ?0|1?\n Value must be an integer 0 or 1", argv[0], argv[1]);
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            cam = (struct camprop *) clientData;
+            cam->radecFromTel = value;
+            sprintf(ligne, "%d", cam->radecFromTel);
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         }
+      }
+   }
+   return result;
+}
+
+/*
  * AcqRead
  * Commande de lecture du CCD.
  */
@@ -756,12 +796,13 @@ static void AcqRead(ClientData clientData)
    strcpy(cam->msg,"");
    
    //  capture 
-   // TODO 2 : une autre solution serait de passer l'adresse de p comme ceci :
-   // CAM_DRV.read_ccd(cam, &p); 
+   // TODO 2 : une autre solution serait de passer l'adresse de p  comme ceci :
+   // CAM_DRV.read_ccd(cam, (unsigned short **)&p); 
    // mais il faut modifier toutes les camera !! ( michel pujol)
    CAM_DRV.read_ccd(cam, (unsigned short *) p);
    
-   // si la taille alloue par defaut a p ne convient pas, la camera crée un nouveau buffer adressé par cam->pixels
+   // si la taille allouee par defaut a p ne convient pas, 
+   // la camera crée un nouveau buffer cam->pixel_data contenant l'image
    if(cam->pixel_data != NULL) {
       if ( (int) cam->pixel_data != -1 ) {
          // les pixels sont dans le buffer cam->pixel_data
@@ -771,8 +812,6 @@ static void AcqRead(ClientData clientData)
    }
    
    if (strlen(cam->msg) == 0) {
-      
-      
       // Ce test permet de savoir si le buffer existe
       sprintf(s, "buf%d bitpix", cam->bufno);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
@@ -807,20 +846,7 @@ static void AcqRead(ClientData clientData)
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          strcpy(s, interp->result);
       }
-      
-      //--- get height after decompression
-      sprintf(s, "buf%d getpixelsheight", cam->bufno);
-      if (Tcl_Eval(interp, s) == TCL_OK) {
-         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
-      }   
-      
-      //--- get width after decompression
-      sprintf(s, "buf%d getpixelswidth", cam->bufno);
-      if (Tcl_Eval(interp, s) == TCL_OK) {
-         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
-      }   
-      
-      
+            
       //--- Add FITS keywords 
       if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
          sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
@@ -857,14 +883,16 @@ static void AcqRead(ClientData clientData)
       }
       Tcl_Eval(interp, s);
       
-      libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-      if (status == 0) {
-         // Add FITS keywords 
-         sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
-         Tcl_Eval(interp, s);
-         sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
-         Tcl_Eval(interp, s);
-      }    
+      if ( cam->radecFromTel  == 1 ) {
+         libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
+         if (status == 0) {
+            // Add FITS keywords 
+            sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
+            Tcl_Eval(interp, s);
+            sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
+            Tcl_Eval(interp, s);
+         }    
+      }
    } else { 
       // erreur d'acquisition, on enregistre une image vide 
       sprintf(s, "buf%d clear", cam->bufno );
@@ -1643,6 +1671,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    }
    cam->check_temperature = CAM_INI[cam->index_cam].check_temperature;
    cam->timerExpiration = NULL;
+   cam->radecFromTel = 1;
    //---  valeurs par defaut des capacites offertes par la camera
    cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
    cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
