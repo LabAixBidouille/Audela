@@ -2,14 +2,14 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.5 2006-06-20 17:30:30 robertdelmas Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.6 2006-10-29 14:30:28 michelpujol Exp $
 #
 
 ##############################################################################
 # namespace ftpclient
 #  ::ftpclient::selectConnection                 : affiche une fenetre de demande de connexion FTP et ouvre la connexion
 #  ::ftpclient::open                             : ouvre la connexion FTP selectionnee
-#  ::ftpclient::close                            : ferme la connexion FTP
+#  ::ftpclient::closeCnx                            : ferme la connexion FTP
 #  ::ftpclient::getFileList (fullpath)           : retourne la liste des fichiers d'un repertoire distant
 #  ::ftpclient::get ( sourceFile targetDir size) : copie un fichier du serveur distant sur le disque local
 #############################################################################
@@ -98,7 +98,7 @@ namespace eval ::ftpclient {
 
       if {  "$private(connection)" != "" } {
          #--- je ferme la connexion en cours si elle existe
-         close
+         closeCnx
       }
 
       set private(connection) [ftp::Open \
@@ -116,11 +116,11 @@ namespace eval ::ftpclient {
    }
 
    #------------------------------------------------------------------------------
-   # ftpclient::close
+   # ftpclient::closeCnx
    #
    # ferme la connexion ftp
    #------------------------------------------------------------------------------
-   proc close { } {
+   proc closeCnx { } {
       variable private
       global caption
 
@@ -344,10 +344,10 @@ namespace eval ::ftpclient {
 
       #::ftp::stopCopy $private(connection) $private(targetsize)
       #set ::ftp::ftp(Total) $::ftpclient::private(targetsize)
-      #close $::ftp::ftp$private(connection)(SourceCI)
+      #closeCnx $::ftp::ftp$private(connection)(SourceCI)
       #unset ::ftp::ftp(get:channel)
       #--- fermer et re ouvrir la connexion
-      #close
+      #closeCnx
       #open
    }
 
@@ -410,10 +410,11 @@ namespace eval ::ftpclient {
    #==============================================================
    # Fonctions de configuration generiques
    #
-   # getLabel        retourne le titre de la fenetre de config
-   # confToWidget    copie les parametres du tableau conf() dans les variables des widgets
-   # widgetToConf    copie les variables des widgets dans le tableau conf()
    # fillConfigPage  affiche la fenetre de config
+   # getLabel        retourne le titre de la fenetre de config
+   # apply           applique les modifications
+   # close           ferme la fenetre
+   # showHelp        affiche l'aide
    #==============================================================
 
    #------------------------------------------------------------
@@ -454,12 +455,12 @@ namespace eval ::ftpclient {
    }
 
    #------------------------------------------------------------
-   #  ftpclient::widgetToConf { } 
+   #  ftpclient::apply { } 
    #  (appelee par ::confGenerique quand on termine avec le bouton OK ou APPLIQUER)
    #  copie les variables des widgets dans le tableau conf() ou private()
    #  et ouvre la connexion ftp
    #------------------------------------------------------------
-   proc widgetToConf { visuNo } {
+   proc apply { visuNo } {
       variable private
       variable widget
       global conf

@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.10 2006-06-20 22:04:49 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.11 2006-10-29 14:30:28 michelpujol Exp $
 #
 
 package provide visio2 1.0
@@ -156,7 +156,7 @@ namespace eval ::Visio2 {
       #--- copie la largeur des colonnes dans conf()
       localTable::saveColumnWidth
       #--- je ferme la connexion ftp
-      ftpclient::close
+      ftpclient::closeCnx
 
       pack forget $private(This)
    }
@@ -601,10 +601,11 @@ namespace eval ::Visio2::config {
    #==============================================================
    # Fonctions de configuration generiques appelees par ::confGenerique::run
    #
-   # getLabel        retourne le titre de la fenetre de config
-   # confToWidget    copie les parametres du tableau conf() dans les variables des widgets
-   # widgetToConf    copie les variable des widgets dans le tableau conf()
    # fillConfigPage  affiche la fenetre de config
+   # getLabel        retourne le titre de la fenetre de config
+   # apply           applique les modifications
+   # close           ferme la fenetre
+   # showHelp        affiche l'aide
    #==============================================================
 
    #------------------------------------------------------------
@@ -643,10 +644,10 @@ namespace eval ::Visio2::config {
    }
 
    #------------------------------------------------------------
-   # ::Visio2::config::widgetToConf { }
+   # ::Visio2::config::apply { }
    #   copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
-   proc widgetToConf { } {
+   proc apply { visuNo } {
       variable private
       variable widget 
       variable widgetEnableExtension
@@ -1712,7 +1713,7 @@ namespace eval ::Visio2::ftpTable {
          set choice [tk_messageBox -title "$caption(visio2,ftp_connection_title)" -type okcancel -message "$message" -icon question ]
          if { $choice == "ok" } {
             #--- je ferme la connexion FTP en cours
-            ::ftpclient::close
+            ::ftpclient::closeCnx
             #--- je masque la table ftp
             pack forget $private(frame)
             set result 1

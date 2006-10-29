@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.9 2006-06-20 17:30:51 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.10 2006-10-29 14:30:28 michelpujol Exp $
 #
 
 ##############################################################################
@@ -695,7 +695,7 @@ namespace eval ::FullScreen::config {
    #
    # getLabel        retourne le titre de la fenetre de config
    # confToWidget    copie les parametres du tableau conf() dans les variables des widgets
-   # widgetToConf    copie les variable des widgets dans le tableau conf()
+   # apply    copie les variable des widgets dans le tableau conf()
    # fillConfigPage  affiche la fenetre de config
    #==============================================================
 
@@ -733,10 +733,10 @@ namespace eval ::FullScreen::config {
    }
 
    #------------------------------------------------------------
-   # ::FullScreen::config::widgetToConf
+   # ::FullScreen::config::apply
    #   copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
-   proc widgetToConf { visuNo } {
+   proc apply { visuNo } {
       variable private
       variable widget
       global conf
