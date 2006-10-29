@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.11 2006-10-21 20:06:52 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.12 2006-10-29 14:30:28 michelpujol Exp $
 #
 
 #
@@ -602,7 +602,7 @@ namespace eval confPosObs {
       set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
       set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
       set conf(posobs,ref_geodesique)         $confgene(posobs,ref_geodesique)
-      set conf(posobs,station_uai)	          $confgene(posobs,station_uai)
+      set conf(posobs,station_uai)                  $confgene(posobs,station_uai)
    }
 }
 
@@ -2638,21 +2638,20 @@ namespace eval confGenerique {
       variable This
       variable confResult
 
-      appliquer $visuNo
+      ::confGenerique::apply $visuNo
       set confResult "1"
-      destroy $This
+      ::confGenerique::close $visuNo
    }
 
    #
    # confGenerique::appliquer
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
-   proc appliquer { visuNo } {
+   proc apply { visuNo } {
       variable NameSpace
 
-      $NameSpace\:\:widgetToConf $visuNo
-      catch {
-         $NameSpace\:\:appliquer $visuNo
+      if { [info procs $NameSpace\:\:apply ] != "" } {
+         $NameSpace\:\:apply $visuNo
       }
    }
 
@@ -2675,15 +2674,17 @@ namespace eval confGenerique {
    # confGenerique::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc fermer { visuNo } {
+   proc close { visuNo } {
       variable This
       variable NameSpace
 
-      catch {
-         #--- appelle la procedure "fermer" s'il elle existe
-         $NameSpace\:\:fermer $visuNo
-      }
-
+      if { [info procs $NameSpace\:\:close ] != "" } {
+         #--- appelle la procedure "close"
+         set result [$NameSpace\:\:close $visuNo]
+         if { $result == "0" } {
+            return
+         }
+      } 
       #--- supprime la fenetre
       destroy $This
    }
@@ -2728,7 +2729,7 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'Appliquer'
       button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
-         -command "::confGenerique::appliquer $visuNo"
+         -command "::confGenerique::apply $visuNo"
       pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree un label 'Invisible' pour simuler un espacement
@@ -2737,7 +2738,7 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::fermer $visuNo"
+         -command "::confGenerique::close $visuNo"
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Aide'

@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: crosshair.tcl,v 1.5 2006-06-20 17:27:58 robertdelmas Exp $
+# Mise a jour $Id: crosshair.tcl,v 1.6 2006-10-29 14:30:28 michelpujol Exp $
 #
 
 namespace eval ::Crosshair {
@@ -41,11 +41,11 @@ namespace eval ::Crosshair {
    #==============================================================
    # Fonctions de configuration generiques
    #
-   # getLabel        retourne le titre de la fenetre de config
-   # confToWidget    copie les parametres du tableau conf() dans les variables des widgets
-   # widgetToConf    copie les variable des widgets dans le tableau conf()
    # fillConfigPage  affiche la fenetre de config
-   #==============================================================
+   # getLabel        retourne le titre de la fenetre de config
+   # apply           applique les modifications
+   # close           ferme la fenetre
+   # showHelp        affiche l'aide
 
    #------------------------------------------------------------
    #  getLabel
@@ -74,10 +74,10 @@ namespace eval ::Crosshair {
    }
 
    #------------------------------------------------------------
-   #  widgetToConf { }
+   #  apply { }
    #     copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
-   proc widgetToConf { visuNo } {
+   proc apply { visuNo } {
       variable widget
       global conf
 

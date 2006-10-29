@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration de l'optique
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.8 2006-10-21 16:35:20 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.9 2006-10-29 14:30:28 michelpujol Exp $
 #
 
 namespace eval ::confOptic {
@@ -92,10 +92,11 @@ namespace eval ::confOptic {
    #==============================================================
    # Fonctions de configuration generiques
    #
-   # getLabel       : retourne le titre de la fenetre de config
-   # confToWidget   : copie les parametres du tableau conf() dans les variables des widgets
-   # widgetToConf   : copie les variables des widgets dans le tableau conf()
-   # fillConfigPage : affiche la fenetre de config
+   # fillConfigPage  affiche la fenetre de config
+   # getLabel        retourne le titre de la fenetre de config
+   # apply           applique les modifications
+   # close           ferme la fenetre
+   # showHelp        affiche l'aide
    #==============================================================
 
    #------------------------------------------------------------
@@ -137,11 +138,11 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  widgetToConf { }
+   #  apply { }
    #     copie les variables des widgets dans le tableau conf()
    #  
    #------------------------------------------------------------
-   proc widgetToConf { visuNo } {
+   proc apply { visuNo } {
       variable private
       variable widget
       global conf
