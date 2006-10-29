@@ -10,6 +10,11 @@
 #define LIBGPHOTO_OK 0
 #define LIBGPHOTO_ERROR -1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct _GPhotoSession GPhotoSession;
 
 int libgphoto_openSession (GPhotoSession **gphotoSession, char * gphotoWinDllDir);
@@ -38,5 +43,9 @@ int libgphoto_setQuality (GPhotoSession *gphotoSession, char * quality);
 // log and errors
 char * libgphoto_getLastErrorMessage(GPhotoSession *gphotoSession);
 void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
