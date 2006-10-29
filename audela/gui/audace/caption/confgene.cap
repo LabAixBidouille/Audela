@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.8 2006-10-28 15:42:42 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.9 2006-10-29 16:38:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -607,7 +607,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Vindue-type"
 
    set caption(confgene,fichier_image)                      "Billedfil"
-   set caption(confgene,fichier_images_seuils_visu)         "# Enregistrer les images avec les seuils de la visu"
+   set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi"
    set caption(confgene,fichier_image_ext_defaut)           "Standand filtype (extension):"
    set caption(confgene,fichier_image_new_ext)              "Valg af filtype (extension):"
    set caption(confgene,fichier_image_compres)              "Komprimeret billedfil(.gz)"
