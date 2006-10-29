@@ -339,7 +339,7 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pi
                unsigned char * pixCurG = (unsigned char *) pixelsG;
                unsigned char * pixCurB = (unsigned char *) pixelsB;
 
-               while(--t>0) {
+               while(--t>=0) {
                   *(pixCur++) = (TYPE_PIXELS_RGB) *(pixCurR++);
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurG++);
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurB++);
@@ -352,7 +352,7 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pi
                short * pixCurG = (short *) pixelsG;
                short * pixCurB = (short *) pixelsB;
 
-               while(--t>0) {
+               while(--t>=0) {
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurR++);
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurG++);
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurB++);
@@ -365,7 +365,7 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pi
                float * pixCurG = (float *) pixelsG;
                float * pixCurB = (float *) pixelsB;
 
-               while(--t>0) {
+               while(--t>=0) {
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurR++);
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurG++);
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurB++);
