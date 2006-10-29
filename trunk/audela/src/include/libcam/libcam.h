@@ -63,6 +63,7 @@ struct cmditem {
    {"acq", (Tcl_CmdProc *)cmdCamAcq},\
    {"stop", (Tcl_CmdProc *)cmdCamStop},\
    {"tel", (Tcl_CmdProc *)cmdCamTel},\
+   {"radecfromtel", (Tcl_CmdProc *)cmdCamRadecFromTel},\
    {"shutter", (Tcl_CmdProc *)cmdCamShutter},\
    {"cooler", (Tcl_CmdProc *)cmdCamCooler},\
    {"temperature", (Tcl_CmdProc *)cmdCamTemperature},\
