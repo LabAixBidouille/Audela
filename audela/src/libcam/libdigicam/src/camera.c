@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.4 2006-07-07 12:54:14 michelpujol Exp $
+// $Id: camera.c,v 1.5 2006-10-29 15:06:01 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -60,10 +60,10 @@ struct camini CAM_INI[] = {
    {"DSLR",			/* camera name */
     "dslr",			/* camera product */
      "cmos",		/* ccd name */
-      1536, 1024,			/* maxx maxy */
+      3088, 2086,			/* maxx maxy */
       23, 14,			/* overscans x */
       0, 0,			/* overscans y */
-      9.8e-6, 12.6e-6,		/* photosite dim (m) */
+      7.4e-6, 7.4e-6,		/* photosite dim (m) */
       65535.,			/* observed saturation */
       1.,			/* filling factor */
       2.,			/* gain (e/adu) */
