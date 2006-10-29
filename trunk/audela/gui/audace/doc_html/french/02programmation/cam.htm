@@ -83,6 +83,13 @@
 <p>Cette commande permet de savoir, ou de modifier, le buffer dans lequel sera stock&eacute;e l'image d'acquisition. L'argument optionnel, tout comme la valeur renvoy&eacute;e est un nombre qui est le num&eacute;ro du buffer. Ainsi, si "cam1 buf" renvoie 2, la commande qui permet d'avoir acc&egrave;s &agrave; l'image acquise est "buf2 ...".</p>
 <h3> <a name="tel" id="tel"></a>cam1 tel ?<em>telNo</em>?</h3>
 <p>R&eacute;alise le m&ecirc;me genre de lien que pour la fonction "buf", mais avec le t&eacute;lescope. S'il est informatis&eacute;, alors &agrave; chaque prise de vue le t&eacute;lescope est interrog&eacute; sur ses coordonn&eacute;es, et elles sont inscrites dans le header FITS.</p>
+<h3><a name="tel" id="tel"></a>cam1 radecfromtel ?<em>1|0</em>? (defaut=1)</h3>
+<p>Active (1) ou d&eacute;sactive (0) l'inscription des coordonn&eacute;es du 
+  t&eacute;lescope dans le header FITS de la prise de vue. </p>
+<p>La d&eacute;sactivation permet de gagner du temps ( 1,2 seconde pour un LX200 
+  ) dans les cas d'une une s&eacute;rie d'acquisitions rapides o&ugrave; les coordonn&eacute;es 
+  dans le header ne sont pas utiles, par exemple l'autoguidage ou la focalisation.</p>
+<h3></h3>
 <h3> <a name="shutter" id="shutter"></a>cam1 shutter ?<em>shut_mode</em>?</h3>
 <p>Lorsque l'obturateur est support&eacute; par la cam&eacute;ra, on peut en pr&eacute;ciser le comportement. La commande "cam1 shutter" permet cela. Elle a un argument optionnel, qui si il est pr&eacute;cis&eacute; permet de r&eacute;gler ce mode de fonctionnement. S'il est absent, cette commande renvoie le mode actuel. </p>
 <p>Les trois modes support&eacute;s sont <em>opened</em>, <em>closed</em>, <em>synchro</em>. Les deux premi&egrave;res valeurs infligent un comportement statique &agrave; l'obturateur. Le dernier mode, <em>synchro</em>, ouvre l'obturateur en d&eacute;but de pose et le ferme &agrave; la fin. C'est le mode par d&eacute;faut, qui est utilis&eacute; pour l'acquisition traditionnelle. Pour faire des noirs et offsets, on se servira du mode <em>closed</em>.</p>
@@ -215,7 +222,7 @@
 <p>Indique la valeur d&eacute;cimale du caract&egrave;re envoy&eacute; sur le port parall&egrave;le au d&eacute;but de la pose. La valeur par d&eacute;faut est 0.</p>
 <h3> <a name="longueposestopvalue" id="longueposestopvalue"></a>cam1 longueposestopvalue <em>?value?</em></h3>
 <p>Indique la valeur d&eacute;cimale du caract&egrave;re envoy&eacute; sur le port parall&egrave;le &agrave; la fin de la pose. La valeur par d&eacute;faut est 1, elle convient si la commande est r&eacute;alis&eacute;e par la pin 2 du port parall&egrave;le.</p>
-</td>
+
 </body>
 
 </html>
