@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.6 2006-06-18 21:41:10 michelpujol Exp $
+ * $Id: libstruc.h,v 1.7 2006-10-29 15:10:20 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -74,6 +74,7 @@ struct Capabilities {
    int bufno;\
    int camno;\
    int telno;\
+   int radecFromTel;\
    unsigned short port;\
    int portindex;\
    int shutterindex;\
