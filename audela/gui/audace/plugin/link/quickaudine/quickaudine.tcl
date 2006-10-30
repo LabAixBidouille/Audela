@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.4 2006-10-21 16:33:49 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.5 2006-10-30 18:14:36 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0
@@ -32,7 +32,7 @@ namespace eval quickaudine {
 #  configureDriver
 #     configure le driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickaudine::configureDriver { } {
    global audace
@@ -59,7 +59,7 @@ proc ::quickaudine::confToWidget { } {
 #  create
 #     demarre la liaison
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickaudine::create { linkLabel deviceId usage comment } {
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
@@ -70,7 +70,7 @@ proc ::quickaudine::create { linkLabel deviceId usage comment } {
 #  delete
 #     arrete la liaison et libere les ressources occupees
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickaudine::delete { linkLabel deviceId usage } {
    #--- pour l'instant, la liaison est arretee par le pilote de la camera
@@ -81,7 +81,7 @@ proc ::quickaudine::delete { linkLabel deviceId usage } {
 #  fillConfigPage
 #     fenetre de configuration du driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickaudine::fillConfigPage { frm } {
    variable private
@@ -90,11 +90,11 @@ proc ::quickaudine::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #---  j'afffiche la liste des link
+   #--- j'afffiche la liste des link
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickaudine,available)
       listbox $frm.available.list  
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
-      Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
+      Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
 
@@ -144,6 +144,9 @@ proc ::quickaudine::getLabel { } {
 #   
 #    retourne une chaine vide si le link n'existe pas
 #
+#   exemple :
+#   getLinkIndex "quickaudine1"
+#     1
 #------------------------------------------------------------
 proc ::quickaudine::getLinkIndex { linkLabel } {
    variable private 
@@ -160,7 +163,7 @@ proc ::quickaudine::getLinkIndex { linkLabel } {
 #
 #   exemple :
 #   getInstanceLabels
-#     { "QuickAudine0" "QuickAudine1" }
+#     { "quickaudine0" "quickaudine1" }
 #------------------------------------------------------------
 proc ::quickaudine::getLinkLabels { } {
    variable private
@@ -178,15 +181,15 @@ proc ::quickaudine::getLinkLabels { } {
 #    retourne le link choisi
 #
 #   exemple :
-#   getLinkLabels
-#     "QuickAudine0"
+#   getSelectedLinkLabel
+#     "quickaudine0"
 #------------------------------------------------------------
 proc ::quickaudine::getSelectedLinkLabel { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    #--- je retourne le label du link (premier mot de la ligne )
@@ -197,13 +200,13 @@ proc ::quickaudine::getSelectedLinkLabel { } {
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #  
-#  return namespace name
+#  return namespace
 #------------------------------------------------------------
 proc ::quickaudine::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link quickaudine quickaudine.cap ]\""
+   uplevel #0 "source \"[ file join $::audace(rep_plugin) link quickaudine quickaudine.cap ]\""
 
    #--- je fixe le nom generique de la liaison
    set private(genericName) "quickaudine"
@@ -233,7 +236,7 @@ proc ::quickaudine::initConf { } {
 #  isReady
 #     informe de l'etat de fonctionnement du driver
 #  
-#  return 0 (ready) , 1 (not ready)
+#  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::quickaudine::isReady { } {
    return 0
@@ -243,14 +246,14 @@ proc ::quickaudine::isReady { } {
 #  refreshAvailableList
 #      rafraichit la liste des link disponibles
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickaudine::refreshAvailableList { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    set selectedLinkLabel [getSelectedLinkLabel]
@@ -262,7 +265,7 @@ proc ::quickaudine::refreshAvailableList { } {
    set linkNoList [link::list]
 
    #--- je remplis la liste
-   foreach linkLabel  [getLinkLabels] {
+   foreach linkLabel [getLinkLabels] {
       set linkText ""
       #--- je recherche si ce link est ouvert
       foreach linkNo $linkNoList {
@@ -271,7 +274,7 @@ proc ::quickaudine::refreshAvailableList { } {
             set linkText "$linkLabel link$linkNo [link$linkNo use get]"
          }
       }
-      #--- si le link est ferme , j'affiche son label seulement
+      #--- si le link est ferme, j'affiche son label seulement
       if { $linkText == "" } {
          set linkText "$linkLabel"
       }
@@ -288,7 +291,7 @@ proc ::quickaudine::refreshAvailableList { } {
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickaudine::selectConfigLink { linkLabel } {
    variable private

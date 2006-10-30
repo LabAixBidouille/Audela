@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.4 2006-10-15 11:16:32 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.5 2006-10-30 18:15:35 robertdelmas Exp $
 #
 
 package provide lx200pad 1.0
@@ -136,7 +136,7 @@ namespace eval ::lx200pad {
 
       set conf(lx200pad,padsize) $widget(padsize)
       set conf(lx200pad,visible) $widget(visible)
-  }
+   }
 
    #------------------------------------------------------------
    #  fillConfigPage
@@ -164,7 +164,7 @@ namespace eval ::lx200pad {
       pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
 
       #--- Definition de la taille de la raquette 
-      set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
+      set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $frm.taille \
          -width 7          \
          -height [llength $list_combobox ] \
@@ -216,7 +216,7 @@ namespace eval ::lx200pad {
       #--- Supprime la raquette
       destroy .lx200pad
 
-      #--- J'arrete la surveillance de audace(telescope,speed) et je modifie pour débloquer la boucle d'attente
+      #--- J'arrete la surveillance de audace(telescope,speed) et je modifie pour debloquer la boucle d'attente
       set temp $audace(telescope,speed)
       set audace(telescope,speed) $temp
 
@@ -336,9 +336,9 @@ namespace eval ::lx200pad {
       pack .lx200pad.display -in .lx200pad  -fill x -side top -pady $geomlx200(10pixels) -padx 12
 
       #--- Refreach the coordinates on the display
-      bind .lx200pad.display.ra  <ButtonPress-1> { ::telescope::afficheCoord  }
-      bind .lx200pad.display.dec <ButtonPress-1> { ::telescope::afficheCoord  }
-      bind .lx200pad.display     <ButtonPress-1> { ::telescope::afficheCoord  }
+      bind .lx200pad.display.ra  <ButtonPress-1> { ::telescope::afficheCoord }
+      bind .lx200pad.display.dec <ButtonPress-1> { ::telescope::afficheCoord }
+      bind .lx200pad.display     <ButtonPress-1> { ::telescope::afficheCoord }
 
       #--- Create a dummy space
       #--- Cree un espace inutile
@@ -1194,8 +1194,8 @@ namespace eval ::lx200pad {
       if { [ winfo exists .lx200pad ] } {
          switch -exact -- $audace(telescope,speed) {
             1 { ::lx200pad::lx200_set_guide }
-            2 { ::lx200pad::lx200_set_cntr  }
-            3 { ::lx200pad::lx200_set_find  }
+            2 { ::lx200pad::lx200_set_cntr }
+            3 { ::lx200pad::lx200_set_find }
             4 { ::lx200pad::lx200_set_slew }
          }
       }

@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.5 2006-10-30 17:34:53 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.6 2006-10-30 18:15:00 robertdelmas Exp $
 #
 
 package provide parallelport 1.0
@@ -207,7 +207,7 @@ proc ::parallelport::getLinkLabels { } {
 #    retourne le link choisi
 #
 #   exemple :
-#   getLinkLabels
+#   getSelectedLinkLabel
 #     "LPT1:"
 #------------------------------------------------------------
 proc ::parallelport::getSelectedLinkLabel { } {
@@ -215,7 +215,7 @@ proc ::parallelport::getSelectedLinkLabel { } {
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    #--- je retourne le label du link (premier mot de la ligne )
@@ -232,7 +232,7 @@ proc ::parallelport::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link parallelport parallelport.cap ]\""
+   uplevel #0 "source \"[ file join $::audace(rep_plugin) link parallelport parallelport.cap ]\""
 
    #--- je recupere le nom generique de la liaison
    set private(genericName) [link::genericname parallelport]
