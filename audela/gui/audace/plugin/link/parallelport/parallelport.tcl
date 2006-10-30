@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.4 2006-10-21 16:33:37 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.5 2006-10-30 17:34:53 robertdelmas Exp $
 #
 
 package provide parallelport 1.0
@@ -36,7 +36,7 @@ namespace eval parallelport {
 #  configureDriver
 #     configure le driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::parallelport::configureDriver { } {
    global audace
@@ -65,14 +65,14 @@ proc ::parallelport::confToWidget { } {
 #   
 #    retourne le numero du link
 #      le numero du link est attribue automatiquement
-#      si ce link est deja cree , on retourne le numero du link existant
+#      si ce link est deja cree, on retourne le numero du link existant
 #
 #   exemple :
-#   ::parallelport::create "Port_parallele1" "cam1" "acquisition" "bit 1"
+#   ::parallelport::create "LPT1:" "cam1" "acquisition" "bit 1"
 #     1
-#   ::parallelport::create "Port_parallele2" "cam1" "longuepose" "bit 1"
+#   ::parallelport::create "LPT2:" "cam1" "longuepose" "bit 1"
 #     2
-#   ::parallelport::create "Port_parallele2" "cam2" "longuepose" "bit 2"
+#   ::parallelport::create "LPT2:" "cam2" "longuepose" "bit 2"
 #     2
 #------------------------------------------------------------
 proc ::parallelport::create { linkLabel deviceId usage comment } {
@@ -97,7 +97,7 @@ proc ::parallelport::delete { linkLabel deviceId usage } {
    set linkno [::confLink::getLinkNo $linkLabel]
    if { $linkno != "" } {
       link$linkno use remove $deviceId $usage
-      if  { [link$linkno use get] == "" } {
+      if { [link$linkno use get] == "" } {
          #--- je supprime la liaison si elle n'est plus utilisee par aucun peripherique
          ::link::delete $linkno
       }
@@ -108,7 +108,7 @@ proc ::parallelport::delete { linkLabel deviceId usage } {
 #  fillConfigPage
 #     fenetre de configuration du driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::parallelport::fillConfigPage { frm } {
    variable private
@@ -121,13 +121,13 @@ proc ::parallelport::fillConfigPage { frm } {
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(parallelport,available)
       listbox $frm.available.list
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
-      Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
+      Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
 
    pack $frm.available -side left -fill both -expand true
 
-   #--- je mets  a jour la liste
+   #--- je mets a jour la liste
    refreshAvailableList
 
    ::confColor::applyColor $private(frm)
@@ -160,7 +160,7 @@ proc ::parallelport::getHelp { } {
 #    retourne une chaine vide si le type du link n'existe pas
 #
 #   exemple :
-#   getLinkIndex "QuickRemote1"
+#   getLinkIndex "LPT1:"
 #     1
 #------------------------------------------------------------
 proc ::parallelport::getLinkIndex { linkLabel } {
@@ -190,7 +190,7 @@ proc ::parallelport::getLabel { } {
 #
 #   exemple :
 #   getLinkLabel
-#   { "LPT0" "LPT1" }
+#   { "LPT1:" "LPT2:" "LPT3:" }
 #------------------------------------------------------------
 proc ::parallelport::getLinkLabels { } {
    set linkLabels [list]
@@ -208,7 +208,7 @@ proc ::parallelport::getLinkLabels { } {
 #
 #   exemple :
 #   getLinkLabels
-#     "parallelPort0"
+#     "LPT1:"
 #------------------------------------------------------------
 proc ::parallelport::getSelectedLinkLabel { } {
    variable private 
@@ -226,7 +226,7 @@ proc ::parallelport::getSelectedLinkLabel { } {
 #  init
 #     initialise le driver
 #     init est lance automatiquement au chargement de ce fichier tcl
-#  return namespace name
+#  return namespace
 #------------------------------------------------------------
 proc ::parallelport::init { } {
    variable private
@@ -262,7 +262,7 @@ proc ::parallelport::initConf { } {
 #  isReady
 #     informe de l'etat de fonctionnement du driver
 #  
-#  return 0 (ready) , 1 (not ready)
+#  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::parallelport::isReady { } {
 
@@ -273,7 +273,7 @@ proc ::parallelport::isReady { } {
 #  refreshAvailableList
 #      rafraichit la liste des link disponibles
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::parallelport::refreshAvailableList { } {
    variable private
@@ -291,8 +291,8 @@ proc ::parallelport::refreshAvailableList { } {
    #--- je recupere les linkNo ouverts
    set linkNoList [link::list]
 
-   #--- je remplis la liste 
-   foreach linkLabel  [::parallelport::getLinkLabels] {
+   #--- je remplis la liste
+   foreach linkLabel [::parallelport::getLinkLabels] {
       set linkText ""
       #--- je recherche si ce link est ouvert
       foreach linkNo $linkNoList {
@@ -318,7 +318,7 @@ proc ::parallelport::refreshAvailableList { } {
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::parallelport::selectConfigLink { linkLabel } {
    variable private

@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.4 2006-10-15 11:14:52 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.5 2006-10-30 17:31:48 robertdelmas Exp $
 #
 
 package provide telpad 1.0
@@ -99,7 +99,6 @@ namespace eval telpad {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(telpad,padsize) ] }    { set conf(telpad,padsize)    "0.6" }
       if { ! [ info exists conf(telpad,visible) ] }    { set conf(telpad,visible)    "1" }
       if { ! [ info exists conf(telpad,wmgeometry) ] } { set conf(telpad,wmgeometry) "157x254+657+252" }
 
@@ -116,7 +115,6 @@ namespace eval telpad {
       variable widget
       global conf
 
-      set widget(padsize) $conf(telpad,padsize)
       set widget(visible) $conf(telpad,visible)
    }
 
@@ -130,7 +128,6 @@ namespace eval telpad {
       variable widget
       global conf
 
-      set conf(telpad,padsize) $widget(padsize)
       set conf(telpad,visible) $widget(visible)
    }
 
@@ -152,29 +149,10 @@ namespace eval telpad {
       frame $frm.frame1 -borderwidth 0 -relief raised
       pack $frm.frame1 -side top -fill both -expand 0
 
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 0
-
-      #--- Label pad size
-      label $frm.labSize -text "$caption(telpad,taille)"
-      pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
-
-      #--- Definition de la taille de la raquette 
-      set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
-      ComboBox $frm.taille \
-         -width 7          \
-         -height [llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable ::telpad::widget(padsize) \
-         -values $list_combobox
-      pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
-
       #--- Raquette toujours visible
       checkbutton $frm.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
          -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.visible -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
    }
 
    #------------------------------------------------------------
