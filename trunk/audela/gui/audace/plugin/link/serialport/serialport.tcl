@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.7 2006-10-28 20:39:28 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.8 2006-10-30 18:13:41 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -237,7 +237,7 @@ proc ::serialport::getSelectedLinkLabel { } {
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    #--- je retourne le label du link (premier mot de la ligne )
@@ -255,7 +255,7 @@ proc ::serialport::init { } {
    global audace
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
+   uplevel #0 "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
 
    #--- Je charge les variables d'environnement
    initConf
@@ -287,7 +287,7 @@ proc ::serialport::refreshAvailableList { } {
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    set selectedLinkLabel [getSelectedLinkLabel]

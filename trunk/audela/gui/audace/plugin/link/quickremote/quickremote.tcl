@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.4 2006-10-21 16:34:01 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.5 2006-10-30 18:14:05 robertdelmas Exp $
 #
 
 package provide quickremote 1.1
@@ -36,7 +36,7 @@ namespace eval quickremote {
 #  configureDriver
 #     configure le driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickremote::configureDriver { } {
    global audace
@@ -67,22 +67,22 @@ proc ::quickremote::confToWidget { } {
 #   
 #    retourne le numero du link
 #      le numero du link est attribue automatiquement
-#      si ce link est deja cree , on retourne le numero du link existant
+#      si ce link est deja cree, on retourne le numero du link existant
 #
 #   exemple :
-#   ::parallelport::create "Quickremote1" "cam1" "acquisition" "bit 1"
+#   ::quickremote::create "quickremote1" "cam1" "acquisition" "bit 1"
 #     1
-#   ::parallelport::create "Quickremote2" "cam1" "longuepose" "bit 1"
+#   ::quickremote::create "quickremote2" "cam1" "longuepose" "bit 1"
 #     2
-#   ::parallelport::create "Quickremote2" "cam2" "longuepose" "bit 2"
+#   ::quickremote::create "quickremote2" "cam2" "longuepose" "bit 2"
 #     2
 #------------------------------------------------------------
 proc ::quickremote::create { linkLabel deviceId usage comment } {
    set linkIndex [getLinkIndex $linkLabel]
 
-   #---  je cree le lien
+   #--- je cree le lien
    set linkno [::link::create quickremote $linkIndex]
-   #---  j'ajoute l'utilisation
+   #--- j'ajoute l'utilisation
    link$linkno use add $deviceId $usage $comment
    return $linkno
 }
@@ -99,7 +99,7 @@ proc ::quickremote::delete { linkLabel deviceId usage } {
    set linkno [::confLink::getLinkNo $linkLabel]
    if { $linkno != "" } {
       link$linkno use remove $deviceId $usage
-      if  { [link$linkno use get] == "" } {
+      if { [link$linkno use get] == "" } {
          #--- je supprime la liaison si elle n'est plus utilisee par aucun peripherique
          ::link::delete $linkno
       }
@@ -110,7 +110,7 @@ proc ::quickremote::delete { linkLabel deviceId usage } {
 #  fillConfigPage
 #     fenetre de configuration du driver
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickremote::fillConfigPage { frm } {
    variable private
@@ -123,7 +123,7 @@ proc ::quickremote::fillConfigPage { frm } {
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickremote,available)
       listbox $frm.available.list
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
-      Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
+      Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickremote,refresh)" -command { ::quickremote::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
 
@@ -193,7 +193,7 @@ proc ::quickremote::getLabel { } {
 #
 #   exemple :
 #   getLinkLabels "quickremote"
-#     { "QuickRemote0" "QuickRemote1" }
+#     { "quickremote0" "quickremote1" }
 #------------------------------------------------------------
 proc ::quickremote::getLinkLabels { } {
    variable private
@@ -210,15 +210,15 @@ proc ::quickremote::getLinkLabels { } {
 #    retourne le link choisi
 #
 #   exemple :
-#   getLinkLabels
-#     "QuickRemote0"
+#   getSelectedLinkLabel
+#     "quickremote0"
 #------------------------------------------------------------
 proc ::quickremote::getSelectedLinkLabel { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    #--- je retourne le label du link (premier mot de la ligne )
@@ -229,14 +229,14 @@ proc ::quickremote::getSelectedLinkLabel { } {
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #  
-#  return namespace name
+#  return namespace
 #------------------------------------------------------------
 proc ::quickremote::init { } {
    global caption
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link quickremote quickremote.cap ]\""
+   uplevel #0 "source \"[ file join $::audace(rep_plugin) link quickremote quickremote.cap ]\""
 
    #--- je recupere le nom generique de la liaison
    set private(genericName) "quickremote"
@@ -266,7 +266,7 @@ proc ::quickremote::initConf { } {
 #  isReady
 #     informe de l'etat de fonctionnement du driver
 #  
-#  return 0 (ready) , 1 (not ready)
+#  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::quickremote::isReady { } {
    return 0
@@ -276,14 +276,14 @@ proc ::quickremote::isReady { } {
 #  refreshAvailableList
 #      rafraichit la liste des link disponibles
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickremote::refreshAvailableList { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
-   if  { $i == "" } {
+   if { $i == "" } {
       set i 0
    }
    set selectedLinkLabel [getSelectedLinkLabel]
@@ -304,7 +304,7 @@ proc ::quickremote::refreshAvailableList { } {
             set linkText "$linkLabel link$linkNo [link$linkNo use get]"
          }
       }
-      #--- si le link est ferme , j'affiche son label seulement
+      #--- si le link est ferme, j'affiche son label seulement
       if { $linkText == "" } {
          set linkText "$linkLabel"
       }
@@ -321,7 +321,7 @@ proc ::quickremote::refreshAvailableList { } {
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
 #  
-#  return nothing
+#  return rien
 #------------------------------------------------------------
 proc ::quickremote::selectConfigLink { linkLabel } {
    variable private
