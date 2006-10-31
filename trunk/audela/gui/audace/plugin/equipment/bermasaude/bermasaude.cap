@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.5 2006-10-22 08:45:00 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.6 2006-10-31 17:42:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -181,36 +181,36 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(bermasaude,titre)                       "Roue à filtres"
+   set caption(bermasaude,titre)                       "Roda de filtros"
 
-   set caption(bermasaude,port)                        "Port"
-   set caption(bermasaude,bermasaude_combinaison)      "Combinaison choisie"
+   set caption(bermasaude,port)                        "Porta"
+   set caption(bermasaude,bermasaude_combinaison)      "Combinação escolhida"
    set caption(bermasaude,bermasaude_bvri)             "BVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMJ"
-   set caption(bermasaude,bermasaude_version_micro)    "Logiciel du microcontrôleur :"
-   set caption(bermasaude,bermasaude_nbr_filtres_1)    "Cette roue à filtres a"
-   set caption(bermasaude,bermasaude_nbr_filtres_2)    "positions."
+   set caption(bermasaude,bermasaude_version_micro)    "Software do microcontrolador:"
+   set caption(bermasaude,bermasaude_nbr_filtres_1)    "Esta roda de filtros tem"
+   set caption(bermasaude,bermasaude_nbr_filtres_2)    "posições."
 
-   set caption(bermasaude,bermasaude_port)             "Port Roue à filtres"
+   set caption(bermasaude,bermasaude_port)             "Porta Roda de filtros"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Site Web de référence :"
+   set caption(bermasaude,site_web_ref)                "Site Web de referência:"
    set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
-   set caption(bermasaude,bermasaude_vide)             "Pas de filtre"
-   set caption(bermasaude,bermasaude_bleu)             "Bleu"
-   set caption(bermasaude,bermasaude_vert)             "Vert"
-   set caption(bermasaude,bermasaude_rouge)            "Rouge"
-   set caption(bermasaude,bermasaude_infrarouge)       "Infrarouge"
-   set caption(bermasaude,bermasaude_cyan)             "Cyan"
+   set caption(bermasaude,bermasaude_vide)             "Sem filtro"
+   set caption(bermasaude,bermasaude_bleu)             "Azul"
+   set caption(bermasaude,bermasaude_vert)             "Verde"
+   set caption(bermasaude,bermasaude_rouge)            "Vermelho"
+   set caption(bermasaude,bermasaude_infrarouge)       "Infravermelho"
+   set caption(bermasaude,bermasaude_cyan)             "Ciano"
    set caption(bermasaude,bermasaude_magenta)          "Magenta"
-   set caption(bermasaude,bermasaude_jaune)            "Jaune"
-   set caption(bermasaude,bermasaude_filtre_arrive_1)  "Le filtre"
-   set caption(bermasaude,bermasaude_filtre_arrive_2)  "est disponible."
-   set caption(bermasaude,bermasaude_filtre_depart_1)  "Le filtre"
-   set caption(bermasaude,bermasaude_filtre_depart_2)  "va être changé."
-   set caption(bermasaude,bermasaude_filtre_encours_1) "Positionnement du filtre"
-   set caption(bermasaude,bermasaude_filtre_encours_2) "en cours..."
+   set caption(bermasaude,bermasaude_jaune)            "Amarelo"
+   set caption(bermasaude,bermasaude_filtre_arrive_1)  "O filtro"
+   set caption(bermasaude,bermasaude_filtre_arrive_2)  "está disponível."
+   set caption(bermasaude,bermasaude_filtre_depart_1)  "O filtro"
+   set caption(bermasaude,bermasaude_filtre_depart_2)  "será alterado."
+   set caption(bermasaude,bermasaude_filtre_encours_1) "Posicionamento do filtro"
+   set caption(bermasaude,bermasaude_filtre_encours_2) "em curso..."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

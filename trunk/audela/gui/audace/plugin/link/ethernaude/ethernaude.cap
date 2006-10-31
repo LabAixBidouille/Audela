@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Mise a jour $Id: ethernaude.cap,v 1.11 2006-10-28 15:42:13 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.cap,v 1.12 2006-10-31 17:41:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -124,20 +124,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,titre)                   "EthernAude"
 
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
-   set caption(ethernaude,test_ethernaude)         "Tester l'adresse IP (ping)"
-   set caption(ethernaude,envoyer_adresse_eth)     "Envoyer ce numéro IP à l'EthernAude avant la connexion"
-   set caption(ethernaude,debug)                   "Mode débug"
-   set caption(ethernaude,lecture_pixel)           "Lecture d'un pixel :"
-   set caption(ethernaude,micro_sec_bornes)        "microsecondes (choisir une valeur comprise entre 5.0 et 15.0 µs)"
-   set caption(ethernaude,tutorial_ethernaude)     "Présentation et tutorial"
-   set caption(ethernaude,coord_gps)               "Coordonnées GPS de l'observateur"
-   set caption(ethernaude,alaudine_nt)             "Alimentation AlAudine NT avec port I2C"
+   set caption(ethernaude,test_ethernaude)         "Testar o endereço IP (ping)"
+   set caption(ethernaude,envoyer_adresse_eth)     "Enviar este número IP para EthernAude antes da ligação"
+   set caption(ethernaude,debug)                   "Modo debug"
+   set caption(ethernaude,lecture_pixel)           "Leitura de um pixel:"
+   set caption(ethernaude,micro_sec_bornes)        "microsegundos (escolher um valor compreendido entre 5.0 e 15.0 µs)"
+   set caption(ethernaude,tutorial_ethernaude)     "Apresentação e tutorial"
+   set caption(ethernaude,coord_gps)               "Coordenadas GPS do observador"
+   set caption(ethernaude,alaudine_nt)             "Alimentação AlAudine NT com porta I2C"
 
-   set caption(ethernaude,appareil_connecte)       "Il y a un appareil à l'adresse IP :"
-   set caption(ethernaude,pas_appareil_connecte)   "Il n'y a pas d'appareil à l'adresse IP :"
-   set caption(ethernaude,message_ping)            "Message de retour de la fonction ping :"
+   set caption(ethernaude,appareil_connecte)       "Existe um dispositivo no endereço IP:"
+   set caption(ethernaude,pas_appareil_connecte)   "Não existe um dispositivo no endereço IP:"
+   set caption(ethernaude,message_ping)            "Mensagem de retorno da função ping:"
 
-   set caption(ethernaude,site_web_ref)            "Site Web de référence :"
+   set caption(ethernaude,site_web_ref)            "Site Web de referência:"
    set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
 
 # *************** Version danoise *****************************

@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.14 2006-10-22 08:55:08 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.15 2006-10-31 17:41:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -146,28 +146,28 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(eventaude_gps,titre)                   "Coordonnées GPS de l'observateur"
+   set caption(eventaude_gps,titre)                   "Coordenadas GPS do observador"
 
-   set caption(eventaude_gps,rafraichir)              "Rafraîchir les coordonnées GPS"
-   set caption(eventaude_gps,position_gps)            "Format GPS (WGS84) :"
-   set caption(eventaude_gps,longitude)               "Longitude :"
+   set caption(eventaude_gps,rafraichir)              "Actualizar as coordenadas GPS"
+   set caption(eventaude_gps,position_gps)            "Formato GPS (WGS84):"
+   set caption(eventaude_gps,longitude)               "Longitude:"
    set caption(eventaude_gps,est)                     "E"
    set caption(eventaude_gps,ouest)                   "O"
-   set caption(eventaude_gps,latitude)                "Latitude :"
+   set caption(eventaude_gps,latitude)                "Latitude:"
    set caption(eventaude_gps,nord)                    "N"
    set caption(eventaude_gps,sud)                     "S"
-   set caption(eventaude_gps,altitude)                "Altitude :"
-   set caption(eventaude_gps,maj_long+lat)            "Mise à jour de la position de l'observateur (longitude et latitude)"
-   set caption(eventaude_gps,maj_long+lat-)           "Mise à jour de la longitude et de la latitude"
-   set caption(eventaude_gps,maj_alt)                 "Mise à jour de la position de l'observateur (altitude)"
-   set caption(eventaude_gps,maj_alt-)                "Mise à jour de l'altitude"
-   set caption(eventaude_gps,confirm)                 "Voulez-vous poursuivre ?"
+   set caption(eventaude_gps,altitude)                "Altitude:"
+   set caption(eventaude_gps,maj_long+lat)            "Actualização da posição do observador (longitude e latitude)"
+   set caption(eventaude_gps,maj_long+lat-)           "Actualização da longitude e da latitude"
+   set caption(eventaude_gps,maj_alt)                 "Actualização da posição do observador (altitude)"
+   set caption(eventaude_gps,maj_alt-)                "Actualização da altitude"
+   set caption(eventaude_gps,confirm)                 "Deseja continuar ?"
    set caption(eventaude_gps,ok)                      "OK"
-   set caption(eventaude_gps,appliquer)               "Appliquer"
-   set caption(eventaude_gps,fermer)                  "Fermer"
-   set caption(eventaude_gps,aide)                    "Aide"
+   set caption(eventaude_gps,appliquer)               "Aplicar"
+   set caption(eventaude_gps,fermer)                  "Fechar"
+   set caption(eventaude_gps,aide)                    "Ajuda"
 
-   set caption(eventaude_gps,site_web_ref)            "Site Web de référence :"
+   set caption(eventaude_gps,site_web_ref)            "Site Web de referência:"
    set caption(eventaude_gps,site_eventaude)          "http://users.skynet.be/astrophotoccd/"
 
 # *************** Version danoise *****************************
