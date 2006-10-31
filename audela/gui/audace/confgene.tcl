@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.12 2006-10-29 14:30:28 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.13 2006-10-31 17:28:36 robertdelmas Exp $
 #
 
 #
@@ -2644,8 +2644,8 @@ namespace eval confGenerique {
    }
 
    #
-   # confGenerique::appliquer
-   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
+   # confGenerique::apply
+   # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc apply { visuNo } {
       variable NameSpace
@@ -2671,7 +2671,7 @@ namespace eval confGenerique {
    }
 
    #
-   # confGenerique::fermer
+   # confGenerique::close
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc close { visuNo } {
