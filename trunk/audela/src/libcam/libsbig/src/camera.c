@@ -370,15 +370,21 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     } else if (gcir0.cameraType == STK_CAMERA) {
 	strcpy(CAM_INI[cam->index_cam].ccd, "STK_CAMERA");
     } else if (gcir0.cameraType == ST9_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "ST9_CAMERA");
+	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf0261");
     } else if (gcir0.cameraType == STV_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "STV_CAMERA");
+	strcpy(CAM_INI[cam->index_cam].ccd, "TC237");
     } else if (gcir0.cameraType == ST10_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "ST10_CAMERA");
+	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf3200");
     } else if (gcir0.cameraType == ST1K_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "ST1K_CAMERA");
+	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf1001");
     } else if (gcir0.cameraType == ST2K_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "ST2K_CAMERA");
+	strcpy(CAM_INI[cam->index_cam].ccd, "Kai4021");
+    } else if (gcir0.cameraType == STL_CAMERA) {
+	strcpy(CAM_INI[cam->index_cam].ccd, "Kai11000");
+    } else if (gcir0.cameraType == ST402_CAMERA) {
+	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf402");
+    } else if (gcir0.cameraType == NEXT_CAMERA) {
+	strcpy(CAM_INI[cam->index_cam].ccd, "NEXT_CAMERA");
     } else {
 	strcpy(CAM_INI[cam->index_cam].ccd, "unknown");
     }
