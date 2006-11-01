@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.11 2006-10-01 17:50:28 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.12 2006-11-01 15:55:05 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2127,7 +2127,7 @@ namespace eval ::confTel {
             }
          lx200 {
             switch [::confLink::getLinkNamespace $conf(lx200,port)] {
-               audinet {    
+               audinet {
                   set confTel(conf_lx200,connect) "1"
                   set confTel(ouranos,connect)    "0"
                   set confTel(audecom,connect)    "0"
