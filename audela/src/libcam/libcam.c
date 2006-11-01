@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.10 2006-10-29 14:52:04 michelpujol Exp $
+ * $Id: libcam.c,v 1.11 2006-11-01 11:52:23 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -766,8 +766,7 @@ static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int ar
 static void AcqRead(ClientData clientData)
 {
    char s[1000];
-   //unsigned short *p;		/* cameras de 1 a 16 bits non signes */
-   char *p;		/* cameras de 1 a 16 bits non signes */
+   unsigned short *p;		/* cameras de 1 a 16 bits non signes */
    double ra, dec, exptime = 0.;
    int status;
    struct camprop *cam;
@@ -779,21 +778,18 @@ static void AcqRead(ClientData clientData)
    // Information par defaut concernant l'image 
    // ATTENTION : la camera peut mettre a jour ces valeurs pendant l'execution de read_ccd()
    strcpy(cam->pixels_classe, "CLASS_GRAY");
-   strcpy(cam->pixels_format, "FORMAT_SHORT");
+   strcpy(cam->pixels_format, "FORMAT_USHORT");
    strcpy(cam->pixels_compression, "COMPRESS_NONE");
    cam->pixels_reverse_x = 0;
    cam->pixels_reverse_y = 0;
    cam->pixel_data = NULL;
+   strcpy(cam->msg,"");
    
    // allocation par defaut du buffer
-   //p = (unsigned short *) calloc(cam->w * cam->h *4, sizeof(unsigned short));
-   p = (char *) calloc(cam->w * cam->h *4, sizeof(unsigned short));
+   p = (unsigned short *) calloc(cam->w * cam->h, sizeof(unsigned short));
    
    libcam_GetCurrentFITSDate(interp, cam->date_end);
    libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
-   
-   // reset message
-   strcpy(cam->msg,"");
    
    //  capture 
    // TODO 2 : une autre solution serait de passer l'adresse de p  comme ceci :
@@ -801,13 +797,14 @@ static void AcqRead(ClientData clientData)
    // mais il faut modifier toutes les camera !! ( michel pujol)
    CAM_DRV.read_ccd(cam, (unsigned short *) p);
    
-   // si la taille allouee par defaut a p ne convient pas, 
-   // la camera crée un nouveau buffer cam->pixel_data contenant l'image
+   // si cam->pixel_data n'est pas nul, la camera a mis les pixels dans cam->pixel_data
    if(cam->pixel_data != NULL) {
       if ( (int) cam->pixel_data != -1 ) {
-         // les pixels sont dans le buffer cam->pixel_data
+         // je supprime le buffer par defaut pointe par "p" 
          free( p);
-         p =  cam->pixel_data;
+         // je fais pointer "p"sur le buffer cree par la camera
+         // ATTENTION : le format des donnees est indique dans cam->pixels_classe, cam->pixels_format et cam->pixels_compression
+         p =  (unsigned short *) cam->pixel_data;
       }
    }
    
@@ -822,6 +819,7 @@ static void AcqRead(ClientData clientData)
       // --- application du miroir horizontal
       if( cam->mirrorh == 1 ) {
          // j'inverse l'orientation de l'image par rapport à un miroir horizontal
+         // les pixels seront inverses lors de la recopie dans le buffer par "buf1 setpixels ..."
          if( cam->pixels_reverse_y == 1 ) {
             cam->pixels_reverse_y = 0; 
          } else {
@@ -832,6 +830,7 @@ static void AcqRead(ClientData clientData)
       // --- application du miroir vertical
       if( cam->mirrorv == 1 ) {
          // j'inverse l'orientation de l'image par rapport à un miroir vertical
+         // les pixels seront inverses lors de la recopie dans le buffer par "buf1 setpixels ..."
          if( cam->pixels_reverse_x == 1 ) {
             cam->pixels_reverse_x = 0; 
          } else {
@@ -839,7 +838,21 @@ static void AcqRead(ClientData clientData)
          }
       }
       
-      //--- set pixels to buffer 
+      //--- set pixels to buffer
+      //--- setPixels usage :
+      //  required parameters : 
+      //      class       CLASS_GRAY|CLASS_RGB|CLASS_3D|CLASS_VIDEO
+      //      width       columns number  
+      //      height      lines number     
+      //      format      FORMAT_BYTE|FORMAT_SHORT|FORMAT_uSHORT|FORMAT_FLOAT 
+      //      compression COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW
+      //      pixelData   pointer to pixels data  (if pixelData is null, set a black image )  
+      //  optional parameters     
+      //      -keep_keywords  keep previous keywords of the buffer  
+      //      -pixelSize   size of pixelData (if COMPRESS_JPEG,COMPRESS_RAW because with and height are unknown)
+      //      -reverseX    if "1" , apply vertical mirror
+      //      -reverseY    if "1" , apply horizontal mirror
+      // ---
       sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d", 
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
          (void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
@@ -849,14 +862,29 @@ static void AcqRead(ClientData clientData)
             
       //--- Add FITS keywords 
       if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
+         // cas d'une image 2D en niveau de gris
          sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
          Tcl_Eval(interp, s);
       } else if ( strcmp(cam->pixels_classe, "CLASS_RGB")==0 ) {
+         // cas d'une image 2D RGB
          sprintf(s, "buf%d setkwd {NAXIS 3 int \"\" \"\"}", cam->bufno);
          Tcl_Eval(interp, s);
          sprintf(s, "buf%d setkwd {NAXIS3 3 int \"\" \"\"}", cam->bufno);
          Tcl_Eval(interp, s);
       }
+
+      //--- get height after decompression
+      sprintf(s, "buf%d getpixelsheight", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_OK) {
+         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
+      }   
+      
+      //--- get width after decompression
+      sprintf(s, "buf%d getpixelswidth", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_OK) {
+         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
+      }   
+
       sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
       Tcl_Eval(interp, s);
       sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
