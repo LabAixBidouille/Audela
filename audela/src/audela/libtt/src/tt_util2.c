@@ -2871,7 +2871,8 @@ int tt_util_regima1(TT_IMA_SERIES *pseries)
 
    p_in=pseries->p_in;
    p_out=pseries->p_out;
-   p_dum=&(pseries->coefa[pseries->index-1]);
+   p_dum=&(pseries->coefa[0]);
+   /*p_dum=&(pseries->coefa[pseries->index-1]);*/
    imax=p_in->naxis1;
    jmax=p_in->naxis2;
    iimax=p_out->naxis1;

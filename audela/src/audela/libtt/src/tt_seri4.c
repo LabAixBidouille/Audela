@@ -500,7 +500,7 @@ int tt_ima_series_resample_1(TT_IMA_SERIES *pseries)
    index=pseries->index;
 
    /* --- decodage des parametres de projection ---*/
-   if (index==1) {
+   if (index>=1) {
       tt_decodekeys(pseries->paramresample,(void***)&keys,&nbkeys);
       if (nbkeys==6) {
          /* --- le nombre parametres est bon ---*/
@@ -522,7 +522,8 @@ int tt_ima_series_resample_1(TT_IMA_SERIES *pseries)
          a[3]= b[3]/delta;
          a[4]=-b[0]/delta;
          a[5]=(b[0]*b[5]-b[2]*b[3])/delta;
-         p_dum=&(pseries->coefa[index-1]);
+         /*p_dum=&(pseries->coefa[index-1]);*/
+         p_dum=&(pseries->coefa[0]);
          for (k=0;k<6;k++) {
             p_dum->a[k]=a[k];
          }
