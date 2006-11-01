@@ -1796,17 +1796,17 @@ int cmdGetPixelsWidth(ClientData clientData, Tcl_Interp *interp, int argc, char 
 // buf$i setpixels class width height bitpix compression pixelsPtr [-keep_keywords] --
 
 //  required parameters : 
-//      class       CLASS_GRAY|CLASS_RGB|CLASS_3D|CLASS_VIDEO
+//      class       CLASS_GRAY|CLASS_RGB
 //      width       columns number  
 //      height      lines number     
-//      format      FORMAT_BYTE|FORMAT_SHORT|FORMAT_FLOAT 
+//      format      FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT 
 //      compression COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW
-//      pixelData     pointer to pixels data 
+//      pixelData   pointer to pixels data  (if pixelData is null, set a black image ) 
 //  optional parameters     
-//      -keep_keywords  
-//      -pixelSize   size of pixels data 
-//      -reverseX    si "1" alors applique un miroir vertical
-//      -reverseY    si "1" alors applique un miroir horizontal
+//      -keep_keywords  keep previous keywords of the buffer  
+//      -pixelSize   size of pixelData (if COMPRESS_JPEG,COMPRESS_RAW, because with and height are unknown)
+//      -reverseX    if "1" , apply vertical mirror
+//      -reverseY    if "1" , apply horizontal mirror
 
 int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -1823,7 +1823,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    int i;
    int reverse_x =0;
    int reverse_y =0;
-   char comment[]="class width height bitpix compression ?import_pointer? ?-keep_keywords? ?-pixels_size? ?-reverse_x? ?-reverse_y?";
+   char comment[]="class width height format compression pixelData ?-keep_keywords? ?-pixels_size? ?-reverse_x? ?-reverse_y?";
 
    ligne = (char*)calloc(1000,sizeof(char));
    if( argc < 7 ) {
