@@ -681,7 +681,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    interp = cam->interp;
    if (cam->longuepose == 1) {
       if (cam_stop_longexposure(cam)) {
-         //error description in cam->msg
+         //If error , cam_stop_longexposure() put error message in cam->msg
          return;
       }
    }
@@ -691,20 +691,28 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    strcpy(cam->pixels_format, "FORMAT_BYTE");
    strcpy(cam->pixels_compression, "COMPRESS_NONE");
    cam->pixels_reverse_y = 1;
-   cam->pixel_data = NULL;
-
-   // copy rgbBuffer into p
-   if( cam->rgbBuffer != NULL ) {
-      tempRgbBuffer = (unsigned char *) p ;
-      unsigned char *ptr = cam->rgbBuffer ;
-      for(int y = cam->jmax -1; y >= 0; y-- ) {
-         ptr = cam->rgbBuffer + y * cam->imax *3 ;
-         for(int x=0; x <cam->imax; x++) {
-            *(tempRgbBuffer++)= *(ptr + x*3 +2);
-            *(tempRgbBuffer++)= *(ptr + x*3 +1);
-            *(tempRgbBuffer++)= *(ptr + x*3 +0);
+   cam->pixel_data = (char*)malloc(cam->imax*cam->jmax*3);
+   if( cam->pixel_data != NULL) {
+      // copy rgbBuffer into cam->pixel_data
+      // convert color order  BGR -> RGB
+      if( cam->rgbBuffer != NULL ) {
+         tempRgbBuffer = (unsigned char *) cam->pixel_data  ;
+         unsigned char *ptr = cam->rgbBuffer ;
+         for(int y = cam->jmax -1; y >= 0; y-- ) {
+            ptr = cam->rgbBuffer + y * cam->imax *3 ;
+            for(int x=0; x <cam->imax; x++) {
+               *(tempRgbBuffer++)= *(ptr + x*3 +2);
+               *(tempRgbBuffer++)= *(ptr + x*3 +1);
+               *(tempRgbBuffer++)= *(ptr + x*3 +0);
+            }
          }
+      } else {
+         // je retourne un message d'erreur
+         sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
       }
+   }
+
+   if (cam->rgbBuffer != NULL) {
       free(cam->rgbBuffer);
       cam->rgbBuffer = NULL;
       cam->rgbBufferSize = 0;
