@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.5 2006-10-30 18:14:36 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.6 2006-11-01 21:45:31 michelpujol Exp $
 #
 
 package provide quickaudine 1.0
@@ -97,7 +97,8 @@ proc ::quickaudine::fillConfigPage { frm } {
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-
+      Label $frm.status -textvariable  ::quickaudine::private(statusMessage) -width 30 -height 4 -wraplength 400
+      pack $frm.status -side bottom -fill both -expand true
    pack $frm.available -side left -fill both -expand true
 
    #--- je mets  a jour la liste
@@ -169,10 +170,12 @@ proc ::quickaudine::getLinkLabels { } {
    variable private
 
    set labels [list]
-   set instances [link::available quickremote ]
-   foreach instance $instances {
-      lappend labels "$private(genericName)[lindex $instance 0]"
-   }
+   catch {   
+      foreach instance [link::available quickremote ] {
+         lappend labels "$private(genericName)[lindex $instance 0]"
+      }
+   } catchError 
+   set private(statusMessage) $catchError
    return $labels
 }
 
@@ -210,7 +213,8 @@ proc ::quickaudine::init { } {
 
    #--- je fixe le nom generique de la liaison
    set private(genericName) "quickaudine"
-
+   set private(statusMessage) ""
+   
    #--- Cree les variables dans conf(...) si elles n'existent pas
    initConf
 
