@@ -44,9 +44,9 @@
  */
 
 struct camini CAM_INI[] = {
-   {"Andor", /* camera name */
+   {"DW436", /* camera name */
    "andor",  /* camera product */
-   "kaf400",      /* ccd name */
+   "Marconi 47-40",      /* ccd name */
    768,512,       /* maxx maxy */
    0,0,         /* overscans x */
    0,0,           /* overscans y*/
@@ -171,8 +171,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->maxTemp=maxTemp;
 
    cam->index_cam=0;
-   strcpy(CAM_INI[cam->index_cam].name,"Andor");
-   strcpy(CAM_INI[cam->index_cam].ccd,"Unknown");
+   strcpy(CAM_INI[cam->index_cam].name,"DW436");
+   strcpy(CAM_INI[cam->index_cam].ccd,"Marconi 47-40");
    CAM_INI[cam->index_cam].overscanxbeg=0;
    CAM_INI[cam->index_cam].overscanxend=0;
    CAM_INI[cam->index_cam].overscanybeg=0;
