@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.7 2006-10-29 15:10:20 michelpujol Exp $
+ * $Id: libstruc.h,v 1.8 2006-11-01 18:25:18 alainklotz Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -77,6 +77,7 @@ struct Capabilities {
    int radecFromTel;\
    unsigned short port;\
    int portindex;\
+   char portname[80];\
    int shutterindex;\
    int coolerindex;\
    int index_cam;\

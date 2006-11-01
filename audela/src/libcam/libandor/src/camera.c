@@ -127,8 +127,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    char aBuffer[256];
 
    strcpy(aBuffer,".");
-   if (argc>=3) {
-      strcpy(aBuffer,argv[2]);
+   if (argc>=7) {
+      strcpy(aBuffer,argv[6]);
    }
 
    /* --- Open Driver ---*/
