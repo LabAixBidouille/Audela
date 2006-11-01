@@ -379,12 +379,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf1001");
     } else if (gcir0.cameraType == ST2K_CAMERA) {
 	strcpy(CAM_INI[cam->index_cam].ccd, "Kai4021");
+   /*
     } else if (gcir0.cameraType == STL_CAMERA) {
 	strcpy(CAM_INI[cam->index_cam].ccd, "Kai11000");
     } else if (gcir0.cameraType == ST402_CAMERA) {
 	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf402");
     } else if (gcir0.cameraType == NEXT_CAMERA) {
 	strcpy(CAM_INI[cam->index_cam].ccd, "NEXT_CAMERA");
+   */
     } else {
 	strcpy(CAM_INI[cam->index_cam].ccd, "unknown");
     }
