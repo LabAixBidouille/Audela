@@ -82,14 +82,18 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
       return 2;
    }
-   sprintf(s,"::registry get \"HKEY_LOCAL_MACHINE\\\\Software\\\\ASCOM\\\\Telescope Drivers\\\\%s\" \"\"",argv[2]);
-   if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
-      /* unknown scope */
-      return 3;
-   }
-   sprintf(s,"set ::ascom_variable(1) [ ::tcom::ref createobj %s ]",argv[2]);
-   if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
+   if (argc>=7) {
+      sprintf(s,"::registry get \"HKEY_LOCAL_MACHINE\\\\Software\\\\ASCOM\\\\Telescope Drivers\\\\%s\" \"\"",argv[6]);
+      if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
+         /* unknown scope */
+         return 3;
+      }
+   } else {
       return 4;
+   } 
+   sprintf(s,"set ::ascom_variable(1) [ ::tcom::ref createobj %s ]",argv[6]);
+   if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
+      return 5;
    }
    strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
    strcpy(s,"$telcmd Connected 1"); mytel_tcleval(tel,s);

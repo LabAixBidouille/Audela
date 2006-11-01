@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.2 2006-02-05 10:20:24 michelpujol Exp $
+// $Id: libtel.c,v 1.3 2006-11-01 17:39:55 alainklotz Exp $
 
 #include "sysexp.h"
 
@@ -449,7 +449,7 @@ int cmdTelPort(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    char ligne[256];
    struct telprop *tel;
    tel = (struct telprop *)clientData;
-   sprintf(ligne,"%s",tel_ports[tel->portindex]);
+   sprintf(ligne,"%s",tel->portname);
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return TCL_OK;
 }
@@ -877,11 +877,13 @@ int tel_init_common(struct telprop *tel, int argc, char **argv)
       }
    }
    /* --- initialisation du numero de port du PC ---*/
+   strcpy(tel->portname,"unknown");
    tel->portindex = 0;
    if (argc>=2) {
       if(strcmp(argv[2],tel_ports[1])==0) {
          tel->portindex = 1;
       }
+      strcpy(tel->portname,argv[2]);
    }
    /* --- init of general variables for the telescope --- */
    tel->foclen=tel_ini[tel->index_tel].foclen;

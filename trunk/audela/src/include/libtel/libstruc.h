@@ -39,6 +39,7 @@
    int telno;\
    unsigned short port;\
    int portindex;\
+   char portname[80];\
    int index_tel;\
    double ra0;\
    double dec0;\
