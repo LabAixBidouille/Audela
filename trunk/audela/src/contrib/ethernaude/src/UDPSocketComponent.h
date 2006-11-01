@@ -40,6 +40,7 @@
 #include "os.h"
 
 #ifdef WINDOWS
+#define EADDRINUSE WSAEADDRINUSE
 #include <pthread.h>
 #endif
 
