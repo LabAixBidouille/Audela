@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.5 2006-10-30 18:14:05 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.6 2006-11-01 21:45:31 michelpujol Exp $
 #
 
 package provide quickremote 1.1
@@ -41,9 +41,8 @@ namespace eval quickremote {
 proc ::quickremote::configureDriver { } {
    global audace
 
-   #--- Affiche la liaison
-   ####quickremote::run "$audace(base).quickremote"
-   console::disp "::quickremote::configureDriver \n"
+   #--- rien a faire ,
+   #--- car la liaison est configuree par le peripherique qui l'utilise
 
    return
 }
@@ -126,9 +125,10 @@ proc ::quickremote::fillConfigPage { frm } {
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickremote,refresh)" -command { ::quickremote::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-
+      Label $frm.status  -textvariable ::quickremote::private(statusMessage) -width 30 -height 4 -wraplength 400
+      pack $frm.status -side bottom -fill both -expand true
    pack $frm.available -side left -fill both -expand true
-
+   
    #--- je mets  a jour la liste
    refreshAvailableList
 
@@ -198,10 +198,16 @@ proc ::quickremote::getLabel { } {
 proc ::quickremote::getLinkLabels { } {
    variable private
 
+   #--- j'intialise une liste vide
    set labels [list]
-   foreach instance [link::available quickremote ] {
-      lappend labels "$private(genericName)[lindex $instance 0]"
-   }
+   catch {   
+      foreach instance [link::available quickremote ] {
+         lappend labels "$private(genericName)[lindex $instance 0]"
+      }
+   } catchError 
+   set private(statusMessage) $catchError
+  
+   
    return $labels
 }
 
@@ -240,6 +246,7 @@ proc ::quickremote::init { } {
 
    #--- je recupere le nom generique de la liaison
    set private(genericName) "quickremote"
+   set private(statusMessage) ""
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
    initConf
@@ -313,8 +320,6 @@ proc ::quickremote::refreshAvailableList { } {
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
    selectConfigLink $selectedLinkLabel
-
-   return
 }
 
 #------------------------------------------------------------
