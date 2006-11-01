@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.13 2006-10-31 17:28:36 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.14 2006-11-01 21:50:42 michelpujol Exp $
 #
 
 #
@@ -2598,22 +2598,34 @@ namespace eval confVersion {
 #
 # confGenerique
 # Description : Configuration generique
-#    Affiche une fenetre de configuration generique et appelle la methode fillConfigPage du driver
-#
+#  Cree une fenetre de configuration generique
+#  Cette fenetre appelle les fonction specifiques du namespace passe en parametre 
+#     namespace::fillConfigPage   pour la creation des widgets dans la fenetre
+#     namespace::showHelp         pour le bouton d'aide
+#     namespace::apply            pour le bouton appliquer ou ok
+#     namespace::close            pour le bouton fermer ou ok
 
 namespace eval confGenerique {
    variable This
    variable NameSpace
 
    #
-   # confGenerique::run this
-   # Cree la fenetre de configuration generique
-   # this = chemin de la fenetre
-   #  
-   #  retourne 1 si la fenetre est fermee avec le bouton OK
-   #  retourne 0 si la fenetre est fermee avec le bouton FERMER
-   #  
-   proc run { this namespace { visuNo "1" } } {
+   # confGenerique::run
+   #   Cree la fenetre de configuration generique
+   #
+   # parametres
+   #  this      : chemin TK de la fenetre
+   #  namespace : namespace des fonctions specifiques
+   #  visuNo    : numero de la visu courante
+   #  mode      : modal (attend la fermeture la fentre) ou nomodal (retourne immediatement) 
+   #   
+   # return 
+   #  si mode=modal 
+   #     retourne 1 si la fenetre est fermee avec le bouton OK
+   #     retourne 0 si la fenetre est fermee avec le bouton FERMER
+   #  si mode=nomodal
+   #     retourne 0
+   proc run { this namespace { visuNo "1" } {mode "modal"}} {
       variable This
       variable NameSpace
       variable confResult
@@ -2623,8 +2635,11 @@ namespace eval confGenerique {
       set confResult "0"
 
       createDialog $visuNo
-      #tkwait visibility $This
-      tkwait window $This
+      
+      if { $mode == "modal" } {
+         #--- j'attends la fermeture de la fenetre avant de terminer
+         tkwait window $This
+      }
 
       return $confResult
    }
