@@ -2,7 +2,7 @@
 # Fichier : ohp.tcl
 # Auteur : Alain KLOTZ
 # Lancement du script : source audace/scripts/ohp.tcl
-# Mise a jour $Id: ohp.tcl,v 1.2 2006-10-01 22:00:35 robertdelmas Exp $
+# Mise a jour $Id: ohp.tcl,v 1.3 2006-11-01 16:57:08 alainklotz Exp $
 #
 
 namespace eval ::ohp {
@@ -1267,7 +1267,16 @@ proc ohp_spectro_profil { path name telescope } {
    set valeurs ""
    for {set k 1} {$k<=$naxis1} {incr k} {
       lappend xs $k
-      lappend valeurs [buf$audace(bufNo) getpix [list $k 1]]
+      set p2 [buf$audace(bufNo) getpix [list $k 1]]
+      if { [ lindex $p2 0 ] == "1" } {
+         set valeur [ lindex $p2 1 ]
+      } elseif { [ lindex $p2 0 ] == "3" } {
+         set vr [ lindex $p2 1 ]
+         set vv [ lindex $p2 2 ]
+         set vb [ lindex $p2 3 ]
+         set valeur [expr ($vr+$vv+$vb)/3.]
+      }
+      lappend valeurs $valeur
    }
    return [list $xs $valeurs]
 }
