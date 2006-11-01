@@ -2,7 +2,7 @@
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: iris.tcl,v 1.3 2006-06-20 17:31:39 robertdelmas Exp $
+# Mise a jour $Id: iris.tcl,v 1.4 2006-11-01 15:54:25 robertdelmas Exp $
 #
 
 #
@@ -50,7 +50,7 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
   switch -regexp $::tcl_platform(os) {
   "Linux" {
     iris_initlinux
-    set line ""    
+    set line ""
     }
   "Windows" {
     set line ""
