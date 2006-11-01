@@ -110,6 +110,21 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void *
             }
          }
          break;
+      case FORMAT_USHORT:
+         {
+            unsigned short * pixelPtr = (unsigned short *) pixels;
+            if (reverseY == 0) {
+               while(--t>=0) *(pix+t) = (TYPE_PIXELS)*((pixelPtr+t));
+            } else {
+               for (u=0, y=height-1; y>=0; y--) {
+                  t = width*y;
+                  for (x=0;x<width;x++) {
+                     *(pix+(t++)) = (TYPE_PIXELS)*((pixelPtr+(u++)));
+                  }
+               }
+            }
+         }
+         break;
       case FORMAT_FLOAT: 
          {
             float * pixelPtr = (float *) pixels;
@@ -369,8 +384,7 @@ void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
 /** 
   GetPixels
   retourne le tableau de pixels correspondant à la fenetre (x1,y1)-(x2,y2)
-  
-
+  en inlcuant les valeur limites x=x1, x=x2, y=y1 , y=y2
 **/
 void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
    int width  = x2-x1+1;
@@ -394,6 +408,16 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
             for(y=y1;y<=y2;y++) {
                for(x=x1;x<=x2;x++) {
                   *(outPtr+width*(y-y1)+(x-x1)) = (short) *(pix+naxis1*y+x);
+               }
+            }
+         }
+         break;
+      case FORMAT_USHORT:
+         {
+            unsigned short * outPtr = (unsigned short *) pixels;
+            for(y=y1;y<=y2;y++) {
+               for(x=x1;x<=x2;x++) {
+                  *(outPtr+width*(y-y1)+(x-x1)) = (unsigned short) *(pix+naxis1*y+x);
                }
             }
          }
@@ -440,6 +464,16 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
             for(y=y1;y<=y2;y++) {
                for(x=x1;x<=x2;x++) {
                   *(outPtr+width*(y-y1)+(x-x1)) = (short) *(pix+naxis1*(naxis2-y-1)+x);
+               }
+            }
+         }
+         break;
+      case FORMAT_USHORT:
+         {
+            unsigned short * outPtr = (unsigned short *) pixels;
+            for(y=y1;y<=y2;y++) {
+               for(x=x1;x<=x2;x++) {
+                  *(outPtr+width*(y-y1)+(x-x1)) = (unsigned short) *(pix+naxis1*(naxis2-y-1)+x);
                }
             }
          }

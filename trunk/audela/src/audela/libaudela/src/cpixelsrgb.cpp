@@ -101,6 +101,24 @@ CPixelsRgb::CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pi
                   }
                }
                break;
+            case FORMAT_USHORT:
+               {
+                  unsigned short * pixelPtr = (unsigned short *) pixels;
+                  TYPE_PIXELS_RGB * pixCur = pix;
+                  if (reverseY == 0) {
+                     while(--t>=0) {
+                           *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+                     }
+                  } else {
+                     for (y=height-1; y>=0; y--) {
+                        t = width*y*naxis;
+                        for (x=0;x<width*naxis;x++) {
+                              *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
+                        }
+                     }
+                  }
+               }
+               break;
             case FORMAT_FLOAT: 
                {
                   float     * pixelPtr = (float *) pixels;
@@ -351,6 +369,19 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pi
                short * pixCurR = (short *) pixelsR;
                short * pixCurG = (short *) pixelsG;
                short * pixCurB = (short *) pixelsB;
+
+               while(--t>=0) {
+                  *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurR++);
+                  *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurG++);
+                  *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurB++);
+               }
+           break;
+          }
+       case FORMAT_USHORT:
+          {
+               unsigned short * pixCurR = (unsigned short *) pixelsR;
+               unsigned short * pixCurG = (unsigned short *) pixelsG;
+               unsigned short * pixCurB = (unsigned short *) pixelsB;
 
                while(--t>=0) {
                   *(pixCur++) = (TYPE_PIXELS_RGB)*(pixCurR++);
@@ -738,6 +769,69 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          }
       }
       break;
+   case FORMAT_USHORT:
+      {
+         unsigned short * out = (unsigned short *) pixels;
+         switch( plane ) {
+         case PLANE_R:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*y+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  *(out++) = (unsigned short) *(ptr++);
+                  ptr++;  // skip G
+                  ptr++;  // skip B
+               }
+            }
+            break;
+         case PLANE_G:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*y+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  ptr++;   // skip R
+                  *(out++) = (unsigned short) *(ptr++);
+                  ptr++;   // skip B
+               }
+            }
+            break;
+         case PLANE_B:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*y+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  ptr++;   // skip R
+                  ptr++;   // skip G
+                  *(out++) = (unsigned short) *(ptr++);
+               }
+            }
+            break;
+         case PLANE_GREY:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*y+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  *(out++) = (unsigned short)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+               }
+            }
+            break;
+         case PLANE_RGB:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*y+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1)*naxis;
+               for(x=x1;x<=x2;x++) {
+                  *(out++) = (unsigned short) *(ptr++);
+                  *(out++) = (unsigned short) *(ptr++);
+                  *(out++) = (unsigned short) *(ptr++);
+               }
+            }
+            break;
+         default :
+            throw CError(ELIBSTD_NOT_IMPLEMENTED);
+            break;
+         }
+      }
+      break;
    case FORMAT_FLOAT: 
       {
          float * out = (float *) pixels;
@@ -934,6 +1028,69 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
                   *(out++) = (short) *(ptr++);
                   *(out++) = (short) *(ptr++);
                   *(out++) = (short) *(ptr++);
+               }
+            }
+            break;
+         default:
+            throw CError(ELIBSTD_NOT_IMPLEMENTED);
+            break;
+         }
+      }
+      break;
+   case FORMAT_USHORT:
+      {
+         unsigned short * out = (unsigned short *) pixels;
+         switch( plane ) {
+         case PLANE_R:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  *(out++) = (unsigned short) *(ptr++);
+                  ptr++;  // skip G
+                  ptr++;  // skip B
+               }
+            }
+            break;
+         case PLANE_G:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  ptr++;   // skip R
+                  *(out++) = (unsigned short) *(ptr++);
+                  ptr++;   // skip B
+               }
+            }
+            break;
+         case PLANE_B:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  ptr++;   // skip R
+                  ptr++;   // skip G
+                  *(out++) = (short) *(ptr++);
+               }
+            }
+            break;
+         case PLANE_GREY:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1);               
+               for(x=x1;x<=x2;x++) {
+                  *(out++) = (unsigned short)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+               }
+            }
+            break;
+         case PLANE_RGB:
+            for(y=y1;y<=y2;y++) {
+               ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
+               out = (unsigned short *) pixels + width*(y-y1)*naxis;
+               for(x=x1;x<=x2;x++) {
+                  *(out++) = (unsigned short) *(ptr++);
+                  *(out++) = (unsigned short) *(ptr++);
+                  *(out++) = (unsigned short) *(ptr++);
                }
             }
             break;

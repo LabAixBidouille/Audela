@@ -25,7 +25,7 @@
 #include "cpixels.h"
 
 char  *  CPixels::PixelClassName  []= {"CLASS_GRAY", "CLASS_RGB", "CLASS_3D", "CLASS_VIDEO"} ;
-char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_SHORT", "FORMAT_FLOAT"} ;
+char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_SHORT", "FORMAT_USHORT", "FORMAT_FLOAT"} ;
 char  *  CPixels::CompressionName []= {"COMPRESS_NONE", "COMPRESS_RGB", "COMPRESS_I420", "COMPRESS_JPEG", "COMPRESS_RAW", "COMPRESS_UNKNOWN"} ;
 char  *  CPixels::ColorPlaneName  []= {"PLANE_GRAY", "PLANE_RGB", "PLANE_RED", "PLANE_GREEN","PLANE_BLUE", "PLANE_UNKNOWN"} ;
 
