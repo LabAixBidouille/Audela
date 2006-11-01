@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.12 2006-11-01 15:55:05 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.13 2006-11-01 17:38:43 alainklotz Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -273,7 +273,7 @@ namespace eval ::confTel {
    #
    # confTel::connectAudeCom
    # Permet d'activer ou de désactiver le bouton 'Controle de la vitesse de King' quand on passe d'un onglet
-   # 'Telescope' a l'autre en evitant les erreurs dues a un appui 'curieux' sur ce bouton 
+   # 'Telescope' a l'autre en evitant les erreurs dues a un appui 'curieux' sur ce bouton
    #
    proc connectAudeCom { } {
       global caption confTel frmm
@@ -349,7 +349,7 @@ namespace eval ::confTel {
 
    #
    # confTel::connectTemma
-   # Permet d'activer ou de désactiver les boutons 'Initialisation au zenith' et '  ?  ' quand on passe d'un onglet 
+   # Permet d'activer ou de désactiver les boutons 'Initialisation au zenith' et '  ?  ' quand on passe d'un onglet
    # 'Telescope' a l'autre en evitant les erreurs dues a un appui 'curieux' sur ces boutons
    #
    proc connectTemma { } {
@@ -358,11 +358,11 @@ namespace eval ::confTel {
       catch {
          set frm $frmm(Telscp4)
          if { $confTel(conf_temma,connect) == "1" } {
-            $frm.init_zenith configure -state normal -command { 
+            $frm.init_zenith configure -state normal -command {
                tel$audace(telNo) initzenith
                ::telescope::afficheCoord
             }
-            $frm.chg_pos_tel configure -state normal -textvariable audace(chg_pos_tel) -command { 
+            $frm.chg_pos_tel configure -state normal -textvariable audace(chg_pos_tel) -command {
                set pos_tel [ tel$audace(telNo) german ]
                if { $pos_tel == "E" } {
                   tel$audace(telNo) german W
@@ -696,7 +696,7 @@ namespace eval ::confTel {
 
       #--- je verifie le contenu de la liste
       if { [llength $list_connexion ] > 0 } {
-         #--- si la liste n'est pas vide, 
+         #--- si la liste n'est pas vide,
          #--- je verifie que la valeur par defaut existe dans la liste
          if { [lsearch -exact $list_connexion $confTel(conf_lx200,port)] == -1 } {
             #--- si la valeur par defaut n'existe pas dans la liste,
@@ -705,7 +705,7 @@ namespace eval ::confTel {
          }
       } else {
          #--- si la liste est vide, on continue quand meme
-      }        
+      }
 
 
       ComboBox $frm.port \
@@ -718,7 +718,7 @@ namespace eval ::confTel {
          -values $list_connexion \
          -modifycmd {
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(conf_lx200,port) { serialport audinet } "controle LX200" 
+            ::confLink::run ::confTel(conf_lx200,port) { serialport audinet } "controle LX200"
          }
       pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
 
@@ -2156,7 +2156,7 @@ namespace eval ::confTel {
                         tel$audace(telNo) longformat on
                      }
                      #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [confLink::create $confTel(conf_lx200,port) "tel$audace(telNo)" "control" ""]     
+                     set linkNo [confLink::create $confTel(conf_lx200,port) "tel$audace(telNo)" "control" ""]
                   }
                }
                serialport {
@@ -2187,7 +2187,7 @@ namespace eval ::confTel {
                         tel$audace(telNo) tempo $conf(lx200,ite-lente_tempo)
                      }
                      #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]     
+                     set linkNo [confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
                   }
                }
             }
@@ -2276,7 +2276,7 @@ namespace eval ::confTel {
                set confTel(conf_temma,connect) "0"
                set confTel(conf_ascom,connect) "1"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create ascom [ lindex $conf(ascom,driver) 1 ] } msg ]
+               set erreur [ catch { tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] } msg ]
                if { $erreur == "1" } {
                   if { $confTel(ascom_drivers) == "" } {
                      #--- Commentaire uniquement en anglais (donc pas de caption)
@@ -2312,8 +2312,8 @@ namespace eval ::confTel {
 
       #--- Gestion du modele de telescope connecte
       if { $erreur == "1" } {
-         #--- En cas de probleme, je desactive le demarrage automatique         
-         set conf(telescope,start) "0" 
+         #--- En cas de probleme, je desactive le demarrage automatique
+         set conf(telescope,start) "0"
          #--- En cas de probleme, telescope par defaut
          set conf(telescope)             "lx200"
          set conf(lx200,port)            [ lindex $audace(list_com) 0 ]
