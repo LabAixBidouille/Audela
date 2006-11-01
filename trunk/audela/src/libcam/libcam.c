@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.11 2006-11-01 11:52:23 michelpujol Exp $
+ * $Id: libcam.c,v 1.12 2006-11-01 18:25:57 alainklotz Exp $
  */
 
 #include "sysexp.h"
@@ -1173,7 +1173,7 @@ static int cmdCamPort(ClientData clientData, Tcl_Interp * interp, int argc, char
    char ligne[256];
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   sprintf(ligne, "%s", cam_ports[cam->portindex]);
+   sprintf(ligne, "%s", cam->portname);
    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1621,7 +1621,9 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    
    /* --- Decode les options de cam::create en fonction de argv[>=3] --- */
    cam->index_cam = 0;
+   strcpy(cam->portname,"unknown");
    if (argc >= 5) {
+      strcpy(cam->portname,argv[2]);
       for (kk = 3; kk < argc - 1; kk++) {
          if (strcmp(argv[kk], "-name") == 0) {
             k = 0;

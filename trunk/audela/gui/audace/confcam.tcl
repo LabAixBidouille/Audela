@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.37 2006-10-28 20:40:33 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.38 2006-11-01 18:27:20 alainklotz Exp $
 #
 
 global confCam
@@ -165,7 +165,7 @@ namespace eval ::confCam {
             TH7852A SCR1300XTC $caption(confcam,dslr) Andor ]
       set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
             th7852a scr1300xtc dslr andor ]
-      
+
    }
 
    #
@@ -206,7 +206,7 @@ namespace eval ::confCam {
    proc startDriver { } {
       global conf
       global confCam
-      
+
       if { $conf(camera,A,start) == "1" } {
          if { $conf(confLink,start) == "1" } {
             ::confLink::configureDriver
@@ -262,7 +262,7 @@ namespace eval ::confCam {
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -relief groove -state disabled
       $This.cmd.aide configure -state disabled
-      $This.cmd.fermer configure -state disabled 
+      $This.cmd.fermer configure -state disabled
       #--- J'arrete la camera
       stopItem $confCam(cam_item)
       #--- je copie les parametres de la nouvelle camera dans conf()
@@ -528,7 +528,7 @@ namespace eval ::confCam {
             -textvariable confCam(A,visuName) \
             -values $confCam(list_visu)
          pack $This.startA.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A" 
+         button $This.startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A"
          pack $This.startA.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.startA.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,A,start)
@@ -539,7 +539,7 @@ namespace eval ::confCam {
       frame $This.startB -borderwidth 1 -relief raised
          radiobutton $This.startB.item -anchor w -highlightthickness 0 \
             -text "B :" -value "B" -variable confCam(cam_item) \
-            -command "::confCam::selectCamItem" 
+            -command "::confCam::selectCamItem"
          pack $This.startB.item -side left -padx 3 -pady 3 -fill x
          label $This.startB.camNo -textvariable confCam(B,camNo)
          pack $This.startB.camNo -side left -padx 3 -pady 3 -fill x
@@ -566,7 +566,7 @@ namespace eval ::confCam {
       frame $This.startC -borderwidth 1 -relief raised
          radiobutton $This.startC.item -anchor w -highlightthickness 0 \
             -text "C :" -value "C" -variable confCam(cam_item) \
-            -command "::confCam::selectCamItem" 
+            -command "::confCam::selectCamItem"
          pack $This.startC.item -side left -padx 3 -pady 3 -fill x
          label $This.startC.camNo -textvariable confCam(C,camNo)
          pack $This.startC.camNo -side left -padx 3 -pady 3 -fill x
@@ -2950,7 +2950,7 @@ namespace eval ::confCam {
       set cam_item $confCam(cam_item)
 
       #--- je selectionne l'onglet correspondant a la camera de cet item
-      ::confCam::select $confCam($cam_item,camName) 
+      ::confCam::select $confCam($cam_item,camName)
    }
 
    #----------------------------------------------------------------------------
@@ -3017,7 +3017,7 @@ namespace eval ::confCam {
          if { $result == "1" } { console::affiche_erreur "$erreur \n" }
       }
 
-      #--- Raz des parametres de l'item 
+      #--- Raz des parametres de l'item
       set confCam($cam_item,camNo) "0"
       if { $cam_item == "A" } {
          #--- mise a jour de la variable audace pour compatibilite
@@ -3152,7 +3152,7 @@ namespace eval ::confCam {
    proc hasVideo { camNo } {
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
-      #---  
+      #---
       if { $result == 0 } {
          switch -exact -- $camProduct {
             webcam     { return 1 }
@@ -3187,8 +3187,8 @@ namespace eval ::confCam {
                   default        { return 0 }
                }
             }
-            default { 
-               return 0 
+            default {
+               return 0
             }
          }
       } else {
@@ -3247,19 +3247,19 @@ namespace eval ::confCam {
          switch $camProduct {
             audine {
                switch [::confLink::getLinkNamespace $confCam(audine,port)] {
-                  "parallelport" { 
+                  "parallelport" {
                      #--- O + F + S
                      set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                   }
-                  "quickaudine" { 
+                  "quickaudine" {
                      #--- F + S
-                     set ShutterOptionList [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]                   
+                     set ShutterOptionList [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                   }
-                  "audinet" { 
+                  "audinet" {
                      #--- O + F + S - A confirmer avec le materiel
                      set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                   }
-                  "ethernaude" { 
+                  "ethernaude" {
                      #--- F + S
                      set ShutterOptionList [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                   }
@@ -3369,7 +3369,7 @@ namespace eval ::confCam {
       #--- j'ouvre la fenetre de configuration de la liaison
       ::confLink::run ::confCam(webcam,longueposeport) \
           { parallelport quickremote } "- $caption(confcam,webcam) - $caption(confcam,dslr_longuepose)"
-      
+
       #--- je positionne startvalue par defaut en fonction du type de liaison
       if { [::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "parallelport" } {
          set confCam(webcam,longueposestartvalue) "0"
@@ -3870,7 +3870,7 @@ namespace eval ::confCam {
             dslr {
                switch [::confLink::getLinkNamespace $conf(dslr,port)] {
                   gphoto2 {
-                     set camNo [ cam::create digicam -name DSLR ]
+                     set camNo [ cam::create digicam usb -name DSLR ]
                      set confCam($cam_item,camNo) $camNo
                      console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$camNo name ]\n"
@@ -3878,10 +3878,10 @@ namespace eval ::confCam {
                      cam$camNo buf $bufNo
                      cam$camNo mirrorh $conf(dslr,mirh)
                      cam$camNo mirrorv $conf(dslr,mirv)
-                     
+
                      #--- J'arrete le service WIA de Windows
                      cam$camNo systemservice 0
-                     #--- Parametrage des longues poses 
+                     #--- Parametrage des longues poses
                      if { $conf(dslr,longuepose) == "1" } {
                         switch [::confLink::getLinkNamespace $conf(dslr,longueposeport)] {
                            quickremote {
@@ -3925,7 +3925,7 @@ namespace eval ::confCam {
                      set camNo ""
                      set erreur [ catch { ::AcqAPN::Off ; ::AcqAPN::Query } camNo ]
                      if { $camNo=="" } {
-                        set camNo "1" 
+                        set camNo "1"
                         if { ! [ info exists camNo ] } { set camNo "1" } else { incr camNo "1" }
                         set confCam($cam_item,camNo) $camNo
                      } else {
@@ -3935,7 +3935,7 @@ namespace eval ::confCam {
                }
             }
             andor {
-               set camNo [ cam::create andor "$conf(andor,config)" ]
+               set camNo [ cam::create andor pci "$conf(andor,config)" ]
                set confCam($cam_item,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
                   $caption(confcam,2points) $conf(andor,config)\n"
@@ -4056,7 +4056,7 @@ namespace eval ::confCam {
                   "$caption(confcam,obtu_audine) -" { cam$camNo shuttertype audine reverse }
                   "$caption(confcam,obtu_audine)"   { cam$camNo shuttertype audine }
                   "$caption(confcam,obtu_i2c)"      { cam$camNo shuttertype audine }
-                  "$caption(confcam,obtu_thierry)"  { 
+                  "$caption(confcam,obtu_thierry)"  {
                      cam$camNo shuttertype thierry
                      set confcolor(obtu_pierre) "1"
                      ::Obtu_Pierre::run
