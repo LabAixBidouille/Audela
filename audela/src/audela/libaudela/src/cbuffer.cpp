@@ -1168,7 +1168,7 @@ int tt_util_cd2cdelt_new(double cd11,double cd12,double cd21,double cd22,double 
 {
    double cdp1,cdp2,crotap2;
    double deuxpi,pisur2,sina,cosa,sinb,cosb,cosab,sinab,ab,aa,bb,cosr,sinr;
-#define TT_PI (atan(1)*4.)
+#define TT_PI (atan(1.)*4.)
 
    deuxpi=2.*(TT_PI);
    pisur2=(TT_PI)/2.;
@@ -1234,7 +1234,7 @@ int tt_util_cd2cdelt_old(double cd11,double cd12,double cd21,double cd22,double 
    double cdp1,cdp2,crotap2;
    double deuxpi,pisur2,sina,cosa,sinb,cosb,cosab,sinab,ab,aa,bb,cosr,sinr;
    double signr,signc,signd;
-#define TT_PI (atan(1)*4.)
+#define TT_PI (atan(1.)*4.)
 
    deuxpi=2.*(TT_PI);
    pisur2=(TT_PI)/2.;
@@ -1311,7 +1311,7 @@ void CBuffer::FillAstromParams()
 {
    #define YES 1
    #define NO 0
-   #define PI (atan(1)*4.)
+   #define PI (atan(1.)*4.)
    CFitsKeyword *k;
    // Debut des declarations MC
    char unit[50];
@@ -2408,7 +2408,7 @@ void CBuffer::radec2xy(double ra, double dec, double *x, double *y,int order)
    double sindec,cosdec,sindec0,cosdec0,cosrara0,sinrara0;
    double h,det;
    double dra,ddec;
-   double PI = (atan(1)*4.);
+   double PI = (atan(1.)*4.);
    double x0,y0,xp,yp;
 
    if (p_ast==NULL) {
@@ -2459,7 +2459,7 @@ void CBuffer::xy2radec(double x, double y, double *ra, double *dec,int order)
 {
    double delta,gamma;
    double dra,ddec;
-   double PI = (atan(1)*4.);
+   double PI = (atan(1.)*4.);
    double xp,yp;
 
    if (p_ast==NULL) {
