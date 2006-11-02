@@ -7,76 +7,76 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 02 septembre 2006</p>
+<p class="date">Date de mise &agrave; jour : 02 novembre 2006</p>
 <h1>Buffer </h1>
 <p>Les commandes qui suivent peuvent &ecirc;tre appel&eacute;es gr&acirc;ce aux commandes <code>buf1</code>, <code>buf2</code>, ... qui sont cr&eacute;&eacute;es par "<code>::buf::create</code>". Ces sous-commandes permettent de formater une image, de manipuler les mots-cl&eacute;s FITS, et de r&eacute;aliser certains traitements sur l'image port&eacute;e par le buffer. Elles sont d&eacute;crites avec la commande <code>buf1</code>, mais sont valables pour toutes les autres commandes de buffer. </p>
 <h2> 1. Gestion du buffer</h2>
 <h3> <a name="setpixels" id="setpixels"></a>buf1 setpixels class width height 
   format compression pixeldata ?-keep_keywords? ?-pixels_size? ?-reverse_x? ?-reverse_y?</h3>
 <p>Dimensionne l'image du buffer &agrave; la taille pr&eacute;cis&eacute;e par 
-  les arguments <em>largeur</em> et <em>hauteur (*)</em> : deux entiers repr&eacute;sentant 
+  les arguments <em>largeur</em> et <em>hauteur (*)</em> : Deux entiers repr&eacute;sentant 
   la largeur et la hauteur souhait&eacute;es de l'image. Si une image existait 
   avant cette commande, elle est effac&eacute;e. Si pixelData est nul, alors les 
   pixels sont initialis&eacute;s &agrave; z&eacute;ro.</p>
 <p>Param&egrave;tres obligatoires : </p>
 <blockquote> 
   <p>class : CLASS_GRAY|CLASS_RGB<br>
-    width : nombre de colonnes (*)<br>
-    height : nombre de lignes (*)<br>
+    width : Nombre de colonnes (*)<br>
+    height : Nombre de lignes (*)<br>
     format : FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT <br>
     compression : COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW<br>
-    pixeldata : pointeur vers les valeurs des pixels (si pixelData est nul, cree 
+    pixeldata : Pointeur vers les valeurs des pixels (si pixelData est nul, cr&eacute;e 
     une image avec tous les pixels &agrave; z&eacute;ro)</p>
 </blockquote>
 <p>Param&egrave;tres facultatifs :</p>
 <blockquote> 
-  <p> -keep_keywords : conserve les mots cl&eacute;s qui &eacute;taient d&eacute;j&agrave; 
+  <p> -keep_keywords : Conserve les mots cl&eacute;s qui &eacute;taient d&eacute;j&agrave; 
     dans le buffer <br>
-    -pixelSize size : nombre d'octets point&eacute; par pixelData pour les images 
+    -pixelSize size : Nombre d'octets point&eacute;s par pixelData pour les images 
     JPEG et RAW (*). Ce param&egrave;tre est obligatoire pour les images JPEG 
     et RAW.<br>
-    -reverseX : si &quot;1&quot; , applique un miroir vertical<br>
-    -reverseY: si &quot;1&quot; , applique un miroir horizontal</p>
+    -reverseX : Si &quot;1&quot;, applique un miroir vertical<br>
+    -reverseY : Si &quot;1&quot;, applique un miroir horizontal</p>
 </blockquote>
 <p>(*) Pour les images JPEG ou RAW (compression=COMPRESS_JPEG|COMPRESS_RAW), les 
   param&egrave;tres &quot;width&quot;et &quot;height&quot; ne sont pas utilis&eacute;s. 
   Les nombres de colonnes et de lignes sont extraits des donn&eacute;es &quot;pixelData&quot; 
   avec les commandes &quot;buf1 getpixelswidth&quot; et &quot;buf1 getpixelsheight&quot; 
-  apr&egrave;s decompression par la commande &quot;buf1 setpixels&quot; </p>
-<p>Exemple : image Audine KAF400</p>
+  apr&egrave;s d&eacute;compression par la commande &quot;buf1 setpixels&quot; </p>
+<p>Exemple : Image Audine KAF-0400</p>
 <blockquote> 
   <p>buf1 setpixels CLASS_GRAY 768 512 FORMAT_USHORT COMPRESS_NONE 180412736</p>
   <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 est un tableau d'entiers 16 bits non sign&eacute;s de 768 colonnes 
+    180412736 sont sous la forme d'un tableau d'entiers 16 bits non sign&eacute;s de 768 colonnes 
     et 512 lignes.</p>
   <p></p>
 </blockquote>
-<p>Exemple : image Webcam Vesta Pro couleur</p>
+<p>Exemple : Image Webcam Vesta Pro, TouCam couleur</p>
 <blockquote> 
   <p>buf1 setpixels CLASS_RGB 640 480 FORMAT_BYTE COMPRESS_NONE 180412736</p>
   <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 est un tableau d'entiers 8 bits non sign&eacute;s de 640x3 colonnes 
+    180412736 sont sous la forme d'un tableau d'entiers 8 bits non sign&eacute;s de 640x3 colonnes 
     et 480 lignes.</p>
 </blockquote>
-<p>Exemple : image Canon 300D, JPEG , large:normal</p>
+<p>Exemple : Image Canon 300D, JPEG, large:normal</p>
 <blockquote> 
   <p>buf1 setpixels CLASS_RGB 0 0 FORMAT_SHORT COMPRESS_JPEG 180412736 -pixelSize 
     1178832</p>
   <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 est un bloc de 1178832 octets contenant une image JPEG au format 
+    180412736 sont sous la forme d'un bloc de 1178832 octets contenant une image JPEG au format 
     d&eacute;fini par le standard JPEG (voir <a href="http://www.ijg.org">http://www.ijg.org</a> 
     ). La commande &quot;setpixels&quot; utilise la librairie &quot;libjpeg&quot; 
     pour d&eacute;compresser ces donn&eacute;es.</p>
   </blockquote>
-<p>Exemple : image Canon 300D, RAW</p>
+<p>Exemple : Image Canon 300D, RAW</p>
 <blockquote> 
   <p>buf1 setpixels CLASS_GRAY 0 0 FORMAT_SHORT COMPRESS_RAW 180412736 -pixelSize 
     7562236 </p>
   <p>Les donn&eacute;es point&eacute;es par &quot;pixeldata&quot; &agrave; l'adresse 
-    180412736 est un bloc de 7562236 octets contenant une image RAW au format 
+    180412736 sont sous la forme d'un bloc de 7562236 octets contenant une image RAW au format 
     d&eacute;fini par le constructeur Canon (voir <a href="http://www.cybercom.net/%7Edcoffin/dcraw">http://www.cybercom.net/~dcoffin/dcraw</a> 
     ). La commande &quot;setpixels&quot; utilise la librairie &quot;libdcraw&quot; 
-    pour d&eacute;compresser ces donn&eacute;es . </p>
+    pour d&eacute;compresser ces donn&eacute;es. </p>
 </blockquote>
 <h3><a name="clear" id="clear"></a>buf1 clear</h3>
 <p>Efface l&#8217;image et l&#8217;en-t&ecirc;te contenues dans le buffer, mais il n'est pas retir&eacute; de la liste des buffers.</p>

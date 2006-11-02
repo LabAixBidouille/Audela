@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.6 2006-11-01 21:45:31 michelpujol Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.7 2006-11-02 17:35:47 robertdelmas Exp $
 #
 
 package provide quickremote 1.1
@@ -56,17 +56,16 @@ proc ::quickremote::configureDriver { } {
 proc ::quickremote::confToWidget { } {
    variable widget
    global conf
-   global caption
 
 }
 
 #------------------------------------------------------------
-# create
-#    cree une liaison
+#  create
+#     demarre la liaison
 #   
-#    retourne le numero du link
-#      le numero du link est attribue automatiquement
-#      si ce link est deja cree, on retourne le numero du link existant
+#     retourne le numero du link
+#       le numero du link est attribue automatiquement
+#       si ce link est deja cree, on retourne le numero du link existant
 #
 #   exemple :
 #   ::quickremote::create "quickremote1" "cam1" "acquisition" "bit 1"
@@ -118,22 +117,27 @@ proc ::quickremote::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #---  j'afffiche la liste des link
+   #--- j'afffiche la liste des link
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickremote,available)
       listbox $frm.available.list
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickremote,refresh)" -command { ::quickremote::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-      Label $frm.status  -textvariable ::quickremote::private(statusMessage) -width 30 -height 4 -wraplength 400
-      pack $frm.status -side bottom -fill both -expand true
-   pack $frm.available -side left -fill both -expand true
-   
+   pack $frm.available -side top -fill both -expand true
+
+   frame $frm.statusMessage -borderwidth 0 -relief ridge
+      label $frm.statusMessage.statusMessage_lab -text "$caption(quickremote,error)"
+      pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 5
+      Label $frm.statusMessage.status -textvariable ::quickremote::private(statusMessage) -width 60 -height 4 \
+         -wraplength 400 -justify left
+      pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
+   pack $frm.statusMessage -side top -fill x
+
    #--- je mets  a jour la liste
    refreshAvailableList
 
    ::confColor::applyColor $private(frm)
-
 }
 
 #------------------------------------------------------------
@@ -157,6 +161,18 @@ proc ::quickremote::getHelp { } {
 }
 
 #------------------------------------------------------------
+#  getLabel
+#     retourne le label du driver
+#  
+#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#------------------------------------------------------------
+proc ::quickremote::getLabel { } {
+   global caption
+
+   return "$caption(quickremote,titre)"
+}
+
+#------------------------------------------------------------
 # getLinkIndex
 #    retourne l'index du link
 #   
@@ -176,23 +192,11 @@ proc ::quickremote::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#  
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-#------------------------------------------------------------
-proc ::quickremote::getLabel { } {
-   global caption
-
-   return "$caption(quickremote,titre)"
-}
-
-#------------------------------------------------------------
-# ::quickremote::getLinkLabels
+# getLinkLabels
 #    retourne les libelles des quickremote disponibles
 #
 #   exemple :
-#   getLinkLabels "quickremote"
+#   getLinkLabels
 #     { "quickremote0" "quickremote1" }
 #------------------------------------------------------------
 proc ::quickremote::getLinkLabels { } {
@@ -206,13 +210,12 @@ proc ::quickremote::getLinkLabels { } {
       }
    } catchError 
    set private(statusMessage) $catchError
-  
-   
+
    return $labels
 }
 
 #------------------------------------------------------------
-# ::quickremote::getSelectedLinkLabel
+# getSelectedLinkLabel
 #    retourne le link choisi
 #
 #   exemple :
@@ -238,14 +241,13 @@ proc ::quickremote::getSelectedLinkLabel { } {
 #  return namespace
 #------------------------------------------------------------
 proc ::quickremote::init { } {
-   global caption
    variable private
 
    #--- Charge le fichier caption
    uplevel #0 "source \"[ file join $::audace(rep_plugin) link quickremote quickremote.cap ]\""
 
-   #--- je recupere le nom generique de la liaison
-   set private(genericName) "quickremote"
+   #--- je fixe le nom generique de la liaison
+   set private(genericName)   "quickremote"
    set private(statusMessage) ""
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
@@ -302,7 +304,7 @@ proc ::quickremote::refreshAvailableList { } {
    set linkNoList [link::list]
 
    #--- je remplis la liste
-   foreach linkLabel [::quickremote::getLinkLabels] {
+   foreach linkLabel [getLinkLabels] {
       set linkText ""
       #--- je recherche si ce link est ouvert
       foreach linkNo $linkNoList {
