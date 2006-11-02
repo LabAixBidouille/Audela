@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.39 2006-11-02 17:54:05 audelateam Exp $
+# Mise a jour $Id: confcam.tcl,v 1.40 2006-11-02 19:37:33 audelateam Exp $
 #
 
 global confCam
@@ -191,6 +191,8 @@ namespace eval ::confCam {
          } elseif { [ string compare $confCam($cam_item,camName) kitty ] == "0" } {
             ::confCam::KittyDispTemp
          } elseif { [ string compare $confCam($cam_item,camName) andor ] == "0" } {
+            ::confCam::AndorDispTemp
+         } elseif { [ string compare $confCam($cam_item,camName) cemes ] == "0" } {
             ::confCam::AndorDispTemp
          }
       } else {
@@ -3062,6 +3064,9 @@ namespace eval ::confCam {
             dslr {
                set binningList [cam$camNo quality list]
             }
+            cemes {
+               set binningList { 1x1 2x2 4x4 8x8 }
+            }
             default {
                set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
             }
@@ -3222,6 +3227,7 @@ namespace eval ::confCam {
                     }
             sbig    { return 1 }
             andor   { return 1 }
+            cemes   { return 1 }
             default { return 0 }
          }
       } else {
@@ -3279,6 +3285,10 @@ namespace eval ::confCam {
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
             andor {
+               #--- O + F + S - A confirmer avec le materiel
+               set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+            }
+            cemes {
                #--- O + F + S - A confirmer avec le materiel
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
