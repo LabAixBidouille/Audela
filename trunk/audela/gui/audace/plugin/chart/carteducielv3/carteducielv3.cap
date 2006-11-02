@@ -1,6 +1,6 @@
 #
 # Fichier : carteducielv3.cap
-# Mise a jour $Id: carteducielv3.cap,v 1.4 2006-10-22 08:43:24 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.cap,v 1.5 2006-11-02 17:33:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -161,32 +161,32 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(carteducielv3,titre)                   "Cartes du Ciel V3"
-   set caption(carteducielv3,fov_label)               "Champ :"
-   set caption(carteducielv3,fov_state)               "Champ fixe"
-   set caption(carteducielv3,fov_value)               "Taille du champ (xxdxxmxxs)"
-   set caption(carteducielv3,fichier)                 "Fichier à rechercher"
-   set caption(carteducielv3,a_partir_de)             "A partir de"
-   set caption(carteducielv3,rechercher)              "Recherche"
+   set caption(carteducielv3,titre)                   "Cartas Celestes V3"
+   set caption(carteducielv3,fov_label)               "Campo:"
+   set caption(carteducielv3,fov_state)               "Campo fixo"
+   set caption(carteducielv3,fov_value)               "Tamanho do campo (xxdxxmxxs)"
+   set caption(carteducielv3,fichier)                 "Ficheiro a procurar"
+   set caption(carteducielv3,a_partir_de)             "A partir da"
+   set caption(carteducielv3,rechercher)              "Procurar"
    set caption(carteducielv3,parcourir)               "..."
-   set caption(carteducielv3,dossier)                 "A partir du dossier :"
-   set caption(carteducielv3,cdchost)                 "Serveur TCP/IP"
-   set caption(carteducielv3,cdcport)                 "Port"
-   set caption(carteducielv3,testping)                "Tester l'adresse IP (ping)"
-   set caption(carteducielv3,appareil_connecte)       "Il y a un appareil à l'adresse IP :"
-   set caption(carteducielv3,pas_appareil_connecte)   "Il n'y a pas d'appareil à l'adresse IP :"
-   set caption(carteducielv3,message_ping)            "Message de retour de la fonction ping :"
-   set caption(carteducielv3,site_web)                "Site Web de référence :"
-   set caption(carteducielv3,site_web_ref)            "http://www.ap-i.net/skychart/index.php?newlang=fra"
-   set caption(carteducielv3,attention)               "Attention"
-   set caption(carteducielv3,option)                  "Option :"
-   set caption(carteducielv3,creation)                "Création d'une carte de champ avec Carte Du Ciel"
-   set caption(carteducielv3,lance)                   "Pour utiliser cette option, le logiciel Carte Du Ciel doit déjà être lancé.\n\nVoulez-vous lancer Carte du Ciel ?"
-   set caption(carteducielv3,verification)            "Vérifiez que Carte du Ciel V3 est installé et sélectionné\ndans le menu 'Configuration --> Carte'."
-   set caption(carteducielv3,rate)                    "Accès non possible"
-   set caption(carteducielv3,gagne)                   "Accès réussi"
-   set caption(carteducielv3,no_connect)              "La connexion à Carte du Ciel a échoué."
-   set caption(carteducielv3,no_object_select)        "Pas d'objet sélectionné dans la carte."
+   set caption(carteducielv3,dossier)                 "A partir da pasta:"
+   set caption(carteducielv3,cdchost)                 "Servidor TCP/IP"
+   set caption(carteducielv3,cdcport)                 "Porta"
+   set caption(carteducielv3,testping)                "Testar o endereço IP (ping)"
+   set caption(carteducielv3,appareil_connecte)       "Existe um dispositivo no endereço IP:"
+   set caption(carteducielv3,pas_appareil_connecte)   "Não existe nenhum dispositivo no endereço IP:"
+   set caption(carteducielv3,message_ping)            "Mensagem de retorno da função ping:"
+   set caption(carteducielv3,site_web)                "Site Web de referencia:"
+   set caption(carteducielv3,site_web_ref)            "http://www.ap-i.net/skychart/index.php?newlang=eng"
+   set caption(carteducielv3,attention)               "Atenção"
+   set caption(carteducielv3,option)                  "Opção:"
+   set caption(carteducielv3,creation)                "Criação de uma carta de campo com Carta Celeste"
+   set caption(carteducielv3,lance)                   "Para utilizar esta opção, o software Carta Celeste tem que estar em execução.\n\nDeseja iniciar Carta Celeste ?"
+   set caption(carteducielv3,verification)            "Verifique que Carta Celeste V3 se encontra instalada e seleccionada\nno menu 'Configuração --> Carta'."
+   set caption(carteducielv3,rate)                    "Acesso falhado"
+   set caption(carteducielv3,gagne)                   "Acesso OK"
+   set caption(carteducielv3,no_connect)              "A ligação à Carta Celeste foi abortada."
+   set caption(carteducielv3,no_object_select)        "Nenhum objecto seleccionado na carta."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

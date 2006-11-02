@@ -1,6 +1,6 @@
 #
 # Fichier : cartedicielv2.cap
-# Mise a jour $Id: carteducielv2.cap,v 1.4 2006-10-22 08:43:10 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.cap,v 1.5 2006-11-02 17:32:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -131,26 +131,26 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(carteducielv2,titre)          "Cartes du Ciel V2"
-   set caption(carteducielv2,fov_label)      "Champ :"
-   set caption(carteducielv2,fov_state)      "Champ fixe"
-   set caption(carteducielv2,fov_value)      "Taille du champ (xxdxxmxxs)"
-   set caption(carteducielv2,fichier)        "Fichier à rechercher"
-   set caption(carteducielv2,a_partir_de)    "A partir de"
-   set caption(carteducielv2,rechercher)     "Recherche"
+   set caption(carteducielv2,titre)          "Cartas Celestes V2"
+   set caption(carteducielv2,fov_label)      "Campo:"
+   set caption(carteducielv2,fov_state)      "Campo fixo"
+   set caption(carteducielv2,fov_value)      "Tamanho do campo (xxdxxmxxs)"
+   set caption(carteducielv2,fichier)        "Ficheiro a procurar"
+   set caption(carteducielv2,a_partir_de)    "A partir da"
+   set caption(carteducielv2,rechercher)     "Procurar"
    set caption(carteducielv2,parcourir)      "..."
-   set caption(carteducielv2,dossier)        "A partir du dossier :"
-   set caption(carteducielv2,site_web)       "Site Web de référence :"
+   set caption(carteducielv2,dossier)        "A partir da pasta:"
+   set caption(carteducielv2,site_web)       "Site Web de referência:"
    set caption(carteducielv2,site_web_ref)   "http://www.astrosurf.com/astropc/cartes/index.html"
-   set caption(carteducielv2,attention)      "Attention"
-   set caption(carteducielv2,option)         "Option :"
-   set caption(carteducielv2,creation)       "Création d'une carte de champ avec Carte Du Ciel"
-   set caption(carteducielv2,lance)          "Pour utiliser cette option, le logiciel Carte Du Ciel doit déjà être lancé.\n\nVoulez-vous lancer Carte du Ciel ?"
-   set caption(carteducielv2,verification)   "Vérifiez que Carte du Ciel V2 est installé et sélectionné\ndans le menu 'Configuration --> Carte'."
-   set caption(carteducielv2,rate)           "Accès non possible"
-   set caption(carteducielv2,gagne)          "Accès réussi"
-   set caption(carteducielv2,no_connect)     "La connexion à Carte du Ciel a échoué."
-   set caption(carteducielv2,coord_no_found) "Coordonnées du centre de la carte introuvables."
+   set caption(carteducielv2,attention)      "Atenção"
+   set caption(carteducielv2,option)         "Opção:"
+   set caption(carteducielv2,creation)       "Criação de uma carta de campo com Carta Celeste"
+   set caption(carteducielv2,lance)          "Para utilizar esta opção, o software Carta Celeste tem que estar em execução.\n\nDeseja iniciar Carta Celeste ?"
+   set caption(carteducielv2,verification)   "Verifique que Carta Celeste V2 se encontra instalada e seleccionada\nno menu 'Configuração --> Carta'."
+   set caption(carteducielv2,rate)           "Acesso falhado"
+   set caption(carteducielv2,gagne)          "Acesso OK"
+   set caption(carteducielv2,no_connect)     "A ligação à Carta Celeste foi abortada."
+   set caption(carteducielv2,coord_no_found) "Coordenadas do centro da carta não encontradas."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

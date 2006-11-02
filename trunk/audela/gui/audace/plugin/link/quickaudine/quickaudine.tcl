@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.6 2006-11-01 21:45:31 michelpujol Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.7 2006-11-02 17:35:22 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0
@@ -27,6 +27,10 @@ package provide quickaudine 1.0
 
 namespace eval quickaudine {
 }
+
+#==============================================================
+# Procedures generiques de configuration des drivers
+#==============================================================
 
 #------------------------------------------------------------
 #  configureDriver
@@ -97,9 +101,15 @@ proc ::quickaudine::fillConfigPage { frm } {
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-      Label $frm.status -textvariable  ::quickaudine::private(statusMessage) -width 30 -height 4 -wraplength 400
-      pack $frm.status -side bottom -fill both -expand true
-   pack $frm.available -side left -fill both -expand true
+   pack $frm.available -side top -fill both -expand true
+
+   frame $frm.statusMessage -borderwidth 0 -relief ridge
+      label $frm.statusMessage.statusMessage_lab -text "$caption(quickaudine,error)"
+      pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 5
+      Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -width 60 -height 4 \
+         -wraplength 400 -justify left
+      pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
+   pack $frm.statusMessage -side top -fill x
 
    #--- je mets  a jour la liste
    refreshAvailableList
@@ -163,12 +173,13 @@ proc ::quickaudine::getLinkIndex { linkLabel } {
 #    retourne les libelles des quickaudine disponibles
 #
 #   exemple :
-#   getInstanceLabels
+#   getLinkLabels
 #     { "quickaudine0" "quickaudine1" }
 #------------------------------------------------------------
 proc ::quickaudine::getLinkLabels { } {
    variable private
 
+   #--- j'intialise une liste vide
    set labels [list]
    catch {   
       foreach instance [link::available quickremote ] {
@@ -176,6 +187,7 @@ proc ::quickaudine::getLinkLabels { } {
       }
    } catchError 
    set private(statusMessage) $catchError
+
    return $labels
 }
 
@@ -212,7 +224,7 @@ proc ::quickaudine::init { } {
    uplevel #0 "source \"[ file join $::audace(rep_plugin) link quickaudine quickaudine.cap ]\""
 
    #--- je fixe le nom generique de la liaison
-   set private(genericName) "quickaudine"
+   set private(genericName)   "quickaudine"
    set private(statusMessage) ""
    
    #--- Cree les variables dans conf(...) si elles n'existent pas
@@ -287,8 +299,6 @@ proc ::quickaudine::refreshAvailableList { } {
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
    selectConfigLink $selectedLinkLabel
-
-   return
 }
 
 #------------------------------------------------------------

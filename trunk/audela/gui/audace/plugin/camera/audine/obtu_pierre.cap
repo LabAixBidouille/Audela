@@ -1,6 +1,6 @@
 #
 # Fichier : obtu_pierre.cap
-# Mise a jour $Id: obtu_pierre.cap,v 1.4 2006-10-22 08:39:37 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.cap,v 1.5 2006-11-02 17:34:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -96,19 +96,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(obtu_pierre,title)         "Réglage des paramètres de l'obturateur"
-   set caption(obtu_pierre,title_pth)     "Obturateur de Pierre Thierry"
-   set caption(obtu_pierre,valider)       "Valider ces valeurs"
-   set caption(obtu_pierre,fermer)        "Fermer"
+   set caption(obtu_pierre,title)         "Ajustamento dos Parâmetros do Obturador"
+   set caption(obtu_pierre,title_pth)     "Obturador do Pierre Thierry"
+   set caption(obtu_pierre,valider)       "Validar estes valores"
+   set caption(obtu_pierre,fermer)        "Fechar"
    set caption(obtu_pierre,synchro)       "Synchro"
-   set caption(obtu_pierre,ouvert)        "Ouvert"
-   set caption(obtu_pierre,ferme)         "Fermé"
-   set caption(obtu_pierre,a)             "Fermé : 1080"
-   set caption(obtu_pierre,b)             "Ouvert : 1180"
-   set caption(obtu_pierre,c)             "Fermé : 1280"
-   set caption(obtu_pierre,e)             "Libre"
+   set caption(obtu_pierre,ouvert)        "Aberto"
+   set caption(obtu_pierre,ferme)         "Fechado"
+   set caption(obtu_pierre,a)             "Fechado : 1080"
+   set caption(obtu_pierre,b)             "Aberto : 1180"
+   set caption(obtu_pierre,c)             "Fechado : 1280"
+   set caption(obtu_pierre,e)             "Livre"
    set caption(obtu_pierre,t)             "15"
-   set caption(obtu_pierre,flag)          "Ciel Profond (1) ou Planètes (2)"
+   set caption(obtu_pierre,flag)          "Céu Profundo (1) ou Planetas (2)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

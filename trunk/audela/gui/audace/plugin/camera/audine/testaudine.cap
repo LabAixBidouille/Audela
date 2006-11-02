@@ -1,6 +1,6 @@
 #
 # Fichier : testaudine.cap
-# Mise a jour $Id: testaudine.cap,v 1.4 2006-10-22 08:39:49 robertdelmas Exp $
+# Mise a jour $Id: testaudine.cap,v 1.5 2006-11-02 17:34:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,18 +91,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(testaudine,titre)    "Tests pour la fabrication de la caméra"
-   set caption(testaudine,voltm)    "Tests avec un voltmètre :"
+   set caption(testaudine,titre)    "Testes para fabrico da camara"
+   set caption(testaudine,voltm)    "Testes com um voltímetro :"
    set caption(testaudine,set0)     "Set 0"
-   set caption(testaudine,text1)    "Mesure de tensions et réglage des potentiomètres P1, P3 et P4"
+   set caption(testaudine,text1)    "Medição das tensões e ajustamento dos potênciometros P1, P3 et P4"
    set caption(testaudine,set255)   "Set 255"
-   set caption(testaudine,text2)    "Mesure de tensions et réglage du potentiomètre P2"
-   set caption(testaudine,oscillo)  "Tests avec un oscilloscope :"
-   set caption(testaudine,test1)    "Test 1"
-   set caption(testaudine,text3)    "Nombre de cycles de transfert zone image/registre horizontal"
-   set caption(testaudine,test2)    "Test 2"
-   set caption(testaudine,text4)    "Nombre de cycles de lecture rapide"
-   set caption(testaudine,fermer)   "Fermer"
+   set caption(testaudine,text2)    "Medição das tensões e ajustamento do potênciometro P2"
+   set caption(testaudine,oscillo)  "Testes com um osciloscópio :"
+   set caption(testaudine,test1)    "Teste 1"
+   set caption(testaudine,text3)    "Número de ciclos de transferência zona imagem/registo horizontal"
+   set caption(testaudine,test2)    "Teste 2"
+   set caption(testaudine,text4)    "Número de ciclos de leitura rápida"
+   set caption(testaudine,fermer)   "Fechar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

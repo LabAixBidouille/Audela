@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.9 2006-10-30 17:30:30 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.10 2006-11-02 17:35:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,6 +14,7 @@ global caption
 set caption(quickaudine,titre)           "QuickAudine"
 set caption(quickaudine,available)       "QuickAudine available"
 set caption(quickaudine,refresh)         "Reload"
+set caption(quickremote,error)           "Error Message:"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -21,6 +22,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)        "QuickAudine"
    set caption(quickaudine,available)    "QuickAudine disponibles"
    set caption(quickaudine,refresh)      "Rafraîchir"
+   set caption(quickaudine,error)        "Message d'erreur :"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -28,6 +30,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)        "QuickAudine"
    set caption(quickaudine,available)    "QuickAudine disponibile"
    set caption(quickaudine,refresh)      "Rinfresca"
+   set caption(quickremote,error)        "Messaggio di errore:"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -35,6 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)        "QuickAudine"
    set caption(quickaudine,available)    "QuickAudine disponibles"
    set caption(quickaudine,refresh)      "Recargar"
+   set caption(quickremote,error)        "Mensaje de error:"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -42,6 +46,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)        "QuickAudine"
    set caption(quickaudine,available)    "QuickAudine verfügbar"
    set caption(quickaudine,refresh)      "Aktualisieren"
+   set caption(quickremote,error)        "Fehlermeldung:"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -49,6 +54,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)        "QuickAudine"
    set caption(quickaudine,available)    "QuickAudine disponível"
    set caption(quickaudine,refresh)      "Actualizar"
+   set caption(quickremote,error)        "Mensagem de erro:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -56,6 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)        "QuickAudine"
    set caption(quickaudine,available)    "QuickAudine disponible"
    set caption(quickaudine,refresh)      "Genindlæs"
+   set caption(quickremote,error)        "Fejlmeddelelse:"
 
 }
 
