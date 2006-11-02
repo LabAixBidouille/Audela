@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.38 2006-11-01 18:27:20 alainklotz Exp $
+# Mise a jour $Id: confcam.tcl,v 1.39 2006-11-02 17:54:05 audelateam Exp $
 #
 
 global confCam
@@ -141,6 +141,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(andor,temp) ] }        { set conf(andor,temp)        "-50" }
       if { ! [ info exists conf(andor,ouvert_obtu) ] } { set conf(andor,ouvert_obtu) "0" }
       if { ! [ info exists conf(andor,ferm_obtu) ] }   { set conf(andor,ferm_obtu)   "30" }
+      if { ! [ info exists conf(andor,port) ] }        { set conf(andor,port)        "pci" }
 
       #--- item par defaut
       set confCam(cam_item)   "A"
@@ -3935,7 +3936,11 @@ namespace eval ::confCam {
                }
             }
             andor {
-               set camNo [ cam::create andor pci "$conf(andor,config)" ]
+               if {$conf(andor,config)=="cemes"} {
+                  set camNo [ cam::create cemes pci ]
+               } else {
+                  set camNo [ cam::create andor pci "$conf(andor,config)" ]
+               }
                set confCam($cam_item,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
                   $caption(confcam,2points) $conf(andor,config)\n"
@@ -3963,8 +3968,10 @@ namespace eval ::confCam {
                cam$camNo mirrorv $conf(andor,mirv)
                ::confVisu::visuDynamix $visuNo 65535 0
                #--- Delais d'ouverture et de fermeture de l'obturateur
-               cam$camNo openingtime $conf(andor,ouvert_obtu)
-               cam$camNo closingtime $conf(andor,ferm_obtu)
+               if {$conf(andor,config)!="cemes"} {
+                  cam$camNo openingtime $conf(andor,ouvert_obtu)
+                  cam$camNo closingtime $conf(andor,ferm_obtu)
+               }
                #---
                if { [ info exists confCam(andor,aftertemp) ] == "0" } {
                   ::confCam::AndorDispTemp
