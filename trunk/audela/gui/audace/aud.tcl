@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.27 2006-10-28 20:39:49 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.28 2006-11-03 16:29:18 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -623,14 +623,14 @@ namespace eval ::audace {
                  ::audace::autovisu $audace(visuNo)
               }
            }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
-         { ::traiteImage::run "$caption(audace,menu,scale)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
          { ::traiteImage::run "$caption(audace,menu,subsky)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
          { ::traiteImage::run "$caption(audace,menu,clip)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
+         { ::traiteImage::run "$caption(audace,menu,scale)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
          { ::traiteImage::run "$caption(audace,menu,offset)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
@@ -648,6 +648,8 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,optimisation,noir)..." \
          { ::traiteImage::run "$caption(audace,optimisation,noir)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
+         { ::traiteWindow::run "$caption(audace,menu,scale)" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
          { ::traiteWindow::run "$caption(audace,menu,offset)" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
