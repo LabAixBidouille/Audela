@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.8 2006-10-30 18:13:41 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.9 2006-11-03 21:25:53 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -57,7 +57,7 @@ proc ::serialport::confToWidget { } {
    variable widget
    global conf
 
-   set widget(conf_serial,port_exclus) "$conf(serial,port_exclus)"
+   set widget(serial,port_exclus) "$conf(serial,port_exclus)"
 }
 
 #------------------------------------------------------------
@@ -120,7 +120,7 @@ proc ::serialport::fillConfigPage { frm } {
    frame $frm.port_exclus -borderwidth 0 -relief ridge
       label $frm.port_exclus_lab -text "$caption(serialport,port_exclus)"
       pack $frm.port_exclus_lab -in $frm.port_exclus -side left -padx 5 -pady 5
-      entry $frm.port_exclus_ent -textvariable serialport::widget(conf_serial,port_exclus) -width 25
+      entry $frm.port_exclus_ent -textvariable serialport::widget(serial,port_exclus) -width 25
       pack $frm.port_exclus_ent -in $frm.port_exclus -side left
    pack $frm.port_exclus -side top -fill x
 
@@ -165,10 +165,22 @@ proc ::serialport::initConf { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex
-#   retourne l'index du link
-#   
-#   retourne une chaine vide si le link n'existe pas
+#  getLabel
+#     retourne le label du driver
+#  
+#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#------------------------------------------------------------
+proc ::serialport::getLabel { } {
+   global caption
+
+   return "$caption(serialport,titre)"
+}
+
+#------------------------------------------------------------
+#  getLinkIndex
+#     retourne l'index du link
+#  
+#  retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
 #   getLinkIndex "COM1"
@@ -186,20 +198,8 @@ proc ::serialport::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#  
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-#------------------------------------------------------------
-proc ::serialport::getLabel { } {
-   global caption
-
-   return "$caption(serialport,titre)"
-}
-
-#------------------------------------------------------------
-# getLinkLabels
-#    retourne les libelles des ports series disponibles
+#  getLinkLabels
+#     retourne les libelles des ports series disponibles
 #
 #   exemple :
 #   getLinkLabels
@@ -225,8 +225,8 @@ proc ::serialport::getLinkLabels { } {
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    retourne le link choisi
+#  getSelectedLinkLabel
+#     retourne le link choisi
 #
 #   exemple :
 #   getSelectedLinkLabel
@@ -252,7 +252,6 @@ proc ::serialport::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 proc ::serialport::init { } {
    variable private
-   global audace
 
    #--- Charge le fichier caption
    uplevel #0 "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
@@ -278,7 +277,7 @@ proc ::serialport::init { } {
 
 #------------------------------------------------------------
 #  refreshAvailableList
-#      rafraichit la liste des link disponibles
+#     rafraichit la liste des link disponibles
 #  
 #  return rien
 #------------------------------------------------------------
@@ -362,7 +361,7 @@ proc ::serialport::widgetToConf { } {
    variable widget
    global conf
 
-   set conf(serial,port_exclus) $widget(conf_serial,port_exclus)
+   set conf(serial,port_exclus) $widget(serial,port_exclus)
 }
 
 #------------------------------------------------------------

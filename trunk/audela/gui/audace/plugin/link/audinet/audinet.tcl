@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.5 2006-09-28 19:50:08 michelpujol Exp $
+# Mise a jour $Id: audinet.tcl,v 1.6 2006-11-03 21:26:52 robertdelmas Exp $
 #
 
 package provide audinet 1.0
@@ -11,14 +11,14 @@ package provide audinet 1.0
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
 #     init              : initialise le namespace (appelee pendant le chargement de ce source)
 #     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver 
+#     getLabel          : retourne le nom affichable du driver
 #     getHelp           : retourne la documentation htm associee
 #     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
 #     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver 
+#     fillConfigPage    : affiche la fenetre de configuration de ce driver
 #     confToWidget      : copie le tableau conf() dans les variables des widgets
 #     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver 
+#     configureDriver   : configure le driver
 #     stopDriver        : arrete le driver et libere les ressources occupees
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
@@ -45,7 +45,7 @@ proc ::audinet::configureDriver { } {
 }
 
 #------------------------------------------------------------
-#  confToWidget 
+#  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
 #  
 #  return rien
@@ -54,20 +54,20 @@ proc ::audinet::confToWidget { } {
    variable widget
    global conf
 
-   set widget(conf_audinet,host)         $conf(audinet,host)
-   set widget(conf_audinet,ipsetting)    $conf(audinet,ipsetting)
-   set widget(conf_audinet,mac_address)  $conf(audinet,mac_address)
-   set widget(conf_audinet,protocole)    $conf(audinet,protocole)
-   set widget(conf_audinet,udptempo)     $conf(audinet,udptempo)
-   set widget(conf_audinet,autoflush)    $conf(audinet,autoflush)
-   set widget(conf_audinet,focuser_type) $conf(audinet,focuser_type)
-   set widget(conf_audinet,focuser_addr) $conf(audinet,focuser_addr)
-   set widget(conf_audinet,focuser_bit)  $conf(audinet,focuser_bit)
+   set widget(audinet,host)         $conf(audinet,host)
+   set widget(audinet,ipsetting)    $conf(audinet,ipsetting)
+   set widget(audinet,mac_address)  $conf(audinet,mac_address)
+   set widget(audinet,protocole)    $conf(audinet,protocole)
+   set widget(audinet,udptempo)     $conf(audinet,udptempo)
+   set widget(audinet,autoflush)    $conf(audinet,autoflush)
+   set widget(audinet,focuser_type) $conf(audinet,focuser_type)
+   set widget(audinet,focuser_addr) $conf(audinet,focuser_addr)
+   set widget(audinet,focuser_bit)  $conf(audinet,focuser_bit)
 }
 
 #------------------------------------------------------------
 #  create
-#     demarre la liaison 
+#     demarre la liaison
 #  
 #  return nothing
 #------------------------------------------------------------
@@ -88,7 +88,7 @@ proc ::audinet::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-#  fillConfigPage 
+#  fillConfigPage
 #     fenetre de configuration du driver
 #  
 #  return nothing
@@ -125,35 +125,35 @@ proc ::audinet::fillConfigPage { frm } {
    label $frm.lab1 -text "$caption(audinet,host_audinet)"
    pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10
 
-   entry $frm.host -width 18 -textvariable ::audinet::widget(conf_audinet,host)
+   entry $frm.host -width 18 -textvariable ::audinet::widget(audinet,host)
    pack $frm.host -in $frm.frame1 -anchor center -side left -padx 10
 
    #--- Bouton de test de la connexion
    button $frm.ping -text "$caption(audinet,test_audinet)" -relief raised -state normal \
       -command {
          #--- Si l'envoi de l'adresse IP est demande, j'execute setip avant ping
-         if { $::audinet::widget(conf_audinet,ipsetting) == "1" } {
+         if { $::audinet::widget(audinet,ipsetting) == "1" } {
             #--- Remarque : Comme setip est une commande specifique a une camera audinet,
             #--- il faut creer temporairement une camera de type audinet pour pouvoir executer la commande
             set camtemp [ cam::create audinet ] 
-            set erreur [ catch { cam$camtemp setip $::audinet::widget(conf_audinet,mac_address) $::audinet::widget(conf_audinet,host) } msg ]
+            set erreur [ catch { cam$camtemp setip $::audinet::widget(audinet,mac_address) $::audinet::widget(audinet,host) } msg ]
             if { $erreur == "1" } {
                tk_messageBox -message "$caption(audinet,erreur_setip)" -icon error
             }
             cam::delete $camtemp
          }
-         #--- J'execute la commande ping   
-         ::audinet::testping $::audinet::widget(conf_audinet,host)
+         #--- J'execute la commande ping
+         ::audinet::testping $::audinet::widget(audinet,host)
       }
    pack $frm.ping -in $frm.frame1 -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
 
    #--- Envoi ou non de l'adresse IP a Audinet
    checkbutton $frm.ipsetting -text "$caption(audinet,envoyer_adresse_aud)" -highlightthickness 0 \
-      -variable ::audinet::widget(conf_audinet,ipsetting)
+      -variable ::audinet::widget(audinet,ipsetting)
    pack $frm.ipsetting -in $frm.frame2 -anchor center -side left -padx 10 -pady 2
 
    #--- Definition de l'adresse MAC
-   entry $frm.macaddress -width 17 -textvariable ::audinet::widget(conf_audinet,mac_address)
+   entry $frm.macaddress -width 17 -textvariable ::audinet::widget(audinet,mac_address)
    pack $frm.macaddress -in $frm.frame2 -anchor center -side right -padx 10
 
    label $frm.labMac -text "$caption(audinet,mac_address)"
@@ -166,11 +166,11 @@ proc ::audinet::fillConfigPage { frm } {
    set list_combobox [ list $caption(audinet,protocole_udp) $caption(audinet,protocole_tcp) ]
    ComboBox $frm.protocole \
       -width 4          \
-      -height [ llength $list_combobox ]  \
+      -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
       -editable 0       \
-      -textvariable ::audinet::widget(conf_audinet,protocole) \
+      -textvariable ::audinet::widget(audinet,protocole) \
       -values $list_combobox
    pack $frm.protocole -in $frm.frame3 -anchor center -side left -padx 10 -pady 5
 
@@ -178,12 +178,12 @@ proc ::audinet::fillConfigPage { frm } {
    label $frm.lab4 -text "$caption(audinet,tempo_udp)"
    pack $frm.lab4 -in $frm.frame3 -anchor center -side left -padx 10 -pady 5
 
-   entry $frm.udptempo -width 5 -textvariable ::audinet::widget(conf_audinet,udptempo) -justify center
+   entry $frm.udptempo -width 5 -textvariable ::audinet::widget(audinet,udptempo) -justify center
    pack $frm.udptempo -in $frm.frame3 -anchor center -side left -padx 10 -pady 5
 
    #--- Definition du mode de vidage de la communication avec le telescope
    checkbutton $frm.autoflush -text "$caption(audinet,autoflush)" -highlightthickness 0 \
-      -variable ::audinet::widget(conf_audinet,autoflush)
+      -variable ::audinet::widget(audinet,autoflush)
    pack $frm.autoflush -in $frm.frame4 -anchor center -side left -padx 10 -pady 2
 
    #--- Choix du systeme de mise au point (focuser)
@@ -197,11 +197,11 @@ proc ::audinet::fillConfigPage { frm } {
       -relief sunken    \
       -borderwidth 1    \
       -editable 0       \
-      -textvariable ::audinet::widget(conf_audinet,focuser_type) \
+      -textvariable ::audinet::widget(audinet,focuser_type) \
       -values $list_combobox \
       -modifycmd {
          #--- Autoriser/masquer l'autre widget en fontion du type de focuser
-         if { $::audinet::widget(conf_audinet,focuser_type) == "lx200" } {
+         if { $::audinet::widget(audinet,focuser_type) == "lx200" } {
             $::audinet::widget(frm).ent_focuser_adr configure -state disabled
          } else {
             $::audinet::widget(frm).ent_focuser_adr configure -state normal
@@ -212,13 +212,13 @@ proc ::audinet::fillConfigPage { frm } {
    #--- Label adresse I2C du focuser 
    label $frm.lab_focuser_adr -text "$caption(audinet,focuser_i2c_address)"
    pack $frm.lab_focuser_adr -in $frm.frame5 -anchor center -side left -padx 10
-   
+
    #--- Saisie adresse I2C du focuser 
-   entry $frm.ent_focuser_adr -width 17 -textvariable ::audinet::widget(conf_audinet,focuser_addr)
+   entry $frm.ent_focuser_adr -width 17 -textvariable ::audinet::widget(audinet,focuser_addr)
    pack $frm.ent_focuser_adr -in $frm.frame5 -anchor center -side left -padx 10
 
    #--- Autoriser/masquer l'autre widget en fontion du type de focuser
-   if { $::audinet::widget(conf_audinet,focuser_type) == "lx200" } {
+   if { $::audinet::widget(audinet,focuser_type) == "lx200" } {
       $::audinet::widget(frm).ent_focuser_adr configure -state disabled
    } else {
       $::audinet::widget(frm).ent_focuser_adr configure -state normal
@@ -261,7 +261,6 @@ proc ::audinet::getDriverType { } {
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::audinet::getHelp { } {
-
    return "audinet.htm"
 }
 
@@ -278,54 +277,53 @@ proc ::audinet::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex 
-#   retourne l'index du link
-#   
-#   retourne une chaine vide si le link n'existe pas
-#
+#  getLinkIndex
+#     retourne l'index du link
+#  
+#  retourne une chaine vide si le link n'existe pas
 #------------------------------------------------------------
 proc ::audinet::getLinkIndex { linkLabel } {
    variable private 
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
-   if { [string first $private(genericName) $linkLabel]  == 0 } {   
+   if { [string first $private(genericName) $linkLabel] == 0 } {
       scan $linkLabel "$private(genericName)%s" linkIndex
    }
    return $linkIndex
 }
 
-
 #------------------------------------------------------------
-# getLinkLabels 
-#    retourne l'instance audinet unique
+#  getLinkLabels
+#     retourne l'instance audinet unique
 #
 #------------------------------------------------------------
 proc ::audinet::getLinkLabels { } {
-   variable private 
+   variable private
+
    return "$private(genericName)1"
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    retourne le link choisi
+#  getSelectedLinkLabel
+#     retourne le link choisi
 #
 #------------------------------------------------------------
 proc ::audinet::getSelectedLinkLabel { } {
-   variable private 
+   variable private
 
-   #--- je retourne le label du seul link 
+   #--- je retourne le label du seul link
    return "$private(genericName)1"
 }
 
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver 
+#     initialise le driver
 #  
 #  return namespace name
 #------------------------------------------------------------
 proc ::audinet::init { } {
-   variable private 
+   variable private
 
    #--- Charge le fichier caption
    uplevel #0  "source \"[ file join $::audace(rep_plugin) link audinet audinet.cap ]\""
@@ -341,7 +339,6 @@ proc ::audinet::init { } {
 
    return [namespace current]
 }
-
 
 #------------------------------------------------------------
 #  initConf
@@ -367,13 +364,12 @@ proc ::audinet::initConf { } {
 }
 
 #------------------------------------------------------------
-#  isReady 
+#  isReady
 #     informe de l'etat de fonctionnement du driver
 #  
-#  return 0 (ready) , 1 (not ready)
+#  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::audinet::isReady { } {
-
    return 0
 }
 
@@ -390,7 +386,7 @@ proc ::audinet::selectConfigLink { linkLabel } {
 }
 
 #------------------------------------------------------------
-#  testping ip 
+#  testping ip
 #     teste la connexion d'un appareil
 #------------------------------------------------------------
 proc ::audinet::testping { ip } {
@@ -417,18 +413,17 @@ proc ::audinet::testping { ip } {
 proc ::audinet::widgetToConf { } {
    variable widget
    global conf
-   
-   set conf(audinet,host)               $widget(conf_audinet,host)
-   set conf(audinet,ipsetting)          $widget(conf_audinet,ipsetting)
-   set conf(audinet,mac_address)        $widget(conf_audinet,mac_address)
-   set conf(audinet,protocole)          $widget(conf_audinet,protocole)
-   set conf(audinet,udptempo)           $widget(conf_audinet,udptempo)
-   set conf(audinet,autoflush)          $widget(conf_audinet,autoflush)
-   set conf(audinet,focuser_type)       $widget(conf_audinet,focuser_type)
-   set conf(audinet,focuser_addr)       $widget(conf_audinet,focuser_addr)
-   set conf(audinet,focuser_bit)        $widget(conf_audinet,focuser_bit)
-}
 
+   set conf(audinet,host)         $widget(audinet,host)
+   set conf(audinet,ipsetting)    $widget(audinet,ipsetting)
+   set conf(audinet,mac_address)  $widget(audinet,mac_address)
+   set conf(audinet,protocole)    $widget(audinet,protocole)
+   set conf(audinet,udptempo)     $widget(audinet,udptempo)
+   set conf(audinet,autoflush)    $widget(audinet,autoflush)
+   set conf(audinet,focuser_type) $widget(audinet,focuser_type)
+   set conf(audinet,focuser_addr) $widget(audinet,focuser_addr)
+   set conf(audinet,focuser_bit)  $widget(audinet,focuser_bit)
+}
 
 ::audinet::init
 

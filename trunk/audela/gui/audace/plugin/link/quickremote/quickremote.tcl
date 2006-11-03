@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.7 2006-11-02 17:35:47 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.8 2006-11-03 21:26:05 robertdelmas Exp $
 #
 
 package provide quickremote 1.1
@@ -62,7 +62,7 @@ proc ::quickremote::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     demarre la liaison
-#   
+#  
 #     retourne le numero du link
 #       le numero du link est attribue automatiquement
 #       si ce link est deja cree, on retourne le numero du link existant
@@ -86,12 +86,12 @@ proc ::quickremote::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-# delete
-#    Supprime une utilisation d'une liaison
-#    et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
-#    Ne fait rien si la liaison n'est pas ouverte
+#  delete
+#     Supprime une utilisation d'une liaison
+#     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
+#     Ne fait rien si la liaison n'est pas ouverte
 #
-#    retourne rien
+#  return rien
 #------------------------------------------------------------
 proc ::quickremote::delete { linkLabel deviceId usage } {
    set linkno [::confLink::getLinkNo $linkLabel]
@@ -134,7 +134,7 @@ proc ::quickremote::fillConfigPage { frm } {
       pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
    pack $frm.statusMessage -side top -fill x
 
-   #--- je mets  a jour la liste
+   #--- je mets a jour la liste
    refreshAvailableList
 
    ::confColor::applyColor $private(frm)
@@ -173,10 +173,10 @@ proc ::quickremote::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex
-#    retourne l'index du link
-#   
-#    retourne une chaine vide si le link n'existe pas
+#  getLinkIndex
+#     retourne l'index du link
+#  
+#     retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
 #   getLinkIndex "quickremote1"
@@ -192,8 +192,8 @@ proc ::quickremote::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels
-#    retourne les libelles des quickremote disponibles
+#  getLinkLabels
+#     retourne les libelles des quickremote disponibles
 #
 #   exemple :
 #   getLinkLabels
@@ -215,8 +215,8 @@ proc ::quickremote::getLinkLabels { } {
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    retourne le link choisi
+#  getSelectedLinkLabel
+#     retourne le link choisi
 #
 #   exemple :
 #   getSelectedLinkLabel
@@ -283,7 +283,7 @@ proc ::quickremote::isReady { } {
 
 #------------------------------------------------------------
 #  refreshAvailableList
-#      rafraichit la liste des link disponibles
+#     rafraichit la liste des link disponibles
 #  
 #  return rien
 #------------------------------------------------------------

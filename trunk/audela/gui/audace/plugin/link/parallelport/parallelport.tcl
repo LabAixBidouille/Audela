@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.6 2006-10-30 18:15:00 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.7 2006-11-03 21:26:28 robertdelmas Exp $
 #
 
 package provide parallelport 1.0
@@ -60,12 +60,12 @@ proc ::parallelport::confToWidget { } {
 }
 
 #------------------------------------------------------------
-# create 
-#    cree une liaison
-#   
-#    retourne le numero du link
-#      le numero du link est attribue automatiquement
-#      si ce link est deja cree, on retourne le numero du link existant
+#  create
+#     cree une liaison
+#  
+#     retourne le numero du link
+#       le numero du link est attribue automatiquement
+#       si ce link est deja cree, on retourne le numero du link existant
 #
 #   exemple :
 #   ::parallelport::create "LPT1:" "cam1" "acquisition" "bit 1"
@@ -86,10 +86,10 @@ proc ::parallelport::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-# delete
-#    Supprime une utilisation d'une liaison
-#    et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
-#    Ne fait rien si la liaison n'est pas ouverte
+#  delete
+#     Supprime une utilisation d'une liaison
+#     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
+#     Ne fait rien si la liaison n'est pas ouverte
 #  
 #  return rien
 #------------------------------------------------------------
@@ -154,10 +154,10 @@ proc ::parallelport::getHelp { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex
-#    retourne l'index du link
-#   
-#    retourne une chaine vide si le type du link n'existe pas
+#  getLinkIndex
+#     retourne l'index du link
+#  
+#     retourne une chaine vide si le type du link n'existe pas
 #
 #   exemple :
 #   getLinkIndex "LPT1:"
@@ -185,8 +185,8 @@ proc ::parallelport::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels
-#    retourne les libelles des ports paralleles disponibles
+#  getLinkLabels
+#     retourne les libelles des ports paralleles disponibles
 #
 #   exemple :
 #   getLinkLabel
@@ -203,8 +203,8 @@ proc ::parallelport::getLinkLabels { } {
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    retourne le link choisi
+#  getSelectedLinkLabel
+#     retourne le link choisi
 #
 #   exemple :
 #   getSelectedLinkLabel
@@ -271,7 +271,7 @@ proc ::parallelport::isReady { } {
 
 #------------------------------------------------------------
 #  refreshAvailableList
-#      rafraichit la liste des link disponibles
+#     rafraichit la liste des link disponibles
 #  
 #  return rien
 #------------------------------------------------------------
