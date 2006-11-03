@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.40 2006-11-02 19:37:33 audelateam Exp $
+# Mise a jour $Id: confcam.tcl,v 1.41 2006-11-03 19:10:47 robertdelmas Exp $
 #
 
 global confCam
@@ -141,7 +141,13 @@ namespace eval ::confCam {
       if { ! [ info exists conf(andor,temp) ] }        { set conf(andor,temp)        "-50" }
       if { ! [ info exists conf(andor,ouvert_obtu) ] } { set conf(andor,ouvert_obtu) "0" }
       if { ! [ info exists conf(andor,ferm_obtu) ] }   { set conf(andor,ferm_obtu)   "30" }
-      if { ! [ info exists conf(andor,port) ] }        { set conf(andor,port)        "pci" }
+
+      #--- initConf 12
+      if { ! [ info exists conf(fingerlakes,cool) ] }     { set conf(fingerlakes,cool)     "0" }
+      if { ! [ info exists conf(fingerlakes,foncobtu) ] } { set conf(fingerlakes,foncobtu) "2" }
+      if { ! [ info exists conf(fingerlakes,mirh) ] }     { set conf(fingerlakes,mirh)     "0" }
+      if { ! [ info exists conf(fingerlakes,mirv) ] }     { set conf(fingerlakes,mirv)     "0" }
+      if { ! [ info exists conf(fingerlakes,temp) ] }     { set conf(fingerlakes,temp)     "-50" }
 
       #--- item par defaut
       set confCam(cam_item)   "A"
@@ -163,9 +169,9 @@ namespace eval ::confCam {
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-            TH7852A SCR1300XTC $caption(confcam,dslr) Andor ]
+            TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI ]
       set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
-            th7852a scr1300xtc dslr andor ]
+            th7852a scr1300xtc dslr andor fingerlakes ]
 
    }
 
@@ -174,7 +180,7 @@ namespace eval ::confCam {
    # Cree la fenetre de choix et de configuration des cameras
    # This = chemin de la fenetre
    # confCam(A,camName) = nom de la camera (audine hisis sbig cookbook starlight kitty webcam \
-   # th7852a scr1300xtc dslr andor)
+   # th7852a scr1300xtc dslr andor fingerlakes)
    #
    proc run { } {
       variable This
@@ -194,6 +200,8 @@ namespace eval ::confCam {
             ::confCam::AndorDispTemp
          } elseif { [ string compare $confCam($cam_item,camName) cemes ] == "0" } {
             ::confCam::AndorDispTemp
+         } elseif { [ string compare $confCam($cam_item,camName) fingerlakes ] == "0" } {
+            ::confCam::FLIDispTemp
          }
       } else {
          select audine
@@ -500,6 +508,7 @@ namespace eval ::confCam {
          fillPage9 $nn
          fillPage10 $nn
          fillPage11 $nn
+         fillPage12 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
 
@@ -2874,6 +2883,118 @@ namespace eval ::confCam {
    }
 
    #
+   # Fenetre de configuration de la FLI (Finger Lakes Instrumentation)
+   #
+   proc fillPage12 { nn } {
+      global audace
+      global confCam
+      global conf
+      global caption
+      global color
+      global frmm
+
+      #--- confToWidget
+      set confCam(fingerlakes,cool)        $conf(fingerlakes,cool)
+      set confCam(fingerlakes,foncobtu)    [ lindex "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" $conf(fingerlakes,foncobtu) ]
+      set confCam(fingerlakes,mirh)        $conf(fingerlakes,mirh)
+      set confCam(fingerlakes,mirv)        $conf(fingerlakes,mirv)
+      set confCam(fingerlakes,temp)        $conf(fingerlakes,temp)
+
+      #--- Initialisation
+      set frmm(Camera12) [ Rnotebook:frame $nn 12 ]
+      set frm $frmm(Camera12)
+
+      #--- Creation des differents frames
+      frame $frm.frame1 -borderwidth 0 -relief raised
+      pack $frm.frame1 -side top -fill both -expand 1
+
+      frame $frm.frame2 -borderwidth 0 -relief raised
+      pack $frm.frame2 -side bottom -fill x -pady 2
+
+      frame $frm.frame3 -borderwidth 0 -relief raised
+      pack $frm.frame3 -in $frm.frame1 -side bottom -fill both -expand 1
+
+      frame $frm.frame4 -borderwidth 0 -relief raised
+      pack $frm.frame4 -in $frm.frame1 -side left -fill x -expand 1
+
+      frame $frm.frame5 -borderwidth 0 -relief raised
+      pack $frm.frame5 -in $frm.frame1 -side left -fill x -expand 1
+
+      frame $frm.frame6 -borderwidth 0 -relief raised
+      pack $frm.frame6 -in $frm.frame4 -side top -fill x -padx 30
+
+      frame $frm.frame7 -borderwidth 0 -relief raised
+      pack $frm.frame7 -in $frm.frame4 -side top -fill x -padx 30
+
+      frame $frm.frame8 -borderwidth 0 -relief raised
+      pack $frm.frame8 -in $frm.frame3 -side top -fill x
+
+      #--- Definition du refroidissement
+      checkbutton $frm.cool -text "$caption(confcam,refroidissement)" -highlightthickness 0 \
+         -variable confCam(fingerlakes,cool)
+      pack $frm.cool -in $frm.frame6 -anchor center -side left -padx 0 -pady 5
+
+      entry $frm.temp -textvariable confCam(fingerlakes,temp) -width 4 -justify center
+      pack $frm.temp -in $frm.frame6 -anchor center -side left -padx 5 -pady 5
+
+      label $frm.tempdeg -text "$caption(confcam,deg_c) $caption(confcam,refroidissement_1)"
+      pack $frm.tempdeg -in $frm.frame6 -side left -fill x -padx 0 -pady 5
+
+      #--- Definition de la temperature du capteur CCD
+      label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
+      pack $frm.temp_ccd -in $frm.frame7 -side left -fill x -padx 20 -pady 5
+
+      #--- Miroir en x et en y
+      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
+         -variable confCam(fingerlakes,mirh)
+      pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 10 -pady 10
+
+      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
+         -variable confCam(fingerlakes,mirv)
+      pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 10 -pady 10
+
+      #--- Fonctionnement de l'obturateur
+      label $frm.lab3 -text "$caption(confcam,fonc_obtu)"
+      pack $frm.lab3 -in $frm.frame8 -anchor center -side left -padx 10 -pady 5
+
+      set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
+         $caption(confcam,obtu_synchro) ]
+      ComboBox $frm.foncobtu \
+         -width 11         \
+         -height [ llength $list_combobox ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable confCam(fingerlakes,foncobtu) \
+         -values $list_combobox
+      pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10 -pady 5
+
+      #--- Site web officiel de la FLI
+      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
+      pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
+
+      label $frm.labURL -text "$caption(confcam,site_fingerlakes)" -font $audace(font,url) -fg $color(blue)
+      pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+      #--- Creation du lien avec le navigateur web et changement de sa couleur
+      bind $frm.labURL <ButtonPress-1> {
+         set filename "$caption(confcam,site_fingerlakes)"
+         ::audace::Lance_Site_htm $filename
+      }
+      bind $frm.labURL <Enter> {
+         global frmm
+         set frm $frmm(Camera12)
+         $frm.labURL configure -fg $color(purple)
+      }
+      bind $frm.labURL <Leave> {
+         global frmm
+         set frm $frmm(Camera12)
+         $frm.labURL configure -fg $color(blue)
+      }
+
+   }
+
+   #
    # confCam::Connect_Camera
    # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
    #
@@ -2925,17 +3046,18 @@ namespace eval ::confCam {
 
       set nn $This.usr.book
       switch -exact -- $camName {
-         audine     { Rnotebook:raise $nn 1 }
-         hisis      { Rnotebook:raise $nn 2 }
-         sbig       { Rnotebook:raise $nn 3 }
-         cookbook   { Rnotebook:raise $nn 4 }
-         starlight  { Rnotebook:raise $nn 5 }
-         kitty      { Rnotebook:raise $nn 6 }
-         webcam     { Rnotebook:raise $nn 7 }
-         th7852a    { Rnotebook:raise $nn 8 }
-         scr1300xtc { Rnotebook:raise $nn 9 }
-         dslr       { Rnotebook:raise $nn 10 }
-         andor      { Rnotebook:raise $nn 11 }
+         audine      { Rnotebook:raise $nn 1 }
+         hisis       { Rnotebook:raise $nn 2 }
+         sbig        { Rnotebook:raise $nn 3 }
+         cookbook    { Rnotebook:raise $nn 4 }
+         starlight   { Rnotebook:raise $nn 5 }
+         kitty       { Rnotebook:raise $nn 6 }
+         webcam      { Rnotebook:raise $nn 7 }
+         th7852a     { Rnotebook:raise $nn 8 }
+         scr1300xtc  { Rnotebook:raise $nn 9 }
+         dslr        { Rnotebook:raise $nn 10 }
+         andor       { Rnotebook:raise $nn 11 }
+         fingerlakes { Rnotebook:raise $nn 12 }
       }
    }
 
@@ -3086,7 +3208,6 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList_Scan { camNo } {
-      global conf
       global confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
@@ -3097,7 +3218,7 @@ namespace eval ::confCam {
                "parallelport" { set binningList_Scan { 1x1 2x2 4x4 } }
                "audinet"      { set binningList_Scan { 1x1 2x2 4x4 } }
                "ethernaude"   { set binningList_Scan { 1x1 2x2 } }
-               default        { set binningList_Scan { }  }
+               default        { set binningList_Scan { } }
             }
          } else {
             set binningList_Scan { }
@@ -3156,13 +3277,21 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasVideo { camNo } {
+      global confCam
+
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
       #---
       if { $result == 0 } {
          switch -exact -- $camProduct {
-            webcam     { return 1 }
-            default    { return 0 }
+            audine  {
+               switch [::confLink::getLinkNamespace $confCam(audine,port)] {
+                  "ethernaude"   { return 1 }
+                  default        { return 0 }
+               }
+            }
+            webcam  { return 1 }
+            default { return 0 }
          }
       } else {
          return 0
@@ -3217,18 +3346,19 @@ namespace eval ::confCam {
       #---
       if { $result == 0 } {
          switch -exact -- $camProduct {
-            audine  { return 1 }
-            hisis   {
-                       if { $conf(hisis,modele) == "11" } {
-                          return 0
-                       } else {
-                          return 1
-                       }
-                    }
-            sbig    { return 1 }
-            andor   { return 1 }
-            cemes   { return 1 }
-            default { return 0 }
+            audine      { return 1 }
+            hisis       {
+                           if { $conf(hisis,modele) == "11" } {
+                              return 0
+                           } else {
+                              return 1
+                           }
+                        }
+            sbig        { return 1 }
+            andor       { return 1 }
+            cemes       { return 1 }
+            fingerlakes { return 1 }
+            default     { return 0 }
          }
       } else {
          return 0
@@ -3289,6 +3419,10 @@ namespace eval ::confCam {
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
             cemes {
+               #--- O + F + S - A confirmer avec le materiel
+               set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+            }
+            fingerlakes {
                #--- O + F + S - A confirmer avec le materiel
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
@@ -3987,6 +4121,39 @@ namespace eval ::confCam {
                   ::confCam::AndorDispTemp
                }
             }
+            fingerlakes {
+               set camNo [ cam::create fingerlakes usb ]
+               set confCam($cam_item,camNo) $camNo
+               console::affiche_erreur "$caption(confcam,port_fingerlakes) ([ cam$camNo name ]) \
+                  $caption(confcam,2points) USB\n"
+               console::affiche_saut "\n"
+               set foncobtu $conf(fingerlakes,foncobtu)
+               switch -exact -- $foncobtu {
+                  0 {
+                     cam$camNo shutter "opened"
+                  }
+                  1 {
+                     cam$camNo shutter "closed"
+                  }
+                  2 {
+                     cam$camNo shutter "synchro"
+                  }
+               }
+               if { $conf(fingerlakes,cool) == "1" } {
+                  cam$camNo cooler on
+                  cam$camNo cooler check $conf(fingerlakes,temp)
+               } else {
+                  cam$camNo cooler off
+               }
+               cam$camNo buf $bufNo
+               cam$camNo mirrorh $conf(fingerlakes,mirh)
+               cam$camNo mirrorv $conf(fingerlakes,mirv)
+               ::confVisu::visuDynamix $visuNo 65535 0
+               #---
+               if { [ info exists confCam(fingerlakes,aftertemp) ] == "0" } {
+                  ::confCam::FLIDispTemp
+               }
+            }
             audine {
                if { [ string range $conf(audine,ccd) 0 4 ] == "kaf16" } {
                   set ccd "kaf1602"
@@ -4268,6 +4435,13 @@ namespace eval ::confCam {
       set conf(andor,temp)                  $confCam(andor,temp)
       set conf(andor,ouvert_obtu)           $confCam(andor,ouvert_obtu)
       set conf(andor,ferm_obtu)             $confCam(andor,ferm_obtu)
+      #--- Memorise la configuration de la FLI dans le tableau conf(fingerlakes,...)
+      set frm [ Rnotebook:frame $nn 12 ]
+      set conf(fingerlakes,cool)            $confCam(fingerlakes,cool)
+      set conf(fingerlakes,foncobtu)        [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(fingerlakes,foncobtu)" ]
+      set conf(fingerlakes,mirh)            $confCam(fingerlakes,mirh)
+      set conf(fingerlakes,mirv)            $confCam(fingerlakes,mirv)
+      set conf(fingerlakes,temp)            $confCam(fingerlakes,temp)
    }
 
    proc SbigDispTemp { } {
@@ -4335,6 +4509,27 @@ namespace eval ::confCam {
          }
       }
    }
+
+   proc FLIDispTemp { } {
+      variable This
+      global caption
+      global confCam
+      global frmm
+
+      catch {
+         set frm $frmm(Camera12)
+         set cam_item $confCam(cam_item)
+         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($cam_item,camNo) temperature ] } ] == "0" } {
+            set temp_ccd [ format "%+5.2f" $temp_ccd ]
+            $frm.temp_ccd configure \
+               -text "$caption(confcam,temperature_CCD) $temp_ccd $caption(confcam,deg_c)"
+            set confCam(fingerlakes,aftertemp) [ after 5000 ::confCam::FLIDispTemp ]
+         } else {
+            catch { unset confCam(fingerlakes,aftertemp) }
+         }
+      }
+   }
+
 }
 
 #--- Connexion au demarrage de la camera selectionnee par defaut

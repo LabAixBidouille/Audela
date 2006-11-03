@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.25 2006-11-02 19:37:01 audelateam Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.26 2006-11-03 19:10:05 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -523,6 +523,9 @@ namespace eval ::AcqFC {
             } elseif { "$camProduct" == "cemes" } {
                set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
                catch { set frm $frmm(Camera11) }
+            } elseif { "$camProduct" == "fingerlakes" } {
+               set conf(fingerlakes,foncobtu) $panneau(AcqFC,$visuNo,obt)
+               catch { set frm $frmm(Camera12) }
             }
          
             #---
