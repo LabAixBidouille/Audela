@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.29 2006-10-29 16:39:04 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.30 2006-11-03 16:46:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -177,7 +177,7 @@ set caption(audace,choix_coefficients)                "Define the coefficients."
 set caption(audace,choix_image_entree)                "Please select input images."
 set caption(audace,choix_nbre_images)                 "Define the number of images."
 set caption(audace,choix_image_sortie)                "Please select the output images."
-set caption(audace,definir,operande)                  "Select a C image used as an operand."
+set caption(audace,definir,operande)                  "Select a C image."
 set caption(audace,definir,entree_generique)          "Select the generic input image."
 set caption(audace,definir,sortie_generique)          "Select the generic output image."
 set caption(audace,definir,image_sortie)              "Select the output image."
@@ -511,7 +511,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_entree)             "Choisissez les images d'entrée."
    set caption(audace,choix_nbre_images)              "Définissez le nombre d'images."
    set caption(audace,choix_image_sortie)             "Choisissez les images de sortie."
-   set caption(audace,definir,operande)               "Choisissez une image opérande C."
+   set caption(audace,definir,operande)               "Choisissez une image C."
    set caption(audace,definir,entree_generique)       "Choisissez l'image générique d'entrée."
    set caption(audace,definir,sortie_generique)       "Choisissez l'image générique de sortie."
    set caption(audace,definir,image_sortie)           "Choisissez l'image de sortie."
@@ -845,7 +845,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_entree)             "Scegliere le immagini di ingresso."
    set caption(audace,choix_nbre_images)              "Definire il numero di immagini."
    set caption(audace,choix_image_sortie)             "Scegliere le immagini di uscita."
-   set caption(audace,definir,operande)               "Scegliere ina immagine come operando C."
+   set caption(audace,definir,operande)               "Scegliere ina immagine C."
    set caption(audace,definir,entree_generique)       "Sceglier l'immagine generica d'ingresso."
    set caption(audace,definir,sortie_generique)       "Scegliere l'immagine generica di uscita."
    set caption(audace,definir,image_sortie)           "Scegliere l'immagine di uscita."
@@ -1179,7 +1179,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_entree)             "Por favor, seleccione las imagenes de entrada."
    set caption(audace,choix_nbre_images)              "Define el número de imágenes."
    set caption(audace,choix_image_sortie)             "Por favor,seleccione la imagen C."
-   set caption(audace,definir,operande)               "Seleccione la imagen C como operando."
+   set caption(audace,definir,operande)               "Seleccione la imagen C."
    set caption(audace,definir,entree_generique)       "Seleccionar la imagen genérica de entrada."
    set caption(audace,definir,sortie_generique)       "Seleccionar la imagen genérica de salida."
    set caption(audace,definir,image_sortie)           "Seleccionar la imagen de salida."
@@ -1513,7 +1513,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_entree)             "Wählen sie die Eingabebilder."
    set caption(audace,choix_nbre_images)              "Bestimmen sied das Bild Zahl."
    set caption(audace,choix_image_sortie)             "Wählen sie die Ausgabebilder."
-   set caption(audace,definir,operande)               "Wählen sie einen Operand für Bild C."
+   set caption(audace,definir,operande)               "Wählen sie einen Bild C."
    set caption(audace,definir,entree_generique)       "Das Gattung Input Bild wählen."
    set caption(audace,definir,sortie_generique)       "Das Gattung Output Bild wählen."
    set caption(audace,definir,image_sortie)           "Das Output Bild wählen."
@@ -1847,7 +1847,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_entree)             "Por favor escolha as imagens de entrada."
    set caption(audace,choix_nbre_images)              "Defina o numero the imagens."
    set caption(audace,choix_image_sortie)             "Por favor escolha as imagens de saída."
-   set caption(audace,definir,operande)               "Seleccione a imagem C usada como operando."
+   set caption(audace,definir,operande)               "Seleccione a imagem C."
    set caption(audace,definir,entree_generique)       "Escolha a imagem genérica de entrada."
    set caption(audace,definir,sortie_generique)       "Escolha a imagem genérica de saída."
    set caption(audace,definir,image_sortie)           "Escolha a imagem de saída."
@@ -2181,7 +2181,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_image_entree)             "Vælg input-billeder."
    set caption(audace,choix_nbre_images)              "Definer antallet af billeder."
    set caption(audace,choix_image_sortie)             "Vælg output-billeder."
-   set caption(audace,definir,operande)               "Vælg et C billede brugt som operand."
+   set caption(audace,definir,operande)               "Vælg et billede C."
    set caption(audace,definir,entree_generique)       "Vælg serie-navn til input-billedet."
    set caption(audace,definir,sortie_generique)       "Vælg serie-navn til output-billedet."
    set caption(audace,definir,image_sortie)           "Vælg output image."
