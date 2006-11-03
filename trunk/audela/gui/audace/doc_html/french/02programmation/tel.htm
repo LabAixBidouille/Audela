@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
+<p class="date">Date de mise &agrave; jour : 03 novembre 2006</p>
 <h1>Fonctions de pilotage de t&eacute;lescopes </h1>
 <p> Ces commandes permettent de contr&ocirc;ler des t&eacute;lescopes reconnus par AudeLA : LX200. Les commandes qui permettent de contr&ocirc;ler un t&eacute;lescope, s'&eacute;crivent "tel" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;es par la commande "::tel::create ...". Ainsi il est possible de piloter plusieurs t&eacute;lescopes, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Il est important de savoir que les auteurs ne disposent pas personnellement de ces t&eacute;lescopes, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
 <p> Les commandes sont divis&eacute;es en deux cat&eacute;gories : </p>
@@ -21,8 +21,8 @@
 <p>Retourne le nom du type de t&eacute;lescope associ&eacute; au driver.</p>
 <h3> <a name="protocol" id="protocol"></a>tel1 protocol</h3>
 <p>Retourne le nom du protocole utilis&eacute;.</p>
-<h3> <a name="port" id="port"></a>tel1 port ?portname?</h3>
-<p>Retourne le nom du port de communication (com1, etc.)</p>
+<h3> <a name="port" id="port"></a>tel1 port</h3>
+<p>Retourne le nom du port de communication (COM1, etc.).</p>
 <h3> <a name="channel" id="channel"></a>tel1 channel</h3>
 <p>Retourne le nom de "channel Tcl" associ&eacute; au port de communication ouvert par l'interpr&eacute;teur Tcl. En effet, les communications par le port s&eacute;rie sont programm&eacute;es dans le driver via l'interpr&eacute;teur Tcl afin de pouvoir communiquer, hors driver, avec l'instrument (fonction puts et read de Tcl). </p>
 <p>Par exemple, dans cet exemple, on envoie la cha&icirc;ne #:L# dans le port de communication et on recueille 4 caract&egrave;res en retour :</p>
