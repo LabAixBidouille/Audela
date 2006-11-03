@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.9 2006-10-07 10:29:24 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.10 2006-11-03 21:26:40 robertdelmas Exp $
 #
 
 package provide ethernaude 1.0
@@ -31,8 +31,8 @@ namespace eval ethernaude {
 }
 
 #------------------------------------------------------------
-# ConfEthernAude
-#    Permet d'activer ou de desactiver les boutons
+#  ConfEthernAude
+#     Permet d'activer ou de desactiver les boutons
 #------------------------------------------------------------
 proc ::ethernaude::ConfEthernAude { } {
    variable widget
@@ -69,7 +69,7 @@ proc ::ethernaude::configureDriver { } {
 }
 
 #------------------------------------------------------------
-#  confToWidget 
+#  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
 #  
 #  return rien
@@ -78,15 +78,15 @@ proc ::ethernaude::confToWidget { } {
    variable widget
    global conf
 
-   set widget(conf_ethernaude,host)      $conf(ethernaude,host)
-   set widget(conf_ethernaude,ipsetting) $conf(ethernaude,ipsetting)
-   set widget(conf_ethernaude,debug)     $conf(ethernaude,debug)
-   set widget(conf_ethernaude,canspeed)  $conf(ethernaude,canspeed)
+   set widget(ethernaude,host)      $conf(ethernaude,host)
+   set widget(ethernaude,ipsetting) $conf(ethernaude,ipsetting)
+   set widget(ethernaude,debug)     $conf(ethernaude,debug)
+   set widget(ethernaude,canspeed)  $conf(ethernaude,canspeed)
 }
 
 #------------------------------------------------------------
 #  create
-#     demarre la liaison 
+#     demarre la liaison
 #  
 #  return nothing
 #------------------------------------------------------------
@@ -115,7 +115,7 @@ proc ::ethernaude::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-#  fillConfigPage 
+#  fillConfigPage
 #     fenetre de configuration du driver
 #  
 #  return nothing
@@ -152,31 +152,29 @@ proc ::ethernaude::fillConfigPage { frm } {
    label $frm.lab1 -text "$caption(ethernaude,host_ethernaude)"
    pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
-   entry $frm.host -width 18 -textvariable ::ethernaude::widget(conf_ethernaude,host)
+   entry $frm.host -width 18 -textvariable ::ethernaude::widget(ethernaude,host)
    pack $frm.host -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
    #--- Bouton de test de la connexion
    button $frm.ping -text "$caption(ethernaude,test_ethernaude)" -relief raised -state normal \
-      -command {
-         ::ethernaude::testping $::ethernaude::widget(conf_ethernaude,host)
-      }
+      -command { ::ethernaude::testping $::ethernaude::widget(ethernaude,host) }
    pack $frm.ping -in $frm.frame1 -anchor center -side top -padx 70 -pady 7 -ipadx 10 -ipady 5 -expand true
 
    #--- Envoi ou non de l'adresse IP a l'EthernAude
    checkbutton $frm.ipsetting -text "$caption(ethernaude,envoyer_adresse_eth)" -highlightthickness 0 \
-      -variable ::ethernaude::widget(conf_ethernaude,ipsetting)
+      -variable ::ethernaude::widget(ethernaude,ipsetting)
    pack $frm.ipsetting -in $frm.frame2 -anchor center -side left -padx 10 -pady 2
 
    #--- EthernAude en mode debug ou non
    checkbutton $frm.debug -text "$caption(ethernaude,debug)" -highlightthickness 0 \
-      -variable ::ethernaude::widget(conf_ethernaude,debug)
+      -variable ::ethernaude::widget(ethernaude,debug)
    pack $frm.debug -in $frm.frame2 -anchor center -side right -padx 10 -pady 2
 
    #--- Definition de la vitesse de lecture d'un pixel
    label $frm.lab2 -text "$caption(ethernaude,lecture_pixel)"
    pack $frm.lab2 -in $frm.frame3 -anchor center -side left -padx 10 -pady 2
 
-   entry $frm.lecture_pixel -textvariable ::ethernaude::widget(conf_ethernaude,canspeed) -width 3 -justify center
+   entry $frm.lecture_pixel -textvariable ::ethernaude::widget(ethernaude,canspeed) -width 3 -justify center
    pack $frm.lecture_pixel -in $frm.frame3 -anchor center -side left -pady 2
 
    label $frm.lab3 -text "$caption(ethernaude,micro_sec_bornes)"
@@ -221,7 +219,7 @@ proc ::ethernaude::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType 
+#  getDriverType
 #     retourne le type de driver
 #  
 #  return "link"
@@ -253,26 +251,25 @@ proc ::ethernaude::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex 
-#   retourne l'index du link
-#   
-#   retourne une chaine vide si le link n'existe pas
-#
+#  getLinkIndex
+#     retourne l'index du link
+#  
+#  retourne une chaine vide si le link n'existe pas
 #------------------------------------------------------------
 proc ::ethernaude::getLinkIndex { linkLabel } {
    variable private
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
-   if { [string first $private(genericName) $linkLabel]  == 0 } {
+   if { [string first $private(genericName) $linkLabel] == 0 } {
       scan $linkLabel "$private(genericName)%s" linkIndex
    }
    return $linkIndex
 }
 
 #------------------------------------------------------------
-# ::confLink::getLinkLabels 
-#    retourne la seule instance ethernaude
+#  getLinkLabels
+#     retourne la seule instance ethernaude
 #
 #------------------------------------------------------------
 proc ::ethernaude::getLinkLabels { } {
@@ -282,8 +279,8 @@ proc ::ethernaude::getLinkLabels { } {
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    retourne le link choisi
+#  getSelectedLinkLabel
+#     retourne le link choisi
 #
 #------------------------------------------------------------
 proc ::ethernaude::getSelectedLinkLabel { } {
@@ -332,19 +329,19 @@ proc ::ethernaude::init { } {
 proc ::ethernaude::initConf { } {
    global conf
 
-   if { ! [ info exists conf(ethernaude,host) ] }       { set conf(ethernaude,host)       "169.254.164.70" }
-   if { ! [ info exists conf(ethernaude,ipsetting) ] }  { set conf(ethernaude,ipsetting)  "0" }
-   if { ! [ info exists conf(ethernaude,debug) ] }      { set conf(ethernaude,debug)      "0" }
-   if { ! [ info exists conf(ethernaude,canspeed) ] }   { set conf(ethernaude,canspeed)   "7" }
+   if { ! [ info exists conf(ethernaude,host) ] }      { set conf(ethernaude,host)       "169.254.164.70" }
+   if { ! [ info exists conf(ethernaude,ipsetting) ] } { set conf(ethernaude,ipsetting)  "0" }
+   if { ! [ info exists conf(ethernaude,debug) ] }     { set conf(ethernaude,debug)      "0" }
+   if { ! [ info exists conf(ethernaude,canspeed) ] }  { set conf(ethernaude,canspeed)   "7" }
 
    return
 }
 
 #------------------------------------------------------------
-#  isReady 
+#  isReady
 #     informe de l'etat de fonctionnement du driver
 #  
-#  return 0 (ready) , 1 (not ready)
+#  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::ethernaude::isReady { } {
    return 0
@@ -363,7 +360,7 @@ proc ::ethernaude::selectConfigLink { linkLabel } {
 }
 
 #------------------------------------------------------------
-#  testping ip 
+#  testping ip
 #     teste la connexion d'un appareil
 #------------------------------------------------------------
 proc ::ethernaude::testping { ip } {
@@ -391,10 +388,10 @@ proc ::ethernaude::widgetToConf { } {
    variable widget
    global conf
 
-   set conf(ethernaude,host)             $widget(conf_ethernaude,host)
-   set conf(ethernaude,ipsetting)        $widget(conf_ethernaude,ipsetting)
-   set conf(ethernaude,debug)            $widget(conf_ethernaude,debug)
-   set conf(ethernaude,canspeed)         $widget(conf_ethernaude,canspeed)
+   set conf(ethernaude,host)      $widget(ethernaude,host)
+   set conf(ethernaude,ipsetting) $widget(ethernaude,ipsetting)
+   set conf(ethernaude,debug)     $widget(ethernaude,debug)
+   set conf(ethernaude,canspeed)  $widget(ethernaude,canspeed)
 }
 
 ::ethernaude::init

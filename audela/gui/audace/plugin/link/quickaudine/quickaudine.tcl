@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.7 2006-11-02 17:35:22 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.8 2006-11-03 21:26:17 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0
@@ -111,7 +111,7 @@ proc ::quickaudine::fillConfigPage { frm } {
       pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
    pack $frm.statusMessage -side top -fill x
 
-   #--- je mets  a jour la liste
+   #--- je mets a jour la liste
    refreshAvailableList
 
    ::confColor::applyColor $private(frm)
@@ -150,10 +150,10 @@ proc ::quickaudine::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex
-#    retourne l'index du link
-#   
-#    retourne une chaine vide si le link n'existe pas
+#  getLinkIndex
+#     retourne l'index du link
+#  
+#  retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
 #   getLinkIndex "quickaudine1"
@@ -169,8 +169,8 @@ proc ::quickaudine::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels
-#    retourne les libelles des quickaudine disponibles
+#  getLinkLabels
+#     retourne les libelles des quickaudine disponibles
 #
 #   exemple :
 #   getLinkLabels
@@ -192,8 +192,8 @@ proc ::quickaudine::getLinkLabels { } {
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    retourne le link choisi
+#  getSelectedLinkLabel
+#     retourne le link choisi
 #
 #   exemple :
 #   getSelectedLinkLabel
@@ -260,7 +260,7 @@ proc ::quickaudine::isReady { } {
 
 #------------------------------------------------------------
 #  refreshAvailableList
-#      rafraichit la liste des link disponibles
+#     rafraichit la liste des link disponibles
 #  
 #  return rien
 #------------------------------------------------------------
