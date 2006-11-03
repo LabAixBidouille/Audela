@@ -1,7 +1,7 @@
 #
 # Fichier : aud3.tcl
 # Description : Interfaces graphiques pour les fonctions d'analyse d'images et de navigation dans les repertoires
-# Mise a jour $Id: aud3.tcl,v 1.14 2006-10-28 13:07:00 robertdelmas Exp $
+# Mise a jour $Id: aud3.tcl,v 1.15 2006-11-03 16:30:57 robertdelmas Exp $
 #
 
 namespace eval ::traiteWindow {
@@ -11,6 +11,8 @@ namespace eval ::traiteWindow {
    proc initConf { } {
       global conf
 
+      if { ! [ info exists conf(multx) ] }                 { set conf(multx)                 "2.0" }
+      if { ! [ info exists conf(multy) ] }                 { set conf(multy)                 "2.0" }
       if { ! [ info exists conf(traiteWindow,position) ] } { set conf(traiteWindow,position) "+350+75" }
 
       return
@@ -82,6 +84,10 @@ namespace eval ::traiteWindow {
       set traiteWindow(out) ""
 
       #---
+      set traiteWindow(scaleWindow_multx) $conf(multx)
+      set traiteWindow(scaleWindow_multy) $conf(multy)
+
+      #---
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
@@ -95,14 +101,36 @@ namespace eval ::traiteWindow {
          frame $This.usr.0 -borderwidth 1 -relief raised
             label $This.usr.0.lab1 -textvariable "traiteWindow(formule)" -font $audace(font,arial_15_b)
             pack $This.usr.0.lab1 -padx 10 -pady 5
-        # pack $This.usr.0 -side top -fill both
+        # pack $This.usr.0 -in $This.usr -side top -fill both
+
+         frame $This.usr.7 -borderwidth 1 -relief raised
+            frame $This.usr.7.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.7.1.che1 -text "$caption(afficher,image,fin)" -variable traiteWindow(4,disp)
+               pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
+            pack $This.usr.7.1 -side top -fill both
+        # pack $This.usr.7 -in $This.usr -side top -fill both
 
          frame $This.usr.6 -borderwidth 1 -relief raised
             frame $This.usr.6.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.6.1.che1 -text "$caption(afficher,image,fin)" -variable traiteWindow(4,disp)
-               pack $This.usr.6.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.6.1 -side top -fill both
-        # pack $This.usr.6 -side bottom -fill both
+               label $This.usr.6.1.lab1 -text "$caption(valeur,resample,multx)"
+               pack $This.usr.6.1.lab1 -side left -padx 10 -pady 10
+               entry $This.usr.6.1.ent1 -textvariable traiteWindow(scaleWindow_multx) -width 7 \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.6.1.ent1 -side right -padx 10 -pady 10 
+            pack $This.usr.6.1 -side top -fill x
+            frame $This.usr.6.2 -borderwidth 0 -relief flat
+               label $This.usr.6.2.lab2 -text "$caption(valeur,resample,multy)"
+               pack $This.usr.6.2.lab2 -side left -padx 10 -pady 5
+               entry $This.usr.6.2.ent2 -textvariable traiteWindow(scaleWindow_multy) -width 7 \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.6.2.ent2 -side right -padx 10 -pady 5 
+            pack $This.usr.6.2 -side top -fill x
+            frame $This.usr.6.3 -borderwidth 0 -relief flat
+               button $This.usr.6.3.but_defaut -text "$caption(audace,valeur_par_defaut)" \
+                  -command { ::traiteWindow::val_defaut }
+               pack $This.usr.6.3.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            pack $This.usr.6.3 -side top -fill both
+        # pack $This.usr.6 -in $This.usr -side top -fill both
 
          frame $This.usr.5 -borderwidth 1 -relief raised
             frame $This.usr.5.1 -borderwidth 0 -relief flat
@@ -123,7 +151,7 @@ namespace eval ::traiteWindow {
                entry $This.usr.5.2.ent9 -textvariable traiteWindow(3,offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.5.2.ent9 -side right -padx 10 -pady 5
             pack $This.usr.5.2 -side top -fill both
-        # pack $This.usr.5 -side bottom -fill both
+        # pack $This.usr.5 -in $This.usr -side top -fill both
 
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
@@ -141,7 +169,7 @@ namespace eval ::traiteWindow {
                entry $This.usr.4.2.ent7 -textvariable traiteWindow(2,const) -width 7 -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent7 -side right -padx 10 -pady 5
             pack $This.usr.4.2 -side top -fill both
-        # pack $This.usr.4 -side bottom -fill both
+        # pack $This.usr.4 -in $This.usr -side top -fill both
 
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
@@ -150,7 +178,7 @@ namespace eval ::traiteWindow {
                entry $This.usr.3.1.ent5 -textvariable traiteWindow(1,const) -width 7 -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent5 -side right -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
-        # pack $This.usr.3 -side bottom -fill both
+        # pack $This.usr.3 -in $This.usr -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.2 -borderwidth 0 -relief flat
@@ -177,17 +205,17 @@ namespace eval ::traiteWindow {
                entry $This.usr.2.3.ent4 -textvariable traiteWindow(out) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.2.3.ent4 -side right -padx 10 -pady 5
             pack $This.usr.2.3 -side top -fill both
-         pack $This.usr.2 -side bottom -fill both
+        # pack $This.usr.2 -in $This.usr -side top -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             label $This.usr.1.lab1 -text "$caption(audace,menu,operation_serie)"
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
-            set list_traiteWindow [ list $caption(audace,menu,offset) $caption(audace,menu,mult_cte) \
-               $caption(audace,menu,noffset) $caption(audace,menu,ngain) $caption(audace,menu,addition) \
-               $caption(audace,menu,soust) $caption(audace,menu,division) $caption(audace,optimisation,noir) \
-               $caption(audace,run,median) $caption(audace,image,somme) $caption(audace,image,moyenne) \
-               $caption(audace,image,ecart_type)  ]
+            set list_traiteWindow [ list $caption(audace,menu,scale) $caption(audace,menu,offset) \
+               $caption(audace,menu,mult_cte) $caption(audace,menu,noffset) $caption(audace,menu,ngain) \
+               $caption(audace,menu,addition) $caption(audace,menu,soust) $caption(audace,menu,division) \
+               $caption(audace,optimisation,noir) $caption(audace,run,median) $caption(audace,image,somme) \
+               $caption(audace,image,moyenne) $caption(audace,image,ecart_type) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteWindow(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -199,7 +227,7 @@ namespace eval ::traiteWindow {
                 -variable traiteWindow(operation) \
                 -command { }
             }
-         pack $This.usr.1 -side bottom -fill both -ipady 5
+        # pack $This.usr.1 -in $This.usr -side top -fill both
       pack $This.usr -side top -fill both -expand 1
 
       frame $This.cmd -borderwidth 1 -relief raised
@@ -254,7 +282,7 @@ namespace eval ::traiteWindow {
       set in  $traiteWindow(in)
       set out $traiteWindow(out)
       set nb  $traiteWindow(nb)
-      #---
+      #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
           tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_image_entree)
           return
@@ -263,14 +291,13 @@ namespace eval ::traiteWindow {
           tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_nbre_images)
           return
       }
-      if { $traiteWindow(out) == "" } {
-          tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_image_sortie)
-          return
-      }
-      #---
       if { [ TestEntier $traiteWindow(nb) ] == "0" } {
          tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
          return
+      }
+      if { $traiteWindow(out) == "" } {
+          tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_image_sortie)
+          return
       }
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
@@ -278,13 +305,57 @@ namespace eval ::traiteWindow {
       #--- que la commande switch continue sur la ligne suivante
       if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
          switch $traiteWindow(operation) \
+            "$caption(audace,menu,scale)" {
+               #---
+               set conf(multx) $traiteWindow(scaleWindow_multx)
+               set conf(multy) $traiteWindow(scaleWindow_multy)
+               #--- Tests les facteurs d'echelle
+               if { $traiteWindow(scaleWindow_multx) == "" && $traiteWindow(scaleWindow_multy) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_coefficients)
+                  return
+               }
+               if { $traiteWindow(scaleWindow_multx) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+                  return
+               }
+               if { $traiteWindow(scaleWindow_multy) == "" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,coef_manquant)
+                  return
+               }
+               if { [ string is double -strict $traiteWindow(scaleWindow_multx) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               if { [ string is double -strict $traiteWindow(scaleWindow_multy) ] == "0" } {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
+                  return
+               }
+               #---
+               ::console::affiche_resultat "Usage : scale2 in out number scale_x scale_y\n\n"
+               catch {
+                  set x $traiteWindow(scaleWindow_multx)
+                  set y $traiteWindow(scaleWindow_multy)
+                  set maxi "50"
+                  if { [ expr $x ] == "0" } { set x "1" }
+                  if { [ expr $x ] > "$maxi" } { set x "$maxi" }
+                  if { [ expr $x ] < "-$maxi" } { set x "-$maxi" }
+                  if { [ expr $y ] == "0" } { set y "1" }
+                  if { [ expr $y ] > "$maxi" } { set y "$maxi" }
+                  if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
+                  scale2 $in $out $nb $x $y
+               } m
+               if { $m == "" } {
+                  tk_messageBox -title $caption(audace,menu,scale) -type ok -message $caption(audace,fin_traitement)
+               } else {
+                  tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
+               }
+            } \
             "$caption(audace,menu,offset)" {
-               #--- Il faut saisir la constante
+               #--- Tests sur la constante
                if { $traiteWindow(1,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -300,12 +371,11 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,mult_cte)" {
-               #--- Il faut saisir la constante
+               #--- Tests sur la constante
                if { $traiteWindow(1,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -321,12 +391,11 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,noffset)" {
-               #--- Il faut saisir une valeur
+               #--- Tests sur la constante
                if { $traiteWindow(1,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -342,12 +411,11 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,ngain)" {
-               #--- Il faut saisir une valeur
+               #--- Tests sur la constante
                if { $traiteWindow(1,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,fond_ciel)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(1,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -363,17 +431,16 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,addition)" {
-               #--- Il faut saisir l'operande C
+               #--- Test sur l'operande
                if { $traiteWindow(2,operand) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
                   return
                }
-               #--- Il faut saisir la constante
+               #--- Tests sur la constante
                if { $traiteWindow(2,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -390,17 +457,16 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,soust)" {
-               #--- Il faut saisir l'operande C
+               #--- Test sur l'operande
                if { $traiteWindow(2,operand) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
                   return
                }
-               #--- Il faut saisir la constante
+               #--- Tests sur la constante
                if { $traiteWindow(2,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -417,17 +483,16 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,division)" {
-               #--- Il faut saisir l'operande C
+               #--- Test sur l'operande
                if { $traiteWindow(2,operand) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,operande)
                   return
                }
-               #--- Il faut saisir la constante
+               #--- Tests sur la constante
                if { $traiteWindow(2,const) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
                   return
                }
-               #---
                if { [ string is double -strict $traiteWindow(2,const) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -444,12 +509,12 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,optimisation,noir)" {
-               #--- Il faut saisir le noir
+               #--- Test sur le noir
                if { $traiteWindow(3,dark) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
                   return
                }
-               #--- Il faut saisir l'offset
+               #--- Test sur l'offset
                if { $traiteWindow(3,offset) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
                   return
@@ -535,7 +600,9 @@ namespace eval ::traiteWindow {
       global traiteWindow
 
       #---
-      if { $traiteWindow(operation) == $caption(audace,menu,offset) } {
+      if { $traiteWindow(operation) == $caption(audace,menu,scale) } {
+         set traiteWindow(page_web) "1155serie_reechantillonner"
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,offset) } {
          set traiteWindow(page_web) "1160serie_somme_cte"
       } elseif { $traiteWindow(operation) == $caption(audace,menu,mult_cte) } {
          set traiteWindow(page_web) "1165serie_multiplier_cte"
@@ -578,6 +645,16 @@ namespace eval ::traiteWindow {
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteWindow(operation) \
+         "$caption(audace,menu,scale)" {
+            pack forget $This.usr.0
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack forget $This.usr.4
+            pack forget $This.usr.5
+            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.7
+         } \
          "$caption(audace,menu,offset)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
@@ -586,6 +663,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.4
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,menu,mult_cte)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -595,6 +673,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.4
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,menu,noffset)" {
             pack forget $This.usr.0
@@ -604,6 +683,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.4
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,menu,ngain)" {
             pack forget $This.usr.0
@@ -613,6 +693,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.4
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,menu,addition)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -622,6 +703,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side top -fill both
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,menu,soust)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -631,6 +713,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side top -fill both
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,menu,division)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -640,6 +723,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side top -fill both
             pack forget $This.usr.5
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,optimisation,noir)" {
             pack forget $This.usr.0
@@ -649,6 +733,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.4
             pack $This.usr.5 -in $This.usr -side top -fill both
             pack forget $This.usr.6
+            pack forget $This.usr.7
          } \
          "$caption(audace,run,median)" {
             pack forget $This.usr.0
@@ -657,7 +742,8 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.3
             pack forget $This.usr.4
             pack forget $This.usr.5
-            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.6
+            pack $This.usr.7 -in $This.usr -side top -fill both
          } \
          "$caption(audace,image,somme)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -666,7 +752,8 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.3
             pack forget $This.usr.4
             pack forget $This.usr.5
-            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.6
+            pack $This.usr.7 -in $This.usr -side top -fill both
          } \
          "$caption(audace,image,moyenne)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -675,7 +762,8 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.3
             pack forget $This.usr.4
             pack forget $This.usr.5
-            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.6
+            pack $This.usr.7 -in $This.usr -side top -fill both
          } \
          "$caption(audace,image,ecart_type)" {
             pack forget $This.usr.0
@@ -684,7 +772,8 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.3
             pack forget $This.usr.4
             pack forget $This.usr.5
-            pack $This.usr.6 -in $This.usr -side top -fill both
+            pack forget $This.usr.6
+            pack $This.usr.7 -in $This.usr -side top -fill both
          }
    }
 
@@ -707,6 +796,17 @@ namespace eval ::traiteWindow {
          set traiteWindow(3,dark) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "5" } {
          set traiteWindow(3,offset) [ file rootname [ file tail $filename ] ]
+      }
+   }
+
+   proc val_defaut { } {
+      global caption
+      global traiteWindow
+
+      #--- Re-initialise les coefficients conf()
+      if { $traiteWindow(operation) == "$caption(audace,menu,scale)"  } {
+         set traiteWindow(scaleWindow_multx) "2.0"
+         set traiteWindow(scaleWindow_multy) "2.0"
       }
    }
 
@@ -977,16 +1077,13 @@ namespace eval ::faireImageRef {
                entry $This.usr.2.3.ent4 -textvariable faireImageRef(out) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.2.3.ent4 -side right -padx 10 -pady 5
             pack $This.usr.2.3 -side top -fill both
-         pack $This.usr.2 -side bottom -fill both
+        # pack $This.usr.2 -side bottom -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             #--- Liste des pretraitements disponibles
             set list_faireImageRef [ list $caption(audace,menu,raw2cfa) $caption(audace,menu,faire_offset) \
                $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
                $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
-           ### set list_faireImageRef [ list $caption(audace,menu,faire_offset) \
-           ###    $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
-           ###    $caption(audace,menu,pretraite) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -998,7 +1095,7 @@ namespace eval ::faireImageRef {
                 -variable faireImageRef(operation) \
                 -command { }
             }
-         pack $This.usr.1 -side bottom -fill both -ipady 5
+        # pack $This.usr.1 -side bottom -fill both -ipady 5
 
       pack $This.usr -side top -fill both -expand 1
 
@@ -1055,7 +1152,7 @@ namespace eval ::faireImageRef {
       set in $faireImageRef(in)
       set out $faireImageRef(out)
       set nb $faireImageRef(nb)
-      #---
+      #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $faireImageRef(in) == "" } {
           tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,entree_generique)
           return
@@ -1063,6 +1160,10 @@ namespace eval ::faireImageRef {
       if { $faireImageRef(nb) == "" } {
           tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,choix_nbre_images)
           return
+      }
+      if { [ TestEntier $faireImageRef(nb) ] == "0" } {
+         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
+         return
       }
       if { $faireImageRef(out) == "" } {
          if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) || $faireImageRef(operation) == $caption(audace,menu,pretraite) || $faireImageRef(operation) == $caption(audace,menu,cfa2rgb) } {
@@ -1072,11 +1173,6 @@ namespace eval ::faireImageRef {
              tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,image_sortie)
              return
          }
-      }
-      #---
-      if { [ TestEntier $faireImageRef(nb) ] == "0" } {
-         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,nbre_entier)
-         return
       }
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
@@ -1105,7 +1201,7 @@ namespace eval ::faireImageRef {
                }
             } \
             "$caption(audace,menu,faire_dark)" {
-               #--- Il faut saisir l'offset
+               #--- Test sur l'offset
                if { $faireImageRef(1,offset) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
                   return
@@ -1137,17 +1233,16 @@ namespace eval ::faireImageRef {
                }
             } \
             "$caption(audace,menu,faire_flat_field)" {
-               #--- Il faut saisir l'offset
+               #--- Test sur l'offset
                if { $faireImageRef(1,offset) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
                   return
                }
-               #--- Il faut saisir la valeur de normalisation
+               #--- Tests sur la valeur de normalisation
                if { $faireImageRef(1,norm) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,constante)
                   return
                }
-               #--- Il faut tester la validite de la valeur de normalisation
                if { [ string is double -strict $faireImageRef(1,norm) ] == "0" } {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $caption(audace,cte_invalide)
                   return
@@ -1174,17 +1269,17 @@ namespace eval ::faireImageRef {
                }
             } \
             "$caption(audace,menu,pretraite)" {
-               #--- Il faut saisir l'offset
+               #--- Test sur l'offset
                if { $faireImageRef(1,offset) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,offset)
                   return
                }
-               #--- Il faut saisir le dark
+               #--- Test sur le dark
                if { $faireImageRef(1,dark) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
                   return
                }
-               #--- Il faut saisir le flat-field
+               #--- Test sur le flat-field
                if { $faireImageRef(1,flat-field) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,flat-field)
                   return
