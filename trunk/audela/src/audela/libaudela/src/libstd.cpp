@@ -489,21 +489,9 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"historik",(Tcl_CmdProc *)CmdHistory,NULL,NULL);
 
    // Fonctions de traitement par lots
-   Tcl_CreateCommand(interp,"offset2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"ngain2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"noffset2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"add2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"sub2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"div2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"opt2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"trans2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"register",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"register2",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"smedian",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"sadd",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
-   Tcl_CreateCommand(interp,"smean",(Tcl_CmdProc *)CmdTtScript,NULL,NULL);
    Tcl_CreateCommand(interp,"ttscript",(Tcl_CmdProc *)CmdTtScript3,NULL,NULL);
    Tcl_CreateCommand(interp,"ttscript2",(Tcl_CmdProc *)CmdTtScript2,NULL,NULL);
+
    Tcl_CreateCommand(interp,"fits2colorjpeg",(Tcl_CmdProc *)CmdFits2ColorJpg,NULL,NULL);
    Tcl_CreateCommand(interp,"fitsheader",(Tcl_CmdProc *)CmdFitsHeader,NULL,NULL);
    Tcl_CreateCommand(interp,"fitsconvert3d",(Tcl_CmdProc *)CmdFitsConvert3d,NULL,NULL);

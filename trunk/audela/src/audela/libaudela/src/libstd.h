@@ -105,7 +105,6 @@ extern int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc
 extern int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdGetGenericNamePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
-
 //------------------------------------------------------------------------------
 // Fonctions de manipulation des objets.
 //
@@ -116,39 +115,15 @@ extern int CmdTel(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 extern int CmdLink(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
-//------------------------------------------------------------------------------
-// Fonctions de manipulation d"angles.
-//
-extern int CmdDeg2HMS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdHMS2Deg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdDeg2DMS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdDMS2Deg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdHMS2HMSList(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdDMS2DMSList(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int kstr2ra(int *h, int *m, int *s, char *entree);
-extern int kstr2dec(int *signe,int *d, int *m, int *s, char *entree);
-
-
 /*
  * Non-object functions to be declared in the Tcl interpreter.
  */
-extern int Service_CreateImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int Service_DeleteImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int Service_DeleteImages(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern void Service_cb_CreateImage(ClientData clientData);
-extern int CmdSub2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdNGain2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdAniFill(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdTtScript(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdTtScript2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdTtScript3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdTestAudine(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdFits2ColorJpg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-
-extern int CmdRobertWrite(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdRobertRead(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /*----
   -- Pour l'execution de Audela depuis une DLL
