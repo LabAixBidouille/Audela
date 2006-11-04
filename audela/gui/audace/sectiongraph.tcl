@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.6 2006-08-20 17:09:44 michelpujol Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.7 2006-11-04 19:08:42 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -227,6 +227,9 @@ proc ::sectiongraph::createToplevel { visuNo } {
    $private($visuNo,graph,horz) element configure lineR -hide no
 
    pack $private($visuNo,graph,horz)
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $This <Key-F1> { ::console::GiveFocus }
 
 }
 
