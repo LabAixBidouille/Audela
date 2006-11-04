@@ -640,8 +640,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    if(argc<nb_arg_min) {
       sprintf(ligne,"Usage: %s genericname nb extension filename3d",argv[0]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      free(ligne);
-      return TCL_OK;
+      return TCL_ERROR;
    }
    nb=atoi(argv[2]);
    if (nb<=0) {
