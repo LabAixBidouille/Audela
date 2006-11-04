@@ -71,8 +71,8 @@ struct camprop {
 };
 
 #ifdef __cplusplus
-#include "E:\Projet CID\luis&leandro\audela - 1.4.0\src\libcam\libcemes\CID_HL\alims.h"
-#include "E:\Projet CID\luis&leandro\audela - 1.4.0\src\libcam\libcemes\CID_HL\controleur.h"
+#include "alims.h"
+#include "controleur.h"
 #endif
 
 void AlimsInit(void);
