@@ -302,13 +302,13 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
 	//Dans ce boucle on attend la fin de la lecture de l'image
 	while(size == 0){				
-		size = control->GetNextImage(sdata,0,&fin_image, &nb_image);		
+		size = control->GetNextImage((unsigned char *)sdata,0,&fin_image, &nb_image);		
 	}
 	size=0;
 	
 	//Dans ce boucle on attend la fin de la lecture d'une image de 2048x2048
 	while((size == 0) && (!fin_image)){			
-		size = control->GetNextImage(sdata1,0,&fin_image, &nb_image);			
+		size = control->GetNextImage((unsigned char *)sdata1,0,&fin_image, &nb_image);			
 	}
 	Stop(1);   
 	size=0;
@@ -779,7 +779,8 @@ unsigned int SetAmplisObtu(int onoff, int onoff2, int onoff3, int onoff4, int on
 
 	on5int=onoff5;
 
-	bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL, on5int);
+	//bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL, on5int);
+	bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL);
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }

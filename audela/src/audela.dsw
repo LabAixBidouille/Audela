@@ -39,28 +39,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libml"=".\audela\libml\vc60\libml.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-###############################################################################
-
-Project: "libyd"=".\audela\libyd\vc60\libyd.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-###############################################################################
-
 Project: "libandor"=".\libcam\libandor\vc60\libandor.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -146,6 +124,30 @@ Package=<4>
 ###############################################################################
 
 Project: "libcamth"=".\libcam\libcamth\vc60\libcamth.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libcelestron"=".\libtel\libcelestron\vc60\libcelestron.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libcemes"=".\libcam\libcemes\vc60\libcemes.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -337,18 +339,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libcelestron"=".\libtel\liblx200\vc60\libcelestron.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "liblxnet"=".\libtel\liblxnet\vc60\liblxnet.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -362,6 +352,18 @@ Package=<4>
 ###############################################################################
 
 Project: "libmc"=".\audela\libmc\vc60\libmc.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libml"=".\audela\libml\vc60\libml.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -494,6 +496,18 @@ Package=<4>
 ###############################################################################
 
 Project: "libwebcam"=".\libcam\libwebcam\vc60\libwebcam.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libyd"=".\audela\libyd\vc60\libyd.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
