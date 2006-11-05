@@ -1,8 +1,8 @@
 #
-# Fichier : aud5.tcl
+# Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise a jour $Id: aud5.tcl,v 1.2 2006-06-20 17:20:17 robertdelmas Exp $
+# Mise a jour $Id: help.tcl,v 1.1 2006-11-05 12:10:29 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -61,20 +61,19 @@ if { [ string compare $langage "french" ] == "0" } {
 namespace eval ::audace {
 
    #----------------------------------------------------------------------------------------
-   #  ::audace::showHelpItem 
+   #  ::audace::showHelpItem
    #  
-   #  ouvre la fenetre d'aide si elle n'est pas deja ouverte 
+   #  ouvre la fenetre d'aide si elle n'est pas deja ouverte
    #  puis affiche la page HTML demandee
    #
-   #  parametres : 
-   # 	   relativeFileName : repertoire du fichier d'aide 
+   #  parametres :
+   #     relativeFileName : repertoire du fichier d'aide
    #     tag              : balise anchor dans la page HTML (optionel)
    #
    #  exemple : ::audace::showHelpItem "$help(dir,affichage)" "1090selection_images.htm"
    #----------------------------------------------------------------------------------------
-   proc ::audace::showHelpItem { { folderRelativeFileName "" } { relativeFileName "" }  { tag "" } } {
-      global audace
-      global help
+   proc ::audace::showHelpItem { { folderRelativeFileName "" } { relativeFileName "" } { tag "" } } {
+      global audace help
 
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
@@ -104,20 +103,19 @@ namespace eval ::audace {
    }
 
    #----------------------------------------------------------------------------------------
-   #  ::audace::showHelpPlugin 
+   #  ::audace::showHelpPlugin
    #  
-   #  ouvre la fenetre d'aide si elle n'est pas deja ouverte 
+   #  ouvre la fenetre d'aide si elle n'est pas deja ouverte
    #  puis affiche la page HTML demandee
    #
    #  parametres : 
-   # 	   relativeFileName : repertoire du fichier d'aide 
+   #     relativeFileName : repertoire du fichier d'aide
    #     tag              : balise anchor dans la page HTML (optionel)
    #
    #  exemple : ::audace::showHelpPlugin tool supernovae supernovae_go.htm
    #----------------------------------------------------------------------------------------
-   proc ::audace::showHelpPlugin { { pluginType } { pluginName } { relativeFileName "" }  { tag "" } } {
-      global audace
-      global help
+   proc ::audace::showHelpPlugin { { pluginType } { pluginName } { relativeFileName "" } { tag "" } } {
+      global audace help
 
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
@@ -131,7 +129,7 @@ namespace eval ::audace {
       #--- J'attends que la fenetre d'aide soit creee
       update
 
-      if { $relativeFileName != "" } {        
+      if { $relativeFileName != "" } {
          #--- J'affiche le fichier d'aide
          ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(rep_plugin) $pluginType $pluginName \
             $audace(help_langage) $relativeFileName ] 1 $tag
@@ -147,13 +145,12 @@ namespace eval ::audace {
    }
 
    #------------------------------------------------------------
-   #  ::audace::showMain 
+   #  ::audace::showMain
    #  
-   #  ouvre la fenetre du sommaire de l'aide 
+   #  ouvre la fenetre du sommaire de l'aide
    #------------------------------------------------------------
    proc ::audace::showMain { } {
-      global audace
-      global help
+      global audace help
 
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
@@ -178,11 +175,10 @@ namespace eval ::audace {
    #------------------------------------------------------------
    #  ::audace::showFunctions
    #  
-   #  ouvre la fenetre de l'inventaire des fonctions 
+   #  ouvre la fenetre de l'inventaire des fonctions
    #------------------------------------------------------------
    proc ::audace::showFunctions { } {
-      global audace
-      global help
+      global audace help
 
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
@@ -204,15 +200,13 @@ namespace eval ::audace {
    }
 
    #------------------------------------------------------------
-   #  ::audace::initHelp 
+   #  ::audace::initHelp
    #  initalise l'acces au repertoire d'aide
    #  
    #  cree les variables audace(help_dir) et audace(help_window)
    #------------------------------------------------------------
    proc ::audace::initHelp { } {
-      global audace
-      global caption
-      global langage
+      global audace caption langage
 
       #--- Je verifie que les packages necessaires sont la
       package require helpviewer
@@ -226,13 +220,13 @@ namespace eval ::audace {
       set audace(help_dir) [ file join $audace(rep_doc_html) $audace(help_langage) ]
 
       if { ! [ file exists $audace(help_dir) ] } {
-         set message "$caption(aide,pas_repertoire)\n$audace(help_dir)" 
+         set message "$caption(aide,pas_repertoire)\n$audace(help_dir)"
          ::console::affiche_erreur "$message \n"
          tk_messageBox -icon error -message $message -type ok
-         return   
+         return
       }
 
-      #--- Je cree la fenetre d'aide 
+      #--- Je cree la fenetre d'aide
       set audace(help_window) [ ::HelpViewer::HelpWindow $audace(help_dir) "$audace(base).help" \
          "630x450+100+50" "$caption(aide,audace)" ]
          
@@ -243,7 +237,7 @@ namespace eval ::audace {
       focus $audace(help_window)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).help <Key-F1> { $audace(console)::GiveFocus }
+      bind $audace(base).help <Key-F1> { ::console::GiveFocus }
 
    }
 
