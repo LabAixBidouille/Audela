@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.1 2006-11-05 07:42:13 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.2 2006-11-05 09:12:00 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -54,7 +54,7 @@ namespace eval ::traiteFilters {
    # ::traiteFilters::confToWidget
    # Charge les variables de configuration dans des variables locales
    #
-   proc confToWidget { } {  
+   proc confToWidget { } {
       variable widget
       global conf
 
@@ -65,7 +65,7 @@ namespace eval ::traiteFilters {
    # ::traiteFilters::widgetToConf
    # Charge les variables locales dans des variables de configuration
    #
-   proc widgetToConf { } {   
+   proc widgetToConf { } {
       variable widget
       global conf
 

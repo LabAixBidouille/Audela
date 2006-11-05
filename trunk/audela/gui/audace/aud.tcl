@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.29 2006-11-05 07:43:19 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.30 2006-11-05 09:12:20 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -28,7 +28,6 @@ source aud_menu_6.tcl
 source aud_menu_7.tcl
 source aud_menu_8.tcl
 source aud1.tcl
-source aud4.tcl
 source aud5.tcl
 source console.tcl
 source confeditscript.tcl
@@ -45,6 +44,7 @@ source poly.tcl
 source filtrage.tcl
 source mauclaire.tcl
 source astrometry.tcl
+source fieldchart.tcl
 source vo_tools.tcl
 source sectiongraph.tcl
 source polydraw.tcl
@@ -153,6 +153,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene_touche.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confeditscript.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) astrometry.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) fieldchart.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) bifsconv.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) compute_stellaire.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) divers.cap ]\""
