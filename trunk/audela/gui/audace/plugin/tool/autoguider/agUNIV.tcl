@@ -2,7 +2,7 @@
 # Fichier : agUNIV.tcl
 # Description : Panneau pour executer l'autoguidage d'un telescope
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: agUNIV.tcl,v 1.4 2006-06-20 20:47:43 robertdelmas Exp $
+# Mise a jour $Id: agUNIV.tcl,v 1.5 2006-11-05 12:29:01 robertdelmas Exp $
 # tension d'alimentation des moteurs 5V
 # VITESSE 1 im sec en binning 2x2 webcam longue pose à 0.5 sec de pose
 # Le pc d'acquisition du ciel profond envoie au pc d'autoguidage 
@@ -201,11 +201,11 @@ proc ::agUNIV::suivi { dx dy } {
    set infos(dy) $dy
    
    ##if { $decalage == "1" } {
-   ##   ::Autoguider::decaler 
+   ##   ::autoguider::decaler 
    ##}
 
 }
-proc ::Autoguider::decaler { } {
+proc ::autoguider::decaler { } {
 
       # Incrémentation du compteur de pose et décallage de la pose 
       if {$w2==1}  {
