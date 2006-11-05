@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.1 2006-11-05 09:13:41 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.2 2006-11-05 09:26:15 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -261,7 +261,7 @@ namespace eval ::mapWindow {
       ::mapWindow::toggleSource
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -295,7 +295,7 @@ namespace eval ::mapWindow {
    proc cmdApply { } {
       variable This
       variable widget
-      global audace caption color conf etoiles mapWindow
+      global audace caption color etoiles mapWindow
 
       set unit "e-6"
 
@@ -434,7 +434,7 @@ namespace eval ::mapWindow {
    #
    proc parcourir { } {
       variable This
-      global audace caption mapWindow
+      global audace caption
 
       set dirname [ tk_chooseDirectory -title "$caption(fieldchart,recherche)" \
          -initialdir $audace(rep_catalogues) -parent $This ]
