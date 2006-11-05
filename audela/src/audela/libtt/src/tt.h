@@ -252,6 +252,9 @@
 #define TT_ERR_PARAMRESAMPLE_IRREGULAR -41
 #define TT_ERR_MATCHING_NULL_DISTANCES -42
 #define TT_ERR_NAXIS12_NULL -43
+#define TT_ERR_NAXIS_NULL -44
+#define TT_ERR_NAXISN_NULL -45
+#define TT_ERR_BITPIX_NULL -46
 
 #define TT_WAR_ALLOC_NOTNULLPTR -1001
 #define TT_WAR_FREE_NULLPTR -1002
@@ -867,6 +870,7 @@ int tt_ptr_loadkeys(void *args);
 int tt_ptr_saveima3d(void *args);
 int tt_ptr_loadima3d(void *args);
 int tt_ptr_saveima1d(void *args);
+int tt_ptr_saveimakeydim(void *args);
 
 int tt_ptr_imaseries(void *args);
 

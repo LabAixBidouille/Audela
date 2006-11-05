@@ -2285,12 +2285,14 @@ int tt_util_statima(TT_IMA *p,double pixelsat_value,double *mean,double *sigma,d
 {
    int k,nbsatures,nelem;
    double valeur,i=0.,mu_i,mu_ii=0.,sx_i,sx_ii=0.,delta;
+   double epsdouble;
    nelem=(p->naxis1)*(p->naxis2);
    valeur=(double)(p->p[0]);
    *maxi=*mini=valeur;
    nbsatures=0;
    mu_i=valeur;
    sx_i=0;
+   epsdouble=1.0e-300;
    if (valeur>=pixelsat_value) {nbsatures++;}
    for (k=1;k<nelem;k++) {
       valeur=(double)(p->p[k]);
@@ -2301,26 +2303,22 @@ int tt_util_statima(TT_IMA *p,double pixelsat_value,double *mean,double *sigma,d
       /* --- algo de la valeur moy et ecart type de Miller ---*/
       i=(double) (k+1);
       delta=valeur-mu_i;
-// debut modif michel
-      if ( fabs(delta) < 1.0e-300) {
+      if ( fabs(delta) < epsdouble) {
          if ( delta < 0 ) {
-            delta = -1.0e-300 ;
+            delta = -epsdouble ;
          } else {
-            delta = 1.0e-300 ;
+            delta = epsdouble ;
          }
       }
-// fin modif michel
       mu_ii=mu_i+delta/(i);
       sx_ii=sx_i+delta*(valeur-mu_ii);
-// debut modif michel
-      if ( fabs(sx_ii) < 1.0e-300) {
+      if ( fabs(sx_ii) < epsdouble) {
          if ( sx_ii < 0 ) {
-            sx_ii = -1.0e-300 ;
+            sx_ii = -epsdouble ;
          } else {
-            sx_ii = 1.0e-300 ;
+            sx_ii = epsdouble ;
          }
       }
-// fin modif michel
       mu_i=mu_ii;
       sx_i=sx_ii;
    }
