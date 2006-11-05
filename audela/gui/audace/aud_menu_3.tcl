@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.1 2006-11-05 07:41:57 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.2 2006-11-05 09:18:26 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -58,7 +58,7 @@ namespace eval ::traiteImage {
    # ::traiteImage::confToWidget
    # Charge les variables de configuration dans des variables locales
    #
-   proc confToWidget { } {  
+   proc confToWidget { } {
       variable widget
       global conf
 
