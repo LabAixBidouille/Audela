@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.12 2006-11-01 18:25:57 alainklotz Exp $
+ * $Id: libcam.c,v 1.13 2006-11-05 11:12:47 alainklotz Exp $
  */
 
 #include "sysexp.h"
@@ -142,6 +142,7 @@ static int cmdCamOverscan(ClientData clientData, Tcl_Interp * interp, int argc, 
 static int cmdCamInterrupt(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamHeaderProc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 static int cam_init_common(struct camprop *cam, int argc, char **argv);
 
@@ -720,6 +721,26 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
    return result;
 }
 
+static int cmdCamHeaderProc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) 
+{
+   char ligne[256];
+   int result = TCL_OK;
+   struct camprop *cam;
+   if((argc!=2)&&(argc!=3)) {
+      sprintf(ligne,"Usage: %s %s ?kwd_header_proc? ",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      cam = (struct camprop*)clientData;
+		if(argc!=2) {
+	      sprintf(cam->headerproc,"%s",argv[2]);
+		}
+      sprintf(ligne,"%s",cam->headerproc);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   }
+   return result;
+}
+
 /*
  * cmdCamTel
  * Lecture/ecriture de l'incateur pour recuperer ou non les coordonnee du telescope
@@ -765,10 +786,13 @@ static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int ar
  */
 static void AcqRead(ClientData clientData)
 {
-   char s[1000];
+   char s[30000];
    unsigned short *p;		/* cameras de 1 a 16 bits non signes */
-   double ra, dec, exptime = 0.;
+   double exptime=0.;
+   /*
+   double ra, dec;
    int status;
+   */
    struct camprop *cam;
    Tcl_Interp *interp;
    
@@ -910,7 +934,15 @@ static void AcqRead(ClientData clientData)
          sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, exptime);
       }
       Tcl_Eval(interp, s);
-      
+
+		/* - call the header proc to add additional informations -*/
+      sprintf(s,"catch {set libcam(header) [%s]}",cam->headerproc);
+      Tcl_Eval(interp,s);
+      if (atoi(interp->result)==0) {
+         sprintf(s, "foreach header $libcam(header) { buf%d setkwd $header }", cam->bufno);
+         Tcl_Eval(interp,s);
+      }
+/*
       if ( cam->radecFromTel  == 1 ) {
          libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
          if (status == 0) {
@@ -921,6 +953,7 @@ static void AcqRead(ClientData clientData)
             Tcl_Eval(interp, s);
          }    
       }
+*/
    } else { 
       // erreur d'acquisition, on enregistre une image vide 
       sprintf(s, "buf%d clear", cam->bufno );
@@ -1702,6 +1735,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->check_temperature = CAM_INI[cam->index_cam].check_temperature;
    cam->timerExpiration = NULL;
    cam->radecFromTel = 1;
+   strcpy(cam->headerproc,"");
    //---  valeurs par defaut des capacites offertes par la camera
    cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
    cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
