@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.35 2006-10-29 14:32:57 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.36 2006-11-05 12:29:29 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -1362,7 +1362,7 @@ namespace eval ::confVisu {
       }
       foreach m [lsort $liste] {
          set m [lindex $m 1]
-         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,Autoguider" ) } {
+         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,autoguider" ) } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
                Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                #--- Lancement automatique de l'outil Acquisition
