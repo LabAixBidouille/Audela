@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.31 2006-11-05 12:10:47 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.32 2006-11-05 14:40:19 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -48,6 +48,7 @@ source help.tcl
 source vo_tools.tcl
 source sectiongraph.tcl
 source polydraw.tcl
+source sextractor.tcl
 
 namespace eval ::audace {
    variable This
@@ -1027,18 +1028,6 @@ namespace eval ::audace {
 
    proc autovisu { visuNo { force "-no" } { fileName "" } } {
       ::confVisu::autovisu $visuNo $force $fileName
-   }
-
-   #
-   # ::audace::listfuncs
-   # Edition des fonctions du site Web local
-   # Il faut avoir un navigateur web sur le micro et les fichiers html dans le repertoire doc_html
-   #
-   proc listfuncs { } {
-      global audace
-
-      set filename "[ file join file:///$audace(rep_doc_html) french 02programmation interfa5c.htm ]"
-      ::audace::Lance_Site_htm "$filename"
    }
 
    #
