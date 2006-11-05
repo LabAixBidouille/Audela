@@ -2,13 +2,13 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.10 2006-09-02 20:57:48 denismarchais Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.11 2006-11-05 14:47:06 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
    variable astrom
 
-   proc confToWidget {  } {
+   proc confToWidget { } {
       variable astrom
       global caption conf
 
@@ -28,7 +28,7 @@ namespace eval ::astrometry {
       set astrom(position)  "$conf(astrometry,position)"
    }
 
-   proc widgetToConf {  } {
+   proc widgetToConf { } {
       variable astrom
       global caption conf
 
@@ -340,11 +340,11 @@ namespace eval ::astrometry {
       }
    }
 
-   proc start { {sextractor no } {silent no } } {
+   proc start { { sextractor no } { silent no } } {
       variable astrom
       global audace caption color
 
-      #set sextractor yes
+      set sextractor yes
       set starfile no
       #::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
       if {$astrom(currenttypecal)=="delwcs"} {
@@ -739,7 +739,7 @@ namespace eval ::astrometry {
       ::buf::delete $k
    }
 
-   proc mpc_provisional2packed { designation {format old} } {
+   proc mpc_provisional2packed { designation { format old } } {
       #               1222345   122233335
       # 2000EL118 <=> K00EB8L   K00E0118L
       #--- On met en majuscules
@@ -787,7 +787,7 @@ namespace eval ::astrometry {
       return $designation
    }
 
-   proc mpc_packed2provisional { designation {format old} } {
+   proc mpc_packed2provisional { designation { format old } } {
       #               1222345   122233335
       # 2000EL118 <=> K00EB8L   K00E0118L
       #--- On supprime les espaces
