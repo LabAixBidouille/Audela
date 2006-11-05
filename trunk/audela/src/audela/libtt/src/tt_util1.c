@@ -97,6 +97,9 @@ int tt_errmessage2(int numerreur,char *message)
    else if (numerreur==TT_ERR_PARAMRESAMPLE_IRREGULAR) {strcat(message,"Resampling parameters are irregular");}
    else if (numerreur==TT_ERR_MATCHING_NULL_DISTANCES) {strcat(message,"Same star was found two times in the list");}
    else if (numerreur==TT_ERR_NAXIS12_NULL) {strcat(message,"One of axes has zero elements");}
+   else if (numerreur==TT_ERR_NAXIS_NULL) {strcat(message,"NAXIS keyword not defined or equal to zero");}
+   else if (numerreur==TT_ERR_NAXISN_NULL) {strcat(message,"At less NAXIS* keyword is not defined or equal to zero");}
+   else if (numerreur==TT_ERR_BITPIX_NULL) {strcat(message,"BITPIX keyword not defined or a valid value");}
    else if (numerreur==TT_WAR_ALLOC_NOTNULLPTR) {strcat(message,"Want to allocate a not null pointer");}
    else if (numerreur==TT_WAR_FREE_NULLPTR) {strcat(message,"Want to free a null pointer");}
    else if (numerreur==TT_WAR_INDEX_OUTMAX) {strcat(message,"Index out of high limit");}

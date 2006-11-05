@@ -1213,3 +1213,135 @@ int tt_ptr_saveima1d(void *args)
    }
    return(OK_DLL);
 }
+
+int tt_ptr_saveimakeydim(void *args)
+/**************************************************************************/
+/* Fonction d'interface pour sauver les images en fonction des mots cle   */
+/**************************************************************************/
+/* ------ entrees obligatoires                                            */
+/* arg1 : *fullname (char*)                                               */
+/* arg2 : *p (void*)                                                      */
+/* arg3 : *datatype (int*)                                                */
+/* arg4 : *nbkeys (int*)                                                  */
+/* arg5 : **keynames (char**)                                             */
+/* arg6 : **values (char**)                                               */
+/* arg7 : **comments (char**)                                             */
+/* arg8 : **units (char**)                                                */
+/* arg9 : *datatype (int*)                                                */
+/**************************************************************************/
+{
+   TT_IMA p_out;
+   int nbkeys,datatype;
+   void **argu;
+   int msg;
+   int naxis1,naxis2,naxis3,bitpix,k,naxis;
+   double bzero=0.,bscale=1.;
+   void *p=NULL;
+   char *fullname=NULL;
+   char **keynames=NULL;
+   char **values=NULL;
+   char **comments=NULL;
+   char **units=NULL;
+   int *datatypes=NULL;
+
+   /* --- verification des arguments ---*/
+   argu=(void**)(args);
+   if (argu[1]==NULL) { return(PB_DLL); }
+   fullname=(char*)(argu[1]);
+   if (argu[2]==NULL) { return(PB_DLL); }
+   p=(void*)(argu[2]);
+   if (argu[3]==NULL) { return(PB_DLL); }
+   datatype=*(int*)(argu[3]);
+   if (argu[4]==NULL) { return(PB_DLL); }
+   nbkeys=*(int*)(argu[4]);
+   if (argu[5]==NULL) { return(PB_DLL); }
+   keynames=(char**)(argu[5]);
+   if (argu[6]==NULL) { return(PB_DLL); }
+   values=(char**)(argu[6]);
+   if (argu[7]==NULL) { return(PB_DLL); }
+   comments=(char**)(argu[7]);
+   if (argu[8]==NULL) { return(PB_DLL); }
+   units=(char**)(argu[8]);
+   if (argu[9]==NULL) { return(PB_DLL); }
+   datatypes=(int*)(argu[9]);
+
+   /* --- construit l'image p_out ---*/
+   if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
+      return(msg);
+   }
+
+   /* --- remplit le header avec les nouveaux mots cle ---*/
+   naxis=0;
+   naxis1=0;
+   naxis2=0;
+   naxis3=0;
+   for (k=0;k<nbkeys;k++) {
+      if (strcmp(keynames[k],"NAXIS")==0) { naxis=atoi(values[k]); }
+      if (strcmp(keynames[k],"NAXIS1")==0) { naxis1=atoi(values[k]); }
+      if (strcmp(keynames[k],"NAXIS2")==0) { naxis2=atoi(values[k]); }
+      if (strcmp(keynames[k],"NAXIS3")==0) { naxis3=atoi(values[k]); }
+      if (strcmp(keynames[k],"BITPIX")==0) { bitpix=atoi(values[k]); }
+      if (strcmp(keynames[k],"BZERO")==0) { bzero=atof(values[k]); }
+      if (strcmp(keynames[k],"BSCALE")==0) { bscale=atof(values[k]); }
+   }
+   for (k=0;k<nbkeys;k++) {
+      tt_imanewkeychar(&p_out,keynames[k],values[k],datatypes[k],comments[k],units[k]);
+   }
+   if ((bitpix!=BYTE_IMG)||(bitpix!=SHORT_IMG)||(bitpix!=LONG_IMG)||(bitpix!=FLOAT_IMG)||(bitpix!=DOUBLE_IMG)||(bitpix!=USHORT_IMG)||(bitpix!=ULONG_IMG)) {
+      msg=TT_ERR_BITPIX_NULL;
+      return(msg);
+   }
+   if ((bitpix==SHORT_IMG)&&(bzero==32768.)&&(bscale==1.)) {
+      bitpix=USHORT_IMG;
+   }
+   if ((bitpix==LONG_IMG)&&(bzero==-(2^31))&&(bscale==1.)) {
+      bitpix=ULONG_IMG;
+   }
+
+   /* --- remplit l'image p_out ---*/
+   if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
+      return(msg);
+   }
+   if (naxis==0) {
+      msg=TT_ERR_NAXIS_NULL;
+      return(msg);
+   } else if (naxis==1) {
+      if (naxis1==0) {
+         msg=TT_ERR_NAXISN_NULL;
+         return(msg);
+      }
+      if ((msg=tt_imacreater1d(&p_out,naxis1))!=OK_DLL) {
+         return(msg);
+      }
+   } else if (naxis==2) {
+      if ((naxis1==0)||(naxis2==0)) {
+         msg=TT_ERR_NAXISN_NULL;
+         return(msg);
+      }
+      if ((msg=tt_imacreater(&p_out,naxis1,naxis2))!=OK_DLL) {
+         return(msg);
+      }
+   } else {
+      if ((naxis1==0)||(naxis2==0)||(naxis3==0)) {
+         msg=TT_ERR_NAXISN_NULL;
+         return(msg);
+      }
+      if ((msg=tt_imacreater3d(&p_out,naxis1,naxis2,naxis3))!=OK_DLL) {
+         return(msg);
+      }
+   }
+   if ((msg=tt_util_ptr2ttima(p,datatype,&p_out))!=OK_DLL) {
+      return(msg);
+   }
+
+   /* --- sauve l'image ---*/
+   if ((msg=tt_imasaver(&p_out,fullname,bitpix))!=0) {
+      return(msg);
+   }
+
+   /* --- destruction de l'objet image ---*/
+   if ((msg=tt_imadestroyer(&p_out))!=OK_DLL) {
+      return(msg);
+   }
+   return(OK_DLL);
+}
