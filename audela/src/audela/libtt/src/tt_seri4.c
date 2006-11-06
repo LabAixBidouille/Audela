@@ -522,8 +522,9 @@ int tt_ima_series_resample_1(TT_IMA_SERIES *pseries)
          a[3]= b[3]/delta;
          a[4]=-b[0]/delta;
          a[5]=(b[0]*b[5]-b[2]*b[3])/delta;
-         /*p_dum=&(pseries->coefa[index-1]);*/
-         p_dum=&(pseries->coefa[0]);
+         pseries->coefa[index-1]=pseries->coefa[0];
+         p_dum=&(pseries->coefa[index-1]);
+         /*p_dum=&(pseries->coefa[0]);*/
          for (k=0;k<6;k++) {
             p_dum->a[k]=a[k];
          }
@@ -709,10 +710,10 @@ int tt_ima_series_register_1(TT_IMA_SERIES *pseries)
       }
       xp[1]=pseries->p_ast.crpix1;
       yp[1]=pseries->p_ast.crpix2;
-      xp[2]=pseries->p_ast.crpix1+100.;
+      xp[2]=pseries->p_ast.crpix1+0.4*p_in->naxis1;
       yp[2]=pseries->p_ast.crpix2;
       xp[3]=pseries->p_ast.crpix1;
-      yp[3]=pseries->p_ast.crpix2+100.;
+      yp[3]=pseries->p_ast.crpix2+0.4*p_in->naxis2;
       for (k=1;k<=3;k++) {
          tt_util_astrom_xy2radec(&pseries->p_ast,xp[k],yp[k],&ra[k],&dec[k]);
       }
