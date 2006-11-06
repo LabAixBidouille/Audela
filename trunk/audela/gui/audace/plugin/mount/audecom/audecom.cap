@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.4 2006-10-22 09:01:28 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.5 2006-11-06 21:56:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -797,34 +797,34 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,ok)                      "OK"
    set caption(audecom,aide)                    "?"
    set caption(audecom,point)                   "."
-   set caption(audecom,annuler)                 "Annuler"
-   set caption(audecom,fermer)                  "Fermer"
+   set caption(audecom,annuler)                 "Anular"
+   set caption(audecom,fermer)                  "Fechar"
 
-   set caption(audecom,para_mot)                "Paramètres moteurs"
-   set caption(audecom,rat_jeu_ad)              "Amplitude du rattrapage des jeux en A.D."
-   set caption(audecom,rat_jeu_dec)             "Amplitude du rattrapage des jeux en Déc."
-   set caption(audecom,val_defaut)              "Valeurs par défaut"
-   set caption(audecom,limites)                 "Dans les limites de"
-   set caption(audecom,a)                       "à"
-   set caption(audecom,max_AD)                  "Vitesse maxi en A.D."
-   set caption(audecom,max_Dec)                 "Vitesse maxi en Déc."
-   set caption(audecom,larg_imp)                "Largeur des impulsions"
+   set caption(audecom,para_mot)                "Parâmetros dos motores"
+   set caption(audecom,rat_jeu_ad)              "Amplitude da correcção dos jogos em A.R."
+   set caption(audecom,rat_jeu_dec)             "Amplitude da correcção dos jogos em Dec."
+   set caption(audecom,val_defaut)              "Valores por defeito"
+   set caption(audecom,limites)                 "Nos limites de"
+   set caption(audecom,a)                       "até"
+   set caption(audecom,max_AD)                  "Velocidade máxima em A.R."
+   set caption(audecom,max_Dec)                 "Velocidade máxima en Dec."
+   set caption(audecom,larg_imp)                "Largura dos impulsos"
 
-   set caption(audecom,para_foc)                "Paramètres de la focalisation"
-   set caption(audecom,vit_foc)                 "Vitesse du moteur"
-   set caption(audecom,limite_vit)              "(choisir une valeur comprise entre 5 et 255)"
-   set caption(audecom,direction)               "Direction du déplacement pour la phase finale de la focalisation :"
-   set caption(audecom,intra_focal)             "Intrafocale"
-   set caption(audecom,extra_focal)             "Extrafocale"
-   set caption(audecom,inversion_rot)           "Inversion du sens de rotation du moteur (raquette virtuelle)"
-   set caption(audecom,valeur_dep)              "Valeur du dépassement de la consigne pour la compensation des jeux :"
-   set caption(audecom,pas)                     "pas"
+   set caption(audecom,para_foc)                "Parâmetros da focagem"
+   set caption(audecom,vit_foc)                 "Velocidade do motor"
+   set caption(audecom,limite_vit)              "(escolher um valor compreendido entre 5 e 255)"
+   set caption(audecom,direction)               "Direcção da deslocação para a fase finale da focagem :"
+   set caption(audecom,intra_focal)             "Intrafocal"
+   set caption(audecom,extra_focal)             "Extrafocal"
+   set caption(audecom,inversion_rot)           "Inversão do sentido de rotação do motor"
+   set caption(audecom,valeur_dep)              "Valor de overshoot para a compensação dos jogos :"
+   set caption(audecom,pas)                     "passos"
 
-   set caption(audecom,prog_pec)                "Programmation du PEC"
-   set caption(audecom,vit_suiv_nom)            "La vitesse de suivi nominale est définie par :"
-   set caption(audecom,somme_ti)                "Somme (ti) / 20"
-   set caption(audecom,compris_entre)           "ti doit être compris entre"
-   set caption(audecom,et)                      "et"
+   set caption(audecom,prog_pec)                "Programação do PEC"
+   set caption(audecom,vit_suiv_nom)            "A velocidade de seguimento nominal é definida por :"
+   set caption(audecom,somme_ti)                "Soma (ti) / 20"
+   set caption(audecom,compris_entre)           "ti deve estar compreendido entre"
+   set caption(audecom,et)                      "e"
    set caption(audecom,t0)                      "t0"
    set caption(audecom,t1)                      "t1"
    set caption(audecom,t2)                      "t2"
@@ -846,107 +846,107 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,t18)                     "t18"
    set caption(audecom,t19)                     "t19"
    set caption(audecom,r)                       "r"
-   set caption(audecom,non_calcul)              "non calculée"
-   set caption(audecom,calculer)                "Calculer"
+   set caption(audecom,non_calcul)              "não calculado"
+   set caption(audecom,calculer)                "Calcular"
 
-   set caption(audecom,ctrl_king)               "Contrôle de la vitesse de King"
-   set caption(audecom,pos_obs)                 "Position de l'observateur :"
+   set caption(audecom,ctrl_king)               "Controlo da velocidade King"
+   set caption(audecom,pos_obs)                 "Posição do observador :"
    set caption(audecom,longitude)               "Longitude :"
    set caption(audecom,latitude)                "Latitude :"
    set caption(audecom,altitude)                "Altitude :"
-   set caption(audecom,pos_tel)                 "Position du télescope :"
-   set caption(audecom,azimut)                  "Azimut (0° - S, 90° - O, ...) :"
-   set caption(audecom,hauteur)                 "Hauteur :"
-   set caption(audecom,ad)                      "Ascension Droite :"
-   set caption(audecom,dec)                     "Déclinaison :"
-   set caption(audecom,temps)                   "Temps :"
-   set caption(audecom,hsysteme)                "Heure de l'ordinateur (HL ou TU) :"
-   set caption(audecom,fushoraire2)             "Votre fuseau horaire est :"
-   set caption(audecom,hhiverete)               "Heure d'hiver / Heure d'été :"
-   set caption(audecom,tu)                      "Temps Universel (TU) :"
-   set caption(audecom,tsl)                     "Temps Sidéral Local (TSL) :"
-   set caption(audecom,angle_horaire)           "Angle horaire :"
-   set caption(audecom,coef_king)               "Coefficient de King :"
+   set caption(audecom,pos_tel)                 "Posição do telescópio :"
+   set caption(audecom,azimut)                  "Azimute (0° - S, 90° - O, ...) :"
+   set caption(audecom,hauteur)                 "Altura :"
+   set caption(audecom,ad)                      "Ascenção Recta :"
+   set caption(audecom,dec)                     "Declinação :"
+   set caption(audecom,temps)                   "Tempo :"
+   set caption(audecom,hsysteme)                "Hora do computador (HL ou TU) :"
+   set caption(audecom,fushoraire2)             "O seu fuso horário é :"
+   set caption(audecom,hhiverete)               "Hora de inverno / Hora de verão :"
+   set caption(audecom,tu)                      "Tempo Universal (TU) :"
+   set caption(audecom,tsl)                     "Tempo Sideral Local (TSL) :"
+   set caption(audecom,angle_horaire)           "Angûlo horário :"
+   set caption(audecom,coef_king)               "Coeficiente King :"
    set caption(audecom,coef_k)                  "k :"
    set caption(audecom,metre)                   "m"
    set caption(audecom,heure_legale)            "HL"
    set caption(audecom,temps_universel)         "TU"
-   set caption(audecom,aucune)                  "Aucune"
-   set caption(audecom,heure_hiver)             "Hiver"
-   set caption(audecom,heure_ete)               "Eté"
+   set caption(audecom,aucune)                  "Nenhum"
+   set caption(audecom,heure_hiver)             "Inverno"
+   set caption(audecom,heure_ete)               "Verão"
    set caption(audecom,degre)                   "°"
 
-   set caption(audecom,para_mobile)             "Suivi d'objets mobiles"
-   set caption(audecom,para_mobile_ad)          "Vitesse en ascension droite"
-   set caption(audecom,para_mobile_dec)         "Vitesse en déclinaison"
-   set caption(audecom,para_mobile_lune)        "Lune"
-   set caption(audecom,para_mobile_soleil)      "Soleil"
-   set caption(audecom,para_mobile_comete)      "Comète, astéroïde ou OVNI"
-   set caption(audecom,para_mobile_etoile)      "Etoile ou autre objet fixe"
+   set caption(audecom,para_mobile)             "Seguimento de objectos móveis"
+   set caption(audecom,para_mobile_ad)          "Velocidade em Ascenção Recta"
+   set caption(audecom,para_mobile_dec)         "Velocidade em Declinação"
+   set caption(audecom,para_mobile_lune)        "Lua"
+   set caption(audecom,para_mobile_soleil)      "Sol"
+   set caption(audecom,para_mobile_comete)      "Cometa, asteroide ou OVNI"
+   set caption(audecom,para_mobile_etoile)      "Estrela ou outro objecto fixo"
 
-   set caption(audecom,para_mot,aide01)         "                                   Tout appui sur un bouton ' ? ' affiche l'aide associée qui"
-   set caption(audecom,para_mot,aide02)         "                                   explique le choix (si nécéssaire) de la meilleure valeur à"
-   set caption(audecom,para_mot,aide03)         "                                   saisir pour la configuration de votre monture équatoriale."
-   set caption(audecom,para_mot,aide05)         "L'amplitude du rattrapage des jeux doit être exprimée en degrés décimaux."
-   set caption(audecom,para_mot,aide06)         "Elle peut être différente en Ascension Droite et en Déclinaison."
-   set caption(audecom,para_mot,aide11)         "' Valeurs par défaut ' : Donne la valeur programmée en dur dans le microcontrôleur."
-   set caption(audecom,para_mot,aide12)         "' Dans les limites de ' : Définit l'intervalle pour le choix de cette valeur."
-   set caption(audecom,para_mot,aide13)         "Cette option permet le choix de la vitesse maximale du moteur d'Ascention Droite.\
-                                                 Plus la valeur saisie est grande, plus la vitesse maximale est importante. Ce\
-                                                 paramétrage permet de limiter la vitesse maximale en cas de décrochage de ce moteur."
-   set caption(audecom,para_mot,aide21)         "Cette option permet le choix de la vitesse maximale du moteur de Déclinaison. Plus\
-                                                 la valeur saisie est grande, plus la vitesse maximale est importante. Ce paramétrage\
-                                                 permet de limiter la vitesse maximale en cas de décrochage de ce moteur."
-   set caption(audecom,para_mot,aide31)         "Cette option ouvre le choix à la largeur des impulsions reçues par les moteurs (A.D. et\
-                                                 Déc. en petite vitesse seulement). Plus la valeur est grande, plus les impulsions sont\
-                                                 larges (plus on consomme de courant). La valeur %s correspond à un rapport cyclique de 100.\
-                                                 %s ne correspond pas à des impulsions nulles, cette valeur inhibe l'économie d'énergie.\
-                                                 La différence entre %s et %s est que si on choisit la valeur %s, le rapport cyclique est\
-                                                 toujours 100, mais le moteur de Déc. reste alimenté et bloqué."
+   set caption(audecom,para_mot,aide01)         "                                   Pressionando um botão ' ? ' visualiza-se a ajuda associada que"
+   set caption(audecom,para_mot,aide02)         "                                   explica a escolha (se necessário) do melhor valor a"
+   set caption(audecom,para_mot,aide03)         "                                   seleccionar para a configuração da sua montagem equatorial."
+   set caption(audecom,para_mot,aide05)         "A amplitude da correcção dos jogos deve ser exprimida em graus décimais."
+   set caption(audecom,para_mot,aide06)         "Ela pode ser diferente en Ascenção Recta e em Declinação."
+   set caption(audecom,para_mot,aide11)         "' Valores por defeito ' : Dá o valor programado no microcontrolador."
+   set caption(audecom,para_mot,aide12)         "' Nos limites de ' : Define o intervalo de escolha desse valor."
+   set caption(audecom,para_mot,aide13)         "Esta opção permite escolher a velocidade máxima do motor de Ascenção Recta.\
+                                                 Quanto maior for o valor seleccionado, maior será a velocidade máxima. Esta\
+                                                 parametragem permite limitar a velocidade máxima em caso do motor estar desencaixado."
+   set caption(audecom,para_mot,aide21)         "Esta opção permite escolher a velocidade máxima do motor de declinação.\
+                                                 Quanto maior for o valor seleccionado, maior será a velocidade máxima. Esta\
+                                                 parametragem permite limitar a velocidade máxima em caso do motor estar desencaixado."
+   set caption(audecom,para_mot,aide31)         "Esta opção abre a escolha à largura dos impulsos recebidos pelos motores (A.R. e\
+                                                 Dec. apenas em velocidade reduzida). Quanto maior o valor, mais largos são os impulsos (e maior\
+                                                 é a corrente consomida). O valor %s corresponde a uma relação ciclíca de 100.\
+                                                 %s não corresponde aos impulsos nulos, este valor inibe a économização de energia.\
+                                                 A diferença entre %s e %s é que se se escolher o valor %s, a relação ciclíca é\
+                                                 sempre 100, mas o motor de Dec. fica alimentado e bloqueado."
 
-   set caption(audecom,para_foc,aide01)         "                                   Tout appui sur un bouton ' ? ' affiche l'aide associée qui"
-   set caption(audecom,para_foc,aide02)         "                                          décrit les choix possibles et leur influence sur le"
-   set caption(audecom,para_foc,aide03)         "                                         fonctionnement de votre système de focalisation."
-   set caption(audecom,para_foc,aide1)          "Cette option permet de modifier la vitesse du moteur de focalisation. '255'\
-                                                 correspond à la vitesse la plus lente, alors que '5' correspond à la vitesse\
-                                                 la plus rapide possible (5000 pas/seconde) si bien sûr le moteur peut suivre."
-   set caption(audecom,para_foc,aide2)          "Cette option permet de choisir le sens de déplacement du système de focalisation pendant la\
-                                                 dernière partie du mouvement. Le but est de réaliser ce déplacement final toujours dans le\
-                                                 même sens (déplacement dans le sens intrafocal ou extrafocal). Elle donne également accès à\
-                                                 l'inversion du sens de rotation du moteur de focalisation (pour la raquette virtuelle seulement)."
-   set caption(audecom,para_foc,aide3)          "Cette option permet de définir la valeur du dépassement de la consigne de focalisation pour\
-                                                 que la dernière partie du déplacement soit toujours réalisée dans le meme sens (250 pas\
-                                                 correspondent à 1/2 tour du moteur de focalisation)."
+   set caption(audecom,para_foc,aide01)         "                                   Pressionando sobre o botão ' ? ' visualiza-se a ajuda associada que"
+   set caption(audecom,para_foc,aide02)         "                                          descreve a escolha (se necessário) e a sua influência sobre o"
+   set caption(audecom,para_foc,aide03)         "                                         funcionamento do seu sistema de focagem."
+   set caption(audecom,para_foc,aide1)          "Esta opção permite modificar a velocidade do motor de focagem. '255'\
+                                                 corresponde à velocidade mais lenta enquanto que '5' corresponde à velocidade\
+                                                 mais rápida possível (5000 passos/segundo) se o motor a suportar."
+   set caption(audecom,para_foc,aide2)          "Esta opção permite escolher o sentido da deslocação do sistema de focagem durante a\
+                                                 última parte do movimento. O objectivo é o de realizar esta deslocação final sempre no\
+                                                 mesmo sentido (deslocando no sentido intrafocal ou extrafocal). Ela permite igualmente o acesso\
+                                                 à inversão do sentido de rotação do motor de focagem."
+   set caption(audecom,para_foc,aide3)          "Esta opção permite definir o valor de overshoot da instrução de focagem para\
+                                                 que a última parte do deslocamento seja sempre realizada no mesmo sentido (250 pas\
+                                                 correspondente a 1/2 volta do motor de focagem)."
 
-   set caption(audecom,para_mobile,aide0)       "Indiquez sous la forme d'un entier la vitesse de déplacement de votre objet.\
-                                                 \nUnité : Seconde d'arc par jour, valeur maxi : 999999 (6 chiffres).\
-                                                 \nPour les dérives Sud et Ouest, l'entier choisi doit être négatif."
+   set caption(audecom,para_mobile,aide0)       "Indique na forma de inteiro a velocidade de deslocamento do objecto.\
+                                                 \nUnidade : Segundo de arco por dia, valor máximo : 999999 (6 digitos).\
+                                                 \nPara as derivações Sul e Oeste, o inteiro escolhido deve ser negativo."
 
-   set caption(audecom,prog_pec,aide01)         "                                   Tout appui sur un bouton ' ? ' affiche l'aide associée qui"
-   set caption(audecom,prog_pec,aide02)         "                                 explique les différentes étapes de la programmation du PEC"
-   set caption(audecom,prog_pec,aide03)         "                                   ainsi que les contrôles à effectuer sur les valeurs à saisir."
-   set caption(audecom,prog_pec,aide11)         "Dans le cas de notre monture équatoriale, la vitesse de suivi nominale est définie par\
-                                                 la valeur entière %s. Pour assurer un suivi nominal, il faut incrémenter le moteur\
-                                                 d'Ascension Droite toutes les %s x t0 = %s ms avec t0 = %s µs. Les corrections de la\
-                                                 vitesse sont faites en fonction de l'angle de rotation du moteur, ainsi la synchronisation\
-                                                 par rapport au début de chaque dent de la roue tangente ne se perd jamais même en cas de\
-                                                 pointages successifs ou de déplacements automatiques."
-   set caption(audecom,prog_pec,aide21)         "Les corrections de la vitesse de suivi en Ascension Droite (ti) doivent impérativement\
-                                                 être des valeurs entières choisies entre %s et %s. Si à cause de l'erreur périodique\
-                                                 on doit accélérer, la valeur choisie sera inférieure à %s, inversement si on doit ralentir\
-                                                 on choisira une valeur supérieure. En tout état de cause, la moyenne des 20 valeurs (ti)\
-                                                 doit être strictement égale à %s, ce contrôle est assuré par le bouton 'Calculer'."
-   set caption(audecom,prog_pec,aide31)         "r définit la périodicité du PEC. La valeur à saisir est un nombre compris entre 1 et 360.\
-                                                 Cette valeur doit correspondre au rapport de réduction qui existe entre la vis sans fin\
-                                                 de la roue tangente de l'axe horaire et le moteur d'entrainement en Ascension Droite."
-   set caption(audecom,prog_pec,analyse11)      "                                         Le calcul de la moyenne des 20 valeurs (t0 à t19)"
-   set caption(audecom,prog_pec,analyse12)      "                                               de la correction de la vitesse de suivi est"
-   set caption(audecom,prog_pec,analyse13)      "                                                            strictement égal à"
-   set caption(audecom,prog_pec,analyse14)      "                                                     Les corrections sont pertinentes."
-   set caption(audecom,prog_pec,analyse21)      "                                         Le calcul de la moyenne des 20 valeurs (t0 à t19)"
-   set caption(audecom,prog_pec,analyse22)      "                                               de la correction de la vitesse de suivi est"
-   set caption(audecom,prog_pec,analyse23)      "                                                   différent de la valeur nominale"
-   set caption(audecom,prog_pec,analyse24)      "                                          Le suivi sidéral est incorrect, la monture dérivera."
+   set caption(audecom,prog_pec,aide01)         "                                   Pressionando um botão ' ? ' visualiza-se a ajuda associada que"
+   set caption(audecom,prog_pec,aide02)         "                                 explica as diferentes étapas da programação do PEC"
+   set caption(audecom,prog_pec,aide03)         "                                   e também os controlos a efectuar sobre os valores seleccionados."
+   set caption(audecom,prog_pec,aide11)         "No caso da nossa montagem equatorial, a velocidade de seguimento nominal é definida pelo\
+                                                 valor inteiro %s. Para assegurar um seguimento nominal é necessário incrementar o motor\
+                                                 de Ascenção Recta todos os %s x t0 = %s ms com t0 = %s µs. As correcções da\
+                                                 velocidade são efectuadas em função do ângulo de rotação do motor, de forma a que a sincronização\
+                                                 em relação ao princípio de cada dente da roda tangente não se perde nunca mesmo em caso de\
+                                                 apontamentos sucesivos ou de deslocamentos automáticos."
+   set caption(audecom,prog_pec,aide21)         "As correcções da velocidade de seguimento em Ascenção Recta (ti) devem imperativamente\
+                                                 ser valores inteiros escolhidos entre %s e %s. Se em caso de erro periódico\
+                                                 for preciso acelerar, o valor escolhido será inferior a %s, inversamente se precisarmos de desacelerar\
+                                                 será escolhido um valor superior. De qualquer forma, a média dos 20 valores (ti)\
+                                                 deve ser estritamente igual a %s, este controlo é assegurado pelo botão 'Calcular'."
+   set caption(audecom,prog_pec,aide31)         "r define a periodicidade du PEC. O valor a escolher é um número compreendido entre 1 e 360.\
+                                                 Este valor deve corresponder à relação de redução que existe entre o parafuso sem fim\
+                                                 da roda tangente do eixo horário e o moteur treino em Ascenção Recta."
+   set caption(audecom,prog_pec,analyse11)      "                                         O calculo da média dos 20 valores (t0 à t19)"
+   set caption(audecom,prog_pec,analyse12)      "                                               da correcção da velocidade de seguimento é"
+   set caption(audecom,prog_pec,analyse13)      "                                                            estritamente igual a"
+   set caption(audecom,prog_pec,analyse14)      "                                                     As correcções são pertinentes."
+   set caption(audecom,prog_pec,analyse21)      "                                         O calculo da média dos 20 valores (t0 à t19)"
+   set caption(audecom,prog_pec,analyse22)      "                                               da correcção da velocidade de seguimento é"
+   set caption(audecom,prog_pec,analyse23)      "                                                   diferente do valor nominal"
+   set caption(audecom,prog_pec,analyse24)      "                                          O seguimento sideral está incorrecto, a montagem derivará."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

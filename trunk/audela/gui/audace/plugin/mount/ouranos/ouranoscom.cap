@@ -1,6 +1,6 @@
 #
 # Fichier : ouranoscom.cap
-# Mise a jour $Id: ouranoscom.cap,v 1.4 2006-10-22 09:01:44 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.cap,v 1.5 2006-11-06 21:57:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -166,32 +166,32 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(ouranoscom,pas)                  "pas"
-   set caption(ouranoscom,reglage)              "Régler"
-   set caption(ouranoscom,lire)                 "Lire"
+   set caption(ouranoscom,pas)                  "passos"
+   set caption(ouranoscom,reglage)              "Regular"
+   set caption(ouranoscom,lire)                 "Ler"
    set caption(ouranoscom,match)                "MATCH"
-   set caption(ouranoscom,etoile)               "Etoiles"
+   set caption(ouranoscom,etoile)               "Estrelas"
    set caption(ouranoscom,messier)              "Messier"
    set caption(ouranoscom,ngc)                  "NGC"
    set caption(ouranoscom,ic)                   "IC"
    set caption(ouranoscom,on)                   "on"
    set caption(ouranoscom,off)                  "off"
-   set caption(ouranoscom,pas_de_reponse)       "Pas de réponse"
-   set caption(ouranoscom,reponse)              "Réponse"
-   set caption(ouranoscom,emis)                 "Emis :"
-   set caption(ouranoscom,recu)                 "Reçu :"
-   set caption(ouranoscom,ferme)                "Fermé"
-   set caption(ouranoscom,pos_tel)              "Ouranos - Position du télescope"
-   set caption(ouranoscom,ad)                   "Ascension Droite :"
-   set caption(ouranoscom,dec)                  "Déclinaison :"
+   set caption(ouranoscom,pas_de_reponse)       "Sem resposta"
+   set caption(ouranoscom,reponse)              "Resposta"
+   set caption(ouranoscom,emis)                 "Emitido :"
+   set caption(ouranoscom,recu)                 "Recebido :"
+   set caption(ouranoscom,ferme)                "Fechado"
+   set caption(ouranoscom,pos_tel)              "Ouranos - Posição do telescópio"
+   set caption(ouranoscom,ad)                   "Ascenção Recta :"
+   set caption(ouranoscom,dec)                  "Declinação :"
    set caption(ouranoscom,x1)                   "x1"
    set caption(ouranoscom,x5)                   "x5"
    set caption(ouranoscom,:5)                   ":5"
    set caption(ouranoscom,ad1)                  "AD"
-   set caption(ouranoscom,dec1)                 "Déc."
+   set caption(ouranoscom,dec1)                 "Dec."
    set caption(ouranoscom,hms_angle)            "(en h m s)"
    set caption(ouranoscom,dms_angle)            "(en d m s)"
-   set caption(ouranoscom,port)                 "Port Ouranos"
+   set caption(ouranoscom,port)                 "Porta Ouranos"
    set caption(ouranoscom,2points)              ":"
 
 # *************** Version danoise *****************************
