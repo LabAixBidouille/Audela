@@ -1,6 +1,6 @@
 #
 # Fichier : horloge_astro.cap
-# Mise a jour $Id: horloge_astro.cap,v 1.4 2006-10-22 08:31:29 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.cap,v 1.5 2006-11-06 21:56:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,15 +76,15 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 if { [string compare $langage "portuguese"] == 0 } {
 
-   set caption(horloge_astro,titre)             "L'horloge de l'astronome"
-   set caption(horloge_astro,tu)                "Temps Universel :"
-   set caption(horloge_astro,tsl)               "Temps Sidéral Local :"
-   set caption(horloge_astro,ad)                "Ascension Droite (h m s) :"
-   set caption(horloge_astro,dec)               "Déclinaison (+/- ° ' '') :"
-   set caption(horloge_astro,valider)           "Valider"
-   set caption(horloge_astro,angle_horaire)     "Angle Horaire :"
-   set caption(horloge_astro,azimut)            "Azimut :"
-   set caption(horloge_astro,hauteur)           "Hauteur :"
+   set caption(horloge_astro,titre)             "Relógio do astrónomo"
+   set caption(horloge_astro,tu)                "Tempo Universal :"
+   set caption(horloge_astro,tsl)               "Tempo Sideral Local :"
+   set caption(horloge_astro,ad)                "Ascenção Recta (h m s) :"
+   set caption(horloge_astro,dec)               "Declinação (+/- ° ' '') :"
+   set caption(horloge_astro,valider)           "Validar"
+   set caption(horloge_astro,angle_horaire)     "Angûlo Horario :"
+   set caption(horloge_astro,azimut)            "Azimute :"
+   set caption(horloge_astro,hauteur)           "Altura :"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : detection.cap
-# Mise a jour $Id: detection.cap,v 1.4 2006-10-22 08:31:14 robertdelmas Exp $
+# Mise a jour $Id: detection.cap,v 1.5 2006-11-06 21:56:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -106,21 +106,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 if { [string compare $langage "portuguese"] == 0 } {
 
-   set caption(detection,start_detection)       "Début de la détection"
+   set caption(detection,start_detection)       "Ínicio da detecção"
    set caption(detection,binning)               "Binning"
-   set caption(detection,wait_before_exposure)  "Pause avant l'exposition"
-   set caption(detection,seconds)               "seconde(s)"
-   set caption(detection,time_exposure)         "Temps d'exposition"
-   set caption(detection,number_exposures)      "Nombre d'exposition(s)"
-   set caption(detection,iteration)             "Itération"
-   set caption(detection,wait_before_serie)     "Pause avant la série"
-   set caption(detection,heading_name)          "En-tête fichier"
+   set caption(detection,wait_before_exposure)  "Pausa antes da exposição"
+   set caption(detection,seconds)               "segundo(s)"
+   set caption(detection,time_exposure)         "Tempo de exposição"
+   set caption(detection,number_exposures)      "Número de exposição(s)"
+   set caption(detection,iteration)             "Iteração"
+   set caption(detection,wait_before_serie)     "Pausa antes da série"
+   set caption(detection,heading_name)          "Cabeçalho do Ficheiro"
    set caption(detection,serie)                 "Série"
-   set caption(detection,goto_position)         "Pointage position"
-   set caption(detection,acq_position)          "Acquisition position"
-   set caption(detection,number)                "Numéro"
-   set caption(detection,save_image_file)       "Sauvegarde fichier image"
-   set caption(detection,detection_complete)    "Fin de la détection"
+   set caption(detection,goto_position)         "Posição de apontamento"
+   set caption(detection,acq_position)          "Posição de aquisição"
+   set caption(detection,number)                "Número"
+   set caption(detection,save_image_file)       "Salvaguardar o ficheiro imagem"
+   set caption(detection,detection_complete)    "Fim da detecção"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
