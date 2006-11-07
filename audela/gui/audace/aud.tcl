@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.32 2006-11-05 14:40:19 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.33 2006-11-07 21:01:11 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -29,8 +29,6 @@ source aud_menu_7.tcl
 source aud_menu_8.tcl
 source aud1.tcl
 source console.tcl
-source confeditscript.tcl
-source newscript.tcl
 source confgene.tcl
 source surchaud.tcl
 source planetography.tcl
@@ -149,19 +147,19 @@ namespace eval ::audace {
 
       #--- Chargement des legendes et textes pour differentes langues
       uplevel #0 "source \"[ file join $audace(rep_caption) caption.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_1.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_7.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene_en-tete.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene_touche.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) confeditscript.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) astrometry.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) fieldchart.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) bifsconv.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) compute_stellaire.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) divers.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) iris.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) newscript.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) fieldchart.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) filtrage.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\""
 
       #--- Creation de la console
       $audace(console)::create
