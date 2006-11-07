@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.13 2006-11-01 17:38:43 alainklotz Exp $
+# Mise a jour $Id: conftel.tcl,v 1.14 2006-11-07 22:38:41 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -10,6 +10,7 @@ global confTel
 set confTel(conf_lx200,connect)     "0"
 set confTel(conf_temma,connect)     "0"
 set confTel(conf_ascom,connect)     "0"
+set confTel(conf_celestron,connect) "0"
 set confTel(fenetre,mobile,valider) "0"
 
 namespace eval ::confTel {
@@ -50,7 +51,7 @@ namespace eval ::confTel {
    # confTel::run
    # Cree la fenetre de choix et de configuration des telescopes
    # This = chemin de la fenetre
-   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma, ascom)
+   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma, ascom, celestron)
    #
    proc run { } {
       variable This
@@ -271,6 +272,93 @@ namespace eval ::confTel {
    }
 
    #
+   # confTel::MatchOuranos
+   # Permet de gerer l'affichage du bouton MATCH d'Ouranos et informations associes ainsi que du bouton
+   # transfert des coordonnees pour MATCH
+   #
+   proc MatchOuranos { } {
+      global audace caption confTel frmm ouranoscom
+
+      catch {
+         set frm $frmm(Telscp2)
+         destroy $frm.match_ra
+         destroy $frm.match_ra_entry
+         destroy $frm.match_dec
+         destroy $frm.match_dec_entry
+
+         if { $confTel(conf_ouranos,show_coord) == "1" } {
+            if { $ouranoscom(lecture) == "0" } {
+               #--- Bouton MATCH avec entry inactif
+               $frm.but_match configure -state disabled
+            } elseif { $ouranoscom(lecture) == "1" } {
+               #--- Bouton MATCH avec entry actif
+               $frm.but_match configure -text "$caption(conftel,ouranos_match)" -width 8 -state normal \
+                  -command { ::OuranosCom::match_ouranos }
+               update
+            }
+            #--- Valeur Dec. en ° ' "
+            entry $frm.match_dec_entry -textvariable confTel(conf_ouranos,match_dec) -justify center -width 12
+            pack $frm.match_dec_entry -in $frm.frame4 -anchor center -side right -padx 10
+            #--- Commentaires Dec.
+            label $frm.match_dec -text "$caption(conftel,dec) $caption(conftel,dms_angle)"
+            pack $frm.match_dec -in $frm.frame4 -anchor center -side right -padx 10
+            #--- Gestion des evenements Dec.
+            bind $frm.match_dec_entry <Enter> { ::confTel::Format_Match_Dec }
+            bind $frm.match_dec_entry <Leave> { destroy $audace(base).format_match_dec }
+            #--- Valeur AD en h mn s
+            entry $frm.match_ra_entry -textvariable confTel(conf_ouranos,match_ra) -justify center -width 12
+            pack $frm.match_ra_entry -in $frm.frame4 -anchor center -side right -padx 10
+            #--- Commentaires AD
+            label $frm.match_ra -text "$caption(conftel,ra) $caption(conftel,hms_angle)"
+            pack $frm.match_ra -in $frm.frame4 -anchor center -side right -padx 10
+            #--- Gestion des evenements AD
+            bind $frm.match_ra_entry <Enter> { ::confTel::Format_Match_AD }
+            bind $frm.match_ra_entry <Leave> { destroy $audace(base).format_match_ad }
+            #--- Mise a jour dynamique des couleurs
+            ::confColor::applyColor $frm
+         } else {
+            #--- Bouton MATCH sans entry inactif
+            $frm.but_match configure -state disabled
+         }
+      }
+   }
+
+   #
+   # confTel::radio_bouton_Ouranos
+   # Permet d'activer ou de désactiver les radio-boutons 'Etoiles', 'Messier', 'NGC' et 'IC'
+   #
+   proc radio_bouton_Ouranos { } {
+      global caption conf confTel frmm
+
+      catch {
+         set frm $frmm(Telscp2)
+         if { ( $confTel(conf_ouranos,show_coord) == "1" ) && ( $confTel(ouranos,connect) == "1" ) } {
+            $frm.rad0 configure -state normal -command {
+                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
+                  ::cataGoto::CataEtoiles
+               }
+            $frm.rad1 configure -state normal -command {
+                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_messier)
+                  ::cataGoto::CataObjet $caption(conftel,ouranos_messier)
+               }
+            $frm.rad2 configure -state normal -command {
+                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
+                  ::cataGoto::CataObjet $caption(conftel,ouranos_ngc)
+               }
+            $frm.rad3 configure -state normal -command {
+                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ic)
+                  ::cataGoto::CataObjet $caption(conftel,ouranos_ic)
+               }
+         } else {
+            $frm.rad0 configure -state disabled
+            $frm.rad1 configure -state disabled
+            $frm.rad2 configure -state disabled
+            $frm.rad3 configure -state disabled
+         }
+      }
+   }
+
+   #
    # confTel::connectAudeCom
    # Permet d'activer ou de désactiver le bouton 'Controle de la vitesse de King' quand on passe d'un onglet
    # 'Telescope' a l'autre en evitant les erreurs dues a un appui 'curieux' sur ce bouton
@@ -454,88 +542,24 @@ namespace eval ::confTel {
    }
 
    #
-   # confTel::MatchOuranos
-   # Permet de gerer l'affichage du bouton MATCH d'Ouranos et informations associes ainsi que du bouton
-   # transfert des coordonnees pour MATCH
+   # confTel::connectCelestron
+   # Permet d'activer ou de désactiver le bouton Mise a jour heure, longitude, latitude et altitude du Celestron,
+   # quand on passe d'un onglet 'Telescope' a l'autre en evitant les erreurs dues a un appui 'curieux' sur ce bouton
    #
-   proc MatchOuranos { } {
-      global audace caption confTel frmm ouranoscom
+   proc connectCelestron { } {
+      global confTel frmm
 
       catch {
-         set frm $frmm(Telscp2)
-         destroy $frm.match_ra
-         destroy $frm.match_ra_entry
-         destroy $frm.match_dec
-         destroy $frm.match_dec_entry
-
-         if { $confTel(conf_ouranos,show_coord) == "1" } {
-            if { $ouranoscom(lecture) == "0" } {
-               #--- Bouton MATCH avec entry inactif
-               $frm.but_match configure -state disabled
-            } elseif { $ouranoscom(lecture) == "1" } {
-               #--- Bouton MATCH avec entry actif
-               $frm.but_match configure -text "$caption(conftel,ouranos_match)" -width 8 -state normal \
-                  -command { ::OuranosCom::match_ouranos }
-               update
+         set frm $frmm(Telscp6)
+         if { $confTel(conf_celestron,connect) == "1" } {
+            $frm.majpara configure -state normal -command {
+               catch {
+                  tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+                  tel$audace(telNo) home $audace(posobs,observateur,gps)
+               }
             }
-            #--- Valeur Dec. en ° ' "
-            entry $frm.match_dec_entry -textvariable confTel(conf_ouranos,match_dec) -justify center -width 12
-            pack $frm.match_dec_entry -in $frm.frame4 -anchor center -side right -padx 10
-            #--- Commentaires Dec.
-            label $frm.match_dec -text "$caption(conftel,dec) $caption(conftel,dms_angle)"
-            pack $frm.match_dec -in $frm.frame4 -anchor center -side right -padx 10
-            #--- Gestion des evenements Dec.
-            bind $frm.match_dec_entry <Enter> { ::confTel::Format_Match_Dec }
-            bind $frm.match_dec_entry <Leave> { destroy $audace(base).format_match_dec }
-            #--- Valeur AD en h mn s
-            entry $frm.match_ra_entry -textvariable confTel(conf_ouranos,match_ra) -justify center -width 12
-            pack $frm.match_ra_entry -in $frm.frame4 -anchor center -side right -padx 10
-            #--- Commentaires AD
-            label $frm.match_ra -text "$caption(conftel,ra) $caption(conftel,hms_angle)"
-            pack $frm.match_ra -in $frm.frame4 -anchor center -side right -padx 10
-            #--- Gestion des evenements AD
-            bind $frm.match_ra_entry <Enter> { ::confTel::Format_Match_AD }
-            bind $frm.match_ra_entry <Leave> { destroy $audace(base).format_match_ad }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
          } else {
-            #--- Bouton MATCH sans entry inactif
-            $frm.but_match configure -state disabled
-         }
-      }
-   }
-
-   #
-   # confTel::radio_bouton_Ouranos
-   # Permet d'activer ou de désactiver les radio-boutons 'Etoiles', 'Messier', 'NGC' et 'IC'
-   #
-   proc radio_bouton_Ouranos { } {
-      global caption conf confTel frmm
-
-      catch {
-         set frm $frmm(Telscp2)
-         if { ( $confTel(conf_ouranos,show_coord) == "1" ) && ( $confTel(ouranos,connect) == "1" ) } {
-            $frm.rad0 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
-                  ::cataGoto::CataEtoiles
-               }
-            $frm.rad1 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_messier)
-                  ::cataGoto::CataObjet $caption(conftel,ouranos_messier)
-               }
-            $frm.rad2 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
-                  ::cataGoto::CataObjet $caption(conftel,ouranos_ngc)
-               }
-            $frm.rad3 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ic)
-                  ::cataGoto::CataObjet $caption(conftel,ouranos_ic)
-               }
-         } else {
-            $frm.rad0 configure -state disabled
-            $frm.rad1 configure -state disabled
-            $frm.rad2 configure -state disabled
-            $frm.rad3 configure -state disabled
+            $frm.majpara configure -state disabled
          }
       }
    }
@@ -592,12 +616,13 @@ namespace eval ::confTel {
       frame $This.usr -borderwidth 0 -relief raised
          #--- Creation de la fenetre a onglets
          set nn $This.usr.book
-         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma ASCOM } -borderwidth 1
+         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma ASCOM Celestron } -borderwidth 1
          fillPage1 $nn
          fillPage2 $nn
          fillPage3 $nn
          fillPage4 $nn
          fillPage5 $nn
+         fillPage6 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       frame $This.start -borderwidth 1 -relief raised
@@ -626,7 +651,7 @@ namespace eval ::confTel {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -706,7 +731,6 @@ namespace eval ::confTel {
       } else {
          #--- si la liste est vide, on continue quand meme
       }
-
 
       ComboBox $frm.port \
          -width 14         \
@@ -923,7 +947,7 @@ namespace eval ::confTel {
 
       ComboBox $frm.port \
          -width 14         \
-         -height [ llength $audace(list_com) ]  \
+         -height [ llength $audace(list_com) ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(ouranos,port) \
@@ -1329,7 +1353,7 @@ namespace eval ::confTel {
 
       ComboBox $frm.port \
          -width 14         \
-         -height [ llength $audace(list_com) ]  \
+         -height [ llength $audace(list_com) ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(conf_audecom,port) \
@@ -1849,6 +1873,202 @@ namespace eval ::confTel {
    }
 
    #
+   # Onglet de configuration du Celestron
+   #
+   proc fillPage6 { nn } {
+      global audace caption color conf confTel frmm
+
+      #--- initConf
+      if { ! [ info exists conf(celestron,format) ] } { set conf(celestron,format) "1" }
+      if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   [ lindex "$audace(list_com)" 0 ] }
+
+      #--- confToWidget
+      set confTel(conf_celestron,format) [ lindex "$caption(conftel,format_court_long)" $conf(celestron,format) ]
+      set confTel(conf_celestron,port)   $conf(celestron,port)
+
+      set confTel(raquette)          $conf(raquette)
+
+      #--- Initialisation
+      set frmm(Telscp6) [ Rnotebook:frame $nn 6 ]
+      set frm $frmm(Telscp6)
+
+      #--- Creation des differents frames
+      frame $frm.frame1 -borderwidth 0 -relief raised
+      pack $frm.frame1 -side top -fill x
+
+      frame $frm.frame2 -borderwidth 0 -relief raised
+      pack $frm.frame2 -side top -fill x
+
+      frame $frm.frame3 -borderwidth 0 -relief raised
+      pack $frm.frame3 -side top -fill x
+
+      frame $frm.frame4 -borderwidth 0 -relief raised
+      pack $frm.frame4 -side top -fill x
+
+      frame $frm.frame4a -borderwidth 0 -relief raised
+      pack $frm.frame4a -side top -fill x
+
+      frame $frm.frame5 -borderwidth 0 -relief raised
+      pack $frm.frame5 -side bottom -fill x -pady 2
+
+      frame $frm.frame6 -borderwidth 0 -relief raised
+      pack $frm.frame6 -in $frm.frame1 -side left -fill both -expand 1
+
+      frame $frm.frame7 -borderwidth 0 -relief raised
+      pack $frm.frame7 -in $frm.frame1 -side left -fill both -expand 1
+
+      frame $frm.frame8 -borderwidth 0 -relief raised
+      pack $frm.frame8 -in $frm.frame7 -side top -fill x
+
+      frame $frm.frame9 -borderwidth 0 -relief raised
+      pack $frm.frame9 -in $frm.frame7 -side top -fill x
+
+      #--- Definition du port
+      label $frm.lab1 -text "$caption(conftel,port_liaison)"
+      pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
+
+      #--- Prise en compte des liaisons
+      set list_connexion [::confLink::getLinkLabels { "serialport" } ]
+
+      #--- je verifie le contenu de la liste
+      if { [llength $list_connexion ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_connexion $confTel(conf_celestron,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confTel(conf_celestron,port) [lindex $list_connexion 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      ComboBox $frm.port \
+         -width 14         \
+         -height [ llength $list_connexion ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -textvariable confTel(conf_celestron,port) \
+         -editable 0       \
+         -values $list_connexion \
+         -modifycmd {
+            #--- Ouvre la configuration des liaisons sur le bon onglet
+            ::confLink::run ::confTel(conf_celestron,port) { serialport } "controle Celestron"
+         }
+      pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
+
+     # #--- Bouton de configuration des liaisons
+     # button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command { ::confLink::run ::confTel(conf_celestron,port) { serialport } "controle Celestron"  }
+     # pack $frm.configure -in $frm.frame6 -anchor n -side right -pady 10 -ipadx 10 -ipady 1 -expand true
+
+     # #--- Definition du LX200 ou du clone
+     # label $frm.lab3 -text "$caption(conftel,modele)"
+     # pack $frm.lab3 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
+
+     # set list_combobox [ list $caption(conftel,modele_lx200) $caption(conftel,modele_audecom) \
+     #    $caption(conftel,modele_skysensor) $caption(conftel,modele_gemini) $caption(conftel,modele_ite-lente) ]
+     # ComboBox $frm.modele \
+     #    -width 17         \
+     #    -height [ llength $list_combobox ] \
+     #    -relief sunken    \
+     #    -borderwidth 1    \
+     #    -textvariable confTel(conf_celestron,modele) \
+     #    -modifycmd { ::confTel::connectIte-lente } \
+     #    -editable 0       \
+     #    -values $list_combobox
+     # pack $frm.modele -in $frm.frame8 -anchor center -side right -padx 10 -pady 10
+
+      #--- Definition du format des donnees transmises au Celestron
+      label $frm.lab2 -text "$caption(conftel,format)"
+      pack $frm.lab2 -in $frm.frame9 -anchor center -side left -padx 10 -pady 10
+
+      set list_combobox "$caption(conftel,format_court_long)"
+      ComboBox $frm.formatradec \
+         -width 7          \
+         -height [ llength $list_combobox ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -textvariable confTel(conf_celestron,format) \
+         -editable 0       \
+         -values $list_combobox
+      pack $frm.formatradec -in $frm.frame9 -anchor center -side right -padx 10 -pady 10
+
+      #--- Le bouton de commande maj heure et position du Celestron
+      button $frm.majpara -text "$caption(conftel,maj_celestron)" -relief raised -command {
+         catch {
+            tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+            tel$audace(telNo) home $audace(posobs,observateur,gps)
+         }
+      }
+      pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+
+     # #--- Entree de la tempo Ite-lente
+     # label $frm.lab4 -text "$caption(conftel,ite-lente_tempo)"
+     # pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
+
+     # entry $frm.tempo -textvariable confTel(conf_celestron,ite-lente_tempo) -justify center -width 5
+     # pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
+
+      #--- Gestion du bouton actif/inactif
+      ::confTel::connectCelestron
+
+      #--- Le checkbutton pour la visibilite de la raquette a l'ecran
+      checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
+         -highlightthickness 0 -variable confTel(raquette)
+      pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
+      ComboBox $frm.nom_raquette \
+         -width 10         \
+         -height [ llength $::confPad::private(driverlist) ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -modifycmd {
+            set label $audace(nom_raquette)
+            set index [lsearch -exact $::confPad::private(driverlist) $label ]
+            if { $index != -1 } {
+               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
+            } else {
+               set ::confPad::private(conf_confPad) ""
+            }
+            set conf(confPad) $::confPad::private(conf_confPad)
+
+            ::confPad::run
+         } \
+         -textvariable audace(nom_raquette) \
+         -editable 0       \
+         -values $::confPad::private(driverlist)
+      pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
+
+      #--- Choix de la raquette
+      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
+      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 20 -ipady 5 -expand true
+
+      #--- Site web officiel du Celestron
+      label $frm.lab103 -text "$caption(conftel,site_web_ref)"
+      pack $frm.lab103 -in $frm.frame5 -side top -fill x -pady 2
+
+      label $frm.labURL -text "$caption(conftel,site_celestron)" -font $audace(font,url) -fg $color(blue)
+      pack $frm.labURL -in $frm.frame5 -side top -fill x -pady 2
+
+      #--- Creation du lien avec le navigateur web et changement de sa couleur
+      bind $frm.labURL <ButtonPress-1> {
+         set filename "$caption(conftel,site_celestron)"
+         ::audace::Lance_Site_htm $filename
+      }
+      bind $frm.labURL <Enter> {
+         global frmm
+         set frm $frmm(Telscp6)
+         $frm.labURL configure -fg $color(purple)
+      }
+      bind $frm.labURL <Leave> {
+         global frmm
+         set frm $frmm(Telscp6)
+         $frm.labURL configure -fg $color(blue)
+      }
+
+      bind [ Rnotebook:button $nn 6 ] <Button-1> { global confTel ; set confTel(tel) "celestron" }
+   }
+
+   #
    # confTel::Format_Match_AD
    # Definit le format en entree de l'AD pour MATCH d'Ouranos
    #
@@ -1975,11 +2195,12 @@ namespace eval ::confTel {
       set nn $This.usr.book
       set confTel(tel) $tel
       switch -exact -- $tel {
-         ascom   { Rnotebook:raise $nn 5 }
-         temma   { Rnotebook:raise $nn 4 }
-         audecom { Rnotebook:raise $nn 3 }
-         ouranos { Rnotebook:raise $nn 2 }
-         lx200   { Rnotebook:raise $nn 1 }
+         celestron { Rnotebook:raise $nn 6 }
+         ascom     { Rnotebook:raise $nn 5 }
+         temma     { Rnotebook:raise $nn 4 }
+         audecom   { Rnotebook:raise $nn 3 }
+         ouranos   { Rnotebook:raise $nn 2 }
+         lx200     { Rnotebook:raise $nn 1 }
       }
    }
 
@@ -2007,11 +2228,12 @@ namespace eval ::confTel {
 
       switch -exact -- $conf(telescope) {
          audecom {
-               set confTel(conf_lx200,connect) "0"
-               set confTel(ouranos,connect)    "0"
-               set confTel(audecom,connect)    "1"
-               set confTel(conf_temma,connect) "0"
-               set confTel(conf_ascom,connect) "0"
+               set confTel(conf_lx200,connect)     "0"
+               set confTel(ouranos,connect)        "0"
+               set confTel(audecom,connect)        "1"
+               set confTel(conf_temma,connect)     "0"
+               set confTel(conf_ascom,connect)     "0"
+               set confTel(conf_celestron,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create audecom $conf(audecom,port) } msg ]
                if { $erreur == "1" } {
@@ -2087,12 +2309,13 @@ namespace eval ::confTel {
                }
             }
          ouranos {
-               set conf(raquette)              "0"
-               set confTel(conf_lx200,connect) "0"
-               set confTel(ouranos,connect)    "1"
-               set confTel(audecom,connect)    "0"
-               set confTel(conf_temma,connect) "0"
-               set confTel(conf_ascom,connect) "0"
+               set conf(raquette)                  "0"
+               set confTel(conf_lx200,connect)     "0"
+               set confTel(ouranos,connect)        "1"
+               set confTel(audecom,connect)        "0"
+               set confTel(conf_temma,connect)     "0"
+               set confTel(conf_ascom,connect)     "0"
+               set confTel(conf_celestron,connect) "0"
                #--- Arrete la lecture des coordonnees
                set ouranoscom(lecture) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
@@ -2193,11 +2416,12 @@ namespace eval ::confTel {
             }
          }
          temma {
-               set confTel(conf_lx200,connect) "0"
-               set confTel(ouranos,connect)    "0"
-               set confTel(audecom,connect)    "0"
-               set confTel(conf_temma,connect) "1"
-               set confTel(conf_ascom,connect) "0"
+               set confTel(conf_lx200,connect)     "0"
+               set confTel(ouranos,connect)        "0"
+               set confTel(audecom,connect)        "0"
+               set confTel(conf_temma,connect)     "1"
+               set confTel(conf_ascom,connect)     "0"
+               set confTel(conf_celestron,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create temma $conf(temma,port) } msg ]
                if { $erreur == "1" } {
@@ -2270,11 +2494,12 @@ namespace eval ::confTel {
                ::confTel::config_correc_Temma
             }
          ascom {
-               set confTel(conf_lx200,connect) "0"
-               set confTel(ouranos,connect)    "0"
-               set confTel(audecom,connect)    "0"
-               set confTel(conf_temma,connect) "0"
-               set confTel(conf_ascom,connect) "1"
+               set confTel(conf_lx200,connect)     "0"
+               set confTel(ouranos,connect)        "0"
+               set confTel(audecom,connect)        "0"
+               set confTel(conf_temma,connect)     "0"
+               set confTel(conf_ascom,connect)     "1"
+               set confTel(conf_celestron,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] } msg ]
                if { $erreur == "1" } {
@@ -2288,6 +2513,35 @@ namespace eval ::confTel {
                      $caption(conftel,2points) [ lindex $conf(ascom,driver) 1 ] \n"
                   console::affiche_saut "\n"
                   set audace(telNo) $msg
+               }
+            }
+         celestron {
+               set confTel(conf_lx200,connect)     "0"
+               set confTel(ouranos,connect)        "0"
+               set confTel(audecom,connect)        "0"
+               set confTel(conf_temma,connect)     "0"
+               set confTel(conf_ascom,connect)     "0"
+               set confTel(conf_celestron,connect) "1"
+               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+               set erreur [ catch { tel::create celestron $conf(celestron,port) } msg ]
+               if { $erreur == "1" } {
+                  if { $audace(list_com) == "" } {
+                     #--- Commentaire uniquement en anglais (donc pas de caption)
+                     append msg "\nNo Port COM."
+                  }
+                  tk_messageBox -message "$msg" -icon error
+               } else {
+                  console::affiche_erreur "$caption(conftel,port_celestron)\
+                     $caption(conftel,2points) $conf(celestron,port)\n"
+                  console::affiche_saut "\n"
+                  set audace(telNo) $msg
+                  if { $conf(celestron,format) == "0" } {
+                     tel$audace(telNo) longformat off
+                  } else {
+                     tel$audace(telNo) longformat on
+                  }
+                  #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+                  set linkNo [confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" ""]
                }
             }
       }
@@ -2317,11 +2571,12 @@ namespace eval ::confTel {
          #--- En cas de probleme, telescope par defaut
          set conf(telescope)             "lx200"
          set conf(lx200,port)            [ lindex $audace(list_com) 0 ]
-         set confTel(conf_lx200,connect) "0"
-         set confTel(ouranos,connect)    "0"
-         set confTel(audecom,connect)    "0"
-         set confTel(conf_temma,connect) "0"
-         set confTel(conf_ascom,connect) "0"
+         set confTel(conf_lx200,connect)     "0"
+         set confTel(ouranos,connect)        "0"
+         set confTel(audecom,connect)        "0"
+         set confTel(conf_temma,connect)     "0"
+         set confTel(conf_ascom,connect)     "0"
+         set confTel(conf_celestron,connect) "0"
          $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,tiret)" -fg $color(blue)
       } else {
          $audace(base).fra1.labTel_name_labURL configure -text "$conf(telescope)" -fg $color(blue)
@@ -2334,6 +2589,7 @@ namespace eval ::confTel {
          ::confTel::connectAudeCom
       }
       ::confTel::connectTemma
+      ::confTel::connectCelestron
 
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectTelescope ] {
@@ -2428,6 +2684,10 @@ namespace eval ::confTel {
       #--- Memorise la configuration du driver ASCOM dans le tableau conf(ascom,...)
       set frm [ Rnotebook:frame $nn 5 ]
       set conf(ascom,driver)          $confTel(conf_ascom,driver)
+      #--- Memorise la configuration du Celestron dans le tableau conf(celestron,...)
+      set frm [ Rnotebook:frame $nn 6 ]
+      set conf(celestron,port)        $confTel(conf_celestron,port)
+      set conf(celestron,format)      [ lsearch "$caption(conftel,format_court_long)" "$confTel(conf_celestron,format)" ]
    }
 }
 
