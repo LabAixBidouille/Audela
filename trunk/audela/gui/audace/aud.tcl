@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.33 2006-11-07 21:01:11 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.34 2006-11-07 23:00:48 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -46,7 +46,6 @@ source help.tcl
 source vo_tools.tcl
 source sectiongraph.tcl
 source polydraw.tcl
-source sextractor.tcl
 
 namespace eval ::audace {
    variable This
@@ -185,6 +184,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace plotxy.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace movie.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confvisu.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace sextractor.tcl ]\""
 
       #---
       set audace(rep_audela) [pwd]
