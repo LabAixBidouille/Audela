@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.6 2006-11-03 21:26:52 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.7 2006-11-08 22:28:07 robertdelmas Exp $
 #
 
 package provide audinet 1.0
@@ -59,6 +59,7 @@ proc ::audinet::confToWidget { } {
    set widget(audinet,mac_address)  $conf(audinet,mac_address)
    set widget(audinet,protocole)    $conf(audinet,protocole)
    set widget(audinet,udptempo)     $conf(audinet,udptempo)
+   set widget(audinet,debug)        $conf(audinet,debug)
    set widget(audinet,autoflush)    $conf(audinet,autoflush)
    set widget(audinet,focuser_type) $conf(audinet,focuser_type)
    set widget(audinet,focuser_addr) $conf(audinet,focuser_addr)
@@ -180,6 +181,11 @@ proc ::audinet::fillConfigPage { frm } {
 
    entry $frm.udptempo -width 5 -textvariable ::audinet::widget(audinet,udptempo) -justify center
    pack $frm.udptempo -in $frm.frame3 -anchor center -side left -padx 10 -pady 5
+
+   #--- AudiNet en mode debug ou non
+   checkbutton $frm.debug -text "$caption(audinet,debug)" -highlightthickness 0 \
+      -variable ::audinet::widget(audinet,debug)
+   pack $frm.debug -in $frm.frame3 -anchor center -side right -padx 10 -pady 2
 
    #--- Definition du mode de vidage de la communication avec le telescope
    checkbutton $frm.autoflush -text "$caption(audinet,autoflush)" -highlightthickness 0 \
@@ -355,6 +361,7 @@ proc ::audinet::initConf { } {
    if { ! [ info exists conf(audinet,mac_address) ] }  { set conf(audinet,mac_address)  "00:01:02:03:04:05" }
    if { ! [ info exists conf(audinet,protocole) ] }    { set conf(audinet,protocole)    "$caption(audinet,protocole_udp)" }
    if { ! [ info exists conf(audinet,udptempo) ] }     { set conf(audinet,udptempo)     "0" }
+   if { ! [ info exists conf(audinet,debug) ] }        { set conf(audinet,debug)        "0" }
    if { ! [ info exists conf(audinet,autoflush) ] }    { set conf(audinet,autoflush)    "1" }
    if { ! [ info exists conf(audinet,focuser_type) ] } { set conf(audinet,focuser_type) "lx200" }
    if { ! [ info exists conf(audinet,focuser_addr) ] } { set conf(audinet,focuser_addr) "112" }
@@ -419,6 +426,7 @@ proc ::audinet::widgetToConf { } {
    set conf(audinet,mac_address)  $widget(audinet,mac_address)
    set conf(audinet,protocole)    $widget(audinet,protocole)
    set conf(audinet,udptempo)     $widget(audinet,udptempo)
+   set conf(audinet,debug)        $widget(audinet,debug)
    set conf(audinet,autoflush)    $widget(audinet,autoflush)
    set conf(audinet,focuser_type) $widget(audinet,focuser_type)
    set conf(audinet,focuser_addr) $widget(audinet,focuser_addr)
