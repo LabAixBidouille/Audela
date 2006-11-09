@@ -25,10 +25,10 @@
 
 #define SPECIFIC_CMDLIST \
    {"parameter",        (Tcl_CmdProc *)cmdCemesParam}, \
-   {"peltmarche",     (Tcl_CmdProc *)cmdPeltierMarche}, \
-   {"pelttemp",     (Tcl_CmdProc *)cmdPeltierTemp}, \
+   {"peltON",     (Tcl_CmdProc *)cmdPeltierMarche}, \
+   {"peltOFF",     (Tcl_CmdProc *)cmdPeltierArret}, \
+   {"settemp",     (Tcl_CmdProc *)cmdCemesSetTemp}, \
    {"gettemp",     (Tcl_CmdProc *)cmdCemesGetTemp}, \
-   {"take",     (Tcl_CmdProc *)cmdCemesTakeASetOf}, \
    {"ampliobtu",     (Tcl_CmdProc *)cmdCemesObtu},    
 
 /* === Specific commands for that camera === */
@@ -36,12 +36,13 @@
 extern "C" {
 #endif
 
-int cmdPeltierTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdPeltierMarche(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdPeltierArret(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesParam(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesObtu(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesGetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdCemesTakeASetOf(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdCemesSetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+
 
 #ifdef __cplusplus
 }
