@@ -1,6 +1,6 @@
 #
 # Fichier : trichro.cap
-# Mise a jour $Id: trichro.cap,v 1.4 2006-10-22 09:23:58 robertdelmas Exp $
+# Mise a jour $Id: trichro.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -82,15 +82,15 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(trichro,interro)     "?"
-   set caption(trichro,titre)       "Importer une trichromie"
-   set caption(trichro,comment)     "Fusion des images rouges/vertes/bleues"
-   set caption(trichro,rep_images)  "Répertoire des images"
+   set caption(trichro,titre)       "Importar uma tricromia"
+   set caption(trichro,comment)     "Fusão das imagens vermelhas/verdes/azuis"
+   set caption(trichro,rep_images)  "Directório das imagens"
    set caption(trichro,parcourir)   "..."
-   set caption(trichro,image_r)     "Image rouge"
-   set caption(trichro,image_v)     "Image verte"
-   set caption(trichro,image_b)     "Image bleue"
-   set caption(trichro,nom_image)   "Nom de l'image"
-   set caption(trichro,executer)    "Exécuter"
+   set caption(trichro,image_r)     "Imagem vermelha"
+   set caption(trichro,image_v)     "Imagem verde"
+   set caption(trichro,image_b)     "Imagem azul"
+   set caption(trichro,nom_image)   "Nome da imagem"
+   set caption(trichro,executer)    "Executar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

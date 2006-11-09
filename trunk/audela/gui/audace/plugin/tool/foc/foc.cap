@@ -1,6 +1,6 @@
 #
 # Fichier : foc.cap
-# Mise a jour $Id: foc.cap,v 1.4 2006-10-22 09:36:24 robertdelmas Exp $
+# Mise a jour $Id: foc.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -211,42 +211,42 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(foc,focalisation)    "Focalisation"
-   set caption(foc,help_titre)      "Aide pour cet outil"
-   set caption(foc,acquisition)     "Acquisition"
-   set caption(foc,centrage)        "Centrage"
-   set caption(foc,fenetre)         "Fenêtre"
-   set caption(foc,seconde)         "sec."
+   set caption(foc,focalisation)    "Focagem"
+   set caption(foc,help_titre)      "Ajuda para esta ferramenta"
+   set caption(foc,acquisition)     "Aquisição"
+   set caption(foc,centrage)        "Centragem"
+   set caption(foc,fenetre)         "Janela"
+   set caption(foc,seconde)         "seg."
    set caption(foc,go)              "GO CCD"
    set caption(foc,raz)             "R.A.Z."
    set caption(foc,stop)            "Stop"
-   set caption(foc,moteur_focus)    "Moteur de foc."
-   set caption(foc,pos_focus)       "Position de la foc."
-   set caption(foc,se_trouve)       "Se trouve à"
-   set caption(foc,pas)             "pas"
-   set caption(foc,aller_a)         "Aller à"
-   set caption(foc,init)            "Initialisation"
-   set caption(foc,graphe)          "Graphe"
+   set caption(foc,moteur_focus)    "Motor de foc."
+   set caption(foc,pos_focus)       "Posição de foc."
+   set caption(foc,se_trouve)       "Encontra-se em"
+   set caption(foc,pas)             "passo"
+   set caption(foc,aller_a)         "Ir até"
+   set caption(foc,init)            "Inicialização"
+   set caption(foc,graphe)          "Gráfico"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
-   set caption(foc,titre_graphe)    "Aud'ACE : Focalisation"
-   set caption(foc,intensite_adu)   "Intensite (ADU)"
+   set caption(foc,titre_graphe)    "Aud'ACE : Focagem"
+   set caption(foc,intensite_adu)   "Intensidade (ADU)"
    set caption(foc,fwhm_x)          "Fwhm X (pixel)"
    set caption(foc,fwhm_y)          "Fwhm Y (pixel)"
    set caption(foc,contrast_adu)    "Contraste (ADU)"
-   set caption(foc,intensite)       "Intensité"
+   set caption(foc,intensite)       "Intensidade"
    set caption(foc,fwhm__x)         "Fwhm X"
    set caption(foc,fwhm__y)         "Fwhm Y"
    set caption(foc,contraste)       "Contraste"
    set caption(foc,egale)           "="
-   set caption(foc,attention)       "Attention"
-   set caption(foc,formatfoc1)      "La valeur à saisir doit être"
-   set caption(foc,formatfoc2)      "comprise entre -32767 et 32767."
-   set caption(foc,limitefoc1)      "Déplacement impossible"
-   set caption(foc,limitefoc2)      "car limité à 32767."
-   set caption(foc,limitefoc3)      "car limité à -32767."
-   set caption(foc,probleme)        "Problème"
-   set caption(foc,entier_positif)  "Temps de pose invalide\n(doit être un nombre positif)"
+   set caption(foc,attention)       "Atenção"
+   set caption(foc,formatfoc1)      "O valor a seleccionar deve ser"
+   set caption(foc,formatfoc2)      "compreendido entre -32767 e 32767."
+   set caption(foc,limitefoc1)      "Deslocamento impossível"
+   set caption(foc,limitefoc2)      "por ser limitado a 32767."
+   set caption(foc,limitefoc3)      "por ser limitado a -32767."
+   set caption(foc,probleme)        "Problema"
+   set caption(foc,entier_positif)  "Tempo de exposição inválido\n(deve ser um número positivo)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

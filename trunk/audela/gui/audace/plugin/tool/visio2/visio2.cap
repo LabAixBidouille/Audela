@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.5 2006-10-22 10:03:59 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.6 2006-11-09 13:17:52 audelateam Exp $
 #
 
 #=========================================================================
@@ -312,26 +312,26 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(visio2,audace)                "Aud'ACE"
-   set caption(visio2,title)                 "Visionneuse bis"
+   set caption(visio2,title)                 "Visualizador 2"
 
-   #--- types de fichier
-   set caption(visio2,parent_folder)         "Répertoire parent"
-   set caption(visio2,folder)                "Répertoire"
-   set caption(visio2,image)                 "Image"
-   set caption(visio2,movie)                 "Film"
-   set caption(visio2,file)                  "Fichier"
+   #--- types de fichier	
+   set caption(visio2,parent_folder)         "Directório raiz"
+   set caption(visio2,folder)                "Directório"
+   set caption(visio2,image)                 "Imagem"
+   set caption(visio2,movie)                 "Filme"
+   set caption(visio2,file)                  "Ficheiro"
 
    #--- menus
-   set caption(visio2,refresh)               "Actualiser"
-   set caption(visio2,select_all)            "Tout sélectionner"
-   set caption(visio2,save_file)             "Enregistrer sous..."
-   set caption(visio2,delete_file)           "Supprimer..."
-   set caption(visio2,get_file)              "Transférer"
-   set caption(visio2,column_name)           "Nom"
-   set caption(visio2,column_type)           "Type"
+   set caption(visio2,refresh)               "Actualizar"
+   set caption(visio2,select_all)            "Seleccionar tudo"
+   set caption(visio2,save_file)             "Guardar como..."
+   set caption(visio2,delete_file)           "Eliminar..."
+   set caption(visio2,get_file)              "Mover"
+   set caption(visio2,column_name)           "Nome"
+   set caption(visio2,column_type)           "Tipo"
    set caption(visio2,column_series)         "Série"
-   set caption(visio2,column_date)           "Date"
-   set caption(visio2,column_size)           "Taille"
+   set caption(visio2,column_date)           "Data"
+   set caption(visio2,column_size)           "Tamanho"
    set caption(visio2,zoom)                  "Zoom"
    set caption(visio2,zoom_0.125)            "x 0.125"
    set caption(visio2,zoom_0.25)             "x 0.25"
@@ -339,34 +339,34 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,zoom_1)                "x 1"
    set caption(visio2,zoom_2)                "x 2"
    set caption(visio2,zoom_4)                "x 4"
-   set caption(visio2,full_screen)           "Plein écran"
-   set caption(visio2,config)                "Configurer..."
+   set caption(visio2,full_screen)           "Ecrã inteiro"
+   set caption(visio2,config)                "Configurar..."
    set caption(visio2,slideshow)             "Diaporama"
-   set caption(visio2,play_movie)            "Voir le film"
-   set caption(visio2,help)                  "Aide..."
+   set caption(visio2,play_movie)            "Ver o filme"
+   set caption(visio2,help)                  "Ajuda..."
 
    #--- messages
-   set caption(visio2,dialog_title)          "Visionneuse bis"
-   set caption(visio2,delete_file_confirm)   "Etes-vous sûr de vouloir supprimer le fichier ?"
-   set caption(visio2,delete_dir_confirm)    "Etes-vous sûr de vouloir supprimer le répertoire et son contenu ?"
-   set caption(visio2,delete_file_error)     "Sélectionner d'abord un fichier"
-   set caption(visio2,slideshow_error)       "Sélectionner d'abord plusieurs images"
-   set caption(visio2,ftp_connection_title)  "Connexion FTP"
-   set caption(visio2,ftp_connection_error)  "Echec de la connexion au serveur :"
-   set caption(visio2,ftp_connection_close)  "Fermer la connexion au serveur :"
+   set caption(visio2,dialog_title)          "Visualizador 2"
+   set caption(visio2,delete_file_confirm)   "Tem a certeza que deseja eliminar o ficheiro ?"
+   set caption(visio2,delete_dir_confirm)    "Tem a certeza que deseja eliminar o directório e o seu conteúdo ?"
+   set caption(visio2,delete_file_error)     "Seleccionar primeiro um ficheiro"
+   set caption(visio2,slideshow_error)       "Seleccionar primeiro várias imagens"
+   set caption(visio2,ftp_connection_title)  "Ligação FTP"
+   set caption(visio2,ftp_connection_error)  "Falha na ligação ao servidor :"
+   set caption(visio2,ftp_connection_close)  "Fechar a ligação ao servidor :"
    set caption(visio2,delete_button0)        "OK"
-   set caption(visio2,delete_button1)        "OK pour tous"
-   set caption(visio2,delete_button2)        "Non"
-   set caption(visio2,delete_button3)        "Abandonner"
-   set caption(visio2,help,titre)            "Aide pour cet outil"
+   set caption(visio2,delete_button1)        "OK para tudo"
+   set caption(visio2,delete_button2)        "Não"
+   set caption(visio2,delete_button3)        "Cancelar"
+   set caption(visio2,help,titre)            "Ajuda para esta ferramenta"
 
-   set caption(visio2,file_exist)            "Le fichier existe déjà. Voulez-vous l'écraser ?"
-   set caption(visio2,show_directory)        "Le répertoire est vide ou absent."
+   set caption(visio2,file_exist)            "O ficheiro já existe. Deseja substituí-lo ?"
+   set caption(visio2,show_directory)        "O directório está vazio ou não existe."
 
    #--- fenetre de configuration
-   set caption(visio2,known_files)           "Fichiers reconnus :"
-   set caption(visio2,show_all_files)        "Afficher les autres fichiers"
-   set caption(visio2,remark)                "Les fichiers bmp, jpg, ps, tiff nécessitent le package Img 1.2.4\nLes fichiers avi, mov, mpeg nécessitent le package tmci (Windows uniquement)."
+   set caption(visio2,known_files)           "Ficheiros reconhecidos :"
+   set caption(visio2,show_all_files)        "Mostrar os outros ficheiros"
+   set caption(visio2,remark)                "Os ficheiros bmp, jpg, ps, tiff necessitam do pacote Img 1.2.4\nOs ficheiros avi, mov, mpeg necessitam do pacote tmci (Windows somente)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

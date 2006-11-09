@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.5 2006-10-22 09:31:14 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.6 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -58,20 +58,20 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)    "Acquisition (MASCOT)"
-   set caption(cmaude,help_titre)      "Aide pour cet outil"
-   set caption(cmaude,bias)            "Image du bias"
-   set caption(cmaude,dark)            "Image du dark"
-   set caption(cmaude,overlay)         "Image d'overlay"
-   set caption(cmaude,nom_image)       "Nom de l'image"
+   set caption(cmaude,titre_mascot)    "Aquisição (MASCOT)"
+   set caption(cmaude,help_titre)      "Ajuda para esta ferramenta"
+   set caption(cmaude,bias)            "Imagem de polarização"
+   set caption(cmaude,dark)            "Imagem dark"
+   set caption(cmaude,overlay)         "Imagem de overlay"
+   set caption(cmaude,nom_image)       "Nome da imagem"
    set caption(cmaude,binning)         "Binning"
-   set caption(cmaude,temps_pose)      "Pose (sec.)"
-   set caption(cmaude,entre_2_images)  "Temps entre 2 img. (sec.)"
+   set caption(cmaude,temps_pose)      "Exposição (seg.)"
+   set caption(cmaude,entre_2_images)  "Tempo entre 2 img. (seg.)"
    set caption(cmaude,go_acquisition)  "GO CCD"
    set caption(cmaude,stop)            "STOP"
-   set caption(cmaude,ephemerides)     "Ephémérides"
-   set caption(cmaude,status)          "Statut"
-   set caption(cmaude,status1)         "Statut de l'acquisition"
+   set caption(cmaude,ephemerides)     "Efemérides"
+   set caption(cmaude,status)          "Estado"
+   set caption(cmaude,status1)         "Estado da aquisição"
    set caption(cmaude,status2)         "---"
 
 # *************** Version danoise *****************************

@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.4 2006-10-22 09:57:46 robertdelmas Exp $
+# Mise a jour $Id: telshift.cap,v 1.5 2006-11-09 13:17:51 audelateam Exp $
 #
 
 #=========================================================================
@@ -201,40 +201,40 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(telshift,titre)         "Imagerie avec déplacement du télescope"
+   set caption(telshift,titre)         "Aquisição de imagem com deslocamento do telescópio"
    set caption(telshift,ok)            "OK"
-   set caption(telshift,annuler)       "Annuler"
-   set caption(telshift,aide)          "Aide"
-   set caption(telshift,nomfichier)    "Nom de base du fichier image :"
-   set caption(telshift,parametres)    "Paramètres des poses :"
-   set caption(telshift,nbposes)       "Nombre de poses : "
-   set caption(telshift,status)        "Statut"
-   set caption(telshift,dureepose)     "Durée de chaque pose : "
-   set caption(telshift,secondes)      " secondes"
-   set caption(telshift,binning)       "Facteur de binning :"
+   set caption(telshift,annuler)       "Cancelar"
+   set caption(telshift,aide)          "Ajuda"
+   set caption(telshift,nomfichier)    "Nome de base do ficheiro imagem :"
+   set caption(telshift,parametres)    "Parâmetros das exposições :"
+   set caption(telshift,nbposes)       "Número de exposições : "
+   set caption(telshift,status)        "Estado"
+   set caption(telshift,dureepose)     "Duração de cada exposição : "
+   set caption(telshift,secondes)      " segundos"
+   set caption(telshift,binning)       "Factor de binning :"
    set caption(telshift,binning1)      "Binning 1x1"
    set caption(telshift,binning2)      "Binning 2x2"
    set caption(telshift,binning4)      "Binning 4x4"
-   set caption(telshift,focale)        "Focale du télescope :"
+   set caption(telshift,focale)        "Focal do telescópio :"
    set caption(telshift,mm)            "mm"
-   set caption(telshift,imagerie)      "Imagerie :"
-   set caption(telshift,imagenormale)  "Image normale"
-   set caption(telshift,superflat)     "PLU sur ciel nocturne"
-   set caption(telshift,mosaique4)     "Mosaïque de 4 images"
-   set caption(telshift,mosaique9)     "Mosaïque de 9 images"
-   set caption(telshift,nbposesmosa)   "Nombre de poses par image de la mosaïque : "
-   set caption(telshift,aideutil)      "Aide à l'utilisateur"
-   set caption(telshift,erreuraide)    "Fichier telshift_fr.txt introuvable. Pour voir l'aide, il doit y avoir ce fichier dans le répertoire 'aide_telshift'."
-   set caption(telshift,pointevers)    "Pointe vers"
-   set caption(telshift,pointesur)     "Pointe sur"
-   set caption(telshift,lancepose)     "Lance la pose n°"
-   set caption(telshift,termine)       "Traitement terminé !"
-   set caption(telshift,anticipee)     "Sortie anticipée !"
-   set caption(telshift,attention)     "Attention !"
-   set caption(telshift,erreurfocale1) "Vous devez obligatoirement renseigner les champs"
-   set caption(telshift,erreurfocale2) "'Nom de base du fichier image' et 'Focale du"
-   set caption(telshift,erreurfocale3) "télescope' avant de cliquer sur le boutton 'OK'."
-   set caption(telshift,numerisation)  "Lecture CCD"
+   set caption(telshift,imagerie)      "Captura :"
+   set caption(telshift,imagenormale)  "Imagem normal"
+   set caption(telshift,superflat)     "Captura de flat em céu escuro"
+   set caption(telshift,mosaique4)     "Mosaico de 4 imagens"
+   set caption(telshift,mosaique9)     "Mosaico de 9 imagens"
+   set caption(telshift,nbposesmosa)   "Número de exposições por imagem do mosaico : "
+   set caption(telshift,aideutil)      "Ajuda ao utilizador"
+   set caption(telshift,erreuraide)    "Ficheiro telshift_fr.txt não encontrado. Para ver a ajuda, tem que existir este ficheiro no directório 'aide_telshift'."
+   set caption(telshift,pointevers)    "A apontar para"
+   set caption(telshift,pointesur)     "A apontar sobre"
+   set caption(telshift,lancepose)     "Iniciar a exposição n°"
+   set caption(telshift,termine)       "Processamento terminado !"
+   set caption(telshift,anticipee)     "Saída antecipada !"
+   set caption(telshift,attention)     "Atenção !"
+   set caption(telshift,erreurfocale1) "Tem que preencher os campos"
+   set caption(telshift,erreurfocale2) "'Nome de base do ficheiro imagem' e 'Focal do"
+   set caption(telshift,erreurfocale3) "telescopio' antes de clicar no butão 'OK'."
+   set caption(telshift,numerisation)  "Leitura CCD"
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
