@@ -72,63 +72,55 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 */
 //... ATE AQUI
 
-
-int cmdPeltierTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
-{	
-	int result=TCL_OK;
-/*	char ligne[256];
-
-	if (argc!=3)
-	{
-		sprintf(ligne, "Usage: %s %s (1)\n\n\t\t(1)->Temperare negatif du peltier(0-50)\n", argv[0], argv[1]);
-		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-		result = TCL_ERROR;
-		return result;
-	}
-	else
-	{
-		//unsigned int cons=13600;	//-40 ºC -> temperature du Peltier
-		//meter aqui a funcao de conversao de graus no valor cons (temperature de consigne)
-
-		if (alim->SetPeltierConsigne(cons)==0)
-		{
-			sprintf(cam->msg,"Peltier consigne erreur");
-			result = TCL_ERROR;
-		}			
-	}
-	*/
-	return result;
-}
-
 int cmdPeltierMarche(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
 	int result=TCL_OK;
-	//char ligne[256];
+	char ligne[256];
+	
+	if (SetPeltier(true)==1) { //true=1-> peltier on
+			sprintf(ligne, "Peltier error");
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_ERROR;
+	}	
+	else {
+			sprintf(ligne, "Peltier ON\n");
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_OK;
+	}
+	return result;
+}
 
-	//La fonction est deja pré pour etre utilisée
-	/*
-	if (SetPeltier(true)==0)   //true=1-> peltier on
-	{
-		sprintf(cam->msg,"Peltier erreur");
-		result = TCL_ERROR;
-	}		
-	*/
+int cmdPeltierArret(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	char ligne[256];
+	
+	if (SetPeltier(false)==1) { //false=0-> peltier off
+			sprintf(ligne, "Peltier error");
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_ERROR;
+	}	
+	else {
+			sprintf(ligne, "Peltier OFF\n");
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_OK;
+	}
 	return result;
 }
 
 int cmdCemesGetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-	char ligne[256];
 	int result=TCL_OK;
+	char ligne[256];
     struct camprop *cam;
     cam = (struct camprop *) clientData;
 
 	unsigned int n;
-	double *temperature=0;///
+	double temperature=0;
 	
 	if (argc!=3)
 	{
-		sprintf(ligne, "Usage: %s %s (1)\n\n\t\t(1)->Temperature to read(0-Peltier/1-Thermal Exchanger/2-Cold Finger)\n", argv[0], argv[1]);
+		sprintf(ligne, "Usage: %s %s (1)\n\n\t\t(1)->Temperature to read:  \n\t\t\t\t0-Peltier\n\t\t\t\t1-Thermal Exchanger\n\t\t\t\t2-Cold Finger\n", argv[0], argv[1]);
 		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 		result = TCL_ERROR;
 	}
@@ -137,14 +129,64 @@ int cmdCemesGetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *
 		n=atoi(argv[2]);
 		if ((n<0) || (n>2)) 
 		{
-			sprintf(ligne, "It can only be chosen 0,1 or 2");
+			sprintf(ligne, "It can only be chosen 0, 1 or 2");
 			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 			result = TCL_ERROR;
 		}
 		else
 		{
-			GetTemperature(n, temperature);
-			sprintf(ligne, "Temperature (ºC): %d\n", *temperature);
+			GetTemperature(n, &temperature);
+			sprintf(ligne, "Temperature (Celsius): %f\n", temperature);
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_OK;
+		}
+	}
+	return result;
+}
+
+int cmdCemesSetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	char ligne[256];
+    struct camprop *cam;
+    cam = (struct camprop *) clientData;
+
+	unsigned int Temp;
+	unsigned int consigne=0;
+	bool ret = false;
+
+	if (argc!=3)
+	{
+		sprintf(ligne, "Usage: %s %s (1)\n\n\t\t(1)->Temperature to reach:  \n\t\t\t\t0-> -30\n\t\t\t\t1-> -35\n\t\t\t\t2-> -40\n\t\t\t\t3-> -45\n\t\t\t\t4-> -50\n", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		result = TCL_ERROR;
+	}
+	else
+	{
+		Temp=atoi(argv[2]);
+		if ((Temp<0) || (Temp>4)) 
+		{
+			sprintf(ligne, "It can only be chosen 0, 1, 2, 3 or 4");
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_ERROR;
+		}
+		else
+		{
+			if (Temp == 0) consigne = 7900;		//-30°C
+			if (Temp == 1) consigne = 10250;	//-35°C
+			if (Temp == 2) consigne = 13600;	//-40°C
+			if (Temp == 3) consigne = 18500;	//-45°C
+			if (Temp == 4) consigne = 25500;	//-50°C
+
+			SetPeltierConsigne(consigne);
+
+			if (Temp == 0) sprintf(ligne, "You've chosen -30\n");
+			if (Temp == 1) sprintf(ligne, "You've chosen -35\n");
+			if (Temp == 2) sprintf(ligne, "You've chosen -40\n");
+			if (Temp == 3) sprintf(ligne, "You've chosen -45\n");
+			if (Temp == 4) sprintf(ligne, "You've chosen -50\n");
+
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 			result = TCL_OK;
 		}
 	}
@@ -305,50 +347,4 @@ int cmdCemesObtu(ClientData clientData, Tcl_Interp * interp, int argc, char *arg
 	}
 	return result;
 }
-
-
-//FUNCAO PROTOTIPO PARA TIRAR VARIAS IMAGENS
-int cmdCemesTakeASetOf(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
-{
-	int result=TCL_OK;
-	/*
-	char ligne[256];
-	int result=TCL_OK;
-    	struct camprop *cam;
-    	cam = (struct camprop *) clientData;
-	
-	unsigned int number=0;
-	unsigned int n;
-
-	if (argc!=3)
-	{
-		sprintf(ligne, "Usage: %s %s (1)\n\n\t\t(1)->Number of images to take (1-65535)\n", argv[0], argv[1]);
-		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-		result = TCL_ERROR;
-	}
-	else
-	{
-		number=atoi(argv[2])
-		if ((n<1) || (n>65535)) 
-		{
-			sprintf(ligne, "It can only be chosen a number between 1 and 65535");
-			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-			result = TCL_ERROR;
-		}
-		else
-		{
-			for (n=0;n<=number;n++)
-			{
-				CamStartExp();  //cam_start_exp(struct camprop *cam, char *amplionoff) ???
-				CamReadCCD();   //(struct camprop *cam, unsigned short *p) ???
-			}
-			result = TCL_OK;
-		}
-	}
-	*/
-	return result;
-}
-
-
-
 

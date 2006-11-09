@@ -50,6 +50,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "camera.h"
 #include <libcam/util.h>
@@ -154,6 +155,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	unsigned int error;
 	cam->status=0;
 
+
 	//CamInit();
  	ControleurInit();	
 	AlimsInit();	
@@ -165,7 +167,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
   	    cam->status=1;
     	return 1;
 	}
-
+	Sleep(1000);
 	error=SerialDownload();	
 	if (error==1) {
 	    sprintf(cam->msg,"SerialDownload returns %d",error);
@@ -201,8 +203,9 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	//Default-> binning=2
 
 	double expos;		//temps de pose
-	unsigned int error,erreur;
-	unsigned int binning;	
+	unsigned int error,erreur,binning;
+	unsigned int obtu=0;
+	unsigned int automan=0;
 	
 	if (cam->binx==1)		
 		binning=0;			
@@ -213,15 +216,17 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	if (cam->binx==8)		
 		binning=3;			
 
-	error=SetModeBinning(0,binning,0,0);	//plutard changer pour (HV, binning, vitesse, debug)
+	error=SetModeBinning(cam->HV, binning, cam->vitesse, cam->debug); 
+	//error=SetModeBinning(0,binning,0,0);	
 	if (error==1) {
 	    sprintf(cam->msg,"SetModeBinning returns %d",error);
   	    cam->status=1;
     	return ;
 	}
 	cam_update_window(cam);
-
-	error=SetModeTension(0,binning);                     //plutard changer pour (cam->HV, binning)
+	
+	error=SetModeTension(cam->HV, binning);
+	//error=SetModeTension(0,binning);                     
 	if (error==1) {
 		sprintf(cam->msg,"SetModeTension returns %d",error);
   		cam->status=2;
@@ -242,14 +247,28 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
     	return ;
 	}
 
-	SetArea((16/cam->binx),(16/cam->binx),10000,10000);	 //Regler la taille de l'image
+	error=SetArea((16/cam->binx),(16/cam->binx),10000,10000);	 //Regler la taille de l'image
 	if (error==1) {
 	    sprintf(cam->msg,"SetArea returns %d",error);
   	    cam->status=5;
     	return ;
 	}
 
-	SetAmplisObtu(cam->ampliautoman,cam->obtuautoman,cam->amplionoff,cam->obtuonoff,cam->obtumode);	//Regler les parameters d'amplificateur et d'obturateur
+	if (cam->shutterindex==0) {
+		automan=1;		//obturateur manuel 
+		obtu=0;			//obturateur ferme
+	}
+	if (cam->shutterindex==1) {
+		automan=0;		//obturateur auto 	
+	}
+	if (cam->shutterindex==2) {
+		automan=1;		//obturateur manuel 
+		obtu=1;			//obturateur ouvert
+	}
+
+	error=SetAmplisObtu(cam->ampliautoman,automan,cam->amplionoff,obtu,cam->obtumode);
+
+	//error=SetAmplisObtu(cam->ampliautoman,cam->obtuautoman,cam->amplionoff,cam->obtuonoff,cam->obtumode);	//Regler les parameters d'amplificateur et d'obturateur
 	if (error==1) {
 	    sprintf(cam->msg,"SetAmplisObtu returns %d",error);
   	    cam->status=6;
@@ -259,14 +278,14 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	
 	//SetImageSize(sx,sy);   ?
 
-	Stop(1);
+	error=Stop(1);
 	if (error==1) {
 	    sprintf(cam->msg,"Stop returns %d",error);
   	    cam->status=7;
     	return ;
 	}
 
-	Start();
+	error=Start();
 	if (error==1) {
 	    sprintf(cam->msg,"Start returns %d",error);
   	    cam->status=8;
@@ -276,7 +295,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-	//Stop(1)???
+	Stop(1);//abort
 }
 
 
@@ -291,7 +310,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	int nb_image;				
 	int nbimages=0;
 	unsigned long size = 0;
-	int taille=(2048/cam->binx)*(2048/cam->biny)*sizeof(unsigned short);	//taille c'est le numero de bytes de l'image
+	//int taille=(2048/cam->binx)*(2048/cam->biny)*sizeof(unsigned short);	//taille c'est le numero de bytes de l'image 
+	int taille=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny)*sizeof(unsigned short);	//cam->nb_photox=2048
 	sdata=(unsigned short *)malloc(taille);
 	sdata1=(unsigned short *)malloc(taille);
 	unsigned short val;
@@ -302,24 +322,25 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
 	//Dans ce boucle on attend la fin de la lecture de l'image
 	while(size == 0){				
-		size = control->GetNextImage((unsigned char *)sdata,0,&fin_image, &nb_image);		
+		size = control->GetNextImage(sdata,0,&fin_image, &nb_image);  //((unsigned char *)sdata,0,&fin_image, &nb_image);			
 	}
 	size=0;
 	
 	//Dans ce boucle on attend la fin de la lecture d'une image de 2048x2048
 	while((size == 0) && (!fin_image)){			
-		size = control->GetNextImage((unsigned char *)sdata1,0,&fin_image, &nb_image);			
+		size = control->GetNextImage(sdata1,0,&fin_image, &nb_image);	//((unsigned char *)sdata1,0,&fin_image, &nb_image);			
 	}
 	Stop(1);   
 	size=0;
 
-	tailletotal=(2048/cam->binx)*(2048/cam->biny);
+	//tailletotal=(2048/cam->binx)*(2048/cam->biny);
+	tailletotal=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny);
 
 	//Dans ce boucle on rempli le pointeur *p avec l'image capturée
 	for (k=0;k<tailletotal;k++)	
 	{
 		val=sdata[k];
-		p[k] = val/2;	
+		p[k] = val;	
 	}
 
 	if (cam->binx==1)
@@ -328,62 +349,59 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 		for (k=tailletotal/4;k<(tailletotal*0.75);k++)
 		{
 			val=sdata1[k];
-			p[k] = val/2;	
+			p[k] = val;	
 		}
-	}
+	}	
 }
 
-//Podemos apagar esta funçao? já temos o set_amplis_obtu!
 void cam_shutter_on(struct camprop *cam)
 {
-/*
-
-*/
+	SetAmplisObtu(1,1,1,1,0);
 }
 
-//Podemos apagar esta funçao? já temos a SetAmplisObtu!
 void cam_shutter_off(struct camprop *cam)
 {
-/*
-
-*/
+	SetAmplisObtu(1,1,1,0,0);
 }
 
-//SetAmplisObtu? GetStatusAmplis?
 void cam_ampli_on(struct camprop *cam)
 {
-/*
-
-*/
+	SetAmplisObtu(1,1,1,1,0);
 }
 
-//Podemos apagar esta funçao? já temos a SetAmplisObtu!
 void cam_ampli_off(struct camprop *cam)
 {
-/*
-
-*/
+	SetAmplisObtu(1,1,0,1,0);
 }
 
 void cam_measure_temperature(struct camprop *cam)
 {
-    cam->temperature = 0.;
+	GetTemperature(2,&(cam->temperature));
 }
 
 void cam_cooler_on(struct camprop *cam)
 {
-
+	SetPeltier(1);
+	cam->coolerindex=1;
 }
 
 void cam_cooler_off(struct camprop *cam)
 {
+	SetPeltier(0);
+	cam->coolerindex=0;
 }
-
-//cam_cooler_on/off é o nosso SetPeltier (?)
 
 void cam_cooler_check(struct camprop *cam)
 {
-
+	double temp;
+	unsigned int consigne;
+	temp=cam->check_temperature;
+	if (temp>=-30.) { consigne = 7900; cam->check_temperature=-30.; }
+	else if (temp<=-50.) { consigne = 25500; cam->check_temperature=-50.; }
+	else {
+		consigne=(unsigned int)pow(10.,2.6551e-6*temp*temp*temp+4.9964e-4*temp*temp+1.516e-3*temp+3.565199);
+	}
+    SetPeltierConsigne(consigne);
 }
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
@@ -513,6 +531,16 @@ unsigned int SetPeltier(int on)
 	else { truefalse=false; }
 
 	bool ret=calim->SetPeltier(truefalse);
+
+	unsigned int error;
+	if (ret==true) { error = 0 ; }
+	else { error = 1; }
+	return error;
+}
+
+unsigned int SetPeltierConsigne(int temp)
+{
+	bool ret=calim->SetPeltierConsigne(temp);
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }
@@ -779,8 +807,8 @@ unsigned int SetAmplisObtu(int onoff, int onoff2, int onoff3, int onoff4, int on
 
 	on5int=onoff5;
 
-	//bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL, on5int);
-	bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL);
+	bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL, on5int);
+	//bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL);
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }
