@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.2 2006-11-07 21:00:44 robertdelmas Exp $
+# Mise a jour $Id: sextractor.tcl,v 1.3 2006-11-09 23:07:15 robertdelmas Exp $
 #
 
 proc sextractor_default_nnw { {filename default.nnw} } {
@@ -290,8 +290,8 @@ proc sextractor { args } {
 }
 
 catch {
-   set pathbin "$audace(rep_gui)/../bin"
-   sextractor_default_nnw "${pathbin}/default.nnw"
-   sextractor_config_param "${pathbin}/config.param"
-   sextractor_config_sex "${pathbin}/config.sex"
+   set pathgui "$audace(rep_gui)"
+   sextractor_default_nnw "${pathgui}/default.nnw"
+   sextractor_config_param "${pathgui}/config.param"
+   sextractor_config_sex "${pathgui}/config.sex"
 }
