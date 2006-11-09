@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.11 2006-10-22 09:48:21 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.12 2006-11-09 13:17:50 audelateam Exp $
 #
 
 #=========================================================================
@@ -202,39 +202,39 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift scan"
-   set caption(scan,help_titre)     "Aide pour cet outil"
-   set caption(scan,colonnes)       "Colonnes"
-   set caption(scan,lignes)         "Lignes"
+   set caption(scan,help_titre)     "Ajuda para esta ferramenta"
+   set caption(scan,colonnes)       "Colunas"
+   set caption(scan,lignes)         "Linhas"
    set caption(scan,pixel)          "Pixel"
    set caption(scan,micron)         "µm"
-   set caption(scan,interligne)     "Interligne"
-   set caption(scan,focale)         "Focale"
+   set caption(scan,interligne)     "Espaçamento entre linhas"
+   set caption(scan,focale)         "Focal"
    set caption(scan,metre)          "m"
-   set caption(scan,declinaison)    "Déc."
-   set caption(scan,calcul)         "Calcul"
-   set caption(scan,milliseconde)   "millisec."
-   set caption(scan,acquisition)    "Acquisition"
+   set caption(scan,declinaison)    "Dec."
+   set caption(scan,calcul)         "Calcular"
+   set caption(scan,milliseconde)   "miliseg."
+   set caption(scan,acquisition)    "Aquisição"
    set caption(scan,goccd)          "GO CCD\non/off"
    set caption(scan,stop)           "Stop"
-   set caption(scan,en_cours)       "En cours..."
-   set caption(scan,visu)           "Visu"
+   set caption(scan,en_cours)       "Em curso..."
+   set caption(scan,visu)           "Visualizar"
    set caption(scan,binning)        "Binning"
-   set caption(scan,nom)            "Nom"
-   set caption(scan,extension)      "Extension"
-   set caption(scan,index)          "Index"
-   set caption(scan,sauvegarde)     "Sauvegarder"
+   set caption(scan,nom)            "Nome"
+   set caption(scan,extension)      "Extensão"
+   set caption(scan,index)          "Índice"
+   set caption(scan,sauvegarde)     "Guardar"
 
-   set caption(scan,pb)             "Problème"
-   set caption(scan,nom_fichier)    "Donnez un nom de fichier."
-   set caption(scan,nom_blanc)      "Le nom du fichier ne doit pas contenir de blanc."
-   set caption(scan,mauvais_car)    "Le nom du fichier contient des caractères invalides."
-   set caption(scan,saisir_indice)  "Saisissez une valeur d'index."
-   set caption(scan,indice_entier)  "Index invalide (doit être un entier positif)."
-   set caption(scan,confirmation)   "Confirmer"
-   set caption(scan,fichier_existe) "Ce fichier existe déjà sur le disque.\nConfirmez-vous l'enregistrement ?"
-
-   set caption(scan,attention)      "Attention"
-   set caption(scan,message)        "Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
+   set caption(scan,pb)             "Problema"
+   set caption(scan,nom_fichier)    "Atribua um nome ao ficheiro."
+   set caption(scan,nom_blanc)      "O nome do ficheiro não deve conter espaços."
+   set caption(scan,mauvais_car)    "O nome do ficheiro contém caracteres inválidos."
+   set caption(scan,saisir_indice)  "Introduza um valor de índice."
+   set caption(scan,indice_entier)  "Índice inválido (deve ser um inteiro positivo)." 
+   set caption(scan,confirmation)   "Confirmar"
+   set caption(scan,fichier_existe) "Este ficheiro já existe no disco.\nTem a certeza que deseja guardar ?"
+ 
+   set caption(scan,attention)      "Atenção"
+   set caption(scan,message)        "Esta ferramenta funciona apenas com uma camara Audine pilotada por\numa porta paralela, por uma AudiNet ou por uma EthernAude."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

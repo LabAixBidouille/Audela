@@ -1,6 +1,6 @@
 #
 # Fichier : snmacros.cap
-# Mise a jour $Id: snmacros.cap,v 1.4 2006-10-22 09:56:39 robertdelmas Exp $
+# Mise a jour $Id: snmacros.cap,v 1.5 2006-11-09 13:17:50 audelateam Exp $
 #
 
 #=========================================================================
@@ -106,20 +106,20 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(snmacros,obscurite)        "La caméra doit être placée dans l'obscurité complète."
-   set caption(snmacros,acqde1)           "Acquisition de"
+   set caption(snmacros,obscurite)        "A câmara deve estar colocada em meio completamente escuro."  ???????????
+   set caption(snmacros,acqde1)           "Aquisição de"
    set caption(snmacros,bias)             "bias"
-   set caption(snmacros,acqbias)          "Acquisition du bias"
-   set caption(snmacros,synthesebias)     "Synthèse du bias final..."
-   set caption(snmacros,synthesebiasfini) "Synthèse du bias terminée"
-   set caption(snmacros,acqbias_stop)     "Acquisition des bias suspendue"
-   set caption(snmacros,acqde2)           "Acquisition de"
+   set caption(snmacros,acqbias)          "Aquisição do bias"
+   set caption(snmacros,synthesebias)     "Síntese do bias final..."
+   set caption(snmacros,synthesebiasfini) "Síntese do bias terminada"
+   set caption(snmacros,acqbias_stop)     "Aquisição dos bias suspensa"
+   set caption(snmacros,acqde2)           "Aquisição de"
    set caption(snmacros,darkde)           "darks de"
-   set caption(snmacros,seconde)          "secondes"
-   set caption(snmacros,acqdark)          "Acquisition du dark"
-   set caption(snmacros,synthesedark)     "Synthèse du dark final..."
-   set caption(snmacros,synthesedarkfini) "Synthèse du dark terminée"
-   set caption(snmacros,acqdark_stop)     "Acquisition des darks suspendue"
+   set caption(snmacros,seconde)          "segundos"
+   set caption(snmacros,acqdark)          "Aquisição do dark"
+   set caption(snmacros,synthesedark)     "Síntese do dark final..."
+   set caption(snmacros,synthesedarkfini) "Síntese do dark terminada"
+   set caption(snmacros,acqdark_stop)     "Aquisição dos darks suspensa"
    set caption(snmacros,est)              "E"
 
 # *************** Version danoise *****************************

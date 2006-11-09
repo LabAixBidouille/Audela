@@ -1,6 +1,6 @@
 #
 # Fichier : dlgshift.cap
-# Mise a jour $Id: dlgshift.cap,v 1.4 2006-10-22 09:23:15 robertdelmas Exp $
+# Mise a jour $Id: dlgshift.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -126,12 +126,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(dlgshift,title)            "Configuration du décalage"
-   set caption(dlgshift,labelTimex)       "Durée du décalage en AD (seconde)"
-   set caption(dlgshift,labelDirectionx)  "Direction du décalage en AD"
-   set caption(dlgshift,labelTimey)       "Durée du décalage en Déc. (seconde)"
-   set caption(dlgshift,labelDirectiony)  "Direction du décalage en Déc."
-   set caption(dlgshift,labelSpeed)       "Vitesse du décalage"
+   set caption(dlgshift,title)            "Configuração do deslocamento"
+   set caption(dlgshift,labelTimex)       "Duração do deslocamento em AR (segundos)"
+   set caption(dlgshift,labelDirectionx)  "Direcção do deslocamento em AR"
+   set caption(dlgshift,labelTimey)       "Duração do deslocamento em Dec. (segundos)"
+   set caption(dlgshift,labelDirectiony)  "Direcção do deslocamento em Dec."
+   set caption(dlgshift,labelSpeed)       "Velocidade do deslocamento"
    set caption(dlgshift,nord)             "N"
    set caption(dlgshift,est)              "E"
    set caption(dlgshift,ouest)            "O"
@@ -141,10 +141,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dlgshift,200)              "200"
    set caption(dlgshift,NS)               "NS"
    set caption(dlgshift,HS)               "HS"
-   set caption(dlgshift,buttonSave)       "Enregistrer"
-   set caption(dlgshift,buttonCancel)     "Annuler"
-   set caption(dlgshift,labelTelescope)   "Décalage du télescope en cours..."
-   set caption(dlgshift,labelStop)        "Arrêt du décalage."
+   set caption(dlgshift,buttonSave)       "Guardar"
+   set caption(dlgshift,buttonCancel)     "Anular"
+   set caption(dlgshift,labelTelescope)   "Deslocamento do telescópio em curso..."
+   set caption(dlgshift,labelStop)        "Parar o deslocamento."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : telshift_go.cap
-# Mise a jour $Id: telshift_go.cap,v 1.4 2006-10-22 09:57:58 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.cap,v 1.5 2006-11-09 13:17:51 audelateam Exp $
 #
 
 #=========================================================================
@@ -51,10 +51,10 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(telshift_go,telshift)      "Imager & déplacer"
-   set caption(telshift_go,help_titre)    "Aide pour cet outil"
-   set caption(telshift_go,acquisition)   "Acquisition"
-   set caption(telshift_go,acq)           "Acq."
+   set caption(telshift_go,telshift)      "Capturar & deslocar"
+   set caption(telshift_go,help_titre)    "Ajuda para esta ferramenta"
+   set caption(telshift_go,acquisition)   "Aquisição"
+   set caption(telshift_go,acq)           "Aq."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

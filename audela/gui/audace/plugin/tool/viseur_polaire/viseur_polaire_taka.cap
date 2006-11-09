@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_taka.cap
-# Mise a jour $Id: viseur_polaire_taka.cap,v 1.4 2006-10-22 10:03:31 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.cap,v 1.5 2006-11-09 13:17:52 audelateam Exp $
 #
 
 #=========================================================================
@@ -91,18 +91,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(viseur_taka,titre)            "Viseur polaire de type Takahashi"
-   set caption(viseur_taka,texte)            "Viseur polaire avec niveau à bulle"
+   set caption(viseur_taka,titre)            "Buscador polar de tipo Takahashi"
+   set caption(viseur_taka,texte)            "Buscador polar com bolha de nível"
    set caption(viseur_taka,long)             "Longitude :"
-   set caption(viseur_taka,ah_polaire)       "Angle horaire de la Polaire :"
-   set caption(viseur_taka,taille)           "Sa taille"
-   set caption(viseur_taka,couleur_fond)     "Couleur du fond"
-   set caption(viseur_taka,couleur_reticule) "Couleur du réticule"
-   set caption(viseur_taka,couleur_etoile)   "Couleur de la Polaire"
+   set caption(viseur_taka,ah_polaire)       "Ângulo horário da Polar :"
+   set caption(viseur_taka,taille)           "Seu tamanho"
+   set caption(viseur_taka,couleur_fond)     "Cor do fundo"
+   set caption(viseur_taka,couleur_reticule) "Cor do retículo"
+   set caption(viseur_taka,couleur_etoile)   "Cor da Polar"
    set caption(viseur_taka,ok)               "OK"
-   set caption(viseur_taka,appliquer)        "Appliquer"
-   set caption(viseur_taka,aide)             "Aide"
-   set caption(viseur_taka,fermer)           "Fermer"
+   set caption(viseur_taka,appliquer)        "Aplicar"
+   set caption(viseur_taka,aide)             "Ajuda"
+   set caption(viseur_taka,fermer)           "Fechar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : seprvb.cap
-# Mise a jour $Id: seprvb.cap,v 1.4 2006-10-22 09:23:34 robertdelmas Exp $
+# Mise a jour $Id: seprvb.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -72,13 +72,13 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(seprvb,interro)      "?"
-   set caption(seprvb,titre)        "Séparation des plans couleur"
-   set caption(seprvb,comment)      "Création des images rouges/vertes/bleues"
-   set caption(seprvb,rep_images)   "Répertoire des images"
+   set caption(seprvb,titre)        "Separação dos planos a cores"
+   set caption(seprvb,comment)      "Criação de imagens vermelhas/verdes/azuis"
+   set caption(seprvb,rep_images)   "Directório das imagens"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nom des images"
-   set caption(seprvb,nbre_images)  "Nombre d'images"
-   set caption(seprvb,executer)     "Exécuter"
+   set caption(seprvb,nom_images)   "Nome das imagens"
+   set caption(seprvb,nbre_images)  "Número das imagens"
+   set caption(seprvb,executer)     "Executar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

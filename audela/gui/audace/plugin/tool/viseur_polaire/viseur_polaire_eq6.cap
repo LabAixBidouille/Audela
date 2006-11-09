@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_eq6.cap
-# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.4 2006-10-22 10:02:43 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.5 2006-11-09 13:17:52 audelateam Exp $
 #
 
 #=========================================================================
@@ -91,18 +91,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(viseur_eq6,titre)             "Viseur polaire de type EQ6"
-   set caption(viseur_eq6,texte)             "Viseur polaire avec dessin de constellations"
+   set caption(viseur_eq6,titre)             "Buscador polar do tipo EQ6"
+   set caption(viseur_eq6,texte)             "Buscador polar com constelações"
    set caption(viseur_eq6,long)              "Longitude :"
-   set caption(viseur_eq6,ah_polaire)        "Angle horaire de la Polaire :"
-   set caption(viseur_eq6,taille)            "Sa taille"
-   set caption(viseur_eq6,couleur_fond)      "Couleur du fond"
-   set caption(viseur_eq6,couleur_reticule)  "Couleur du réticule"
-   set caption(viseur_eq6,couleur_etoile)    "Couleur des étoiles"
+   set caption(viseur_eq6,ah_polaire)        "Ângulo horário da Polar :"
+   set caption(viseur_eq6,taille)            "Seu tamanho"
+   set caption(viseur_eq6,couleur_fond)      "Cor do fundo"
+   set caption(viseur_eq6,couleur_reticule)  "Cor do retículo"
+   set caption(viseur_eq6,couleur_etoile)    "Cor das estrelas"
    set caption(viseur_eq6,ok)                "OK"
-   set caption(viseur_eq6,appliquer)         "Appliquer"
-   set caption(viseur_eq6,aide)              "Aide"
-   set caption(viseur_eq6,fermer)            "Fermer"
+   set caption(viseur_eq6,appliquer)         "Aplicar"
+   set caption(viseur_eq6,aide)              "Ajuda"
+   set caption(viseur_eq6,fermer)            "Fechar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

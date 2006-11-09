@@ -1,6 +1,6 @@
 #
 # Fichier : snvisuzoom.cap
-# Mise a jour $Id: snvisuzoom.cap,v 1.4 2006-10-22 09:57:09 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.cap,v 1.5 2006-11-09 13:17:50 audelateam Exp $
 #
 
 #=========================================================================
@@ -46,9 +46,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(snvisuzoom,zoom_main_title)   "Sn Visu - Loupe 1"
-   set caption(snvisuzoom,zoom_main_title_d) "Sn Visu - Loupe 2"
-   set caption(snvisuzoom,wait)              "En cours..."
+   set caption(snvisuzoom,zoom_main_title)   "Visualização Sn - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Visualização Sn - Zoom 2"
+   set caption(snvisuzoom,wait)              "Aguardar..."
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

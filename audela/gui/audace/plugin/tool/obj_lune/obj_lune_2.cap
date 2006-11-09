@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune_2.cap
-# Mise a jour $Id: obj_lune_2.cap,v 1.4 2006-10-22 09:47:01 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.cap,v 1.5 2006-11-09 13:17:49 audelateam Exp $
 #
 
 #=========================================================================
@@ -76,15 +76,15 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(obj_lune2,cartographie)       "Cartographie"
+   set caption(obj_lune2,cartographie)       "Cartografia"
 
-   set caption(obj_lune2,visible_ombre)      "Site observable, mais non éclairé."
-   set caption(obj_lune2,face_cachee)        "Site inobservable."
+   set caption(obj_lune2,visible_ombre)      "Local observável, mas não iluminado."
+   set caption(obj_lune2,face_cachee)        "Local não observável."
 
-   set caption(obj_lune2,manque_cartes_1)    "Vous devez télécharger les cartes de la Lune à l'adresse :"
+   set caption(obj_lune2,manque_cartes_1)    "Deve descarregar da internet as cartas da lua no endereço :"
    set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu.htm#lune"
-   set caption(obj_lune2,manque_cartes_3)    "Il existe un fichier unique pour la version Windows et la version Linux."
-   set caption(obj_lune2,manque_cartes_4)    "Ce fichier doit être dézippé dans le répertoire 'gui\\audace\\plugin\\tool\\obj_lune'."
+   set caption(obj_lune2,manque_cartes_3)    "Existe um ficheiro único para a versão Windows e para a versão Linux."
+   set caption(obj_lune2,manque_cartes_4)    "Este ficheiro deve ser descomprimido no directório 'gui\\audace\\plugin\\tool\\obj_lune'."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

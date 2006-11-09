@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune_go.cap
-# Mise a jour $Id: obj_lune_go.cap,v 1.4 2006-10-22 09:47:14 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.cap,v 1.5 2006-11-09 13:17:49 audelateam Exp $
 #
 
 #=========================================================================
@@ -46,9 +46,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)      "Objectif Lune"
-   set caption(obj_lune_go,help_titre)    "Aide pour cet outil"
-   set caption(obj_lune_go,executer)      "Exécuter"
+   set caption(obj_lune_go,obj_lune)      "Objectivo Lua"
+   set caption(obj_lune_go,help_titre)    "Ajuda para esta ferramenta"
+   set caption(obj_lune_go,executer)      "Executar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

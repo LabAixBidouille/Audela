@@ -1,6 +1,6 @@
 #
 # Fichier : smedianrvb.cap
-# Mise a jour $Id: smedianrvb.cap,v 1.4 2006-10-22 09:23:46 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -87,16 +87,16 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(smedianrvb,interro)     "?"
-   set caption(smedianrvb,titre)       "Exécute la médiane d'une pile d'images"
-   set caption(smedianrvb,comment1)    "Génère les 3 fichiers finaux (rouge, vert, bleu)"
-   set caption(smedianrvb,comment2)    "Efface les fichiers intermédiaires"
-   set caption(smedianrvb,rep_images)  "Répertoire des images"
+   set caption(smedianrvb,titre)       "Executar a mediana de uma sequência de imagens"
+   set caption(smedianrvb,comment1)    "Gerar os 3 ficheiros finais (vermelho, verde, azul)"
+   set caption(smedianrvb,comment2)    "Apagar os ficheiros temporários"
+   set caption(smedianrvb,rep_images)  "Directório das imagens"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Nom des images"
-   set caption(smedianrvb,nbre_images) "Nombre d'images"
-   set caption(smedianrvb,nom_med)     "Nom de la médiane"
-   set caption(smedianrvb,comment3)    "Commentaire : Enregistrer la médiane affichée"
-   set caption(smedianrvb,executer)    "Exécuter"
+   set caption(smedianrvb,nom_images)  "Nome das imagens"
+   set caption(smedianrvb,nbre_images) "Número das imagens"
+   set caption(smedianrvb,nom_med)     "Nome da mediana"
+   set caption(smedianrvb,comment3)    "Comentário : Guardar a mediana"
+   set caption(smedianrvb,executer)    "Executar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

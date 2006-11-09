@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.5 2006-10-22 09:25:27 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.6 2006-11-09 13:17:48 audelateam Exp $
 #
 
 #=========================================================================
@@ -141,28 +141,28 @@ if { [ string compare $langage "french" ] == 0 } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(autoguider,menu)                  "Autoguidage"
-   set caption(autoguider,titre)                 "Autoguidage"
-   set caption(autoguider,help_titre)            "Aide pour cet outil"
-   set caption(autoguider,pb)                    "Problème"
-   set caption(autoguider,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+   set caption(autoguider,menu)                  "Autoguiagem"
+   set caption(autoguider,titre)                 "Autoguiagem"
+   set caption(autoguider,help_titre)            "Ajuda para esta ferramenta"
+   set caption(autoguider,pb)                    "Problema"
+   set caption(autoguider,selcam)                "Deve seleccionar primeiro uma câmara\n(menu Configuração/Câmara)."
 
-   set caption(autoguider,ctrl_monture)          "Suivi actif"
-   set caption(autoguider,config_guidage)        "Configuration..."
-   set caption(autoguider,init_position)         "Initialiser"
-   set caption(autoguider,coord_origine)         "Origine"
-   set caption(autoguider,coord_etoile)          "Etoile"
-   set caption(autoguider,ecart_origine_etoile)  "Ecart"
+   set caption(autoguider,ctrl_monture)          "Seguimento activo"
+   set caption(autoguider,config_guidage)        "Configuração..."
+   set caption(autoguider,init_position)         "Inicializar"
+   set caption(autoguider,coord_origine)         "Origem"
+   set caption(autoguider,coord_etoile)          "Estrela"
+   set caption(autoguider,ecart_origine_etoile)  "Desvio"
 
-   set caption(autoguider,pose)                  "Pose"
-   set caption(autoguider,sec)                   "sec."
+   set caption(autoguider,pose)                  "Exposição"
+   set caption(autoguider,sec)                   "seg."
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Intervalle"
+   set caption(autoguider,intervalle)            "Intervalo"
 
-   set caption(autoguider,lecture)               "Lecture"
-   set caption(autoguider,attente)               "Attente"
+   set caption(autoguider,lecture)               "Leitura"
+   set caption(autoguider,attente)               "Espera"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
