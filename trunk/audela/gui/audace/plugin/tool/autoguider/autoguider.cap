@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.6 2006-11-09 13:17:48 audelateam Exp $
+# Mise a jour $Id: autoguider.cap,v 1.7 2006-11-10 12:28:56 michelpujol Exp $
 #
 
 #=========================================================================
@@ -34,6 +34,13 @@ set caption(autoguider,intervalle)               "Interval"
 set caption(autoguider,lecture)                  "Reading"
 set caption(autoguider,attente)                  "Wait"
 
+set caption(autoguider,seuil)                   "Threshold (pixels)"
+set caption(autoguider,detection)               "#Star dectection"
+set caption(autoguider,apprenti)                "#Learning"
+set caption(autoguider,vitesse)               "#Vitesse (pixel/seconde)"
+set caption(autoguider,detection_psf)         "#Etoile"
+set caption(autoguider,detection_fente)       "#Fente"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == 0 } {
 
@@ -59,6 +66,13 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,lecture)               "Lecture"
    set caption(autoguider,attente)               "Attente"
+   set caption(autoguider,seuil)                 "Seuil (pixel)"
+   set caption(autoguider,detection)             "Détection étoile"
+   set caption(autoguider,apprenti)              "Apprentissage"
+   set caption(autoguider,vitesse)               "Vitesse (pixel/seconde)"
+   set caption(autoguider,detection_psf)         "Etoile"
+   set caption(autoguider,detection_fente)       "Fente"
+
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == 0 } {
