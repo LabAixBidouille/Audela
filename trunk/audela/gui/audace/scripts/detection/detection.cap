@@ -1,6 +1,6 @@
 #
 # Fichier : detection.cap
-# Mise a jour $Id: detection.cap,v 1.5 2006-11-06 21:56:22 robertdelmas Exp $
+# Mise a jour $Id: detection.cap,v 1.6 2006-11-10 13:21:39 audelateam Exp $
 #
 
 #=========================================================================
@@ -106,7 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 if { [string compare $langage "portuguese"] == 0 } {
 
-   set caption(detection,start_detection)       "Ínicio da detecção"
+   set caption(detection,start_detection)       "Início da detecção"
    set caption(detection,binning)               "Binning"
    set caption(detection,wait_before_exposure)  "Pausa antes da exposição"
    set caption(detection,seconds)               "segundo(s)"

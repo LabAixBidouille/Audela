@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
+# Mise a jour $Id: acqapn.cap,v 1.6 2006-11-10 13:19:03 audelateam Exp $
 #
 
 #=========================================================================
@@ -409,7 +409,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,but,restaurer)         "Reiniciar"
    set caption(acqapn,but,traiter)           "Processar a imagem"
    set caption(acqapn,sw,encours)            "Em curso..."
-   set caption(acqapn,sw,exposer)            "Começar"
+   set caption(acqapn,sw,exposer)            "Iniciar"
    set caption(acqapn,sw_connect,on)         "Conectar"
    set caption(acqapn,sw_connect,off)        "Desconectar"
    set caption(acqapn,sw_video,no)           "Video Conectado"
@@ -424,10 +424,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,help,unites)           "segundos"
    set caption(acqapn,info,batterie)         "Bateria :"
    set caption(acqapn,info,ccd)              "CCD :"
-   set caption(acqapn,info,memoire_libre)    "Memoria livre :"
+   set caption(acqapn,info,memoire_libre)    "Memória livre :"
    set caption(acqapn,info,pixel)            "Píxeis :"
    set caption(acqapn,info,serial)           "N° de série :"
-   set caption(acqapn,info,um)               "microns"
+   set caption(acqapn,info,um)               "micros"
    set caption(acqapn,info,unites)           "bytes"
    set caption(acqapn,info,version)          "Versão :"
    set caption(acqapn,info,vues)             "Fotos registadas :"
@@ -457,7 +457,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_fichier)        "Ficheiro desconhecido\nno directório das imagens"
    set caption(acqapn,msg,no_pose)           "Pelo menos 1 pose !"
    set caption(acqapn,msg,no_resolution)     "O formato e a compressão\nda imagem são incompativeis.\n"
-   set caption(acqapn,msg,no_save)           "Parâmetros não salvaguardado\n"
+   set caption(acqapn,msg,no_save)           "Parâmetros não salvaguardados\n"
    set caption(acqapn,msg,pas_detecte)       "não detectado.\n"
    set caption(acqapn,msg,pose)              "Este não é um tempo de exposição."
    set caption(acqapn,port_serie)            "Porta série"

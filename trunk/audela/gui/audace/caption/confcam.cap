@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.20 2006-11-03 19:10:28 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.21 2006-11-10 13:08:44 audelateam Exp $
 #
 
 #=========================================================================
@@ -835,12 +835,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,aide)                    "Ajuda"
    set caption(confcam,arreter)                 "Parar"
 
-   set caption(confcam,acquisition)             "Acquisição"
+   set caption(confcam,acquisition)             "Aquisição"
    set caption(confcam,camera)                  "Câmara:"
    set caption(confcam,audine)                  "Audine"
 
-   set caption(confcam,port)                    "Porto"
-   set caption(confcam,port_liaison)            "Porto / Ligação"
+   set caption(confcam,port)                    "Porta"
+   set caption(confcam,port_liaison)            "Porta / Ligação"
    set caption(confcam,lpt1)                    "lpt1"
    set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
@@ -938,11 +938,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dsc_longue_pose)         "Longa Exposição"
    set caption(confcam,dsc_quickremote)         "QuickRemote"
    set caption(confcam,dsc_externe)             "Manual"
-   set caption(confcam,dsc_longueposebit)       "Controlo do Numero do Bit"
-   set caption(confcam,dsc_longueposestart)     "Controlo do Ínicio da Exposição"
+   set caption(confcam,dsc_longueposebit)       "Controlo do Número do Bit"
+   set caption(confcam,dsc_longueposestart)     "Controlo do Início da Exposição"
    set caption(confcam,dsc_detect_service)      "Parar Automaticamente a Detecção de Câmaras Digitais"
    set caption(confcam,dsc_telecharger)         "Download da Imagem"
-   set caption(confcam,apn_port)                "Porto de Controlo da Câmara Digital"
+   set caption(confcam,apn_port)                "Porta de Controlo da Câmara Digital"
    set caption(confcam,apn_baud)                "Velocidade da Porta Série (bauds)"
 
    set caption(confcam,andor_config)            "Pasta que contém os ficheiros de configuração"
@@ -953,7 +953,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,andor_ms)                "ms"
 
    set caption(confcam,attention)               "Aviso"
-   set caption(confcam,connexion_texte1)        "Conecção da Câmara em curso..."
+   set caption(confcam,connexion_texte1)        "Conexão da câmara em curso..."
    set caption(confcam,connexion_texte2)        "Por favor aguarde alguns segundos."
 
    set caption(confcam,2points)                 ":"
