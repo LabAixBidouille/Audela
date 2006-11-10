@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.6 2006-10-31 17:42:08 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.7 2006-11-10 13:12:26 audelateam Exp $
 #
 
 #=========================================================================
@@ -185,8 +185,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Porta"
    set caption(bermasaude,bermasaude_combinaison)      "Combinação escolhida"
-   set caption(bermasaude,bermasaude_bvri)             "BVRI"
-   set caption(bermasaude,bermasaude_cmj)              "CMJ"
+   set caption(bermasaude,bermasaude_bvri)             "BGRI"
+   set caption(bermasaude,bermasaude_cmj)              "CMY"
    set caption(bermasaude,bermasaude_version_micro)    "Software do microcontrolador:"
    set caption(bermasaude,bermasaude_nbr_filtres_1)    "Esta roda de filtros tem"
    set caption(bermasaude,bermasaude_nbr_filtres_2)    "posições."

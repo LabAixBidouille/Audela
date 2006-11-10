@@ -1,6 +1,6 @@
 #
 # Fichier : horloge_astro.cap
-# Mise a jour $Id: horloge_astro.cap,v 1.5 2006-11-06 21:56:34 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.cap,v 1.6 2006-11-10 13:21:50 audelateam Exp $
 #
 
 #=========================================================================
@@ -82,7 +82,7 @@ if { [string compare $langage "portuguese"] == 0 } {
    set caption(horloge_astro,ad)                "Ascenção Recta (h m s) :"
    set caption(horloge_astro,dec)               "Declinação (+/- ° ' '') :"
    set caption(horloge_astro,valider)           "Validar"
-   set caption(horloge_astro,angle_horaire)     "Angûlo Horario :"
+   set caption(horloge_astro,angle_horaire)     "Ângulo Horário :"
    set caption(horloge_astro,azimut)            "Azimute :"
    set caption(horloge_astro,hauteur)           "Altura :"
 

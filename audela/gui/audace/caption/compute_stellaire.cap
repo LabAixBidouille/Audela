@@ -1,6 +1,6 @@
 #
 # Fichier : compute_stellaire.cap
-# Mise a jour $Id: compute_stellaire.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: compute_stellaire.cap,v 1.5 2006-11-10 13:08:44 audelateam Exp $
 #
 
 #=========================================================================
@@ -173,9 +173,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(compute,noirsdePLUsok)           "Número de dark-frames de imagem flat-field encontradas:"
    set caption(compute,pbpourcentage)           "A percentagem de imagens a conservar para a composição\nnão é correcta e deve ser um número inferior a 100"
    set caption(compute,tmp_noir)                "A criar a dark-frame (através do cálculo da média)...\n"
-   set caption(compute,tmp_brute-noir_X)        "Subtraindo a dark-frame...\n"
+   set caption(compute,tmp_brute-noir_X)        "A subtrair a dark-frame...\n"
    set caption(compute,tmp_noirdePLUs)          "A criar a dark-frame para imagem flat-field (através do cálculo da média)...\n"
-   set caption(compute,tmp_PLU-noir_X)          "Subtraindo a dark-frame das imagens flat-field...\n"
+   set caption(compute,tmp_PLU-noir_X)          "A subtrair a dark-frame das imagens flat-field...\n"
    set caption(compute,tmp_PLUnorm_X)           "A normalizar o ganho das imagens flat-field...\n"
    set caption(compute,tmp_PLU)                 "A criar a imagem de flat-field (através do cálculo da média)...\n"
    set caption(compute,tmp_pret_X)              "Normalização através da imagem flat-field...\n"

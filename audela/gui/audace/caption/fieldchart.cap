@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.1 2006-11-05 09:14:13 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.2 2006-11-10 13:08:45 audelateam Exp $
 #
 
 #=========================================================================
@@ -183,7 +183,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loneos)                     "MicroCat-Loneos"
    set caption(fieldchart,parcourir)                  "..."
    set caption(fieldchart,x)                          " x "
-   set caption(fieldchart,champ_image)                "Parametros do campo da imagem"
+   set caption(fieldchart,champ_image)                "Parâmetros do campo da imagem"
    set caption(fieldchart,catalogue)                  "Mapa"
    set caption(fieldchart,cat_microcat)               "Catálogo MicroCat"
    set caption(fieldchart,magnitude_limite)           "Magnitude Limite"

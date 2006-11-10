@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.16 2006-11-07 22:38:18 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.17 2006-11-10 13:08:45 audelateam Exp $
 #
 
 #=========================================================================
@@ -647,10 +647,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Actualizar tempo, longitude, latitude e altitude do Celestron"
 
-   set caption(conftel,ouranos_unites)                "Coordinadas"
+   set caption(conftel,ouranos_unites)                "Coordenadas"
    set caption(conftel,ouranos_visible)               "Sempre visível no ecrã"
    set caption(conftel,ouranos_on)                    "on"
-   set caption(conftel,ouranos_inv)                   "Reverso"
+   set caption(conftel,ouranos_inv)                   "Inverso"
    set caption(conftel,ouranos_init1)                 "Dec. = 0°"
    set caption(conftel,ouranos_init2)                 "Dec. = 90°"
    set caption(conftel,ouranos_frequence)             "todos"
@@ -713,7 +713,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,dms_angle)                     "( d m s )"
 
    set caption(conftel,attention)                     "Aviso"
-   set caption(conftel,connexion_texte1)              "Ligação da Montagem em progresso..."
+   set caption(conftel,connexion_texte1)              "Ligação da Montagem em curso..."
    set caption(conftel,connexion_texte2)              "Por favor aguarde alguns segundos."
 
    set caption(conftel,ouranos_formataddec1)          "Formato para a Ascenção Recta:"

@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.6 2006-10-21 12:55:12 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.7 2006-11-10 13:08:44 audelateam Exp $
 #
 
 #=========================================================================
@@ -271,7 +271,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,erreur_catalog) "Verifique se o catálogo seleccionado está disponível."
    set caption(astrometry,erreur_file)    "Verifique se a imagem seleccionada está disponível."
 
-   set caption(astrometry,RA)             "RA"
+   set caption(astrometry,RA)             "AR"
    set caption(astrometry,DEC)            "Dec."
    set caption(astrometry,egale)          "="
    set caption(astrometry,tiret)          "-"

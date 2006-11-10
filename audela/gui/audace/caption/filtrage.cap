@@ -1,6 +1,6 @@
 #
 # Fichier : filtrage.cap
-# Mise a jour $Id: filtrage.cap,v 1.4 2006-10-20 17:41:56 robertdelmas Exp $
+# Mise a jour $Id: filtrage.cap,v 1.5 2006-11-10 13:08:45 audelateam Exp $
 #
 
 #=========================================================================
@@ -126,7 +126,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(filtrage,pas_de_fichier)     "O Ficheiro Não Existe.\n"
    set caption(filtrage,charge_image)       "É Necessário Carregar Uma Imagem.\n"
    set caption(filtrage,attention)          "Aviso"
-   set caption(filtrage,pas_image_memoire)  "Sem Imagem em Memoria."
+   set caption(filtrage,pas_image_memoire)  "Sem Imagem em Memória."
    set caption(filtrage,tracer)             "Por favor desenhe um quadrado com o rato."
 
    set caption(filtrage,masque_flou)        "Máscara de focagem"

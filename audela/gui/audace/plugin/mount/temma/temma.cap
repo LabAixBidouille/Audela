@@ -1,6 +1,6 @@
 #
 # Fichier : temma.cap
-# Mise a jour $Id: temma.cap,v 1.5 2006-11-06 21:58:05 robertdelmas Exp $
+# Mise a jour $Id: temma.cap,v 1.6 2006-11-10 13:17:37 audelateam Exp $
 #
 
 #=========================================================================
@@ -129,7 +129,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,para_mobile_ad)            "Velocidade em ascenção recta"
    set caption(temma,para_mobile_dec)           "Velocidade em declinação"
    set caption(temma,para_mobile_etoile)        "Seguimento sideral"
-   set caption(temma,para_mobile_comete)        "Cometa, asteroide ou OVNI"
+   set caption(temma,para_mobile_comete)        "Cometa, asteróide ou OVNI"
 
    set caption(temma,2points)                   ":"
 

@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.5 2006-11-06 21:56:47 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.6 2006-11-10 13:13:02 audelateam Exp $
 #
 
 #=========================================================================
@@ -881,7 +881,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,para_mobile_dec)         "Velocidade em Declinação"
    set caption(audecom,para_mobile_lune)        "Lua"
    set caption(audecom,para_mobile_soleil)      "Sol"
-   set caption(audecom,para_mobile_comete)      "Cometa, asteroide ou OVNI"
+   set caption(audecom,para_mobile_comete)      "Cometa, asteróide ou OVNI"
    set caption(audecom,para_mobile_etoile)      "Estrela ou outro objecto fixo"
 
    set caption(audecom,para_mot,aide01)         "                                   Pressionando um botão ' ? ' visualiza-se a ajuda associada que"

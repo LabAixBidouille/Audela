@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.31 2006-11-05 09:12:42 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.32 2006-11-10 13:08:44 audelateam Exp $
 #
 
 #=========================================================================
@@ -1629,7 +1629,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,entete)                    "Cabeçalho FITS"
    set caption(audace,menu,select)                    "Selecção de imagem"
 
-   set caption(audace,menu,pretraite)                 "Preprocessamento"
+   set caption(audace,menu,pretraite)                 "Pré-processamento"
    set caption(audace,menu,offset)                    "Adicionar constante"
    set caption(audace,menu,mult_cte)                  "Multiplicar por constante"
    set caption(audace,menu,noffset)                   "Normalizar fundo do céu"
@@ -1648,7 +1648,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_flat_field)          "Fazer um flat-field"
    set caption(audace,menu,cfa2rgb)                   "Conversão CFA ---> RGB"
 
-   set caption(audace,menu,traitement)                "Processando"
+   set caption(audace,menu,traitement)                "A processar"
    set caption(audace,menu,filtres)                   "Filtros:"
    set caption(audace,menu,masque_flou)               "Mascara de focagem"
    set caption(audace,menu,filtre_passe-bas)          "Filtro passa baixo"
@@ -1687,7 +1687,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,raquette)                  "Controlador de mão"
    set caption(audace,menu,equipement)                "Equipamento"
    set caption(audace,menu,carte)                     "Mapa"
-   set caption(audace,menu,optique)                   "Optíco"
+   set caption(audace,menu,optique)                   "Optico"
    set caption(audace,menu,liaison)                   "Ligação"
 
    set caption(audace,menu,aide)                      "Ajuda"
@@ -1700,22 +1700,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,a_propos_de)               "Sobre..."
 
    set caption(aide,audace)                           "Ajuda Aud'ACE"
-   set caption(aide,pas_repertoire)                   "A pasta ajuda não existe:"
+   set caption(aide,pas_repertoire)                   "A pasta Ajuda não existe:"
 
    set caption(audace,histo,adu)                      "Unidades digitais (ADU)"
    set caption(audace,histo,nbpix)                    "Número de pixeis"
    set caption(audace,histo,titre)                    "Histograma de imagens"
 
-   set caption(audace,reseau,execute)                 "Correr:"
+   set caption(audace,reseau,execute)                 "Executar:"
    set caption(audace,reseau,serveur)                 "Servidor"
    set caption(audace,reseau,detruit)                 "Servidor destruído"
    set caption(audace,reseau,client)                  "Cliente"
-   set caption(audace,reseau,connecte)                "Cliente conectado correctamente"
+   set caption(audace,reseau,connecte)                "Cliente correctamente conectado"
    set caption(audace,reseau,serveur_retour)          "Servidor de imagens criado"
    set caption(audace,reseau,deconnecte)              "Cliente disconectado"
    set caption(audace,reseau,deconnexion)             "Disconectado"
    set caption(audace,reseau,du_serveur)              "do servidor"
-   set caption(audace,reseau,connexion_client)        "Connecção através do cliente"
+   set caption(audace,reseau,connexion_client)        "Conexão através do cliente"
    set caption(audace,reseau,reponse_vers)            "Responder a"
 
    set caption(audace,header,noimage)                 "Não existe imagem carregada em memória."
@@ -1745,7 +1745,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,choix_coefficient)              "Defina os coeficientes."
    set caption(audace,choix_coefficients)             "Defina os coeficientes."
    set caption(audace,choix_image_entree)             "Por favor escolha as imagens de entrada."
-   set caption(audace,choix_nbre_images)              "Defina o numero the imagens."
+   set caption(audace,choix_nbre_images)              "Defina o número the imagens."
    set caption(audace,choix_image_sortie)             "Por favor escolha as imagens de saída."
    set caption(audace,definir,operande)               "Seleccione a imagem C."
    set caption(audace,definir,entree_generique)       "Escolha a imagem genérica de entrada."
@@ -1781,11 +1781,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ecart,type,fond)                       "Desvio RMS (erro quadrático médio) do fundo do céu: "
    set caption(audace,methode)                        "Método:"
    set caption(audace,run,median)                     "Mediana"
-   set caption(audace,dialog,pretraitement)           "Preprocessamento"
+   set caption(audace,dialog,pretraitement)           "Pré-processamento"
    set caption(audace,optimisation,noir)              "Optimização do Dark Frame"
    set caption(audace,image,somme)                    "Soma"
    set caption(audace,image,moyenne)                  "Média"
-   set caption(audace,image,ecart_type)               "Desviação Padrão"
+   set caption(audace,image,ecart_type)               "Desvio Padrão"
    set caption(audace,image,nombre-)                  "Número de imagens"
    set caption(audace,image,nombre)                   "Número de imagens:"
    set caption(audace,formule)                        "Fórmula:"
@@ -1819,8 +1819,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,dialog,repertoire_images)       "Pasta das imagens:"
    set caption(audace,label_sous_rep)                 "Nova Sub-Pasta"
    set caption(audace,creation_sous_rep)              "Criar"
-   set caption(audace,dialog,repertoire_scripts)      "Pasta do scripts:"
-   set caption(audace,dialog,repertoire_catalogues)   "Pasta do catalogos:"
+   set caption(audace,dialog,repertoire_scripts)      "Pasta dos scripts:"
+   set caption(audace,dialog,repertoire_catalogues)   "Pasta dos catálogos:"
    set caption(audace,boite,erreur)                   "Erro"
    set caption(audace,boite,pas_repertoire)           " não é uma pasta."
    set caption(audace,dynamique)                      "Dinâmica:"
@@ -1869,7 +1869,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figura"
 
-   set caption(sectiongraph,title)                    "Grafica da secção"
+   set caption(sectiongraph,title)                    "Gráfica da secção"
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"

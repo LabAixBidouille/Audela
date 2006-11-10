@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.9 2006-10-29 16:38:11 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.10 2006-11-10 13:08:44 audelateam Exp $
 #
 
 #=========================================================================
@@ -552,7 +552,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_uai_maj2)                   "(directório 'audace/etc') pode ser actualizado por download"
    set caption(confgene,fichier_uai_maj3)                   "a partir da seguinte direcção Web:"
    set caption(confgene,fichier_uai_maj4)                   "http://cfa-www.harvard.edu/iau/lists/ObsCodes.html"
-   set caption(confgene,fichier_uai_maj5)                   "Atenção: Utilizar 'Salvar como...' --->"
+   set caption(confgene,fichier_uai_maj5)                   "Atenção: Utilizar 'Guardar como...' --->"
    set caption(confgene,fichier_uai_erreur1)                "O número do sítio IAU deve"
    set caption(confgene,fichier_uai_erreur2)                "ter, pelo menos, 3 dígitos"
    set caption(confgene,fichier_uai_erreur3)                "(ex.:  000, 008, 013, 104, A05)."
