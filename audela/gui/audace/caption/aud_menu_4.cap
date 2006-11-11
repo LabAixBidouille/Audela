@@ -1,0 +1,65 @@
+#
+# Fichier : aud_menu_4.cap
+# Mise a jour $Id: aud_menu_4.cap,v 1.1 2006-11-11 16:24:07 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(audace,header_noimage)        "No Image in Memory."
+
+set caption(traiteFilters,parcourir)      "..."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audace,header_noimage)     "Il n'y a pas d'image actuellement en mémoire."
+
+   set caption(traiteFilters,parcourir)   "..."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audace,header_noimage)     "Nessuna immagine in memoria."
+
+   set caption(traiteFilters,parcourir)   "..."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audace,header_noimage)     "No existe una imágen cargada en la memoria."
+
+   set caption(traiteFilters,parcourir)   "..."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audace,header_noimage)     "Es ist jetzt kein Bild im Speicher."
+
+   set caption(traiteFilters,parcourir)   "..."
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audace,header_noimage)     "Não existe imagem carregada em memória."
+
+   set caption(traiteFilters,parcourir)   "..."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audace,header_noimage)     "Intet billede i memory."
+
+   set caption(traiteFilters,parcourir)   "..."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

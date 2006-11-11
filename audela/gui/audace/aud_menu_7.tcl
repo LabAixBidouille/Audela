@@ -1,14 +1,15 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.2 2006-11-07 21:00:28 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.3 2006-11-11 16:29:39 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
 
    #
-   # ::cwdWindow::run
+   # ::cwdWindow::run this
    # Lance la boite de dialogue de reglage des repertoires
+   # this : Chemin de la fenetre
    #
    proc run { this } {
       variable This
@@ -51,7 +52,7 @@ namespace eval ::cwdWindow {
       toplevel $This
       wm geometry $This +180+50 
       wm resizable $This 0 0
-      wm title $This "$caption(audace,menu,cwd)"
+      wm title $This "$caption(cwdWindow,title)"
       wm protocol $This WM_DELETE_WINDOW ::cwdWindow::cmdClose
       #--- Initialisation des variables de changement
       set cwdWindow(rep_images)     "0"
@@ -61,41 +62,41 @@ namespace eval ::cwdWindow {
       frame $This.usr -borderwidth 0 -relief raised
          frame $This.usr.1 -borderwidth 1 -relief raised
             frame $This.usr.1.a -borderwidth 0 -relief raised
-               button $This.usr.1.a.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.1.a.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
                   -command { ::cwdWindow::change_rep_images }
                pack $This.usr.1.a.explore -side left -padx 5 -pady 5 -ipady 5
-               label $This.usr.1.a.lab1 -text "$caption(audace,dialog,repertoire_images)"
+               label $This.usr.1.a.lab1 -text "$caption(cwdWindow,repertoire_images)"
                pack $This.usr.1.a.lab1 -side left -padx 5 -pady 5
                entry $This.usr.1.a.ent1 -textvariable cwdWindow(dir_images) -width $cwdWindow(long)
                pack $This.usr.1.a.ent1 -side right -padx 5 -pady 5
             pack $This.usr.1.a -side top -fill both -expand 1
             frame $This.usr.1.b -borderwidth 0 -relief raised
                #--- Label nouveau sous-repertoire
-               label $This.usr.1.b.label_sous_rep -text "$caption(audace,label_sous_rep)"
+               label $This.usr.1.b.label_sous_rep -text "$caption(cwdWindow,label_sous_rep)"
                pack $This.usr.1.b.label_sous_rep -side left -padx 5 -pady 5
                #--- Entry nouveau sous-repertoire
                entry $This.usr.1.b.ent_sous_rep -textvariable cwdWindow(sous_repertoire) -width 30
                pack $This.usr.1.b.ent_sous_rep -side left -padx 5 -pady 5
                #--- Button creation du sous-repertoire
-               button $This.usr.1.b.button_sous_rep -text "$caption(audace,creation_sous_rep)" -width 7 \
+               button $This.usr.1.b.button_sous_rep -text "$caption(cwdWindow,creation_sous_rep)" -width 7 \
                   -command { ::cwdWindow::cmdCreateSubDir }
                pack $This.usr.1.b.button_sous_rep -side left -padx 5 -pady 5 -ipady 5
             pack $This.usr.1.b -side top -fill both -expand 1
          pack $This.usr.1 -side top -fill both -expand 1
          frame $This.usr.2 -borderwidth 1 -relief raised
-            button $This.usr.2.explore -text "$caption(script,parcourir)" -width 1 \
+            button $This.usr.2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
                -command { ::cwdWindow::change_rep_scripts }
             pack $This.usr.2.explore -side left -padx 5 -pady 5 -ipady 5
-            label $This.usr.2.lab2 -text "$caption(audace,dialog,repertoire_scripts)"
+            label $This.usr.2.lab2 -text "$caption(cwdWindow,repertoire_scripts)"
             pack $This.usr.2.lab2 -side left -padx 5 -pady 5
             entry $This.usr.2.ent2 -textvariable cwdWindow(dir_scripts) -width $cwdWindow(long)
             pack $This.usr.2.ent2 -side right -padx 5 -pady 5
          pack $This.usr.2 -side top -fill both -expand 1
          frame $This.usr.3 -borderwidth 1 -relief raised
-            button $This.usr.3.explore -text "$caption(script,parcourir)" -width 1 \
+            button $This.usr.3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
                -command { ::cwdWindow::change_rep_catalogues }
             pack $This.usr.3.explore -side left -padx 5 -pady 5 -ipady 5
-            label $This.usr.3.lab3 -text "$caption(audace,dialog,repertoire_catalogues)"
+            label $This.usr.3.lab3 -text "$caption(cwdWindow,repertoire_catalogues)"
             pack $This.usr.3.lab3 -side left -padx 5 -pady 5
             entry $This.usr.3.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
             pack $This.usr.3.ent3 -side right -padx 5 -pady 5
@@ -105,18 +106,18 @@ namespace eval ::cwdWindow {
       set cwdWindow(rep_font) [ $This.usr.1.a.ent1 cget -font ]
       #---
       frame $This.cmd -borderwidth 1 -relief raised
-         button $This.cmd.ok -text "$caption(conf,ok)" -width 7 \
+         button $This.cmd.ok -text "$caption(aud_menu_7,ok)" -width 7 \
             -command { ::cwdWindow::cmdOk }
          if { $conf(ok+appliquer)=="1" } {
            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
-         button $This.cmd.appliquer -text "$caption(creer,dialogue,appliquer)" -width 8 \
+         button $This.cmd.appliquer -text "$caption(aud_menu_7,appliquer)" -width 8 \
             -command { ::cwdWindow::cmdApply }
          pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.fermer -text "$caption(creer,dialogue,fermer)" -width 7 \
+         button $This.cmd.fermer -text "$caption(aud_menu_7,fermer)" -width 7 \
             -command { ::cwdWindow::cmdClose }
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.aide -text "$caption(conf,aide)" -width 7 \
+         button $This.cmd.aide -text "$caption(aud_menu_7,aide)" -width 7 \
             -command { ::cwdWindow::afficheAide }
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
@@ -163,7 +164,7 @@ namespace eval ::cwdWindow {
       set cwdWindow(rep_images) "1"
       $This.usr.1.a.ent1 configure -font $cwdWindow(rep_font_italic) -relief solid
       set initialdir $cwdWindow(dir_images)
-      set title $caption(audace,dialog,repertoire_images)
+      set title $caption(cwdWindow,repertoire_images)
       set cwdWindow(dir_images) "[ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]"
       $This.usr.1.a.ent1 configure -textvariable cwdWindow(dir_images) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
@@ -185,7 +186,7 @@ namespace eval ::cwdWindow {
       set cwdWindow(rep_scripts) "1"
       $This.usr.2.ent2 configure -font $cwdWindow(rep_font_italic) -relief solid
       set initialdir $cwdWindow(dir_scripts)
-      set title $caption(audace,dialog,repertoire_scripts)
+      set title $caption(cwdWindow,repertoire_scripts)
       set cwdWindow(dir_scripts) "[ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]"
       $This.usr.2.ent2 configure -textvariable cwdWindow(dir_scripts) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
@@ -207,7 +208,7 @@ namespace eval ::cwdWindow {
       set cwdWindow(rep_catalogues) "1"
       $This.usr.3.ent3 configure -font $cwdWindow(rep_font_italic) -relief solid
       set initialdir $cwdWindow(dir_catalogues)
-      set title $caption(audace,dialog,repertoire_catalogues)
+      set title $caption(cwdWindow,repertoire_catalogues)
       set cwdWindow(dir_catalogues) "[ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]"
       $This.usr.3.ent3 configure -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
@@ -215,7 +216,7 @@ namespace eval ::cwdWindow {
    }
 
    #
-   # ::cwdWindow::tkplus_chooseDir
+   # ::cwdWindow::tkplus_chooseDir [inidir] [title] [parent]
    # Navigateur pour le choix des repertoires
    #
    proc tkplus_chooseDir { { inidir . } { title } { parent } } {
@@ -269,8 +270,8 @@ namespace eval ::cwdWindow {
          set audace(rep_images) "$cwdWindow(dir_images)"
       } else {
          set m "$cwdWindow(dir_images)"
-         append m "$caption(audace,boite,pas_repertoire)"
-         tk_messageBox -message $m -title "$caption(audace,boite,erreur)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
          restore_cursor
          return -1
       }
@@ -280,8 +281,8 @@ namespace eval ::cwdWindow {
          set audace(rep_scripts) "$cwdWindow(dir_scripts)"
       } else {
          set m "$cwdWindow(dir_scripts)"
-         append m "$caption(audace,boite,pas_repertoire)"
-         tk_messageBox -message $m -title "$caption(audace,boite,erreur)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
          restore_cursor
          return -1
       }
@@ -291,8 +292,8 @@ namespace eval ::cwdWindow {
          set audace(rep_catalogues) "$cwdWindow(dir_catalogues)"
       } else {
          set m "$cwdWindow(dir_catalogues)"
-         append m "$caption(audace,boite,pas_repertoire)"
-         tk_messageBox -message $m -title "$caption(audace,boite,erreur)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
          restore_cursor
          return -1
       }
@@ -333,7 +334,7 @@ namespace eval ::confEditScript {
    #
    # confEditScript::run this
    # Cree la fenetre de configuration de l'editeur de scripts, de fichiers pdf, de pages html et d'images
-   # this = chemin de la fenetre
+   # this : Chemin de la fenetre
    #
    proc run { this } {
       variable This
@@ -421,7 +422,7 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
-         button $This.usr1.explore1 -text "$caption(confeditscript,parcourir)" -width 1 \
+         button $This.usr1.explore1 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr1.ent1 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
@@ -451,7 +452,7 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
-         button $This.usr2.explore2 -text "$caption(confeditscript,parcourir)" -width 1 \
+         button $This.usr2.explore2 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr2.ent2 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
@@ -481,7 +482,7 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
-         button $This.usr3.explore3 -text "$caption(confeditscript,parcourir)" -width 1 \
+         button $This.usr3.explore3 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr3.ent3 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
@@ -511,7 +512,7 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
-         button $This.usr4.explore4 -text "$caption(confeditscript,parcourir)" -width 1 \
+         button $This.usr4.explore4 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr4.ent4 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
@@ -534,13 +535,13 @@ namespace eval ::confEditScript {
       #--- Cree un frame pour y mettre les boutons
       frame $This.cmd -borderwidth 1 -relief raised
          #--- Cree le bouton 'OK'
-         button $This.cmd.ok -text "$caption(confeditscript,ok)" -width 7 -command ::confEditScript::cmdOk
+         button $This.cmd.ok -text "$caption(aud_menu_7,ok)" -width 7 -command ::confEditScript::cmdOk
          pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          #--- Cree le bouton 'Fermer'
-         button $This.cmd.fermer -text "$caption(confeditscript,fermer)" -width 7 -command ::confEditScript::cmdClose
+         button $This.cmd.fermer -text "$caption(aud_menu_7,fermer)" -width 7 -command ::confEditScript::cmdClose
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
          #--- Cree le bouton 'Aide' 
-         button $This.cmd.aide -text "$caption(confeditscript,aide)" -width 7 -command ::confEditScript::afficheAide
+         button $This.cmd.aide -text "$caption(aud_menu_7,aide)" -width 7 -command ::confEditScript::afficheAide
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
 
@@ -661,7 +662,7 @@ namespace eval ::confEditScript {
 namespace eval ::audace {
 
    #
-   # ::audace::enregistrerConfiguration
+   # ::audace::enregistrerConfiguration visuNo
    # Demande la confirmation pour enregistrer la configuration
    #
    proc enregistrerConfiguration { visuNo } {
@@ -691,19 +692,19 @@ namespace eval ::audace {
       array set file_conf [ini_getArrayFromFile $filename]
 
       if {[ini_fileNeedWritten file_conf conf]} {
-         set choice [ tk_messageBox -message "$caption(sur,enregistrer,config7)" \
-            -title "$caption(sur,enregistrer,config3)" -icon question -type yesno ]
+         set choice [ tk_messageBox -message "$caption(audace,enregistrer_config3)" \
+            -title "$caption(audace,enregistrer_config1)" -icon question -type yesno ]
          if { $choice == "yes" } {
             #--- Enregistrer la configuration
             array set theconf [ini_merge file_conf conf]
             ini_writeIniFile $filename2 theconf
          } elseif {$choice=="no"} {
             #--- Pas d'enregistrement
-            ::console::affiche_resultat "$caption(sur,enregistrer,config5)\n\n"
+            ::console::affiche_resultat "$caption(sur,enregistrer,config2)\n\n"
          }
       } else {
          #--- Pas d'enregistrement
-         ::console::affiche_resultat "$caption(sur,enregistrer,config5)\n\n"
+         ::console::affiche_resultat "$caption(sur,enregistrer,config2)\n\n"
       }
       #---
       menustate normal

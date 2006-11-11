@@ -1,13 +1,13 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.1 2006-11-05 07:42:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.2 2006-11-11 16:29:16 robertdelmas Exp $
 #
 
 namespace eval ::audace {
 
    #
-   # ::audace::Histo
+   # ::audace::Histo visuNo
    # Visualisation de l'histogramme de l'image affichee dans la visu
    #
    proc Histo { visuNo } {
@@ -33,7 +33,7 @@ namespace eval ::audace {
 ############################# Fin du namespace audace #############################
 
 #
-# statwin
+# statwin visuNo
 # Fournit les statistiques d'une fenetre d'une image
 #
 proc statwin { visuNo } {
@@ -89,7 +89,7 @@ proc statwin { visuNo } {
 }
 
 #
-# fwhm
+# fwhm visuNo
 # Fournit les fwhm en x et en y d'une fenetre d'une image
 #
 proc fwhm { visuNo } {
@@ -137,7 +137,7 @@ proc fwhm { visuNo } {
 }
 
 #
-# fitgauss
+# fitgauss visuNo
 # Ajuste une gaussienne dans une fenetre d'une image
 #
 proc fitgauss { visuNo } {
@@ -362,7 +362,7 @@ proc fitgauss { visuNo } {
 }
 
 #
-# center
+# center visuNo
 # Fournit le photocentre d'une fenetre d'une image
 #
 proc center { visuNo } {
@@ -408,7 +408,7 @@ proc center { visuNo } {
 }
 
 #
-# photom
+# photom visuNo
 # Fournit la photometrie integrale d'une fenetre d'une image
 #
 proc photom { visuNo } {
@@ -454,7 +454,7 @@ proc photom { visuNo } {
 }
 
 #
-# subfitgauss
+# subfitgauss visuNo
 # Ajuste et soustrait une gaussinne dans une fenetre d'une image
 #
 proc subfitgauss { visuNo } {
@@ -469,7 +469,7 @@ proc subfitgauss { visuNo } {
 }
 
 #
-# scar
+# scar visuNo
 # Cicatrise l'interieur d'une fenetre d'une image
 #
 proc scar { visuNo } {
@@ -488,7 +488,7 @@ proc scar { visuNo } {
 ###################################################################################
 
 #
-# ferme_fenetre_analyse
+# ferme_fenetre_analyse This nom_conf
 # Recupere les coordonnees des boites de dialogue ci-dessus
 #
 proc ferme_fenetre_analyse { This nom_conf } {

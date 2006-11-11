@@ -1,13 +1,13 @@
 #
 # Fichier : aud_menu_8.tcl
 # Description : Script regroupant les fonctionnalites du menu Aide
-# Mise a jour $Id: aud_menu_8.tcl,v 1.1 2006-11-05 07:43:00 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.tcl,v 1.2 2006-11-11 16:29:50 robertdelmas Exp $
 #
 
 namespace eval ::audace {
 
    #
-   # ::audace::Lance_Site_htm
+   # ::audace::Lance_Site_htm filename
    # Lance le navigation web
    #
    proc Lance_Site_htm { filename } {
@@ -22,7 +22,7 @@ namespace eval ::audace {
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editsite_htm)\" \"$filename\" &"
          if [catch $a_effectuer input] {
-           # ::console::affiche_erreur "$caption(audace,console,rate)\n"
+           # ::console::affiche_erreur "$caption(audace,console_rate)\n"
             set confgene(EditScript,error_htm) "0"
             ::confEditScript::run "$audace(base).confEditScript"
             set a_effectuer "exec \"$conf(editsite_htm)\" \"$filename\" &"
@@ -31,10 +31,10 @@ namespace eval ::audace {
             }
          } else {
             set audace(current_edit) $input
-           # ::console::affiche_erreur "$caption(audace,console,gagne)\n"
+           # ::console::affiche_erreur "$caption(audace,console_gagne)\n"
          }
       } else {
-        # ::console::affiche_erreur "$caption(audace,console,annule)\n"
+        # ::console::affiche_erreur "$caption(audace,console_annule)\n"
       }
       menustate normal
    }
@@ -82,7 +82,7 @@ namespace eval ::audace {
 ###################################################################################
 
    #
-   # ::audace::Lance_Notice_pdf
+   # ::audace::Lance_Notice_pdf filename
    # Lance l'editeur de documents pdf
    #
    proc Lance_Notice_pdf { filename } {
@@ -96,7 +96,7 @@ namespace eval ::audace {
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editnotice_pdf)\" \"$filename\" &"
          if [catch $a_effectuer input] {
-           # ::console::affiche_erreur "$caption(audace,console,rate)\n"
+           # ::console::affiche_erreur "$caption(audace,console_rate)\n"
             set confgene(EditScript,error_pdf) "0"
             ::confEditScript::run "$audace(base).confEditScript"
             set a_effectuer "exec \"$conf(editnotice_pdf)\" \"$filename\" &"
@@ -105,10 +105,10 @@ namespace eval ::audace {
             }
          } else {
             set audace(current_edit) $input
-           # ::console::affiche_erreur "$caption(audace,console,gagne)\n"
+           # ::console::affiche_erreur "$caption(audace,console_gagne)\n"
          }
       } else {
-        # ::console::affiche_erreur "$caption(audace,console,annule)\n"
+        # ::console::affiche_erreur "$caption(audace,console_annule)\n"
       }
       menustate normal
    }

@@ -1,14 +1,15 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.2 2006-11-05 09:12:00 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.3 2006-11-11 16:28:27 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
 
    #
-   # ::traiteFilters::run
+   # ::traiteFilters::run type_filtre this
    # Lance la boite de dialogue pour les traitements sur une images
+   # this : Chemin de la fenetre
    #
    proc run { type_filtre this } {
       variable This
@@ -150,7 +151,7 @@ namespace eval ::traiteFilters {
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.3a -borderwidth 0 -relief raised
                frame $This.usr.3a.1 -borderwidth 0 -relief flat
-                  button $This.usr.3a.1.explore -text "$caption(script,parcourir)" -width 1 \
+                  button $This.usr.3a.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
                      -command { ::traiteFilters::parcourir }
                   pack $This.usr.3a.1.explore -side left -padx 10 -pady 5 -ipady 5
                   label $This.usr.3a.1.lab1 -text "$caption(audace,image,entree)"
@@ -162,7 +163,7 @@ namespace eval ::traiteFilters {
 
             frame $This.usr.3b -borderwidth 0 -relief raised
                frame $This.usr.3b.1 -borderwidth 0 -relief flat
-                  button $This.usr.3b.1.explore -text "$caption(script,parcourir)" -width 1 \
+                  button $This.usr.3b.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
                      -command { ::traiteFilters::parcourir }
                   pack $This.usr.3b.1.explore -side left -padx 10 -pady 5 -ipady 5
                   label $This.usr.3b.1.lab1 -text "$caption(audace,image,entree)"
@@ -297,7 +298,7 @@ namespace eval ::traiteFilters {
       #--- Il faut saisir la constante
       if { $traiteFilters(choix) == "0" } {
          if { [ buf$audace(bufNo) imageready ] == "0" } {
-            tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,header,noimage)
+            tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,header_noimage)
             return
          }
       } elseif { $traiteFilters(choix) == "1" } {
@@ -576,7 +577,7 @@ namespace eval ::traiteFilters {
    }
 
    #
-   # ::traiteFilters::change
+   # ::traiteFilters::change n1 n2 op
    # Adapte l'interface graphique en fonction du choix
    #
    proc change { n1 n2 op } {
@@ -761,8 +762,9 @@ namespace eval ::traiteFilters {
    }
 
    #
-   # ::traiteFilters::griser
+   # ::traiteFilters::griser this
    # Grise les widgets disabled
+   # this : Chemin de la fenetre
    #
    proc griser { this } {
       variable This
@@ -776,8 +778,9 @@ namespace eval ::traiteFilters {
    }
 
    #
-   # ::traiteFilters::activer
+   # ::traiteFilters::activer this
    # Active les widgets
+   # this : Chemin de la fenetre
    #
    proc activer { this } {
       variable This

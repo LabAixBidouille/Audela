@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.1 2006-11-07 21:02:20 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.2 2006-11-11 16:24:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,93 +11,198 @@ global caption
 
 # *************** Version anglaise ****************************
 
+set caption(cwdWindow,title)                    "Folders"
+set caption(cwdWindow,repertoire_images)        "Image Folder:"
+set caption(cwdWindow,label_sous_rep)           "New Sub-Folder"
+set caption(cwdWindow,creation_sous_rep)        "Create"
+set caption(cwdWindow,repertoire_scripts)       "Script Folder:"
+set caption(cwdWindow,repertoire_catalogues)    "Catalogue Folder:"
+set caption(cwdWindow,boite_erreur)             "Error"
+set caption(cwdWindow,pas_repertoire)           " is not a folder."
+
 set caption(confeditscript,editeurs)            "Editors"
-set caption(confeditscript,parcourir)           "..."
 set caption(confeditscript,edit_script)         "Script Editor:"
 set caption(confeditscript,notice_pdf)          "See User Guides (.pdf):"
 set caption(confeditscript,navigateur_htm)      "Web Browser:"
 set caption(confeditscript,viewer)              "Viewer:"
-set caption(confeditscript,ok)                  "OK"
-set caption(confeditscript,fermer)              "Close"
-set caption(confeditscript,aide)                "Help"
+
+set caption(audace,enregistrer_config1)         "Save setup?"
+set caption(audace,enregistrer_config2)         "Setup saving not required."
+set caption(audace,enregistrer_config3)         "Save new setup?"
+
+set caption(aud_menu_7,parcourir)               "..."
+set caption(aud_menu_7,ok)                      "OK"
+set caption(aud_menu_7,appliquer)               "Apply"
+set caption(aud_menu_7,fermer)                  "Close"
+set caption(aud_menu_7,aide)                    "Help"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(cwdWindow,title)                 "Répertoires"
+   set caption(cwdWindow,repertoire_images)     "Répertoire des images :"
+   set caption(cwdWindow,label_sous_rep)        "Nouveau sous répertoire"
+   set caption(cwdWindow,creation_sous_rep)     "Créer"
+   set caption(cwdWindow,repertoire_scripts)    "Répertoire des scripts :"
+   set caption(cwdWindow,repertoire_catalogues) "Répertoire des catalogues :"
+   set caption(cwdWindow,boite_erreur)          "Erreur"
+   set caption(cwdWindow,pas_repertoire)        " n'est pas un répertoire."
+
    set caption(confeditscript,editeurs)         "Editeurs"
-   set caption(confeditscript,parcourir)        "..."
    set caption(confeditscript,edit_script)      "Editeur de scripts :"
    set caption(confeditscript,notice_pdf)       "Voir les notices (.pdf) :"
    set caption(confeditscript,navigateur_htm)   "Navigateur Web :"
    set caption(confeditscript,viewer)           "Visualiseur d'images :"
-   set caption(confeditscript,ok)               "OK"
-   set caption(confeditscript,fermer)           "Fermer"
-   set caption(confeditscript,aide)             "Aide"
+
+   set caption(audace,enregistrer_config3)      "Enregistrer la configuration ?"
+   set caption(audace,enregistrer_config2)      "Pas d'enregistrement de configuration nécessaire."
+   set caption(audace,enregistrer_config3)      "Voulez-vous enregistrer la nouvelle configuration de Aud'ACE ?"
+
+   set caption(aud_menu_7,parcourir)            "..."
+   set caption(aud_menu_7,ok)                   "OK"
+   set caption(aud_menu_7,appliquer)            "Appliquer"
+   set caption(aud_menu_7,fermer)               "Fermer"
+   set caption(aud_menu_7,aide)                 "Aide"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
+   set caption(cwdWindow,title)                 "Directories"
+   set caption(cwdWindow,repertoire_images)     "Directory delle immagini:"
+   set caption(cwdWindow,label_sous_rep)        "Nuova sottodirectory"
+   set caption(cwdWindow,creation_sous_rep)     "Generazione"
+   set caption(cwdWindow,repertoire_scripts)    "Directory degli script:"
+   set caption(cwdWindow,repertoire_catalogues) "Directory dei cataloghi:"
+   set caption(cwdWindow,boite_erreur)          "Errore"
+   set caption(cwdWindow,pas_repertoire)        " non e' una directory."
+
    set caption(confeditscript,editeurs)         "Editors"
-   set caption(confeditscript,parcourir)        "..."
    set caption(confeditscript,edit_script)      "Editor script:"
    set caption(confeditscript,notice_pdf)       "Vedi la guida utente (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Web browser:"
    set caption(confeditscript,viewer)           "Visualizzatore di immagini:"
-   set caption(confeditscript,ok)               "OK"
-   set caption(confeditscript,fermer)           "Chiudi"
-   set caption(confeditscript,aide)             "Aiuto"
+
+   set caption(audace,enregistrer_config3)      "Salvare la configurazione?"
+   set caption(audace,enregistrer_config2)      "Non e` richiesto il salvataggio della configurazione."
+   set caption(audace,enregistrer_config3)      "Volete salvare questa configurazione?"
+
+   set caption(aud_menu_7,parcourir)            "..."
+   set caption(aud_menu_7,ok)                   "OK"
+   set caption(aud_menu_7,appliquer)            "Applica"
+   set caption(aud_menu_7,fermer)               "Chiudi"
+   set caption(aud_menu_7,aide)                 "Aiuto"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(cwdWindow,title)                 "Directorios"
+   set caption(cwdWindow,repertoire_images)     "Directorio de imagenes:"
+   set caption(cwdWindow,label_sous_rep)        "Nueva subcarpeta"
+   set caption(cwdWindow,creation_sous_rep)     "Crear"
+   set caption(cwdWindow,repertoire_scripts)    "Directorio de scripts:"
+   set caption(cwdWindow,repertoire_catalogues) "Directorio de catalogos:"
+   set caption(cwdWindow,boite_erreur)          "Error"
+   set caption(cwdWindow,pas_repertoire)        " no es un directorio."
+
    set caption(confeditscript,editeurs)         "Editores"
-   set caption(confeditscript,parcourir)        "..."
    set caption(confeditscript,edit_script)      "Editor de scripts:"
    set caption(confeditscript,notice_pdf)       "Ver guia de usuario (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Navegador Web:"
    set caption(confeditscript,viewer)           "Visualizador de imágenes:"
-   set caption(confeditscript,ok)               "OK"
-   set caption(confeditscript,fermer)           "Cerrar"
-   set caption(confeditscript,aide)             "Ayuda"
+
+   set caption(audace,enregistrer_config3)      "¿ Guardar preferencias ?"
+   set caption(audace,enregistrer_config2)      "No hace falta guardar las preferencias."
+   set caption(audace,enregistrer_config3)      "¿ Guardar las nuevas preferencias ?"
+
+   set caption(aud_menu_7,parcourir)            "..."
+   set caption(aud_menu_7,ok)                   "OK"
+   set caption(aud_menu_7,appliquer)            "Aplicar"
+   set caption(aud_menu_7,fermer)               "Cerrar"
+   set caption(aud_menu_7,aide)                 "Ayuda"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
+   set caption(cwdWindow,title)                 "Verzeichnis"
+   set caption(cwdWindow,repertoire_images)     "Bilder Verzeichnis:"
+   set caption(cwdWindow,label_sous_rep)        "Neuer Unterregister"
+   set caption(cwdWindow,creation_sous_rep)     "Schaffen"
+   set caption(cwdWindow,repertoire_scripts)    "Skripten Verzeichnis:"
+   set caption(cwdWindow,repertoire_catalogues) "Katalogen Verzeichnis:"
+   set caption(cwdWindow,boite_erreur)          "Irrtum"
+   set caption(cwdWindow,pas_repertoire)        "das ist kein Verzeichnis."
+
    set caption(confeditscript,editeurs)         "Editoren"
-   set caption(confeditscript,parcourir)        "..."
    set caption(confeditscript,edit_script)      "Skripten Editor:"
    set caption(confeditscript,notice_pdf)       "Hinweisen ansehen (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Web Navigator:"
    set caption(confeditscript,viewer)           "Bild Zeichner:"
-   set caption(confeditscript,ok)               "OK"
-   set caption(confeditscript,fermer)           "Schließen"
-   set caption(confeditscript,aide)             "Hilfe"
+
+   set caption(audace,enregistrer_config3)      "Gestalt speichern ?"
+   set caption(audace,enregistrer_config2)      "Keine Gestalt Speicherung notwendig."
+   set caption(audace,enregistrer_config3)      "Wollen sie die neue Aude'ACE Gestalt bevor speichern?"
+
+   set caption(aud_menu_7,parcourir)            "..."
+   set caption(aud_menu_7,ok)                   "OK"
+   set caption(aud_menu_7,appliquer)            "Anwenden"
+   set caption(aud_menu_7,fermer)               "Schließen"
+   set caption(aud_menu_7,aide)                 "Hilfe"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(cwdWindow,title)                 "Pastas"
+   set caption(cwdWindow,repertoire_images)     "Pasta das imagens:"
+   set caption(cwdWindow,label_sous_rep)        "Nova Sub-Pasta"
+   set caption(cwdWindow,creation_sous_rep)     "Criar"
+   set caption(cwdWindow,repertoire_scripts)    "Pasta do scripts:"
+   set caption(cwdWindow,repertoire_catalogues) "Pasta do catalogos:"
+   set caption(cwdWindow,boite_erreur)          "Erro"
+   set caption(cwdWindow,pas_repertoire)        " não é uma pasta."
+
    set caption(confeditscript,editeurs)         "Editores"
-   set caption(confeditscript,parcourir)        "..."
    set caption(confeditscript,edit_script)      "Editor de scripts:"
    set caption(confeditscript,notice_pdf)       "Ver guia de utilizador (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Navegador Web:"
    set caption(confeditscript,viewer)           "Visualizador de imagens:"
-   set caption(confeditscript,ok)               "OK"
-   set caption(confeditscript,fermer)           "Fechar"
-   set caption(confeditscript,aide)             "Ajuda"
+
+   set caption(audace,enregistrer_config3)      "Guardar configuração?"
+   set caption(audace,enregistrer_config2)      "Não é necessário guardar configuração."
+   set caption(audace,enregistrer_config3)      "Guardar a nova configuração?"
+
+   set caption(aud_menu_7,parcourir)            "..."
+   set caption(aud_menu_7,ok)                   "OK"
+   set caption(aud_menu_7,appliquer)            "Aplicar"
+   set caption(aud_menu_7,fermer)               "Fechar"
+   set caption(aud_menu_7,aide)                 "Ajuda"
 
    # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
+   set caption(cwdWindow,title)                 "Mappe"
+   set caption(cwdWindow,repertoire_images)     "Billedmappe:"
+   set caption(cwdWindow,label_sous_rep)        "Ny undermappe"
+   set caption(cwdWindow,creation_sous_rep)     "Dan"
+   set caption(cwdWindow,repertoire_scripts)    "Skriptmappe:"
+   set caption(cwdWindow,repertoire_catalogues) "Katalogmappe:"
+   set caption(cwdWindow,boite_erreur)          "Fejl"
+   set caption(cwdWindow,pas_repertoire)        " er ingen mappe."
+
    set caption(confeditscript,editeurs)         "Teksteditor"
-   set caption(confeditscript,parcourir)        "..."
    set caption(confeditscript,edit_script)      "Script Editor:"
    set caption(confeditscript,notice_pdf)       "Se brugsanvisning (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Web Browser:"
    set caption(confeditscript,viewer)           "Billedvisning:"
-   set caption(confeditscript,ok)               "OK"
-   set caption(confeditscript,fermer)           "Luk"
-   set caption(confeditscript,aide)             "Hjælp"
+
+   set caption(audace,enregistrer_config3)      "Gem opsætning?"
+   set caption(audace,enregistrer_config2)      "Gem opsætning - Er ikke nødvendig."
+   set caption(audace,enregistrer_config3)      "Gem ny opsætning?"
+
+   set caption(aud_menu_7,parcourir)            "..."
+   set caption(aud_menu_7,ok)                   "OK"
+   set caption(aud_menu_7,appliquer)            "Anvend"
+   set caption(aud_menu_7,fermer)               "Luk"
+   set caption(aud_menu_7,aide)                 "Hjælp"
 
 }
 
