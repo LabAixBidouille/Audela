@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.34 2006-11-07 23:00:48 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.35 2006-11-11 13:07:14 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -27,7 +27,7 @@ source aud_menu_5.tcl
 source aud_menu_6.tcl
 source aud_menu_7.tcl
 source aud_menu_8.tcl
-source aud1.tcl
+source aud_proc.tcl
 source console.tcl
 source confgene.tcl
 source surchaud.tcl
