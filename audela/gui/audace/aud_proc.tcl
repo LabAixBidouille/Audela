@@ -1,11 +1,11 @@
 #
-# Fichier : aud1.tcl
-# Description : Fonctions de chargement/sauvegarde et traitement d'images
-# Mise a jour $Id: aud1.tcl,v 1.20 2006-11-05 07:43:32 robertdelmas Exp $
+# Fichier : aud_proc.tcl
+# Description : Fonctions de chargement, sauvegarde et traitement d'images
+# Mise a jour $Id: aud_proc.tcl,v 1.1 2006-11-11 13:06:56 robertdelmas Exp $
 #
 
 #
-# loadima [filename] [visuNo] [-novisu)
+# loadima [filename] [visuNo] [affichage]
 # Chargement d'une image : Sans argument, ou avec "?" comme nom de fichier,
 # ouvre une fenetre de selection pour demander le nom de fichier,
 # avec l'option "-novisu" l'image n'est pas affichee
@@ -212,15 +212,15 @@ proc savejpeg { { filename "?" } } {
    return
 }
 
-#------------------------------------------------------------
-# visu
-# Visualisation du buffer : Eventuellement on peut changer les seuils en passant une liste de
-# deux elements entiers, le seuil haut et le seuil bas
+#
+# visu [cuts]
+# Visualisation du buffer : Eventuellement on peut changer les seuils en passant
+# une liste de deux elements entiers, le seuil haut et le seuil bas
 #
 # Exemple :
 # visu
 # visu {500 0}
-#------------------------------------------------------------
+#
 proc visu { { cuts "autocuts" } } {
    global audace
 
@@ -230,10 +230,7 @@ proc visu { { cuts "autocuts" } } {
 #
 # stat
 # Renvoie une liste des statistiques de l'image
-# Dans l'ordre : hicut, locut, datamax, datamin, mean, sigma, bgmean, bgsigma, contrast
-#
-# Exemple :
-# stat
+# Dans l'ordre : hicut, locut, datamax, datamin, mean, sigma, bgmean, bgsigma et contrast
 #
 proc stat { } {
    global audace
@@ -243,14 +240,13 @@ proc stat { } {
 
 #
 # acq exptime binning
-# Declenche l'acquisition, et affiche l'image une fois l'acquisition terminee
+# Declenche l'acquisition et affiche l'image une fois l'acquisition terminee
 #
 # Exemple :
 # acq 10 2
 #
 proc acq { exptime binning } {
-   global audace
-   global caption
+   global audace caption
 
    #--- Petit raccourci
    set camera cam$audace(camNo)
@@ -273,6 +269,10 @@ proc acq { exptime binning } {
    wm title $audace(base) "$caption(audace,image,acquisition) $exptime s"
 }
 
+#
+# offset value
+# Realise un offset sur l'image, tous les pixels de l'image sont decales de value
+#
 proc offset { args } {
    global audace
 
@@ -280,10 +280,14 @@ proc offset { args } {
       buf$audace(bufNo) offset [lindex $args 0]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: offset val"
+      error "Usage: offset value"
    }
 }
 
+#
+# mult value
+# Multiplie tous les pixels de l'image en memoire par la valeur value
+#
 proc mult { args } {
    global audace
 
@@ -291,10 +295,14 @@ proc mult { args } {
       buf$audace(bufNo) mult [lindex $args 0]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: mult val"
+      error "Usage: mult value"
    }
 }
 
+#
+# noffset value
+# Normalise le fond du ciel par un offset a la valeur value
+#
 proc noffset { args } {
    global audace
 
@@ -302,10 +310,14 @@ proc noffset { args } {
       buf$audace(bufNo) noffset [lindex $args 0]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: noffset val"
+      error "Usage: noffset value"
    }
 }
 
+#
+# ngain value
+# Normalise le fond du ciel a la valeur value
+#
 proc ngain { args } {
    global audace
 
@@ -313,10 +325,14 @@ proc ngain { args } {
       buf$audace(bufNo) ngain [lindex $args 0]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: ngain val"
+      error "Usage: ngain value"
    }
 }
 
+#
+# add image value
+# Ajoute l'image contenue dans fichier a l'image du buffer et ajoute un offset de valeur value
+#
 proc add { args } {
    global audace
 
@@ -324,10 +340,14 @@ proc add { args } {
       buf$audace(bufNo) add [lindex $args 0] [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: add image val"
+      error "Usage: add image value"
    }
 }
 
+#
+# sub image value
+# Soustrait l'image contenue dans image a l'image du buffer et ajoute un offset de valeur value
+#
 proc sub { args } {
    global audace
 
@@ -335,10 +355,15 @@ proc sub { args } {
       buf$audace(bufNo) sub [lindex $args 0] [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: sub image val"
+      error "Usage: sub image value"
    }
 }
 
+#
+# div image value
+# Divise l'image courante par l'image contenue dans le fichier nom,
+# et multiplie par la constante numerique value
+#
 proc div { args } {
    global audace
 
@@ -346,10 +371,14 @@ proc div { args } {
       buf$audace(bufNo) div [lindex $args 0] [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage: div image val"
+      error "Usage: div image value"
    }
 }
 
+#
+# opt dark offset
+# Optimise le noir sur le buffer
+#
 proc opt { args } {
    global audace
 
@@ -361,6 +390,12 @@ proc opt { args } {
    }
 }
 
+#
+# deconvflat coef
+# Retire l'effet de smearing d'une image
+# Le coefficient coef correspond au rapport du temps de lecture d'une
+# ligne par rapport a l'image entiere
+#
 proc deconvflat { args } {
    global audace
 
@@ -372,6 +407,10 @@ proc deconvflat { args } {
    }
 }
 
+#
+# rot x0 y0 angle
+# Rotation de l'image autour du centre (x0,y0) et d'un angle angle en degres decimaux
+#
 proc rot { args } {
    global audace
 
@@ -383,6 +422,10 @@ proc rot { args } {
    }
 }
 
+#
+# log coef [offset]
+# Applique une transformation logarithmique a l'image
+#
 proc log { args } {
    global audace
 
@@ -397,6 +440,11 @@ proc log { args } {
    }
 }
 
+#
+# binx x1 x2 [width]
+# Cree une nouvelle image de dimensions width*NAXIS2 dont toutes les colonnes sont identiques
+# et egales a la somme de toutes les colonnes comprises entre les abscisses x1 et x2 de l'image
+#
 proc binx { args } {
    global audace
 
@@ -411,6 +459,11 @@ proc binx { args } {
    }
 }
 
+#
+# biny y1 y2 [height]
+# Cree une nouvelle image de dimensions height*NAXIS1 dont toutes les lignes sont identiques
+# et egales a la somme de toutes les lignes comprises entre les ordonnées y1 et y2 de l'image
+#
 proc biny { args } {
    global audace
 
@@ -425,9 +478,14 @@ proc biny { args } {
    }
 }
 
+#
+# window
+# Extrait une sous-image de l'image du buffer
+# L'argument est une liste de quatre valeurs numeriques indiquant les coordonnees
+# de deux des coins opposes : [list $x1 $y1 $x2 $y2]
+#
 proc window { { args "" } } {
-   global audace
-   global caption
+   global audace caption
 
    if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
       if {$args == ""} {
@@ -445,6 +503,10 @@ proc window { { args "" } } {
    }
 }
 
+#
+# clipmin value
+# Remplace toutes les valeurs inferieures a value par value (ecretage)
+#
 proc clipmin { args } {
    global audace
 
@@ -457,6 +519,10 @@ proc clipmin { args } {
    }
 }
 
+#
+# clipmax value
+# Remplace toutes les valeurs superieures a value par value (ecretage)
+#
 proc clipmax { args } {
    global audace
 
@@ -469,6 +535,10 @@ proc clipmax { args } {
    }
 }
 
+#
+# resample Factor_x Factor_y [NormaFlux]
+# Reechantillonne (bilineaire) l'image en tenant compte de facteurs d'echelle sur chaque axe
+#
 proc resample { args } {
    global audace
 
@@ -485,6 +555,10 @@ proc resample { args } {
    }
 }
 
+#
+# mirrorx
+# Retourne l'image par un effet de miroir horizontal
+#
 proc mirrorx { args } {
    global audace
 
@@ -496,6 +570,10 @@ proc mirrorx { args } {
    }
 }
 
+#
+# mirrory
+# Retourne l'image par un effet de miroir vertical
+#
 proc mirrory { args } {
    global audace
 
@@ -509,13 +587,13 @@ proc mirrory { args } {
 
 #
 # delete2 in nb
-# Deletes files from $in1 to $in$nb
+# Supprime les fichiers de $in1 a $in$nb
 #
-# Exemple : delete2 i 3 --> deletes files i1.fit, i2.fit, i3.fit
+# Exemple :
+# delete2 i 3 --> Supprime les fichiers i1.fit, i2.fit et i3.fit
 #
 proc delete2 { args } {
-   global conf
-   global audace
+   global audace conf
 
    #--- Recuperation de l'extension par defaut
    buf$audace(bufNo) extension "$conf(extension,defaut)"
@@ -532,11 +610,14 @@ proc delete2 { args } {
 
 #
 # extract_flat in dark offset out nb
-# Computes a flat from night sky images, requires CCD dark and offset clean frames
+# Calcule un flat directement a partir des images de la nuit
+# Il est necessaire d'avoir un offset et un noir
 #
-# Exemple : extract_flat sky drk off flat 5
-# -> extracts flat.fit from the images sky1.fit to sky5.fit using drk.fit and off.fit as dark and
-#    offset maps. Temporary files named flat-tmp-1.fit to flat-tmp-5.fit are generated and deleted
+# Exemple :
+# extract_flat sky dark offset flat 5
+# Extrait une image flat.fit des 5 images sky1.fit to sky5.fit en utilisant
+# un noir dark.fit et un offset off.fit
+# Temporairement les fichiers flat-tmp-1.fit a flat-tmp-5.fit sont crees puis supprimes
 #
 proc extract_flat { args } {
    if {[llength $args] == 5} {
@@ -568,6 +649,12 @@ proc fitsdate { args } {
    }
 }
 
+#
+# dir [rgxp]
+# Liste le contenu d'un repertoire, telle la commande DOS DIR
+# Pour lister les images du sous repertoire nuit, il faut utiliser
+# la commande "dir nuit/*.fit"
+#
 proc dir { { rgxp "*" } } {
    set res [glob $rgxp]
    set maxlen 0
@@ -578,22 +665,24 @@ proc dir { { rgxp "*" } } {
    }
    foreach elem $res {
       if {[file isdirectory $elem]} {
-   set comment "<DIR>"
+         set comment "<DIR>"
       } else {
-   set comment "([file size $elem])"
+         set comment "([file size $elem])"
       }
       ::console::affiche_resultat [format "%-[subst $maxlen]s  %s\n" $elem $comment]
    }
 }
 
+#
+# animate filename nb [millisecondes] [nbtours]
+# Creation d'animation d'images
+# filename : Nom generique des fichiers image filename*.fit a animer
+# nb : Nombre d'images (1 a nb)
+# millisecondes : Temps entre chaque image affichee
+# nbtours : Nombre de boucles sur les nb images
+#
 proc animate { filename nb {millisecondes 200} {nbtours 10} } {
-   #--- filename : Nom generique des fichiers image filename*.fit a animer
-   #--- nb : Nombre d'images (1 a nb)
-   #--- millisecondes : Temps entre chaque image affichee
-   #--- nbtours : Nombre de boucles sur les nb images
-   #
-   global conf
-   global audace
+   global audace conf
 
    #--- Repertoire des images
    set len [ string length $conf(rep_images) ]
