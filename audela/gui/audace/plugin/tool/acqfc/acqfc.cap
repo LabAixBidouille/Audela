@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.12 2006-11-09 13:17:48 audelateam Exp $
+# Mise a jour $Id: acqfc.cap,v 1.13 2006-11-11 18:41:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -277,19 +277,19 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,continu)                "Continuo"
    set caption(acqfc,continu_1)              "Continuo (1)"
    set caption(acqfc,titre_1)                "Serie continua di immagini ad intervalli regolari"
-   set caption(acqfc,intervalle_1)           "# Intervallo tra ogni serie (sec.)"
-   set caption(acqfc,int_mini_serie)         "# Intrevallo minimo tra ogni serie:"
+   set caption(acqfc,intervalle_1)           "Intervallo tra l'inizio di ogni serie di immagini (sec.)"
+   set caption(acqfc,int_mini_serie)         "Intervallo minimo tra l'inizio di ogni serie di immagini:"
    set caption(acqfc,simulation)             "Simulazione"
    set caption(acqfc,continu_2)              "Continuo (2)"
    set caption(acqfc,titre_2)                "Immagini continue ad intervalli regolari"
-   set caption(acqfc,intervalle_2)           "# Intervallo tra ogni immagine (sec.)"
-   set caption(acqfc,int_mini_image)         "# Intervallo minimo tra ogni immagine:"
+   set caption(acqfc,intervalle_2)           "Intervallo tra l'inizio di ogni esposizione (sec.)"
+   set caption(acqfc,int_mini_image)         "Intervallo minimo tra l'inizio di ogni esposizione:"
    set caption(acqfc,simu_deja_faite)        "Una simulazione e` stata fatta con gli stessi parametri di esposizione."
    set caption(acqfc,enregistrer)            "Registrare"
    set caption(acqfc,video)                  "Video"
    set caption(acqfc,video_1)                "Video (1)"
    set caption(acqfc,titre_3)                "Video continue ad intervalli regolari"
-   set caption(acqfc,intervalle_video)       "# Intervallo tra ogni video (sec.)"
+   set caption(acqfc,intervalle_video)       "Intervallo tra l'inizio di ogni video (sec.)"
    set caption(acqfc,show_video)             "Anteprima video"
    set caption(acqfc,capture_video)          "Acquisizione video"
    set caption(acqfc,lg_film)                "Durata del filmato"
