@@ -2,11 +2,13 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.3 2006-11-09 23:07:15 robertdelmas Exp $
+# Mise a jour $Id: sextractor.tcl,v 1.4 2006-11-11 10:29:25 robertdelmas Exp $
 #
 
+global audace
+
 proc sextractor_default_nnw { {filename default.nnw} } {
-   set texte ""
+   set texte    ""
    append texte "NNW\n"
    append texte "# Neural Network Weights for the SExtractor star/galaxy classifier (V1.3)\n"
    append texte "# inputs: 9 for profile parameters + 1 for seeing.\n"
@@ -35,14 +37,14 @@ proc sextractor_default_nnw { {filename default.nnw} } {
    append texte "\n"
    append texte "0.00000e+00 \n"
    append texte "1.00000e+00 \n"
-   #
+   #--- Creation du fichier de configuration default.nnw
    set f [open "$filename" w]
    puts -nonewline $f $texte
    close $f
 }
 
 proc sextractor_config_param { {filename config.param} } {
-   set texte ""
+   set texte    ""
    append texte "NUMBER\n"
    append texte "\n"
    append texte "#FLUX_ISO\n"
@@ -170,14 +172,14 @@ proc sextractor_config_param { {filename config.param} } {
    append texte "\n"
    append texte "CLASS_STAR\n"
    append texte "#VIGNET(5,5)\n"
-   #
+   #--- Creation du fichier de configuration config.param
    set f [open "$filename" w]
    puts -nonewline $f $texte
    close $f
 }
 
 proc sextractor_config_sex { {filename config.sex} } {
-   set texte ""
+   set texte    ""
    append texte "\n"
    append texte "# New configuration file for SExtractor V1.2b14 - > 2.0\n"
    append texte "# EB 23/07/98\n"
@@ -256,7 +258,7 @@ proc sextractor_config_sex { {filename config.sex} } {
    append texte "\n"
    append texte "#------------------------------- New Stuff -----------------------------------\n"
    append texte "#FITS_UNSIGNED Y\n"
-   #
+   #--- Creation du fichier de configuration config.sex
    set f [open "$filename" w]
    puts -nonewline $f $texte
    close $f
@@ -289,9 +291,14 @@ proc sextractor { args } {
    return "$msg"
 }
 
-catch {
-   set pathgui "$audace(rep_gui)"
-   sextractor_default_nnw "${pathgui}/default.nnw"
-   sextractor_config_param "${pathgui}/config.param"
-   sextractor_config_sex "${pathgui}/config.sex"
-}
+   #--- Creation des fichiers de configuration s'ils n'existent pas deja
+   if { [ file exist [ file join ${audace(rep_gui)} config.param ] ] == "0" } {
+      sextractor_config_param "${audace(rep_gui)}/config.param"
+   }
+   if { [ file exist [ file join ${audace(rep_gui)} config.sex ] ] == "0" } {
+      sextractor_config_sex "${audace(rep_gui)}/config.sex"
+   }
+   if { [ file exist [ file join ${audace(rep_gui)} default.nnw ] ] == "0" } {
+      sextractor_default_nnw "${audace(rep_gui)}/default.nnw"
+   }
+
