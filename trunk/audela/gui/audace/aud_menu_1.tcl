@@ -1,13 +1,13 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.3 2006-11-08 06:16:31 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.4 2006-11-11 16:27:28 robertdelmas Exp $
 #
 
 namespace eval ::audace {
 
    #
-   # ::audace::charger
+   # ::audace::charger visuNo
    # Charge un fichier dans la visu
    #
    proc charger { visuNo } {
@@ -23,7 +23,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::enregistrer
+   # ::audace::enregistrer visuNo
    # Enregistre un fichier sous son nom d'ouverture
    #
    proc enregistrer { visuNo } {
@@ -39,7 +39,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::enregistrer_sous
+   # ::audace::enregistrer_sous visuNo
    # Enregistre un fichier sous un nom
    #
    proc enregistrer_sous { visuNo } {
@@ -55,7 +55,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::copyjpeg
+   # ::audace::copyjpeg visuNo
    # Enregistre un fichier au format Jpeg
    #
    proc copyjpeg { visuNo } {
@@ -80,7 +80,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::header
+   # ::audace::header visuNo
    # Affiche l'en-tete FITS d'un fichier
    #
    proc header { visuNo } {
@@ -99,7 +99,7 @@ namespace eval ::audace {
          wm minsize $base.header 632 303
       }
       wm resizable $base.header 0 1
-      wm title $base.header "$caption(audace,menu,entete) (visu$visuNo)"
+      wm title $base.header "$caption(audace,header_title) (visu$visuNo)"
       set posx_header [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
       set posy_header [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $base.header +[ expr $posx_header + 3 ]+[ expr $posy_header + 75 ]
@@ -130,7 +130,7 @@ namespace eval ::audace {
             $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
          }
       } else {
-         label $base.header.l -text "$caption(audace,header,noimage)"
+         label $base.header.l -text "$caption(audace,header_noimage)"
          pack $base.header.l -padx 20 -pady 10
       }
       update
@@ -191,7 +191,7 @@ namespace eval ::audace {
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editscript)\" \"$filename\" &"
          if [catch $a_effectuer input] {
-           # ::console::affiche_erreur "$caption(audace,console,rate)\n"
+           # ::console::affiche_erreur "$caption(audace,console_rate)\n"
             set confgene(EditScript,error_script) "0"
             ::confEditScript::run "$audace(base).confEditScript"
             set a_effectuer "exec \"$conf(editscript)\" \"$filename\" &"
@@ -206,10 +206,10 @@ namespace eval ::audace {
             ::console::disp $filename
             ::console::affiche_saut "\n"
             set audace(current_edit) $input
-           # ::console::affiche_erreur "$caption(audace,console,gagne)\n"
+           # ::console::affiche_erreur "$caption(audace,console_gagne)\n"
          }
       } else {
-        # ::console::affiche_erreur "$caption(audace,console,annule)\n"
+        # ::console::affiche_erreur "$caption(audace,console_annule)\n"
       }
    }
 
@@ -231,7 +231,7 @@ namespace eval ::audace {
          ::console::affiche_erreur "$caption(prog,erreur,script) $filename\n"
          ::console::affiche_erreur "\n"
          if {[catch {uplevel source \"$filename\"} m]} {
-            ::console::affiche_erreur "$caption(audace,boite,erreur) $caption(caractere,2points) $m\n";
+            ::console::affiche_erreur "$caption(audace,boite_erreur) $caption(caractere,2points) $m\n";
             set m2 $errorInfo
             ::console::affiche_erreur "$m2\n";
          } else {
@@ -367,8 +367,9 @@ namespace eval ::audace {
 namespace eval ::newScript {
 
    #
-   # ::newScript::run
+   # ::newScript::run this
    # Lance la boite de dialogue de creation d'un nouveau script
+   # this : Chemin de la fenetre
    #
    proc run { this } {
       variable This
@@ -397,8 +398,9 @@ namespace eval ::newScript {
    }
 
    #
-   # ::newScript::createDialog
+   # ::newScript::createDialog this
    # Creation de l'interface graphique
+   # this : Chemin de la fenetre
    #
    proc createDialog { this } {
       variable This

@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.35 2006-11-11 13:07:14 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.36 2006-11-11 16:27:14 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -147,7 +147,13 @@ namespace eval ::audace {
       #--- Chargement des legendes et textes pour differentes langues
       uplevel #0 "source \"[ file join $audace(rep_caption) caption.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_1.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_2.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_3.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_4.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_5.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_6.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_7.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_8.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene_en-tete.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_caption) confgene_touche.cap ]\""

@@ -1,13 +1,13 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.1 2006-11-05 07:41:39 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.2 2006-11-11 16:27:53 robertdelmas Exp $
 #
 
 namespace eval ::audace {
 
    #
-   # ::audace::MAJ_palette
+   # ::audace::MAJ_palette visuNo
    # Procedure de creation dynamique de la palette en fonction de la fonction de transfert
    #
    proc MAJ_palette { visuNo } {
@@ -264,7 +264,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::fonction_transfert
+   # ::audace::fonction_transfert visuNo
    # Procedure d'affichage de la fenetre "fonctions de transfert"
    #
    proc fonction_transfert { visuNo } {
@@ -356,7 +356,7 @@ namespace eval ::audace {
 ###################################################################################
 
    #
-   # ::audace::fonction_transfertok
+   # ::audace::fonction_transfertok visuNo
    # Procedure correspondant a l'appui sur le bouton OK de la boite "fonction de transfert"
    #
    proc fonction_transfertok { visuNo } {
@@ -374,7 +374,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::fonction_transfertquit
+   # ::audace::fonction_transfertquit visuNo
    # Procedure correspondant a l'appui sur bouton Quitter de la boite "fonction de transfert"
    #
    proc fonction_transfertquit { visuNo } {
@@ -400,7 +400,7 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::fonction_transfert_recup_position
+   # ::audace::fonction_transfert_recup_position visuNo
    # Recupere les coordonnees de la boite de dialogue de la "fonction de transfert"
    #
    proc fonction_transfert_recup_position { visuNo } {
@@ -421,7 +421,7 @@ namespace eval ::audace {
 namespace eval ::seuilWindow {
 
    #
-   # ::seuilWindow::run
+   # ::seuilWindow::run base visuNo
    # Lance la boite de dialogue de reglage des seuils de visualisation
    #
    proc run { base visuNo } {
@@ -443,7 +443,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::initConf
+   # ::seuilWindow::initConf [visuNo]
    # Initialise les variables de configuration
    #
    proc initConf { { visuNo 1 } } {
@@ -459,7 +459,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::createDialog
+   # ::seuilWindow::createDialog visuNo
    # Creation de l'interface graphique
    #
    proc createDialog { visuNo } {
@@ -555,7 +555,7 @@ namespace eval ::seuilWindow {
                pack $seuilWindow($visuNo,This).usr2.2.1.lab1 -side left -padx 10 -pady 5
                entry $seuilWindow($visuNo,This).usr2.2.1.ent1 -textvariable seuilWindow($visuNo,max) -width 10
                pack $seuilWindow($visuNo,This).usr2.2.1.ent1 -side left -padx 10 -pady 5
-               menubutton $seuilWindow($visuNo,This).usr2.2.1.but -text $caption(script,parcourir) -menu $seuilWindow($visuNo,This).usr2.2.1.but.menu \
+               menubutton $seuilWindow($visuNo,This).usr2.2.1.but -text $caption(seuilWindow,parcourir) -menu $seuilWindow($visuNo,This).usr2.2.1.but.menu \
                   -relief raised
                pack $seuilWindow($visuNo,This).usr2.2.1.but -side left -padx 10 -pady 5
                set m [ menu $seuilWindow($visuNo,This).usr2.2.1.but.menu -tearoff 0 ]
@@ -573,7 +573,7 @@ namespace eval ::seuilWindow {
                pack $seuilWindow($visuNo,This).usr2.2.2.lab1 -side left -padx 10 -pady 5
                entry $seuilWindow($visuNo,This).usr2.2.2.ent1 -textvariable seuilWindow($visuNo,min) -width 10
                pack $seuilWindow($visuNo,This).usr2.2.2.ent1 -side left -padx 10 -pady 5
-               menubutton $seuilWindow($visuNo,This).usr2.2.2.but -text $caption(script,parcourir) -menu $seuilWindow($visuNo,This).usr2.2.2.but.menu \
+               menubutton $seuilWindow($visuNo,This).usr2.2.2.but -text $caption(seuilWindow,parcourir) -menu $seuilWindow($visuNo,This).usr2.2.2.but.menu \
                   -relief raised
                pack $seuilWindow($visuNo,This).usr2.2.2.but -side left -padx 10 -pady 5
                set m [ menu $seuilWindow($visuNo,This).usr2.2.2.but.menu -tearoff 0 ]
@@ -680,7 +680,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::cmdseuilWindowAuto_Manuel
+   # ::seuilWindow::cmdseuilWindowAuto_Manuel visuNo
    # Modifie l'interface graphique en fonction du choix (automatique ou manuel)
    #
    proc cmdseuilWindowAuto_Manuel { visuNo } {
@@ -710,7 +710,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::cmdPreview
+   # ::seuilWindow::cmdPreview visuNo
    # Fonction apercu
    #
    proc cmdPreview { visuNo } {
@@ -733,7 +733,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::cmdOk
+   # ::seuilWindow::cmdOk visuNo
    # Procedure correspondant a l'appui sur le bouton OK
    #
    proc cmdOk { visuNo } {
@@ -742,7 +742,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::cmdApply
+   # ::seuilWindow::cmdApply visuNo
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { visuNo } {
@@ -799,7 +799,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::cmdClose
+   # ::seuilWindow::cmdClose visuNo
    # Procedure correspondant a l'appui sur le bouton Fermer
    #
    proc cmdClose { visuNo } {
@@ -813,7 +813,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::seuils_recup_position
+   # ::seuilWindow::seuils_recup_position visuNo
    # Recupere les coordonnees de la boite de dialogue des seuils
    #
    proc seuils_recup_position { visuNo } {

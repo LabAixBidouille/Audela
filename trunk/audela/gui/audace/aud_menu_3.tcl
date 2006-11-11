@@ -1,15 +1,16 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.2 2006-11-05 09:18:26 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.3 2006-11-11 16:28:11 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
 
    #
-   # ::traiteImage::run
+   # ::traiteImage::run type_pretraitement_image this
    # Lance la boite de dialogue pour les pretraitements sur une images
    #
+   # this : Chemin de la fenetre
    proc run { type_pretraitement_image this } {
       variable This
       variable widget
@@ -160,7 +161,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5 
            # pack $This.usr.2.4 -side top -fill both
             frame $This.usr.2.5 -borderwidth 0 -relief flat
-               button $This.usr.2.5.btn1 -text "$caption(script,parcourir)" -command ::traiteImage::parcourir
+               button $This.usr.2.5.btn1 -text "$caption(traiteImage,parcourir)" -command ::traiteImage::parcourir
                pack $This.usr.2.5.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.5.lab5 -text "$caption(nom,image,ajouter)"
                pack $This.usr.2.5.lab5 -side left -padx 5 -pady 5
@@ -176,7 +177,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.6.ent6 -side right -padx 10 -pady 5
            # pack $This.usr.2.6 -side top -fill both 
             frame $This.usr.2.7 -borderwidth 0 -relief flat
-               button $This.usr.2.7.btn2 -text "$caption(script,parcourir)" -command ::traiteImage::parcourir
+               button $This.usr.2.7.btn2 -text "$caption(traiteImage,parcourir)" -command ::traiteImage::parcourir
                pack $This.usr.2.7.btn2 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.7.lab7 -text "$caption(nom,image,soustraire)"
                pack $This.usr.2.7.lab7 -side left -padx 5 -pady 5
@@ -192,7 +193,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.8.ent8 -side right -padx 10 -pady 5
            # pack $This.usr.2.8 -side top -fill both 
             frame $This.usr.2.9 -borderwidth 0 -relief flat
-               button $This.usr.2.9.btn3 -text "$caption(script,parcourir)" -command ::traiteImage::parcourir
+               button $This.usr.2.9.btn3 -text "$caption(traiteImage,parcourir)" -command ::traiteImage::parcourir
                pack $This.usr.2.9.btn3 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.9.lab9 -text "$caption(image,nom,diviser)"
                pack $This.usr.2.9.lab9 -side left -padx 5 -pady 5
@@ -255,7 +256,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.17.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
            # pack $This.usr.2.17 -side top -fill both
             frame $This.usr.2.18 -borderwidth 0 -relief flat
-               button $This.usr.2.18.btn1 -text "$caption(script,parcourir)" -command { ::traiteImage::parcourir 1 }
+               button $This.usr.2.18.btn1 -text "$caption(traiteImage,parcourir)" -command { ::traiteImage::parcourir 1 }
                pack $This.usr.2.18.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.18.lab5 -text "$caption(audace,image,noir:)"
                pack $This.usr.2.18.lab5 -side left -padx 5 -pady 5
@@ -264,7 +265,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.18.ent5 -side right -padx 10 -pady 5
            # pack $This.usr.2.19 -side top -fill both 
             frame $This.usr.2.19 -borderwidth 0 -relief flat
-               button $This.usr.2.19.btn1 -text "$caption(script,parcourir)" -command { ::traiteImage::parcourir 2 }
+               button $This.usr.2.19.btn1 -text "$caption(traiteImage,parcourir)" -command { ::traiteImage::parcourir 2 }
                pack $This.usr.2.19.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.19.lab5 -text "$caption(audace,log,offset)"
                pack $This.usr.2.19.lab5 -side left -padx 5 -pady 5
@@ -343,7 +344,7 @@ namespace eval ::traiteImage {
    }
 
    #
-   # ::traiteImage::cmdApply
+   # ::traiteImage::cmdApply [visuNo]
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { { visuNo "1" } } {
@@ -351,7 +352,7 @@ namespace eval ::traiteImage {
 
       #--- Il faut une image affichee
       if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
-         tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,header,noimage)
+         tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,header_noimage)
          return
       }
 
@@ -755,7 +756,7 @@ namespace eval ::traiteImage {
    }
 
    #
-   # ::traiteImage::change
+   # ::traiteImage::change n1 n2 op
    # Adapte l'interface graphique en fonction du choix
    #
    proc change { n1 n2 op } {
@@ -1015,7 +1016,7 @@ namespace eval ::traiteImage {
    }
 
    #
-   # ::traiteImage::parcourir
+   # ::traiteImage::parcourir [option]
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { { option 1 } } {
@@ -1094,8 +1095,9 @@ namespace eval ::traiteImage {
 namespace eval ::traiteWindow {
 
    #
-   # ::traiteWindow::run
+   # ::traiteWindow::run type_pretraitement this
    # Lance la boite de dialogue pour les pretraitements sur une images
+   # this : Chemin de la fenetre
    #
    proc run { type_pretraitement this } {
       variable This
@@ -1240,7 +1242,7 @@ namespace eval ::traiteWindow {
 
          frame $This.usr.5 -borderwidth 1 -relief raised
             frame $This.usr.5.1 -borderwidth 0 -relief flat
-               button $This.usr.5.1.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.5.1.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 4 }
                pack $This.usr.5.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.5.1.lab8 -text "$caption(audace,image,noir:)"
@@ -1249,7 +1251,7 @@ namespace eval ::traiteWindow {
                pack $This.usr.5.1.ent8 -side right -padx 10 -pady 5
             pack $This.usr.5.1 -side top -fill both
             frame $This.usr.5.2 -borderwidth 0 -relief flat
-               button $This.usr.5.2.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.5.2.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 5 }
                pack $This.usr.5.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.5.2.lab9 -text "$caption(audace,log,offset)"
@@ -1261,7 +1263,7 @@ namespace eval ::traiteWindow {
 
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
-               button $This.usr.4.1.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.4.1.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 3 }
                pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.1.lab6 -textvariable "traiteWindow(operande)"
@@ -1288,7 +1290,7 @@ namespace eval ::traiteWindow {
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.2 -borderwidth 0 -relief flat
-               button $This.usr.2.2.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.2.2.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 1 }
                pack $This.usr.2.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.2.lab3 -textvariable "traiteWindow(image_A)"
@@ -1303,7 +1305,7 @@ namespace eval ::traiteWindow {
                pack $This.usr.2.1.lab2 -side right -padx 5 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
-               button $This.usr.2.3.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.2.3.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 2 }
                pack $This.usr.2.3.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.3.lab4 -textvariable "traiteWindow(image_B)"
@@ -1751,7 +1753,7 @@ namespace eval ::traiteWindow {
    }
 
    #
-   # ::traiteWindow::change
+   # ::traiteWindow::change n1 n2 op
    # Adapte l'interface graphique en fonction du choix
    #
    proc change { n1 n2 op } {
@@ -1899,7 +1901,7 @@ namespace eval ::traiteWindow {
    }
 
    #
-   # ::traiteWindow::parcourir
+   # ::traiteWindow::parcourir In_Out
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { In_Out } {
@@ -2004,8 +2006,9 @@ namespace eval ::traiteWindow {
 namespace eval ::faireImageRef {
 
    #
-   # ::faireImageRef::run
+   # ::faireImageRef::run type_image_reference this
    # Lance la boite de dialogue pour les pretraitements sur une images
+   # this : Chemin de la fenetre
    #
    proc run { type_image_reference this } {
       variable This
@@ -2118,7 +2121,7 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.7 -borderwidth 1 -relief raised
             frame $This.usr.7.1 -borderwidth 0 -relief flat
-               button $This.usr.7.1.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.7.1.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.7.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.1.lab6 -textvariable "faireImageRef(offset)"
@@ -2127,7 +2130,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.1 -side top -fill both
             frame $This.usr.7.2 -borderwidth 0 -relief flat
-               button $This.usr.7.2.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.7.2.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
                pack $This.usr.7.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.2.lab6 -textvariable "faireImageRef(dark)"
@@ -2140,7 +2143,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.3.opt -side right -padx 60 -pady 5
             pack $This.usr.7.3 -side top -fill both
             frame $This.usr.7.4 -borderwidth 0 -relief flat
-               button $This.usr.7.4.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.7.4.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 5 }
                pack $This.usr.7.4.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.4.lab6 -textvariable "faireImageRef(flat-field)"
@@ -2175,7 +2178,7 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
-               button $This.usr.4.1.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.4.1.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.1.lab6 -textvariable "faireImageRef(offset)"
@@ -2193,7 +2196,7 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
-               button $This.usr.3.1.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.3.1.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.3.1.lab6 -textvariable "faireImageRef(offset)"
@@ -2205,7 +2208,7 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.2 -borderwidth 0 -relief flat
-               button $This.usr.2.2.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.2.2.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 1 }
                pack $This.usr.2.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.2.lab3 -textvariable "faireImageRef(image_generique)"
@@ -2220,7 +2223,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.2.1.lab2 -side right -padx 5 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
-               button $This.usr.2.3.explore -text "$caption(script,parcourir)" -width 1 \
+               button $This.usr.2.3.explore -text "$caption(traiteImage,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 2 }
                pack $This.usr.2.3.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.3.lab4 -textvariable "faireImageRef(image_sortie)"
@@ -2530,7 +2533,7 @@ namespace eval ::faireImageRef {
    }
 
    #
-   # ::faireImageRef::change
+   # ::faireImageRef::change n1 n2 op
    # Adapte l'interface graphique en fonction du choix
    #
    proc change { n1 n2 op } {
@@ -2602,7 +2605,7 @@ namespace eval ::faireImageRef {
    }
 
    #
-   # ::faireImageRef::parcourir
+   # ::faireImageRef::parcourir In_Out
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { In_Out } {
