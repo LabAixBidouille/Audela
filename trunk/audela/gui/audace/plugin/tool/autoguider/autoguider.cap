@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.7 2006-11-10 12:28:56 michelpujol Exp $
+# Mise a jour $Id: autoguider.cap,v 1.8 2006-11-11 17:43:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -34,12 +34,12 @@ set caption(autoguider,intervalle)               "Interval"
 set caption(autoguider,lecture)                  "Reading"
 set caption(autoguider,attente)                  "Wait"
 
-set caption(autoguider,seuil)                   "Threshold (pixels)"
-set caption(autoguider,detection)               "#Star dectection"
-set caption(autoguider,apprenti)                "#Learning"
-set caption(autoguider,vitesse)               "#Vitesse (pixel/seconde)"
-set caption(autoguider,detection_psf)         "#Etoile"
-set caption(autoguider,detection_fente)       "#Fente"
+set caption(autoguider,seuil)                    "Threshold (pixels)"
+set caption(autoguider,detection)                "Star Dectection"
+set caption(autoguider,apprenti)                 "Learning"
+set caption(autoguider,vitesse)                  "Speed (pixel/second)"
+set caption(autoguider,detection_psf)            "Star"
+set caption(autoguider,detection_fente)          "Slit"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == 0 } {
@@ -66,6 +66,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,lecture)               "Lecture"
    set caption(autoguider,attente)               "Attente"
+
    set caption(autoguider,seuil)                 "Seuil (pixel)"
    set caption(autoguider,detection)             "Détection étoile"
    set caption(autoguider,apprenti)              "Apprentissage"
@@ -100,6 +101,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,lecture)               "Lettura"
    set caption(autoguider,attente)               "Attesa"
 
+   set caption(autoguider,seuil)                 "# Seuil (pixel)"
+   set caption(autoguider,detection)             "# Détection étoile"
+   set caption(autoguider,apprenti)              "# Apprentissage"
+   set caption(autoguider,vitesse)               "# Vitesse (pixel/seconde)"
+   set caption(autoguider,detection_psf)         "# Etoile"
+   set caption(autoguider,detection_fente)       "# Fente"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == 0 } {
 
@@ -125,6 +133,13 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,lecture)               "Lectura"
    set caption(autoguider,attente)               "Esperando"
+
+   set caption(autoguider,seuil)                 "# Seuil (pixel)"
+   set caption(autoguider,detection)             "# Détection étoile"
+   set caption(autoguider,apprenti)              "# Apprentissage"
+   set caption(autoguider,vitesse)               "# Vitesse (pixel/seconde)"
+   set caption(autoguider,detection_psf)         "# Etoile"
+   set caption(autoguider,detection_fente)       "# Fente"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
@@ -152,6 +167,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,lecture)               "Abstattung"
    set caption(autoguider,attente)               "Warten"
 
+   set caption(autoguider,seuil)                 "# Seuil (pixel)"
+   set caption(autoguider,detection)             "# Détection étoile"
+   set caption(autoguider,apprenti)              "# Apprentissage"
+   set caption(autoguider,vitesse)               "# Vitesse (pixel/seconde)"
+   set caption(autoguider,detection_psf)         "# Etoile"
+   set caption(autoguider,detection_fente)       "# Fente"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -178,6 +200,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,lecture)               "Leitura"
    set caption(autoguider,attente)               "Espera"
 
+   set caption(autoguider,seuil)                 "# Seuil (pixel)"
+   set caption(autoguider,detection)             "# Détection étoile"
+   set caption(autoguider,apprenti)              "# Apprentissage"
+   set caption(autoguider,vitesse)               "# Vitesse (pixel/seconde)"
+   set caption(autoguider,detection_psf)         "# Etoile"
+   set caption(autoguider,detection_fente)       "# Fente"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
 
@@ -203,6 +232,13 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,lecture)               "Reading"
    set caption(autoguider,attente)               "Wait"
+
+set caption(autoguider,seuil)                    "Threshold (pixels)"
+set caption(autoguider,detection)                "Star Dectection"
+set caption(autoguider,apprenti)                 "Learning"
+set caption(autoguider,vitesse)                  "Speed (pixel/second)"
+set caption(autoguider,detection_psf)            "Star"
+set caption(autoguider,detection_fente)          "Slit"
 
 }
 
