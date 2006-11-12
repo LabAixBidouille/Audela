@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_6.tcl
 # Description : Script regroupant les fonctionnalites du menu Outils
-# Mise a jour $Id: aud_menu_6.tcl,v 1.2 2006-11-11 16:29:27 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_6.tcl,v 1.3 2006-11-12 16:08:52 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -40,7 +40,7 @@ namespace eval ::audace {
          set confgene(Choix_Outil,n$confgene(Choix_Outil,nbre)) $conf(panneau,n$confgene(Choix_Outil,nbre))
          if { $confgene(Choix_Outil,n$confgene(Choix_Outil,nbre)) == "1" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
-               Menu_Command $visuNo "$caption(audace,menu_outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
+               Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                if { $conf(raccourci,n$i) != "" } {
                   set raccourci(n$i) $conf(raccourci,n$i)
                   if { [string range $raccourci(n$i) 0 3] == "Alt+" } {
@@ -52,7 +52,7 @@ namespace eval ::audace {
                   lappend audace(list_raccourcis) [ list $conf(raccourci,n$i) ]
                   lappend audace(list_ns_raccourcis) [ list $ns ]
                   #---
-                  Menu_Bind $visuNo $audace(base) <$raccourci(n$i)> "$caption(audace,menu_outils)" "$panneau($m)" "$conf(raccourci,n$i)"
+                  Menu_Bind $visuNo $audace(base) <$raccourci(n$i)> "$caption(audace,menu,outils)" "$panneau($m)" "$conf(raccourci,n$i)"
                             bind $audace(Console) <$raccourci(n$i)> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$ns"
                }
             }

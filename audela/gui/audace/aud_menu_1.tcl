@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.4 2006-11-11 16:27:28 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.5 2006-11-12 16:08:25 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -164,7 +164,7 @@ namespace eval ::audace {
             #--- Ouverture de ce fichier
             set a_effectuer "exec \"$conf(editscript)\" \"$filename\" &"
             if {[catch $a_effectuer msg]} {
-               ::console::affiche_erreur "$caption(impossible,ouvrir,fichier) $msg\n"
+               ::console::affiche_erreur "$caption(audace,pas_ouvrir_fichier) $msg\n"
             }
          }
       }
@@ -228,16 +228,16 @@ namespace eval ::audace {
       if [string compare $filename ""] {
          ::console::affiche_saut "\n"
          ::console::affiche_erreur "\n"
-         ::console::affiche_erreur "$caption(prog,erreur,script) $filename\n"
+         ::console::affiche_erreur "$caption(audace,script) $filename\n"
          ::console::affiche_erreur "\n"
          if {[catch {uplevel source \"$filename\"} m]} {
-            ::console::affiche_erreur "$caption(audace,boite_erreur) $caption(caractere,2points) $m\n";
+            ::console::affiche_erreur "$caption(audace,boite_erreur) $caption(audace,2points) $m\n";
             set m2 $errorInfo
             ::console::affiche_erreur "$m2\n";
          } else {
             ::console::affiche_erreur "\n"
          }
-         ::console::affiche_erreur "$caption(termine,erreur,script)\n"
+         ::console::affiche_erreur "$caption(audace,script_termine)\n"
          ::console::affiche_erreur "\n"
       }
    }
@@ -319,8 +319,8 @@ namespace eval ::audace {
 
       if {[ini_fileNeedWritten file_conf conf]} {
          set old_focus [focus]
-         set choice [tk_messageBox -message "$caption(sur,enregistrer,config1)\n$caption(sur,enregistrer,config2)" \
-            -title "$caption(sur,enregistrer,config3)" -icon question -type yesnocancel]
+         set choice [tk_messageBox -message "$caption(audace,enregistrer_config_1)\n$caption(audace,enregistrer_config_2)" \
+            -title "$caption(audace,enregistrer_config_3)" -icon question -type yesnocancel]
          if {$choice=="yes"} {
             #--- Enregistrer la configuration
             array set theconf [ini_merge file_conf conf]
@@ -341,14 +341,14 @@ namespace eval ::audace {
          }
          focus $old_focus
       } else {
-         set choice [tk_messageBox -type yesno -icon warning -title "$caption(attention,enregistrer,config)" \
-            -message "$caption(audace,prog,quitter)"]
+         set choice [tk_messageBox -type yesno -icon warning -title "$caption(audace,attention)" \
+            -message "$caption(audace,quitter)"]
          if {$choice=="yes"} {
             ::confVisu::stopTool $audace(visuNo)
             ::audace::shutdown_devices
             exit
          }
-         ::console::affiche_resultat "$caption(sur,enregistrer,config5)\n\n"
+         ::console::affiche_resultat "$caption(audace,enregistrer_config_4)\n\n"
          wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
          wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
       }
