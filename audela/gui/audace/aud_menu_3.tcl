@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.3 2006-11-11 16:28:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.4 2006-11-12 23:05:33 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -282,7 +282,7 @@ namespace eval ::traiteImage {
             set list_traiteImage [ list  $caption(audace,menu,subsky) $caption(audace,menu,clip) \
                $caption(audace,menu,scale) $caption(audace,menu,offset) $caption(audace,menu,mult_cte) \
                $caption(audace,menu,noffset) $caption(audace,menu,ngain) $caption(audace,menu,addition) \
-               $caption(audace,menu,soust) $caption(audace,menu,division) $caption(audace,optimisation,noir) ]
+               $caption(audace,menu,soust) $caption(audace,menu,division) $caption(audace,menu,opt_noir) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteImage(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -680,7 +680,7 @@ namespace eval ::traiteImage {
             #---
             restore_cursor
          } \
-         "$caption(audace,optimisation,noir)" {
+         "$caption(audace,menu,opt_noir)" {
             #--- Test sur l'image de dark
             if { $traiteImage(optWindow_dark_filename) == "" } {
                tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
@@ -697,7 +697,7 @@ namespace eval ::traiteImage {
             #---
             catch { opt $traiteImage(optWindow_dark_filename) $traiteImage(optWindow_offset_filename) } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
+               tk_messageBox -title $caption(audace,menu,opt_noir) -type ok -message $caption(audace,fin_traitement)
             } else {
                tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
             }
@@ -747,7 +747,7 @@ namespace eval ::traiteImage {
          set traiteImage(page_web) "1080soustraction"
       } elseif { $traiteImage(operation) == $caption(audace,menu,division) } {
          set traiteImage(page_web) "1090division"
-      } elseif { $traiteImage(operation) == $caption(audace,optimisation,noir) } {
+      } elseif { $traiteImage(operation) == $caption(audace,menu,opt_noir) } {
          set traiteImage(page_web) "1095opt_noir"
       }
 
@@ -991,7 +991,7 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.18
             pack forget $This.usr.2.19
          } \
-         "$caption(audace,optimisation,noir)" {
+         "$caption(audace,menu,opt_noir)" {
             pack forget $This.usr.0
             pack forget $This.usr.2.1
             pack forget $This.usr.2.2
@@ -1033,9 +1033,9 @@ namespace eval ::traiteImage {
          set traiteImage(subWindow_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,division)" } {
          set traiteImage(divWindow_filename) [ file rootname [ file tail $filename ] ]
-      } elseif { $traiteImage(operation) == "$caption(audace,optimisation,noir)" && $option == "1" } {
+      } elseif { $traiteImage(operation) == "$caption(audace,menu,opt_noir)" && $option == "1" } {
          set traiteImage(optWindow_dark_filename) [ file rootname [ file tail $filename ] ]
-      } elseif { $traiteImage(operation) == "$caption(audace,optimisation,noir)" && $option == "2" } {
+      } elseif { $traiteImage(operation) == "$caption(audace,menu,opt_noir)" && $option == "2" } {
          set traiteImage(optWindow_offset_filename) [ file rootname [ file tail $filename ] ]
       }
    }
@@ -1322,8 +1322,8 @@ namespace eval ::traiteWindow {
             set list_traiteWindow [ list $caption(audace,menu,scale) $caption(audace,menu,offset) \
                $caption(audace,menu,mult_cte) $caption(audace,menu,noffset) $caption(audace,menu,ngain) \
                $caption(audace,menu,addition) $caption(audace,menu,soust) $caption(audace,menu,division) \
-               $caption(audace,optimisation,noir) $caption(audace,run,median) $caption(audace,image,somme) \
-               $caption(audace,image,moyenne) $caption(audace,image,ecart_type) ]
+               $caption(audace,menu,opt_noir) $caption(audace,menu,mediane) $caption(audace,menu,somme) \
+               $caption(audace,menu,moyenne) $caption(audace,menu,ecart_type) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteWindow(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -1622,7 +1622,7 @@ namespace eval ::traiteWindow {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
             } \
-            "$caption(audace,optimisation,noir)" {
+            "$caption(audace,menu,opt_noir)" {
                #--- Test sur le noir
                if { $traiteWindow(3,dark) == "" } {
                   tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,definir,noir)
@@ -1639,12 +1639,12 @@ namespace eval ::traiteWindow {
                ::console::affiche_resultat "opt2 $in $dark $offset $out $nb\n\n"
                catch { opt2 $in $dark $offset $out $nb } m
                if { $m == "" } {
-                  tk_messageBox -title $caption(audace,optimisation,noir) -type ok -message $caption(audace,fin_traitement)
+                  tk_messageBox -title $caption(audace,menu,opt_noir) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
             } \
-            "$caption(audace,run,median)" {
+            "$caption(audace,menu,mediane)" {
                ::console::affiche_resultat "smedian $in $out $nb\n\n"
                catch { smedian $in $out $nb } m
                if { $m == "" } {
@@ -1652,12 +1652,12 @@ namespace eval ::traiteWindow {
                      loadima $out
                      ::audace::autovisu $audace(visuNo)
                   }
-                  tk_messageBox -title $caption(audace,run,median) -type ok -message $caption(audace,fin_traitement)
+                  tk_messageBox -title $caption(audace,menu,mediane) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
             } \
-            "$caption(audace,image,somme)" {
+            "$caption(audace,menu,somme)" {
                ::console::affiche_resultat "sadd $in $out $nb\n\n"
                catch { sadd $in $out $nb } m
                if { $m == "" } {
@@ -1665,12 +1665,12 @@ namespace eval ::traiteWindow {
                      loadima $out
                      ::audace::autovisu $audace(visuNo)
                   }
-                  tk_messageBox -title $caption(audace,image,somme) -type ok -message $caption(audace,fin_traitement)
+                  tk_messageBox -title $caption(audace,menu,somme) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
             } \
-            "$caption(audace,image,moyenne)" {
+            "$caption(audace,menu,moyenne)" {
                ::console::affiche_resultat "smean $in $out $nb\n\n"
                catch { smean $in $out $nb } m
                if { $m == "" } {
@@ -1678,12 +1678,12 @@ namespace eval ::traiteWindow {
                      loadima $out
                      ::audace::autovisu $audace(visuNo)
                   }
-                  tk_messageBox -title $caption(audace,image,moyenne) -type ok -message $caption(audace,fin_traitement)
+                  tk_messageBox -title $caption(audace,menu,moyenne) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
             } \
-            "$caption(audace,image,ecart_type)" {
+            "$caption(audace,menu,ecart_type)" {
                ::console::affiche_resultat "ssigma $in $out $nb bitpix=-32\n\n"
                catch { ssigma $in $out $nb "bitpix=-32" } m
                if { $m == "" } {
@@ -1691,7 +1691,7 @@ namespace eval ::traiteWindow {
                      loadima $out
                      ::audace::autovisu $audace(visuNo)
                   }
-                  tk_messageBox -title $caption(audace,image,ecart_type) -type ok -message $caption(audace,fin_traitement)
+                  tk_messageBox -title $caption(audace,menu,ecart_type) -type ok -message $caption(audace,fin_traitement)
                } else {
                   tk_messageBox -title $caption(audace,boite,attention) -icon error -message $m
                }
@@ -1736,15 +1736,15 @@ namespace eval ::traiteWindow {
          set traiteWindow(page_web) "1200serie_soustraction"
       } elseif { $traiteWindow(operation) == $caption(audace,menu,division) } {
          set traiteWindow(page_web) "1210serie_division"
-      } elseif { $traiteWindow(operation) == $caption(audace,optimisation,noir) } {
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,opt_noir) } {
          set traiteWindow(page_web) "1220serie_opt_noir"
-      } elseif { $traiteWindow(operation) == $caption(audace,run,median) } {
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,mediane) } {
          set traiteWindow(page_web) "1120serie_mediane"
-      } elseif { $traiteWindow(operation) == $caption(audace,image,somme) } {
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,somme) } {
          set traiteWindow(page_web) "1130serie_somme"
-      } elseif { $traiteWindow(operation) == $caption(audace,image,moyenne) } {
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,moyenne) } {
          set traiteWindow(page_web) "1140serie_moyenne"
-      } elseif { $traiteWindow(operation) == $caption(audace,image,ecart_type) } {
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,ecart_type) } {
          set traiteWindow(page_web) "1150serie_ecart_type"
       }
 
@@ -1848,7 +1848,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.6
             pack forget $This.usr.7
          } \
-         "$caption(audace,optimisation,noir)" {
+         "$caption(audace,menu,opt_noir)" {
             pack forget $This.usr.0
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1858,7 +1858,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.6
             pack forget $This.usr.7
          } \
-         "$caption(audace,run,median)" {
+         "$caption(audace,menu,mediane)" {
             pack forget $This.usr.0
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1868,7 +1868,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.6
             pack $This.usr.7 -in $This.usr -side top -fill both
          } \
-         "$caption(audace,image,somme)" {
+         "$caption(audace,menu,somme)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1878,7 +1878,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.6
             pack $This.usr.7 -in $This.usr -side top -fill both
          } \
-         "$caption(audace,image,moyenne)" {
+         "$caption(audace,menu,moyenne)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1888,7 +1888,7 @@ namespace eval ::traiteWindow {
             pack forget $This.usr.6
             pack $This.usr.7 -in $This.usr -side top -fill both
          } \
-         "$caption(audace,image,ecart_type)" {
+         "$caption(audace,menu,ecart_type)" {
             pack forget $This.usr.0
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
@@ -1979,12 +1979,12 @@ namespace eval ::traiteWindow {
          set traiteWindow(constante) "$caption(image,constante,multiplicative)"
          set traiteWindow(operande)  "$caption(image,nom,diviser-) ( C ) :"
          set traiteWindow(formule)   "$caption(audace,formule) Bn = ( An / C ) x Cte"
-      } elseif { $traiteWindow(operation) == "$caption(audace,image,somme)" } {
+      } elseif { $traiteWindow(operation) == "$caption(audace,menu,somme)" } {
          set traiteWindow(image_A)   "$caption(audace,images,entree-) ( A ) :"
          set traiteWindow(nombre)    "$caption(audace,image,nombre-) ( n ) :"
          set traiteWindow(image_B)   "$caption(audace,images,sortie-) ( B ) :"
          set traiteWindow(formule)   "$caption(audace,formule) B = A1 + A2 + ... + An"
-      } elseif { $traiteWindow(operation) == "$caption(audace,image,moyenne)" } {
+      } elseif { $traiteWindow(operation) == "$caption(audace,menu,moyenne)" } {
          set traiteWindow(image_A)   "$caption(audace,images,entree-) ( A ) :"
          set traiteWindow(nombre)    "$caption(audace,image,nombre-) ( n ) :"
          set traiteWindow(image_B)   "$caption(audace,images,sortie-) ( B ) :"
@@ -2139,7 +2139,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.2.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.2 -side top -fill both
             frame $This.usr.7.3 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.3.opt -text "$caption(audace,optimisation,noir)" -variable faireImageRef(1,opt)
+               checkbutton $This.usr.7.3.opt -text "$caption(audace,menu,opt_noir)" -variable faireImageRef(1,opt)
                pack $This.usr.7.3.opt -side right -padx 60 -pady 5
             pack $This.usr.7.3 -side top -fill both
             frame $This.usr.7.4 -borderwidth 0 -relief flat
@@ -2165,13 +2165,13 @@ namespace eval ::faireImageRef {
                label $This.usr.5.1.lab9 -text "$caption(audace,methode)"
                pack $This.usr.5.1.lab9 -side left -padx 10 -pady 5
                radiobutton $This.usr.5.1.rad0 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,image,somme)" -value 0 -variable faireImageRef(1,methode)
+                  -text "$caption(audace,menu,somme)" -value 0 -variable faireImageRef(1,methode)
                pack $This.usr.5.1.rad0 -side left -padx 10 -pady 5
                radiobutton $This.usr.5.1.rad1 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,image,moyenne)" -value 1 -variable faireImageRef(1,methode)
+                  -text "$caption(audace,menu,moyenne)" -value 1 -variable faireImageRef(1,methode)
                pack $This.usr.5.1.rad1 -side left -padx 10 -pady 5
                radiobutton $This.usr.5.1.rad2 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,run,median)" -value 2 -variable faireImageRef(1,methode)
+                  -text "$caption(audace,menu,mediane)" -value 2 -variable faireImageRef(1,methode)
                pack $This.usr.5.1.rad2 -side left -padx 10 -pady 5
             pack $This.usr.5.1 -side top -fill both
         # pack $This.usr.5 -side bottom -fill both

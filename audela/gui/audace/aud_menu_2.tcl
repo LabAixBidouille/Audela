@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.2 2006-11-11 16:27:53 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.3 2006-11-12 23:04:57 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -278,7 +278,7 @@ namespace eval ::audace {
          #--- Creation de la fenetre
          toplevel $base.fonction_transfert
          wm geometry $base.fonction_transfert $conf(fonction_transfert,visu$visuNo,position)
-         wm title $base.fonction_transfert "$caption(fcttransfert,titre) (visu$visuNo)"
+         wm title $base.fonction_transfert "$caption(audace,menu,fcttransfert_titre) (visu$visuNo)"
          wm transient $base.fonction_transfert [ winfo parent $base.fonction_transfert ]
          wm protocol $base.fonction_transfert WM_DELETE_WINDOW " ::audace::fonction_transfertquit $visuNo "
 
@@ -295,12 +295,12 @@ namespace eval ::audace {
          frame $base.fonction_transfert.regl.1
          pack $base.fonction_transfert.regl.1 -fill x
          radiobutton $base.fonction_transfert.regl.1.but -variable conf(fonction_transfert,visu$visuNo,mode) \
-            -text $caption(fcttransfert,lin) -value 1
+            -text $caption(audace,menu,fcttransfert_lin) -value 1
          pack $base.fonction_transfert.regl.1.but -side left
          frame $base.fonction_transfert.regl.2
          pack $base.fonction_transfert.regl.2 -fill x
          radiobutton $base.fonction_transfert.regl.2.but -variable conf(fonction_transfert,visu$visuNo,mode) \
-            -text $caption(fcttransfert,log) -value 2
+            -text $caption(audace,menu,fcttransfert_log) -value 2
          pack $base.fonction_transfert.regl.2.but -side left
          entry $base.fonction_transfert.regl.2.ent -textvariable conf(fonction_transfert,param2) \
             -font $audace(font,arial_8_b) -width 4 -justify center
@@ -308,7 +308,7 @@ namespace eval ::audace {
          frame $base.fonction_transfert.regl.3
          pack $base.fonction_transfert.regl.3 -fill x
          radiobutton $base.fonction_transfert.regl.3.but -variable conf(fonction_transfert,visu$visuNo,mode) \
-            -text $caption(fcttransfert,exp) -value 3
+            -text $caption(audace,menu,fcttransfert_exp) -value 3
          pack $base.fonction_transfert.regl.3.but -side left
          entry $base.fonction_transfert.regl.3.ent -textvariable conf(fonction_transfert,param3) \
             -font $audace(font,arial_8_b) -width 4 -justify center
@@ -316,26 +316,28 @@ namespace eval ::audace {
          frame $base.fonction_transfert.regl.4
          pack $base.fonction_transfert.regl.4 -fill x
          radiobutton $base.fonction_transfert.regl.4.but -variable conf(fonction_transfert,visu$visuNo,mode) \
-            -text $caption(fcttransfert,arc) -value 4
+            -text $caption(audace,menu,fcttransfert_arc) -value 4
          pack $base.fonction_transfert.regl.4.but -side left
          entry $base.fonction_transfert.regl.4.ent -textvariable conf(fonction_transfert,param4) \
             -font $audace(font,arial_8_b) -width 4 -justify center
          pack $base.fonction_transfert.regl.4.ent -side right
+
+         #--- Bouton Aide
          button $base.fonction_transfert.regl.aide -command ::audace::fonction_transfertaide \
-            -text $caption(conf,aide) -width 8
+            -text $caption(aud_menu_2,aide) -width 8
          pack $base.fonction_transfert.regl.aide -expand true -padx 10 -pady 10
 
          #--- Sous-trame boutons OK, previsu & quitter
          frame $base.fonction_transfert.buttons
          pack $base.fonction_transfert.buttons
          button $base.fonction_transfert.buttons.ok -command " ::audace::fonction_transfertok $visuNo " \
-            -text $caption(conf,ok)
+            -text $caption(aud_menu_2,ok)
          pack $base.fonction_transfert.buttons.ok -side left -expand true -padx 14 -pady 10 -ipadx 10
          button $base.fonction_transfert.buttons.previsu -command " ::audace::MAJ_palette $visuNo " \
-            -text $caption(conf,previsu)
+            -text $caption(aud_menu_2,previsu)
          pack $base.fonction_transfert.buttons.previsu -side left -expand true -padx 14 -pady 10 -ipadx 10
          button $base.fonction_transfert.buttons.quit -command " ::audace::fonction_transfertquit $visuNo " \
-            -text $caption(conf,quitter)
+            -text $caption(aud_menu_2,quitter)
          pack $base.fonction_transfert.buttons.quit -side left -expand true -padx 14 -pady 10 -ipadx 10
 
          #--- Focus
@@ -479,7 +481,7 @@ namespace eval ::seuilWindow {
       toplevel $seuilWindow($visuNo,This) -class $visuNo
       wm resizable $seuilWindow($visuNo,This) 0 0
       wm deiconify $seuilWindow($visuNo,This)
-      wm title $seuilWindow($visuNo,This) "$caption(seuils,titre) (visu$visuNo)"
+      wm title $seuilWindow($visuNo,This) "$caption(seuilWindow,titre) (visu$visuNo)"
       wm geometry $seuilWindow($visuNo,This) $conf(seuils,visu$visuNo,position)
       wm transient $seuilWindow($visuNo,This) [ winfo parent $seuilWindow($visuNo,This) ] 
       wm protocol $seuilWindow($visuNo,This) WM_DELETE_WINDOW " ::seuilWindow::cmdClose $visuNo "
@@ -503,7 +505,7 @@ namespace eval ::seuilWindow {
 
          frame $seuilWindow($visuNo,This).usr1.affichage_intensites
 
-            label $seuilWindow($visuNo,This).usr1.affichage_intensites.lab1 -text "$caption(audace,intensite)"
+            label $seuilWindow($visuNo,This).usr1.affichage_intensites.lab1 -text "$caption(seuilWindow,intensite)"
             pack $seuilWindow($visuNo,This).usr1.affichage_intensites.lab1 -side left -padx 10
 
          pack $seuilWindow($visuNo,This).usr1.affichage_intensites -side left -expand true
@@ -512,7 +514,7 @@ namespace eval ::seuilWindow {
 
             radiobutton $seuilWindow($visuNo,This).usr1.affichage_intensites.0.but \
                -variable ::confVisu::private($visuNo,intensity) -value 1 \
-               -text $caption(audace,avec_zero)
+               -text $caption(seuilWindow,intensite_avec_zero)
             pack $seuilWindow($visuNo,This).usr1.affichage_intensites.0.but -side left -padx 10
 
          pack $seuilWindow($visuNo,This).usr1.affichage_intensites.0 -side top -padx 10 -fill x
@@ -521,7 +523,7 @@ namespace eval ::seuilWindow {
 
             radiobutton $seuilWindow($visuNo,This).usr1.affichage_intensites.1.but \
                -variable ::confVisu::private($visuNo,intensity) -value 0 \
-               -text $caption(audace,sans_zero)
+               -text $caption(seuilWindow,intensite_sans_zero)
             pack $seuilWindow($visuNo,This).usr1.affichage_intensites.1.but -side left -padx 10
 
          pack $seuilWindow($visuNo,This).usr1.affichage_intensites.1 -side top -padx 10 -fill x
@@ -532,13 +534,13 @@ namespace eval ::seuilWindow {
 
          frame $seuilWindow($visuNo,This).usr2.1 -borderwidth 0 -relief flat
 
-            label $seuilWindow($visuNo,This).usr2.1.lab1 -text "$caption(audace,dynamique)"
+            label $seuilWindow($visuNo,This).usr2.1.lab1 -text "$caption(seuilWindow,dynamique)"
             pack $seuilWindow($visuNo,This).usr2.1.lab1 -side left -padx 10
             radiobutton $seuilWindow($visuNo,This).usr2.1.rad1 -variable seuilWindow($visuNo,seuilWindowAuto_Manuel) \
-               -text $caption(audace,seuil,auto) -value 1 -command " ::seuilWindow::cmdseuilWindowAuto_Manuel $visuNo "
+               -text $caption(seuilWindow,auto) -value 1 -command " ::seuilWindow::cmdseuilWindowAuto_Manuel $visuNo "
             pack $seuilWindow($visuNo,This).usr2.1.rad1 -side left -padx 10
             radiobutton $seuilWindow($visuNo,This).usr2.1.rad2 -variable seuilWindow($visuNo,seuilWindowAuto_Manuel) \
-               -text $caption(audace,seuil,manuel) -value 2 -command " ::seuilWindow::cmdseuilWindowAuto_Manuel $visuNo "
+               -text $caption(seuilWindow,manuel) -value 2 -command " ::seuilWindow::cmdseuilWindowAuto_Manuel $visuNo "
             pack $seuilWindow($visuNo,This).usr2.1.rad2 -side left -padx 10
 
          pack $seuilWindow($visuNo,This).usr2.1 -side top -fill both
@@ -551,7 +553,7 @@ namespace eval ::seuilWindow {
             pack $seuilWindow($visuNo,This).usr2.2.bornesMinMax_variant -side top -padx 10 -pady 7
 
             frame $seuilWindow($visuNo,This).usr2.2.1 -borderwidth 0 -relief flat
-               label $seuilWindow($visuNo,This).usr2.2.1.lab1 -text "$caption(audace,dynamique,max)"
+               label $seuilWindow($visuNo,This).usr2.2.1.lab1 -text "$caption(seuilWindow,dynamique_max)"
                pack $seuilWindow($visuNo,This).usr2.2.1.lab1 -side left -padx 10 -pady 5
                entry $seuilWindow($visuNo,This).usr2.2.1.ent1 -textvariable seuilWindow($visuNo,max) -width 10
                pack $seuilWindow($visuNo,This).usr2.2.1.ent1 -side left -padx 10 -pady 5
@@ -569,7 +571,7 @@ namespace eval ::seuilWindow {
             pack $seuilWindow($visuNo,This).usr2.2.1 -side top -fill both
 
             frame $seuilWindow($visuNo,This).usr2.2.2 -borderwidth 0 -relief flat
-               label $seuilWindow($visuNo,This).usr2.2.2.lab1 -text "$caption(audace,dynamique,min)"
+               label $seuilWindow($visuNo,This).usr2.2.2.lab1 -text "$caption(seuilWindow,dynamique_min)"
                pack $seuilWindow($visuNo,This).usr2.2.2.lab1 -side left -padx 10 -pady 5
                entry $seuilWindow($visuNo,This).usr2.2.2.ent1 -textvariable seuilWindow($visuNo,min) -width 10
                pack $seuilWindow($visuNo,This).usr2.2.2.ent1 -side left -padx 10 -pady 5
@@ -601,17 +603,17 @@ namespace eval ::seuilWindow {
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.0
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.0 -fill x
          radiobutton $seuilWindow($visuNo,This).usr3.regl_seuils.0.but -variable tmp(seuils,visu$visuNo,mode_) \
-            -text $caption(seuils,pas_de_calcul_auto) -value disable
+            -text $caption(seuilWindow,pas_de_calcul_auto) -value disable
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.0.but -side left -padx 10
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.1
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.1 -fill x
          radiobutton $seuilWindow($visuNo,This).usr3.regl_seuils.1.but -variable tmp(seuils,visu$visuNo,mode_) \
-            -text $caption(seuils,loadima) -value loadima
+            -text $caption(seuilWindow,loadima) -value loadima
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.1.but -side left -padx 10
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.2
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.2 -fill x
          radiobutton $seuilWindow($visuNo,This).usr3.regl_seuils.2.but -variable tmp(seuils,visu$visuNo,mode_) \
-            -text $caption(seuils,iris) -value iris
+            -text $caption(seuilWindow,iris) -value iris
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.2.but -side left -padx 10
          entry $seuilWindow($visuNo,This).usr3.regl_seuils.2.enth -textvariable tmp(seuils,irisautohaut_) \
             -font $audace(font,arial_8_b) -width 10 -justify center
@@ -622,7 +624,7 @@ namespace eval ::seuilWindow {
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.4
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.4 -fill x
          radiobutton $seuilWindow($visuNo,This).usr3.regl_seuils.4.but -variable tmp(seuils,visu$visuNo,mode_) \
-            -text $caption(seuils,histoauto) -value histoauto
+            -text $caption(seuilWindow,histoauto) -value histoauto
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.4.but -side left -padx 10
          entry $seuilWindow($visuNo,This).usr3.regl_seuils.4.enth -textvariable tmp(seuils,histoautohaut_) \
             -font $audace(font,arial_8_b) -width 10 -justify center
@@ -633,11 +635,11 @@ namespace eval ::seuilWindow {
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.6
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.6 -fill x
          radiobutton $seuilWindow($visuNo,This).usr3.regl_seuils.6.but -variable tmp(seuils,visu$visuNo,mode_) \
-            -text $caption(seuils,initiaux) -value initiaux
+            -text $caption(seuilWindow,initiaux) -value initiaux
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.6.but -side left -padx 10
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.7
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.7 -fill x
-         button $seuilWindow($visuNo,This).usr3.regl_seuils.7.but -text $caption(conf,previsu) \
+         button $seuilWindow($visuNo,This).usr3.regl_seuils.7.but -text $caption(seuilWindow,previsu) \
             -command " ::seuilWindow::cmdPreview $visuNo "
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.7.but -side top -expand true -padx 10 -pady 5 -ipadx 10
 
@@ -645,21 +647,21 @@ namespace eval ::seuilWindow {
 
       frame $seuilWindow($visuNo,This).cmd -borderwidth 1 -relief raised
 
-         button $seuilWindow($visuNo,This).cmd.ok -text "$caption(conf,ok)" -width 7 \
+         button $seuilWindow($visuNo,This).cmd.ok -text "$caption(seuilWindow,ok)" -width 7 \
             -command " ::seuilWindow::cmdOk $visuNo "
          if { $conf(ok+appliquer)=="1" } {
             pack $seuilWindow($visuNo,This).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
 
-         button $seuilWindow($visuNo,This).cmd.appliquer -text "$caption(creer,dialogue,appliquer)" -width 8 \
+         button $seuilWindow($visuNo,This).cmd.appliquer -text "$caption(seuilWindow,appliquer)" -width 8 \
             -command "::seuilWindow::cmdApply $visuNo "
          pack $seuilWindow($visuNo,This).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
 
-         button $seuilWindow($visuNo,This).cmd.fermer -text "$caption(creer,dialogue,fermer)" -width 7 \
+         button $seuilWindow($visuNo,This).cmd.fermer -text "$caption(seuilWindow,fermer)" -width 7 \
             -command " ::seuilWindow::cmdClose $visuNo "
          pack $seuilWindow($visuNo,This).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
 
-         button $seuilWindow($visuNo,This).cmd.aide -text "$caption(conf,aide)" -width 7 \
+         button $seuilWindow($visuNo,This).cmd.aide -text "$caption(seuilWindow,aide)" -width 7 \
             -command " ::seuilWindow::afficheAide "
          pack $seuilWindow($visuNo,This).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 

@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.36 2006-11-05 12:29:29 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.37 2006-11-12 23:03:36 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -1282,17 +1282,17 @@ namespace eval ::confVisu {
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
               "4" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(fcttransfert,titre)"
-      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,lin)" "1" \
-              "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
-      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,log)" "2" \
-              "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
-      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,exp)" "3" \
-              "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
-      Menu_Command_Radiobutton $visuNo "$caption(fcttransfert,titre)" "$caption(fcttransfert,arc)" "4" \
-              "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+      Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,fcttransfert_titre)"
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
+              "1" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
+              "2" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
+              "3" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
+              "4" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Command $visuNo "$caption(audace,menu,affichage)" "$caption(seuils,titre)..." \
+      Menu_Command $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,seuils)..." \
               "::seuilWindow::run $This $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
