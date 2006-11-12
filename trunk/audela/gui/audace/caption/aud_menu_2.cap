@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.1 2006-11-11 16:24:07 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.2 2006-11-12 16:35:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,37 +11,177 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(seuilWindow,parcourir)                         "..."
+set caption(audace,menu,affichage)                    "View"
+set caption(audace,menu,nouvelle_visu)                "New 'visu'"
+set caption(audace,menu,palette_grise)                "Grey Swatch"
+set caption(audace,menu,palette_inverse)              "Reversed Swatch"
+set caption(audace,menu,palette_iris)                 "Iris Swatch"
+set caption(audace,menu,palette_arc_en_ciel)          "Rainbow Swatch"
+set caption(audace,menu,zoom)                         "Zoom"
+set caption(audace,menu,zoom_0.125)                   "x 0.125"
+set caption(audace,menu,zoom_0.25)                    "x 0.25"
+set caption(audace,menu,zoom_0.5)                     "x 0.5"
+set caption(audace,menu,zoom_1)                       "x 1"
+set caption(audace,menu,zoom_2)                       "x 2"
+set caption(audace,menu,zoom_4)                       "x 4"
+set caption(audace,menu,plein_ecran)                  "Full Screen"
+set caption(audace,menu,miroir_x)                     "Vertical Mirror"
+set caption(audace,menu,miroir_y)                     "Horizontal Mirror"
+set caption(audace,menu,miroir_xy)                    "Diagonal Mirror"
+set caption(audace,menu,window)                       "Window"
+set caption(audace,menu,vision_nocturne)              "Night Vision"
+
+set caption(seuilWindow,parcourir)                    "..."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(seuilWindow,parcourir)                      "..."
+   set caption(audace,menu,affichage)                 "Affichage"
+   set caption(audace,menu,nouvelle_visu)             "Nouvelle 'visu'"
+   set caption(audace,menu,palette_grise)             "Palette grise"
+   set caption(audace,menu,palette_inverse)           "Palette inversée"
+   set caption(audace,menu,palette_iris)              "Palette Iris"
+   set caption(audace,menu,palette_arc_en_ciel)       "Palette arc en ciel"
+   set caption(audace,menu,zoom)                      "Zoom"
+   set caption(audace,menu,zoom_0.125)                "x 0.125"
+   set caption(audace,menu,zoom_0.25)                 "x 0.25"
+   set caption(audace,menu,zoom_0.5)                  "x 0.5"
+   set caption(audace,menu,zoom_1)                    "x 1"
+   set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
+   set caption(audace,menu,plein_ecran)               "Plein écran"
+   set caption(audace,menu,miroir_x)                  "Miroir vertical"
+   set caption(audace,menu,miroir_y)                  "Miroir horizontal"
+   set caption(audace,menu,miroir_xy)                 "Miroir diagonal"
+   set caption(audace,menu,window)                    "Fenêtrer"
+   set caption(audace,menu,vision_nocturne)           "Vision nocturne"
+
+   set caption(seuilWindow,parcourir)                 "..."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(seuilWindow,parcourir)                      "..."
+   set caption(audace,menu,affichage)                 "Vista"
+   set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
+   set caption(audace,menu,palette_grise)             "Palette grigia"
+   set caption(audace,menu,palette_inverse)           "Palette inversa"
+   set caption(audace,menu,palette_iris)              "Palette Iris"
+   set caption(audace,menu,palette_arc_en_ciel)       "Palette arcobaleno"
+   set caption(audace,menu,zoom)                      "Zoom"
+   set caption(audace,menu,zoom_0.125)                "x 0.125"
+   set caption(audace,menu,zoom_0.25)                 "x 0.25"
+   set caption(audace,menu,zoom_0.5)                  "x 0.5"
+   set caption(audace,menu,zoom_1)                    "x 1"
+   set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
+   set caption(audace,menu,plein_ecran)               "Tutto schermo"
+   set caption(audace,menu,miroir_x)                  "Specchio verticale"
+   set caption(audace,menu,miroir_y)                  "Specchio orizzontale"
+   set caption(audace,menu,miroir_xy)                 "Specchio diagonale"
+   set caption(audace,menu,window)                    "Estrarre zona selezionata"
+   set caption(audace,menu,vision_nocturne)           "Visione notturna"
+
+   set caption(seuilWindow,parcourir)                 "..."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(seuilWindow,parcourir)                      "..."
+   set caption(audace,menu,affichage)                 "Ver"
+   set caption(audace,menu,nouvelle_visu)             "Nueva 'visu'"
+   set caption(audace,menu,palette_grise)             "Paleta de grises "
+   set caption(audace,menu,palette_inverse)           "Paleta invertida "
+   set caption(audace,menu,palette_iris)              "Paleta de Iris "
+   set caption(audace,menu,palette_arc_en_ciel)       "Paleta arco iris "
+   set caption(audace,menu,zoom)                      "Zoom"
+   set caption(audace,menu,zoom_0.125)                "x 0.125"
+   set caption(audace,menu,zoom_0.25)                 "x 0.25"
+   set caption(audace,menu,zoom_0.5)                  "x 0.5"
+   set caption(audace,menu,zoom_1)                    "x 1"
+   set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
+   set caption(audace,menu,plein_ecran)               "Pantalla completa"
+   set caption(audace,menu,miroir_x)                  "Espejo vertical"
+   set caption(audace,menu,miroir_y)                  "Espejo horizontal"
+   set caption(audace,menu,miroir_xy)                 "Espejo diagonal "
+   set caption(audace,menu,window)                    "Extraer Ventana"
+   set caption(audace,menu,vision_nocturne)           "Visión nocturna"
+
+   set caption(seuilWindow,parcourir)                 "..."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(seuilWindow,parcourir)                      "..."
+   set caption(audace,menu,affichage)                 "Anzeige"
+   set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
+   set caption(audace,menu,palette_grise)             "Graue Palette"
+   set caption(audace,menu,palette_inverse)           "Umgekehrte Palette"
+   set caption(audace,menu,palette_iris)              "Iris Palette"
+   set caption(audace,menu,palette_arc_en_ciel)       "Regenbogen Palette"
+   set caption(audace,menu,zoom)                      "Zoom"
+   set caption(audace,menu,zoom_0.125)                "x 0.125"
+   set caption(audace,menu,zoom_0.25)                 "x 0.25"
+   set caption(audace,menu,zoom_0.5)                  "x 0.5"
+   set caption(audace,menu,zoom_1)                    "x 1"
+   set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
+   set caption(audace,menu,plein_ecran)               "Vollschirm"
+   set caption(audace,menu,miroir_x)                  "Verticale Spiegel"
+   set caption(audace,menu,miroir_y)                  "Horizontale Spiegel"
+   set caption(audace,menu,miroir_xy)                 "Diagonal Spiegel"
+   set caption(audace,menu,window)                    "Zone abschneiden"
+   set caption(audace,menu,vision_nocturne)           "Nächtsicht"
+
+   set caption(seuilWindow,parcourir)                 "..."
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(seuilWindow,parcourir)                      "..."
+   set caption(audace,menu,affichage)                 "Ver"
+   set caption(audace,menu,nouvelle_visu)             "Novo 'visu'"
+   set caption(audace,menu,palette_grise)             "Paleta de cinzentos"
+   set caption(audace,menu,palette_inverse)           "Paleta inversa"
+   set caption(audace,menu,palette_iris)              "Paleta de iris"
+   set caption(audace,menu,palette_arc_en_ciel)       "Paleta arco irirs"
+   set caption(audace,menu,zoom)                      "Zoom"
+   set caption(audace,menu,zoom_0.125)                "x 0.125"
+   set caption(audace,menu,zoom_0.25)                 "x 0.25"
+   set caption(audace,menu,zoom_0.5)                  "x 0.5"
+   set caption(audace,menu,zoom_1)                    "x 1"
+   set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
+   set caption(audace,menu,plein_ecran)               "Ecrã inteiro"
+   set caption(audace,menu,miroir_x)                  "Espelho vertical"
+   set caption(audace,menu,miroir_y)                  "Espelho horizontal"
+   set caption(audace,menu,miroir_xy)                 "Espelho diagonal"
+   set caption(audace,menu,window)                    "Janela"
+   set caption(audace,menu,vision_nocturne)           "Visão nocturna"
+
+   set caption(seuilWindow,parcourir)                 "..."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(seuilWindow,parcourir)                      "..."
+   set caption(audace,menu,affichage)                 "Vis"
+   set caption(audace,menu,nouvelle_visu)             "Ny 'visu'"
+   set caption(audace,menu,palette_grise)             "Grå palet"
+   set caption(audace,menu,palette_inverse)           "Modsat farve"
+   set caption(audace,menu,palette_iris)              "Iris palet"
+   set caption(audace,menu,palette_arc_en_ciel)       "Regnbue palet"
+   set caption(audace,menu,zoom)                      "Zoom"
+   set caption(audace,menu,zoom_0.125)                "x 0.125"
+   set caption(audace,menu,zoom_0.25)                 "x 0.25"
+   set caption(audace,menu,zoom_0.5)                  "x 0.5"
+   set caption(audace,menu,zoom_1)                    "x 1"
+   set caption(audace,menu,zoom_2)                    "x 2"
+   set caption(audace,menu,zoom_4)                    "x 4"
+   set caption(audace,menu,plein_ecran)               "Fuld skærm"
+   set caption(audace,menu,miroir_x)                  "Vertikal spejl"
+   set caption(audace,menu,miroir_y)                  "Horisontal spejl"
+   set caption(audace,menu,miroir_xy)                 "Diagonal spejl"
+   set caption(audace,menu,window)                    "Vindue"
+   set caption(audace,menu,vision_nocturne)           "Nattesyn"
+
+   set caption(seuilWindow,parcourir)                 "..."
 
 }
 

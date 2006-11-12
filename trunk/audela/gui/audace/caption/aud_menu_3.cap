@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.1 2006-11-11 16:24:07 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.2 2006-11-12 16:35:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,51 +11,191 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(audace,header_noimage)        "No Image in Memory."
+set caption(audace,menu,pretraite)                    "Preprocessing"
+set caption(audace,menu,window1)                      "Crop"
+set caption(audace,menu,subsky)                       "Subtract Sky Background"
+set caption(audace,menu,clip)                         "Clip"
+set caption(audace,menu,scale)                        "Resample"
+set caption(audace,menu,offset)                       "Add a Constant"
+set caption(audace,menu,mult_cte)                     "Multiply by a constant"
+set caption(audace,menu,noffset)                      "Normalize Sky Background"
+set caption(audace,menu,ngain)                        "Normalize Illumination"
+set caption(audace,menu,addition)                     "Add"
+set caption(audace,menu,soust)                        "Subtract"
+set caption(audace,menu,division)                     "Divide"
+set caption(audace,menu,raw2cfa)                      "RAW ---> CFA Conversion"
+set caption(audace,menu,faire_offset)                 "Shoot a bias frame"
+set caption(audace,menu,faire_dark)                   "Shoot a dark frame"
+set caption(audace,menu,faire_flat_field)             "Shoot a flat-field frame"
+set caption(audace,menu,cfa2rgb)                      "CFA ---> RGB Conversion"
 
-set caption(traiteImage,parcourir)        "..."
+set caption(audace,menu,operation_serie)              "Series of Images:"
+
+set caption(audace,header_noimage)                    "No Image in Memory."
+
+set caption(traiteImage,parcourir)                    "..."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,header_noimage)     "Il n'y a pas d'image actuellement en mémoire."
+   set caption(audace,menu,pretraite)                 "Prétraitement"
+   set caption(audace,menu,window1)                   "Recadrer"
+   set caption(audace,menu,subsky)                    "Soustraire le fond de ciel"
+   set caption(audace,menu,clip)                      "Ecrêter les extrêmes"
+   set caption(audace,menu,scale)                     "Re-échantillonner"
+   set caption(audace,menu,offset)                    "Ajouter une constante"
+   set caption(audace,menu,mult_cte)                  "Multiplier par une constante"
+   set caption(audace,menu,noffset)                   "Normaliser le fond de ciel"
+   set caption(audace,menu,ngain)                     "Normaliser l'éclairement"
+   set caption(audace,menu,addition)                  "Additionner"
+   set caption(audace,menu,soust)                     "Soustraire"
+   set caption(audace,menu,division)                  "Diviser"
+   set caption(audace,menu,raw2cfa)                   "Conversion RAW ---> CFA"
+   set caption(audace,menu,faire_offset)              "Faire un offset"
+   set caption(audace,menu,faire_dark)                "Faire un dark"
+   set caption(audace,menu,faire_flat_field)          "Faire un flat-field"
+   set caption(audace,menu,cfa2rgb)                   "Conversion CFA ---> RVB"
 
-   set caption(traiteImage,parcourir)     "..."
+   set caption(audace,menu,operation_serie)           "Sur une série d'images :"
+
+   set caption(audace,header_noimage)                 "Il n'y a pas d'image actuellement en mémoire."
+
+   set caption(traiteImage,parcourir)                 "..."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,header_noimage)     "Nessuna immagine in memoria."
+   set caption(audace,menu,pretraite)                 "Pretrattamento"
+   set caption(audace,menu,window1)                   "Reinquadrare"
+   set caption(audace,menu,subsky)                    "Sottrarre fondo cielo"
+   set caption(audace,menu,clip)                      "Eliminare valori estremi"
+   set caption(audace,menu,scale)                     "Ricampionamento"
+   set caption(audace,menu,offset)                    "Regolare una costante"
+   set caption(audace,menu,mult_cte)                  "Moltiplicare per una costante"
+   set caption(audace,menu,noffset)                   "Normalizzare il fondo cielo"
+   set caption(audace,menu,ngain)                     "Normalizzare illuminazione"
+   set caption(audace,menu,addition)                  "Sommare"
+   set caption(audace,menu,soust)                     "Sottrarre"
+   set caption(audace,menu,division)                  "Dividere"
+   set caption(audace,menu,raw2cfa)                   "Conversione RAW ---> CFA"
+   set caption(audace,menu,faire_offset)              "Fare un bias"
+   set caption(audace,menu,faire_dark)                "Fare un dark"
+   set caption(audace,menu,faire_flat_field)          "Fare un flat field"
+   set caption(audace,menu,cfa2rgb)                   "Conversione CFA ---> RGB"
 
-   set caption(traiteImage,parcourir)     "..."
+   set caption(audace,menu,operation_serie)           "Su una serie di immagini:"
+
+   set caption(audace,header_noimage)                 "Nessuna immagine in memoria."
+
+   set caption(traiteImage,parcourir)                 "..."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,header_noimage)     "No existe una imágen cargada en la memoria."
+   set caption(audace,menu,pretraite)                 "Preproceso"
+   set caption(audace,menu,window1)                   "Recortar"
+   set caption(audace,menu,subsky)                    "Restar fondo de cielo"
+   set caption(audace,menu,clip)                      "Recortar extremos"
+   set caption(audace,menu,scale)                     "Remuestreo"
+   set caption(audace,menu,offset)                    "Añadir una constante"
+   set caption(audace,menu,mult_cte)                  "Multiplicar por una constante"
+   set caption(audace,menu,noffset)                   "Normalizar fondo de cielo"
+   set caption(audace,menu,ngain)                     "Normalizar iluminación"
+   set caption(audace,menu,addition)                  "Sumar"
+   set caption(audace,menu,soust)                     "Restar"
+   set caption(audace,menu,division)                  "Dividir"
+   set caption(audace,menu,raw2cfa)                   "Conversion RAW --> CFA"
+   set caption(audace,menu,faire_offset)              "Haz una toma bias"
+   set caption(audace,menu,faire_dark)                "Haz una toma dark"
+   set caption(audace,menu,faire_flat_field)          "Haz una toma de campo plano"
+   set caption(audace,menu,cfa2rgb)                   "Conversion CFA --> RGB"
 
-   set caption(traiteImage,parcourir)     "..."
+   set caption(audace,menu,operation_serie)           "Una serie de imágenes:"
+
+   set caption(audace,header_noimage)                 "No existe una imágen cargada en la memoria."
+
+   set caption(traiteImage,parcourir)                 "..."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,header_noimage)     "Es ist jetzt kein Bild im Speicher."
+   set caption(audace,menu,pretraite)                 "Vorbehandlung"
+   set caption(audace,menu,window1)                   "Wieder einstellen"
+   set caption(audace,menu,subsky)                    "Den Hinterhimmel abziehen"
+   set caption(audace,menu,clip)                      "Die Extremen beseitigen"
+   set caption(audace,menu,scale)                     "Wider proben"
+   set caption(audace,menu,offset)                    "Eine Konstante addieren"
+   set caption(audace,menu,mult_cte)                  "Bei eine Konstante multiplizieren"
+   set caption(audace,menu,noffset)                   "Hinterhimmel Normung"
+   set caption(audace,menu,ngain)                     "Beleuchtungsstärke Normung"
+   set caption(audace,menu,addition)                  "Addieren"
+   set caption(audace,menu,soust)                     "Abziehen"
+   set caption(audace,menu,division)                  "Dividieren"
+   set caption(audace,menu,raw2cfa)                   "RAW ---> CFA Umstellung"
+   set caption(audace,menu,faire_offset)              "Ein Neigung Bild treiben"
+   set caption(audace,menu,faire_dark)                "Ein Schwartz Bild treiben"
+   set caption(audace,menu,faire_flat_field)          "Ein Flat-Field Bild treiben"
+   set caption(audace,menu,cfa2rgb)                   "CFA ---> RGB Umstellung"
 
-   set caption(traiteImage,parcourir)     "..."
+   set caption(audace,menu,operation_serie)           "Auf eine Bild Reihe:"
+
+   set caption(audace,header_noimage)                 "Es ist jetzt kein Bild im Speicher."
+
+   set caption(traiteImage,parcourir)                 "..."
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,header_noimage)     "Não existe imagem carregada em memória."
+   set caption(audace,menu,pretraite)                 "Preprocessamento"
+   set caption(audace,menu,window1)                   "Recortar"
+   set caption(audace,menu,subsky)                    "Subtrair fundo do céu"
+   set caption(audace,menu,clip)                      "Recortar extremos"
+   set caption(audace,menu,scale)                     "Reamostrar"
+   set caption(audace,menu,offset)                    "Adicionar constante"
+   set caption(audace,menu,mult_cte)                  "Multiplicar por constante"
+   set caption(audace,menu,noffset)                   "Normalizar fundo do céu"
+   set caption(audace,menu,ngain)                     "Normalizar iluminação"
+   set caption(audace,menu,addition)                  "Somar"
+   set caption(audace,menu,soust)                     "Subtrair"
+   set caption(audace,menu,division)                  "Dividir"
+   set caption(audace,menu,raw2cfa)                   "Conversão RAW ---> CFA"
+   set caption(audace,menu,faire_offset)              "Fazer um offset"
+   set caption(audace,menu,faire_dark)                "Fazer um dark"
+   set caption(audace,menu,faire_flat_field)          "Fazer um flat-field"
+   set caption(audace,menu,cfa2rgb)                   "Conversão CFA ---> RGB"
 
-   set caption(traiteImage,parcourir)     "..."
+   set caption(audace,menu,operation_serie)           "Série de imagens:"
+
+   set caption(audace,header_noimage)                 "Não existe imagem carregada em memória."
+
+   set caption(traiteImage,parcourir)                 "..."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,header_noimage)     "Intet billede i memory."
+   set caption(audace,menu,pretraite)                 "Forbehandling"
+   set caption(audace,menu,window1)                   "Beskære"
+   set caption(audace,menu,subsky)                    "Subtraher himmelbaggrund"
+   set caption(audace,menu,clip)                      "Klip"
+   set caption(audace,menu,scale)                     "Resampling"
+   set caption(audace,menu,offset)                    "Tilføj en konstant"
+   set caption(audace,menu,mult_cte)                  "Multiplicer med en konstant"
+   set caption(audace,menu,noffset)                   "Normaliser himmelbaggrund"
+   set caption(audace,menu,ngain)                     "Normaliser belysning"
+   set caption(audace,menu,addition)                  "Addér"
+   set caption(audace,menu,soust)                     "Subtraher"
+   set caption(audace,menu,division)                  "Divider"
+   set caption(audace,menu,raw2cfa)                   "Konvertering: RAW ---> CFA"
+   set caption(audace,menu,faire_offset)              "Optag en Bias frame"
+   set caption(audace,menu,faire_dark)                "Optag en Dark frame"
+   set caption(audace,menu,faire_flat_field)          "Optag en flat-field frame"
+   set caption(audace,menu,cfa2rgb)                   "Konvertering: CFA ---> RGB"
 
-   set caption(traiteImage,parcourir)     "..."
+   set caption(audace,menu,operation_serie)           "Billedserie:"
+
+   set caption(audace,header_noimage)                 "Intet billede i memory."
+
+   set caption(traiteImage,parcourir)                 "..."
 
 }
 
