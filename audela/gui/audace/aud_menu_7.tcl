@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.3 2006-11-11 16:29:39 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.4 2006-11-12 16:33:02 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -52,7 +52,7 @@ namespace eval ::cwdWindow {
       toplevel $This
       wm geometry $This +180+50 
       wm resizable $This 0 0
-      wm title $This "$caption(cwdWindow,title)"
+      wm title $This "$caption(cwdWindow,repertoire)"
       wm protocol $This WM_DELETE_WINDOW ::cwdWindow::cmdClose
       #--- Initialisation des variables de changement
       set cwdWindow(rep_images)     "0"
@@ -700,11 +700,11 @@ namespace eval ::audace {
             ini_writeIniFile $filename2 theconf
          } elseif {$choice=="no"} {
             #--- Pas d'enregistrement
-            ::console::affiche_resultat "$caption(sur,enregistrer,config2)\n\n"
+            ::console::affiche_resultat "$caption(audace,enregistrer_config2)\n\n"
          }
       } else {
          #--- Pas d'enregistrement
-         ::console::affiche_resultat "$caption(sur,enregistrer,config2)\n\n"
+         ::console::affiche_resultat "$caption(audace,enregistrer_config2)\n\n"
       }
       #---
       menustate normal
