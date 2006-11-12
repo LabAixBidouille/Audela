@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.5 2006-11-09 13:17:51 audelateam Exp $
+# Mise a jour $Id: telshift.cap,v 1.6 2006-11-12 16:05:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -190,9 +190,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telshift,pointevers)    "Schwenken nach"
    set caption(telshift,pointesur)     "Schwenken auf"
    set caption(telshift,lancepose)     "Bildleuchtung N°... anfangen"
-   set caption(telshift,termine)       "Behandlung fertig !"
-   set caption(telshift,anticipee)     "Vorzeitigen beenden !"
-   set caption(telshift,attention)     "Achtung !"
+   set caption(telshift,termine)       "Behandlung fertig!"
+   set caption(telshift,anticipee)     "Vorzeitigen beenden!"
+   set caption(telshift,attention)     "Achtung!"
    set caption(telshift,erreurfocale1) "Sie müssen diese Felder zwangsläufig unterrichten"
    set caption(telshift,erreurfocale2) "'Namen der Grundlage des Bild Datei' und 'Brennweite von"
    set caption(telshift,erreurfocale3) "Teleskop' bevor auf den Knopf 'OK' zu drücken."

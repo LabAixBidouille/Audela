@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.2 2006-11-11 16:29:16 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.3 2006-11-12 16:08:10 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -23,9 +23,9 @@ namespace eval ::audace {
          set r [ buf$bufNo histo 50 $mini $maxi ]
          ::plotxy::figure 1
          ::plotxy::plot [ lindex $r 1 ]  [ lindex $r 0 ]
-         ::plotxy::xlabel "$caption(audace,histo,adu)"
-         ::plotxy::ylabel "$caption(audace,histo,nbpix)"
-         ::plotxy::title "$caption(audace,histo,titre) (visu$visuNo)"
+         ::plotxy::xlabel "$caption(audace,histo_adu)"
+         ::plotxy::ylabel "$caption(audace,histo_nbpix)"
+         ::plotxy::title "$caption(audace,histo_titre) (visu$visuNo)"
       }
    }
 
@@ -65,17 +65,17 @@ proc statwin { visuNo } {
    #--- Cree les etiquettes
    label $This.lab0 -text "Visu$visuNo"
    pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,image,max) [ lindex $valeurs 2 ]"
+   label $This.lab1 -text "$caption(audace,maxi) [ lindex $valeurs 2 ]"
    pack $This.lab1 -padx 10 -pady 2
-   label $This.lab2 -text "$caption(audace,image,min) [ lindex $valeurs 3 ]"
+   label $This.lab2 -text "$caption(audace,mini) [ lindex $valeurs 3 ]"
    pack $This.lab2 -padx 10 -pady 2
-   label $This.lab3 -text "$caption(audace,image,moyenne:) [ lindex $valeurs 4 ]"
+   label $This.lab3 -text "$caption(audace,moyenne) [ lindex $valeurs 4 ]"
    pack $This.lab3 -padx 10 -pady 2
-   label $This.lab4 -text "$caption(image,ecart,type) [ lindex $valeurs 5 ]"
+   label $This.lab4 -text "$caption(audace,ecart_type) [ lindex $valeurs 5 ]"
    pack $This.lab4 -padx 10 -pady 2
-   label $This.lab5 -text "$caption(moyenne,fond,ciel) [ lindex $valeurs 6 ]"
+   label $This.lab5 -text "$caption(audace,moyenne_fond_ciel) [ lindex $valeurs 6 ]"
    pack $This.lab5 -padx 10 -pady 2
-   label $This.lab6 -text "$caption(ecart,type,fond) [ lindex $valeurs 7 ]"
+   label $This.lab6 -text "$caption(audace,ecart_type_fond_ciel) [ lindex $valeurs 7 ]"
    pack $This.lab6 -padx 10 -pady 2
    #--- Cree le bouton pour recalculer les statistiques
    button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "statwin $visuNo"
@@ -121,9 +121,9 @@ proc fwhm { visuNo } {
    #--- Cree les etiquettes
    label $This.lab0 -text "Visu$visuNo"
    pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,fwhm,x) : [ lindex $valeurs 0 ]"
+   label $This.lab1 -text "$caption(audace,fwhm_x) : [ lindex $valeurs 0 ]"
    pack $This.lab1 -padx 10 -pady 2
-   label $This.lab2 -text "$caption(audace,fwhm,y) : [ lindex $valeurs 1 ]"
+   label $This.lab2 -text "$caption(audace,fwhm_y) : [ lindex $valeurs 1 ]"
    pack $This.lab2 -padx 10 -pady 2
    #--- Cree le bouton pour recalculer les fwhm
    button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "fwhm $visuNo"
@@ -202,9 +202,9 @@ proc fitgauss { visuNo } {
    #--- Cree les etiquettes
    label $This.lab0 -text "Visu$visuNo"
    pack $This.lab0 -padx 10 -pady 2
-   ::console::affiche_resultat "=== Visu$visuNo $caption(audace,title_gauss)\n"
+   ::console::affiche_resultat "=== Visu$visuNo $caption(audace,titre_gauss)\n"
    ::console::affiche_resultat "$caption(audace,coord_box) : $box\n"
-   set texte "$caption(audace,center,xy) : "
+   set texte "$caption(audace,center_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%.2f" $xc ] / [ format "%.2f" $yc ]"
    } elseif {($naxis1>1)&&($naxis2==1)} {
@@ -215,7 +215,7 @@ proc fitgauss { visuNo } {
    ::console::affiche_resultat "$texte\n"
    label $This.lab1 -text "$texte"
    pack $This.lab1 -padx 10 -pady 2
-   set texte "$caption(audace,fwhm,xy) : "
+   set texte "$caption(audace,fwhm_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
    } elseif {($naxis1>1)&&($naxis2==1)} {
@@ -226,7 +226,7 @@ proc fitgauss { visuNo } {
    ::console::affiche_resultat "$texte\n"
    label $This.lab2 -text "$texte"
    pack $This.lab2 -padx 10 -pady 2
-   set texte "$caption(audace,intens,xy) : "
+   set texte "$caption(audace,intens_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
    } elseif {($naxis1>1)&&($naxis2==1)} {
@@ -237,7 +237,7 @@ proc fitgauss { visuNo } {
    ::console::affiche_resultat "$texte\n"
    label $This.lab3 -text "$texte"
    pack $This.lab3 -padx 10 -pady 2
-   set texte "$caption(audace,back,xy) : "
+   set texte "$caption(audace,back_xy) : "
    if {($naxis1>1)&&($naxis2>1)} {
       append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
    } elseif {($naxis1>1)&&($naxis2==1)} {
@@ -257,7 +257,7 @@ proc fitgauss { visuNo } {
    pack $This.lab5 -padx 10 -pady 2
    #---
    if {($naxis1==1)||($naxis2==1)} {
-      set texte "$caption(audace,largequiv,xy) : [ format "%f" $leq ] pixels"
+      set texte "$caption(audace,largeurequiv) : [ format "%f" $leq ] pixels"
       ::console::affiche_resultat "$texte\n"
       label $This.lab6 -text "$texte"
       pack $This.lab6 -padx 10 -pady 2
@@ -282,9 +282,9 @@ proc fitgauss { visuNo } {
       set dec [ lindex $radec 1 ]
       set rah [ mc_angle2hms $ra 360 zero 2 auto string ]
       set decd [ mc_angle2dms $dec 90 zero 2 + string ]
-      set texte "$caption(caractere,RA) $caption(caractere,DEC) : $ra $dec"
+      set texte "$caption(audace,RA) $caption(audace,DEC) : $ra $dec"
       ::console::affiche_resultat "$texte\n"
-      set texte "$caption(caractere,RA) $caption(caractere,DEC) : $rah $decd"
+      set texte "$caption(audace,RA) $caption(audace,DEC) : $rah $decd"
       ::console::affiche_resultat "$texte\n"
       # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
       #    Rab101    C2003 10 18.89848 01 33 53.74 +02 27 19.3          18.6        xxx
@@ -334,7 +334,7 @@ proc fitgauss { visuNo } {
       ::console::affiche_saut "\n"
       #---
       if { $xxx != "xxx" } {
-         ::console::affiche_erreur "$caption(audace,boite,attention)\n"
+         ::console::affiche_erreur "$caption(audace,gauss_attention)\n"
          ::console::affiche_erreur "[eval [concat {format} { $caption(audace,UAI_site_image) $conf(posobs,station_uai) } ] ]\n"
          ::console::affiche_saut "\n"
       }
@@ -394,7 +394,7 @@ proc center { visuNo } {
    #--- Cree les etiquettes
    label $This.lab0 -text "Visu$visuNo"
    pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,center,xy) : ( [ format "%.2f" [ lindex $valeurs 0 ] ] / [ format "%.2f" [ lindex $valeurs 1 ] ] )"
+   label $This.lab1 -text "$caption(audace,center_xy) : ( [ format "%.2f" [ lindex $valeurs 0 ] ] / [ format "%.2f" [ lindex $valeurs 1 ] ] )"
    pack $This.lab1 -padx 10 -pady 2
    #--- Cree le bouton pour recalculer le photocentre
    button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "center $visuNo"

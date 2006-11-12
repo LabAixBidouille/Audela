@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.2 2006-11-10 13:08:45 audelateam Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.3 2006-11-12 16:05:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -165,7 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,pas_etoile)                 "Kein Stern in diesem Feld"
 
    set caption(fieldchart,erreur)                     "Irrtum"
-   set caption(fieldchart,attention)                  "Achtung !"
+   set caption(fieldchart,attention)                  "Achtung!"
 
    set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Anwenden"

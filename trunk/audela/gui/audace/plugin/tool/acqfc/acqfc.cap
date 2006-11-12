@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.13 2006-11-11 18:41:48 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.14 2006-11-12 16:05:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -56,6 +56,7 @@ set caption(acqfc,start_capture_error)       "Error when starting capture:"
 set caption(acqfc,error)                     "Error:"
 set caption(acqfc,no_package)                "Error: No tkimgvideo package."
 set caption(acqfc,no_video_mode)             "Camera has no video mode."
+set caption(acqfc,attention)                 "Warning"
 set caption(acqfc,pb)                        "Problem"
 set caption(acqfc,pbouvfich)                 "Unable to open the log file.\n \
    Change the tool now and check\nyou can access the image folder."
@@ -179,6 +180,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Erreur :"
    set caption(acqfc,no_package)             "Erreur : Package tkimgvideo non trouvé."
    set caption(acqfc,no_video_mode)          "La caméra n'a pas de mode vidéo."
+   set caption(acqfc,attention)              "Attention"
    set caption(acqfc,pb)                     "Problème"
    set caption(acqfc,pbouvfich)              "Impossible d'ouvrir le fichier \
       log.\nChangez immédiatement d'outil, puis vérifiez\nque \
@@ -303,6 +305,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Errore:"
    set caption(acqfc,no_package)             "Errore: Package tkimgvideo non trovato."
    set caption(acqfc,no_video_mode)          "La camera non ha il modo video."
+   set caption(acqfc,attention)              "Attenzione"
    set caption(acqfc,pb)                     "Problema"
    set caption(acqfc,pbouvfich)              "Impossibile aprire il file di \
       log.\nCambiare l'accessorio e verificare\nche \
@@ -426,6 +429,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Error:"
    set caption(acqfc,no_package)             "Error: No tengo el paquete tkimgvideo."
    set caption(acqfc,no_video_mode)          "La cámara no tiene modo de vídeo."
+   set caption(acqfc,attention)              "Cuidado"
    set caption(acqfc,pb)                     "Problema"
    set caption(acqfc,pbouvfich)              "No se puede abrir el fichero \
       de log.\nCambie la herramienta ahora y compruebe\nque \
@@ -549,6 +553,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Irrtum:"
    set caption(acqfc,no_package)             "Irrtum: Kein tkimgvideo Programmpaket."
    set caption(acqfc,no_video_mode)          "Die Kamera hat keinen Video Modus."
+   set caption(acqfc,attention)              "Achtung"
    set caption(acqfc,pb)                     "Problem"
    set caption(acqfc,pbouvfich)              "Log. Datei unmöglich zu \
       öffnen.\nErst das Gerät wechseln, und dann kontrollieren\ndass \
@@ -672,6 +677,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Erro :"
    set caption(acqfc,no_package)             "Erro : Pacote tkimgvideo não encontrado."
    set caption(acqfc,no_video_mode)          "A câmara não funciona em modo video."
+   set caption(acqfc,attention)              "Aviso"
    set caption(acqfc,pb)                     "Problema"
    set caption(acqfc,pbouvfich)              "Impossível abrir o ficheiro \
       log.\nSubstitua imediatamente a ferramenta e depois verifique\nque \
@@ -796,6 +802,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,error)                  "Error:"
    set caption(acqfc,no_package)             "Error: No tkimgvideo package."
    set caption(acqfc,no_video_mode)          "Camera has no video mode."
+   set caption(acqfc,attention)              "Advarsel"
    set caption(acqfc,pb)                     "Problem"
    set caption(acqfc,pbouvfich)              "Unable to open the log file.\n \
       Change the tool now and check\nyou can access the image folder."

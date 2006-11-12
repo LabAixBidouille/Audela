@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.4 2006-11-11 23:38:10 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.5 2006-11-12 16:07:45 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -107,7 +107,7 @@ namespace eval ::traiteFilters {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(traiteFilters,traitement)"
+      wm title $This "$caption(audace,menu,traitement)"
       wm geometry $This $widget(traiteFilters,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteFilters::cmdClose
@@ -130,11 +130,11 @@ namespace eval ::traiteFilters {
             label $This.usr.1.lab1 -text "$caption(traiteFilters,filtres)"
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des traitements disponibles
-            set list_traiteFilters [ list $caption(traiteFilters,masque_flou) $caption(traiteFilters,filtre_passe-bas) \
-               $caption(traiteFilters,filtre_passe-haut) $caption(traiteFilters,filtre_median) \
-               $caption(traiteFilters,filtre_minimum) $caption(traiteFilters,filtre_maximum) \
-               $caption(traiteFilters,filtre_gaussien) $caption(traiteFilters,ond_morlet) \
-               $caption(traiteFilters,ond_mexicain) $caption(traiteFilters,log) ]
+            set list_traiteFilters [ list $caption(audace,menu,masque_flou) $caption(audace,menu,filtre_passe-bas) \
+               $caption(audace,menu,filtre_passe-haut) $caption(audace,menu,filtre_median) \
+               $caption(audace,menu,filtre_minimum) $caption(audace,menu,filtre_maximum) \
+               $caption(audace,menu,filtre_gaussien) $caption(audace,menu,ond_morlet) \
+               $caption(audace,menu,ond_mexicain) $caption(audace,menu,log) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteFilters(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -225,7 +225,7 @@ namespace eval ::traiteFilters {
                frame $This.usr.7.1 -borderwidth 0 -relief flat
                   entry $This.usr.7.1.ent5 -textvariable traiteFilters(offset) -width 10 -font $audace(font,arial_8_b)
                   pack $This.usr.7.1.ent5 -side right -padx 10 -pady 5
-                  label $This.usr.7.1.lab7 -text "$caption(traiteFilters,log_offset)"
+                  label $This.usr.7.1.lab7 -text "$caption(traiteFilters,offset)"
                   pack $This.usr.7.1.lab7 -side right -padx 5 -pady 5
                pack $This.usr.7.1 -side top -fill both
            # pack $This.usr.7 -side top -fill both
@@ -303,7 +303,7 @@ namespace eval ::traiteFilters {
          }
       } elseif { $traiteFilters(choix) == "1" } {
          if { $traiteFilters(image) == "" } {
-            tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,header_noimage_dd)
+            tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_image_dd)
             return
          }
       }
@@ -312,7 +312,7 @@ namespace eval ::traiteFilters {
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteFilters(operation) \
-         "$caption(traiteFilters,masque_flou)" {
+         "$caption(audace,menu,masque_flou)" {
             #---
             if { ( $traiteFilters(coef_etal) == "" ) && ( $traiteFilters(coef_mult) == "" ) } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficients)
@@ -348,11 +348,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_masque_flou $image $coef_etal $coef_mult\n\n"
                bm_masque_flou $image $coef_etal $coef_mult
             } else {
-               ::console::affiche_resultat "bm_masque_flou $caption(traiteFilters,filtre_image_affichee) $coef_etal $coef_mult\n\n"
+               ::console::affiche_resultat "bm_masque_flou $caption(traiteFilters,_image_affichee_) $coef_etal $coef_mult\n\n"
                bm_masque_flou "$audace(artifice)" $coef_etal $coef_mult
             }
          } \
-         "$caption(traiteFilters,filtre_passe-bas)" {
+         "$caption(audace,menu,filtre_passe-bas)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
@@ -363,11 +363,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_passe_bas $image $efficacite\n\n"
                bm_passe_bas $image $efficacite
             } else {
-               ::console::affiche_resultat "bm_passe_bas $caption(traiteFilters,filtre_image_affichee) $efficacite\n\n"
+               ::console::affiche_resultat "bm_passe_bas $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_passe_bas "$audace(artifice)" $efficacite
             }
          } \
-         "$caption(traiteFilters,filtre_passe-haut)" {
+         "$caption(audace,menu,filtre_passe-haut)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
@@ -378,11 +378,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_passe_haut $image $efficacite\n\n"
                bm_passe_haut $image $efficacite
             } else {
-               ::console::affiche_resultat "bm_passe_haut $caption(traiteFilters,filtre_image_affichee) $efficacite\n\n"
+               ::console::affiche_resultat "bm_passe_haut $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_passe_haut "$audace(artifice)" $efficacite
             }
          } \
-         "$caption(traiteFilters,filtre_median)" {
+         "$caption(audace,menu,filtre_median)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
@@ -393,11 +393,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_filtre_median $image $efficacite\n\n"
                bm_filtre_median $image $efficacite
             } else {
-               ::console::affiche_resultat "bm_filtre_median $caption(traiteFilters,filtre_image_affichee) $efficacite\n\n"
+               ::console::affiche_resultat "bm_filtre_median $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_filtre_median "$audace(artifice)" $efficacite
             }
          } \
-         "$caption(traiteFilters,filtre_minimum)" {
+         "$caption(audace,menu,filtre_minimum)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
@@ -408,11 +408,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_filtre_min $image $efficacite\n\n"
                bm_filtre_min $image $efficacite
             } else {
-               ::console::affiche_resultat "bm_filtre_min $caption(traiteFilters,filtre_image_affichee) $efficacite\n\n"
+               ::console::affiche_resultat "bm_filtre_min $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_filtre_min "$audace(artifice)" $efficacite
             }
          } \
-         "$caption(traiteFilters,filtre_maximum)" {
+         "$caption(audace,menu,filtre_maximum)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
@@ -423,11 +423,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_filtre_max $image $efficacite\n\n"
                bm_filtre_max $image $efficacite
             } else {
-               ::console::affiche_resultat "bm_filtre_max $caption(traiteFilters,filtre_image_affichee) $efficacite\n\n"
+               ::console::affiche_resultat "bm_filtre_max $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_filtre_max "$audace(artifice)" $efficacite
             }
          } \
-         "$caption(traiteFilters,filtre_gaussien)" {
+         "$caption(audace,menu,filtre_gaussien)" {
             #---
             if { $traiteFilters(coef_etal) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
@@ -443,11 +443,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_filtre_gauss $image $coef_etal\n\n"
                bm_filtre_gauss $image $coef_etal
             } else {
-               ::console::affiche_resultat "bm_filtre_gauss $caption(traiteFilters,filtre_image_affichee) $coef_etal\n\n"
+               ::console::affiche_resultat "bm_filtre_gauss $caption(traiteFilters,_image_affichee_) $coef_etal\n\n"
                bm_filtre_gauss "$audace(artifice)" $coef_etal
             }
          } \
-         "$caption(traiteFilters,ond_morlet)" {
+         "$caption(audace,menu,ond_morlet)" {
             #---
             if { $traiteFilters(coef_etal) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
@@ -463,11 +463,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_ondelette_mor $image $coef_etal\n\n"
                bm_ondelette_mor $image $coef_etal
             } else {
-               ::console::affiche_resultat "bm_ondelette_mor $caption(traiteFilters,filtre_image_affichee) $coef_etal\n\n"
+               ::console::affiche_resultat "bm_ondelette_mor $caption(traiteFilters,_image_affichee_) $coef_etal\n\n"
                bm_ondelette_mor "$audace(artifice)" $coef_etal
             }
          } \
-         "$caption(traiteFilters,ond_mexicain)" {
+         "$caption(audace,menu,ond_mexicain)" {
             #---
             if { $traiteFilters(coef_etal) == "" } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
@@ -483,11 +483,11 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_ondelette_mex $image $coef_etal\n\n"
                bm_ondelette_mex $image $coef_etal
             } else {
-               ::console::affiche_resultat "bm_ondelette_mex $caption(traiteFilters,filtre_image_affichee) $coef_etal\n\n"
+               ::console::affiche_resultat "bm_ondelette_mex $caption(traiteFilters,_image_affichee_) $coef_etal\n\n"
                bm_ondelette_mex "$audace(artifice)" $coef_etal
             }
          } \
-         "$caption(traiteFilters,log)" {
+         "$caption(audace,menu,log)" {
             #---
             if { ( $traiteFilters(coef_mult) == "" ) && ( $traiteFilters(offset) == "" ) } {
                tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficients)
@@ -523,7 +523,7 @@ namespace eval ::traiteFilters {
                ::console::affiche_resultat "bm_logima $image $coef_mult $offset\n\n"
                bm_logima $image $coef_mult $offset
             } else {
-               ::console::affiche_resultat "bm_logima $caption(traiteFilters,filtre_image_affichee) $coef_mult $offset\n\n"
+               ::console::affiche_resultat "bm_logima $caption(traiteFilters,_image_affichee_) $coef_mult $offset\n\n"
                bm_logima "$audace(artifice)" $coef_mult $offset
             }
          }
@@ -538,25 +538,25 @@ namespace eval ::traiteFilters {
       global help caption traiteFilters
 
       #---
-      if { $traiteFilters(operation) == $caption(traiteFilters,masque_flou) } {
+      if { $traiteFilters(operation) == $caption(audace,menu,masque_flou) } {
          set traiteFilters(page_web) "1010masque_flou"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,filtre_passe-bas) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,filtre_passe-bas) } {
          set traiteFilters(page_web) "1020passe_bas"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,filtre_passe-haut) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,filtre_passe-haut) } {
          set traiteFilters(page_web) "1030passe_haut"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,filtre_median) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,filtre_median) } {
          set traiteFilters(page_web) "1040median"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,filtre_minimum) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,filtre_minimum) } {
          set traiteFilters(page_web) "1050minimum"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,filtre_maximum) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,filtre_maximum) } {
          set traiteFilters(page_web) "1060maximum"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,filtre_gaussien) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,filtre_gaussien) } {
          set traiteFilters(page_web) "1070gaussien"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,ond_morlet) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,ond_morlet) } {
          set traiteFilters(page_web) "1080morlet"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,ond_mexicain) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,ond_mexicain) } {
          set traiteFilters(page_web) "1090mexicain"
-      } elseif { $traiteFilters(operation) == $caption(traiteFilters,log) } {
+      } elseif { $traiteFilters(operation) == $caption(audace,menu,log) } {
          set traiteFilters(page_web) "1100logarithme"
       }
 
@@ -592,7 +592,7 @@ namespace eval ::traiteFilters {
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteFilters(operation) \
-         "$caption(traiteFilters,masque_flou)" {
+         "$caption(audace,menu,masque_flou)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -606,7 +606,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
             pack $This.usr.5 -in $This.usr.2 -side top -fill both
          } \
-         "$caption(traiteFilters,filtre_passe-bas)" {
+         "$caption(audace,menu,filtre_passe-bas)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -618,7 +618,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.3b -in $This.usr.2 -side top -fill both
             pack $This.usr.6 -in $This.usr.2 -side top -fill both
          } \
-         "$caption(traiteFilters,filtre_passe-haut)" {
+         "$caption(audace,menu,filtre_passe-haut)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -630,7 +630,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.3b -in $This.usr.2 -side top -fill both
             pack $This.usr.6 -in $This.usr.2 -side top -fill both
          } \
-         "$caption(traiteFilters,filtre_median)" {
+         "$caption(audace,menu,filtre_median)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -642,7 +642,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.3b -in $This.usr.2 -side top -fill both
             pack $This.usr.6 -in $This.usr.2 -side top -fill both
          } \
-         "$caption(traiteFilters,filtre_minimum)" {
+         "$caption(audace,menu,filtre_minimum)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -654,7 +654,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.3b -in $This.usr.2 -side top -fill both
             pack $This.usr.6 -in $This.usr.2 -side top -fill both
          } \
-         "$caption(traiteFilters,filtre_maximum)" {
+         "$caption(audace,menu,filtre_maximum)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -666,7 +666,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.3b -in $This.usr.2 -side top -fill both
             pack $This.usr.6 -in $This.usr.2 -side top -fill both
          } \
-         "$caption(traiteFilters,filtre_gaussien)" {
+         "$caption(audace,menu,filtre_gaussien)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -679,7 +679,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.4 -in $This.usr.2 -side top -fill both
             pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
          } \
-         "$caption(traiteFilters,ond_morlet)" {
+         "$caption(audace,menu,ond_morlet)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -692,7 +692,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.4 -in $This.usr.2 -side top -fill both
             pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
          } \
-         "$caption(traiteFilters,ond_mexicain)" {
+         "$caption(audace,menu,ond_mexicain)" {
             pack forget $This.usr.3a
             pack forget $This.usr.3b
             pack forget $This.usr.4
@@ -705,7 +705,7 @@ namespace eval ::traiteFilters {
             pack $This.usr.4 -in $This.usr.2 -side top -fill both
             pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
          } \
-         "$caption(traiteFilters,log)" {
+         "$caption(audace,menu,log)" {
             if { [ buf$audace(bufNo) imageready ] == "1" } {
                set traiteFilters(offset) [ lindex [ buf$audace(bufNo) autocuts ] 1 ]
             }
@@ -747,16 +747,16 @@ namespace eval ::traiteFilters {
       global caption traiteFilters
 
       #--- Re-initialise les coefficients d'etalement et multiplicatif
-      if { $traiteFilters(operation) == "$caption(traiteFilters,masque_flou)" } {
+      if { $traiteFilters(operation) == "$caption(audace,menu,masque_flou)" } {
          set traiteFilters(coef_etal) "0.8"
          set traiteFilters(coef_mult) "1.3"
-      } elseif { $traiteFilters(operation) == "$caption(traiteFilters,filtre_gaussien)" } {
+      } elseif { $traiteFilters(operation) == "$caption(audace,menu,filtre_gaussien)" } {
          set traiteFilters(coef_etal) "0.5"
-      } elseif { $traiteFilters(operation) == "$caption(traiteFilters,ond_morlet)" } {
+      } elseif { $traiteFilters(operation) == "$caption(audace,menu,ond_morlet)" } {
          set traiteFilters(coef_etal) "2.0"
-      } elseif { $traiteFilters(operation) == "$caption(traiteFilters,ond_mexicain)" } {
+      } elseif { $traiteFilters(operation) == "$caption(audace,menu,ond_mexicain)" } {
          set traiteFilters(coef_etal) "2.0"
-      } elseif { $traiteFilters(operation) == "$caption(traiteFilters,log)" } {
+      } elseif { $traiteFilters(operation) == "$caption(audace,menu,log)" } {
          set traiteFilters(coef_mult) "20.0"
       }
    }

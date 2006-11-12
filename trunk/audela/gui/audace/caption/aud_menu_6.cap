@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_6.cap
-# Mise a jour $Id: aud_menu_6.cap,v 1.1 2006-11-11 16:24:07 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_6.cap,v 1.2 2006-11-12 16:08:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,37 +11,44 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(audace,menu_outils)                       "Tools"
+set caption(audace,menu,outils)                       "Tools"
+set caption(audace,menu,pas_outil)                    "Hide"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,menu_outils)                    "Outils"
+   set caption(audace,menu,outils)                    "Outils"
+   set caption(audace,menu,pas_outil)                 "Masquer"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu_outils)                    "Accessori"
+   set caption(audace,menu,outils)                    "Accessori"
+   set caption(audace,menu,pas_outil)                 "Nascosto"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu_outils)                    "Herramientas"
+   set caption(audace,menu,outils)                    "Herramientas"
+   set caption(audace,menu,pas_outil)                 "Ocultar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu_outils)                    "Geräte"
+   set caption(audace,menu,outils)                    "Geräte"
+   set caption(audace,menu,pas_outil)                 "Ausblenden"
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu_outils)                    "Ferramentas"
+   set caption(audace,menu,outils)                    "Ferramentas"
+   set caption(audace,menu,pas_outil)                 "Ocultar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu_outils)                    "Værktøj"
+   set caption(audace,menu,outils)                    "Værktøj"
+   set caption(audace,menu,pas_outil)                 "Skjul"
 
 }
 

@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.26 2006-11-03 19:10:05 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.27 2006-11-12 16:06:15 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -1869,10 +1869,10 @@ namespace eval ::AcqFC {
          #--- j'affiche un message s'il y a eu une erreur pendant l'acquisition 
          set msg [cam$camNo lasterror] 
          if { $msg != "" } {
-            tk_messageBox -title $caption(audace,boite,attention) -icon error -message $msg
+            tk_messageBox -title $caption(acqfc,attention) -icon error -message $msg
          }      
       } else { 
-         tk_messageBox -title $caption(audace,boite,attention) -icon error -message $msg
+         tk_messageBox -title $caption(acqfc,attention) -icon error -message $msg
       }
 
       #--- Je retablis le choix du fonctionnement de l'obturateur
