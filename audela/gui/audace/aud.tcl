@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.36 2006-11-11 16:27:14 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.37 2006-11-12 17:23:39 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -753,7 +753,7 @@ namespace eval ::audace {
       Menu           $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,general)..." \
          { ::confGeneral::run "$audace(base).confGeneral" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,cwd)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,repertoire)..." \
          { ::cwdWindow::run "$audace(base).cwdWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,editeur)..." \
          { ::confEditScript::run "$audace(base).confEditScript" }
