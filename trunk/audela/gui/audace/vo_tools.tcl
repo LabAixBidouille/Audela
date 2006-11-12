@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.7 2006-06-20 17:37:11 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.8 2006-11-12 09:19:58 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -286,10 +286,12 @@ proc vo_skybot { args } {
 
       set erreur [ catch { skybot epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter } response ]
 
-      if { $erreur == "0" } {
-         return $response
+      set flag [lindex 1]
+      set result [lindex $response 5]
+      if { $erreur == "0" && $flag >= 0 } {
+         return $result
       } else {
-         tk_messageBox -title "error" -type ok -message $response
+         tk_messageBox -title "error" -type ok -message $result
          return "failed"
       }
 
@@ -355,7 +357,7 @@ proc vo_skybotresolver { args } {
  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- xmlns:ns1="http://www.imcce.fr/webservices/skybot">
+ xmlns:ns1="http://www.imcce.fr/webservices/skybot-dev">
  <SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <ns1:skybotresolver>
    <inputArray>
@@ -371,18 +373,20 @@ proc vo_skybotresolver { args } {
       }
 
       SOAP::create skybotresolver \
-         -uri "http://www.imcce.fr/webservices/skybot"\
-         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://www.imcce.fr/webservices/skybot-dev"\
+         -proxy "http://www.imcce.fr/webservices/skybot-dev/skybot.php" \
          -name "skybotresolver" \
          -wrapProc vo_skybotXML \
          -params { epoch double target string mime string out string observer string }
 
       set erreur [ catch { skybotresolver epoch $jd target $target mime $mime out $out observer $observer } response ]
 
-      if { $erreur == "0" } {
-         return $response
+      set flag [lindex 1]
+      set result [lindex $response 5]
+      if { $erreur == "0" && $flag >= 0 } {
+         return $result
       } else {
-         tk_messageBox -title "error" -type ok -message $response
+         tk_messageBox -title "error" -type ok -message $result
          return "failed"
       }
 
