@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des séries d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.4 2006-06-20 22:04:15 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.5 2006-11-14 21:47:44 robertdelmas Exp $
 #
 
 package provide visio 2.6.2
@@ -41,7 +41,7 @@ namespace eval ::visio {
 
     # Modifier ici la capacité (en octets) du lecteur amovible par défaut
     # (pour une disquette, 1457664 octets)
-    set panneau(visio,capacite_lecteur_amovible)	1457664
+    set panneau(visio,capacite_lecteur_amovible) 1457664
 
     #---
     set panneau(visio,repertoire) $audace(rep_images)
@@ -78,10 +78,10 @@ namespace eval ::visio {
       }
     }
     visioBuildIF $This
-           
+
     # Affichage de l'onglet par défaut (série)
     set panneau(visio,onglet) serie
-          
+
 #--- Debut modif Robert
     pack $This.onglet.serie -side top -fill x -pady 3 -ipady 3
 #--- Fin modif Robert
@@ -122,20 +122,20 @@ namespace eval ::visio {
       $panneau(visio,menu_repertoires) delete 0
       }
 
-    # Création de la liste des sous-répertoires...
+    # Création de la liste des sous-répertoires
     # ...et en premier le répertoire parent !
     $panneau(visio,menu_repertoires) add command -label "..            " \
       -command "visio::MAJ_repertoire \"[file dirname $panneau(visio,repertoire)]\""
 
     set repertoires [lsort [liste_sousreps -rep $panneau(visio,repertoire)]]
     set panneau(visio,nb_repertoires) [expr [llength $repertoires]+1]
-    # On ajoute les sous-répertoires...
+    # On ajoute les sous-répertoires
     foreach repertoire $repertoires {
       $panneau(visio,menu_repertoires) add command -label $repertoire \
        -command "visio::MAJ_repertoire \"[file join $panneau(visio,repertoire) $repertoire]\""
      }
 
-    #...ainsi que le répertoire images Aud'ACE, si on n'est pas déjà dedans.
+    #...ainsi que le répertoire images Aud'ACE, si on n'est pas déjà dedans
     if {$audace(rep_images) != $panneau(visio,repertoire)} {
       $panneau(visio,menu_repertoires) add command -label "$caption(visio,rep_images_audace)" \
        -command "visio::MAJ_repertoire \"$audace(rep_images)\""
@@ -239,7 +239,7 @@ namespace eval ::visio {
 #--- Debut modif Robert
     pack $This.onglet.$panneau(visio,onglet) -side top -fill x
 #--- Fin modif Robert
-    $This.onglet.chg config -text $caption(visio,$panneau(visio,onglet))                 
+    $This.onglet.chg config -text $caption(visio,$panneau(visio,onglet))
     }
 
   proc desactive_boutons {} {
@@ -295,9 +295,9 @@ namespace eval ::visio {
     $audace(hCanvas) configure -scrollregion [list 0 0 $audace(picture,w) $audace(picture,h)]
 #--- Debut modif Robert
     ::audace::autovisu $audace(visuNo)
-#--- Fin modif Robert
     # MAJ en-tête audace
-    wm title $audace(base) "$caption(visio,audace)"   
+    wm title $audace(base) "$caption(visio,audace) (visu1)"
+#--- Fin modif Robert
     # MAJ index du fichier
     set panneau(visio,nom_generique) ""
     set panneau(visio,index) ""
@@ -314,12 +314,14 @@ namespace eval ::visio {
       # Chargement du fichier dans le buffer audace avec visu auto
       charge $fichier
       # MAJ en-tête audace
-      wm title $audace(base) "$caption(visio,audace) - $fichier"
+#--- Debut modif Robert
+      wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+#--- Fin modif Robert
       }
    }
 
   proc serie-1 {} {
-    global audace panneau caption	    
+    global audace panneau caption
     if {[file exist [file join $panneau(visio,repertoire) $panneau(visio,nom_generique)$panneau(visio,index)$panneau(visio,extension)]]==1} {
       # On ne continue que si l'index courant est entier. Au passage on élimine ainsi le cas d'un fichier courant non indexé
       if {[TestEntier $panneau(visio,index)]==1} {
@@ -335,18 +337,20 @@ namespace eval ::visio {
           # Chargement du fichier dans le buffer audace avec visu auto
           charge $fichier
           # MAJ en-tête audace
-          wm title $audace(base) "$caption(visio,audace) - $fichier"
+#--- Debut modif Robert
+          wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+#--- Fin modif Robert
           set panneau(visio,refresh) 1
           }
         # Réactive les boutons
         visio::active_boutons
-        }      
+        }
       }
     }
    
    proc serie-- {} {
      global audace panneau caption
-     if {$panneau(visio,index)!=1} {		 	 
+     if {$panneau(visio,index)!=1} {
        if {[file exist [file join $panneau(visio,repertoire) $panneau(visio,nom_generique)$panneau(visio,index)$panneau(visio,extension)]]==1} {
          # On ne continue que si l'index courant est entier. Au passage on élimine ainsi le cas d'un fichier courant non indexé
          if {[TestEntier $panneau(visio,index)]==1} {
@@ -363,13 +367,15 @@ namespace eval ::visio {
              # Chargement du fichier dans le buffer audace avec visu auto
              charge $fichier
              # MAJ en-tête audace
-             wm title $audace(base) "$caption(visio,audace) - $fichier"
+#--- Debut modif Robert
+             wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+#--- Fin modif Robert
              set panneau(visio,refresh) 1
-             }                             	   	 
+             }
            # Réactive les boutons
            visio::active_boutons
            }
-         }     
+         }
        }
      }
 
@@ -383,14 +389,16 @@ namespace eval ::visio {
       set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
       # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
       if [catch [set index_serie [lsort -ascii $index_serie]]] {}
-      set place_fichier [lsearch -exact $index_serie $panneau(visio,index)]      
+      set place_fichier [lsearch -exact $index_serie $panneau(visio,index)]
       if {$place_fichier<[expr [llength $index_serie]-1]} {
         set panneau(visio,index) [lindex $index_serie [expr $place_fichier+1]]
         set fichier [file join $panneau(visio,repertoire) $panneau(visio,nom_generique)$panneau(visio,index)$panneau(visio,extension)]
         # Chargement du fichier dans le buffer audace avec visu auto
         charge $fichier
         # MAJ en-tête audace
-        wm title $audace(base) "$caption(visio,audace) - $fichier"
+#--- Debut modif Robert
+        wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+#--- Fin modif Robert
         set panneau(visio,refresh) 1
         }
         # Réactive les boutons
@@ -417,7 +425,9 @@ namespace eval ::visio {
           # Chargement du fichier dans le buffer audace avec visu auto
           charge $fichier
           # MAJ en-tête audace
-          wm title $audace(base) "$caption(visio,audace) - $fichier"
+#--- Debut modif Robert
+          wm title $audace(base) "$caption(visio,audace) (visu1) - $fichier"
+#--- Fin modif Robert
           set panneau(visio,refresh) 1
           }
         # Réactive les boutons
@@ -432,15 +442,15 @@ namespace eval ::visio {
     if {[file exist $oldfichier]==1} {
       # Désactive les boutons
       visio::desactive_boutons
-      set panneau(visio,refresh) 0         
+      set panneau(visio,refresh) 0
       # Si le fichier fait partie d'une série, on tente d'afficher un parent proche
       if {[TestEntier $panneau(visio,index)]==1} {
-        # D'abord le fichier qui succède au plus près...
+        # D'abord le fichier qui succède au plus près
         visio::serie+1
-        # Si ça n'a pas marché on affiche le fichier qui précède au plus près...
+        # Si ça n'a pas marché on affiche le fichier qui précède au plus près
         if {$panneau(visio,refresh)==0} {::visio::serie-1}
         }
-      # Si toujours au point mort : RAZ du buffer courant.
+      # Si toujours au point mort : RAZ du buffer courant
       if {$panneau(visio,refresh)==0} {
         visio::RAZ
         }
@@ -574,7 +584,7 @@ namespace eval ::visio {
           ::CreeFenFullDisket
           # On attend la réponse de l'utilisateur
           vwait panneau(visio,attente)
-          # On sort de la boucle si l'utilisateur le souhaite...
+          # On sort de la boucle si l'utilisateur le souhaite
           if {$panneau(visio,attente)==2} {
             file delete [file join $panneau(visio,repertoire) tmp$conf(extension,defaut).gz]
             break
@@ -586,9 +596,9 @@ namespace eval ::visio {
         file rename [file join $panneau(visio,repertoire) tmp$conf(extension,defaut).gz] [file join $panneau(visio,lecteur_amovible) $panneau(visio,nom_generique)$index$conf(extension,defaut).gz]
         }
       # Suppression du buffer temporaire
-      buf::delete $num_buf_tmp		 	  
+      buf::delete $num_buf_tmp
       # Réactive les boutons
-      ::visio::active_boutons	  
+      ::visio::active_boutons
       }
     }
 
@@ -606,7 +616,7 @@ namespace eval ::visio {
      global panneau audace
      set panneau(visio,attente) 2
      # On ferme la fenêtre
-     destroy $audace(base).fenfulldisket   			   	  
+     destroy $audace(base).fenfulldisket
      }
 
   proc saverep_toA {} {
@@ -614,7 +624,7 @@ namespace eval ::visio {
     # On ne continue que s'il y a une disquette dans le lecteur
     if {[file exist $panneau(visio,lecteur_amovible)]==1} {
       # On ferme la fenêtre de lancement
-      destroy $audace(base).feninidisket	  
+      destroy $audace(base).feninidisket
       # Désactive les boutons
       ::visio::desactive_boutons
       # Supprime les fichiers existants sur la disquette
@@ -623,7 +633,7 @@ namespace eval ::visio {
       set num_buf_tmp [buf::create]	  
       set rep_courant_nogz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut)]]]
       set rep_courant_gz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut).gz]]]
-      set rep_courant [lsort -increasing [concat $rep_courant_nogz $rep_courant_gz]]         
+      set rep_courant [lsort -increasing [concat $rep_courant_nogz $rep_courant_gz]]
       set bits_utilises 0
       set panneau(visio,disquetteNo) 1
       foreach fichier $rep_courant {
@@ -637,7 +647,7 @@ namespace eval ::visio {
           ::CreeFenFullDisket
           # On attend la réponse de l'utilisateur
           vwait panneau(visio,attente)
-          # On sort de la boucle si l'utilisateur le souhaite...
+          # On sort de la boucle si l'utilisateur le souhaite
           if {$panneau(visio,attente)==2} {
             file delete [file join $panneau(visio,repertoire) tmp$conf(extension,defaut).gz]
             break
@@ -651,9 +661,9 @@ namespace eval ::visio {
         file rename [file join $panneau(visio,repertoire) tmp$conf(extension,defaut).gz] [file join $panneau(visio,lecteur_amovible) $nom_fichier$conf(extension,defaut).gz]
         }
       # Suppression du buffer temporaire
-      buf::delete $num_buf_tmp		 	  
+      buf::delete $num_buf_tmp
       # Réactive les boutons
-      ::visio::active_boutons	  
+      ::visio::active_boutons
       }
     }
 
@@ -674,9 +684,9 @@ namespace eval ::visio {
       buf$num_buf_tmp save [file join $panneau(visio,repertoire) $nom_fichier$conf(extension,defaut)]
       }
     # Suppression du buffer temporaire
-    buf::delete $num_buf_tmp		 
+    buf::delete $num_buf_tmp
     # Réactive le bouton copie_fromA
-    $This.onglet.zip.copie_fromA configure -state normal	  
+    $This.onglet.zip.copie_fromA configure -state normal
     }
 
 }
@@ -723,7 +733,7 @@ pack $This.panneau -side top -fill x
     -relief raised -menu $This.panneau.repertoire.menu -anchor e -width 14
    pack $This.panneau.repertoire -fill none
    set panneau(visio,menu_repertoires) [menu $This.panneau.repertoire.menu -tearoff 0]
-         
+
    #--- Nom générique
    menubutton $This.panneau.nom_generique -text $panneau(visio,nom_generique) \
     -relief raised -menu $This.panneau.nom_generique.menu -width 14
@@ -771,7 +781,7 @@ pack $This.panneau -side top -fill x
        -font $audace(font,arial_10_b) -command ::visio::serie++
       pack $This.panneau.depl_serie.3.2 -fill x
 #--- Fin modif Robert
-      
+
 #---Trame bouton de suppression de l'image
 frame $This.suppr -relief groove -borderwidth 1
 #--- Debut modif Robert
@@ -782,13 +792,12 @@ pack $This.suppr -side top -fill x
     -command ::visio::suppr_fichier
    pack $This.suppr.suppr_fichier -fill x -expand true -pady 1
 
-
 #--- Trame des sous-commandes
 frame $This.onglet -relief groove -borderwidth 1
 #--- Debut modif Robert
 pack $This.onglet -side top -fill x
 #--- Fin modif Robert
-   
+
 #--- Bouton de changement d'onglet
 #--- Debut modif Robert
 button $This.onglet.chg -text $caption(visio,serie) \
@@ -811,12 +820,11 @@ pack $This.onglet.serie -side top -fill x -pady 3 -ipady 3
    button $This.onglet.serie.renommer -text $caption(visio,renommer) \
     -command ::CreeFenRenommer
    pack $This.onglet.serie.renommer -fill both -expand true
-          
+
    #--- Bouton de suppression d'une série d'images
    button $This.onglet.serie.suppr_serie -text $caption(visio,suppr_serie) \
     -command CreeFenConfirmSuppr
    pack $This.onglet.serie.suppr_serie -fill both -expand true
-   
 
 #--- Trame de gestion des fichiers compressés
 frame $This.onglet.zip -relief groove -borderwidth 1
@@ -825,7 +833,7 @@ frame $This.onglet.zip -relief groove -borderwidth 1
    button $This.onglet.zip.save_toA -text $caption(visio,save_toA) \
     -command ::CreeFenIniDisket
    pack $This.onglet.zip.save_toA -fill both -expand true
-   
+
    #--- Bouton de copie de fichiers compressés depuis une disquette
    button $This.onglet.zip.copie_fromA -text $caption(visio,copie_fromA) \
     -command ::visio::copie_fromA
@@ -835,9 +843,7 @@ frame $This.onglet.zip -relief groove -borderwidth 1
    ::confColor::applyColor $This
 }
 
-
 #################################################################################
-
 
 #---Procédure d'affichage de la fenêtre initialisation copie sur disquettes
 proc CreeFenIniDisket {} {
@@ -847,12 +853,12 @@ proc CreeFenIniDisket {} {
       toplevel $audace(base).feninidisket
       wm geometry $audace(base).feninidisket 530x130+120+120
       wm title $audace(base).feninidisket $caption(visio,feninidisket)
-      
+
       #--- Textes d'avertissement
       label $audace(base).feninidisket.lab1 -text $caption(visio,init1)
       pack $audace(base).feninidisket.lab1 -expand true
       label $audace(base).feninidisket.lab2 -text $caption(visio,achtung)
-      pack $audace(base).feninidisket.lab2 -expand true      
+      pack $audace(base).feninidisket.lab2 -expand true
 
       #--- Sous-trame pour boutons
       frame $audace(base).feninidisket.but
@@ -897,7 +903,7 @@ proc CreeFenFullDisket {} {
       label $audace(base).fenfulldisket.lab2 -text $caption(visio,full2)
       pack $audace(base).fenfulldisket.lab2 -expand true
       label $audace(base).fenfulldisket.lab3 -text $caption(visio,achtung)
-      pack $audace(base).fenfulldisket.lab3 -expand true           
+      pack $audace(base).fenfulldisket.lab3 -expand true
 
       #--- Sous-trame pour boutons
       frame $audace(base).fenfulldisket.but
@@ -968,7 +974,7 @@ proc CreeFenRenommer {} {
       pack $audace(base).fenrenommer.old.lab -side left -expand true
       label $audace(base).fenrenommer.old.ent -textvariable panneau(visio,nom_generique)
       pack $audace(base).fenrenommer.old.ent -side right -expand true -fill x
-      
+
       #--- Sous-trame nouveau nom de série
       frame $audace(base).fenrenommer.new
       pack $audace(base).fenrenommer.new -expand true -fill x

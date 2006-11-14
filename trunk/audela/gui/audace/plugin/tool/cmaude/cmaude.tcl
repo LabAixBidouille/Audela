@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.3 2006-06-20 20:54:05 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.4 2006-11-14 21:48:19 robertdelmas Exp $
 #
 # REMARKS :
 # The definition of some variables (binning, exp. time, rythm...)
@@ -527,7 +527,7 @@ namespace eval ::cmaude {
       #--- Visualisation
       ::audace::autovisu $audace(visuNo)
 
-     # wm title $audace(base) "$caption(audace,image,acquisition) $exptime s"
+     # wm title $audace(base) "$caption(cmaude,image_acq) $exptime s"
    }
 
    #===============================

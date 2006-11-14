@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.36 2006-11-14 18:26:46 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.37 2006-11-14 21:48:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -43,22 +43,17 @@ set caption(audace,reseau,reponse_vers)               "Reply to"
 
 set caption(audace,image,acquisition)                 "Aud'ACE - Acquisition of"
 set caption(sur,enregistrer,config1)                  "Save new setup before quitting?"
-set caption(sur,enregistrer,config2)                  "(Press 'Cancel' to return to Aud'ACE)"
 set caption(sur,enregistrer,config3)                  "Save setup?"
 set caption(sur,enregistrer,config4)                  "Setup saved."
 set caption(sur,enregistrer,config5)                  "Setup saving not required."
 set caption(sur,enregistrer,config6)                  "Saving aborted."
-set caption(creer,dialogue,appliquer)                 "Apply"
 set caption(creer,dialogue,fermer)                    "Close"
 set caption(seuil,haut)                               "H.T."
 set caption(seuil,bas)                                "L.T."
-set caption(audace,image,image_a_choisir:)            "To an Image on the Hard Disk:"
 set caption(audace,seuil,auto)                        "Auto"
 set caption(audace,boite,attention)                   "Warning!"
 set caption(audace,boite,tracer)                      "Please draw a square with your mouse."
 set caption(conf,ok)                                  "OK"
-set caption(conf,aide)                                "Help"
-set caption(conf,quitter)                             "Exit"
 
 set caption(script,parcourir)                         "..."
 
@@ -68,10 +63,6 @@ set caption(sectiongraph,title)                       "Graph of the section"
 
 set caption(audace,temps_universel)                   "UT"
 set caption(audace,temps_heurelegale)                 "CT"
-
-set caption(audace,temps_aucune)                      "None"
-set caption(audace,temps_hiver)                       "Winter"
-set caption(audace,temps_ete)                         "Summer"
 
 set caption(caractere,RA)                             "RA"
 set caption(caractere,DEC)                            "Dec."
@@ -122,22 +113,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,image,acquisition)              "Aud'ACE - Acquisition de"
    set caption(sur,enregistrer,config1)               "Voulez-vous enregistrer la nouvelle configuration de Aud'ACE avant de quitter ?"
-   set caption(sur,enregistrer,config2)               "(Appuyer sur 'Annuler' pour retourner à Aude'ACE)"
    set caption(sur,enregistrer,config3)               "Enregistrer la configuration ?"
    set caption(sur,enregistrer,config4)               "Configuration enregistrée."
    set caption(sur,enregistrer,config5)               "Pas d'enregistrement de configuration nécessaire."
    set caption(sur,enregistrer,config6)               "Enregistrement abandonné."
-   set caption(creer,dialogue,appliquer)              "Appliquer"
    set caption(creer,dialogue,fermer)                 "Fermer"
    set caption(seuil,haut)                            "S.h."
    set caption(seuil,bas)                             "S.b."
-   set caption(audace,image,image_a_choisir:)         "Sur une image du disque dur :"
    set caption(audace,seuil,auto)                     "Auto"
    set caption(audace,boite,attention)                "Attention !"
    set caption(audace,boite,tracer)                   "Veuillez tracer un cadre à la souris."
    set caption(conf,ok)                               "OK"
-   set caption(conf,aide)                             "Aide"
-   set caption(conf,quitter)                          "Quitter"
 
    set caption(script,parcourir)                      "..."
 
@@ -147,10 +133,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HL"
-
-   set caption(audace,temps_aucune)                   "Aucune"
-   set caption(audace,temps_hiver)                    "Hiver"
-   set caption(audace,temps_ete)                      "Eté"
 
    set caption(caractere,RA)                          "AD"
    set caption(caractere,DEC)                         "Déc."
@@ -201,22 +183,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,image,acquisition)              "Aud'ACE - Acquisizione di"
    set caption(sur,enregistrer,config1)               "Volete salvare questa configurazione prima di uscire?"
-   set caption(sur,enregistrer,config2)               "(Premere 'Cancella' per tornare ad Aud'ACE)"
    set caption(sur,enregistrer,config3)               "Salvare la configurazione?"
    set caption(sur,enregistrer,config4)               "Configurazione salvata."
    set caption(sur,enregistrer,config5)               "Non e` richiesto il salvataggio della configurazione."
    set caption(sur,enregistrer,config6)               "Salvataggio abbandonato."
-   set caption(creer,dialogue,appliquer)              "Applica"
    set caption(creer,dialogue,fermer)                 "Chiudi"
    set caption(seuil,haut)                            "S.mas."
    set caption(seuil,bas)                             "S.min."
-   set caption(audace,image,image_a_choisir:)         "Su una immagine del disco fisso:"
    set caption(audace,seuil,auto)                     "Auto"
    set caption(audace,boite,attention)                "Attenzione!"
    set caption(audace,boite,tracer)                   "Disegnare un quadrato con il mouse."
    set caption(conf,ok)                               "OK"
-   set caption(conf,aide)                             "Aiuto"
-   set caption(conf,quitter)                          "Esci"
 
    set caption(script,parcourir)                      "..."
 
@@ -226,10 +203,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "O"
-
-   set caption(audace,temps_aucune)                   "Nessuna"
-   set caption(audace,temps_hiver)                    "Invernale"
-   set caption(audace,temps_ete)                      "Estiva"
 
    set caption(caractere,RA)                          "AR"
    set caption(caractere,DEC)                         "Dec."
@@ -280,22 +253,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,image,acquisition)              "Aud'ACE - Acquisicion de"
    set caption(sur,enregistrer,config1)               "¿ Guardar las nuevas preferencias antes de salir ?"
-   set caption(sur,enregistrer,config2)               "(Pulsar 'Cancel' para volver a Aud'ACE)"
    set caption(sur,enregistrer,config3)               "¿ Guardar preferencias ?"
    set caption(sur,enregistrer,config4)               "Preferencias guardadas."
    set caption(sur,enregistrer,config5)               "No hace falta guardar las preferencias."
    set caption(sur,enregistrer,config6)               "Operación de guardar abortada."
-   set caption(creer,dialogue,appliquer)              "Aplicar"
    set caption(creer,dialogue,fermer)                 "Cerrar"
    set caption(seuil,haut)                            "U.a."
    set caption(seuil,bas)                             "U.b."
-   set caption(audace,image,image_a_choisir:)         "A una imagen en el disco duro:"
    set caption(audace,seuil,auto)                     "Auto"
    set caption(audace,boite,attention)                "!Cuidado¡"
    set caption(audace,boite,tracer)                   "Porfavor, dibuje un recuadro con el ratón."
    set caption(conf,ok)                               "OK"
-   set caption(conf,aide)                             "Ayuda"
-   set caption(conf,quitter)                          "Salir"
 
    set caption(script,parcourir)                      "..."
 
@@ -305,10 +273,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HC"
-
-   set caption(audace,temps_aucune)                   "Ninguno"
-   set caption(audace,temps_hiver)                    "Invierno"
-   set caption(audace,temps_ete)                      "Verano"
 
    set caption(caractere,RA)                          "RA"
    set caption(caractere,DEC)                         "Dec."
@@ -359,22 +323,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,image,acquisition)              "Aud'ACE - Anschaffung von"
    set caption(sur,enregistrer,config1)               "Wollen sie die neue Aude'ACE Gestalt bevor beenden speichern?"
-   set caption(sur,enregistrer,config2)               "(Auf 'Annullieren' drücken um zu Aude'ACE zurückgehen)"
    set caption(sur,enregistrer,config3)               "Gestalt speichern ?"
    set caption(sur,enregistrer,config4)               "Gestalt gespeichert."
    set caption(sur,enregistrer,config5)               "Keine Gestalt Speicherung notwendig."
    set caption(sur,enregistrer,config6)               "Speichern annulliert."
-   set caption(creer,dialogue,appliquer)              "Anwenden"
    set caption(creer,dialogue,fermer)                 "Schließen"
    set caption(seuil,haut)                            "H.H."
    set caption(seuil,bas)                             "H.T."
-   set caption(audace,image,image_a_choisir:)         "Von eine Festplatte Bild:"
    set caption(audace,seuil,auto)                     "Auto"
    set caption(audace,boite,attention)                "Achtung!"
    set caption(audace,boite,tracer)                   "Bitte, einen Rahmen mit der Mause zeichnen."
    set caption(conf,ok)                               "OK"
-   set caption(conf,aide)                             "Hilfe"
-   set caption(conf,quitter)                          "Programm beenden"
 
    set caption(script,parcourir)                      "..."
 
@@ -384,10 +343,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,temps_universel)                "WZ"
    set caption(audace,temps_heurelegale)              "UZ"
-
-   set caption(audace,temps_aucune)                   "Keine"
-   set caption(audace,temps_hiver)                    "Winter"
-   set caption(audace,temps_ete)                      "Sommer"
 
    set caption(caractere,RA)                          "RA"
    set caption(caractere,DEC)                         "Dek."
@@ -438,22 +393,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,image,acquisition)              "Aud'ACE - Acquisição de"
    set caption(sur,enregistrer,config1)               "Guardar nova configuração antes de sair?"
-   set caption(sur,enregistrer,config2)               "(Prima 'Cancelar' para voltar ao Aud'ACE)"
    set caption(sur,enregistrer,config3)               "Guardar configuração?"
    set caption(sur,enregistrer,config4)               "Configuração guardada com exito."
    set caption(sur,enregistrer,config5)               "Não é necessário guardar configuração."
    set caption(sur,enregistrer,config6)               "Operação \"guardar\" abortada."
-   set caption(creer,dialogue,appliquer)              "Aplicar"
    set caption(creer,dialogue,fermer)                 "Fechar"
    set caption(seuil,haut)                            "H.T."
    set caption(seuil,bas)                             "L.T."
-   set caption(audace,image,image_a_choisir:)         "Sobre uma imagem do disco rígido:"
    set caption(audace,seuil,auto)                     "Auto"
    set caption(audace,boite,attention)                "Aviso!"
    set caption(audace,boite,tracer)                   "Por favor desenhe um quadrado com o seu rato."
    set caption(conf,ok)                               "OK"
-   set caption(conf,aide)                             "Ajuda"
-   set caption(conf,quitter)                          "Sair"
 
    set caption(script,parcourir)                      "..."
 
@@ -463,10 +413,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
-
-   set caption(audace,temps_aucune)                   "Nenhum"
-   set caption(audace,temps_hiver)                    "Inverno"
-   set caption(audace,temps_ete)                      "Verão"
 
    set caption(caractere,RA)                          "AR"
    set caption(caractere,DEC)                         "Dec."
@@ -517,22 +463,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,image,acquisition)              "Aud'ACE - Eksponering slut"
    set caption(sur,enregistrer,config1)               "Gem ny opsætning før afslutning?"
-   set caption(sur,enregistrer,config2)               "(Tryk 'Annuller' for at vende tilbage til Aud'ACE)"
    set caption(sur,enregistrer,config3)               "Gem opsætning?"
    set caption(sur,enregistrer,config4)               "Opsætning gemt."
    set caption(sur,enregistrer,config5)               "Gem opsætning - Er ikke nødvendig."
    set caption(sur,enregistrer,config6)               "Gem - Annulleret."
-   set caption(creer,dialogue,appliquer)              "Anvend"
    set caption(creer,dialogue,fermer)                 "Luk"
    set caption(seuil,haut)                            "H.t."
    set caption(seuil,bas)                             "L.t."
-   set caption(audace,image,image_a_choisir:)         "På et billede på harddisken:"
    set caption(audace,seuil,auto)                     "Auto"
    set caption(audace,boite,attention)                "Advarsel!"
    set caption(audace,boite,tracer)                   "Tegn en ramme med musen."
    set caption(conf,ok)                               "OK"
-   set caption(conf,aide)                             "Hjælp"
-   set caption(conf,quitter)                          "Afbryd"
 
    set caption(script,parcourir)                      "..."
 
@@ -542,10 +483,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
-
-   set caption(audace,temps_aucune)                   "Ingen"
-   set caption(audace,temps_hiver)                    "Vinter"
-   set caption(audace,temps_ete)                      "Sommer"
 
    set caption(caractere,RA)                          "RA"
    set caption(caractere,DEC)                         "Dec."
