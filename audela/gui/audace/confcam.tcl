@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.41 2006-11-03 19:10:47 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.42 2006-11-14 21:49:12 robertdelmas Exp $
 #
 
 global confCam
@@ -4081,9 +4081,9 @@ namespace eval ::confCam {
             }
             andor {
                if {$conf(andor,config)=="cemes"} {
-                  set camNo [ cam::create cemes pci ]
+                  set camNo [ cam::create cemes PCI ]
                } else {
-                  set camNo [ cam::create andor pci "$conf(andor,config)" ]
+                  set camNo [ cam::create andor PCI "$conf(andor,config)" ]
                }
                set confCam($cam_item,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
