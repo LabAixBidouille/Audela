@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.4 2006-10-20 18:01:56 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.5 2006-11-15 20:47:39 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -32,8 +32,8 @@ namespace eval ::console {
       wm minsize $This 370 200
       wm resizable $This 1 1
       wm deiconify $This
-      wm title $This "$caption(audace,console)"
-      wm protocol $This WM_DELETE_WINDOW " ::audace::quitter "
+      wm title $This "$caption(console,titre)"
+      wm protocol $This WM_DELETE_WINDOW "::audace::quitter"
 
       scrollbar $This.scr1 -orient vert -command console::onScr1Scroll
       entry $This.ent1 -bg #FFFFFF -fg #000000 -textvariable console::CmdLine
@@ -76,7 +76,7 @@ namespace eval ::console {
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright10)\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright11)\n" style_entete
       $This.txt1 insert end "#\n" style_entete
-      $This.txt1 insert end "\n" 
+      $This.txt1 insert end "\n"
 
       bind $This.txt1 <Key-Return> {console::onTxt1KeyReturn %W; break;}
       bind $This.ent1 <Key-Return> {console::onEnt1KeyReturn %W; break;}
@@ -119,7 +119,7 @@ namespace eval ::console {
 
    proc affiche_debug {ligne} {
       variable This
-      $This.txt1 insert end "# $caption(audace,console,debug)>" style_entete
+      $This.txt1 insert end "# $caption(console,debug)>" style_entete
       $This.txt1 insert end "$ligne -> "
       $This.txt1 see insert
       update
@@ -213,7 +213,7 @@ namespace eval ::console {
             $This.txt1 insert insert "# $res\n" style_resultat
          }
       }
-      $This.txt1 insert insert "\n" 
+      $This.txt1 insert insert "\n"
       restore_cursor
    }
 

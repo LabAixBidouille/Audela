@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecom.tcl,v 1.2 2006-06-20 19:41:26 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.3 2006-11-15 20:41:11 robertdelmas Exp $
 #
 
 #
@@ -1663,8 +1663,8 @@ namespace eval confAudecomMobile {
       variable This
 
       set This $this
-	$This.vitmotad configure -state disabled
-	$This.vitmotdec configure -state disabled
+      $This.vitmotad configure -state disabled
+      $This.vitmotdec configure -state disabled
    }
 
    #
@@ -1675,8 +1675,8 @@ namespace eval confAudecomMobile {
       variable This
 
       set This $this
-	$This.vitmotad configure -state normal
-	$This.vitmotdec configure -state normal
+      $This.vitmotad configure -state normal
+      $This.vitmotdec configure -state normal
    }
 
   proc createDialog { } {
