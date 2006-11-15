@@ -6,4 +6,5 @@ EXPORTS
     libdcraw_bufferRaw2Rgb
     libdcraw_bufferCfa2Rgb
     libdcraw_freeBuffer
+    libdcraw_getInfoFromFile
     
