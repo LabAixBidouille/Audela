@@ -43,30 +43,54 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #define BAYER(row,col) \
 	image[((row) >> shrink)*iwidth + ((col) >> shrink)][FC(row,col)]
 
+/**---------------------------------------------------------------
+ * scale_color_cb
+ *
+ * fonction interne qui remplace scale_color de dcraw.c
+ * 
+ * Cette fonction copie les pixels a decoder la matrice "image"
+ * sans modifier les couleurs comme le fait Christian Buil dans iris
+ * La balance sera faite ultérieurement par l'utilisateur apres le decodage CFA->RGB
+ * 
+ * parametres 
+ *   aucun
+ * return 
+ *   void
+ *---------------------------------------------------------------
+ */
+
+void scale_color_cb ()
+{
+   int row, col;
+
+   for (row=0; row < height; row++) {
+      for (col=0; col < width; col++) {         
+         image[row*width+col][0] = image[row*width+col][0] + image[row*width+col][1] +image[row*width+col][2] + +image[row*width+col][3]; 
+         image[row*width+col][1] = image[row*width+col][0];  
+         image[row*width+col][2] = image[row*width+col][0];  
+         image[row*width+col][3] = 0;  
+      }
+   }
+}
 
 /**---------------------------------------------------------------
- * libdcraw_fileRaw2Cfa
+ * libdcraw_getInfoFromFile
  *
- * copie un fichier RAW dans un buffer CFA 
- * Cette fonction cree le buffer dataOut. 
- * le programme appelant doit detruire le buffer dataOut avec la fonction libdcraw_freeBuffer.
+ * extrait les informations de l'image et les retourne dans une structure dataInfo
  * 
  * parametres 
  *   inputFileName (IN) nom du fichier RAW
- *   pwidth       (OUT) largeur de l'image en pixels
- *   pheight      (OUT) hauteur de l'image en pixels
- *   dataOut      (OUT) pointeur du buffer de sortie
+ *   dataInfo      (OUT) information de l'image
  * return 
  *   0   OK
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_fileRaw2Cfa (char * inputFileName, struct DataInfo *dataInfo,  unsigned short ** dataOut)
+int libdcraw_getInfoFromFile (char * inputFileName, struct libdcraw_DataInfo *dataInfo)
 {
    int status=0, user_flip=-1;
    int identify_only=0;
    int half_size=0, use_fuji_rotate=1;
-   int row, col;
       
    
    
@@ -95,20 +119,11 @@ int libdcraw_fileRaw2Cfa (char * inputFileName, struct DataInfo *dataInfo,  unsi
    
    status = (identify(),!is_raw);
    
-//   if (load_raw == kodak_ycbcr_load_raw) {
-//      height += height & 1;
-//      width  += width  & 1;
-//   }
    shrink = half_size && filters;
    iheight = (height + shrink) >> shrink;
    iwidth  = (width  + shrink) >> shrink;
-   image = calloc (iheight*iwidth*sizeof *image + meta_length, 1);
-   merror (image, "main()");
-   meta_data = (char *) (image + iheight*iwidth);
 
    // je position le pointeur de fichier sur le debut des donnees de l'image
-   fseek (ifp, data_offset, SEEK_SET);
-   (*load_raw)();
    height = iheight;
    width  = iwidth;
    fclose(ifp);
@@ -120,8 +135,6 @@ int libdcraw_fileRaw2Cfa (char * inputFileName, struct DataInfo *dataInfo,  unsi
    dataInfo->colors  = colors;
    dataInfo->black  = black;
    dataInfo->maximum = maximum;
-   dataInfo->top_margin = top_margin;
-   dataInfo->left_margin = left_margin;
 
    dataInfo->timestamp = timestamp;
    strcpy(dataInfo->make, make);
@@ -131,72 +144,14 @@ int libdcraw_fileRaw2Cfa (char * inputFileName, struct DataInfo *dataInfo,  unsi
    dataInfo->shutter   = shutter;
    dataInfo->aperture  = aperture;
    dataInfo->focal_len = focal_len;
-
-
-   *dataOut = malloc( width *  height * sizeof(unsigned short) );
-   if( *dataOut == NULL) {
-     fprintf(stderr,"insufficient memory.\n");
-      return -1;
-   }
-
-   for (row=0; row < height; row++) {
-      for (col=0; col < width; col++) {
-         *(*dataOut + row*width  +  col )  =  BAYER((height-row-1),col);
-      }
-   }
-
-   free (image);
    
    return status;      
 }
 
 /**---------------------------------------------------------------
- * libdcraw_bufferRaw2Cfa
- *
- * Copie un buffer RAW dans un buffer CFA 
- * Cette fonction cree le buffer de sortie dataOut. 
- * Le programme appelant doit detruire le buffer dataOut avec la fonction libdcraw_freeBuffer.
- * 
- * parametres 
- *   dataIn       (IN)  pointer du buffer RAW
- *   dataInSize   (IN)  taille du buffer en octets 
- *   pwidth       (OUT) largeur de l'image en pixels
- *   pheight      (OUT) hauteur de l'image en pixels
- *   dataOut      (OUT) pointeur du buffer de sortie
- * return 
- *   0   OK
- *   -1  Erreur fichier incorrect
- *---------------------------------------------------------------
- */
-int libdcraw_bufferRaw2Cfa (unsigned short * dataIn, unsigned long dataInSize, struct DataInfo *dataInfo, unsigned short ** dataOut)
-{
-
-   char tempFileName[] ="tempfilename2.tmp";
-   int result;
-   size_t sizeWritten;
-   FILE * ofp;
-   
-   ofp = fopen (tempFileName, "wb");
-   if (ofp) {
-      sizeWritten = fwrite (dataIn, dataInSize, 1, ofp);
-      fclose(ofp);
-      if( sizeWritten == 1 ) { 
-         result = libdcraw_fileRaw2Cfa (tempFileName, dataInfo, dataOut);
-      } 
-      remove(tempFileName);
-      result = 0;
-   } else {
-      result = -1;
-   }
-   
-   return result;
-}
-
-
-/**---------------------------------------------------------------
  * libdcraw_fileRaw2Rgb
  *
- * decode et copie un fichier RAW dans un buffer RGB
+ * Decode et copie un fichier RAW dans un buffer RGB
  * Cette fonction cree le buffer dataOut. 
  * le programme appelant doit detruire le buffer dataOut avec la fonction libdcraw_freeBuffer.
  * 
@@ -210,7 +165,7 @@ int libdcraw_bufferRaw2Cfa (unsigned short * dataIn, unsigned long dataInSize, s
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsigned short ** dataOut)
+int libdcraw_fileRaw2Rgb (char * inputFileName, struct libdcraw_DataInfo *dataInfo,  TInterpolationMethod method ,unsigned short ** dataOut)
 {
    int status=0, user_flip=-1;
    int identify_only=0;
@@ -261,18 +216,24 @@ int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsig
    //bad_pixels();
    height = iheight;
    width  = iwidth;
-   scale_colors();
-   cam_to_cielab (NULL,NULL);
-   
-
-   //bilinear interpolation
-   //border_interpolate(1);
-   //lin_interpolate();
-   //vng_interpolate();
-   ahd_interpolate();
+   //scale_colors();
+   //cam_to_cielab (NULL,NULL);
+   scale_color_cb();
+      
+   switch( method) {
+   case LINEAR :
+      lin_interpolate();
+      break;
+   case VNG :
+      vng_interpolate();
+      break;
+   case ADH :
+      ahd_interpolate();
+      break;
+   }
    
    if (shrink) filters = 0;
-   convert_to_rgb();
+   //convert_to_rgb();
 
    dataInfo->width  = width;
    dataInfo->height = height;
@@ -282,6 +243,16 @@ int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsig
    dataInfo->maximum = maximum;
    dataInfo->top_margin = top_margin;
    dataInfo->left_margin = left_margin;
+   
+   dataInfo->timestamp = timestamp;
+   strcpy(dataInfo->make, make);
+   strcpy(dataInfo->model, model);
+   dataInfo->flash_used = flash_used;
+   dataInfo->iso_speed = iso_speed;
+   dataInfo->shutter   = shutter;
+   dataInfo->aperture  = aperture;
+   dataInfo->focal_len = focal_len;
+
 
    *dataOut = malloc(width * height *3 * sizeof(unsigned short));
    if( *dataOut == NULL) {
@@ -292,16 +263,164 @@ int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsig
    for (row=0; row < height; row++) {
       for (col=0; col < width; col++) {
          for (c=0; c < 3; c++) {
-              *(*dataOut + row*width*3  +  col*3 + c)  = htons(image[row*width+col][c]);
-              //*(*dataOut + row*width*3  +  col*3 + c)  =  image[row*width+col][c];
+              *(*dataOut + (row*width +  col)*3 + c)  = (unsigned short) image[row*width+col][c];
          }
       }
    }
+
 
    free (image);
    return status;
       
 }
+
+
+
+/**---------------------------------------------------------------
+ * libdcraw_fileRaw2Cfa
+ *
+ * copie un fichier RAW dans un buffer CFA 
+ * Cette fonction cree le buffer dataOut. 
+ * le programme appelant doit detruire le buffer dataOut avec la fonction libdcraw_freeBuffer.
+ * 
+ * parametres 
+ *   inputFileName (IN) nom du fichier RAW
+ *   pwidth       (OUT) largeur de l'image en pixels
+ *   pheight      (OUT) hauteur de l'image en pixels
+ *   dataOut      (OUT) pointeur du buffer de sortie
+ * return 
+ *   0   OK
+ *   -1  Erreur fichier incorrect
+ *---------------------------------------------------------------
+ */
+int libdcraw_fileRaw2Cfa (char * inputFileName, struct libdcraw_DataInfo *dataInfo,  unsigned short ** dataOut)
+{
+   int status=0, user_flip=-1;
+   int identify_only=0;
+   int half_size=0, use_fuji_rotate=1;
+   int row, col;
+   long row2;
+      
+   
+   
+#if defined(WIN32) || defined(DJGPP) || defined(__CYGWIN__)
+   if (setmode(1,O_BINARY) < 0) {
+      perror("setmode()");
+      return -1;
+   }
+#endif
+   verbose = 0;
+   status = 1;
+   image = NULL;
+   user_flip = 0;
+   output_color = 0;
+   half_size = 0;
+
+   ifname = inputFileName;   
+   if( ifname == NULL) {
+      return -1;
+   }
+
+   if (!(ifp = fopen (ifname, "rb"))) {
+      perror (ifname);
+      return -1;
+   }
+   
+   status = (identify(),!is_raw);
+   
+   shrink = half_size && filters;
+   iheight = (height + shrink) >> shrink;
+   iwidth  = (width  + shrink) >> shrink;
+   image = calloc (iheight*iwidth*sizeof *image + meta_length, 1);
+   merror (image, "main()");
+   meta_data = (char *) (image + iheight*iwidth);
+
+   // je position le pointeur de fichier sur le debut des donnees de l'image
+   fseek (ifp, data_offset, SEEK_SET);
+   (*load_raw)();
+   height = iheight;
+   width  = iwidth;
+   fclose(ifp);
+
+  
+   dataInfo->width  = width;
+   dataInfo->height = height;
+   dataInfo->filters = filters;
+   dataInfo->colors  = colors;
+   dataInfo->black  = black;
+   dataInfo->maximum = maximum;
+
+   dataInfo->timestamp = timestamp;
+   strcpy(dataInfo->make, make);
+   strcpy(dataInfo->model, model);
+   dataInfo->flash_used = flash_used;
+   dataInfo->iso_speed = iso_speed;
+   dataInfo->shutter   = shutter;
+   dataInfo->aperture  = aperture;
+   dataInfo->focal_len = focal_len;
+
+
+   *dataOut = malloc( width *  height * sizeof(unsigned short) );
+   if( *dataOut == NULL) {
+     fprintf(stderr,"insufficient memory.\n");
+      return -1;
+   }
+
+   for (row=0; row < height; row++) {
+      row2 = height-row-1;
+      for (col=0; col < width; col++) {
+         //*(*dataOut + row*width  +  col )  =  BAYER((height-row-1),col);
+         *(*dataOut + row*width  +  col )  =  BAYER(row2,col);
+      }
+   }
+
+   free (image);
+   
+   return status;      
+}
+
+/**---------------------------------------------------------------
+ * libdcraw_bufferRaw2Cfa
+ *
+ * Copie un buffer RAW dans un buffer CFA 
+ * Cette fonction cree le buffer de sortie dataOut. 
+ * Le programme appelant doit detruire le buffer dataOut avec la fonction libdcraw_freeBuffer.
+ * 
+ * parametres 
+ *   dataIn       (IN)  pointer du buffer RAW
+ *   dataInSize   (IN)  taille du buffer en octets 
+ *   pwidth       (OUT) largeur de l'image en pixels
+ *   pheight      (OUT) hauteur de l'image en pixels
+ *   dataOut      (OUT) pointeur du buffer de sortie
+ * return 
+ *   0   OK
+ *   -1  Erreur fichier incorrect
+ *---------------------------------------------------------------
+ */
+int libdcraw_bufferRaw2Cfa (unsigned short * dataIn, unsigned long dataInSize, struct libdcraw_DataInfo *dataInfo, unsigned short ** dataOut)
+{
+
+   char tempFileName[] ="tempfilename2.tmp";
+   int result;
+   size_t sizeWritten;
+   FILE * ofp;
+   
+   ofp = fopen (tempFileName, "wb");
+   if (ofp) {
+      sizeWritten = fwrite (dataIn, dataInSize, 1, ofp);
+      fclose(ofp);
+      if( sizeWritten == 1 ) { 
+         result = libdcraw_fileRaw2Cfa (tempFileName, dataInfo, dataOut);
+      } 
+      remove(tempFileName);
+      result = 0;
+   } else {
+      result = -1;
+   }
+   
+   return result;
+}
+
 
 
 
@@ -324,7 +443,7 @@ int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsig
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, struct DataInfo *dataInfo, unsigned short **dataOut)
+int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, struct libdcraw_DataInfo *dataInfo, TInterpolationMethod method ,unsigned short **dataOut)
 {
 
    char tempFileName[] ="tempfilename2.tmp";
@@ -337,7 +456,7 @@ int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, s
       sizeWritten = fwrite (dataIn, dataInSize, 1, ofp);
       fclose(ofp);
       if( sizeWritten == 1 ) { 
-         result = libdcraw_fileRaw2Rgb(tempFileName, dataInfo, dataOut);
+         result = libdcraw_fileRaw2Rgb(tempFileName, dataInfo, method, dataOut);
       } 
       remove(tempFileName);
       result = 0;
@@ -367,12 +486,12 @@ int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, s
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, unsigned short **dataOut)
+int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct libdcraw_DataInfo *dataInfo, TInterpolationMethod method , unsigned short **dataOut)
 {
    int user_flip=-1;
    int identify_only=0;
    int half_size=0, use_fuji_rotate=1;
-   long row, col, c;
+   long row, col, c, row2;
       
       
    verbose = 0;
@@ -381,6 +500,8 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, 
    output_color = 0;
    half_size = 0;
    shrink = 0;
+   //use_auto_wb = 0;
+   //highlight = 0;
    
    width   = dataInfo->width;
    height  = dataInfo->height;
@@ -388,8 +509,12 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, 
    colors  = dataInfo->colors;
    black   = dataInfo->black;
    maximum = dataInfo->maximum;
-   top_margin = dataInfo->top_margin;
-   left_margin = dataInfo->left_margin;
+
+   //top_margin = dataInfo->top_margin;
+   //left_margin = dataInfo->left_margin;
+
+   top_margin = 0;
+   left_margin = 0;
 
    shrink = half_size && filters;
    iheight = (height + shrink) >> shrink;
@@ -398,7 +523,7 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, 
    
    // j'allloue la memoire de la zone de travail
    image = calloc (height * width * sizeof *image, 1);
-   if( *dataOut == NULL) {
+   if( image == NULL) {
      fprintf(stderr,"insufficient memory.\n");
       return -1;
    }
@@ -407,26 +532,38 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, 
    meta_data = NULL;
 
    // je copie les data dans la zone de travail
+   // en faisant un mirroir Y
+   // comme le fait scale_color_cb()
    for (row=0; row < height; row++) {
+      row2 = (height-row-1)*width;
       for (col=0; col < width; col++) {
-         BAYER((height-row-1),col) = *(dataIn + row*width  +  col );  
+         //BAYER((height-row-1),col) = *(dataIn + row*width  +  col );  
+         //BAYER(row,col) = *(dataIn + row*width  +  col ); 
+         image[row2+col][0] = *(dataIn + row*width  +  col );
+         image[row2+col][1] = *(dataIn + row*width  +  col );
+         image[row2+col][2] = *(dataIn + row*width  +  col );
+         image[row2+col][3] = 0;
       }
    }
-   
-   //bad_pixels();
-   scale_colors();
-   cam_to_cielab (NULL,NULL);
-   
 
-   //bilinear interpolation;
-   //border_interpolate(1);
-   //lin_interpolate();
-   //vng_interpolate();
-   //foveon_interpolate();
-   ahd_interpolate();
-   
-   if (shrink) filters = 0;
-   convert_to_rgb();
+   //bad_pixels();
+   //scale_colors();
+   //cam_to_cielab (NULL,NULL);   
+
+   switch( method) {
+   case LINEAR :
+      lin_interpolate();
+      break;
+   case VNG :
+      vng_interpolate();
+      break;
+   case ADH :
+      ahd_interpolate();
+      break;
+   }
+
+   //if (shrink) filters = 0;
+   //convert_to_rgb();
 
    *dataOut = malloc(width * height *3 * sizeof(unsigned short));
    if( *dataOut == NULL) {
@@ -437,8 +574,8 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, 
    for (row=0; row < height; row++) {
       for (col=0; col < width; col++) {
          for (c=0; c < 3; c++) {
-              *(*dataOut + row*width*3  +  col*3 + c)  = htons(image[row*width+col][c]);
-              //*(*dataOut + row*width*3  +  col*3 + c)  =  image[row*width+col][c];
+              //*(*dataOut + row*width*3  +  col*3 + c)  = htons(image[row*width+col][c]);
+              *(*dataOut + row*width*3  +  col*3 + c)  =  image[row*width+col][c];
          }
       }
    }

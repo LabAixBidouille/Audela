@@ -3,17 +3,17 @@
 // Date   :05/08/2005
 // Author :Michel Pujol
 
-#ifndef __LIBDCRAW_SRC_H__
-#define __LIBDCRAW_SRC_H__
-
-#include <time.h>
+#ifndef _LIBDCRAW_H_
+#define _LIBDCRAW_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+typedef enum { LINEAR, FOVEON, VNG, ADH } TInterpolationMethod;
 
-struct DataInfo {
+
+struct libdcraw_DataInfo {
   // information indispensables pour la conversion CFA->RGB
   int width;
   int height;
@@ -21,11 +21,9 @@ struct DataInfo {
   int colors;
   int black;               // niveau de noir
   int maximum;             // niveau maximum
-  int top_margin;
-  int left_margin;
 
   // autres informations
-  time_t timestamp;        // date en nombre de secondes depuis le 01/01/1970
+  long timestamp;        // date en nombre de secondes depuis le 01/01/1970
   char make[64];           // fabriquant de la camera
   char model[72];          // modele de la camera
   float flash_used;        // flash utilisé
@@ -33,9 +31,26 @@ struct DataInfo {
   float shutter;           // durée de la pose
   float aperture;          // ouverture en millimetre
   float focal_len;      
+  int top_margin;
+  int left_margin;
 
-} dataInfo;
+};
 
+
+/**---------------------------------------------------------------
+ * libdcraw_getInfoFromFile
+ *
+ * extrait les information de l'image et les retourne dans une structure dataInfo
+ * 
+ * parametres 
+ *   inputFileName (IN) nom du fichier RAW
+ *   dataInfo      (OUT) information de l'image
+ * return 
+ *   0   OK
+ *   -1  Erreur fichier incorrect
+ *---------------------------------------------------------------
+ */
+int libdcraw_getInfoFromFile (char * inputFileName, struct libdcraw_DataInfo *dataInfo);
 
 /**---------------------------------------------------------------
  * libdcraw_fileRaw2Cfa
@@ -53,7 +68,7 @@ struct DataInfo {
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_fileRaw2Cfa (char * inputFileName, struct DataInfo *dataInfo, unsigned short ** dataOut);
+int libdcraw_fileRaw2Cfa (char * inputFileName, struct libdcraw_DataInfo *dataInfo, unsigned short ** dataOut);
 
 
 /**---------------------------------------------------------------
@@ -73,7 +88,7 @@ int libdcraw_fileRaw2Cfa (char * inputFileName, struct DataInfo *dataInfo, unsig
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_bufferRaw2Cfa (unsigned short * dataIn, unsigned long dataInSize, struct DataInfo *dataInfo, unsigned short ** dataOut);
+int libdcraw_bufferRaw2Cfa (unsigned short * dataIn, unsigned long dataInSize, struct libdcraw_DataInfo *dataInfo, unsigned short ** dataOut);
 
 
 /**---------------------------------------------------------------
@@ -92,7 +107,7 @@ int libdcraw_bufferRaw2Cfa (unsigned short * dataIn, unsigned long dataInSize, s
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsigned short ** dataOut);
+int libdcraw_fileRaw2Rgb (char * inputFileName, struct libdcraw_DataInfo *dataInfo,  TInterpolationMethod method ,unsigned short ** dataOut);
 
 
 /**---------------------------------------------------------------
@@ -112,7 +127,7 @@ int libdcraw_fileRaw2Rgb (char * inputFileName, struct DataInfo *dataInfo, unsig
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, struct DataInfo *dataInfo, unsigned short ** dataOut);
+int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, struct libdcraw_DataInfo *dataInfo, TInterpolationMethod method ,unsigned short ** dataOut);
 
 
 /**---------------------------------------------------------------
@@ -131,7 +146,7 @@ int libdcraw_bufferRaw2Rgb (unsigned short * dataIn, unsigned long dataInSize, s
  *   -1  Erreur fichier incorrect
  *---------------------------------------------------------------
  */
-int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct DataInfo *dataInfo, unsigned short **dataOut);
+int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct libdcraw_DataInfo *dataInfo, TInterpolationMethod method, unsigned short **dataOut);
 
 /**---------------------------------------------------------------
  * libdcraw_freeBuffer
@@ -150,4 +165,4 @@ void libdcraw_freeBuffer (unsigned short * data);
 }
 #endif
 
-#endif 
+#endif
