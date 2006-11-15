@@ -103,6 +103,9 @@ namespace eval ::param_spc_audace_calibre2 {
       set audace(param_spc_audace,calibre2,font,c12b) [ list {Courier} 10 bold ]
       set audace(param_spc_audace,calibre2,font,c10b) [ list {Courier} 10 bold ]
       
+      # === Caption de remplacement
+      set caption(script,parcourir) "..."
+      
       # === Captions
       set caption(param_spc_audace,calibre2,titre2) "Paramètres des 2 raies"
       set caption(param_spc_audace,calibre2,titre) "Calibration avec 2 raies"

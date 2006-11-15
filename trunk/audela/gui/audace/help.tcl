@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise a jour $Id: help.tcl,v 1.1 2006-11-05 12:10:29 robertdelmas Exp $
+# Mise a jour $Id: help.tcl,v 1.2 2006-11-15 20:47:54 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -108,7 +108,7 @@ namespace eval ::audace {
    #  ouvre la fenetre d'aide si elle n'est pas deja ouverte
    #  puis affiche la page HTML demandee
    #
-   #  parametres : 
+   #  parametres :
    #     relativeFileName : repertoire du fichier d'aide
    #     tag              : balise anchor dans la page HTML (optionel)
    #
@@ -220,7 +220,7 @@ namespace eval ::audace {
       set audace(help_dir) [ file join $audace(rep_doc_html) $audace(help_langage) ]
 
       if { ! [ file exists $audace(help_dir) ] } {
-         set message "$caption(aide,pas_repertoire)\n$audace(help_dir)"
+         set message "$caption(audace,pas_repertoire_aide)\n$audace(help_dir)"
          ::console::affiche_erreur "$message \n"
          tk_messageBox -icon error -message $message -type ok
          return
@@ -228,7 +228,7 @@ namespace eval ::audace {
 
       #--- Je cree la fenetre d'aide
       set audace(help_window) [ ::HelpViewer::HelpWindow $audace(help_dir) "$audace(base).help" \
-         "630x450+100+50" "$caption(aide,audace)" ]
+         "630x450+100+50" "$caption(audace,aide)" ]
          
       #--- J'attends que la fenetre d'aide soit creee
       update

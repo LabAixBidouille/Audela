@@ -44,7 +44,8 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - SCR1300XTC,
 - APN (Appareil Photo Numérique),
 - AndorTech,
-- Finger Lakes Instruments.
+- Finger Lakes Instruments,
+- CEMES.
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
@@ -52,6 +53,7 @@ AudeLA est capable de piloter les montures suivantes :
 - AudeCom (ex-carte Kauffmann),
 - Temma (monture Takahashi avec module Temma),
 - ASCOM,
+- Celestron,
 - N'importe quel telescope repondant au protocole LX200.
 
 AudeLA est capable de piloter les interfaces de communication suivantes :

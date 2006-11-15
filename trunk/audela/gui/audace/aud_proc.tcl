@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.1 2006-11-11 13:06:56 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.2 2006-11-15 20:42:30 robertdelmas Exp $
 #
 
 #
@@ -266,7 +266,7 @@ proc acq { exptime binning } {
    #--- Visualisation de l'image
    ::audace::autovisu $audace(visuNo)
 
-   wm title $audace(base) "$caption(audace,image,acquisition) $exptime s"
+   wm title $audace(base) "$caption(audace,image_acquisition) $exptime s"
 }
 
 #
@@ -499,7 +499,7 @@ proc window { { args "" } } {
          error "Usage: window {x1 y1 x2 y2}"
       }
    } else {
-      tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
+      tk_messageBox -title $caption(confVisu,attention) -type ok -message $caption(confVisu,tracer_boite)
    }
 }
 

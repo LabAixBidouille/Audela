@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.38 2006-11-12 23:04:31 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.39 2006-11-15 20:42:13 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -701,6 +701,10 @@ namespace eval ::audace {
          { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
          { ::faireImageRef::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+g+b2rgb)..." \
+         { ::faireImageRef::run "$caption(audace,menu,r+g+b2rgb)" "$audace(base).faireImageRef" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rgb2r+g+b)..." \
+         { ::faireImageRef::run "$caption(audace,menu,rgb2r+g+b)" "$audace(base).faireImageRef" }
 
       Menu           $visuNo "$caption(audace,menu,traitement)"
       Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,masque_flou)..." \
@@ -845,7 +849,7 @@ namespace eval ::audace {
       if { [ llength $audace(list_com) ] != "0" } {
          $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $audace(list_com) \n\n"
       } else {
-         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port) \n\n"
+         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port_com) \n\n"
       }
 
       #--- Définition d'un fichier palette temporaire, modifiable dynamiquement
@@ -873,7 +877,7 @@ namespace eval ::audace {
          set no_administrator "PortTalk: You do not have rights to access"
          if { ( $res == "1" ) && ( [ file exists "[ file join $audace(rep_install) bin allowio.txt ]" ] == "0" ) } {
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               $audace(console)::affiche_erreur "$msg\n\n$caption(audace,porttalk_erreur)\n"
+               $audace(console)::affiche_erreur "$msg\n\n$caption(audace,porttalk_msg_erreur)\n"
             } else {
                $audace(console)::affiche_erreur "$msg\n"
             }
@@ -882,9 +886,9 @@ namespace eval ::audace {
             wm geometry $base +50+100
             wm resizable $base 0 0
             wm deiconify $base
-            wm title $base "$caption(audace,porttalk,titre)"
+            wm title $base "$caption(audace,porttalk_erreur)"
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               message $base.msg -text "$msg\n\n$caption(audace,porttalk_erreur)\n" -font 6 -justify center -width 460
+               message $base.msg -text "$msg\n\n$caption(audace,porttalk_msg_erreur)\n" -font 6 -justify center -width 460
             } else {
                message $base.msg -text "$msg\n" -font 6 -justify center -width 460
             }
@@ -893,10 +897,10 @@ namespace eval ::audace {
                set saveallowio "0"
                checkbutton $base.frame1.check1 -variable saveallowio
                pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-               label $base.frame1.lab1 -text "$caption(audace,porttalk,message)" -font 6
+               label $base.frame1.lab1 -text "$caption(audace,porttalk_message)" -font 6
                pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
             pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
-            button $base.but1 -text "$caption(conf,ok)" \
+            button $base.but1 -text "$caption(audace,ok)" \
                -command {
                   if { $saveallowio == "1" } {
                      set f [ open "[ file join $audace(rep_install) bin allowio.txt ]" w ]
@@ -909,7 +913,7 @@ namespace eval ::audace {
             tkwait window $base
          } else {
             catch {
-               $audace(console)::affiche_prompt "$caption(audace,porttalk) $result\n\n"
+               $audace(console)::affiche_prompt "$caption(audace,porttalk_titre) $result\n\n"
             }
          }
       }
@@ -1053,7 +1057,7 @@ namespace eval ::audace {
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
          if [catch $a_effectuer input] {
-           # $audace(console)::affiche_erreur "$caption(audace,console,rate)\n"
+           # $audace(console)::affiche_erreur "$caption(audace,console_rate)\n"
             set confgene(EditScript,error_viewer) "0"
             ::confEditScript::run "$audace(base).confEditScript"
             set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
@@ -1062,10 +1066,10 @@ namespace eval ::audace {
             }
          } else {
             set audace(current_edit) $input
-           # $audace(console)::affiche_erreur "$caption(audace,console,gagne)\n"
+           # $audace(console)::affiche_erreur "$caption(audace,console_gagne)\n"
          }
       } else {
-        # $audace(console)::affiche_erreur "$caption(audace,console,annule)\n"
+        # $audace(console)::affiche_erreur "$caption(audace,console_annule)\n"
       }
       menustate normal
    }
@@ -1257,18 +1261,18 @@ namespace eval ::audace {
       array set file_conf [ ini_getArrayFromFile $filename ]
       if { [ ini_fileNeedWritten file_conf conf ] } {
          set old_focus [focus]
-         set choice [ tk_messageBox -message "$caption(sur,enregistrer,config1)" \
-            -title "$caption(sur,enregistrer,config3)" -icon question -type yesno ]
+         set choice [ tk_messageBox -message "$caption(audace,enregistrer_config1)" \
+            -title "$caption(audace,enregistrer_config2)" -icon question -type yesno ]
          if {$choice=="yes"} {
             array set theconf [ini_merge file_conf conf]
             ini_writeIniFile $filename2 theconf
-            $audace(console)::affiche_resultat "$caption(sur,enregistrer,config4)\n"
+            $audace(console)::affiche_resultat "$caption(audace,enregistrer_config3)\n"
          } else {
-            $audace(console)::affiche_resultat "caption(sur,enregistrer,config6)\n"
+            $audace(console)::affiche_resultat "caption(audace,enregistrer_config5)\n"
          }
          focus $old_focus
       } else {
-         $audace(console)::affiche_resultat "caption(sur,enregistrer,config5)\n\n"
+         $audace(console)::affiche_resultat "caption(audace,enregistrer_config4)\n\n"
       }
    }
 

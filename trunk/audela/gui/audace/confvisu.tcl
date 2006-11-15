@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.37 2006-11-12 23:03:36 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.38 2006-11-15 20:43:22 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -435,12 +435,12 @@ namespace eval ::confVisu {
 
        if { $private($visuNo,labcoord_type) == "xy" } {
          set private($visuNo,labcoord_type) "radec"
-         $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
-         $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
+         $private($visuNo,This).fra1.labURLX configure -text "$caption(confVisu,RA) $caption(confVisu,egale) $caption(confVisu,tiret)"
+         $private($visuNo,This).fra1.labURLY configure -text "$caption(confVisu,DEC) $caption(confVisu,egale) $caption(confVisu,tiret)"
        } else {
          set private($visuNo,labcoord_type) "xy"
-         $private($visuNo,This).fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
-         $private($visuNo,This).fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
+         $private($visuNo,This).fra1.labURLX configure -text "$caption(confVisu,X) $caption(confVisu,egale) $caption(confVisu,tiret)"
+         $private($visuNo,This).fra1.labURLY configure -text "$caption(confVisu,Y) $caption(confVisu,egale) $caption(confVisu,tiret)"
        }
    }
 
@@ -603,7 +603,7 @@ namespace eval ::confVisu {
       if { $camNo == 0 } {
          set private($visuNo,camName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
-            $private($visuNo,This).fra1.labCam_name_labURL configure -text $caption(caractere,tiret) -fg $color(blue)
+            $private($visuNo,This).fra1.labCam_name_labURL configure -text $caption(confVisu,tiret) -fg $color(blue)
          }
       } else {
          set private($visuNo,camName) [cam$camNo name]
@@ -683,7 +683,7 @@ namespace eval ::confVisu {
                #--- Je redessine le reticule
                redrawCrosshair $visuNo
             } else {
-               tk_messageBox -title $caption(audace,boite,attention) -type ok -message $caption(audace,boite,tracer)
+               tk_messageBox -title $caption(confVisu,attention) -type ok -message $caption(confVisu,tracer_boite)
                set private($visuNo,window) "0"
             }
          }
@@ -1023,11 +1023,11 @@ namespace eval ::confVisu {
       #---
       frame $This.fra1 -borderwidth 2 -cursor arrow -relief groove
 
-         button $This.fra1.but_seuils_auto -text "$caption(audace,seuil,auto)" \
+         button $This.fra1.but_seuils_auto -text "$caption(confVisu,seuil_auto)" \
             -command "::confVisu::onCutLabelLeftClick $visuNo" -width 5
          grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we -in $This.fra1 -padx 5
 
-         button $This.fra1.but_config_glissieres -text "$caption(script,parcourir)" \
+         button $This.fra1.but_config_glissieres -text "$caption(confVisu,boite_seuil)" \
             -command "::seuilWindow::run $::confVisu::private($visuNo,This) $visuNo"
          grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} -in $This.fra1 -padx 5
 
@@ -1041,22 +1041,22 @@ namespace eval ::confVisu {
             -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
          grid configure $This.fra1.sca2 -column 2 -row 1 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.lab1 -width 10 -text "$caption(seuil,haut)" -font $audace(font,arial_8_n)
+         label $This.fra1.lab1 -width 10 -text "$caption(confVisu,seuil_haut)" -font $audace(font,arial_8_n)
          grid configure $This.fra1.lab1 -column 3 -row 0 -sticky we -in $This.fra1 -pady 2
 
-         label $This.fra1.lab2 -width 10 -text "$caption(seuil,bas)" -font $audace(font,arial_8_n)
+         label $This.fra1.lab2 -width 10 -text "$caption(confVisu,seuil_bas)" -font $audace(font,arial_8_n)
          grid configure $This.fra1.lab2 -column 3 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labURLX -width 16 -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,X) $caption(caractere,egale) $caption(caractere,tiret)"
+            -text "$caption(confVisu,X) $caption(confVisu,egale) $caption(confVisu,tiret)"
          grid configure $This.fra1.labURLX -column 4 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labURLY -width 16 -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,Y) $caption(caractere,egale) $caption(caractere,tiret)"
+            -text "$caption(confVisu,Y) $caption(confVisu,egale) $caption(confVisu,tiret)"
          grid configure $This.fra1.labURLY -column 4 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labI -width 19 -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
+            -text "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
          grid configure $This.fra1.labI -column 5 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTime -width 19 -font $audace(font,arial_8_n) -anchor w \
@@ -1064,19 +1064,19 @@ namespace eval ::confVisu {
          grid configure $This.fra1.labTime -column 5 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labCam_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,camera) $caption(caractere,2points)" -fg $color(blue)
+            -text "$caption(audace,menu,camera) $caption(confVisu,2points)" -fg $color(blue)
          grid configure $This.fra1.labCam_labURL -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labCam_name_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,tiret)" -fg $color(blue)
+            -text "$caption(confVisu,tiret)" -fg $color(blue)
          grid configure $This.fra1.labCam_name_labURL -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTel_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,monture) $caption(caractere,2points)" -fg $color(blue)
+            -text "$caption(audace,menu,monture) $caption(confVisu,2points)" -fg $color(blue)
          grid configure $This.fra1.labTel_labURL -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTel_name_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(caractere,tiret)" -fg $color(blue)
+            -text "$caption(confVisu,tiret)" -fg $color(blue)
          grid configure $This.fra1.labTel_name_labURL -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
 
       pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
@@ -1266,7 +1266,7 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" " ::audace::header $visuNo "
 
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(creer,dialogue,fermer)" \
+      Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(confVisu,fermer)" \
          " ::confVisu::close $visuNo "
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
@@ -1575,9 +1575,9 @@ namespace eval ::confVisu {
 
       #--- j'affiche les coordonnees si le curseur de la souris est a l'interieur de la fenetre
       if { $xc < $x0 || $xc > $x1 || $yc < $y0 || $yc >$y1 } {
-         set xi "$caption(caractere,tiret)"
-         set yi "$caption(caractere,tiret)"
-         set intensite "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
+         set xi "$caption(confVisu,tiret)"
+         set yi "$caption(confVisu,tiret)"
+         set intensite "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
       } else {
          #--- xi et yi sont des 'coordonnees-image'
          set xi [ lindex $coord 0 ]
@@ -1588,35 +1588,35 @@ namespace eval ::confVisu {
          if { $result == 0 } {
             if { $private($visuNo,intensity) == "1" } {
                if { [ lindex $ii 0 ] == "1" } {
-                  set intensite "$caption(caractere,I) $caption(caractere,egale) [ lindex $ii 1 ]"
+                  set intensite "$caption(confVisu,I) $caption(confVisu,egale) [ lindex $ii 1 ]"
                } elseif { [ lindex $ii 0 ] == "3" } {
-                  set intensite "$caption(couleur,rouge)[ lindex $ii 1 ] $caption(couleur,vert)[ lindex $ii 2 ] $caption(couleur,bleu)[ lindex $ii 3 ]"
+                  set intensite "$caption(confVisu,rouge)[ lindex $ii 1 ] $caption(confVisu,vert)[ lindex $ii 2 ] $caption(confVisu,bleu)[ lindex $ii 3 ]"
                }
             } elseif { $private($visuNo,intensity) == "0" } {
                if { [ lindex $ii 0 ] == "1" } {
-                  set intensite "$caption(caractere,I) $caption(caractere,egale) [ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ]"
+                  set intensite "$caption(confVisu,I) $caption(confVisu,egale) [ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ]"
                } elseif { [ lindex $ii 0 ] == "3" } {
-                  set intensite "$caption(couleur,rouge)[ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ] \
-                     $caption(couleur,vert)[ string trimleft [ format "%8.0f" [ lindex $ii 2 ] ] " " ] \
-                     $caption(couleur,bleu)[ string trimleft [ format "%8.0f" [ lindex $ii 3 ] ] " " ]"
+                  set intensite "$caption(confVisu,rouge)[ string trimleft [ format "%8.0f" [ lindex $ii 1 ] ] " " ] \
+                     $caption(confVisu,vert)[ string trimleft [ format "%8.0f" [ lindex $ii 2 ] ] " " ] \
+                     $caption(confVisu,bleu)[ string trimleft [ format "%8.0f" [ lindex $ii 3 ] ] " " ]"
                }
             }
          } else {
             #--- je traite le cas ou la taille de l'image a ete changee vant de mettre
             #--- a jour les parametres confisu (par exemple acquition en cours avec une camera)
-            set xi "$caption(caractere,tiret)"
-            set yi "$caption(caractere,tiret)"
-            set intensite "$caption(caractere,I) $caption(caractere,egale) $caption(caractere,tiret)"
+            set xi "$caption(confVisu,tiret)"
+            set yi "$caption(confVisu,tiret)"
+            set intensite "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
          }
       }
 
       #--- Affichage a l'ecran
       if { $private($visuNo,labcoord_type) == "xy" } {
-         $This.fra1.labURLX configure -text "$caption(caractere,X) $caption(caractere,egale) $xi"
-         $This.fra1.labURLY configure -text "$caption(caractere,Y) $caption(caractere,egale) $yi"
+         $This.fra1.labURLX configure -text "$caption(confVisu,X) $caption(confVisu,egale) $xi"
+         $This.fra1.labURLY configure -text "$caption(confVisu,Y) $caption(confVisu,egale) $yi"
          $This.fra1.labI configure -text "$intensite"
       } else {
-         if { $xi != "$caption(caractere,tiret)" } {
+         if { $xi != "$caption(confVisu,tiret)" } {
             set result [catch { set temp [ buf$bufNo xy2radec [ list $xi $yi ] ] } ]
             if { $result == 1 } {
                #--- en cas d'erreur de conversion, je reviens encoordonnees xy
@@ -1624,11 +1624,11 @@ namespace eval ::confVisu {
                return
             }
 
-            $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) [ mc_angle2hms [ lindex $temp 0 ] 360 zero 1 auto string ]"
-            $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) [ mc_angle2dms [ lindex $temp 1 ] 90 zero 0 + string ]"
+            $This.fra1.labURLX configure -text "$caption(confVisu,RA) $caption(confVisu,egale) [ mc_angle2hms [ lindex $temp 0 ] 360 zero 1 auto string ]"
+            $This.fra1.labURLY configure -text "$caption(confVisu,DEC) $caption(confVisu,egale) [ mc_angle2dms [ lindex $temp 1 ] 90 zero 0 + string ]"
          } else {
-            $This.fra1.labURLX configure -text "$caption(caractere,RA) $caption(caractere,egale) $caption(caractere,tiret)"
-            $This.fra1.labURLY configure -text "$caption(caractere,DEC) $caption(caractere,egale) $caption(caractere,tiret)"
+            $This.fra1.labURLX configure -text "$caption(confVisu,RA) $caption(confVisu,egale) $caption(confVisu,tiret)"
+            $This.fra1.labURLY configure -text "$caption(confVisu,DEC) $caption(confVisu,egale) $caption(confVisu,tiret)"
          }
          $This.fra1.labI configure -text "$intensite"
       }

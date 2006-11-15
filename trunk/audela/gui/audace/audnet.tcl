@@ -2,7 +2,7 @@
 # Fichier : audnet.tcl
 # Description : Network functions using RPC or simple TCP sockets
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: audnet.tcl,v 1.3 2006-06-20 17:20:34 robertdelmas Exp $
+# Mise a jour $Id: audnet.tcl,v 1.4 2006-11-15 20:42:44 robertdelmas Exp $
 #
 
 # ====================================================================
@@ -76,7 +76,7 @@ proc sock_accept {fidsockc ip port} {
    global caption
    ::console::affiche_saut "\n"
    ::console::affiche_resultat "====================================\n"
-   ::console::affiche_resultat "[mc_date2iso8601 now] : $caption(audace,reseau,connexion_client) $fidsockc (IP = $ip - Port = $port)\n"
+   ::console::affiche_resultat "[mc_date2iso8601 now] : $caption(audace,reseau_connexion_client) $fidsockc (IP = $ip - Port = $port)\n"
    fconfigure $fidsockc -buffering line
    fileevent $fidsockc readable [list sock_respons $fidsockc]
 }
@@ -111,7 +111,7 @@ proc sock_delete_server { {id "?"} } {
    close $id
    set rpcid(serveur) ""
    set rpcid(state) ""
-   ::console::affiche_resultat "$caption(audace,reseau,serveur) $id $caption(audace,reseau,detruit)\n"
+   ::console::affiche_resultat "$caption(audace,reseau_serveur) $id $caption(audace,reseau_detruit)\n"
 }
 
 # ====================================================================
@@ -129,10 +129,10 @@ proc sock_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_clien
       return
    }
    set rpcid(client) [socket $ip_serveur $port_serveur]
-   ::console::affiche_resultat "$caption(audace,reseau,client) $rpcid(client)\n"
+   ::console::affiche_resultat "$caption(audace,reseau_client) $rpcid(client)\n"
    fconfigure $rpcid(client) -buffering line -blocking 1
    # --- Envoi un message de connexion a afficher sur la console du serveur
-   puts $rpcid(client) "::console::affiche_resultat \"$caption(audace,reseau,client) $rpcid(client) $caption(audace,reseau,connecte)\\n\""
+   puts $rpcid(client) "::console::affiche_resultat \"$caption(audace,reseau_client) $rpcid(client) $caption(audace,reseau_connecte)\\n\""
    set res [gets $rpcid(client)]
    ::console::affiche_resultat "res=$res\n"
    if {$ip_client!="?"} {
@@ -141,7 +141,7 @@ proc sock_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_clien
       # --- Demande au serveur de se connecter au "serveur" du client
       sock_send "set rpcid(client) \[socket $ip_client $port_client\]"
       set rpcid(state) "client/server"
-      ::console::affiche_resultat "$caption(audace,reseau,serveur_retour) $rpcid(serveur)\n"
+      ::console::affiche_resultat "$caption(audace,reseau_serveur_retour) $rpcid(serveur)\n"
    } else {
       set rpcid(state) "client"
    }
@@ -166,8 +166,8 @@ proc sock_delete_client { {id "?"} } {
    if {$id=="?"} {
       set id $rpcid(client)
    }
-   puts $id "::console::affiche_resultat \"$caption(audace,reseau,client) $id $caption(audace,reseau,deconnecte)\\n\""
-   ::console::affiche_resultat "$caption(audace,reseau,deconnexion) $id $caption(audace,reseau,du_serveur)\n"
+   puts $id "::console::affiche_resultat \"$caption(audace,reseau_client) $id $caption(audace,reseau_deconnecte)\\n\""
+   ::console::affiche_resultat "$caption(audace,reseau_deconnexion) $id $caption(audace,reseau_du_serveur)\n"
    # --- On elimine physiquement le client
    set rpcid(client) ""
    if {$rpcid(state)=="client"} {
@@ -181,7 +181,7 @@ proc sock_delete_client { {id "?"} } {
          close $rpcid(serveur)
          set rpcid(serveur) ""
          set rpcid(state) ""
-         ::console::affiche_resultat "$caption(audace,reseau,serveur) $id $caption(audace,reseau,detruit)\n"
+         ::console::affiche_resultat "$caption(audace,reseau_serveur) $id $caption(audace,reseau_detruit)\n"
       }
    }
 
@@ -191,8 +191,8 @@ proc sock_send { arg } {
    # --- Fonction pour renvoyer des messages a executer
    global rpcid
    global caption
-   ::console::affiche_resultat "$caption(audace,reseau,execute) $arg \n"
-   ::console::affiche_resultat "$caption(audace,reseau,reponse_vers) $rpcid(client)\n"
+   ::console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
+   ::console::affiche_resultat "$caption(audace,reseau_reponse_vers) $rpcid(client)\n"
    #puts $rpcid(client) "\{ $arg \}"
    puts $rpcid(client) "$arg"
    set res [gets $rpcid(client)]
@@ -241,7 +241,7 @@ proc rpc_send { arg } {
    # --- Fonction pour renvoyer des messages a executer
    global rpcid
    global caption
-   dp_RPC $rpcid(client) console::affiche_resultat "$caption(audace,reseau,execute) $arg \n"
+   dp_RPC $rpcid(client) console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
    set message "dp_RPC $rpcid(client) eval_serveur \{ $arg \}"
    eval $message
 }
@@ -274,7 +274,7 @@ proc rpc_delete_server { {id "?"} } {
    close $id
    set rpcid(serveur) ""
    set rpcid(state) ""
-   ::console::affiche_resultat "$caption(audace,reseau,serveur) $id $caption(audace,reseau,detruit)\n"
+   ::console::affiche_resultat "$caption(audace,reseau_serveur) $id $caption(audace,reseau_detruit)\n"
 }
 
 proc rpc_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_client "?"} {port_client 5000} } {
@@ -286,14 +286,14 @@ proc rpc_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_client
    }
    set rpcid(client) [dp_MakeRPCClient $ip_serveur $port_serveur]
    # --- Envoi un message de connexion a afficher sur la console du serveur
-   dp_RPC $rpcid(client) console::affiche_resultat "$caption(audace,reseau,client) $rpcid(client) $caption(audace,reseau,connecte)\n"
+   dp_RPC $rpcid(client) console::affiche_resultat "$caption(audace,reseau_client) $rpcid(client) $caption(audace,reseau_connecte)\n"
    if {$ip_client!="?"} {
       # --- Cree un serveur sur le client pour recuperer les appels en retour
       rpc_create_server $port_client
       # --- Demande au serveur de se connecter au "serveur" du client
       rpc_send "set rpcid(client) \[dp_MakeRPCClient $ip_client $port_client\]"
       set rpcid(state) "client/server"
-      ::console::affiche_resultat "$caption(audace,reseau,serveur_retour) $rpcid(serveur)\n"
+      ::console::affiche_resultat "$caption(audace,reseau_serveur_retour) $rpcid(serveur)\n"
    } else {
       set rpcid(state) "client"
    }
@@ -318,8 +318,8 @@ proc rpc_delete_client { {id "?"} } {
    if {$id=="?"} {
       set id $rpcid(client)
    }
-   dp_RPC $id ::console::affiche_resultat "$caption(audace,reseau,client) $id $caption(audace,reseau,deconnecte)\n"
-   ::console::affiche_resultat "$caption(audace,reseau,deconnexion) $id $caption(audace,reseau,du_serveur)\n"
+   dp_RPC $id ::console::affiche_resultat "$caption(audace,reseau_client) $id $caption(audace,reseau_deconnecte)\n"
+   ::console::affiche_resultat "$caption(audace,reseau_deconnexion) $id $caption(audace,reseau_du_serveur)\n"
    # --- On elimine physiquement le client
    set rpcid(client) ""
    if {$rpcid(state)=="client"} {
@@ -334,7 +334,7 @@ proc rpc_delete_client { {id "?"} } {
          close $rpcid(serveur)
          set rpcid(serveur) ""
          set rpcid(state) ""
-         ::console::affiche_resultat "$caption(audace,reseau,serveur) $id $caption(audace,reseau,detruit)\n"
+         ::console::affiche_resultat "$caption(audace,reseau_serveur) $id $caption(audace,reseau_detruit)\n"
       }
    }
 
