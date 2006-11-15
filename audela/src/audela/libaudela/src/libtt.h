@@ -138,6 +138,12 @@ extern int libtt_main(int service, ...);
 int libtt_main(int service, ...);
 #endif
 
+// Librairie de traitement d'images
+extern LIBTT *Libtt_main;
+
+void load_libtt(void);
+
+
 /***************************************************************************/
 /************** variables utiles pour les fonctions de FITSIO **************/
 /***************************************************************************/
@@ -208,6 +214,7 @@ int libtt_main(int service, ...);
 #define TT_PTR_SAVEIMA3D                213
 #define TT_PTR_LOADIMA3D                214
 #define TT_PTR_SAVEIMA1D                215
+#define TT_PTR_CFA2RGB                  216
 
 #define TT_PTR_IMASERIES                210
 

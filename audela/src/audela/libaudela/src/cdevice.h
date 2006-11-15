@@ -26,10 +26,21 @@
 #define BUF_PREFIXE "buf"
 #define TEL_PREFIXE "tel"
 #define CAM_PREFIXE "cam"
-#define VISU_PREFIXE "visu"
+//#define VISU_PREFIXE "visu"
 #define LINK_PREFIXE "link"
 
-class CDevice {
+#ifdef WIN32
+   #ifdef LIBAUDELA_EXPORTS
+      #define LIBAUDELA_API __declspec( dllexport )
+   #else
+      #define LIBAUDELA_API __declspec( dllimport )
+   #endif//LIBAUDELA_EXPORTS
+#else
+   #define LIBAUDELA_API
+#endif//WIN32
+
+
+class LIBAUDELA_API CDevice {
       protected:
       public:
    CDevice *next;

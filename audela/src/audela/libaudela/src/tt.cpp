@@ -20,12 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "sysexp.h"    /* definition de OS_* */
+
 #if defined(OS_LIN)
 #   include <stdlib.h>
 #   include <string.h>
 #endif
+#if defined(OS_LIN) || defined(OS_MACOS)
+#include <unistd.h>    /* getcwd */
+#endif
 #include <math.h>
 #include "libstd.h"
+#include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
 
 #define NB_TT_PARAMS 7
 
@@ -51,6 +57,62 @@
 
 #define CMD_OFFSET2   12
 #define CMD_ADD2      13
+
+//------------------------------------------------------------------------------
+// Implementation de la libraire Libtt
+//
+HINSTANCE dll_tt;
+LIBTT *Libtt_main;
+void load_libtt(void);
+
+//------------------------------------------------------------------------------
+// Prototypes
+//
+#if defined(OS_WIN)
+#define LIBTT_MAIN                "_libtt_main"
+#define LIBTT_NAME                "libtt.dll"
+#endif /* defined(OS_WIN) */
+
+#if defined(OS_LIN) || defined(OS_MACOS)
+#define LIBTT_MAIN                "libtt_main"
+#define LIBTT_NAME                "libtt.so"
+#endif /* defined(OS_LIN) */
+
+//------------------------------------------------------------------------------
+// Fonction de chargement de la librairie de traitement d'images tt.
+//
+void load_libtt(void)
+{
+#if defined(OS_WIN)
+    dll_tt = LoadLibrary(LIBTT_NAME);
+	if(dll_tt!=NULL) {
+        Libtt_main = (LIBTT*)GetProcAddress((struct HINSTANCE__ *)dll_tt,LIBTT_MAIN);
+        if(Libtt_main==NULL) {
+            MessageBox(NULL,"Importation des fonctions de libtt impossible.\nAudeLA va s'arreter.","Erreur fatale",MB_OK);
+            PostQuitMessage(0);
+        }
+    } else {
+        MessageBox(NULL,"La dll libtt.dll n'a pas pu etre chargee.\nAudeLA va s'arreter.","Erreur fatale",MB_OK);
+        PostQuitMessage(0);
+    }
+#elif defined(OS_LIN) || defined(OS_MACOS)
+   char s[1000],ss[1000];
+   getcwd(s,1000);
+   sprintf(ss,"%s/%s",s,LIBTT_NAME);
+   dll_tt = dlopen(ss,RTLD_LAZY);
+   if(dll_tt) {
+      Libtt_main = (LIBTT*)dlsym(dll_tt,LIBTT_MAIN);
+      if(Libtt_main==NULL) {
+         printf("%s : Importation des fonctions impossible.\n",ss);
+      }
+   } else {
+      printf("%s : Chargement impossible.\n",ss);
+   }
+#else
+   LOG("libtt loading is not implemented, AudeLA stops.\n");
+   exit(1);
+#endif
+}
 
 class Ctt_params {
       protected:
@@ -677,7 +739,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
             return TCL_ERROR;
          }
      	 keywords->SetToArray(&keynames0,&values0,&comments0,&units0,&datatypes0);
-         for (kk=0;kk<nbkeys0;kk++) {            
+         for (kk=0;kk<nbkeys0;kk++) {
             if (strcmp(keynames0[kk],"NAXIS1")==0) { naxis10=atoi(values0[kk]); }
             if (strcmp(keynames0[kk],"NAXIS2")==0) { naxis20=atoi(values0[kk]); }
             if (strcmp(keynames0[kk],"BITPIX")==0) { bitpix=atoi(values0[kk]); }
@@ -753,3 +815,6 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
 fitsconvert3d d:/audela/images/j 10 .fit d:/audela/images/alain
 */
 }
+
+
+

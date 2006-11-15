@@ -23,6 +23,7 @@
 #define __DLL__
 #include "libstd.h"
 #include "audela.h"
+#include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
 
 #if defined(OS_LIN) || defined(OS_UNX) || defined(OS_MACOS)
    #include <sys/timeb.h>
@@ -56,23 +57,15 @@
    #include <porttalk_interface.h>
 #endif
 
-/* Global variable which knows if Tk is loaded with succes */
-/* Else, only Tcl function will be activated */
-int withtk;
-
 //------------------------------------------------------------------------------
 // Prototypes
 //
 #if defined(OS_WIN)
 extern "C" int __stdcall Std_Init(Tcl_Interp*);
-#define LIBTT_MAIN                "_libtt_main"
-#define LIBTT_NAME                "libtt.dll"
 #endif /* defined(OS_WIN) */
 
 #if defined(OS_LIN) || defined(OS_MACOS)
 extern "C" int Std_Init(Tcl_Interp*interp);
-#define LIBTT_MAIN                "libtt_main"
-#define LIBTT_NAME                "libtt.so"
 #endif /* defined(OS_LIN) */
 
 static char default_log_filename[] = "libstd.log";
@@ -81,7 +74,6 @@ void LogFile(char*s);
 void vlogfile(char *fmt, ...);
 
 char* message(int error);
-void load_libtt(void);
 int CmdTestGetClicks(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdHistory(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdLibstdId(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -91,12 +83,6 @@ int ping(char * hostName, int nbTry, int receivedTimeOut, char *result);
 
 static char audela_version[] = AUDELA_VERSION;
 
-//------------------------------------------------------------------------------
-// Implementation de la libraire Libtt
-//
-HINSTANCE dll_tt;
-LIBTT *Libtt_main;
-void load_libtt(void);
 
 //------------------------------------------------------------------------------
 // Divers
@@ -110,7 +96,7 @@ TPlatform gPlatform;
 //#define LOG vlogfile
 #define LOG
 //#define LOGDEBUG LOG
-#define LOGDEBUG
+//#define LOGDEBUG
 void LogFile(char*s)
 {
    FILE *f;
@@ -328,42 +314,6 @@ int CmdPortTalk(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 #endif
 }
 
-//------------------------------------------------------------------------------
-// Fonction de chargement de la librairie de traitement d'images tt.
-//
-void load_libtt(void)
-{
-#if defined(OS_WIN)
-    dll_tt = LoadLibrary(LIBTT_NAME);
-	if(dll_tt!=NULL) {
-        Libtt_main = (LIBTT*)GetProcAddress((struct HINSTANCE__ *)dll_tt,LIBTT_MAIN);
-        if(Libtt_main==NULL) {
-            MessageBox(NULL,"Importation des fonctions de libtt impossible.\nAudeLA va s'arreter.","Erreur fatale",MB_OK);
-            PostQuitMessage(0);
-        }
-    } else {
-        MessageBox(NULL,"La dll libtt.dll n'a pas pu etre chargee.\nAudeLA va s'arreter.","Erreur fatale",MB_OK);
-        PostQuitMessage(0);
-    }
-#elif defined(OS_LIN) || defined(OS_MACOS)
-   char s[1000],ss[1000];
-   getcwd(s,1000);
-   sprintf(ss,"%s/%s",s,LIBTT_NAME);
-   dll_tt = dlopen(ss,RTLD_LAZY);
-   if(dll_tt) {
-      Libtt_main = (LIBTT*)dlsym(dll_tt,LIBTT_MAIN);
-      if(Libtt_main==NULL) {
-         printf("%s : Importation des fonctions impossible.\n",ss);
-      }
-   } else {
-      printf("%s : Chargement impossible.\n",ss);
-   }
-#else
-   LOG("libtt loading is not implemented, AudeLA stops.\n");
-   exit(1);
-#endif
-}
-
 
 //------------------------------------------------------------------------------
 // history --
@@ -461,7 +411,7 @@ void audelaInit(Tcl_Interp *interp)
    buf_pool = new CPool(BUF_PREFIXE);
    tel_pool = new CPool(TEL_PREFIXE);
    cam_pool = new CPool(CAM_PREFIXE);
-   visu_pool = new CPool(VISU_PREFIXE);
+   //visu_pool = new CPool(VISU_PREFIXE);
    link_pool = new CPool(LINK_PREFIXE);
 /*
    // Initialisation du timer pour les temps de pose
@@ -508,13 +458,6 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::buf::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)buf_pool,NULL);
    Tcl_CreateCommand(interp,"::buf::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)buf_pool,NULL);
 
-   // Gestion de la liste des visus
-   if (withtk==1) {
-      Tcl_CreateCommand(interp,"::visu::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)visu_pool,NULL);
-      Tcl_CreateCommand(interp,"::visu::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)visu_pool,NULL);
-      Tcl_CreateCommand(interp,"::visu::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)visu_pool,NULL);
-   }
-   
    // Gestion de la liste des cameras
    Tcl_CreateCommand(interp,"::cam::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)cam_pool,NULL);
    Tcl_CreateCommand(interp,"::cam::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)cam_pool,NULL);
@@ -566,17 +509,6 @@ extern "C" int Audela_Init(Tcl_Interp*interp)
       Tcl_SetResult(interp,"Tcl Stubs initialization failed in libaudela.",TCL_STATIC);
       return TCL_ERROR;
    }
-   withtk=1;
-   try {
-      if(Tk_InitStubs(interp,"8.3",0)==NULL) {
-         Tcl_SetResult(interp,"Tk Stubs initialization failed in libaudela.",TCL_STATIC);
-         /*return TCL_ERROR;*/
-      }  
-   } catch (const CError &e) {
-      withtk=0;
-      throw e;
-   }
-
    if((s=(char*)Tcl_GetVar(interp,"audelog_filename",0))==NULL) s = default_log_filename;
    libstd_log_filename = (char*)calloc(sizeof(char),strlen(s)+1);
    strcpy(libstd_log_filename,s);

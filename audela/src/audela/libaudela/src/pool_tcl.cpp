@@ -23,7 +23,6 @@
 #include "libstd.h"
 #include "cpool.h"
 #include "cbuffer.h"
-#include "cvisu.h"
 
 //------------------------------------------------------------------------------
 // Commandes externes TCL pour gerer des listes de devices
@@ -191,7 +190,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
    strcpy(s,"");
 
    if(strcmp(classname,BUF_PREFIXE)==0)         CASE = CASE_BUFFER;
-   else if(strcmp(classname,VISU_PREFIXE)==0)   CASE = CASE_VISU;
+   //else if(strcmp(classname,VISU_PREFIXE)==0)   CASE = CASE_VISU;
    else if(strcmp(classname,CAM_PREFIXE)==0)    CASE = CASE_CAMERA;
    else if(strcmp(classname,TEL_PREFIXE)==0)    CASE = CASE_TELESCOPE;
    else if(strcmp(classname,LINK_PREFIXE)==0)   CASE = CASE_LINK;
@@ -216,6 +215,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             if(toto) ENREGISTRER_CMD(CmdBuf);
          }
          break;
+      /*
       case CASE_VISU :
          if((argc<3)||(argc>4)) {
             sprintf(ligne,"Usage: %s bufno imgno ?%snum?",argv[0],classname);
@@ -244,6 +244,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             if(toto) ENREGISTRER_CMD(CmdVisu);
          }
          break;
+      */
       case CASE_CAMERA :
          if(argc<2) {
             sprintf(ligne,"Usage: %s libcam_driver ?options?",argv[0]);

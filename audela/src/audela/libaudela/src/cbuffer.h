@@ -32,8 +32,9 @@
 #define __BUFH__
 
 #include "cdevice.h"
-#include "libstd.h"
+//#include "libstd.h"
 #include "cpixels.h"
+#include "fitskw.h"
 
 #define BUFCOMPRESS_NONE      0
 #define BUFCOMPRESS_GZIP      1
@@ -42,6 +43,7 @@
 #define DONT_KEEP_KEYWORDS    1
 
 #define CHAREXTENSION 128
+
 
 typedef enum {dt_Short, dt_Int, dt_Float} TDataType;
 
@@ -80,7 +82,7 @@ typedef struct {
    int tycho_only;
 } mc_ASTROM;
 
-class CBuffer : public CDevice {
+class LIBAUDELA_API CBuffer : public CDevice {
 protected:
    mc_ASTROM *p_ast;
    int saving_type;
@@ -129,8 +131,10 @@ public:
    void Autocut(double *phicut,double *plocut,double *pmode);
    void BinX(int x1, int x2, int width);
    void BinY(int y1, int y2, int height);
+   void Cfa2rgb(int method);
    void Clipmax(double value);
    void Clipmin(double value);
+   static CBuffer * Chercher(int bufNo);
    void CopyTo(CBuffer*dest);
    void CopyFrom(CFitsKeywords*hdr, TColorPlane plane, TYPE_PIXELS*pix);
    void CopyKwdFrom(CBuffer*org);
@@ -156,10 +160,11 @@ public:
    void GetPixelsPointer(TYPE_PIXELS **ppixels);
    void GetPixelsVisu( int x1,int y1,int x2, int y2, 
             int mirrorX, int mirrorY,
-            double hicutRed,   double locutRed, 
-            double hicutGreen, double locutGreen,
-            double hicutBlue,  double locutBlue, 
-            Pal_Struct *pal, unsigned char *ptr);
+                  //double hicutRed,   double locutRed, 
+                  //double hicutGreen, double locutGreen,
+                  //double hicutBlue,  double locutBlue,
+                  float *cuts,
+            unsigned char *palette[3], unsigned char *ptr);
    int  GetSavingType();
    int  GetCompressType();
    char * GetExtension();
@@ -167,11 +172,8 @@ public:
    int  IsPixelsReady(void) ;
    void Histogram(int n, float *adus, float *meanadus, long *histo,
                      int ismini,float mini,int ismaxi,float maxi);
-   //int  InitBuffer(CPixels  * pixels);
+   void LoadFile(char *filename);
    void LoadFits(char *filename);
-   //void LoadFitsRGB(char *filename);
-   void LoadRawFile(char * filename);
-   void LoadNoFits(int pixelSize, int offset[4], int pitch , int width, int height, unsigned char *pixelPtr);
    void Load3d(char *filename,int iaxis3);
    void Log(float coef, float offset);
    void MergePixels(TColorPlane plane, int pixels);
@@ -191,7 +193,7 @@ public:
    void Save1d(char *filename,int iaxis2);
    void Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end);
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);
-   void SaveNoFits(int *pixelSize, int *offset, int *pitch , int *width, int *height, unsigned char **pixelPtr);
+   void SaveJpg(char *filename,int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory);
    void SaveRawFile(char *filename);
    void SetCompressType(int st);
    void SetExtension(char *ext);

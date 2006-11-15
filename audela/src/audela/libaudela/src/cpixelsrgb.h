@@ -23,15 +23,12 @@
 #ifndef __CPIXELSRBGH__
 #define __CPIXELSRGBH__
 
-#include "cdevice.h"
-#include "libstd.h"
 #include "cpixels.h"
-#include "cerror.h"
 
 typedef  short TYPE_PIXELS_RGB;
 
 
-class CPixelsRgb : public CPixels
+class LIBAUDELA_API CPixelsRgb : public CPixels
 {
 public:
    CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY);
@@ -67,10 +64,11 @@ public:
    //         double hicut, double locut, Pal_Struct *pal, unsigned char *ptr);
    void GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
-            double hicutRed,   double locutRed, 
-            double hicutGreen, double locutGreen,
-            double hicutBlue,  double locutBlue,
-            Pal_Struct *pal, unsigned char *ptr);
+                  //double hicutRed,   double locutRed, 
+                  //double hicutGreen, double locutGreen,
+                  //double hicutBlue,  double locutBlue,
+                  float *cuts,
+            unsigned char *palette[3], unsigned char *ptr);
    int  IsPixelsReady(void);
    void Log(float coef, float offset);
    void MergePixels(TColorPlane plane, int pixels);

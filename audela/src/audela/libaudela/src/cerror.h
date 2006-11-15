@@ -25,6 +25,16 @@
 
 #include <stdio.h>
 
+#ifdef WIN32
+   #ifdef LIBAUDELA_EXPORTS
+      #define LIBAUDELA_API __declspec( dllexport )
+   #else
+      #define LIBAUDELA_API __declspec( dllimport )
+   #endif//LIBAUDELA_EXPORTS
+#else
+   #define LIBAUDELA_API
+#endif//WIN32
+
 /*
  * Codes d'erreur de libstd : ils sont negatifs alors que
  * ceux de libtt sont positifs.
@@ -68,7 +78,7 @@ extern char* message(int error);
 //
 //=====================================================================
 
-class CError {
+class LIBAUDELA_API CError {
 private:
 	const CError& operator=(const CError&);		// protect against accidents
 
@@ -98,7 +108,7 @@ public:
 //
 //=====================================================================
 
-class CErrorLibtt : public CError{
+class LIBAUDELA_API CErrorLibtt : public CError{
 private:
 	const CErrorLibtt& operator=(const CErrorLibtt&);		// protect against accidents
 
@@ -106,18 +116,5 @@ public:
 	CErrorLibtt(const int errnum)  throw();
 };
 
-//=====================================================================
-//
-//  class CErrorLibstd
-//
-//=====================================================================
-
-class CErrorLibstd : public CError{
-private:
-	const CErrorLibstd& operator=(const CErrorLibstd&);		// protect against accidents
-
-public:
-	CErrorLibstd(void)  throw();
-};
 
 #endif

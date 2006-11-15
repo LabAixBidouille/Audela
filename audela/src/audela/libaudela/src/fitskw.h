@@ -23,15 +23,23 @@
 #ifndef __FITSKWH__
 #define __FITSKWH__
 
-#include "libtt.h"
-
 #define EFITSKW 								0x00010000
 
 #define EFITSKW_NO_KWDS						(EFITSKW+1)
 #define EFITSKW_INTERNAL_INVALID_ARG0  (EFITSKW+2)
 #define EFITSKW_NO_SUCH_KWD				(EFITSKW+3)
 
-class CFitsKeyword {
+#ifdef WIN32
+   #ifdef LIBAUDELA_EXPORTS
+      #define LIBAUDELA_API __declspec( dllexport )
+   #else
+      #define LIBAUDELA_API __declspec( dllimport )
+   #endif//LIBAUDELA_EXPORTS
+#else
+   #define LIBAUDELA_API
+#endif//WIN32
+
+class LIBAUDELA_API CFitsKeyword {
       protected:
    char *name;           // Chaines de caracteres pour remplir
    char *comment;        // la structure a passer a libtt
@@ -62,7 +70,7 @@ class CFitsKeyword {
    int GetIntValue() { return int_value; };
 };
 
-class CFitsKeywords {
+class LIBAUDELA_API CFitsKeywords {
       protected:
    CFitsKeyword *kw;
 
@@ -74,6 +82,7 @@ class CFitsKeywords {
    int Delete(char*kw_name);
 	int DeleteAll();
    void Add(char*a_nom,void*a_data,int a_datatype,char*a_comment,char*a_unit);
+   void Add(char *nom, char *data, char *datatype, char *comment, char *unit);
    void AddFromArray(int,char***,char***,char***,char***,int**);
    void GetFromArray(int,char***,char***,char***,char***,int**);
    void SetToArray(char***,char***,char***,char***,int**);

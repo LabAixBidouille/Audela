@@ -23,13 +23,10 @@
 #ifndef __CPIXELSGRAYH__
 #define __CPIXELSGRAYH__
 
-#include "cdevice.h"
-#include "libstd.h"
 #include "cpixels.h"
-#include "palette.h"
 
 
-class CPixelsGray : public CPixels
+class LIBAUDELA_API CPixelsGray : public CPixels
 {
 public:
 	virtual ~CPixelsGray();
@@ -59,10 +56,11 @@ public:
    void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
    void GetPixelsVisu( int x1,int y1,int x2, int y2, 
             int mirrorX, int mirrorY,
-            double hicutRed,   double locutRed, 
-            double hicutGreen, double locutGreen,
-            double hicutBlue,  double locutBlue,
-            Pal_Struct *pal, unsigned char *ptr);
+                  //double hicutRed,   double locutRed, 
+                  //double hicutGreen, double locutGreen,
+                  //double hicutBlue,  double locutBlue,
+                  float *cuts,
+            unsigned char *palette[3], unsigned char *ptr);
    int  IsPixelsReady(void);
    void Log(float coef, float offset);
    void MergePixels(TColorPlane plane, int pixels);

@@ -234,14 +234,6 @@ DWORD WINAPI EventLoopThreadFunc(LPVOID lpParam)
       MessageBox(NULL,s,"AudeLA",MB_OK);
       return NULL;
    }
-#ifdef USE_TK
-   if(Tk_Init(cmdinterp)!=TCL_OK) {
-      sprintf(s,"Can't initialize TK library :\n%s",cmdinterp->result);
-      MessageBox(NULL,s,"AudeLA",MB_OK);
-      return NULL;
-   }
-#endif
-
    audelaInit(cmdinterp);
 
    //mailslot_interp_in = CreateMailslot("\\\\.\\mailslot\\audela\\interp",0,MAILSLOT_WAIT_FOREVER,NULL);
@@ -295,11 +287,7 @@ DWORD WINAPI EventLoopThreadFunc(LPVOID lpParam)
    CloseHandle(hEvent);
 
    /* Thread event loop */
-#ifdef USE_TK
-   while(Tk_GetNumMainWindows()>0) {
-#else
    while(1) {
-#endif
       Tcl_DoOneEvent(0);
    }
 

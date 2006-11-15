@@ -87,6 +87,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "libaudelatk"=".\audela\libaudelatk\vc60\libaudelatk.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libaudine"=".\libcam\libaudine\vc60\libaudine.dsp" - Package Owner=<4>
 
 Package=<5>

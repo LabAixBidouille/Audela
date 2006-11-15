@@ -21,9 +21,17 @@
  */
 
 #include "math.h"
-#include "libstd.h"
 #include "cpixelsrgb.h"
+#include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
+#include "cerror.h"
 
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -682,10 +690,14 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*y+x1) * naxis;
                out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (unsigned char)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (unsigned char)(val/naxis);
                }
             }
             break;
@@ -745,10 +757,14 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*y+x1) * naxis;
                out = (short *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (short)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (short)(val/naxis);
                }
             }
             break;
@@ -808,10 +824,14 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*y+x1) * naxis;
                out = (unsigned short *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (unsigned short)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (unsigned short)(val/naxis);
                }
             }
             break;
@@ -871,12 +891,14 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*y+x1) * naxis;
                out = (float *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (float)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
-                  // *(out++) = (unsigned char)sqrt( (((float)ptr[0] * (float)ptr[0]) + ((float)ptr[1] * (float)ptr[1]) + ((float)ptr[2] * (float)ptr[2]))/3);
-                  // ptr += 3;
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (float)(val/naxis);
                }
             }
             break;
@@ -950,10 +972,14 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
                out = (unsigned char *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (unsigned char)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (unsigned char)(val/naxis);
                }
             }
             break;
@@ -1013,10 +1039,14 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
                out = (short *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (short)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (short)(val/naxis);
                }
             }
             break;
@@ -1076,10 +1106,14 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
                out = (unsigned short *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (unsigned short)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (unsigned short)(val/naxis);
                }
             }
             break;
@@ -1139,10 +1173,14 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             break;
          case PLANE_GREY:
             for(y=y1;y<=y2;y++) {
+               float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
                out = (float *) pixels + width*(y-y1);               
                for(x=x1;x<=x2;x++) {
-                  *(out++) = (float)(( (float) *(ptr++) + (float) *(ptr++) + (float) *(ptr++))/naxis);
+                  val = (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  val += (float)*(ptr++);
+                  *(out++) = (float)(val/naxis);
                }
             }
             break;
@@ -1222,24 +1260,30 @@ void CPixelsRgb::GetPixelsPointer(TYPE_PIXELS **pixels) {
 
 void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
-            double hicutRed,   double locutRed, 
-            double hicutGreen, double locutGreen,
-            double hicutBlue,  double locutBlue,
-            Pal_Struct *pal, unsigned char *ptr) 
+                  //double hicutRed,   double locutRed, 
+                  //double hicutGreen, double locutGreen,
+                  //double hicutBlue,  double locutBlue,
+                  float *cuts,
+                  unsigned char *palette[3], unsigned char *ptr) 
 {
    int i, j;
    int orgww, orgwh;        // original window width, height
    float dynRed, dynGreen, dynBlue;
-   float fshRed = (float)hicutRed;
-   float fsbRed = (float)locutRed;
-   float fshGreen = (float)hicutGreen;
-   float fsbGreen = (float)locutGreen;
-   float fshBlue = (float)hicutBlue;
-   float fsbBlue = (float)locutBlue;
+//   float fshRed = (float)hicutRed;
+//   float fsbRed = (float)locutRed;
+//   float fshGreen = (float)hicutGreen;
+//   float fsbGreen = (float)locutGreen;
+//   float fshBlue = (float)hicutBlue;
+//   float fsbBlue = (float)locutBlue;
+   float fshRed = (float)cuts[0];
+   float fsbRed = (float)cuts[1];
+   float fshGreen = (float)cuts[2];
+   float fsbGreen = (float)cuts[3];
+   float fshBlue = (float)cuts[4];
+   float fsbBlue = (float)cuts[5];
    long base;
    int xdest, ydest;
    unsigned char (*pdest)[3];
-
    pdest = (unsigned char (*)[3])ptr;
 
    orgww = x2 - x1 + 1; // Largeur de la fenetre au depart
@@ -1275,9 +1319,9 @@ void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
             xdest = (x2-x1) - (i-x1) ;
          }
          base = (j*naxis1+i)*naxis;
-         pdest[ydest+xdest][0] = (pal->pal)[0][(unsigned char)min(max(((float)pix[base+0]-fsbRed)  *dynRed,0),255)];
-         pdest[ydest+xdest][1] = (pal->pal)[1][(unsigned char)min(max(((float)pix[base+1]-fsbGreen)*dynGreen,0),255)];
-         pdest[ydest+xdest][2] = (pal->pal)[2][(unsigned char)min(max(((float)pix[base+2]-fsbBlue) *dynBlue,0),255)];
+         pdest[ydest+xdest][0] = palette[0][(unsigned char)min(max(((float)pix[base+0]-fsbRed)  *dynRed,0),255)];
+         pdest[ydest+xdest][1] = palette[1][(unsigned char)min(max(((float)pix[base+1]-fsbGreen)*dynGreen,0),255)];
+         pdest[ydest+xdest][2] = palette[2][(unsigned char)min(max(((float)pix[base+2]-fsbBlue) *dynBlue,0),255)];
       }
    }   
 }

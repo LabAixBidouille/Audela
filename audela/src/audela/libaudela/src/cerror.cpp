@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include "libstd.h"
 #include "cerror.h"
+#include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
+
 
 //=====================================================================
 //
@@ -169,13 +171,4 @@ char* CError::message(int error)
 CErrorLibtt::CErrorLibtt(const int errnum) throw(){
 	buf = new char[1024];
    Libtt_main(TT_ERROR_MESSAGE,2,&errnum,buf);
-}
-
-//=====================================================================
-//
-//  class CErrorLibtt
-//
-//=====================================================================
-
-CErrorLibstd::CErrorLibstd(void) throw(){
 }
