@@ -6,6 +6,8 @@
 #ifndef __JPEG_MEM_SRC_H__
 #define __JPEG_MEM_SRC_H__
 
+#include "jpeglib.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
