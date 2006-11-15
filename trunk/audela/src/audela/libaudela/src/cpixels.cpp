@@ -21,8 +21,12 @@
  */
 
 #include <math.h>   // floor()
+#include <stdlib.h>    // atoi, calloc, free, putenv, getenv
+#include <string.h>
 
 #include "cpixels.h"
+#include "cerror.h"
+
 
 char  *  CPixels::PixelClassName  []= {"CLASS_GRAY", "CLASS_RGB", "CLASS_3D", "CLASS_VIDEO"} ;
 char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_SHORT", "FORMAT_USHORT", "FORMAT_FLOAT"} ;

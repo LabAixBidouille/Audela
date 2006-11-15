@@ -29,7 +29,7 @@
 #include <math.h>
 
 #include "fitskw.h"
-
+#include "libtt.h"    // for FLEN_CARD, FLEN_VALUE, ...
 CFitsKeyword::CFitsKeyword()
 {
    name = NULL;
@@ -311,6 +311,33 @@ void CFitsKeywords::Add(
    if(kwd) kwd->SetKeyword(a_nom,a_data,a_datatype,a_comment,a_unit);
 }
 
+
+void CFitsKeywords::Add(char *nom, char *data, char *datatype, char *comment, char *unit)
+{
+   int iDatatype;
+   int iInt;
+   double dDouble;
+   float fFloat;
+   void *pvData;
+   
+   if(strcmp(datatype,"float")==0) {
+      iDatatype = TFLOAT;
+      sscanf(data,"%f",&fFloat);
+      pvData = (void*)&fFloat;
+   } else if(strcmp(datatype,"double")==0) {
+      iDatatype = TDOUBLE;
+      sscanf(data,"%lf",&dDouble);
+      pvData = (void*)&dDouble;
+   } else if(strcmp(datatype,"string")==0) {
+      iDatatype = TSTRING;
+      pvData = (void*)&(data);
+   } else {
+      iDatatype = TINT;
+      sscanf(data,"%d",&iInt);
+      pvData = (void*)&iInt;
+   }
+   this->Add(nom,pvData,iDatatype,comment,unit);
+}
 
 //------------------------------------------------------------------------------
 // Fonction d'ajout d'un mot-cle, et saisie de toutes ses caracteristiques.

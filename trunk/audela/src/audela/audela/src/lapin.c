@@ -43,9 +43,8 @@
  */
 #define LOG_FILENAME     "audela.log"
 #define EXE_NAME         "audela.exe"
-#define DEFAULT_SCRIPT   "audela.tcl"
+#define DEFAULT_SCRIPT_TK   "audela.tcl"
 #define MAX_STRING       256
-// #define AUDELA_VERSION   "1.333"
 
 #if defined(OS_WIN)
 #define PATH_SEP         '\\'
@@ -55,13 +54,13 @@
 #define PATH_STRING_SEP  "/"
 #endif
 
-#define __DEBUG_AUDELA__
 
 
 /*
  * Global variables
  */
 static int gVerbose = 0;
+static int gConsole = 0;
 static char log_filename[256];
 void log_write(char *fmt,...);
 
@@ -69,22 +68,25 @@ void log_write(char *fmt,...);
 HINSTANCE ghInstance;
 #endif
 
+
 /*
  * Functions prototypes
  */
 
-#ifdef _Windows
-int PASCAL WinMain(HINSTANCE,HINSTANCE,LPSTR,int);
-#else
-int main(int argc, char **argv);
-#endif
 void load_library(Tcl_Interp *interp, char *s);
 int Tk_AppInit(Tcl_Interp *interp);
+int Tcl_AppInit(Tcl_Interp *interp);
 
+#if defined(OS_WIN)
+static BOOL __stdcall   sigHandler (DWORD fdwCtrlType);
+static void AppInitExitHandler(ClientData clientData);
+void createMsdosConsole();
+#endif
 
 //------------------------------------------------------------------------------
 // Log functions
 //
+//#define __LOG_AUDELA_
 #if defined(__LOG_AUDELA_)
 #if defined(OS_LIN) || defined(OS_MACOS)
 #define LOG(what...) log_write(what)
@@ -258,26 +260,17 @@ void audela_parsecmdline(char *cmdline, int *argc, char ***argv)
 
 
 //------------------------------------------------------------------------------
-// Point d'entree du logiciel
+// Point d'entree du logiciel pour LINUX ou MAC
 //
-#if defined(OS_WIN)
-int PASCAL WinMain(HINSTANCE hCurInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#else
 int main(int argc , char **argv)
-#endif
 {
    int i, k;
    int default_tcltk_libs = 0;
    char rootpath[MAX_STRING];
+
    char env_var[MAX_STRING];
    int tcl_argc = 1;
    char *tcl_argv[2];
-#if defined(OS_WIN)
-   char exename[1024] = EXE_NAME" ";
-   int argc;
-   char **argv;
-   ghInstance=hCurInstance;
-#endif
 
    if(audela_getcwd(rootpath,MAX_STRING-1)==NULL) {
       printf("AudeLA: can't get current working directory. Exiting.\n");
@@ -291,17 +284,18 @@ int main(int argc , char **argv)
    /* Parse command line options and create tcl command line */
    /* with the file to source at startup. Under Windows, the */
    /* (argc,argv) are build from the entire command line.    */
-#if defined(OS_WIN)
-   audela_parsecmdline(strcat(exename,lpCmdLine),&argc,&argv);
-#endif
-   tcl_argc = 2;
+
+   tcl_argc = 1;
    tcl_argv[0] = argv[0];
-   tcl_argv[1] = DEFAULT_SCRIPT;
+
    for(i=1;i<argc;i++) {
       if(strcmp(argv[i],"--file")==0) {
          tcl_argv[1] = argv[++i];
+         tcl_argc = 2;
       } else if(strcmp(argv[i],"--verbose")==0) {
          gVerbose = 1;
+      } else if(strcmp(argv[i],"--console")==0) {
+         gConsole = 1;
       } else if(strcmp(argv[i],"--default-tcltk")==0) {
          default_tcltk_libs = 1;
       } else if(strcmp(argv[i],"--version")==0) {
@@ -313,11 +307,36 @@ int main(int argc , char **argv)
          printf("  --file [fichier]  Utilise [fichier] au lieu de audela.tcl pour demarrer.\n");	 
          printf("  --help            Affiche ce message.\n");	 
          printf("  --verbose         Affiche des messages de debug.\n");
+         printf("  --console         use console GUI (no TK).\n");
          printf("  --version         Version de AudeLA.\n");
          return 0;
       }
    }
+
+#if defined(OS_WIN)
+   if ( gConsole == 1 ) {
+      // create a Msdos console
+      createMsdosConsole();
+   }
+#endif
+
+   // set default script
+   if ( tcl_argc==1 ) {
+      if (gConsole == 0 ) {
+         // set default script for tk GUI
+         tcl_argv[1] = DEFAULT_SCRIPT_TK;
+         tcl_argc = 2;
+      } else {
+         // no default script for console GUI
+         tcl_argv[1] = NULL;
+      }
+   }
+
+   if ( tcl_argv[1] != NULL) {
    LOG("Starting new AudeLA session (initial file=%s).\n",tcl_argv[1]);
+   } else {
+      LOG("Starting new AudeLA session (no initial file).\n");
+   }
 
    /* Assignment of environment variables allows to locate */
    /* the Tcl/Tk libraries and AudeLA+users' libraries     */
@@ -339,13 +358,37 @@ int main(int argc , char **argv)
       }
    }
 
-   // Boucle principale de TK, et lancement du programme
+   // Boucle principale et lancement du programme
+   if ( gConsole == 1 ) {
+      Tcl_Main(tcl_argc,tcl_argv,Tcl_AppInit);
+   } else {
    Tk_Main(tcl_argc,tcl_argv,Tk_AppInit);
+   }
 
    // On renvoie 0 pour eviter un warning du compilateur, mais
    // le logiciel ne passe jamais ici !
    return 0;
 }
+
+
+//------------------------------------------------------------------------------
+// Point d'entree du logiciel pour WINDOWS
+//
+#if defined(OS_WIN)
+int PASCAL WinMain(HINSTANCE hCurInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+   char exename[1024] = EXE_NAME" ";
+   int argc;
+   char **argv;
+
+   ghInstance=hCurInstance;
+   audela_parsecmdline(strcat(exename,lpCmdLine),&argc,&argv);
+
+   // Do the real work.
+   return main( argc, argv );
+   return 0;
+}
+#endif
 
 
 //------------------------------------------------------------------------------
@@ -357,14 +400,12 @@ void load_library(Tcl_Interp *interp, char *s)
    char t[256];
    sprintf(t,"catch {load %s[info sharedlibextension]} msg",s);
    LOGDEBUG("commande = %s\n",t);
-   LOGDEBUG("Tcl_Eval=%p\n",Tcl_Eval);
-   //Tcl_Eval(interp,"");
-   //LOGDEBUG("result=%s\n",interp->result);
    Tcl_Eval(interp,t);
    LOGDEBUG("result=%s\n",interp->result);
    if(atoi(interp->result)==1) {
       Tcl_Eval(interp,"set msg");
       LOG("%s\n",interp->result);
+      printf("%s\n",interp->result);
    } else {
       if(gVerbose) LOG("%s: ok\n",s);
    }
@@ -385,6 +426,13 @@ int Tk_AppInit(Tcl_Interp *interp)
       LOG("Tcl initialization failed.\n");
       return TCL_ERROR;
    }
+
+#ifdef TCL_THREADS
+    if (TclThread_Init(interp) == TCL_ERROR) {
+        return TCL_ERROR;
+    }
+#endif
+   
    if(Tk_Init(interp)!=TCL_OK) {
       LOG("Tk initialization failed.\n");
       return TCL_ERROR;
@@ -398,8 +446,10 @@ int Tk_AppInit(Tcl_Interp *interp)
    LOGDEBUG("will load libraries\n");
 
    /* Standard libraries for AudeLA */
+   
    load_library(interp,"libak");      // Misc. from Alain Klotz
    load_library(interp,"libaudela");  // Acquisition, and preprocssing
+   load_library(interp,"libaudelatk"); // visu with TK 
    load_library(interp,"libgsltcl");  // Gnu Scientific Library extension for Tcl
    load_library(interp,"libgzip");    // Gzip compression
    load_library(interp,"libjm");      // Misc. from Jacques Michelet
@@ -418,3 +468,132 @@ int Tk_AppInit(Tcl_Interp *interp)
    return TCL_OK;
 }
 
+//------------------------------------------------------------------------------
+// Fonction callback d'initialisation de l'application TCL.
+//
+int Tcl_AppInit(Tcl_Interp *interp)
+{
+   if (Tcl_Init(interp) == TCL_ERROR) {
+      return TCL_ERROR;
+   }
+   
+#if defined(OS_WIN)
+   //-- Install a signal handler to the win32 console 
+   //SetConsoleCtrlHandler(sigHandler, TRUE);
+   //-- This exit handler will be used to free the resources allocated in this file.
+   Tcl_CreateExitHandler(AppInitExitHandler, interp);
+#endif   
+   
+#ifdef TCL_THREADS
+    if (TclThread_Init(interp) == TCL_ERROR) {
+        return TCL_ERROR;
+    }
+#endif
+
+   load_library(interp,"libak");      // Misc. from Alain Klotz
+   load_library(interp,"libaudela");  // Acquisition, and preprocssing
+   load_library(interp,"libgsltcl");  // Gnu Scientific Library extension for Tcl
+   load_library(interp,"libgzip");    // Gzip compression
+   load_library(interp,"libjm");      // Misc. from Jacques Michelet
+   load_library(interp,"libbm");      // Misc. from Benjamin Mauclaire
+   load_library(interp,"libmc");      // Celestial mechanics
+   load_library(interp,"libsext");    // Sextractor code from Bertin
+   load_library(interp,"libyd");      // Misc. from Yassine Damerdji
+   load_library(interp,"libml");      // Misc. from Myrtille Laas
+
+   return TCL_OK;
+}
+ 
+
+
+#if defined(OS_WIN)
+
+/*
+*----------------------------------------------------------------------
+*
+* AppInitExitHandler --
+*
+*       This function is called to cleanup the app init resources before
+*       Tcl is unloaded.
+*
+* Results:
+*       None.
+*
+* Side effects:
+*       wait for key pressed if error occurs.
+*
+*----------------------------------------------------------------------
+*/
+
+static void AppInitExitHandler(ClientData clientData)
+{
+   char pause[1024];
+   Tcl_Interp *interp = (Tcl_Interp *)clientData;
+   if ( interp->errorLine != 1 ) {
+      // let's read the error message before closing the console
+      printf("Press any key to close ..." );
+      gets(pause);
+   } else {
+      // no error , nothing to do
+   }
+}
+
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * createMsdosConsole  (for WIN32 only)
+ *
+ *	Creates a Msdos console.
+ *
+ * Results:
+ *	none.
+ *
+ * Side effects:
+ *	stdin, stdout , stderr are redirected to the console
+ *
+ *----------------------------------------------------------------------
+ */
+#include <stdio.h>
+#include <fcntl.h>
+#include <io.h>      // for _open_osfhandle
+#define MAX_CONSOLE_LINES 80
+
+void createMsdosConsole() {
+   
+   int hConHandle;
+   long lStdHandle;
+   CONSOLE_SCREEN_BUFFER_INFO coninfo;
+   FILE *fp;
+   
+   // allocate a console for this app
+   AllocConsole();
+   
+   // set the screen buffer to be big enough to let us scroll text
+   GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE),&coninfo); 
+   coninfo.dwSize.Y = MAX_CONSOLE_LINES;
+   SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE),coninfo.dwSize);
+   
+   // redirect unbuffered STDOUT to the console
+   lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+   hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+   fp = _fdopen( hConHandle, "w" );
+   *stdout = *fp;
+   setvbuf( stdout, NULL, _IONBF, 0 );
+   
+   // redirect unbuffered STDIN to the console
+   lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+   hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+   fp = _fdopen( hConHandle, "r" );
+   *stdin = *fp;
+   setvbuf( stdin, NULL, _IONBF, 0 );
+   
+   // redirect unbuffered STDERR to the console
+   lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+   hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+   fp = _fdopen( hConHandle, "w" );
+   *stderr = *fp;
+   setvbuf( stderr, NULL, _IONBF, 0 );
+   
+}
+#endif

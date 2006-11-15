@@ -30,7 +30,6 @@
 #endif
 
 #include <tcl.h>
-#include <tk.h>
 #include "libtt.h"
 #include "fitskw.h"
 #include "history.h"
@@ -84,14 +83,11 @@ extern int audela_strcasecmp(char *a, char *b);
 extern void LogFile(char*s);
 extern void vlogfile(char *fmt, ...);
 
-// Librairie de traitement d'images
-extern LIBTT *Libtt_main;
-
 //------------------------------------------------------------------------------
 // Pools de devices
 //
 extern CPool *buf_pool;
-extern CPool *visu_pool;
+//extern CPool *visu_pool;
 extern CPool *cam_pool;
 extern CPool *tel_pool;
 extern CPool *link_pool;
@@ -109,7 +105,7 @@ extern int CmdGetGenericNamePoolItem(ClientData clientData, Tcl_Interp *interp, 
 // Fonctions de manipulation des objets.
 //
 extern int CmdBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-extern int CmdVisu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+//extern int CmdVisu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdCam(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdTel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 extern int CmdLink(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);

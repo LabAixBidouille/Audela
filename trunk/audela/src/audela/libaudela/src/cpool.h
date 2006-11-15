@@ -23,9 +23,20 @@
 #ifndef __CPOOLH__
 #define __CPOOLH__
 
+#ifdef WIN32
+   #ifdef LIBAUDELA_EXPORTS
+      #define LIBAUDELA_API __declspec( dllexport )
+   #else
+      #define LIBAUDELA_API __declspec( dllimport )
+   #endif//LIBAUDELA_EXPORTS
+#else
+   #define LIBAUDELA_API
+#endif//WIN32
+
+
 #include "cdevice.h"
 
-class CPool {
+class LIBAUDELA_API CPool {
       protected:
    char *ClassName;
    int LibererDevices();

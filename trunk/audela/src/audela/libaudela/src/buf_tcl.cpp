@@ -26,7 +26,7 @@
 #include "libstd.h"
 #include "cpool.h"
 #include "cbuffer.h"
-
+#include "libtt.h"
 
 //------------------------------------------------------------------------------
 // La variable globale est definie de maniere unique ici.
@@ -38,6 +38,7 @@ CPool *buf_pool;
 //
 //int cmdFormat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdType(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdClear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -118,6 +119,7 @@ static struct cmditem cmdlist[] = {
    {"biny", (Tcl_CmdProc *)cmdBinY},
    {"bitpix", (Tcl_CmdProc *)cmdBitpix},
    {"centro", (Tcl_CmdProc *)cmdAstroPhot},
+   {"cfa2rgb", (Tcl_CmdProc *)cmdCfa2rgb},
    {"clear", (Tcl_CmdProc *)cmdClear},
    {"clipmax", (Tcl_CmdProc *)cmdClipmax},
    {"clipmin", (Tcl_CmdProc *)cmdClipmin},
@@ -813,7 +815,9 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       Tcl_Eval(interp,ligne); 
       strcpy(nom_fichier,interp->result);
       
+
       try {
+     /*
          if( strcmp(ext, ".bmp")== 0 
             || strcmp(ext, ".gif")== 0 
             || strcmp(ext, ".jpg")== 0 
@@ -826,114 +830,60 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             || strcmp(ext, ".xbm")== 0 
             || strcmp(ext, ".xpm")== 0 ) {   
             // je verifie la présence de la libriairie Img 1.3
-            sprintf(ligne,"package require Img 1.3");             
-            if( Tcl_Eval(interp,ligne) != TCL_OK  ) {
-               throw CError("Missing library Img 1.3 for loading %s (%s)",nom_fichier,interp->result);
-            }     
+ */
+         if(strcmp(argv[1],"save")==0) {
+
+            //  save  JPEG
+            if( strcmp(ext, ".jpg")== 0 || strcmp(ext, ".jpeg")== 0 ) {            
+               unsigned char *palette[3];
+               unsigned char pal0[256];
+               unsigned char pal1[256];
+               unsigned char pal2[256];
+               float cuts[6];
+               CFitsKeyword *kwd;
+               int width, height, planes;
+               int quality = 100;
+               
+               // je fabrique une palette par défaut
+               palette[0] = pal0;
+               palette[1] = pal1;
+               palette[2] = pal2;
+                  for(int i=0; i<256; i++) {
+                     pal0[i]= i;
+                     pal1[i]= i;
+                     pal2[i]= i;
+                  }
             
-            if(strcmp(argv[1],"save")==0) {
-               //--- SAVE standard format image (BMP, JPEG, GIF, PNG, PS, TIFF, XPN, XBN)
-               Tk_PhotoImageBlock pib;
-               char tkImgfileFormat[10];
-               Tk_PhotoHandle ph ;
-               
-               // je cree une image tk temporaire.
-               sprintf(ligne,"image create photo imageload"); 
-               if ( Tcl_Eval(interp,ligne) != TCL_OK) {
-                  throw CError("Error creating imageload when loading/saving %s (%)",nom_fichier, interp->result );
-               }
+               // je fabrique des seuils par defaut
+               kwd = Buffer->GetKeywords()->FindKeyword("MIPS-HI");
+               cuts[0] = kwd->GetFloatValue();
+               cuts[2] = kwd->GetFloatValue();
+               cuts[4] = kwd->GetFloatValue();
+               kwd = Buffer->GetKeywords()->FindKeyword("MIPS-LO");
+               cuts[1] = kwd->GetFloatValue();
+               cuts[3] = kwd->GetFloatValue();
+               cuts[5] = kwd->GetFloatValue();
+            
+               // je recupere la taille 
+               width = Buffer->GetW();
+               height = Buffer->GetH();
+               planes = Buffer->GetNaxis();
 
-               // je recupere le handle de l'image tk
-               ph = Tk_FindPhoto(interp,"imageload");
-               if(ph==NULL) throw CError( ELIBSTD_NO_TKPHOTO_HANDLE);
-               
-               // je convertis l'extension en minuscule
-               sprintf(ligne,"string tolower \"%s\" ",ext); Tcl_Eval(interp,ligne);
-               strcpy(ext, interp->result);          
-               
-               // j'identifie le format de la sauvegarde à partir de l'extension du fichier
-               strcpy(tkImgfileFormat,"");
-               if(strcmp(ext, ".bmp" )==0)   strcpy(tkImgfileFormat, "bmp");
-               if(strcmp(ext, ".gif" )==0)   strcpy(tkImgfileFormat, "gif");
-               if(strcmp(ext, ".jpg" )==0)   strcpy(tkImgfileFormat, "jpeg");
-               if(strcmp(ext, ".jpeg")==0)   strcpy(tkImgfileFormat, "jpeg");
-               if(strcmp(ext, ".png" )==0)   strcpy(tkImgfileFormat, "png");
-               if(strcmp(ext, ".ps"  )==0)   strcpy(tkImgfileFormat, "ps");
-               if(strcmp(ext, ".eps" )==0)   strcpy(tkImgfileFormat, "ps");
-               if(strcmp(ext, ".tiff")==0)   strcpy(tkImgfileFormat, "tiff");
-               if(strcmp(ext, ".tif" )==0)   strcpy(tkImgfileFormat, "tiff");
-               if(strcmp(ext, ".xbm" )==0)   strcpy(tkImgfileFormat, "xbm");
-               if(strcmp(ext, ".xpm" )==0)   strcpy(tkImgfileFormat, "xpm");
-               
-               if( strcmp(tkImgfileFormat,"" )==0) {
-                  throw CError("Usage: %s %s filename  ?options? \nfile extension must be bmp|fits|gif|jpg|png|tif|xbm|xpm",argv[0],argv[1]);
-               }
-               
-               // j"extrait les pixels du buffer                 
-               Buffer->SaveNoFits(&pib.pixelSize, pib.offset, &pib.pitch, &pib.width, &pib.height, &pib.pixelPtr  );                  
-               // je copie les pixels dans l'image tk temporaire
-               Tk_PhotoPutBlock(ph,&pib,0,0,pib.width,pib.height);
-               free(pib.pixelPtr);                  
-               // j'enregistre l'image dans le fichier en utilisant la librairie tkimg
-               sprintf(ligne,"imageload write \"%s\" -format %s ", nom_fichier, tkImgfileFormat); 
-               if( Tcl_Eval(interp,ligne) != TCL_OK ) 
-                  throw CError("Error when saving %s (%s)",nom_fichier, interp->result );
-               retour = TCL_OK;               
-            } else {
-               //--- LOAD standard format image (BMP, JPEG, GIF, PNG, PS, TIFF, XPN, XBN)
-               Tk_PhotoImageBlock pib;
-               Tk_PhotoHandle ph ;
+               quality = 80;
+            
+               Buffer->SaveJpg(nom_fichier, quality, cuts, palette, 0 , 0 ) ;
 
-               // je cree une image tk temporaire.
-               sprintf(ligne,"image create photo imageload"); 
-               if ( Tcl_Eval(interp,ligne) != TCL_OK) {
-                  throw CError("Error creating imageload when loading/saving %s (%)",nom_fichier, interp->result );
-               }
-               // je recupere le handle de l'image tk
-               ph = Tk_FindPhoto(interp,"imageload");
-               if(ph==NULL) throw CError( ELIBSTD_NO_TKPHOTO_HANDLE);
-               
-               // j'ajoute des guillements pour traiter les fichiers dont le nom contient un espace
-               sprintf(ligne,"imageload configure -file \"%s\" ", nom_fichier); 
-               if( Tcl_Eval(interp,ligne) != TCL_OK ) {
-                  sprintf(ligne,"image delete imageload"); 
-                  Tcl_Eval(interp,ligne);
-                  throw CError("Error when loading %s (%s)",nom_fichier, interp->result );
-               } else {
-                  // je charge les pixels dans l'image temporaire avec la librairie tkImg 
-                  retour = Tk_PhotoGetImage(ph,&pib);            
-                  if( pib.pixelPtr == NULL) {
-                     sprintf(ligne,"image delete imageload"); 
-                     Tcl_Eval(interp,ligne);
-                     throw CError("Error Tk_PhotoGetImage when loading %s",nom_fichier);
-                  } else {
-                     // je copie le pixels de l'image tk temporaire dans le buffer
-                     Buffer->LoadNoFits(pib.pixelSize, pib.offset, pib.pitch ,pib.width, pib.height, pib.pixelPtr);
-                  }                              
-               }
-            }
-            // je supprime l'image tk temporaire
-            sprintf(ligne,"image delete imageload"); 
-            Tcl_Eval(interp,ligne);
-         } else if( strcmp(ext, ".crw")== 0      // canon raw image
+            } else if( strcmp(ext, ".crw")== 0   // canon raw image
                     || strcmp(ext, ".nef")== 0   // nikon raw image
-                    || strcmp(ext, ".cr2")== 0   // nikon raw image
+                    || strcmp(ext, ".cr2")== 0   // canon raw image
                     || strcmp(ext, ".dng")== 0   // nikon raw image
-                  ) {  
-            //--- RAW file (crw, nef, cr2 , dng )
-            if(strcmp(argv[1],"save")==0) {
-               //--- SAVE RAW file
+                     ) {  
+               //--- SAVE RAW file (crw, nef, cr2 , dng )
                Buffer->SaveRawFile(nom_fichier);
                retour = TCL_OK;
+               
             } else {
-               //--- LOAD RAW file
-               Buffer->LoadRawFile(nom_fichier);
-               retour = TCL_OK;
-            }
-                     
-         } else {
-            //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
-            if(strcmp(argv[1],"save")==0) {
+               //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
                //--- save FITS file
                Buffer->SaveFits(nom_fichier);
                // compression eventuelle du fichier
@@ -947,12 +897,12 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
                }
                retour = TCL_OK;
-            } else {
-               //--- Load FITS file
-               Buffer->LoadFits(nom_fichier);
-               retour = TCL_OK;
             }
-         }
+         } else {
+            // LoadFile (tous les formats)
+            
+            Buffer->LoadFile(nom_fichier);
+         }      
          
          Tcl_SetResult(interp,"",TCL_VOLATILE);
          retour = TCL_OK;         
@@ -963,10 +913,6 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          free(nom_fichier);
          free(ligne);
       } catch (const CError& e) {
-         // je supprime l'image temporaire 
-         sprintf(ligne,"catch { image delete imageload }"); 
-         Tcl_Eval(interp,ligne);
-
          // je complete le message de l'erreur
          sprintf(ligne,"%s %s \n%s ",argv[1],argv[2], e.gets());
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1518,12 +1464,12 @@ int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                      }
                   } else {
                      if(x<=0||x>naxis1||y<=0||y>naxis2) {
-                        sprintf(ligne,"Out of limits point ((%d,%d) in (1,1),(%d,%d)).",x,y,naxis1,naxis2);
-                        retour = TCL_ERROR;
-                     } else { 
-                        // Changement de repere
-                        x -= 1;
-                        y -= 1;
+                     sprintf(ligne,"Out of limits point ((%d,%d) in (1,1),(%d,%d)).",x,y,naxis1,naxis2);
+                     retour = TCL_ERROR;
+                  } else {
+                     // Changement de repere
+                     x -= 1;
+                     y -= 1;
                         retour = TCL_OK;
                      }
                   }
@@ -1628,7 +1574,7 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                      try {
                         if ( argc == 4 ) {
                            buffer->SetPix(PLANE_GREY, (TYPE_PIXELS)val,x,y);
-                           retour = TCL_OK;
+                        retour = TCL_OK;
                         } else {
                            Tcl_GetDouble(interp,argv[3],&valred);
                            Tcl_GetDouble(interp,argv[5],&valblue);
@@ -1868,9 +1814,9 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       if (argc>=8) {
          if((Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK)&&(retour==TCL_OK)) {
             sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1],argv[2]);
-            retour =  TCL_ERROR;
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         }
+         retour =  TCL_ERROR;
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      } 
       }
 
       keep_keywords = DONT_KEEP_KEYWORDS;
@@ -4032,6 +3978,48 @@ int cmdMedY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    delete ligne;
    return retour;
 }
+
+//==============================================================================
+// buf$i clipmax --
+//   Ecretage de l'image
+//   Equivalent de QMiPS : CLIPMAX
+//
+int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   CBuffer *buffer;
+   char *ligne;
+   int retour = TCL_OK;
+   int method;
+
+   ligne = new char[1000];
+
+   if(argc!=3) {
+      sprintf(ligne,"Usage: %s %s method",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      if(Tcl_GetInt(interp,argv[2],&method)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s method\nmethod: 1=LINEAR 2=VND 3=AHD",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+      } else {
+         // Appel a la methode du buffer
+         buffer = (CBuffer*)clientData;
+         try {
+            //buffer->Cfa2rgb(method);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            retour = TCL_OK;
+         } catch(const CError& e) {
+            sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+   }
+   delete ligne;
+   return retour;
+}
+
 
 int cmdWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {

@@ -23,21 +23,26 @@
 #define __CPIXELSH__
 
 
-#include "cdevice.h"
-#include "libstd.h"
-#include "cpixels.h"
 #include "palette.h"
-#include "cerror.h"
+
+#ifdef WIN32
+   #ifdef LIBAUDELA_EXPORTS
+      #define LIBAUDELA_API __declspec( dllexport )
+   #else
+      #define LIBAUDELA_API __declspec( dllimport )
+   #endif//LIBAUDELA_EXPORTS
+#else
+   #define LIBAUDELA_API
+#endif//WIN32
 
 typedef float TYPE_PIXELS;
-
 
 typedef enum { CLASS_GRAY, CLASS_RGB, CLASS_3D, CLASS_VIDEO, CLASS_UNKNOWN} TPixelClass;
 typedef enum { FORMAT_BYTE, FORMAT_SHORT, FORMAT_USHORT, FORMAT_FLOAT, FORMAT_UNKNOWN} TPixelFormat;
 typedef enum { COMPRESS_NONE, COMPRESS_RGB, COMPRESS_I420, COMPRESS_JPEG, COMPRESS_RAW, COMPRESS_UNKNOWN} TPixelCompression;
 typedef enum { PLANE_GREY, PLANE_RGB, PLANE_R, PLANE_G, PLANE_B, PLANE_UNKNOWN} TColorPlane;
 
-class CPixels 
+class LIBAUDELA_API CPixels 
 {
 public:
    virtual ~CPixels();
@@ -75,10 +80,11 @@ public:
    virtual void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels)=0;
    virtual void GetPixelsVisu( int x1,int y1,int x2, int y2,
                   int mirrorX, int mirrorY,
-                  double hicutRed,   double locutRed, 
-                  double hicutGreen, double locutGreen,
-                  double hicutBlue,  double locutBlue,
-                  Pal_Struct *pal, unsigned char *ptr)=0;
+                  //double hicutRed,   double locutRed, 
+                  //double hicutGreen, double locutGreen,
+                  //double hicutBlue,  double locutBlue,
+                  float *cuts,
+                  unsigned char *palette[3], unsigned char *ptr)=0;
    void         Histogram(int n, float *adus, float *meanadus, long *histo,
                           int ismini,float mini,int ismaxi,float maxi);
    virtual int  IsPixelsReady(void)=0;

@@ -23,7 +23,16 @@
 #include <math.h>   // floor()
 
 #include "cpixelsgray.h"
+#include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
+#include "cerror.h"
 
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -501,21 +510,23 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
 
 void CPixelsGray::GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
-            double hicutRed,   double locutRed, 
-            double hicutGreen, double locutGreen,
-            double hicutBlue,  double locutBlue,
-            Pal_Struct *pal, unsigned char *ptr) 
+                  //double hicutRed,   double locutRed, 
+                  //double hicutGreen, double locutGreen,
+                  //double hicutBlue,  double locutBlue,
+                  float *cuts,
+            unsigned char *palette[3], unsigned char *ptr) 
 {
    int i, j;
    int orgww, orgwh;                // original window width, height
    float dyn;
-   float fsh = (float) hicutRed;
-   float fsb = (float) locutRed;
+//   float fsh = (float) hicutRed;
+//   float fsb = (float) locutRed;
+   float fsh = (float) cuts[0];
+   float fsb = (float) cuts[1];
    long base;
    int xdest, ydest;
    unsigned char colorIndex;
    unsigned char (*pdest)[3];
-
    pdest = (unsigned char (*)[3])ptr;
 
    orgww = x2 - x1 + 1;  // Largeur de la fenetre au depart
@@ -552,9 +563,9 @@ void CPixelsGray::GetPixelsVisu( int x1,int y1,int x2, int y2,
          }
          base = j*naxis1+i;
          colorIndex = (unsigned char)min(max(((float)pix[base]-fsb)*dyn,0),255);
-         pdest[ydest+xdest][0] = (pal->pal)[0][colorIndex];
-         pdest[ydest+xdest][1] = (pal->pal)[1][colorIndex];
-         pdest[ydest+xdest][2] = (pal->pal)[2][colorIndex];
+         pdest[ydest+xdest][0] = palette[0][colorIndex];
+         pdest[ydest+xdest][1] = palette[1][colorIndex];
+         pdest[ydest+xdest][2] = palette[2][colorIndex];
       }
    }
 }
@@ -613,7 +624,7 @@ void CPixelsGray::MergePixels(TColorPlane plane, int pixels)
 void CPixelsGray::MirX()
 {
    int msg, datatype;
-   char * s; 
+   char * s;
 
 
    datatype = TFLOAT;
