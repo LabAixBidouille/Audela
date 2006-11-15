@@ -4,5 +4,5 @@
 echo -e "Se mettre dans le repertoire bin...\n"
 chemin=`pwd`
 typeset -x LD_LIBRARY_PATH=$chemin
-./audela
+./audela $*
 
