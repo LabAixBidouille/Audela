@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.6 2006-11-10 13:13:02 audelateam Exp $
+# Mise a jour $Id: audecom.cap,v 1.7 2006-11-16 13:40:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -546,7 +546,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,ad)                      "Ascensión Recta:"
    set caption(audecom,dec)                     "Declinación:"
    set caption(audecom,temps)                   "Tiempo:"
-   set caption(audecom,hsysteme)                "Hora del ordenador (HC o TU):"
+   set caption(audecom,hsysteme)                "Hora del ordenador (HC u TU):"
    set caption(audecom,fushoraire2)             "Su zona horaria es:"
    set caption(audecom,hhiverete)               "Horario de invierno / Horario de verano:"
    set caption(audecom,tu)                      "Tiempo Universal (TU):"
@@ -598,7 +598,7 @@ if { [ string compare $langage "french" ] == "0" } {
                                                  posible (5000 pasos/seg.) si el motor lo permite."
    set caption(audecom,para_foc,aide2)          "Esta opción permite escoger el sentido del desplazamiento del sistema de enfoque\
                                                  en la ultima fase de enfoque. Este movimiento final debe efectuarse siempre en el\
-                                                 mismo sentido (intrafocal o extrafocal). Permite igualmente acceder a la inversión\
+                                                 mismo sentido (intrafocal u extrafocal). Permite igualmente acceder a la inversión\
                                                  del sentido de rotación del motor de enfoque (para el teclado virtual solamente)."
    set caption(audecom,para_foc,aide3)          "Esta opción permite definir el valor de rebasamiento para el punto de enfoque en el\
                                                  ultimo movimiento que sera siempre en el mismo sentido (250 pasos corresponden a\
