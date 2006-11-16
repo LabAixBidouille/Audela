@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <time.h>    // pour gmtime
 
-#include "CFile.h"
+#include "cfile.h"
 #include "cerror.h"
 #include "cpixelsgray.h"
 #include "cpixelsrgb.h"
