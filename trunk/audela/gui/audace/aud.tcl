@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.39 2006-11-15 20:42:13 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.40 2006-11-16 22:12:54 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -637,6 +637,11 @@ namespace eval ::audace {
               }
            }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+v+b2rvb)..." \
+         { ::traiteImage::run "$caption(audace,menu,r+v+b2rvb)" "$audace(base).traiteImage" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rvb2r+v+b)..." \
+         { ::traiteImage::run "$caption(audace,menu,rvb2r+v+b)" "$audace(base).traiteImage" }
+      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
          { ::traiteImage::run "$caption(audace,menu,subsky)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
@@ -701,10 +706,6 @@ namespace eval ::audace {
          { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
          { ::faireImageRef::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+g+b2rgb)..." \
-         { ::faireImageRef::run "$caption(audace,menu,r+g+b2rgb)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rgb2r+g+b)..." \
-         { ::faireImageRef::run "$caption(audace,menu,rgb2r+g+b)" "$audace(base).faireImageRef" }
 
       Menu           $visuNo "$caption(audace,menu,traitement)"
       Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,masque_flou)..." \
