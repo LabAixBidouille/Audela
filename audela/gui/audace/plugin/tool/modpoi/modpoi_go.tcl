@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.3 2006-06-20 21:05:11 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.4 2006-11-16 22:12:02 robertdelmas Exp $
 #
 
 package provide modpoi 1.0
@@ -72,7 +72,7 @@ proc ModelpoiBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          label $This.fra2.lab1 -borderwidth 0 -text $panneau(Modelpoi,titre1)
-         pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top
+         pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top -pady 5
 
          #--- Bouton Nouveau
          button $This.fra2.but1 -borderwidth 2 -text $panneau(Modelpoi,nouveau) \

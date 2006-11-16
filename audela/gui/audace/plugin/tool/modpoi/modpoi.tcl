@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.3 2006-06-20 21:05:47 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.4 2006-11-16 22:12:19 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -188,13 +188,13 @@ proc modpoi_wiz { { mode new } } {
    if { $::tcl_platform(os) == "Linux" } {
       set taille [ expr int(12*6./$modpoi(stars,nb)) ]
       set taille [ expr $taille + 3 ]
-      if { $taille < "9" } {
-         set taille "9"
+      if { $taille < "12" } {
+         set taille "12"
       }
    } else {
       set taille [expr int(12*6./$modpoi(stars,nb))]
-      if { $taille < "6" } {
-         set taille "6"
+      if { $taille < "9" } {
+         set taille "9"
       }
    }
    set modpoi(font,starname) "[list {Arial} $taille bold ]"
@@ -234,7 +234,12 @@ proc modpoi_wiz1 { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz1,title)
    #--- Title
    label $modpoi(g,base).lab_title2 \
@@ -278,7 +283,12 @@ proc modpoi_wiz1b { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz1b,title)
    #--- Title
    label $modpoi(g,base).lab_title1b \
@@ -490,13 +500,13 @@ proc modpoi_wiz1b { } {
       -text $caption(modpoi,$wiz,next) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) \
       -command {
-         if { $modpoi(stars,nb) >= "6" } {
+         if { ( $modpoi(stars,nb) >= "6" ) && ( $modpoi(stars,nb) <= "48" ) } {
             modpoi_paraminit $modpoi(stars,decmin) $modpoi(stars,decmax) $modpoi(stars,heast) $modpoi(stars,hwest)
             if {$modpoi(centering,check)==0} { modpoi_wiz2 } else { modpoi_wiz1c }
          } else {
             set choice [ tk_messageBox -message "$caption(modpoi,wiz1b,nstars1)" -title "$caption(modpoi,wiz1b,warning)" -icon question -type ok ]
             if { $choice == "ok" } {
-               set modpoi(stars,nb) "6"
+               set modpoi(stars,nb) ""
             }
          }
       }
@@ -521,7 +531,12 @@ proc modpoi_wiz1c { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz1c,title)
    #--- Title
    label $modpoi(g,base).lab_title1b \
@@ -704,7 +719,12 @@ proc modpoi_wiz2 { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz2,title)
    #--- Title
    label $modpoi(g,base).lab_title2 \
@@ -714,8 +734,43 @@ proc modpoi_wiz2 { } {
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- Buttons
+   set colonne 0
    set nk 0
    set nstars $modpoi(stars,nb)
+   #--- Create frame for buttons
+   frame $modpoi(g,base).star_bottom
+   pack $modpoi(g,base).star_bottom \
+   -side top -anchor center \
+   -padx 5 -pady 5 -expand 0
+   #--- Create colunm for buttons
+   if { $nstars <= "12" } {
+      frame $modpoi(g,base).star_bottom.1
+      pack $modpoi(g,base).star_bottom.1 \
+      -side left -anchor center \
+      -padx 5 -pady 5 -expand 0
+   } elseif { $nstars <= "24" } {
+      for {set kk 1} {$kk<=2} {incr kk} {
+         frame $modpoi(g,base).star_bottom.$kk
+         pack $modpoi(g,base).star_bottom.$kk \
+         -side left -anchor center \
+         -padx 5 -pady 5 -expand 0
+      }
+   } elseif { $nstars <= "36" } {
+      for {set kk 1} {$kk<=3} {incr kk} {
+         frame $modpoi(g,base).star_bottom.$kk
+         pack $modpoi(g,base).star_bottom.$kk \
+         -side left -anchor center \
+         -padx 5 -pady 5 -expand 0
+      }
+   } elseif { $nstars <= "48" } {
+      for {set kk 1} {$kk<=4} {incr kk} {
+         frame $modpoi(g,base).star_bottom.$kk
+         pack $modpoi(g,base).star_bottom.$kk \
+         -side left -anchor center \
+         -padx 5 -pady 5 -expand 0
+      }
+   }
+   #---
    for {set k 1} {$k<=$nstars} {incr k} {
       set kk [expr ${k}-1]
       if {$modpoi(centering,mode)=="manu"} {
@@ -731,13 +786,103 @@ proc modpoi_wiz2 { } {
          set lab "$caption(modpoi,wiz2,star) $k"
          set col $color(lightred)
       }
-      button $modpoi(g,base).but_color_invariant_$k \
-      -bg $col -activebackground $col \
-      -text $lab -borderwidth 2 \
-      -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
-      pack $modpoi(g,base).but_color_invariant_$k \
-      -side top -anchor center \
-      -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+      #--- Put buttons in different columns
+      if { $nstars <= "12" } {
+         button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+         -bg $col -activebackground $col \
+         -text $lab -borderwidth 2 \
+         -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+         pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+         -side top -anchor center \
+         -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+      } elseif { $nstars <= "24" } {
+         if { $colonne == "0" } {
+            button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "1"
+         } else {
+            button $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "0"
+         }
+      } elseif { $nstars <= "36" } {
+         if { $colonne == "0" } {
+            button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "1"
+         } elseif { $colonne == "1" } {
+            button $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "2"
+         } else {
+            button $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "0"
+         }
+      } elseif { $nstars <= "48" } {
+         if { $colonne == "0" } {
+            button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "1"
+         } elseif { $colonne == "1" } {
+            button $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "2"
+         } elseif { $colonne == "2" } {
+            button $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "3"
+         } else {
+            button $modpoi(g,base).star_bottom.4.but_color_invariant_$k \
+            -bg $col -activebackground $col \
+            -text $lab -borderwidth 2 \
+            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            pack $modpoi(g,base).star_bottom.4.but_color_invariant_$k \
+            -side top -anchor center \
+            -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
+            set colonne "0"
+         }
+      }
    }
    #--- Frame for bottom buttons
    if {$modpoi(centering,mode)=="manu"} {
@@ -817,7 +962,12 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) "$caption(modpoi,$wiz,title) $starindex"
    #--- Title
    label $modpoi(g,base).lab_title2 \
@@ -929,7 +1079,12 @@ proc modpoi_wiz4 { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) "$caption(modpoi,wiz4,title) $starindex"
    #--- Title
    label $modpoi(g,base).lab_title2 \
@@ -1092,7 +1247,12 @@ proc modpoi_wiz5 { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz5,title)
    #--- Title
    label $modpoi(g,base).lab_title2 \
@@ -1183,7 +1343,12 @@ proc modpoi_wiz5b { } {
    #--- New toplevel
    toplevel $modpoi(g,base) -class Toplevel
    wm geometry $modpoi(g,base) $modpoi(wm_geometry)
-   wm resizable $modpoi(g,base) 0 0
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $modpoi(g,base) 560 680
+   } else {
+      wm minsize $modpoi(g,base) 440 500
+   }
+   wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz5,title)
    #--- Title
    label $modpoi(g,base).lab_title2 \
