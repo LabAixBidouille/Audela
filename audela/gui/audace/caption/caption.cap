@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.40 2006-11-17 10:35:36 audelateam Exp $
+# Mise a jour $Id: caption.cap,v 1.41 2006-11-17 11:00:53 audelateam Exp $
 #
 
 #=========================================================================
@@ -468,7 +468,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Ajuda"
    set caption(audace,menu,sommaire)                  "Conteúdos"
-   set caption(audace,menu,fonctions)                 "Indece de funções"
+   set caption(audace,menu,fonctions)                 "Indice de funções"
    set caption(audace,menu,site_audela)               "Site Web"
    set caption(audace,menu,site_internet)             "Site Web (Internet)"
    set caption(audace,menu,site_dd)                   "Site Web (cópia de disco duro)"
@@ -670,7 +670,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,enregistrer_config1)            "Guardar nova configuração antes de sair?"
    set caption(audace,enregistrer_config2)            "Guardar configuração?"
-   set caption(audace,enregistrer_config3)            "Configuração guardada com exito."
+   set caption(audace,enregistrer_config3)            "Configuração guardada com êxito."
    set caption(audace,enregistrer_config4)            "Não é necessário guardar configuração."
    set caption(audace,enregistrer_config5)            "Operação \"guardar\" abortada."
 
@@ -695,7 +695,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(plotxy,figure)                         "Figura"
 
-   set caption(sectiongraph,title)                    "Grafica da secção"
+   set caption(sectiongraph,title)                    "Gráfico da secção"
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
