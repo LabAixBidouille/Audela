@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.7 2006-11-17 16:16:07 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.8 2006-11-17 18:46:17 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -135,28 +135,28 @@ namespace eval ::traiteImage {
             frame $This.usr.2.1 -borderwidth 0 -relief flat
                label $This.usr.2.1.lab1 -text "$caption(traiteImage,ajouter_cte)"
                pack $This.usr.2.1.lab1 -side left -padx 10 -pady 5
-               entry $This.usr.2.1.ent1 -textvariable traiteImage(offsetWindow_value) -width 7 \
+               entry $This.usr.2.1.ent1 -textvariable traiteImage(offsetWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5 
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
                label $This.usr.2.2.lab2 -text "$caption(traiteImage,cte_mult)"
                pack $This.usr.2.2.lab2 -side left -padx 10 -pady 5
-               entry $This.usr.2.2.ent2 -textvariable traiteImage(multWindow_value) -width 7 \
+               entry $This.usr.2.2.ent2 -textvariable traiteImage(multWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5 
            # pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
                label $This.usr.2.3.lab3 -text "$caption(traiteImage,valeur_fond_ciel)"
                pack $This.usr.2.3.lab3 -side left -padx 10 -pady 5
-               entry $This.usr.2.3.ent3 -textvariable traiteImage(noffsetWindow_value) -width 7 \
+               entry $This.usr.2.3.ent3 -textvariable traiteImage(noffsetWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5 
            # pack $This.usr.2.3 -side top -fill both
             frame $This.usr.2.4 -borderwidth 0 -relief flat
                label $This.usr.2.4.lab4 -text "$caption(traiteImage,valeur_fond_ciel)"
                pack $This.usr.2.4.lab4 -side left -padx 10 -pady 5
-               entry $This.usr.2.4.ent4 -textvariable traiteImage(ngainWindow_value) -width 7 \
+               entry $This.usr.2.4.ent4 -textvariable traiteImage(ngainWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5 
            # pack $This.usr.2.4 -side top -fill both
@@ -172,7 +172,7 @@ namespace eval ::traiteImage {
             frame $This.usr.2.6 -borderwidth 0 -relief flat
                label $This.usr.2.6.lab6 -text "$caption(traiteImage,ajouter_cte)"
                pack $This.usr.2.6.lab6 -side left -padx 10 -pady 5
-               entry $This.usr.2.6.ent6 -textvariable traiteImage(addWindow_value) -width 7 \
+               entry $This.usr.2.6.ent6 -textvariable traiteImage(addWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.6.ent6 -side right -padx 10 -pady 5
            # pack $This.usr.2.6 -side top -fill both 
@@ -188,7 +188,7 @@ namespace eval ::traiteImage {
             frame $This.usr.2.8 -borderwidth 0 -relief flat
                label $This.usr.2.8.lab8 -text "$caption(traiteImage,ajouter_cte)"
                pack $This.usr.2.8.lab8 -side left -padx 10 -pady 5
-               entry $This.usr.2.8.ent8 -textvariable traiteImage(subWindow_value) -width 7 \
+               entry $This.usr.2.8.ent8 -textvariable traiteImage(subWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.8.ent8 -side right -padx 10 -pady 5
            # pack $This.usr.2.8 -side top -fill both 
@@ -204,49 +204,49 @@ namespace eval ::traiteImage {
             frame $This.usr.2.10 -borderwidth 0 -relief flat
                label $This.usr.2.10.lab10 -text "$caption(traiteImage,cte_mult)"
                pack $This.usr.2.10.lab10 -side left -padx 10 -pady 5
-               entry $This.usr.2.10.ent10 -textvariable traiteImage(divWindow_value) -width 7 \
+               entry $This.usr.2.10.ent10 -textvariable traiteImage(divWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.10.ent10 -side right -padx 10 -pady 5
            # pack $This.usr.2.10 -side top -fill x 
             frame $This.usr.2.11 -borderwidth 0 -relief flat
                label $This.usr.2.11.lab11 -text "$caption(traiteImage,multx)"
                pack $This.usr.2.11.lab11 -side left -padx 10 -pady 10
-               entry $This.usr.2.11.ent11 -textvariable traiteImage(scaleWindow_multx) -width 7 \
+               entry $This.usr.2.11.ent11 -textvariable traiteImage(scaleWindow_multx) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.11.ent11 -side right -padx 10 -pady 10 
            # pack $This.usr.2.11 -side top -fill x
             frame $This.usr.2.12 -borderwidth 0 -relief flat
                label $This.usr.2.12.lab12 -text "$caption(traiteImage,multy)"
                pack $This.usr.2.12.lab12 -side left -padx 10 -pady 5
-               entry $This.usr.2.12.ent12 -textvariable traiteImage(scaleWindow_multy) -width 7 \
+               entry $This.usr.2.12.ent12 -textvariable traiteImage(scaleWindow_multy) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.12.ent12 -side right -padx 10 -pady 5 
            # pack $This.usr.2.12 -side top -fill x
             frame $This.usr.2.13 -borderwidth 0 -relief flat
                label $This.usr.2.13.lab13 -text "$caption(traiteImage,grille_subsky)"
                pack $This.usr.2.13.lab13 -side left -padx 10 -pady 10
-               entry $This.usr.2.13.ent13 -textvariable traiteImage(subskyWindow_back_kernel) -width 7 \
+               entry $This.usr.2.13.ent13 -textvariable traiteImage(subskyWindow_back_kernel) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.13.ent13 -side right -padx 10 -pady 10 
            # pack $This.usr.2.13 -side top -fill x
             frame $This.usr.2.14 -borderwidth 0 -relief flat
                label $This.usr.2.14.lab14 -text "$caption(traiteImage,seuil_subsky)"
                pack $This.usr.2.14.lab14 -side left -padx 10 -pady 5
-               entry $This.usr.2.14.ent14 -textvariable traiteImage(subskyWindow_back_threshold) -width 7 \
+               entry $This.usr.2.14.ent14 -textvariable traiteImage(subskyWindow_back_threshold) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.14.ent14 -side right -padx 10 -pady 5 
            # pack $This.usr.2.14 -side top -fill x
             frame $This.usr.2.15 -borderwidth 0 -relief flat
                label $This.usr.2.15.lab15 -text "$caption(traiteImage,clip_min)"
                pack $This.usr.2.15.lab15 -side left -padx 10 -pady 10
-               entry $This.usr.2.15.ent15 -textvariable traiteImage(clipWindow_mini) -width 7 \
+               entry $This.usr.2.15.ent15 -textvariable traiteImage(clipWindow_mini) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.15.ent15 -side right -padx 10 -pady 10 
            # pack $This.usr.2.15 -side top -fill x
             frame $This.usr.2.16 -borderwidth 0 -relief flat
                label $This.usr.2.16.lab16 -text "$caption(traiteImage,clip_max)"
                pack $This.usr.2.16.lab16 -side left -padx 10 -pady 5
-               entry $This.usr.2.16.ent16 -textvariable traiteImage(clipWindow_maxi) -width 7 \
+               entry $This.usr.2.16.ent16 -textvariable traiteImage(clipWindow_maxi) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.16.ent16 -side right -padx 10 -pady 5 
            # pack $This.usr.2.16 -side top -fill both
@@ -278,7 +278,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.20.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.20.lab5 -text "$caption(traiteImage,image_gene_entree_r+v+b)"
                pack $This.usr.2.20.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.20.ent5 -textvariable traiteImage(optWindow_r+v+b_filename) -width 20 \
+               entry $This.usr.2.20.ent5 -textvariable traiteImage(rvbWindow_r+v+b_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.20.ent5 -side right -padx 10 -pady 5
            # pack $This.usr.2.20 -side top -fill both
@@ -287,7 +287,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.21.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.21.lab5 -text "$caption(traiteImage,image_sortie_rvb)"
                pack $This.usr.2.21.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.21.ent5 -textvariable traiteImage(optWindow_rvb_filename) -width 20 \
+               entry $This.usr.2.21.ent5 -textvariable traiteImage(rvbWindow_rvb_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.21.ent5 -side right -padx 10 -pady 5
            # pack $This.usr.2.21 -side top -fill both
@@ -296,7 +296,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.22.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.22.lab5 -text "$caption(traiteImage,image_entree_rvb)"
                pack $This.usr.2.22.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.22.ent5 -textvariable traiteImage(optWindow_rvb_filename) -width 20 \
+               entry $This.usr.2.22.ent5 -textvariable traiteImage(rvbWindow_rvb_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.22.ent5 -side right -padx 10 -pady 5
            # pack $This.usr.2.22 -side top -fill both
@@ -305,7 +305,7 @@ namespace eval ::traiteImage {
                pack $This.usr.2.23.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.23.lab5 -text "$caption(traiteImage,image_gene_sortie_r+v+b)"
                pack $This.usr.2.23.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.23.ent5 -textvariable traiteImage(optWindow_r+v+b_filename) -width 20 \
+               entry $This.usr.2.23.ent5 -textvariable traiteImage(rvbWindow_r+v+b_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.23.ent5 -side right -padx 10 -pady 5
            # pack $This.usr.2.23 -side top -fill both
@@ -402,13 +402,13 @@ namespace eval ::traiteImage {
       switch $traiteImage(operation) \
          "$caption(audace,menu,r+v+b2rvb)" {
             #--- Test sur le nom generique des images R, V et B
-            if { $traiteImage(optWindow_r+v+b_filename) == "" } {
+            if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
                tk_messageBox -title $caption(traiteImage,attention) -type ok \
                   -message $caption(traiteImage,definir_entree_generique)
                return
             }
             #--- Test sur l'image RVB
-            if { $traiteImage(optWindow_rvb_filename) == "" } {
+            if { $traiteImage(rvbWindow_rvb_filename) == "" } {
                tk_messageBox -title $caption(traiteImage,attention) -type ok \
                   -message $caption(traiteImage,definir_image_sortie)
                return
@@ -418,8 +418,8 @@ namespace eval ::traiteImage {
             all_cursor watch
             #---
             catch {
-               fitsconvert3d $audace(rep_images)/$traiteImage(optWindow_r+v+b_filename) 3 .fit $audace(rep_images)/$traiteImage(optWindow_rvb_filename)
-               loadima $traiteImage(optWindow_rvb_filename)
+               fitsconvert3d $audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename) 3 .fit $audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)
+               loadima $traiteImage(rvbWindow_rvb_filename)
             } m
             if { $m == "" } {
                tk_messageBox -title $caption(audace,menu,r+v+b2rvb) -type ok \
@@ -432,13 +432,13 @@ namespace eval ::traiteImage {
          } \
          "$caption(audace,menu,rvb2r+v+b)" {
             #--- Test sur l'image RVB
-            if { $traiteImage(optWindow_rvb_filename) == "" } {
+            if { $traiteImage(rvbWindow_rvb_filename) == "" } {
                tk_messageBox -title $caption(traiteImage,attention) -type ok \
                   -message $caption(traiteImage,definir_image_entree)
                return
             }
             #--- Test sur le nom generique des images R, V et B
-            if { $traiteImage(optWindow_r+v+b_filename) == "" } {
+            if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
                tk_messageBox -title $caption(traiteImage,attention) -type ok \
                   -message $caption(traiteImage,definir_sortie_generique)
                return
@@ -448,12 +448,12 @@ namespace eval ::traiteImage {
             all_cursor watch
             #---
             catch {
-               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(optWindow_rvb_filename).fit" 1
-               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(optWindow_r+v+b_filename)1.fit"
-               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(optWindow_rvb_filename).fit" 2
-               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(optWindow_r+v+b_filename)2.fit"
-               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(optWindow_rvb_filename).fit" 3
-               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(optWindow_r+v+b_filename)3.fit"
+               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 1
+               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)1.fit"
+               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 2
+               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)2.fit"
+               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 3
+               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)3.fit"
             } m
             if { $m == "" } {
                tk_messageBox -title $caption(audace,menu,rvb2r+v+b) -type ok \
@@ -876,9 +876,9 @@ namespace eval ::traiteImage {
 
       #---
       if { $traiteImage(operation) == $caption(audace,menu,r+v+b2rvb) } {
-         set traiteImage(page_web) "1014r+v+b2rgb"
+         set traiteImage(page_web) "1014r+v+b2rvb"
       } elseif { $traiteImage(operation) == $caption(audace,menu,rvb2r+v+b) } {
-         set traiteImage(page_web) "1016rgb2r+v+b"
+         set traiteImage(page_web) "1016rvb2r+v+b"
       } elseif { $traiteImage(operation) == $caption(audace,menu,subsky) } {
          set traiteImage(page_web) "1100soust_fond_ciel"
       } elseif { $traiteImage(operation) == $caption(audace,menu,clip) } {
@@ -1276,13 +1276,13 @@ namespace eval ::traiteImage {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $traiteImage(operation) == "$caption(audace,menu,r+v+b2rvb)" && $option == "1" } {
-         set traiteImage(optWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(rvbWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,r+v+b2rvb)" && $option == "2" } {
-         set traiteImage(optWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,rvb2r+v+b)" && $option == "1" } {
-         set traiteImage(optWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,rvb2r+v+b)" && $option == "2" } {
-         set traiteImage(optWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(rvbWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,addition)" } {
          set traiteImage(addWindow_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,soust)" } {
@@ -1323,7 +1323,13 @@ namespace eval ::traiteImage {
    proc formule { } {
       global caption traiteImage
 
-      if { $traiteImage(operation) == "$caption(audace,menu,offset)" } {
+      if { $traiteImage(operation) == "$caption(audace,menu,r+v+b2rvb)" } {
+         set traiteImage(image_A) ""
+         set traiteImage(formule) ""
+      } elseif { $traiteImage(operation) == "$caption(audace,menu,rvb2r+v+b)" } {
+         set traiteImage(image_A) ""
+         set traiteImage(formule) ""
+      } elseif { $traiteImage(operation) == "$caption(audace,menu,offset)" } {
          set traiteImage(image_A) "$caption(traiteImage,image_affichee) ( A ) :"
          set traiteImage(formule) "$caption(traiteImage,formule) A + Cte"
       } elseif { $traiteImage(operation) == "$caption(audace,menu,mult_cte)" } {
@@ -1481,14 +1487,14 @@ namespace eval ::traiteWindow {
             frame $This.usr.6.1 -borderwidth 0 -relief flat
                label $This.usr.6.1.lab1 -text "$caption(traiteImage,multx)"
                pack $This.usr.6.1.lab1 -side left -padx 10 -pady 10
-               entry $This.usr.6.1.ent1 -textvariable traiteWindow(scaleWindow_multx) -width 7 \
+               entry $This.usr.6.1.ent1 -textvariable traiteWindow(scaleWindow_multx) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.6.1.ent1 -side right -padx 10 -pady 10 
             pack $This.usr.6.1 -side top -fill x
             frame $This.usr.6.2 -borderwidth 0 -relief flat
                label $This.usr.6.2.lab2 -text "$caption(traiteImage,multy)"
                pack $This.usr.6.2.lab2 -side left -padx 10 -pady 5
-               entry $This.usr.6.2.ent2 -textvariable traiteWindow(scaleWindow_multy) -width 7 \
+               entry $This.usr.6.2.ent2 -textvariable traiteWindow(scaleWindow_multy) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.6.2.ent2 -side right -padx 10 -pady 5 
             pack $This.usr.6.2 -side top -fill x
@@ -1533,7 +1539,8 @@ namespace eval ::traiteWindow {
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                label $This.usr.4.2.lab7 -textvariable "traiteWindow(constante)"
                pack $This.usr.4.2.lab7 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent7 -textvariable traiteWindow(2,const) -width 7 -font $audace(font,arial_8_b)
+               entry $This.usr.4.2.ent7 -textvariable traiteWindow(2,const) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent7 -side right -padx 10 -pady 5
             pack $This.usr.4.2 -side top -fill both
         # pack $This.usr.4 -in $This.usr -side top -fill both
@@ -1542,7 +1549,8 @@ namespace eval ::traiteWindow {
             frame $This.usr.3.1 -borderwidth 0 -relief flat
                label $This.usr.3.1.lab5 -textvariable "traiteWindow(constante)"
                pack $This.usr.3.1.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.3.1.ent5 -textvariable traiteWindow(1,const) -width 7 -font $audace(font,arial_8_b)
+               entry $This.usr.3.1.ent5 -textvariable traiteWindow(1,const) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent5 -side right -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -in $This.usr -side top -fill both
@@ -1558,13 +1566,14 @@ namespace eval ::traiteWindow {
                pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
-               entry $This.usr.2.2.ent2 -textvariable traiteWindow(nb) -width 7 -font $audace(font,arial_8_b)
+               entry $This.usr.2.2.ent2 -textvariable traiteWindow(nb) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
                pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5
                label $This.usr.2.2.lab2 -textvariable "traiteWindow(nombre)"
                pack $This.usr.2.2.lab2 -side right -padx 5 -pady 5
             pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
-               entry $This.usr.2.3.ent3 -textvariable traiteWindow(valeur_indice) -width 5 -justify center\
+               entry $This.usr.2.3.ent3 -textvariable traiteWindow(valeur_indice) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
                label $This.usr.2.3.lab3 -textvariable "traiteWindow(premier_indice)"
@@ -2514,7 +2523,8 @@ namespace eval ::faireImageRef {
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                label $This.usr.4.2.lab7 -textvariable "faireImageRef(normalisation)"
                pack $This.usr.4.2.lab7 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent7 -textvariable faireImageRef(1,norm) -width 7 -font $audace(font,arial_8_b)
+               entry $This.usr.4.2.ent7 -textvariable faireImageRef(1,norm) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent7 -side right -padx 10 -pady 5
             pack $This.usr.4.2 -side top -fill both
         # pack $This.usr.4 -side bottom -fill both
@@ -2542,14 +2552,15 @@ namespace eval ::faireImageRef {
                pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
-               entry $This.usr.2.2.ent2 -textvariable faireImageRef(nb) -width 7 -font $audace(font,arial_8_b)
+               entry $This.usr.2.2.ent2 -textvariable faireImageRef(nb) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
                pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5
                label $This.usr.2.2.lab2 -textvariable "faireImageRef(nombre)"
                pack $This.usr.2.2.lab2 -side right -padx 5 -pady 5
             pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
-               entry $This.usr.2.3.ent3 -textvariable faireImageRef(valeur_indice) -width 5 -justify center\
-                  -font $audace(font,arial_8_b) -state disabled
+               entry $This.usr.2.3.ent3 -textvariable faireImageRef(valeur_indice) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
                pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
                label $This.usr.2.3.lab3 -textvariable "faireImageRef(premier_indice)"
                pack $This.usr.2.3.lab3 -side right -padx 5 -pady 5
@@ -2639,9 +2650,10 @@ namespace eval ::faireImageRef {
       global audace caption conf faireImageRef
 
       #---
-      set in $faireImageRef(in)
-      set out $faireImageRef(out)
-      set nb $faireImageRef(nb)
+      set in    $faireImageRef(in)
+      set out   $faireImageRef(out)
+      set nb    $faireImageRef(nb)
+      set first $faireImageRef(valeur_indice)
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $faireImageRef(in) == "" } {
           tk_messageBox -title $caption(traiteImage,attention) -type ok \
@@ -2676,7 +2688,7 @@ namespace eval ::faireImageRef {
       if { ( $in != "" ) && ( $out != "" ) && ( $nb != "" ) } {
          switch $faireImageRef(operation) \
             "$caption(audace,menu,raw2cfa)" {
-               catch { raw2cfa $in $out $nb } m
+               catch { raw2cfa $in $out $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,raw2cfa) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -2685,7 +2697,7 @@ namespace eval ::faireImageRef {
                }
             } \
             "$caption(audace,menu,faire_offset)" {
-               catch { smedian $in $out $nb } m
+               catch { smedian $in $out $nb $first } m
                if { $m == "" } {
                   if { $faireImageRef(1,disp) == 1 } {
                      loadima $out
@@ -2708,16 +2720,16 @@ namespace eval ::faireImageRef {
                set offset $faireImageRef(1,offset)
                set const "0"
                set temp "temp"
-               catch { sub2 $in $offset $temp $const $nb } m
+               catch { sub2 $in $offset $temp $const $nb $first } m
                if { $faireImageRef(1,methode) == "0" } {
                   #--- Somme
-                  catch { sadd $temp $out $nb } m
+                  catch { sadd $temp $out $nb $first } m
                } elseif { $faireImageRef(1,methode) == "1" } {
                   #--- Moyenne
-                  catch { smean $temp $out $nb } m
+                  catch { smean $temp $out $nb $first } m
                } elseif { $faireImageRef(1,methode) == "2" } {
                   #--- Mediane
-                  catch { smedian $temp $out $nb } m
+                  catch { smedian $temp $out $nb $first } m
                }
                catch { delete2 $temp $nb } m
                if { $m == "" } {
@@ -2755,9 +2767,9 @@ namespace eval ::faireImageRef {
                set const  "0"
                set temp   "temp"
                set tempo  "tempo"
-               catch { sub2 $in $offset $temp $const $nb } m
-               catch { noffset2 $temp $tempo $norm $nb } m
-               catch { smedian $tempo $out $nb } m
+               catch { sub2 $in $offset $temp $const $nb $first } m
+               catch { noffset2 $temp $tempo $norm $nb $first } m
+               catch { smedian $tempo $out $nb $first } m
                catch { delete2 $temp $nb } m
                catch { delete2 $tempo $nb } m
                if { $m == "" } {
@@ -2812,28 +2824,28 @@ namespace eval ::faireImageRef {
                   } m
                   if { $faireImageRef(1,sans_flat) == "0" } {
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                     catch { sub2 $in offset+dark $temp $const $nb } m
+                     catch { sub2 $in offset+dark $temp $const $nb $first } m
                      #--- Realisation de Z = Y / Flat-field
-                     catch { div2 $temp $flat $out $const_mult $nb } m
+                     catch { div2 $temp $flat $out $const_mult $nb $first } m
                      #--- Suppression des fichiers temporaires
                      catch { delete2 $temp $nb } m
                   } else {
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                     catch { sub2 $in offset+dark $out $const $nb } m
+                     catch { sub2 $in offset+dark $out $const $nb $first } m
                   }
                   #--- Suppression des fichiers intermediaires
                   catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
                } else {
                   if { $faireImageRef(1,sans_flat) == "0" } {
                      #--- Optimisation du noir
-                     catch { opt2 $in $dark $offset $temp $nb } m
+                     catch { opt2 $in $dark $offset $temp $nb $first } m
                      #--- Division par le flat
-                     catch { div2 $temp $flat $out $const_mult $nb } m
+                     catch { div2 $temp $flat $out $const_mult $nb $first } m
                      #--- Suppression des fichiers temporaires
                      catch { delete2 $temp $nb } m
                   } else {
                      #--- Optimisation du noir
-                     catch { opt2 $in $dark $offset $out $nb } m
+                     catch { opt2 $in $dark $offset $out $nb $first } m
                   }
                }
                #---
@@ -2845,7 +2857,7 @@ namespace eval ::faireImageRef {
                }
             } \
             "$caption(audace,menu,cfa2rgb)" {
-               catch { cfa2rgb $in $out $nb } m
+               catch { cfa2rgb $in $out $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -2888,7 +2900,7 @@ namespace eval ::faireImageRef {
       } elseif { $faireImageRef(operation) == $caption(audace,menu,pretraite) } {
          set faireImageRef(page_web) "1116pretraitement"
       } elseif { $faireImageRef(operation) == $caption(audace,menu,cfa2rgb) } {
-         set faireImageRef(page_web) "1117cfa2rgb"
+         set faireImageRef(page_web) "1117cfa2rvb"
       }
 
       #---

@@ -2,41 +2,41 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.10 2006-11-17 16:15:50 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.11 2006-11-17 18:46:34 robertdelmas Exp $
 #
 # offset  value
-# offset2  in out const number
-# ngain2  in out const number
-# noffset2  in out const number
+# offset2  in out const number ?first_index? ?tt_options?
+# ngain2  in out const number ?first_index? ?tt_options?
+# noffset2  in out const number ?first_index? ?tt_options?
 # add  operand value
-# add2  in operand out const number
+# add2  in operand out const number ?first_index? ?tt_options?
 # sub  operand value
-# sub2  in operand out const number
+# sub2  in operand out const number ?first_index? ?tt_options?
 # div  operand value
-# div2  in operand out const number
+# div2  in operand out const number ?first_index? ?tt_options?
 # opt  dark offset
-# opt2  in dark offset out const number
+# opt2  in dark offset out const number ?first_index? ?tt_options?
 # delete2  in number
-# register  in out number
-# register2  in out number
-# registerwcs  in out number
-# smedian  in out number
-# sadd  in out number
-# ssigma  in out number
-# smean  in out number
-# ssk  in out number kappa
-# ssort  in out number percent
+# register  in out number ?-box {x1 y1 x2 y2}? ?tt_options?
+# register2  in out number ?first_index? ?tt_options?
+# registerwcs  in out number ?first_index? ?tt_options?
+# smedian  in out number ?first_index? ?tt_options?
+# sadd  in out number ?first_index? ?tt_options?
+# ssigma  in out number ?first_index? ?tt_options?
+# smean  in out number ?first_index? ?tt_options?
+# ssk  in out number kappa ?first_index? ?tt_options?
+# ssort  in out number percent ?first_index? ?tt_options?
 # uncosmic  coef
-# uncosmic2  in out number coef
+# uncosmic2  in out number coef ?first_index? ?tt_options?
 # convgauss  sigma
-# convgauss2  in out number sigma
+# convgauss2  in out number sigma ?first_index? ?tt_options?
 # mult  const
-# mult2  in out const number
+# mult2  in out const number ?first_index? ?tt_options?
 # trans  dx dy
-# trans2  in out dx dy number
-# scale2  in out number scale_x scale_y
-# raw2cfa  in out number
-# cfa2rgb  in out number
+# trans2  in out dx dy number ?first_index? ?tt_options?
+# scale2  in out number scale_x scale_y ?first_index? ?tt_options?
+# raw2cfa  in out number ?first_index? ?tt_options?
+# cfa2rgb  in out number ?first_index? ?tt_options?
 #
 
 proc offset {args} {
@@ -456,7 +456,7 @@ proc delete2 {args} {
 }
 
 proc register {args} {
-   # in out number ?options?
+   # in out number ?-box {x1 y1 x2 y2}? ?tt_options?
    # options : "tt options" or -box {x1 y1 x2 y2}
    global audace
    global caption
