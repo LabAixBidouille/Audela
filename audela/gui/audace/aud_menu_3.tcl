@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.6 2006-11-16 22:13:32 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.7 2006-11-17 16:16:07 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -1565,7 +1565,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
                entry $This.usr.2.3.ent3 -textvariable traiteWindow(valeur_indice) -width 5 -justify center\
-                  -font $audace(font,arial_8_b) -state disabled
+                  -font $audace(font,arial_8_b)
                pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
                label $This.usr.2.3.lab3 -textvariable "traiteWindow(premier_indice)"
                pack $This.usr.2.3.lab3 -side right -padx 5 -pady 5
@@ -1659,9 +1659,10 @@ namespace eval ::traiteWindow {
       global audace caption traiteWindow
 
       #---
-      set in  $traiteWindow(in)
-      set out $traiteWindow(out)
-      set nb  $traiteWindow(nb)
+      set in    $traiteWindow(in)
+      set out   $traiteWindow(out)
+      set nb    $traiteWindow(nb)
+      set first $traiteWindow(valeur_indice)
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
           tk_messageBox -title $caption(traiteImage,attention) -type ok \
@@ -1720,7 +1721,7 @@ namespace eval ::traiteWindow {
                   return
                }
                #---
-               ::console::affiche_resultat "Usage : scale2 in out number scale_x scale_y\n\n"
+               ::console::affiche_resultat "Usage: scale2 in out number scale_x scale_y ?first_index? ?tt_options?\n\n"
                catch {
                   set x $traiteWindow(scaleWindow_multx)
                   set y $traiteWindow(scaleWindow_multy)
@@ -1731,7 +1732,7 @@ namespace eval ::traiteWindow {
                   if { [ expr $y ] == "0" } { set y "1" }
                   if { [ expr $y ] > "$maxi" } { set y "$maxi" }
                   if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
-                  scale2 $in $out $nb $x $y
+                  scale2 $in $out $nb $x $y $first
                } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,scale) -type ok \
@@ -1754,8 +1755,8 @@ namespace eval ::traiteWindow {
                }
                #---
                set const $traiteWindow(1,const)
-               ::console::affiche_resultat "offset2 $in $out $const $nb\n\n"
-               catch { offset2 $in $out $const $nb } m
+               ::console::affiche_resultat "Usage: offset2 in out const number ?first_index? ?tt_options?\n\n"
+               catch { offset2 $in $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,offset) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1777,8 +1778,8 @@ namespace eval ::traiteWindow {
                }
                #---
                set const $traiteWindow(1,const)
-               ::console::affiche_resultat "mult2 $in $out $const $nb\n\n"
-               catch { mult2 $in $out $const $nb } m
+               ::console::affiche_resultat "Usage: mult2 in out const number ?first_index? ?tt_options?\n\n"
+               catch { mult2 $in $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,mult_cte) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1800,8 +1801,8 @@ namespace eval ::traiteWindow {
                }
                #---
                set const $traiteWindow(1,const)
-               ::console::affiche_resultat "noffset2 $in $out $const $nb\n\n"
-               catch { noffset2 $in $out $const $nb } m
+               ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
+               catch { noffset2 $in $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,noffset) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1823,8 +1824,8 @@ namespace eval ::traiteWindow {
                }
                #---
                set const $traiteWindow(1,const)
-               ::console::affiche_resultat "ngain2 $in $out $const $nb\n\n"
-               catch { ngain2 $in $out $const $nb } m
+               ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
+               catch { ngain2 $in $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,ngain) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1853,8 +1854,8 @@ namespace eval ::traiteWindow {
                #---
                set operand $traiteWindow(2,operand)
                set const $traiteWindow(2,const)
-               ::console::affiche_resultat "add2 $in $operand $out $const $nb\n\n"
-               catch { add2 $in $operand $out $const $nb } m
+               ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
+               catch { add2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,addition) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1883,8 +1884,8 @@ namespace eval ::traiteWindow {
                #---
                set operand $traiteWindow(2,operand)
                set const $traiteWindow(2,const)
-               ::console::affiche_resultat "sub2 $in $operand $out $const $nb\n\n"
-               catch { sub2 $in $operand $out $const $nb } m
+               ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
+               catch { sub2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,soust) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1913,8 +1914,8 @@ namespace eval ::traiteWindow {
                #---
                set operand $traiteWindow(2,operand)
                set const $traiteWindow(2,const)
-               ::console::affiche_resultat "div2 $in $operand $out $const $nb\n\n"
-               catch { div2 $in $operand $out $const $nb } m
+               ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
+               catch { div2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,division) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1938,8 +1939,8 @@ namespace eval ::traiteWindow {
                #---
                set dark $traiteWindow(3,dark)
                set offset $traiteWindow(3,offset)
-               ::console::affiche_resultat "opt2 $in $dark $offset $out $nb\n\n"
-               catch { opt2 $in $dark $offset $out $nb } m
+               ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
+               catch { opt2 $in $dark $offset $out $nb $first } m
                if { $m == "" } {
                   tk_messageBox -title $caption(audace,menu,opt_noir) -type ok \
                      -message $caption(traiteImage,fin_traitement)
@@ -1948,8 +1949,8 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,mediane)" {
-               ::console::affiche_resultat "smedian $in $out $nb\n\n"
-               catch { smedian $in $out $nb } m
+               ::console::affiche_resultat "Usage: smedian in out number ?first_index? ?tt_options?\n\n"
+               catch { smedian $in $out $nb $first } m
                if { $m == "" } {
                   if { $traiteWindow(4,disp) == 1 } {
                      loadima $out
@@ -1962,8 +1963,8 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,somme)" {
-               ::console::affiche_resultat "sadd $in $out $nb\n\n"
-               catch { sadd $in $out $nb } m
+               ::console::affiche_resultat "Usage: sadd in out number ?first_index? ?tt_options?\n\n"
+               catch { sadd $in $out $nb $first } m
                if { $m == "" } {
                   if { $traiteWindow(4,disp) == 1 } {
                      loadima $out
@@ -1976,8 +1977,8 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,moyenne)" {
-               ::console::affiche_resultat "smean $in $out $nb\n\n"
-               catch { smean $in $out $nb } m
+               ::console::affiche_resultat "Usage: smean in out number ?first_index? ?tt_options?\n\n"
+               catch { smean $in $out $nb $first } m
                if { $m == "" } {
                   if { $traiteWindow(4,disp) == 1 } {
                      loadima $out
@@ -1990,8 +1991,8 @@ namespace eval ::traiteWindow {
                }
             } \
             "$caption(audace,menu,ecart_type)" {
-               ::console::affiche_resultat "ssigma $in $out $nb bitpix=-32\n\n"
-               catch { ssigma $in $out $nb "bitpix=-32" } m
+               ::console::affiche_resultat "Usage: ssigma in out number ?first_index? bitpix=-32\n\n"
+               catch { ssigma $in $out $nb $first "bitpix=-32" } m
                if { $m == "" } {
                   if { $traiteWindow(4,disp) == 1 } {
                      loadima $out

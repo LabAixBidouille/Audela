@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.9 2006-11-15 00:49:31 alainklotz Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.10 2006-11-17 16:15:50 robertdelmas Exp $
 #
 # offset  value
 # offset2  in out const number
@@ -49,12 +49,12 @@ proc offset {args} {
       buf$audace(bufNo) imaseries "OFFSET offset=[lindex $args 0]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : offset value"
+      error "Usage: offset value"
    }
 }
 
 proc offset2 {args} {
-   # in out const number
+   # in out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -73,12 +73,12 @@ proc offset2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" OFFSET offset=[lindex $args 2] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : offset2 in out const number ?first_index? ?tt_options?"
+      error "Usage: offset2 in out const number ?first_index? ?tt_options?"
    }
 }
 
 proc ngain2 {args} {
-   # in out const number
+   # in out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -97,12 +97,12 @@ proc ngain2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" NORMGAIN normgain_value=[lindex $args 2] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : ngain2 in out const number ?first_index? ?tt_options?"
+      error "Usage: ngain2 in out const number ?first_index? ?tt_options?"
    }
 }
 
 proc noffset2 {args} {
-   # in out const number
+   # in out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -121,7 +121,7 @@ proc noffset2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" NORMOFFSET normoffset_value=[lindex $args 2] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : noffset2 in out const number ?first_index? ?tt_options?"
+      error "Usage: noffset2 in out const number ?first_index? ?tt_options?"
    }
 }
 
@@ -149,12 +149,12 @@ proc add {args} {
       buf$audace(bufNo) add "$operand" [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : add operand value"
+      error "Usage: add operand value"
    }
 }
 
 proc add2 {args} {
-   # in operand out const number
+   # in operand out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -189,7 +189,7 @@ proc add2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" ADD \"file=$operand\" offset=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : add2 in operand out const number ?first_index? ?tt_options?"
+      error "Usage: add2 in operand out const number ?first_index? ?tt_options?"
    }
 }
 
@@ -217,12 +217,12 @@ proc sub {args} {
       buf$audace(bufNo) sub "$operand" [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : sub operand value"
+      error "Usage: sub operand value"
    }
 }
 
 proc sub2 {args} {
-   # in operand out const number
+   # in operand out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -257,7 +257,7 @@ proc sub2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : sub2 in operand out const number ?first_index? ?tt_options?"
+      error "Usage: sub2 in operand out const number ?first_index? ?tt_options?"
    }
 }
 
@@ -285,12 +285,12 @@ proc div {args} {
       buf$audace(bufNo) div "$operand" [lindex $args 1]
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : div operand value"
+      error "Usage: div operand value"
    }
 }
 
 proc div2 {args} {
-   # in operand out const number
+   # in operand out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -325,7 +325,7 @@ proc div2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" DIV \"file=$operand\" constant=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : div2 in operand out const number ?first_index? ?tt_options?"
+      error "Usage: div2 in operand out const number ?first_index? ?tt_options?"
    }
 }
 
@@ -367,12 +367,12 @@ proc opt {args} {
       buf$audace(bufNo) opt "$dark" "$offset"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : opt dark offset"
+      error "Usage: opt dark offset"
    }
 }
 
 proc opt2 {args} {
-   # in dark offset out number
+   # in dark offset out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -425,7 +425,7 @@ proc opt2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" OPT \"dark=$dark\" \"bias=$offset\" $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : opt2 in dark offset out number ?first_index? ?tt_options?"
+      error "Usage: opt2 in dark offset out number ?first_index? ?tt_options?"
    }
 }
 
@@ -451,7 +451,7 @@ proc delete2 {args} {
          }
       }
    } else {
-      error "Usage : delete2 in number"
+      error "Usage: delete2 in number"
    }
 }
 
@@ -463,7 +463,7 @@ proc register {args} {
 
    set argc [llength $args]
    if { $argc < 3} {
-      error "Usage : register in out number ?-box {x1 y1 x2 y2}? ?tt_options?"
+      error "Usage: register in out number ?-box {x1 y1 x2 y2}? ?tt_options?"
       return $error;
    }
    # --- decode la ligne de commande
@@ -526,7 +526,7 @@ proc register {args} {
 }
 
 proc register2 {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -547,12 +547,12 @@ proc register2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" REGISTER translate=never $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE $options"
    } else {
-      error "Usage : register2 in out number ?first_index? ?tt_options?"
+      error "Usage: register2 in out number ?first_index? ?tt_options?"
    }
 }
 
 proc registerwcs {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -570,12 +570,12 @@ proc registerwcs {args} {
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" REGISTER matchwcs"
    } else {
-      error "Usage : registerwcs in out number ?first_index? ?tt_options?"
+      error "Usage: registerwcs in out number ?first_index? ?tt_options?"
    }
 }
 
 proc smedian {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -594,12 +594,12 @@ proc smedian {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MED $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : smedian in out number ?first_index? ?tt_options?"
+      error "Usage: smedian in out number ?first_index? ?tt_options?"
    }
 }
 
 proc sadd {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -618,12 +618,12 @@ proc sadd {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" ADD $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : sadd in out number ?first_index? ?tt_options?"
+      error "Usage: sadd in out number ?first_index? ?tt_options?"
    }
 }
 
 proc ssigma {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -642,12 +642,12 @@ proc ssigma {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" SIG $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : ssigma in out number ?first_index? ?tt_options?"
+      error "Usage: ssigma in out number ?first_index? ?tt_options?"
    }
 }
 
 proc smean {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -666,12 +666,12 @@ proc smean {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MEAN $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : smean in out number ?first_index? ?tt_options?"
+      error "Usage: smean in out number ?first_index? ?tt_options?"
    }
 }
 
 proc ssk {args} {
-   # in out number kappa
+   # in out number kappa ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -690,12 +690,12 @@ proc ssk {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" SK kappa=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : ssk in out number kappa ?first_index? ?tt_options?"
+      error "Usage: ssk in out number kappa ?first_index? ?tt_options?"
    }
 }
 
 proc ssort {args} {
-   # in out number percent
+   # in out number percent ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -714,7 +714,7 @@ proc ssort {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" SORT percent=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : ssort in out number percent ?first_index? ?tt_options?"
+      error "Usage: ssort in out number percent ?first_index? ?tt_options?"
    }
 }
 
@@ -728,12 +728,12 @@ proc uncosmic {args} {
       buf$audace(bufNo) imaseries "FILTER kernel_width=3 kernel_type=med kernel_coef=[lindex $args 0]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : uncosmic coef"
+      error "Usage: uncosmic coef"
    }
 }
 
 proc uncosmic2 {args} {
-   # in out number coef
+   # in out number coef ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -751,7 +751,7 @@ proc uncosmic2 {args} {
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" FILTER kernel_width=3 kernel_type=med kernel_coef=[lindex $args 3] $options"
    } else {
-      error "Usage : uncosmic2 in out number coef ?first_index? ?tt_options?"
+      error "Usage: uncosmic2 in out number coef ?first_index? ?tt_options?"
    }
 }
 
@@ -765,12 +765,12 @@ proc convgauss {args} {
       buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=[lindex $args 0]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : convgauss sigma"
+      error "Usage: convgauss sigma"
    }
 }
 
 proc convgauss2 {args} {
-   # in out number sigma
+   # in out number sigma ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -789,7 +789,7 @@ proc convgauss2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CONV kernel_type=gaussian sigma=$[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : convgauss2 in out number sigma ?first_index? ?tt_options?"
+      error "Usage: convgauss2 in out number sigma ?first_index? ?tt_options?"
    }
 }
 
@@ -803,12 +803,12 @@ proc mult {args} {
       buf$audace(bufNo) imaseries "MULT constant=[lindex $args 0]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : mult const"
+      error "Usage: mult const"
    }
 }
 
 proc mult2 {args} {
-   # in out const number
+   # in out const number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -827,7 +827,7 @@ proc mult2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" MULT constant=[lindex $args 2] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : mult2 in out const number ?first_index? ?tt_options?"
+      error "Usage: mult2 in out const number ?first_index? ?tt_options?"
    }
 }
 
@@ -841,12 +841,12 @@ proc trans {args} {
       buf$audace(bufNo) imaseries "TRANS trans_x=[lindex $args 0] trans_y=[lindex $args 1]"
       ::audace::autovisu $audace(visuNo)
    } else {
-      error "Usage : trans dx dy"
+      error "Usage: trans dx dy"
    }
 }
 
 proc trans2 {args} {
-   # in out dx dy number
+   # in out dx dy number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -865,12 +865,12 @@ proc trans2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" TRANS trans_x=[lindex $args 2] trans_y=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage : trans2 in out dx dy number ?first_index? ?tt_options?"
+      error "Usage: trans2 in out dx dy number ?first_index? ?tt_options?"
    }
 }
 
 proc scale2 {args} {
-   # in out number scale_x scale_y
+   # in out number scale_x scale_y ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -888,12 +888,12 @@ proc scale2 {args} {
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" RESAMPLE \"paramresample=[lindex $args 3] 0 0 0 [lindex $args 4] 0\" normaflux=1 $options"
    } else {
-      error "Usage : scale2 in out number scale_x scale_y ?first_index? ?tt_options?"
+      error "Usage: scale2 in out number scale_x scale_y ?first_index? ?tt_options?"
    }
 }
 
 proc raw2cfa {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -911,12 +911,12 @@ proc raw2cfa {args} {
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" RAW2CFA $options"
    } else {
-      error "Usage : raw2cfa in out number ?first_index? ?tt_options?"
+      error "Usage: raw2cfa in out number ?first_index? ?tt_options?"
    }
 }
 
 proc cfa2rgb {args} {
-   # in out number
+   # in out number ?first_index? ?tt_options?
    global audace
    global caption
 
@@ -934,7 +934,7 @@ proc cfa2rgb {args} {
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CFA2RGB $options"
    } else {
-      error "Usage : cfa2rgb in out number ?first_index? ?tt_options?"
+      error "Usage: cfa2rgb in out number ?first_index? ?tt_options?"
    }
 }
 
