@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.39 2006-11-17 10:30:53 audelateam Exp $
+# Mise a jour $Id: caption.cap,v 1.40 2006-11-17 10:35:36 audelateam Exp $
 #
 
 #=========================================================================
@@ -365,7 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,pas_port_com)                   "Sem porta"
 
    set caption(audace,titre)                          "Aud'ACE"
-#<<<<<<< caption.cap
+
    set caption(audace,console)                        "Consola"
    set caption(audace,console,rate)                   "O acesso não é possivel"
    set caption(audace,console,gagne)                  "Acesso OK"
@@ -380,7 +380,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,nouveau_script)            "Novo Script"
    set caption(audace,menu,editer_script)             "Editar um script"
    set caption(audace,menu,lancer_script)             "Executar um script"
-   set caption(audace,menu,sauve_config)              "Guardar Setup"
+   set caption(audace,menu,sauve_config)              "Guardar configuração"
    set caption(audace,menu,quitter)                   "Sair"
 
    set caption(audace,menu,affichage)                 "Ver"
@@ -640,8 +640,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuils,iris)                           "Limiares padrão de Iris:"
    set caption(seuils,histoauto)                      "Limiares em % do histograma (baixo/alto):"
    set caption(seuils,initiaux)                       "Limiares Iniciais "
-#=======
-#>>>>>>> 1.38
 
    set caption(console,titre)                         "Consola"
    set caption(console,debug)                         "Debug"
