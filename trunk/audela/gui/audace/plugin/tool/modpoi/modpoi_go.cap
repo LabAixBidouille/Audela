@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi_go.cap
-# Mise a jour $Id: modpoi_go.cap,v 1.5 2006-11-09 13:17:49 audelateam Exp $
+# Mise a jour $Id: modpoi_go.cap,v 1.6 2006-11-18 23:48:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -18,7 +18,6 @@ set caption(modpoi_go,titre)              "TPOINT"
 set caption(modpoi_go,nouveau)            "New"
 set caption(modpoi_go,ouvrir)             "Open"
 set caption(modpoi_go,editer)             "Edit"
-set caption(modpoi_go,enregistrer)        "Save"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -29,7 +28,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi_go,nouveau)         "Nouveau"
    set caption(modpoi_go,ouvrir)          "Ouvrir"
    set caption(modpoi_go,editer)          "Editer"
-   set caption(modpoi_go,enregistrer)     "Enregistrer"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -40,7 +38,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi_go,nouveau)         "Nuovo"
    set caption(modpoi_go,ouvrir)          "Aprire"
    set caption(modpoi_go,editer)          "Edita"
-   set caption(modpoi_go,enregistrer)     "Salvare"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -51,7 +48,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi_go,nouveau)         "Nuevo"
    set caption(modpoi_go,ouvrir)          "Abrir"
    set caption(modpoi_go,editer)          "Editar"
-   set caption(modpoi_go,enregistrer)     "Guardar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -62,7 +58,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi_go,nouveau)         "Neu"
    set caption(modpoi_go,ouvrir)          "Öffnen"
    set caption(modpoi_go,editer)          "Editieren"
-   set caption(modpoi_go,enregistrer)     "Speichern"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -73,7 +68,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi_go,nouveau)         "Novo"
    set caption(modpoi_go,ouvrir)          "Abrir"
    set caption(modpoi_go,editer)          "Editar"
-   set caption(modpoi_go,enregistrer)     "Guardar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -84,7 +78,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi_go,nouveau)         "Ny"
    set caption(modpoi_go,ouvrir)          "Åbn"
    set caption(modpoi_go,editer)          "Rediger"
-   set caption(modpoi_go,enregistrer)     "Gem"
 
 }
 
