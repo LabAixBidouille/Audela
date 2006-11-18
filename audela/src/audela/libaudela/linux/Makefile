@@ -19,15 +19,15 @@ include ../../../Makefile1
 CXXFLAGS += -I$(EXTINC)
 
 install: $(OUTPUT)
-	cp -f ../src/cpool.h   ../../include
-	cp -f ../src/cdevice.h  ../../include
-	cp -f ../src/cerror.h  ../../include
-	cp -f ../src/palette.h  ../../include
-	cp -f ../src/cdevice.h  ../../include
-	cp -f ../src/cbuffer.h  ../../include
-	cp -f ../src/cpixels.h  ../../include
-	cp -f ../src/fitskw.h   ../../include
-	
+	cp -f ../src/cpool.h   ../../../include
+	cp -f ../src/cdevice.h  ../../../include
+	cp -f ../src/cerror.h  ../../../include
+	cp -f ../src/palette.h  ../../../include
+	cp -f ../src/cdevice.h  ../../../include
+	cp -f ../src/cbuffer.h  ../../../include
+	cp -f ../src/cpixels.h  ../../../include
+	cp -f ../src/fitskw.h   ../../../include
+
 
 
 
