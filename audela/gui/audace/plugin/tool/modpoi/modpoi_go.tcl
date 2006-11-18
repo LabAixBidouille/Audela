@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.4 2006-11-16 22:12:02 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.5 2006-11-18 23:49:10 robertdelmas Exp $
 #
 
 package provide modpoi 1.0
@@ -31,7 +31,6 @@ namespace eval ::Modelpoi {
       set panneau(Modelpoi,nouveau)     "$caption(modpoi_go,nouveau)"
       set panneau(Modelpoi,charger)     "$caption(modpoi_go,ouvrir)"
       set panneau(Modelpoi,editer)      "$caption(modpoi_go,editer)"
-      set panneau(Modelpoi,enregistrer) "$caption(modpoi_go,enregistrer)"
       ModelpoiBuildIF $This
    }
 
@@ -110,14 +109,6 @@ proc ModelpoiBuildIF { This } {
                modpoi_wiz edit
             }
          pack $This.fra2.but3 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-         #--- Bouton Enregistrer
-         button $This.fra2.but4 -borderwidth 2 -text $panneau(Modelpoi,enregistrer) -state disabled \
-            -command { 
-               source [ file join $audace(rep_plugin) tool modpoi modpoi.tcl ] 
-               Chargement_Var
-            }
-         pack $This.fra2.but4 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra2 -side top -fill x
 
