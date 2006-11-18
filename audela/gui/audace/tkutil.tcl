@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.5 2006-08-23 19:51:54 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.6 2006-11-18 22:27:39 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -196,7 +196,7 @@ namespace eval tkutil {
 
    #
    # tkutil::box_save parent initialdir numero_buffer type
-   # Ouvre la fenetre de selection des fichiers a proposer au chargement
+   # Ouvre la fenetre de selection des fichiers a proposer a la sauvegarde
    #
    proc box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo "" } } {
       variable saveFileType
