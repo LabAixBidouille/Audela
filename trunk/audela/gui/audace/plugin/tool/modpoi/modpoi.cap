@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.7 2006-11-19 11:08:56 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.8 2006-11-19 17:15:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,7 @@ global caption
 # *************** Version anglaise ****************************
 
    set caption(modpoi,modele_existe)         "Aiming Model Ready."
-   set caption(modpoi,modele_existe_pas)     "There is no aiming model."
+   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "To edit an aiming model, you must first open it."
 
@@ -49,8 +49,9 @@ both sides of the meridian."
    set caption(modpoi,wiz1b,nstars1)         "Invalid Stars Number."
    set caption(modpoi,wiz1b,catalog)         "Star Catalog"
    set caption(modpoi,wiz1b,acqauto)         "Self-centering"
-   set caption(modpoi,wiz1b,refraction_1)    "Note:  This telescope computes the\nrefraction correction for GoTo movements."
-   set caption(modpoi,wiz1b,refraction_2)    "Note:  This telescope does not compute\nthe refraction correction for GoTo\n\
+   set caption(modpoi,wiz1b,refraction_1)    "# Note: This telescope computes the\nrefraction correction for GoTo movements.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
+   set caption(modpoi,wiz1b,refraction_2)    "Note: This telescope does not compute\nthe refraction correction for GoTo\n\
 movements but Aud'ACE performs this calculation."
 
    set caption(modpoi,wiz1c,title)           "Aiming Model: Self-centering"
@@ -145,7 +146,7 @@ telescope keypad buttons:"
 if { [ string compare $langage "french" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Modèle de pointage opérationnel."
-   set caption(modpoi,modele_existe_pas)     "Il n'existe pas de modèle de pointage."
+   set caption(modpoi,modele_non_charge)     "Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "Pour éditer un modèle de pointage, il faut d'abord l'ouvrir."
 
@@ -182,7 +183,8 @@ part et d'autre du méridien."
    set caption(modpoi,wiz1b,nstars1)         "Nombre d'étoiles invalide."
    set caption(modpoi,wiz1b,catalog)         "Catalogue d'étoiles"
    set caption(modpoi,wiz1b,acqauto)         "Centrage automatique"
-   set caption(modpoi,wiz1b,refraction_1)    "Nota : Ce télescope tient compte de la\ncorrection de réfraction pour les GoTo."
+   set caption(modpoi,wiz1b,refraction_1)    "# Nota : Ce télescope tient compte de la\ncorrection de réfraction pour les GoTo.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
    set caption(modpoi,wiz1b,refraction_2)    "Nota : Ce télescope ne tient pas compte de\nla correction de réfraction pour les GoTo.\n\
 Aud'ACE se charge de ce calcul pour lui."
 
@@ -279,7 +281,7 @@ des directions :"
 } elseif { [ string compare $langage "italian" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Modello di puntamento pronto."
-   set caption(modpoi,modele_existe_pas)     "Non esiste come modello di puntamento."
+   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "Per editare un modello di puntamento, occorre prima aprirlo."
 
@@ -316,7 +318,8 @@ entrambe le parti del meridiano."
    set caption(modpoi,wiz1b,nstars1)         "Numero di stelle non valida."
    set caption(modpoi,wiz1b,catalog)         "Catalogo stellare"
    set caption(modpoi,wiz1b,acqauto)         "Puntamento automatico"
-   set caption(modpoi,wiz1b,refraction_1)    "Nota: Questo telescopio tiene conto della\ncorrezione per la rifrazione nei GoTo."
+   set caption(modpoi,wiz1b,refraction_1)    "# Nota: Questo telescopio tiene conto della\ncorrezione per la rifrazione nei GoTo.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
    set caption(modpoi,wiz1b,refraction_2)    "Nota: Questo telescopio non effettua la\ncorrezione di rifrazione atmosferica\n\
 per i movimenti di GoTo, ma Aud'ACE la esegue."
 
@@ -413,7 +416,7 @@ di direzione:"
 } elseif { [ string compare $langage "spanish" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Modelo de apuntado listo?"
-   set caption(modpoi,modele_existe_pas)     "No existe modelo de apuntado?"
+   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "Para editar un modelo de apuntado, se debe abrirlo en primer lugar."
 
@@ -450,7 +453,8 @@ a ambos lados del meridiano."
    set caption(modpoi,wiz1b,nstars1)         "Número de estrellas inválida."
    set caption(modpoi,wiz1b,catalog)         "Catálogo estelar "
    set caption(modpoi,wiz1b,acqauto)         "Auto-centrado"
-   set caption(modpoi,wiz1b,refraction_1)    "Nota: Este telescopio calcula la corrección\npor refracción para el movimiento de GoTo."
+   set caption(modpoi,wiz1b,refraction_1)    "# Nota: Este telescopio calcula la corrección\npor refracción para el movimiento de GoTo.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
    set caption(modpoi,wiz1b,refraction_2)    "Nota: Este telescopio no calcula la corrección\npor refracción para los movimientos de GoTo,\n\
 pero Aud'ACE sí."
 
@@ -546,7 +550,7 @@ los mandos del telescopio:"
 } elseif { [ string compare $langage "german" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Operativ Schwenken Vorlage."
-   set caption(modpoi,modele_existe_pas)     "Es gibt kein operativ Schwenken Vorbild."
+   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "Um den Operativ Schwenken Vorlage zu editieren, muss man es erst öffnen."
 
@@ -582,7 +586,8 @@ an beide Seiten des Meridian."
    set caption(modpoi,wiz1b,nstars1)         "Ungültige Sternen Zahl."
    set caption(modpoi,wiz1b,catalog)         "Sternen Katalog"
    set caption(modpoi,wiz1b,acqauto)         "Automatische Zentrierung"
-   set caption(modpoi,wiz1b,refraction_1)    "Notiz: Dieses Teleskop berechnet die Strahlenbrechung\nVerbesserung für die GoTo Bewegung."
+   set caption(modpoi,wiz1b,refraction_1)    "# Notiz: Dieses Teleskop berechnet die Strahlenbrechung\nVerbesserung für die GoTo Bewegung.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
    set caption(modpoi,wiz1b,refraction_2)    "Notiz: dieses Teleskop berechnet die Strahlenbrechung\nVerbesserung für die GoTo Bewegung\n\
 nicht aber Aud’ACE tut diese Berechnung."
 
@@ -678,7 +683,7 @@ Richtung Hand Kontroller Knöpfe drücken:"
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(modpoi,modele_existe)         "Modelo de apontamento operacional."
-   set caption(modpoi,modele_existe_pas)     "Não existe modelo de apontamento."
+   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "Para editar um modelo de apontamento é preciso abri-lo primeiro."
 
@@ -702,28 +707,29 @@ A determinação dos parâmetros do modelo\n\
 realiza-se apontando para estrelas de\n\
 um sítio e outra do meridiano."
 
-   set caption(modpoi,wiz1b,title)           "Modelo de apontamento : Parâmetros de apontamento"
+   set caption(modpoi,wiz1b,title)           "Modelo de apontamento: Parâmetros de apontamento"
    set caption(modpoi,wiz1b,title2)          "Parâmetros de apontamento"
    set caption(modpoi,wiz1b,prev)            "<< Anterior"
    set caption(modpoi,wiz1b,next)            "Seguinte >>"
-   set caption(modpoi,wiz1b,heast)           "Angulos horários limite : Este"
+   set caption(modpoi,wiz1b,heast)           "Angulos horários limite: Este"
    set caption(modpoi,wiz1b,hwest)           "Oeste"
-   set caption(modpoi,wiz1b,decinf)          "Declinações limite : Sul"
+   set caption(modpoi,wiz1b,decinf)          "Declinações limite: Sul"
    set caption(modpoi,wiz1b,decsup)          "Norte"
    set caption(modpoi,wiz1b,nstars)          "Número de estrelas (6 min. e 48 max.)"
    set caption(modpoi,wiz1b,warning)         "Atenção"
    set caption(modpoi,wiz1b,nstars1)         "Número de estrelas inválida."
    set caption(modpoi,wiz1b,catalog)         "Catálogo de estrelas"
    set caption(modpoi,wiz1b,acqauto)         "Centragem automática"
-   set caption(modpoi,wiz1b,refraction_1)    "Nota : Este telescópio tem em conta a\ncorrecção da refracção para os GoTo."
-   set caption(modpoi,wiz1b,refraction_2)    "Nota : Este telescópio não tem em conta a\ncorrecção da refracção para os GoTo.\n\
+   set caption(modpoi,wiz1b,refraction_1)    "# Nota: Este telescópio tem em conta a\ncorrecção da refracção para os GoTo.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
+   set caption(modpoi,wiz1b,refraction_2)    "Nota: Este telescópio não tem em conta a\ncorrecção da refracção para os GoTo.\n\
 Aud'ACE encarrega-se desse cálculo."
 
-   set caption(modpoi,wiz1c,title)           "Modelo de apontamento : Centragem automática"
+   set caption(modpoi,wiz1c,title)           "Modelo de apontamento: Centragem automática"
    set caption(modpoi,wiz1c,title2)          "Centragem automática"
    set caption(modpoi,wiz1c,prev)            "<< Anterior"
    set caption(modpoi,wiz1c,next)            "Seguinte >>"
-   set caption(modpoi,wiz1c,xyc)             "Posicionar a estrela nas coordenadas :"
+   set caption(modpoi,wiz1c,xyc)             "Posicionar a estrela nas coordenadas:"
    set caption(modpoi,wiz1c,xc)              "x ="
    set caption(modpoi,wiz1c,yc)              "y ="
    set caption(modpoi,wiz1c,binning)         "Binning"
@@ -732,19 +738,19 @@ Aud'ACE encarrega-se desse cálculo."
    set caption(modpoi,wiz1c,initial_delay)   "Derivação da calibragem (microseg.)"
    set caption(modpoi,wiz1c,compositage)     "Número de imagens a interferir"
 
-   set caption(modpoi,wiz2,title)            "Modelo de apontamento : Medida dos desvios de apontamento"
+   set caption(modpoi,wiz2,title)            "Modelo de apontamento: Medida dos desvios de apontamento"
    set caption(modpoi,wiz2,title2)           "Sequência de medida dos desvios\nentre a posição a apontar\ne a posição observada"
    set caption(modpoi,wiz2,star)             "Estrela"
    set caption(modpoi,wiz2,next)             "Cálculo >>"
    set caption(modpoi,wiz2,prev)             "<< Anterior"
 
-   set caption(modpoi,wiz3,title)            "Modelo de apontamento : Apontamento de estrela número "
+   set caption(modpoi,wiz3,title)            "Modelo de apontamento: Apontamento de estrela número "
    set caption(modpoi,wiz3,title2)           "\
 Apontamento de estrela número "
    set caption(modpoi,wiz3,j2000)            "\
-Coordenadas catálogo J2000.0 : "
+Coordenadas catálogo J2000.0: "
    set caption(modpoi,wiz3,tel)              "\
-Coordenadas enviadas ao telescópio :"
+Coordenadas enviadas ao telescópio:"
    set caption(modpoi,wiz3,comment_1)        "\
 As coordenadas\n\
 enviadas ao telescópio incluem\n\
@@ -761,20 +767,20 @@ de aberração e de nutação."
    set caption(modpoi,wiz3,prev)             "<< Anterior"
    set caption(modpoi,wiz3,pas_etoile)       "Já não existe estrela. Deve\nfechar a ferramenta 'Modelo de apontamento'."
 
-   set caption(modpoi,wiz4,title)            "Modelo de apontamento : Centragem da estrela número "
+   set caption(modpoi,wiz4,title)            "Modelo de apontamento: Centragem da estrela número "
    set caption(modpoi,wiz4,title2)           "Centragem da estrela número "
    set caption(modpoi,wiz4,center)           "Centrar "
    set caption(modpoi,wiz4,comment)          "\
 Colocar a estrela no centro do campo (verificar\n\
 eventualmente com uma imagem CCD) agindo\n\
 sobre os botões do controlador de mão\n\
-para comandar as direcções :"
+para comandar as direcções:"
    set caption(modpoi,wiz4,next)             "Estrela centrada >>"
    set caption(modpoi,wiz4,prev)             "<< Anterior"
    set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
    set caption(modpoi,wiz4,comment_auto)     "Centragem automática em curso..."
 
-   set caption(modpoi,wiz5,title)            "Modelo de apontamento : Resultado dos cálculos"
+   set caption(modpoi,wiz5,title)            "Modelo de apontamento: Resultado dos cálculos"
 
    set caption(modpoi,wiz5,IH)               "deslocamento do codificador h"
    set caption(modpoi,wiz5,ID)               "deslocamento do codigicador d"
@@ -794,13 +800,13 @@ para comandar as direcções :"
    set caption(modpoi,west)                  "O"
    set caption(modpoi,south)                 "S"
 
-   set caption(modpoi,non_centree)           "Problema : Estrela não centrada."
-   set caption(modpoi,consignes)             "Posicionar a estrela sobre as coordenadas :"
-   set caption(modpoi,fichier)               "Ficheiro :"
-   set caption(modpoi,etalonnage)            "Calibração :"
-   set caption(modpoi,etat_initial)          "Posição inicial da estrela :"
-   set caption(modpoi,shift_n)               "Deslocamento para norte :"
-   set caption(modpoi,shift-e)               "Deslocamento para este :"
+   set caption(modpoi,non_centree)           "Problema: Estrela não centrada."
+   set caption(modpoi,consignes)             "Posicionar a estrela sobre as coordenadas:"
+   set caption(modpoi,fichier)               "Ficheiro:"
+   set caption(modpoi,etalonnage)            "Calibração:"
+   set caption(modpoi,etat_initial)          "Posição inicial da estrela:"
+   set caption(modpoi,shift_n)               "Deslocamento para norte:"
+   set caption(modpoi,shift-e)               "Deslocamento para este:"
    set caption(modpoi,iteration)             "Iteração"
 
    set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
@@ -812,7 +818,7 @@ para comandar as direcções :"
 } elseif { [ string compare $langage "danish" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Aiming Model Ready."
-   set caption(modpoi,modele_existe_pas)     "There is no aiming model."
+   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
 
    set caption(modpoi,modele,editer)         "To edit an aiming model, you must first open it."
 
@@ -849,8 +855,9 @@ both sides of the meridian."
    set caption(modpoi,wiz1b,nstars1)         "Invalid Stars Number."
    set caption(modpoi,wiz1b,catalog)         "Star Catalog"
    set caption(modpoi,wiz1b,acqauto)         "Self-centering"
-   set caption(modpoi,wiz1b,refraction_1)    "Note:  This telescope computes the\nrefraction correction for GoTo movements."
-   set caption(modpoi,wiz1b,refraction_2)    "Note:  This telescope does not compute\nthe refraction correction for GoTo\n\
+   set caption(modpoi,wiz1b,refraction_1)    "# Note: This telescope computes the\nrefraction correction for GoTo movements.\n\
+Aud'ACE ne calcule pas cette correction pour lui."
+   set caption(modpoi,wiz1b,refraction_2)    "Note: This telescope does not compute\nthe refraction correction for GoTo\n\
 movements but Aud'ACE performs this calculation."
 
    set caption(modpoi,wiz1c,title)           "Aiming Model: Self-centering"

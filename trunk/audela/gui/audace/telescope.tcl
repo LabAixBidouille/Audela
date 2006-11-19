@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.6 2006-11-01 15:55:25 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.7 2006-11-19 17:15:00 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -707,20 +707,38 @@ global audace
    #     retourne 0 sinon
    #------------------------------------------------------------
    proc possedeCorrectionRefraction { } {
-   
+
       # The telescope mount computes the refraction corrections
-      # yes = 1 (case of the Meade LX200, Sky Sensor 2000 or Losmandy Gemini)
-      # no  = 0 (case of the AudeCom)
+      # yes = 1 (case of the Meade LX200, Sky Sensor 2000 PC, Losmandy Gemini or Mel Bartels)
+      # no  = 0 (case of the Ouranos, AudeCom or Ite-lente)
+      global audace
       global conf
       global caption
 
-      if { $conf(telescope) == "lx200" && $conf(lx200,modele) != "$caption(telescope,modele_audecom)" } {
-         set result "1"
+      #--- Je verifie si la monture est capable fournir son nom de famille
+      set result [ catch { tel$audace(telNo) name } telName ]
+      #---
+      if { $result == 0 } {
+         switch -exact -- $telName {
+            LX200       {
+                           if { $conf(lx200,modele) == "$caption(telescope,modele_audecom)" } {
+                              return 0
+                           } elseif { $conf(lx200,modele) == "$caption(conftel,modele_ite-lente)" } {
+                              return 0
+                           } else {
+                              return 1
+                           }
+                        }
+            Ouranos     { return 0 }
+            AudeCom     { return 0 }
+            Temma       { return 0 }
+            ASCOM       { return 0 }
+            Celestron   { return 1 }
+            default     { return 0 }
+         }
       } else {
-         set result "0"
+         return 0
       }
-
-      return $result
    }
 
    #------------------------------------------------------------

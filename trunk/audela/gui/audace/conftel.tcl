@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.14 2006-11-07 22:38:41 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.15 2006-11-19 17:14:31 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -755,7 +755,8 @@ namespace eval ::confTel {
       pack $frm.lab3 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
 
       set list_combobox [ list $caption(conftel,modele_lx200) $caption(conftel,modele_audecom) \
-         $caption(conftel,modele_skysensor) $caption(conftel,modele_gemini) $caption(conftel,modele_ite-lente) ]
+         $caption(conftel,modele_skysensor) $caption(conftel,modele_gemini) $caption(conftel,modele_ite-lente) \
+         $caption(conftel,modele_mel_bartels) ]
       ComboBox $frm.modele \
          -width 17         \
          -height [ llength $list_combobox ] \

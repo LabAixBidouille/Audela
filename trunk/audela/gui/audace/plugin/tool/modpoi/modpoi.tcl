@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.6 2006-11-19 11:08:40 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.7 2006-11-19 17:15:43 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1784,7 +1784,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
       if {($hauteur>30)&&($sepmoon>10)} {
          #--- Case :
          #--- The telescope mount computes the refraction corrections
-         #--- yes = 1 (case of the Meade LX200 or Sky Sensor 2000)
+         #--- yes = 1 (case of the Meade LX200, Sky Sensor 2000, ...)
          #--- no  = 0 (case of the AudeCom, ...)
          if {$modpoi(corrections,refraction)==0} {
             set listv [modpoi_apparent2observed $listv 101325 290 $date]
@@ -1807,7 +1807,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
          if {$starname=="$modpoi(starname,actual)"} {
             #--- Case :
             #--- The telescope mount computes the refraction corrections
-            #--- yes = 1 (case of the Meade LX200 or Sky Sensor 2000)
+            #--- yes = 1 (case of the Meade LX200, Sky Sensor 2000, ...)
             #--- no  = 0 (case of the AudeCom, ...)
             if {$modpoi(corrections,refraction)==0} {
                set listv [modpoi_apparent2observed $listv 101325 290 $date]
@@ -1973,7 +1973,7 @@ proc modpoi_cat2tel { radec } {
    set listv [modpoi_catalogmean2apparent [lindex $radec 0] [lindex $radec 1] J2000.0 $now]
    #--- Case :
    #--- The telescope mount computes the refraction corrections
-   #--- yes = 1 (case of the Meade LX200 or Sky Sensor 2000)
+   #--- yes = 1 (case of the Meade LX200, Sky Sensor 2000, ...)
    #--- no  = 0 (case of the AudeCom, ...)
    if {$modpoi(corrections,refraction)==0} {
       set listv [modpoi_apparent2observed $listv 101325 290 $now]
@@ -1993,7 +1993,7 @@ proc modpoi_tel2cat { radec } {
    catch {set now [::audace::date_sys2ut now]}
    #--- Case :
    #--- The telescope mount computes the refraction corrections
-   #--- yes = 1 (case of the Meade LX200 or Sky Sensor 2000)
+   #--- yes = 1 (case of the Meade LX200, Sky Sensor 2000, ...)
    #--- no  = 0 (case of the AudeCom, ...)
    if {$modpoi(corrections,refraction)==0} {
       set radec [modpoi_observed2apparent [lindex $radec 0] [lindex $radec 1] 101325 290 $now]
@@ -2065,7 +2065,6 @@ proc modpoi_load { { fileres "modpoi_res.txt" } } {
    global audace caption modpoi
 
    set modpoi(modpoi_choisi) $fileres
-  ### set modpoi(corrections,refraction) [ ::telescope::possedeCorrectionRefraction ]
    load libgsltcl[info sharedlibextension]
    set num [ catch { set input [ open [ file join $audace(rep_plugin) tool modpoi model_modpoi $fileres ] r ] } msg ]
    if { $num!="1"} {
@@ -2090,7 +2089,7 @@ proc modpoi_load { { fileres "modpoi_res.txt" } } {
       tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
       return $modpoi(vec)
    } else {
-      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe_pas)" -icon error
+      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)" -icon error
    }
 }
 
@@ -2169,7 +2168,7 @@ proc modpoi_recomputecoef { { fileinp "modpoi_inp.txt" } } {
          modpoi_load
          modpoi_wiz edit
       } else {
-         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe_pas)" -icon error
+         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)" -icon error
       }
    }
 }
