@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.17 2006-11-10 13:08:45 audelateam Exp $
+# Mise a jour $Id: conftel.cap,v 1.18 2006-11-19 17:14:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -33,6 +33,7 @@ set caption(conftel,modele_audecom)                   "AudeCom"
 set caption(conftel,modele_skysensor)                 "SkySensor 2000 PC"
 set caption(conftel,modele_gemini)                    "Losmandy Gemini"
 set caption(conftel,modele_ite-lente)                 "Ite-lente"
+set caption(conftel,modele_mel_bartels)               "Mel BARTELS"
 set caption(conftel,maj_lx200)                        "Update time, longitude, latitude and altitude of LX200"
 set caption(conftel,ite-lente_tempo)                  "Tempo"
 set caption(conftel,maj_celestron)                    "Update time, longitude, latitude and altitude of Celestron"
@@ -155,6 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,modele_skysensor)              "SkySensor 2000 PC"
    set caption(conftel,modele_gemini)                 "Losmandy Gemini"
    set caption(conftel,modele_ite-lente)              "Ite-lente"
+   set caption(conftel,modele_mel_bartels)            "Mel BARTELS"
    set caption(conftel,maj_lx200)                     "Mise à jour heure, longitude, latitude et altitude du LX200"
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Mise à jour heure, longitude, latitude et altitude du Celestron"
@@ -277,6 +279,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,modele_skysensor)              "SkySensor 2000 PC"
    set caption(conftel,modele_gemini)                 "Losmandy Gemini"
    set caption(conftel,modele_ite-lente)              "Ite-lente"
+   set caption(conftel,modele_mel_bartels)            "Mel BARTELS"
    set caption(conftel,maj_lx200)                     "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' LX200"
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' Celestron"
@@ -399,6 +402,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,modele_skysensor)              "SkySensor 2000 PC"
    set caption(conftel,modele_gemini)                 "Losmandy Gemini"
    set caption(conftel,modele_ite-lente)              "Ite-lente"
+   set caption(conftel,modele_mel_bartels)            "Mel BARTELS"
    set caption(conftel,maj_lx200)                     "Actualizar hora, longitud, latitud y altitud del LX200"
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Actualizar hora, longitud, latitud y altitud del Celestron"
@@ -521,6 +525,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,modele_skysensor)              "SkySensor 2000 PC"
    set caption(conftel,modele_gemini)                 "Losmandy Gemini"
    set caption(conftel,modele_ite-lente)              "Ite-lente"
+   set caption(conftel,modele_mel_bartels)            "Mel BARTELS"
    set caption(conftel,maj_lx200)                     "Zeit, Länge, Breite, Höhe des LX200 Aktualisierung"
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Zeit, Länge, Breite, Höhe des Celestron Aktualisierung"
@@ -643,6 +648,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,modele_skysensor)              "SkySensor 2000 PC"
    set caption(conftel,modele_gemini)                 "Losmandy Gemini"
    set caption(conftel,modele_ite-lente)              "Ite-lente"
+   set caption(conftel,modele_mel_bartels)            "Mel BARTELS"
    set caption(conftel,maj_lx200)                     "Actualizar tempo, longitude, latitude e altitude do LX200"
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Actualizar tempo, longitude, latitude e altitude do Celestron"
@@ -765,6 +771,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,modele_skysensor)              "SkySensor 2000 PC"
    set caption(conftel,modele_gemini)                 "Losmandy Gemini"
    set caption(conftel,modele_ite-lente)              "Ite-lente"
+   set caption(conftel,modele_mel_bartels)            "Mel BARTELS"
    set caption(conftel,maj_lx200)                     "Update time, longitude, latitude and altitude of LX200"
    set caption(conftel,ite-lente_tempo)               "Tempo"
    set caption(conftel,maj_celestron)                 "Update time, longitude, latitude and altitude of Celestron"
