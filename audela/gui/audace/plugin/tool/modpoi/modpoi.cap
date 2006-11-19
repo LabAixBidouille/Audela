@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.6 2006-11-16 22:12:38 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.7 2006-11-19 11:08:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -96,10 +96,8 @@ and nutation corrections."
    set caption(modpoi,wiz3,pas_etoile)       "No more stars. Close the Aiming Model tool."
 
    set caption(modpoi,wiz4,title)            "Aiming Model: Center Star Number "
-   set caption(modpoi,wiz4,title2)           "\
-Centering Star Number "
-   set caption(modpoi,wiz4,center)           "\
-Center "
+   set caption(modpoi,wiz4,title2)           "Centering Star Number "
+   set caption(modpoi,wiz4,center)           "Center "
    set caption(modpoi,wiz4,comment)          "\
 Center the star in the field (if possible, check\n\
 with a CCD image) using the\n\
@@ -108,10 +106,8 @@ telescope keypad buttons:"
    set caption(modpoi,wiz4,prev)             "<< Back"
    set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
    set caption(modpoi,wiz4,comment_auto)     "Automatic centering in progress..."
- 
+
    set caption(modpoi,wiz5,title)            "Aiming Model: Results of Computations"
-   set caption(modpoi,wiz5,title2)           "\
-Measurement Results after Computations."
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"
@@ -139,6 +135,11 @@ Measurement Results after Computations."
    set caption(modpoi,shift_n)               "Shift to the North:"
    set caption(modpoi,shift-e)               "Shift to the East:"
    set caption(modpoi,iteration)             "Looping Process"
+
+   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == 0 } {
@@ -228,10 +229,8 @@ d'aberration et de nutation."
    set caption(modpoi,wiz3,pas_etoile)       "Il n'y a plus d'étoile. Vous devez\nfermer l'outil 'Modèle de pointage'."
 
    set caption(modpoi,wiz4,title)            "Modèle de pointage : Centrage de l'étoile numéro "
-   set caption(modpoi,wiz4,title2)           "\
-Centrage de l'étoile numéro "
-   set caption(modpoi,wiz4,center)           "\
-Centrer "
+   set caption(modpoi,wiz4,title2)           "Centrage de l'étoile numéro "
+   set caption(modpoi,wiz4,center)           "Centrer "
    set caption(modpoi,wiz4,comment)          "\
 Placer l'étoile au centre du champ (vérifier\n\
 éventuellement avec une image CCD) en agissant\n\
@@ -243,8 +242,6 @@ des directions :"
    set caption(modpoi,wiz4,comment_auto)     "Centrage automatique en cours..."
 
    set caption(modpoi,wiz5,title)            "Modèle de pointage : Résultat des calculs"
-   set caption(modpoi,wiz5,title2)           "\
-Résultats de la mesure après calculs."
 
    set caption(modpoi,wiz5,IH)               "décalage du codeur h"
    set caption(modpoi,wiz5,ID)               "décalage du codeur d"
@@ -272,6 +269,11 @@ Résultats de la mesure après calculs."
    set caption(modpoi,shift_n)               "Déplacement vers le nord :"
    set caption(modpoi,shift-e)               "Déplacement vers l'est :"
    set caption(modpoi,iteration)             "Itération"
+
+   set caption(modpoi,define_mame_modpoi)    "Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == 0 } {
@@ -361,10 +363,8 @@ aberrazione e nutazione."
    set caption(modpoi,wiz3,pas_etoile)       "Non ci sono stelle. Fermare\nl'accessorio Modello di puntamento."
 
    set caption(modpoi,wiz4,title)            "Modello di puntamento: Centraggio della stella numero "
-   set caption(modpoi,wiz4,title2)           "\
-Centraggio della stella numero "
-   set caption(modpoi,wiz4,center)           "\
-Centrare "
+   set caption(modpoi,wiz4,title2)           "Centraggio della stella numero "
+   set caption(modpoi,wiz4,center)           "Centrare "
    set caption(modpoi,wiz4,comment)          "\
 Mettere la stella al centro del campo (verificare\n\
 eventualmente con una immagine CCD) agendo\n\
@@ -376,8 +376,6 @@ di direzione:"
    set caption(modpoi,wiz4,comment_auto)     "Centratura automatica in corso..."
 
    set caption(modpoi,wiz5,title)            "Modello di puntamento: Risultato dei calcoli"
-   set caption(modpoi,wiz5,title2)           "\
-Risultati delle misure dopo i calcoli."
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"
@@ -405,6 +403,11 @@ Risultati delle misure dopo i calcoli."
    set caption(modpoi,shift_n)               "Spostamento verso nord:"
    set caption(modpoi,shift-e)               "Spostamento verso Est:"
    set caption(modpoi,iteration)             "Iterazione"
+
+   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == 0 } {
@@ -494,10 +497,8 @@ aberración y nutación."
    set caption(modpoi,wiz3,pas_etoile)       "No hay más estrellas. Cierre la\nherramienta del Modelo de Apuntado."
 
    set caption(modpoi,wiz4,title)            "Modelo de apuntado: Centrar la estrella número "
-   set caption(modpoi,wiz4,title2)           "\
-Centrando estrella número "
-   set caption(modpoi,wiz4,center)           "\
-Centrando "
+   set caption(modpoi,wiz4,title2)           "Centrando estrella número "
+   set caption(modpoi,wiz4,center)           "Centrando "
    set caption(modpoi,wiz4,comment)          "\
 Centrar la estrella en el campo (si es posible, comprobar\n\
 con una imagen CCD) utilizando\n\
@@ -508,8 +509,7 @@ los mandos del telescopio:"
    set caption(modpoi,wiz4,comment_auto)     "Centrado automático en curso..."
 
    set caption(modpoi,wiz5,title)            "Modelo de apuntado: Resultado de los cálculos"
-   set caption(modpoi,wiz5,title2)           "\
-Resultado de las medidas despues de los cálculos."
+
    set caption(modpoi,wiz5,IH)               "error de índice encoder h"
    set caption(modpoi,wiz5,ID)               "error de índice encoder d"
    set caption(modpoi,wiz5,NP)               "falta de perpendicularidad h/d"
@@ -536,6 +536,11 @@ Resultado de las medidas despues de los cálculos."
    set caption(modpoi,shift_n)               "Desplazar al Norte:"
    set caption(modpoi,shift-e)               "Desplazar al Este:"
    set caption(modpoi,iteration)             "Iteración"
+
+   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
@@ -624,10 +629,8 @@ Aberration, und Nutation Verbesserungen."
    set caption(modpoi,wiz3,pas_etoile)       "Es gibt kein Stern mehr. Sie müssen\ndas Gerät 'Richter Modell' schließen."
 
    set caption(modpoi,wiz4,title)            "Schwenken Vorlage: Stern Nummer ... Zentrieren "
-   set caption(modpoi,wiz4,title2)           "\
-Zentrierung des Stern Nummer "
-   set caption(modpoi,wiz4,center)           "\
-Zentrieren "
+   set caption(modpoi,wiz4,title2)           "Zentrierung des Stern Nummer "
+   set caption(modpoi,wiz4,center)           "Zentrieren "
    set caption(modpoi,wiz4,comment)          "\
 Der Stern in der Mitte der Feld setzen (möglicherweise\n\
 mit ein CCD Bild nachsehen) bei auf den\n\
@@ -638,8 +641,6 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,wiz4,comment_auto)     "Automatische Zentrierung laufend..."
 
    set caption(modpoi,wiz5,title)            "Schwenken Vorlage: Rechnungen Erfolg"
-   set caption(modpoi,wiz5,title2)           "\
-Messung Erfolgen nach Rechnungen."
 
    set caption(modpoi,wiz5,IH)               "h Kodierer Verschiebung"
    set caption(modpoi,wiz5,ID)               "d Kodierer Verschiebung"
@@ -667,6 +668,11 @@ Messung Erfolgen nach Rechnungen."
    set caption(modpoi,shift_n)               "Nach Nord schieben:"
    set caption(modpoi,shift-e)               "Nach Ost schieben:"
    set caption(modpoi,iteration)             "Schlingung"
+
+   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -756,10 +762,8 @@ de aberração e de nutação."
    set caption(modpoi,wiz3,pas_etoile)       "Já não existe estrela. Deve\nfechar a ferramenta 'Modelo de apontamento'."
 
    set caption(modpoi,wiz4,title)            "Modelo de apontamento : Centragem da estrela número "
-   set caption(modpoi,wiz4,title2)           "\
-Centragem da estrela número "
-   set caption(modpoi,wiz4,center)           "\
-Centrar "
+   set caption(modpoi,wiz4,title2)           "Centragem da estrela número "
+   set caption(modpoi,wiz4,center)           "Centrar "
    set caption(modpoi,wiz4,comment)          "\
 Colocar a estrela no centro do campo (verificar\n\
 eventualmente com uma imagem CCD) agindo\n\
@@ -771,8 +775,6 @@ para comandar as direcções :"
    set caption(modpoi,wiz4,comment_auto)     "Centragem automática em curso..."
 
    set caption(modpoi,wiz5,title)            "Modelo de apontamento : Resultado dos cálculos"
-   set caption(modpoi,wiz5,title2)           "\
-Resultados da medida após dos cálculos."
 
    set caption(modpoi,wiz5,IH)               "deslocamento do codificador h"
    set caption(modpoi,wiz5,ID)               "deslocamento do codigicador d"
@@ -800,6 +802,11 @@ Resultados da medida após dos cálculos."
    set caption(modpoi,shift_n)               "Deslocamento para norte :"
    set caption(modpoi,shift-e)               "Deslocamento para este :"
    set caption(modpoi,iteration)             "Iteração"
+
+   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
@@ -889,10 +896,8 @@ and nutation corrections."
    set caption(modpoi,wiz3,pas_etoile)       "No more stars. Close the Aiming Model tool."
 
    set caption(modpoi,wiz4,title)            "Aiming Model: Center Star Number "
-   set caption(modpoi,wiz4,title2)           "\
-Centering Star Number "
-   set caption(modpoi,wiz4,center)           "\
-Center "
+   set caption(modpoi,wiz4,title2)           "Centering Star Number "
+   set caption(modpoi,wiz4,center)           "Center "
    set caption(modpoi,wiz4,comment)           "\
 Center the star in the field (if possible, check\n\
 with a CCD image) using the\n\
@@ -903,8 +908,6 @@ telescope keypad buttons:"
    set caption(modpoi,wiz4,comment_auto)     "Automatic centering in progress..."
  
    set caption(modpoi,wiz5,title)            "Aiming Model: Results of Computations"
-   set caption(modpoi,wiz5,title2)           "\
-Measurement Results after Computations."
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"
@@ -932,6 +935,11 @@ Measurement Results after Computations."
    set caption(modpoi,shift_n)               "Shift to the North:"
    set caption(modpoi,shift-e)               "Shift to the East:"
    set caption(modpoi,iteration)             "Looping Process"
+
+   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,parcourir)             "..."
+   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,ok)                    "OK"
 
 }
 

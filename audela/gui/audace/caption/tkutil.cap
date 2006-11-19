@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.5 2006-10-20 17:39:14 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.6 2006-11-19 11:07:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,6 +23,7 @@ set caption(tkutil,editeur_script)        "Script Editor:"
 set caption(tkutil,editeur_pdf)           "See User Guides (.pdf):"
 set caption(tkutil,editeur_page_web)      "Web Browser:"
 set caption(tkutil,editeur_image)         "Viewer:"
+set caption(tkutil,editer_modpoi)         "# Sélectionner un modèle de pointage"
 
 set caption(tkutil,image_file)            "Image Files"
 set caption(tkutil,image_fits)            "FITS Files"
@@ -56,6 +57,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Voir les notices (.pdf) :"
    set caption(tkutil,editeur_page_web)   "Navigateur Web :"
    set caption(tkutil,editeur_image)      "Visualiseur d'images :"
+   set caption(tkutil,editer_modpoi)      "Sélectionner un modèle de pointage"
 
    set caption(tkutil,image_file)         "Fichiers Image"
    set caption(tkutil,image_fits)         "Fichiers FITS"
@@ -89,6 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Vedi la guida utente (.pdf):"
    set caption(tkutil,editeur_page_web)   "Web browser:"
    set caption(tkutil,editeur_image)      "Visualizzatore di immagini:"
+   set caption(tkutil,editer_modpoi)      "# Sélectionner un modèle de pointage"
 
    set caption(tkutil,image_file)         "File Immagini"
    set caption(tkutil,image_fits)         "File FITS"
@@ -122,6 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Ver guia de usuario (.pdf):"
    set caption(tkutil,editeur_page_web)   "Navegador Web:"
    set caption(tkutil,editeur_image)      "Visualizador de imágenes:"
+   set caption(tkutil,editer_modpoi)      "# Sélectionner un modèle de pointage"
 
    set caption(tkutil,image_file)         "Ficheros Imágenes"
    set caption(tkutil,image_fits)         "Ficheros FITS"
@@ -155,6 +159,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Hinweisen ansehen (.pdf):"
    set caption(tkutil,editeur_page_web)   "Web Navigator:"
    set caption(tkutil,editeur_image)      "Bild Zeichner:"
+   set caption(tkutil,editer_modpoi)      "# Sélectionner un modèle de pointage"
 
    set caption(tkutil,image_file)         "Bilder Datei"
    set caption(tkutil,image_fits)         "FITS Datei"
@@ -188,6 +193,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Ver guia de utilizador (.pdf):"
    set caption(tkutil,editeur_page_web)   "Navegador Web:"
    set caption(tkutil,editeur_image)      "Visualizador de imagens:"
+   set caption(tkutil,editer_modpoi)      "# Sélectionner un modèle de pointage"
 
    set caption(tkutil,image_file)         "Ficheiros Imagens"
    set caption(tkutil,image_fits)         "Ficheiros FITS"
@@ -221,6 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Se brugsanvisning (.pdf):"
    set caption(tkutil,editeur_page_web)   "Web Browser:"
    set caption(tkutil,editeur_image)      "Billedvisning:"
+   set caption(tkutil,editer_modpoi)      "# Sélectionner un modèle de pointage"
 
    set caption(tkutil,image_file)         "Billeder Filer"
    set caption(tkutil,image_fits)         "FITS Filer"
