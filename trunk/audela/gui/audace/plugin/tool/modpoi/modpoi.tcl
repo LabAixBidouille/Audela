@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.5 2006-11-16 22:21:25 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.6 2006-11-19 11:08:40 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -12,8 +12,8 @@
 # 2) Pour lancer le wizard :
 #    modpoi_wiz
 #    * A la fin :
-#      ** Les 10 coefficients du modele sont ecrits dans le fichier modpoires.txt
-#      ** Le fichier modpoitest.txt est constitue de 6 lignes et comprend les
+#      ** Les 10 coefficients du modele sont ecrits dans le fichier modpoi_res.txt
+#      ** Le fichier modpoi_test.txt est constitue de 6 lignes et comprend les
 #         colonnes suivantes :
 #         col-1 : angle horaire theorique (degres)
 #         col-2 : declinaison theorique (degres)
@@ -30,8 +30,8 @@
 #
 # 3) Pour charger un modele de pointage existant
 #    source modpoi.tcl
-#    modpoi_load "modpoires.txt"
-#    * Le fichier doit etre du type modpoires.txt genere par le wizard.
+#    modpoi_load "modpoi_res.txt"
+#    * Le fichier doit etre du type modpoi_res.txt genere par le wizard.
 #    * L'objet telescope effectuera automatiquement les corrections du modele
 #      lors des pointages et des lectures des coordonnees.
 #
@@ -63,7 +63,7 @@ proc Chargement_Var { } {
    }
    if { ! [ info exists parametres(modpoi,position) ] }    { set parametres(modpoi,position)    "+130+10" }
    if { ! [ info exists parametres(modpoi,nb_stars) ] }    { set parametres(modpoi,nb_stars)    "8" }
-   if { ! [ info exists parametres(modpoi,catalog) ] }     { set parametres(modpoi,catalog)     "etoiles_base.txt" }
+   if { ! [ info exists parametres(modpoi,catalog) ] }     { set parametres(modpoi,catalog)     "cat_105_etoiles.txt" }
    if { ! [ info exists parametres(modpoi,heast) ] }       { set parametres(modpoi,heast)       "-60." }
    if { ! [ info exists parametres(modpoi,hwest) ] }       { set parametres(modpoi,hwest)       "60." }
    set latitude [ lindex $modpoi(var,home) 3 ]
@@ -88,8 +88,7 @@ proc Chargement_Var { } {
 
 proc Enregistrement_Var { } {
    variable parametres
-   global audace
-   global modpoi
+   global audace modpoi
 
    set parametres(modpoi,position)       $modpoi(toplevel,position)
    set parametres(modpoi,nb_stars)       $modpoi(stars,nb)
@@ -179,25 +178,12 @@ proc modpoi_wiz { { mode new } } {
    set modpoi(rad2deg) [expr 180./$modpoi(pi)]
 
    #--- Gestion des polices de caracteres
-   set modpoi(font,title2) "$audace(font,arial_12_b)"
-   set modpoi(font,normal) "$audace(font,arial_12_n)"
-   set modpoi(font,next)   "$audace(font,arial_15_b)"
-   set modpoi(font,cannot) "$audace(font,arial_10_b)"
-   set modpoi(font,result) "$audace(font,arial_7_b)"
-
-   if { $::tcl_platform(os) == "Linux" } {
-      set taille [ expr int(12*6./$modpoi(stars,nb)) ]
-      set taille [ expr $taille + 3 ]
-      if { $taille < "12" } {
-         set taille "12"
-      }
-   } else {
-      set taille [expr int(12*6./$modpoi(stars,nb))]
-      if { $taille < "9" } {
-         set taille "9"
-      }
-   }
-   set modpoi(font,starname) "[list {Arial} $taille bold ]"
+   set modpoi(font,title2)   "$audace(font,arial_12_b)"
+   set modpoi(font,normal)   "$audace(font,arial_12_n)"
+   set modpoi(font,next)     "$audace(font,arial_15_b)"
+   set modpoi(font,cannot)   "$audace(font,arial_10_b)"
+   set modpoi(font,result)   "$audace(font,arial_7_b)"
+   set modpoi(font,starname) "$audace(font,arial_8_n)"
 
    #---
    set modpoi(toplevel,position) $parametres(modpoi,position)
@@ -219,7 +205,7 @@ proc modpoi_wiz { { mode new } } {
 }
 
 proc modpoi_wiz1 { } {
-   global modpoi caption
+   global caption modpoi
 
    if { [winfo exists $modpoi(g,base)] } {
       set modpoi(wm_geometry) [wm geometry $modpoi(g,base)]
@@ -268,7 +254,7 @@ proc modpoi_wiz1 { } {
 
 proc modpoi_wiz1b { } {
    variable parametres
-   global modpoi caption audace
+   global audace caption modpoi
 
    #--- Parameters entries
    if { [winfo exists $modpoi(g,base)] } {
@@ -493,7 +479,7 @@ proc modpoi_wiz1b { } {
       -text $caption(modpoi,$wiz,prev) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1 }
       pack $modpoi(g,base).fra_bottom.but_prev \
-      -side left  -anchor se \
+      -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
@@ -511,7 +497,7 @@ proc modpoi_wiz1b { } {
          }
       }
       pack $modpoi(g,base).fra_bottom.but_next \
-      -side right  -anchor se \
+      -side right -anchor se \
       -padx 5 -pady 5 -expand 0
    pack $modpoi(g,base).fra_bottom \
    -side bottom -anchor center \
@@ -521,7 +507,7 @@ proc modpoi_wiz1b { } {
 }
 
 proc modpoi_wiz1c { } {
-   global modpoi caption
+   global caption modpoi
 
    #--- Parameters entries
    if { [winfo exists $modpoi(g,base)] } {
@@ -692,14 +678,14 @@ proc modpoi_wiz1c { } {
       -text $caption(modpoi,$wiz,prev) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1b }
       pack $modpoi(g,base).fra_bottom.but_prev \
-      -side left  -anchor se \
+      -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,$wiz,next) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_paraminit $modpoi(stars,decmin) $modpoi(stars,decmax) $modpoi(stars,heast) $modpoi(stars,hwest) ; modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_next \
-      -side right  -anchor se \
+      -side right -anchor se \
       -padx 5 -pady 5 -expand 0
    pack $modpoi(g,base).fra_bottom \
    -side bottom -anchor center \
@@ -710,7 +696,7 @@ proc modpoi_wiz1c { } {
 }
 
 proc modpoi_wiz2 { } {
-   global modpoi caption color
+   global caption color modpoi
 
    if { [winfo exists $modpoi(g,base)] } {
       set modpoi(wm_geometry) [wm geometry $modpoi(g,base)]
@@ -892,7 +878,7 @@ proc modpoi_wiz2 { } {
       -text $caption(modpoi,wiz2,prev) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1 }
       pack $modpoi(g,base).fra_bottom.but_prev \
-      -side left  -anchor se \
+      -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       if {$nk==$nstars} {
@@ -900,7 +886,7 @@ proc modpoi_wiz2 { } {
          -text $caption(modpoi,wiz2,next) -borderwidth 2 \
          -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz5 }
          pack $modpoi(g,base).fra_bottom.but_next \
-         -side right  -anchor se \
+         -side right -anchor se \
          -padx 5 -pady 5 -expand 0
       }
       pack $modpoi(g,base).fra_bottom \
@@ -929,7 +915,7 @@ proc modpoi_wiz2 { } {
 #--- Wizard de pointage d'une étoile
 #--- h0, d0, meilleure position de l'étoile
 proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
-   global modpoi caption
+   global caption modpoi
 
    if { [winfo exists $modpoi(g,base)] } {
       set modpoi(wm_geometry) [wm geometry $modpoi(g,base)]
@@ -1036,14 +1022,14 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
       -text $caption(modpoi,$wiz,prev) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_prev \
-      -side left  -anchor se \
+      -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,$wiz,next) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,next) -command $com_next
       pack $modpoi(g,base).fra_bottom.but_next \
-      -side right  -anchor se \
+      -side right -anchor se \
       -padx 5 -pady 5 -expand 0
       pack $modpoi(g,base).fra_bottom \
       -side bottom -anchor center \
@@ -1068,7 +1054,7 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
 }
 
 proc modpoi_wiz4 { } {
-   global audace modpoi caption
+   global audace caption modpoi
 
    if { [winfo exists $modpoi(g,base)] } {
       set modpoi(wm_geometry) [wm geometry $modpoi(g,base)]
@@ -1192,14 +1178,14 @@ proc modpoi_wiz4 { } {
       -text $caption(modpoi,wiz4,prev) -borderwidth 2 \
       -padx 10 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_prev \
-      -side left  -anchor se \
+      -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,wiz4,next) -borderwidth 2 \
       -padx 10 -pady 10 -font $modpoi(font,next) -command { modpoi_coord ; modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_next \
-      -side right  -anchor se \
+      -side right -anchor se \
       -padx 5 -pady 5 -expand 0
       pack $modpoi(g,base).fra_bottom \
       -side bottom -anchor center \
@@ -1238,7 +1224,7 @@ proc modpoi_wiz4 { } {
 }
 
 proc modpoi_wiz5 { } {
-   global modpoi caption
+   global caption modpoi
 
    if { [winfo exists $modpoi(g,base)] } {
       set modpoi(wm_geometry) [wm geometry $modpoi(g,base)]
@@ -1254,13 +1240,6 @@ proc modpoi_wiz5 { } {
    }
    wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz5,title)
-   #--- Title
-   label $modpoi(g,base).lab_title2 \
-   -text $caption(modpoi,wiz5,title2) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
-   pack $modpoi(g,base).lab_title2 \
-   -side top -anchor center \
-   -padx 5 -pady 3 -expand 0
    #--- Compute the coefficients
    set res [modpoi_computecoef]
    set modpoi(vec) [lindex $res 0]
@@ -1291,6 +1270,13 @@ proc modpoi_wiz5 { } {
    #--- Test du calcul direct
    set res [modpoi_testcoef $modpoi(vec) $modpoi(chisq) $modpoi(covar)]
    ::console::affiche_resultat "$res\n"
+   #--- Display name
+   label $modpoi(g,base).lab_name \
+   -text "[ file rootname [ file tail $modpoi(Filename) ] ]" -borderwidth 2 \
+   -padx 20 -pady 10 -font $modpoi(font,cannot)
+   pack $modpoi(g,base).lab_name \
+   -side top -anchor center \
+   -padx 5 -pady 3 -expand 0
    #--- Display the results
    label $modpoi(g,base).lab_res1 \
    -text "$res1" -borderwidth 2 \
@@ -1305,14 +1291,14 @@ proc modpoi_wiz5 { } {
       -text $caption(modpoi,wiz5,prev) -borderwidth 2 \
       -padx 10 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_prev \
-      -side left  -anchor se \
+      -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,wiz5,next) -borderwidth 2 \
       -padx 10 -pady 10 -font $modpoi(font,next) -command { recup_position ; modpoi_wiz11 }
       pack $modpoi(g,base).fra_bottom.but_next \
-      -side right  -anchor se \
+      -side right -anchor se \
       -padx 5 -pady 5 -expand 0
    pack $modpoi(g,base).fra_bottom \
    -side bottom -anchor center \
@@ -1334,7 +1320,7 @@ proc modpoi_wiz11 { } {
 }
 
 proc modpoi_wiz5b { } {
-   global modpoi caption
+   global caption modpoi
 
    if { [winfo exists $modpoi(g,base)] } {
       set modpoi(wm_geometry) [wm geometry $modpoi(g,base)]
@@ -1350,13 +1336,6 @@ proc modpoi_wiz5b { } {
    }
    wm resizable $modpoi(g,base) 1 0
    wm title $modpoi(g,base) $caption(modpoi,wiz5,title)
-   #--- Title
-   label $modpoi(g,base).lab_title2 \
-   -text $caption(modpoi,wiz5,title2) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
-   pack $modpoi(g,base).lab_title2 \
-   -side top -anchor center \
-   -padx 5 -pady 3 -expand 0
    #--- Compute the coefficients
    #set res [modpoi_computecoef]
    #set modpoi(vec) [lindex $res 0]
@@ -1387,6 +1366,13 @@ proc modpoi_wiz5b { } {
       chisquare=$modpoi(chisq)\n\n"
    } msg]
    if { $num!="1"} {
+      #--- Display name
+      label $modpoi(g,base).lab_name \
+      -text "[ file rootname [ file tail $modpoi(modpoi_choisi) ] ]" -borderwidth 2 \
+      -padx 20 -pady 10 -font $modpoi(font,cannot)
+      pack $modpoi(g,base).lab_name \
+      -side top -anchor center \
+      -padx 5 -pady 3 -expand 0
       #--- Display the results
       label $modpoi(g,base).lab_res1 \
       -text "$res1" -borderwidth 2 \
@@ -1398,8 +1384,7 @@ proc modpoi_wiz5b { } {
       ::confColor::applyColor $modpoi(g,base)
    } else {
       destroy $modpoi(g,base)
-      ::console::affiche_saut "\n"
-      ::console::affiche_erreur "$caption(modpoi,modele,editer)\n\n"
+      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele,editer)" -icon error
    }
 }
 
@@ -1666,7 +1651,7 @@ proc modpoi_observed2apparent { rao deco { pressure 101325 } { temperature 290 }
 }
 
 proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
-   global audace modpoi caption
+   global audace caption modpoi
 
    set pi $modpoi(pi)
    set deg2rad $modpoi(deg2rad)
@@ -1859,8 +1844,10 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
 }
 
 proc modpoi_computecoef { } {
-   global modpoi audace
+   global audace modpoi
 
+   #--- Ouvre la fenetre pour donner un nom au modele de pointage
+   run_name_modpoi
    #--- Analyse chaque ligne
    set vecY ""
    set matX ""
@@ -1883,12 +1870,12 @@ proc modpoi_computecoef { } {
       append texte "$h [mc_angle2deg $dec 90] $deltah $deltad\n"
    }
    #--- Cree un fichier de resultats o-c
-   set output [ open [ file join $audace(rep_plugin) tool modpoi modpoiinp.txt ] w ]
+   set output [ open [ file join $audace(rep_plugin) tool modpoi test_modpoi $modpoi(Filename)_inp.txt ] w ]
    puts -nonewline $output $texte
    close $output
    #--- Calcul des coefficients
    set res [gsl_mfitmultilin $vecY $matX $vecW]
-   set output [ open [ file join $audace(rep_plugin) tool modpoi modpoires.txt ] w ]
+   set output [ open [ file join $audace(rep_plugin) tool modpoi model_modpoi $modpoi(Filename).txt ] w ]
    puts -nonewline $output "$res $modpoi(corrections,refraction)"
    close $output
    #--- Affecte le modèle pour l'objet télescope
@@ -1946,7 +1933,7 @@ proc modpoi_addobs { vecY matX vecW deltah deltad dec h phi } {
 }
 
 proc modpoi_testcoef { vec chisq covar } {
-   global modpoi audace
+   global audace modpoi
 
    #--- Analyse chaque ligne
    set texte ""
@@ -1971,7 +1958,7 @@ proc modpoi_testcoef { vec chisq covar } {
       append texte "$h [mc_angle2deg $dec 90] $deltah $deltad $dra_c $ddec_c\n"
    }
    #--- Cree un fichier de resultats o-c
-   set input [ open [ file join $audace(rep_plugin) tool modpoi modpoitest.txt ] w ]
+   set input [ open [ file join $audace(rep_plugin) tool modpoi test_modpoi $modpoi(Filename)_test.txt ] w ]
    puts -nonewline $input $texte
    close $input
    return $texte
@@ -2074,12 +2061,13 @@ proc modpoi_passage { radec sens } {
    return [list $ratel $dectel]
 }
 
-proc modpoi_load { { fileres "modpoires.txt" } } {
-   global audace modpoi caption
+proc modpoi_load { { fileres "modpoi_res.txt" } } {
+   global audace caption modpoi
 
+   set modpoi(modpoi_choisi) $fileres
   ### set modpoi(corrections,refraction) [ ::telescope::possedeCorrectionRefraction ]
    load libgsltcl[info sharedlibextension]
-   set num [ catch { set input [ open [ file join $audace(rep_plugin) tool modpoi $fileres ] r ] } msg ]
+   set num [ catch { set input [ open [ file join $audace(rep_plugin) tool modpoi model_modpoi $fileres ] r ] } msg ]
    if { $num!="1"} {
       set res [read $input]
       close $input
@@ -2099,12 +2087,10 @@ proc modpoi_load { { fileres "modpoires.txt" } } {
       } else {
          tel$audace(telNo) model modpoi_cat2tel modpoi_tel2cat
       }
-      ::console::affiche_saut "\n"
-      ::console::affiche_erreur "$caption(modpoi,modele_existe)\n\n"
+      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
       return $modpoi(vec)
    } else {
-      ::console::affiche_saut "\n"
-      ::console::affiche_erreur "$caption(modpoi,modele_existe_pas)\n\n"
+      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe_pas)" -icon error
    }
 }
 
@@ -2119,12 +2105,12 @@ proc modpoi_rien { } {
    tel$audace(telNo) radec coord
 }
 
-proc modpoi_recomputecoef { { fileinp "modpoiinp.txt" } } {
-#--- Recalcule le modele de pointage a partir du fichier modpiinp.txt
-   global audace modpoi caption
+proc modpoi_recomputecoef { { fileinp "modpoi_inp.txt" } } {
+#--- Recalcule le modele de pointage a partir du fichier modpoi_inp.txt
+   global audace caption modpoi
 
    load libgsltcl[info sharedlibextension]
-   set num [ catch { set input [ open [ file join $audace(rep_plugin) tool modpoi $fileinp ] r ] } msg ]
+   set num [ catch { set input [ open [ file join $audace(rep_plugin) tool modpoi test_modpoi $fileinp ] r ] } msg ]
    if { $num!="1"} {
       set obs [split [read $input] \n]
       close $input
@@ -2183,13 +2169,13 @@ proc modpoi_recomputecoef { { fileinp "modpoiinp.txt" } } {
          modpoi_load
          modpoi_wiz edit
       } else {
-         ::console::affiche_erreur "$caption(modpoi,modele,existe_pas)\n\n"
+         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe_pas)" -icon error
       }
    }
 }
 
 proc modpoi_autocentering { } {
-   global audace modpoi caption
+   global audace caption modpoi
 
    #--- Center automaticaly the brightest star
    if {$modpoi(centering,mode)=="manu"} { return }
@@ -2368,7 +2354,7 @@ proc modpoi_autocentering { } {
 
 proc modpoi_acqxy { } {
    #--- Acquire one image and return xc,yc of photocenter of the brightest star.
-   global audace modpoi caption conf
+   global audace caption conf modpoi
 
    if {[::cam::list]!=""} {
       #--- Initialisation du fenetrage
@@ -2426,5 +2412,91 @@ proc modpoi_acqxy { } {
       set res {0. 0.}
    }
    return $res
+}
+
+proc run_name_modpoi { } {
+   variable This
+   global audace modpoi
+
+   #---
+   set This "$audace(base).modpoi.name_modpoi"
+   #---
+   createDialog_name_modpoi
+   if { [ info exists modpoi(geometry,name_modpoi) ] } {
+      wm geometry $This $modpoi(geometry,name_modpoi)
+   }
+   tkwait variable modpoi(flag)
+   return $modpoi(Filename)
+}
+
+proc createDialog_name_modpoi { } {
+   variable This
+   global audace caption modpoi
+
+   if { [ info exists $This ] } {
+      wm withdraw $This
+      wm deiconify $This
+      focus $This
+      return
+   }
+
+   toplevel $This
+   wm resizable $This 0 0
+   wm deiconify $This
+   wm title $This "$caption(modpoi,define_mame_modpoi)"
+   wm geometry $This +180+50 
+   wm transient $This $audace(base).modpoi
+   wm protocol $This WM_DELETE_WINDOW cmdClose_name_modpoi
+
+   #--- Cree un frame pour y mettre le bouton et la zone a renseigner
+   frame $This.frame1 -borderwidth 1 -relief raised
+      #--- Positionne le label et la zone a renseigner
+      button $This.frame1.explore -text "$caption(modpoi,parcourir)" -width 1 -command {
+         #--- Fenetre parent
+         set fenetre "$audace(base).modpoi"
+         #--- Repertoire contenant les modeles de pointage
+         set initialdir [ file join $audace(rep_plugin) tool modpoi model_modpoi ]
+         #--- Ouvre la fenetre de choix des modeles de pointage
+         set modpoi(Filename) [ ::tkutil::box_load $fenetre $initialdir $audace(bufNo) "10" ]
+         #--- Extraction du nom du fichier
+         set modpoi(Filename) [ file rootname [ file tail $modpoi(Filename) ] ]
+      }
+      pack $This.frame1.explore -side left -padx 5 -pady 5 -ipady 5
+      label $This.frame1.lab1 -text "$caption(modpoi,name_modpoi)"
+      pack $This.frame1.lab1 -side left -padx 5 -pady 5
+      entry $This.frame1.ent1 -textvariable modpoi(Filename) -width 40
+      pack $This.frame1.ent1 -side right -padx 5 -pady 5
+   pack $This.frame1 -side top -fill both -expand 1
+
+   #--- Cree un frame pour y mettre le bouton
+   frame $This.frame2 -borderwidth 1 -relief raised
+      #--- Cree le bouton 'OK'
+      button $This.frame2.ok -text "$caption(modpoi,ok)" -width 8 -command { cmdOk_name_modpoi }
+      pack $This.frame2.ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+   pack $This.frame2 -side top -fill x
+
+   #--- La fenetre est active
+   focus $This
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $This <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $This
+}
+
+proc cmdOk_name_modpoi { } {
+   variable This
+   global modpoi
+
+   set modpoi(flag) "1"
+   set modpoi(geometry,name_modpoi) [ wm geometry $This ]
+   destroy $This
+   unset modpoi(flag)
+   unset This
+}
+
+proc cmdClose_name_modpoi { } {
+   #--- Empeche de fermer la fenetre
 }
 
