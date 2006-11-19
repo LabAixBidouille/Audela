@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.8 2006-11-19 17:15:26 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.9 2006-11-19 23:14:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,7 @@ global caption
 
    set caption(modpoi,modele_existe)         "Aiming Model Ready."
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "To edit an aiming model, you must first open it."
 
@@ -109,6 +110,7 @@ telescope keypad buttons:"
    set caption(modpoi,wiz4,comment_auto)     "Automatic centering in progress..."
 
    set caption(modpoi,wiz5,title)            "Aiming Model: Results of Computations"
+   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"
@@ -147,6 +149,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Modèle de pointage opérationnel."
    set caption(modpoi,modele_non_charge)     "Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "Pour éditer un modèle de pointage, il faut d'abord l'ouvrir."
 
@@ -244,6 +247,7 @@ des directions :"
    set caption(modpoi,wiz4,comment_auto)     "Centrage automatique en cours..."
 
    set caption(modpoi,wiz5,title)            "Modèle de pointage : Résultat des calculs"
+   set caption(modpoi,wiz5,title1)           "Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "décalage du codeur h"
    set caption(modpoi,wiz5,ID)               "décalage du codeur d"
@@ -282,6 +286,7 @@ des directions :"
 
    set caption(modpoi,modele_existe)         "Modello di puntamento pronto."
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "Per editare un modello di puntamento, occorre prima aprirlo."
 
@@ -379,6 +384,7 @@ di direzione:"
    set caption(modpoi,wiz4,comment_auto)     "Centratura automatica in corso..."
 
    set caption(modpoi,wiz5,title)            "Modello di puntamento: Risultato dei calcoli"
+   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"
@@ -417,6 +423,7 @@ di direzione:"
 
    set caption(modpoi,modele_existe)         "Modelo de apuntado listo?"
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "Para editar un modelo de apuntado, se debe abrirlo en primer lugar."
 
@@ -513,6 +520,7 @@ los mandos del telescopio:"
    set caption(modpoi,wiz4,comment_auto)     "Centrado automático en curso..."
 
    set caption(modpoi,wiz5,title)            "Modelo de apuntado: Resultado de los cálculos"
+   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "error de índice encoder h"
    set caption(modpoi,wiz5,ID)               "error de índice encoder d"
@@ -551,6 +559,7 @@ los mandos del telescopio:"
 
    set caption(modpoi,modele_existe)         "Operativ Schwenken Vorlage."
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "Um den Operativ Schwenken Vorlage zu editieren, muss man es erst öffnen."
 
@@ -646,6 +655,7 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,wiz4,comment_auto)     "Automatische Zentrierung laufend..."
 
    set caption(modpoi,wiz5,title)            "Schwenken Vorlage: Rechnungen Erfolg"
+   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "h Kodierer Verschiebung"
    set caption(modpoi,wiz5,ID)               "d Kodierer Verschiebung"
@@ -684,6 +694,7 @@ Richtung Hand Kontroller Knöpfe drücken:"
 
    set caption(modpoi,modele_existe)         "Modelo de apontamento operacional."
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "Para editar um modelo de apontamento é preciso abri-lo primeiro."
 
@@ -781,6 +792,7 @@ para comandar as direcções:"
    set caption(modpoi,wiz4,comment_auto)     "Centragem automática em curso..."
 
    set caption(modpoi,wiz5,title)            "Modelo de apontamento: Resultado dos cálculos"
+   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "deslocamento do codificador h"
    set caption(modpoi,wiz5,ID)               "deslocamento do codigicador d"
@@ -819,6 +831,7 @@ para comandar as direcções:"
 
    set caption(modpoi,modele_existe)         "Aiming Model Ready."
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
 
    set caption(modpoi,modele,editer)         "To edit an aiming model, you must first open it."
 
@@ -915,6 +928,7 @@ telescope keypad buttons:"
    set caption(modpoi,wiz4,comment_auto)     "Automatic centering in progress..."
  
    set caption(modpoi,wiz5,title)            "Aiming Model: Results of Computations"
+   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"

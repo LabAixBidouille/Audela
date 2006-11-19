@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.7 2006-11-19 17:15:43 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.8 2006-11-19 23:14:16 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1335,7 +1335,7 @@ proc modpoi_wiz5b { } {
       wm minsize $modpoi(g,base) 440 500
    }
    wm resizable $modpoi(g,base) 1 0
-   wm title $modpoi(g,base) $caption(modpoi,wiz5,title)
+   wm title $modpoi(g,base) $caption(modpoi,wiz5,title1)
    #--- Compute the coefficients
    #set res [modpoi_computecoef]
    #set modpoi(vec) [lindex $res 0]
@@ -1367,8 +1367,13 @@ proc modpoi_wiz5b { } {
    } msg]
    if { $num!="1"} {
       #--- Display name
+      if { [ info exists modpoi(modpoi_choisi) ] == "1" } {
+         set name $modpoi(modpoi_choisi)
+      } else {
+         set name $modpoi(Filename)
+      }
       label $modpoi(g,base).lab_name \
-      -text "[ file rootname [ file tail $modpoi(modpoi_choisi) ] ]" -borderwidth 2 \
+      -text "[ file rootname [ file tail $name ] ]" -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,cannot)
       pack $modpoi(g,base).lab_name \
       -side top -anchor center \
@@ -2089,7 +2094,12 @@ proc modpoi_load { { fileres "modpoi_res.txt" } } {
       tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
       return $modpoi(vec)
    } else {
-      tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)" -icon error
+      if { [ info exists modpoi(vec) ] == "1" } {
+         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)\n\
+            $caption(modpoi,modele_precedent)" -icon error
+      } else {
+         tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_non_charge)" -icon error
+      }
    }
 }
 
