@@ -1,5 +1,5 @@
 
-OUTPUT   = libaudela.so
+OUTPUT   = libaudela.so copy_include
 
 SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  \
@@ -12,22 +12,21 @@ SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
 OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 A_LIBS = $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 
-### $(SRCDIR)/cvisu.cpp  $(SRCDIR)/visu_tcl.cpp
-
 include ../../../Makefile1
 
 CXXFLAGS += -I$(EXTINC)
 
-install: $(OUTPUT)
-	cp -f ../src/cpool.h   ../../../include
-	cp -f ../src/cdevice.h  ../../../include
-	cp -f ../src/cerror.h  ../../../include
-	cp -f ../src/palette.h  ../../../include
-	cp -f ../src/cdevice.h  ../../../include
-	cp -f ../src/cbuffer.h  ../../../include
-	cp -f ../src/cpixels.h  ../../../include
-	cp -f ../src/fitskw.h   ../../../include
-
+copy_include : 
+	mkdir -p  ../../include
+	cp -f ../src/cpool.h   ../../include
+	cp -f ../src/cdevice.h  ../../include
+	cp -f ../src/cerror.h  ../../include
+	cp -f ../src/palette.h  ../../include
+	cp -f ../src/cdevice.h  ../../include
+	cp -f ../src/cbuffer.h  ../../include
+	cp -f ../src/cpixels.h  ../../include
+	cp -f ../src/fitskw.h   ../../include
+	
 
 
 
