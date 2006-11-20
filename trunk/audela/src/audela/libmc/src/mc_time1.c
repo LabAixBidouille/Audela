@@ -436,7 +436,7 @@ void mc_tdminusut(double jj,double *dt)
       return;
    }
    /* --- extrapolation ---*/
-   t=(jj-J2000)/365.25;
+   t=(jj-2453736.5)/365.25;
    ds=65.184+t/6.;
    *dt=ds;
 }

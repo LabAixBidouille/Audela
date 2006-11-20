@@ -28,6 +28,45 @@
 /***************************************************************************/
 #include "mc.h"
 
+void mc_parallaxe_stellaire(double jj,double asd1,double dec1,double *asd2,double *dec2,double plx_mas)
+/***************************************************************************/
+/* Corrige asd1,dec1 de la parallaxe stellaire et retourne asd2 et dec2    */
+/***************************************************************************/
+/* A. Danjon : Astronomie Generale ed. A. Blanchard (1980) p130            */
+/***************************************************************************/
+{
+   double llp[10],mmp[10],uup[10],ls,bs,rs,eps,dpsi,deps;
+   int planete;
+   double secd,dasd,ddec;
+   double plxrad;
+
+   /* --- obliquite moyenne --- */
+   mc_obliqmoy(jj,&eps);
+
+   /* --- longitude vraie du soleil ---*/
+   planete=SOLEIL;
+   mc_jd2lbr1a(jj,llp,mmp,uup);
+   mc_jd2lbr1b(jj,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
+   mc_nutation(jj,1,&dpsi,&deps);
+   ls+=dpsi;
+
+   plxrad=plx_mas*1e-3/3600.*(DR);
+   secd=cos(dec1);
+   if (secd==0) {
+      *asd2=asd1;
+      *dec2=dec1;
+      return;
+   }
+   secd=1./secd;
+   dasd=(cos(eps)*cos(asd1)*sin(ls)-sin(asd1)*cos(ls))*secd;
+   ddec=(sin(eps)*cos(dec1)*sin(ls)-sin(dec1)*cos(asd1)*cos(ls)-cos(eps)*sin(dec1)*sin(asd1)*sin(ls));
+   asd1+=plxrad*dasd;
+   dec1+=plxrad*ddec;
+   asd1=fmod(4*PI+asd1,2*PI);
+   *asd2=asd1;
+   *dec2=dec1;
+}
+
 void mc_aberration_annuelle(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe)
 /***************************************************************************/
 /* Corrige asd1,dec1 de l'aberration annuelle et retourne asd2 et dec2     */

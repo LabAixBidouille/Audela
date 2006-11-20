@@ -653,6 +653,7 @@ void mc_dateobs2jd(char *date, double *jj);
 /***************************************************************************/
 /* Corrections de precession, nutation, aberration ...                     */
 /***************************************************************************/
+void mc_parallaxe_stellaire(double jj,double asd1,double dec1,double *asd2,double *dec2,double plx_mas);
 void mc_aberration_annuelle(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
 void mc_aberration_eterms(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
 void mc_aberration_diurne(double jj,double asd1,double dec1, double longuai, double rhocosphip, double rhosinphip,double *asd2,double *dec2,int signe);
@@ -1027,6 +1028,8 @@ void mc_dateobs2jd(char *date, double *jj);
 /***************************************************************************/
 /*
 MC_CORC1.C
+void mc_parallaxe_stellaire(double jj,double asd1,double dec1,double *asd2,double *dec2,double plx_mas);
+   Corrige asd1,dec1 de la parallaxe stellaire et retourne asd2 et dec2
 void mc_aberration_annuelle(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
    Corrige asd1,dec1 de l'aberration annuelle et retourne asd2 et dec2     
 void mc_aberration_eterms(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
