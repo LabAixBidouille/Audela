@@ -5223,7 +5223,7 @@ if test x"$GSL_FOUND" = x"1" ; then
 	CONTRIB="$CONTRIB libbm"
 fi
 
-AUDELA="audela libaudela libgzip libmc libml librgb libsext libtt"
+AUDELA="audela libaudela libaudelatk libgzip libmc libml librgb libsext libtt"
 if test x"$GSL_FOUND" = x"1" ; then
 	AUDELA="$AUDELA libak libgsltcl libjm libyd"
 fi

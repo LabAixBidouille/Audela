@@ -7,7 +7,7 @@ OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 
 include ../../../Makefile1
 
-CXXFLAGS += -I$(EXTINC) -I../../include
+CXXFLAGS += -I$(EXTINC) -I../../include  -I ../../libaudela/src
 A_LIBS = $(OUTPUTDIR)/libaudela.so 
 
 
