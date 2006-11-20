@@ -73,6 +73,7 @@
    Tcl_CreateCommand(interp,"mc_precessradec",(Tcl_CmdProc *)Cmd_mctcl_precessradec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);	 
    Tcl_CreateCommand(interp,"mc_nutationradec",(Tcl_CmdProc *)Cmd_mctcl_nutationradec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);	 
    Tcl_CreateCommand(interp,"mc_aberrationradec",(Tcl_CmdProc *)Cmd_mctcl_aberrationradec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);	 
+   Tcl_CreateCommand(interp,"mc_parallaxradec",(Tcl_CmdProc *)Cmd_mctcl_annualparallaxradec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);	 
    Tcl_CreateCommand(interp,"mc_home2gps",(Tcl_CmdProc *)Cmd_mctcl_home2gps,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_home2mpc",(Tcl_CmdProc *)Cmd_mctcl_home2mpc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           
    Tcl_CreateCommand(interp,"mc_home2geosys",(Tcl_CmdProc *)Cmd_mctcl_home2geosys,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);           

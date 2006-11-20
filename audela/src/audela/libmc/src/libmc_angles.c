@@ -2439,6 +2439,55 @@ int Cmd_mctcl_aberrationradec(ClientData clientData, Tcl_Interp *interp, int arg
    return result;
 }
 
+int Cmd_mctcl_annualparallaxradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Effectue une des corrections de parallaxe annuelle.                      */
+/****************************************************************************/
+/* Entrees :                 												*/
+/* ListRaDec                 												*/
+/* Date_from                 												*/
+/*																			*/
+/* Sorties :																*/
+/* ListRaDec en degres.                 									*/
+/****************************************************************************/
+   double jjfrom=0.,asd2=0.,dec2=0.,radeg,decdeg;
+   int result=TCL_ERROR;
+   char s[100];
+   char **argvv=NULL;
+   int argcc;
+   double plx=0.;
+
+   if(argc<4) {
+      sprintf(s,"Usage: %s ListRaDec Date PLX_mas", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      plx=atof(argv[3]);
+      /* --- decode les dates ---*/
+      mctcl_decode_date(interp,argv[2],&jjfrom);
+      /*--- Calcul des coordonnees Ra,Dec */
+      if (Tcl_SplitList(interp,argv[1],&argcc,&argvv)==TCL_OK) {
+         if (argcc>=2) {
+            mctcl_decode_angle(interp,argvv[0],&radeg);
+            mctcl_decode_angle(interp,argvv[1],&decdeg);
+            Tcl_Free((char *) argvv);
+            /* --- calcul de la parallaxe annuelle ---*/
+            mc_parallaxe_stellaire(jjfrom,radeg*DR,decdeg*DR,&asd2,&dec2,plx);
+            /* --- sortie des résultats ---*/
+            sprintf(s,"%12f %12f",asd2/(DR),dec2/(DR));
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            result = TCL_OK;
+         } else {
+            Tcl_Free((char *) argvv);
+            sprintf(s,"Usage: %s ListRaDec Date PLX_mas", argv[0]);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      }
+   }
+   return result;
+}
+
 int Cmd_mctcl_radec2galactic(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /****************************************************************************/
 /* Conversion Ra,Dec vers le systeme de coordonnees galactiques.            */

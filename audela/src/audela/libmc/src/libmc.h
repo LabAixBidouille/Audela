@@ -117,6 +117,7 @@
  int Cmd_mctcl_precessradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_nutationradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_aberrationradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_annualparallaxradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_listradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
