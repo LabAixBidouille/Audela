@@ -946,7 +946,7 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 									x_dec=0.;
 								}
 								x_mag=cmag+mag;
-								/*Modif Yassine
+								/*Modif Yassine*/
 								/*x_mag1=(diffmag1+mag)*0.;*/
                                 x_mag1=diffmag1+mag;
 								/*fin*/

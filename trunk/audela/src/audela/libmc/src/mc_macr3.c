@@ -990,6 +990,8 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
       delta2=dx*dx+dy*dy+dz*dz;
       delta=sqrt(delta2);
       /* --- defines the center for the projection ---*/
+      bc=0.;
+      lc=0.;
       if (frame_center==0) {
          lc=atan2(cdrpos[kt].yaster,cdrpos[kt].xaster);
          bc=asin(cdrpos[kt].zaster/r);

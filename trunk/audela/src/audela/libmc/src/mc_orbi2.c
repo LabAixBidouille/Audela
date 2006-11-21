@@ -704,6 +704,7 @@ void mc_mvc2d(struct observ *obs,double ee,struct elemorb *elem,double jj_equino
    /* --- kk=1 : boucle pour calculer les elements d'orbites au plus près de chaque solution ---*/
    /* --- kk=2 : calcule les elements d'orbites pour le plus faible résidu ---*/
    yitermin=1e23;
+   kyitermin=0;
    sortie=0;
    for (kk=0;kk<=2;kk++) {
 

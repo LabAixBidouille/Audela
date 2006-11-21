@@ -564,6 +564,7 @@ void mc_mvc3a(struct observ *obs,struct elemorb *elem,double jj_equinoxe)
    for (k=1;k<=3;k++) {
       rho00[k]=0;
    }
+   r[2]=0.;
    /*--- boucle sur l'aberration planetaire ---*/
    do {
 

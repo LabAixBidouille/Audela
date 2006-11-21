@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.13 2006-11-05 11:12:47 alainklotz Exp $
+ * $Id: libcam.c,v 1.14 2006-11-21 21:59:28 alainklotz Exp $
  */
 
 #include "sysexp.h"
@@ -879,7 +879,7 @@ static void AcqRead(ClientData clientData)
       // ---
       sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d", 
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
-         (void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+         (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          strcpy(s, interp->result);
       }
