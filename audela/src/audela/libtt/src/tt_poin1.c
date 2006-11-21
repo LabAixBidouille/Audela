@@ -456,7 +456,7 @@ int tt_ptr_saveima(void *args)
 /**************************************************************************/
 {
    TT_IMA p_out;
-   int nbkeys,datatype;
+   int nbkeys=0,datatype;
    void **argu;
    int msg;
    int naxis1,naxis2,bitpix,k,naxis=2;

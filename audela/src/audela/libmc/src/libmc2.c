@@ -39,7 +39,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
 {
    int result;
    char s[10000];
-   int *p0=NULL,*p=NULL,res,nscenes,k,*occupations=NULL,flag=0;
+   int *p0=NULL,res,nscenes,k,*occupations=NULL,flag=0;
    char file_scenes[1024],file_users[1024],file_out[1024];
    double jd1min,jd2max,jd1,jd2;
    int ndt,kl,kc,k1,k2;
@@ -48,7 +48,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
    /*FILE *fic;*/
    int nscenesplaced=0;
    int k11,k22,kcc,k111,k222;
-   double jd111,jd10,jd20;
+   double jd111=0.,jd10,jd20;
    Tcl_DString dsptr;
 
    if(argc<=3) {
@@ -2763,7 +2763,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
   	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
-            sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
+            sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             free(relief);
             return TCL_ERROR;
@@ -3087,7 +3087,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
   	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
-            sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
+            sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             free(relief);
             return TCL_ERROR;
@@ -3746,8 +3746,8 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
    int argcc,code,res;
    double jdk,tot,dif,offmag,stdmag;
    double jd1,jd2,jdmed,djd;
-   double stdmagmin,offmagmin;
-   int kjdmin;
+   double stdmagmin,offmagmin=0.;
+   int kjdmin=0;
    char mesures[]="mes";
 
    int njd=100;
@@ -3946,7 +3946,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
   	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
-            sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
+            sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             free(relief);
             return TCL_ERROR;
