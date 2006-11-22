@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.16 2006-09-28 19:58:57 michelpujol Exp $
+# Mise a jour $Id: scan.tcl,v 1.17 2006-11-22 07:59:23 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -426,7 +426,7 @@ namespace eval ::Dscan {
          }
       } elseif { ( $conf(telescope) == "ouranos" ) && ( $confTel(ouranos,connect) == "1" ) } {
          if { $conf(ouranos,show_coord) == "1" } {
-            set panneau(Dscan,dec) "$confTel(conf_ouranos,coord_dec)"
+            set panneau(Dscan,dec) "$confTel(ouranos,coord_dec)"
          } else {
             set panneau(Dscan,dec) "$parametres(Dscan,dec)"
          }

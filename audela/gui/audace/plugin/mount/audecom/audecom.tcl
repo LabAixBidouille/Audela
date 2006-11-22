@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecom.tcl,v 1.3 2006-11-15 20:41:11 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.4 2006-11-22 08:01:37 robertdelmas Exp $
 #
 
 #
@@ -17,7 +17,7 @@ global confgene
 
 #--- Initialisation de variables
 set confTel(audecom,connect) "0"
-set confgene(espion)         "1" 
+set confgene(espion)         "1"
 
 namespace eval confAudecomMot {
    variable This
@@ -28,7 +28,7 @@ namespace eval confAudecomMot {
    # Initialise les variables caption(...) 
    #
    proc init { } {
-      global audace   
+      global audace
  
       #--- Charge le fichier caption
       uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecom.cap ]\""
@@ -100,11 +100,11 @@ namespace eval confAudecomMot {
       wm resizable $This 0 0
 
       #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomMot(conf_audecom,rat_ad)  $confTel(conf_audecom,rat_ad)
-      set confAudecomMot(conf_audecom,rat_dec) $confTel(conf_audecom,rat_dec)
-      set confAudecomMot(conf_audecom,maxad)   $confTel(conf_audecom,maxad)
-      set confAudecomMot(conf_audecom,maxdec)  $confTel(conf_audecom,maxdec)
-      set confAudecomMot(conf_audecom,limp)    $confTel(conf_audecom,limp)
+      set confAudecomMot(audecom,rat_ad)  $confTel(audecom,rat_ad)
+      set confAudecomMot(audecom,rat_dec) $confTel(audecom,rat_dec)
+      set confAudecomMot(audecom,maxad)   $confTel(audecom,maxad)
+      set confAudecomMot(audecom,maxdec)  $confTel(audecom,maxdec)
+      set confAudecomMot(audecom,limp)    $confTel(audecom,limp)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -164,113 +164,113 @@ namespace eval confAudecomMot {
       #--- Cree le bouton 'Aide' du rattrapage des jeux en AD et Dec. 
       button $This.but_aide0 -text "$caption(audecom,aide)" -height 3 -width 2 -borderwidth 2 \
          -command { ::confAudecomMot::aide0 } 
-	pack $This.but_aide0 -in $This.frame5 -anchor center -side left -padx 10 -pady 0
+      pack $This.but_aide0 -in $This.frame5 -anchor center -side left -padx 10 -pady 0
 
       #--- De l'amplitude du rattrapage des jeux en A.D.
       label $This.lab1 -text "$caption(audecom,rat_jeu_ad)"
-	pack $This.lab1 -in $This.frame11 -anchor w -side left -padx 5 -pady 5
+      pack $This.lab1 -in $This.frame11 -anchor w -side left -padx 5 -pady 5
 
       catch {
-         entry $This.rat_ad -textvariable confAudecomMot(conf_audecom,rat_ad) -width 5 -justify center
-	   pack $This.rat_ad -in $This.frame13 -anchor w -side left -padx 5 -pady 5
+         entry $This.rat_ad -textvariable confAudecomMot(audecom,rat_ad) -width 5 -justify center
+         pack $This.rat_ad -in $This.frame13 -anchor w -side left -padx 5 -pady 5
       }
 
       #--- De l'amplitude du rattrapage des jeux en Dec.
       label $This.lab2 -text "$caption(audecom,rat_jeu_dec)"
-	pack $This.lab2 -in $This.frame12 -anchor w -side left -padx 5 -pady 5
+      pack $This.lab2 -in $This.frame12 -anchor w -side left -padx 5 -pady 5
 
       catch {
-         entry $This.rat_dec -textvariable confAudecomMot(conf_audecom,rat_dec) -width 5 -justify center
-	   pack $This.rat_dec -in $This.frame14 -anchor w -side left -padx 5 -pady 5
+         entry $This.rat_dec -textvariable confAudecomMot(audecom,rat_dec) -width 5 -justify center
+         pack $This.rat_dec -in $This.frame14 -anchor w -side left -padx 5 -pady 5
       }
 
       #--- Rappelle les valeurs par defaut programmees dans le microcontroleur
       label $This.lab3 -text "$caption(audecom,val_defaut)"
-	pack $This.lab3 -in $This.frame9 -anchor center -side top -padx 0 -pady 5
+      pack $This.lab3 -in $This.frame9 -anchor center -side top -padx 0 -pady 5
 
       #--- De la largeur des impulsions
       catch {
          label $This.lab4 -text "$conf(audecom,dlimp)"
-	   pack $This.lab4 -in $This.frame9 -anchor center -side bottom -padx 0 -pady 11
+         pack $This.lab4 -in $This.frame9 -anchor center -side bottom -padx 0 -pady 11
       }
 
       #--- De la vitesse maxi en Dec.
       catch {
          label $This.lab5 -text "$conf(audecom,dmaxdec)"
-	   pack $This.lab5 -in $This.frame9 -anchor center -side bottom -padx 0 -pady 11
+         pack $This.lab5 -in $This.frame9 -anchor center -side bottom -padx 0 -pady 11
       }
 
       #--- De la vitesse maxi en A.D.
       catch {
          label $This.lab6 -text "$conf(audecom,dmaxad)"
-	   pack $This.lab6 -in $This.frame9 -anchor center -side bottom -padx 0 -pady 11
+         pack $This.lab6 -in $This.frame9 -anchor center -side bottom -padx 0 -pady 11
       }
 
       #--- Rapelle les limites de ces valeurs
       label $This.lab7 -text "$caption(audecom,limites)"
-	pack $This.lab7 -in $This.frame10 -anchor center -side top -padx 0 -pady 5
+      pack $This.lab7 -in $This.frame10 -anchor center -side top -padx 0 -pady 5
 
       #--- De la largeur des impulsions
       catch {
          label $This.lab8 -text "$conf(audecom,dlimpmin) $caption(audecom,a)\
             $conf(audecom,dlimpmax)"
-	   pack $This.lab8 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
+         pack $This.lab8 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
       }
 
       #--- De la vitesse maxi en Dec.
       catch {
          label $This.lab9 -text "$conf(audecom,dmaxdecmin) $caption(audecom,a)\
             $conf(audecom,dmaxdecmax)"
-	   pack $This.lab9 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
+         pack $This.lab9 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
       }
 
       #--- De la vitesse maxi en A.D.
       catch {
          label $This.lab10 -text "$conf(audecom,dmaxadmin) $caption(audecom,a)\
             $conf(audecom,dmaxadmax)"
-	   pack $This.lab10 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
+         pack $This.lab10 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
       }
 
       #--- Cree le bouton 'Aide' de la vitesse maxi en A.D. 
       button $This.but_aide1 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomMot::aide1 }
-	pack $This.but_aide1 -in $This.frame17 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide1 -in $This.frame17 -anchor center -side left -padx 10 -pady 5
 
       #--- De la vitesse maxi en A.D.
       label $This.lab11 -text "$caption(audecom,max_AD)"
-	pack $This.lab11 -in $This.frame17 -anchor center -side left -padx 0 -pady 5
+      pack $This.lab11 -in $This.frame17 -anchor center -side left -padx 0 -pady 5
 
       catch {
-         entry $This.limp -textvariable confAudecomMot(conf_audecom,maxad) -width 5 -justify center
-	   pack $This.limp -in $This.frame17 -anchor center -side right -padx 5 -pady 5
+         entry $This.limp -textvariable confAudecomMot(audecom,maxad) -width 5 -justify center
+         pack $This.limp -in $This.frame17 -anchor center -side right -padx 5 -pady 5
       }
 
       #--- Cree le bouton 'Aide' de la vitesse maxi en Dec. 
       button $This.but_aide2 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomMot::aide2 }
-	pack $This.but_aide2 -in $This.frame16 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide2 -in $This.frame16 -anchor center -side left -padx 10 -pady 5
 
       #--- De la vitesse maxi en Dec.
       label $This.lab12 -text "$caption(audecom,max_Dec)"
-	pack $This.lab12 -in $This.frame16 -anchor center -side left -padx 0 -pady 5
+      pack $This.lab12 -in $This.frame16 -anchor center -side left -padx 0 -pady 5
 
       catch {
-         entry $This.maxad -textvariable confAudecomMot(conf_audecom,maxdec) -width 5 -justify center
-	   pack $This.maxad -in $This.frame16 -anchor center -side right -padx 5 -pady 5
+         entry $This.maxad -textvariable confAudecomMot(audecom,maxdec) -width 5 -justify center
+         pack $This.maxad -in $This.frame16 -anchor center -side right -padx 5 -pady 5
       }
 
       #--- Cree le bouton 'Aide' de la largeur des impulsions 
       button $This.but_aide3 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomMot::aide3 } 
-	pack $This.but_aide3 -in $This.frame15 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide3 -in $This.frame15 -anchor center -side left -padx 10 -pady 5
 
       #--- De la largeur des impulsions
       label $This.lab13 -text "$caption(audecom,larg_imp)"
-	pack $This.lab13 -in $This.frame15 -anchor center -side left -padx 0 -pady 5
+      pack $This.lab13 -in $This.frame15 -anchor center -side left -padx 0 -pady 5
 
       catch {
-         entry $This.maxdec -textvariable confAudecomMot(conf_audecom,limp) -width 5 -justify center
-	   pack $This.maxdec -in $This.frame15 -anchor center -side right -padx 5 -pady 5
+         entry $This.maxdec -textvariable confAudecomMot(audecom,limp) -width 5 -justify center
+         pack $This.maxdec -in $This.frame15 -anchor center -side right -padx 5 -pady 5
       }
 
       #--- Cree le bouton 'OK' 
@@ -371,11 +371,11 @@ namespace eval confAudecomMot {
       global confAudecomMot
       global confTel
 
-      set confTel(conf_audecom,rat_ad)  $confAudecomMot(conf_audecom,rat_ad)
-      set confTel(conf_audecom,rat_dec) $confAudecomMot(conf_audecom,rat_dec)
-      set confTel(conf_audecom,maxad)   $confAudecomMot(conf_audecom,maxad)
-      set confTel(conf_audecom,maxdec)  $confAudecomMot(conf_audecom,maxdec)
-      set confTel(conf_audecom,limp)    $confAudecomMot(conf_audecom,limp)
+      set confTel(audecom,rat_ad)  $confAudecomMot(audecom,rat_ad)
+      set confTel(audecom,rat_dec) $confAudecomMot(audecom,rat_dec)
+      set confTel(audecom,maxad)   $confAudecomMot(audecom,maxad)
+      set confTel(audecom,maxdec)  $confAudecomMot(audecom,maxdec)
+      set confTel(audecom,limp)    $confAudecomMot(audecom,limp)
    }
 }
 
@@ -453,10 +453,10 @@ namespace eval confAudecomFoc {
       wm resizable $This 0 0
 
       #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomFoc(conf_audecom,vitesse)     $confTel(conf_audecom,vitesse)
-      set confAudecomFoc(conf_audecom,intra_extra) $confTel(conf_audecom,intra_extra)
-      set confAudecomFoc(conf_audecom,inv_rot)     $confTel(conf_audecom,inv_rot)
-      set confAudecomFoc(conf_audecom,dep_val)     $confTel(conf_audecom,dep_val)
+      set confAudecomFoc(audecom,vitesse)     $confTel(audecom,vitesse)
+      set confAudecomFoc(audecom,intra_extra) $confTel(audecom,intra_extra)
+      set confAudecomFoc(audecom,inv_rot)     $confTel(audecom,inv_rot)
+      set confAudecomFoc(audecom,dep_val)     $confTel(audecom,dep_val)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -486,30 +486,30 @@ namespace eval confAudecomFoc {
       #--- Cree le bouton 'Aide' de la vitesse du moteur 
       button $This.but_aide1 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomFoc::aide1 }
-	pack $This.but_aide1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
 
       #--- Etiquette vitesse du moteur
       label $This.lab1 -text "$caption(audecom,vit_foc)"
-	pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse du moteur
       catch {
-         entry $This.vitmotfoc -textvariable confAudecomFoc(conf_audecom,vitesse) -width 5 -justify center
-	   pack $This.vitmotfoc -in $This.frame3 -anchor center -side left -padx 5 -pady 5
+         entry $This.vitmotfoc -textvariable confAudecomFoc(audecom,vitesse) -width 5 -justify center
+         pack $This.vitmotfoc -in $This.frame3 -anchor center -side left -padx 5 -pady 5
       }
 
       #--- Etiquette des limites de la vitesse moteur
       label $This.lab2 -text "$caption(audecom,limite_vit)"
-	pack $This.lab2 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab2 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree le bouton 'Aide' de la direction du mouvement 
       button $This.but_aide2 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomFoc::aide2 }
-	pack $This.but_aide2 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide2 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
 
       #--- Etiquette direction du mouvement
       label $This.lab3 -text "$caption(audecom,direction)"
-	pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_1 -width 10
@@ -517,13 +517,13 @@ namespace eval confAudecomFoc {
 
       #--- Radio-bouton intrafocal
       radiobutton $This.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(audecom,intra_focal)" -value 0 -variable confAudecomFoc(conf_audecom,intra_extra)
-	pack $This.rad1 -in $This.frame5 -anchor center -side left -padx 3 -pady 5
+         -text "$caption(audecom,intra_focal)" -value 0 -variable confAudecomFoc(audecom,intra_extra)
+      pack $This.rad1 -in $This.frame5 -anchor center -side left -padx 3 -pady 5
 
       #--- Radio-bouton extrafocal
       radiobutton $This.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(audecom,extra_focal)" -value 1 -variable confAudecomFoc(conf_audecom,intra_extra)
-	pack $This.rad2 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
+         -text "$caption(audecom,extra_focal)" -value 1 -variable confAudecomFoc(audecom,intra_extra)
+      pack $This.rad2 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_2 -width 10 -borderwidth 0
@@ -531,17 +531,17 @@ namespace eval confAudecomFoc {
 
       #--- Inversion du sens de rotation du moteur
       checkbutton $This.invrot -text "$caption(audecom,inversion_rot)" -highlightthickness 0 \
-         -variable confAudecomFoc(conf_audecom,inv_rot)
-	pack $This.invrot -in $This.frame6 -anchor center -side left -padx 5 -pady 5
+         -variable confAudecomFoc(audecom,inv_rot)
+      pack $This.invrot -in $This.frame6 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree le bouton 'Aide' de la consigne pour le rattrapage des jeux
       button $This.but_aide3 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomFoc::aide3 }
-	pack $This.but_aide3 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide3 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
 
       #--- Etiquette consigne pour le rattrapage des jeux
       label $This.lab4 -text "$caption(audecom,valeur_dep)"
-	pack $This.lab4 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab4 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_3 -width 11 -borderwidth 0
@@ -549,13 +549,13 @@ namespace eval confAudecomFoc {
 
       #--- Cree la zone a renseigner de la consigne du rattrapage des jeux
       catch {
-         entry $This.depval -textvariable confAudecomFoc(conf_audecom,dep_val) -width 5 -justify center
-	   pack $This.depval -in $This.frame8 -anchor center -side left -padx 5 -pady 5
+         entry $This.depval -textvariable confAudecomFoc(audecom,dep_val) -width 5 -justify center
+         pack $This.depval -in $This.frame8 -anchor center -side left -padx 5 -pady 5
       }
 
       #--- Etiquette de l'unite (pas) pour la consigne
       label $This.lab5 -text "$caption(audecom,pas)"
-	pack $This.lab5 -in $This.frame8 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab5 -in $This.frame8 -anchor center -side left -padx 5 -pady 5
 
       #--- Cree le bouton 'OK' 
       button $This.but_ok -text "$caption(audecom,ok)" -width 7 -borderwidth 2 \
@@ -635,10 +635,10 @@ namespace eval confAudecomFoc {
       global confAudecomFoc
       global confTel
 
-      set confTel(conf_audecom,vitesse)     $confAudecomFoc(conf_audecom,vitesse)
-      set confTel(conf_audecom,intra_extra) $confAudecomFoc(conf_audecom,intra_extra)
-      set confTel(conf_audecom,inv_rot)     $confAudecomFoc(conf_audecom,inv_rot)
-      set confTel(conf_audecom,dep_val)     $confAudecomFoc(conf_audecom,dep_val)
+      set confTel(audecom,vitesse)     $confAudecomFoc(audecom,vitesse)
+      set confTel(audecom,intra_extra) $confAudecomFoc(audecom,intra_extra)
+      set confTel(audecom,inv_rot)     $confAudecomFoc(audecom,inv_rot)
+      set confTel(audecom,dep_val)     $confAudecomFoc(audecom,dep_val)
    }
 }
 
@@ -715,29 +715,29 @@ namespace eval confAudecomPec {
       set posy_audecom_prog_pec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
       wm geometry $This +[ expr $posx_audecom_prog_pec + 0 ]+[ expr $posy_audecom_prog_pec + 70 ]
       wm resizable $This 0 0
- 
+
       #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomPec(conf_audecom,t0)   $confTel(conf_audecom,t0)
-      set confAudecomPec(conf_audecom,t1)   $confTel(conf_audecom,t1)
-      set confAudecomPec(conf_audecom,t2)   $confTel(conf_audecom,t2)
-      set confAudecomPec(conf_audecom,t3)   $confTel(conf_audecom,t3)
-      set confAudecomPec(conf_audecom,t4)   $confTel(conf_audecom,t4)
-      set confAudecomPec(conf_audecom,t5)   $confTel(conf_audecom,t5)
-      set confAudecomPec(conf_audecom,t6)   $confTel(conf_audecom,t6)
-      set confAudecomPec(conf_audecom,t7)   $confTel(conf_audecom,t7)
-      set confAudecomPec(conf_audecom,t8)   $confTel(conf_audecom,t8)
-      set confAudecomPec(conf_audecom,t9)   $confTel(conf_audecom,t9)
-      set confAudecomPec(conf_audecom,t10)  $confTel(conf_audecom,t10)
-      set confAudecomPec(conf_audecom,t11)  $confTel(conf_audecom,t11)
-      set confAudecomPec(conf_audecom,t12)  $confTel(conf_audecom,t12)
-      set confAudecomPec(conf_audecom,t13)  $confTel(conf_audecom,t13)
-      set confAudecomPec(conf_audecom,t14)  $confTel(conf_audecom,t14)
-      set confAudecomPec(conf_audecom,t15)  $confTel(conf_audecom,t15)
-      set confAudecomPec(conf_audecom,t16)  $confTel(conf_audecom,t16)
-      set confAudecomPec(conf_audecom,t17)  $confTel(conf_audecom,t17)
-      set confAudecomPec(conf_audecom,t18)  $confTel(conf_audecom,t18)
-      set confAudecomPec(conf_audecom,t19)  $confTel(conf_audecom,t19)
-      set confAudecomPec(conf_audecom,rpec) $confTel(conf_audecom,rpec)
+      set confAudecomPec(audecom,t0)   $confTel(audecom,t0)
+      set confAudecomPec(audecom,t1)   $confTel(audecom,t1)
+      set confAudecomPec(audecom,t2)   $confTel(audecom,t2)
+      set confAudecomPec(audecom,t3)   $confTel(audecom,t3)
+      set confAudecomPec(audecom,t4)   $confTel(audecom,t4)
+      set confAudecomPec(audecom,t5)   $confTel(audecom,t5)
+      set confAudecomPec(audecom,t6)   $confTel(audecom,t6)
+      set confAudecomPec(audecom,t7)   $confTel(audecom,t7)
+      set confAudecomPec(audecom,t8)   $confTel(audecom,t8)
+      set confAudecomPec(audecom,t9)   $confTel(audecom,t9)
+      set confAudecomPec(audecom,t10)  $confTel(audecom,t10)
+      set confAudecomPec(audecom,t11)  $confTel(audecom,t11)
+      set confAudecomPec(audecom,t12)  $confTel(audecom,t12)
+      set confAudecomPec(audecom,t13)  $confTel(audecom,t13)
+      set confAudecomPec(audecom,t14)  $confTel(audecom,t14)
+      set confAudecomPec(audecom,t15)  $confTel(audecom,t15)
+      set confAudecomPec(audecom,t16)  $confTel(audecom,t16)
+      set confAudecomPec(audecom,t17)  $confTel(audecom,t17)
+      set confAudecomPec(audecom,t18)  $confTel(audecom,t18)
+      set confAudecomPec(audecom,t19)  $confTel(audecom,t19)
+      set confAudecomPec(audecom,rpec) $confTel(audecom,rpec)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -800,233 +800,233 @@ namespace eval confAudecomPec {
       #--- Cree le bouton 'Aide' de la vitesse de suivi nominale 
       button $This.but_aide1 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomPec::aide1 }
-	pack $This.but_aide1 -in $This.frame16 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide1 -in $This.frame16 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle la vitesse de suivi nominale
       label $This.lab1 -text "$caption(audecom,vit_suiv_nom)"
-	pack $This.lab1 -in $This.frame16 -anchor center -side left -padx 5 -pady 5
+      pack $This.lab1 -in $This.frame16 -anchor center -side left -padx 5 -pady 5
 
       catch {
          label $This.labURL2 -text "$conf(audecom,dsuivinom)" -fg $color(blue)
-	   pack $This.labURL2 -in $This.frame16 -anchor center -side left -padx 0 -pady 5
+         pack $This.labURL2 -in $This.frame16 -anchor center -side left -padx 0 -pady 5
       }
 
       #--- Cree le bouton 'Aide' de l'intervalle de choix de la vitesse de suivi
       button $This.but_aide2 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomPec::aide2 } 
-	pack $This.but_aide2 -in $This.frame17 -anchor center -side left -padx 10 -pady 5
+      pack $This.but_aide2 -in $This.frame17 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle les limites des corrections et la reduction
       catch {
          label $This.lab3 -text "$caption(audecom,compris_entre) $conf(audecom,dsuivinommin)\
             $caption(audecom,et) $conf(audecom,dsuivinommax)"
-	   pack $This.lab3 -in $This.frame17 -anchor center -side left -padx 5 -pady 5
+         pack $This.lab3 -in $This.frame17 -anchor center -side left -padx 5 -pady 5
       }
 
       #--- Affiche la moyenne des correction
       label $This.lab4 -text "$caption(audecom,somme_ti)"
-	pack $This.lab4 -in $This.frame6 -anchor center -side top -padx 10 -pady 9
+      pack $This.lab4 -in $This.frame6 -anchor center -side top -padx 10 -pady 9
 
       label $This.labURL5 -text "$caption(audecom,non_calcul)" -relief groove -fg $color(blue) -width 13 
-	pack $This.labURL5 -in $This.frame6 -anchor center -side top -padx 10 -pady 9
+      pack $This.labURL5 -in $This.frame6 -anchor center -side top -padx 10 -pady 9
 
       #--- Cree la zone a renseigner t0
       label $This.lab6 -text "$caption(audecom,t0)"
-	pack $This.lab6 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab6 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t0 -textvariable confAudecomPec(conf_audecom,t0) -width 5 -justify center
-	   pack $This.t0 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
+         entry $This.t0 -textvariable confAudecomPec(audecom,t0) -width 5 -justify center
+         pack $This.t0 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t1
       label $This.lab7 -text "$caption(audecom,t1)"
-	pack $This.lab7 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab7 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t1 -textvariable confAudecomPec(conf_audecom,t1) -width 5 -justify center
-	   pack $This.t1 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
+         entry $This.t1 -textvariable confAudecomPec(audecom,t1) -width 5 -justify center
+         pack $This.t1 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t2
       label $This.lab8 -text "$caption(audecom,t2)"
-	pack $This.lab8 -in $This.frame7 -anchor center -side top -padx 5 -pady 5 
+      pack $This.lab8 -in $This.frame7 -anchor center -side top -padx 5 -pady 5 
 
       catch {
-         entry $This.t2 -textvariable confAudecomPec(conf_audecom,t2) -width 5 -justify center
-	   pack $This.t2 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
+         entry $This.t2 -textvariable confAudecomPec(audecom,t2) -width 5 -justify center
+         pack $This.t2 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t3
       label $This.lab9 -text "$caption(audecom,t3)"
-	pack $This.lab9 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab9 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t3 -textvariable confAudecomPec(conf_audecom,t3) -width 5 -justify center
-	   pack $This.t3 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
+         entry $This.t3 -textvariable confAudecomPec(audecom,t3) -width 5 -justify center
+         pack $This.t3 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t4
       label $This.lab10 -text "$caption(audecom,t4)"
-	pack $This.lab10 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab10 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t4 -textvariable confAudecomPec(conf_audecom,t4) -width 5 -justify center
-	   pack $This.t4 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
+         entry $This.t4 -textvariable confAudecomPec(audecom,t4) -width 5 -justify center
+         pack $This.t4 -in $This.frame8 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t5
       label $This.lab11 -text "$caption(audecom,t5)"
-	pack $This.lab11 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab11 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t5 -textvariable confAudecomPec(conf_audecom,t5) -width 5 -justify center
-	   pack $This.t5 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
+         entry $This.t5 -textvariable confAudecomPec(audecom,t5) -width 5 -justify center
+         pack $This.t5 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t6
       label $This.lab12 -text "$caption(audecom,t6)"
-	pack $This.lab12 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab12 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t6 -textvariable confAudecomPec(conf_audecom,t6) -width 5 -justify center
-	   pack $This.t6 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
+         entry $This.t6 -textvariable confAudecomPec(audecom,t6) -width 5 -justify center
+         pack $This.t6 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t7
       label $This.lab13 -text "$caption(audecom,t7)"
-	pack $This.lab13 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab13 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t7 -textvariable confAudecomPec(conf_audecom,t7) -width 5 -justify center
-	   pack $This.t7 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
+         entry $This.t7 -textvariable confAudecomPec(audecom,t7) -width 5 -justify center
+         pack $This.t7 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t8
       label $This.lab14 -text "$caption(audecom,t8)"
-	pack $This.lab14 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab14 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t8 -textvariable confAudecomPec(conf_audecom,t8) -width 5 -justify center
-	   pack $This.t8 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
+         entry $This.t8 -textvariable confAudecomPec(audecom,t8) -width 5 -justify center
+         pack $This.t8 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t9
       label $This.lab15 -text "$caption(audecom,t9)"
-	pack $This.lab15 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab15 -in $This.frame9 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t9 -textvariable confAudecomPec(conf_audecom,t9) -width 5 -justify center
-	   pack $This.t9 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
+         entry $This.t9 -textvariable confAudecomPec(audecom,t9) -width 5 -justify center
+         pack $This.t9 -in $This.frame10 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t10
       label $This.lab16 -text "$caption(audecom,t10)"
-	pack $This.lab16 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab16 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t10 -textvariable confAudecomPec(conf_audecom,t10) -width 5 -justify center
-	   pack $This.t10 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
+         entry $This.t10 -textvariable confAudecomPec(audecom,t10) -width 5 -justify center
+         pack $This.t10 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t11
       label $This.lab17 -text "$caption(audecom,t11)"
-	pack $This.lab17 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab17 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t11 -textvariable confAudecomPec(conf_audecom,t11) -width 5 -justify center
-	   pack $This.t11 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
+         entry $This.t11 -textvariable confAudecomPec(audecom,t11) -width 5 -justify center
+         pack $This.t11 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t12
       label $This.lab18 -text "$caption(audecom,t12)"
-	pack $This.lab18 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab18 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t12 -textvariable confAudecomPec(conf_audecom,t12) -width 5 -justify center
-	   pack $This.t12 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
+         entry $This.t12 -textvariable confAudecomPec(audecom,t12) -width 5 -justify center
+         pack $This.t12 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t13
       label $This.lab19 -text "$caption(audecom,t13)"
-	pack $This.lab19 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab19 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t13 -textvariable confAudecomPec(conf_audecom,t13) -width 5 -justify center
-	   pack $This.t13 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
+         entry $This.t13 -textvariable confAudecomPec(audecom,t13) -width 5 -justify center
+         pack $This.t13 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t14
       label $This.lab20 -text "$caption(audecom,t14)"
-	pack $This.lab20 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab20 -in $This.frame11 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t14 -textvariable confAudecomPec(conf_audecom,t14) -width 5 -justify center
-	   pack $This.t14 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
+         entry $This.t14 -textvariable confAudecomPec(audecom,t14) -width 5 -justify center
+         pack $This.t14 -in $This.frame12 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t15
       label $This.lab21 -text "$caption(audecom,t15)"
-	pack $This.lab21 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab21 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t15 -textvariable confAudecomPec(conf_audecom,t15) -width 5 -justify center
-	   pack $This.t15 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
+         entry $This.t15 -textvariable confAudecomPec(audecom,t15) -width 5 -justify center
+         pack $This.t15 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t16
       label $This.lab22 -text "$caption(audecom,t16)"
-	pack $This.lab22 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab22 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t16 -textvariable confAudecomPec(conf_audecom,t16) -width 5 -justify center
-	   pack $This.t16 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
+         entry $This.t16 -textvariable confAudecomPec(audecom,t16) -width 5 -justify center
+         pack $This.t16 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t17
       label $This.lab23 -text "$caption(audecom,t17)"
-	pack $This.lab23 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab23 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t17 -textvariable confAudecomPec(conf_audecom,t17) -width 5 -justify center
-	   pack $This.t17 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
+         entry $This.t17 -textvariable confAudecomPec(audecom,t17) -width 5 -justify center
+         pack $This.t17 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t18
       label $This.lab24 -text "$caption(audecom,t18)"
-	pack $This.lab24 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab24 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t18 -textvariable confAudecomPec(conf_audecom,t18) -width 5 -justify center
-	   pack $This.t18 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
+         entry $This.t18 -textvariable confAudecomPec(audecom,t18) -width 5 -justify center
+         pack $This.t18 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree la zone a renseigner t19
       label $This.lab25 -text "$caption(audecom,t19)"
-	pack $This.lab25 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
+      pack $This.lab25 -in $This.frame13 -anchor center -side top -padx 5 -pady 5
 
       catch {
-         entry $This.t19 -textvariable confAudecomPec(conf_audecom,t19) -width 5 -justify center
-	   pack $This.t19 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
+         entry $This.t19 -textvariable confAudecomPec(audecom,t19) -width 5 -justify center
+         pack $This.t19 -in $This.frame14 -anchor center -side top -padx 5 -pady 5
       }
 
       #--- Cree le bouton 'Calculer' la moyenne de la somme de t1 a t19
       button $This.but_calculer -text "$caption(audecom,calculer)" -borderwidth 2 \
          -command { ::confAudecomPec::moyti } 
-	pack $This.but_calculer -in $This.frame18 -anchor center -side top -pady 9 -ipadx 10 -ipady 5 -expand true
+      pack $This.but_calculer -in $This.frame18 -anchor center -side top -pady 9 -ipadx 10 -ipady 5 -expand true
 
       #--- Cree le bouton 'Aide' pour la periodicite du PEC
       button $This.but_aide3 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomPec::aide3 } 
-	pack $This.but_aide3 -in $This.frame19 -anchor center -side left -padx 10 -pady 9
+      pack $This.but_aide3 -in $This.frame19 -anchor center -side left -padx 10 -pady 9
 
       #--- Cree la zone a renseigner (r)
       label $This.lab26 -text "$caption(audecom,r)"
-	pack $This.lab26 -in $This.frame19 -anchor center -side left -padx 10 -pady 9
+      pack $This.lab26 -in $This.frame19 -anchor center -side left -padx 10 -pady 9
 
       catch {
-         entry $This.rpec -textvariable confAudecomPec(conf_audecom,rpec) -width 5 -justify center
-	   pack $This.rpec -in $This.frame19 -anchor center -side left -padx 10 -pady 9
+         entry $This.rpec -textvariable confAudecomPec(audecom,rpec) -width 5 -justify center
+         pack $This.rpec -in $This.frame19 -anchor center -side left -padx 10 -pady 9
       }
 
       #--- Cree le bouton 'OK' 
@@ -1160,7 +1160,7 @@ namespace eval confAudecomPec {
 
       set confTel(audecom,t) 0
       for {set i 0} {$i <= 19} {incr i} {
-         set confTel(audecom,t) [ expr $confTel(audecom,t) + $confAudecomPec(conf_audecom,t$i) ]
+         set confTel(audecom,t) [ expr $confTel(audecom,t) + $confAudecomPec(audecom,t$i) ]
       }
       set confTel(audecom,moyti) [ expr $confTel(audecom,t) / 20.0 ]
       if { $confTel(audecom,moyti) == "$conf(audecom,dsuivinom)" } {
@@ -1181,27 +1181,27 @@ namespace eval confAudecomPec {
       global confTel
       global confAudecomPec
    
-      set confTel(conf_audecom,t0)   $confAudecomPec(conf_audecom,t0)
-      set confTel(conf_audecom,t1)   $confAudecomPec(conf_audecom,t1)
-      set confTel(conf_audecom,t2)   $confAudecomPec(conf_audecom,t2)
-      set confTel(conf_audecom,t3)   $confAudecomPec(conf_audecom,t3)
-      set confTel(conf_audecom,t4)   $confAudecomPec(conf_audecom,t4)
-      set confTel(conf_audecom,t5)   $confAudecomPec(conf_audecom,t5)
-      set confTel(conf_audecom,t6)   $confAudecomPec(conf_audecom,t6)
-      set confTel(conf_audecom,t7)   $confAudecomPec(conf_audecom,t7)
-      set confTel(conf_audecom,t8)   $confAudecomPec(conf_audecom,t8)
-      set confTel(conf_audecom,t9)   $confAudecomPec(conf_audecom,t9)
-      set confTel(conf_audecom,t10)  $confAudecomPec(conf_audecom,t10)
-      set confTel(conf_audecom,t11)  $confAudecomPec(conf_audecom,t11)
-      set confTel(conf_audecom,t12)  $confAudecomPec(conf_audecom,t12)
-      set confTel(conf_audecom,t13)  $confAudecomPec(conf_audecom,t13)
-      set confTel(conf_audecom,t14)  $confAudecomPec(conf_audecom,t14)
-      set confTel(conf_audecom,t15)  $confAudecomPec(conf_audecom,t15)
-      set confTel(conf_audecom,t16)  $confAudecomPec(conf_audecom,t16)
-      set confTel(conf_audecom,t17)  $confAudecomPec(conf_audecom,t17)
-      set confTel(conf_audecom,t18)  $confAudecomPec(conf_audecom,t18)
-      set confTel(conf_audecom,t19)  $confAudecomPec(conf_audecom,t19)
-      set confTel(conf_audecom,rpec) $confAudecomPec(conf_audecom,rpec)
+      set confTel(audecom,t0)   $confAudecomPec(audecom,t0)
+      set confTel(audecom,t1)   $confAudecomPec(audecom,t1)
+      set confTel(audecom,t2)   $confAudecomPec(audecom,t2)
+      set confTel(audecom,t3)   $confAudecomPec(audecom,t3)
+      set confTel(audecom,t4)   $confAudecomPec(audecom,t4)
+      set confTel(audecom,t5)   $confAudecomPec(audecom,t5)
+      set confTel(audecom,t6)   $confAudecomPec(audecom,t6)
+      set confTel(audecom,t7)   $confAudecomPec(audecom,t7)
+      set confTel(audecom,t8)   $confAudecomPec(audecom,t8)
+      set confTel(audecom,t9)   $confAudecomPec(audecom,t9)
+      set confTel(audecom,t10)  $confAudecomPec(audecom,t10)
+      set confTel(audecom,t11)  $confAudecomPec(audecom,t11)
+      set confTel(audecom,t12)  $confAudecomPec(audecom,t12)
+      set confTel(audecom,t13)  $confAudecomPec(audecom,t13)
+      set confTel(audecom,t14)  $confAudecomPec(audecom,t14)
+      set confTel(audecom,t15)  $confAudecomPec(audecom,t15)
+      set confTel(audecom,t16)  $confAudecomPec(audecom,t16)
+      set confTel(audecom,t17)  $confAudecomPec(audecom,t17)
+      set confTel(audecom,t18)  $confAudecomPec(audecom,t18)
+      set confTel(audecom,t19)  $confAudecomPec(audecom,t19)
+      set confTel(audecom,rpec) $confAudecomPec(audecom,rpec)
    }
 }
 
@@ -1329,7 +1329,7 @@ namespace eval confAudecomKing {
 
       #--- Position de l'observateur
       label $This.lab1 -text "$caption(audecom,pos_obs)"
-	pack $This.lab1 -in $This.frame7 -anchor w -side top -padx 5 -pady 5
+      pack $This.lab1 -in $This.frame7 -anchor w -side top -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_1 -text " "
@@ -1337,31 +1337,31 @@ namespace eval confAudecomKing {
 
       #--- Longitude observateur
       label $This.lab2 -text "$caption(audecom,longitude)"
-	pack $This.lab2 -in $This.frame7 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab2 -in $This.frame7 -anchor w -side top -padx 25 -pady 0
 
       #--- Cree le label de la longitude
       label $This.lab3 -borderwidth 1 -width 14 -anchor w
-	pack $This.lab3 -in $This.frame8 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab3 -in $This.frame8 -anchor w -side top -padx 5 -pady 1
 
       #--- Latitude observateur
       label $This.lab4 -text "$caption(audecom,latitude)"
-	pack $This.lab4 -in $This.frame7 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab4 -in $This.frame7 -anchor w -side top -padx 25 -pady 0
 
       #--- Cree le label de la latitude
       label $This.lab5 -borderwidth 1 -width 14 -anchor w
-	pack $This.lab5 -in $This.frame8 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab5 -in $This.frame8 -anchor w -side top -padx 5 -pady 1
 
       #--- Altitude observateur
       label $This.lab6 -text "$caption(audecom,altitude)"
-	pack $This.lab6 -in $This.frame7 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab6 -in $This.frame7 -anchor w -side top -padx 25 -pady 0
 
       #--- Cree le label de l'altitude
       label $This.lab7 -borderwidth 1 -width 14 -anchor w
-	pack $This.lab7 -in $This.frame8 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab7 -in $This.frame8 -anchor w -side top -padx 5 -pady 1
 
       #--- Position du telescope
       label $This.lab8 -text "$caption(audecom,pos_tel)"
-	pack $This.lab8 -in $This.frame9 -anchor w -side top -padx 5 -pady 5
+      pack $This.lab8 -in $This.frame9 -anchor w -side top -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_2 -text " "
@@ -1369,35 +1369,35 @@ namespace eval confAudecomKing {
 
       #--- Azimut
       label $This.lab9 -text "$caption(audecom,azimut)"
-	pack $This.lab9 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab9 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab10 -borderwidth 1 -textvariable "confAudecomKing(azimut)" -width 14 -anchor w
-	pack $This.lab10 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab10 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
 
       #--- Hauteur
       label $This.lab11 -text "$caption(audecom,hauteur)"
-	pack $This.lab11 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab11 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab12 -borderwidth 1 -textvariable "confAudecomKing(hauteur)" -width 14 -anchor w
-	pack $This.lab12 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab12 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
 
       #--- Ascension droite
       label $This.lab13 -text "$caption(audecom,ad)"
-	pack $This.lab13 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab13 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab14 -borderwidth 1 -textvariable "confAudecomKing(ascension1)" -width 14 -anchor w
-	pack $This.lab14 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab14 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
 
       #--- Declinaison
       label $This.lab15 -text "$caption(audecom,dec)"
-	pack $This.lab15 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab15 -in $This.frame9 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab16 -borderwidth 1 -textvariable "confAudecomKing(declinaison1)" -width 14 -anchor w
-	pack $This.lab16 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab16 -in $This.frame10 -anchor w -side top -padx 5 -pady 1
 
       #--- Parametres lies au temps
       label $This.lab17 -text "$caption(audecom,temps)"
-	pack $This.lab17 -in $This.frame11 -anchor w -side top -padx 5 -pady 5
+      pack $This.lab17 -in $This.frame11 -anchor w -side top -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_3 -text " "
@@ -1405,49 +1405,49 @@ namespace eval confAudecomKing {
 
       #--- Heure systeme = tu ou heure legale
       label $This.lab18 -text "$caption(audecom,hsysteme)"
-	pack $This.lab18 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab18 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab19 -borderwidth 1 -width 14 -anchor w -textvariable confgene(temps,hsysteme)
-	pack $This.lab19 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab19 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
 
       #--- Cree le label fushoraire
       label $This.lab20 -text "$caption(audecom,fushoraire2)"
-	pack $This.lab20 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab20 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab21 -borderwidth 1 -width 14 -anchor w -textvariable confgene(temps,fushoraire)
-	pack $This.lab21 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab21 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
 
       #--- Cree le label hhiverete
       label $This.lab22 -text "$caption(audecom,hhiverete)"
-	pack $This.lab22 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab22 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab23 -borderwidth 1 -width 14 -anchor w
-	pack $This.lab23 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab23 -in $This.frame12 -anchor w -side top -padx 5 -pady 1
 
       #--- Angle horaire
       label $This.lab24 -text "$caption(audecom,angle_horaire)"
-	pack $This.lab24 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+      pack $This.lab24 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
 
       label $This.lab25 -borderwidth 1 -textvariable "confAudecomKing(anglehoraire)" -width 14 -anchor w
-	pack $This.lab25 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+      pack $This.lab25 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
 
       #--- Temps sideral local
       label $This.lab26 -text "$caption(audecom,tsl)"
-	pack $This.lab26 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+      pack $This.lab26 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
 
       label $This.lab27 -borderwidth 1 -textvariable "audace(tsl,format,hmsint)" -width 14 -anchor w
-	pack $This.lab27 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+      pack $This.lab27 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
 
       #--- Temps universel
       label $This.lab28 -text "$caption(audecom,tu)"
-	pack $This.lab28 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
+      pack $This.lab28 -in $This.frame11 -anchor w -side bottom -padx 25 -pady 0
 
       label $This.lab29 -borderwidth 1 -textvariable "audace(tu,format,hmsint)" -width 14 -anchor w
-	pack $This.lab29 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
+      pack $This.lab29 -in $This.frame12 -anchor w -side bottom -padx 5 -pady 1
 
       #--- Coefficient de King
       label $This.lab30 -text "$caption(audecom,coef_king)"
-	pack $This.lab30 -in $This.frame13 -anchor w -side top -padx 5 -pady 5
+      pack $This.lab30 -in $This.frame13 -anchor w -side top -padx 5 -pady 5
 
       #--- Cree un widget 'Invisible' pour simuler un espacement
       label $This.lab_invisible_4 -text " "
@@ -1455,10 +1455,10 @@ namespace eval confAudecomKing {
 
       #--- Coefficient k
       label $This.lab31 -text "$caption(audecom,coef_k)"
-	pack $This.lab31 -in $This.frame13 -anchor w -side top -padx 25 -pady 0
+      pack $This.lab31 -in $This.frame13 -anchor w -side top -padx 25 -pady 0
 
       label $This.lab32 -borderwidth 1 -textvariable "confAudecomKing(coefking)" -width 14 -anchor w
-	pack $This.lab32 -in $This.frame14 -anchor w -side top -padx 5 -pady 1
+      pack $This.lab32 -in $This.frame14 -anchor w -side top -padx 5 -pady 1
 
       #--- Cree le bouton 'Fermer' 
       button $This.but_close -text "$caption(audecom,fermer)" -width 7 -borderwidth 2 \
@@ -1507,14 +1507,14 @@ namespace eval confAudecomKing {
                set confgene(espion1) "0"
                #--- Cree le label fushoraire
                label $This.lab20 -text "$caption(audecom,fushoraire2)"
-	         pack $This.lab20 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
+               pack $This.lab20 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
                label $This.lab21 -borderwidth 1 -width 6 -anchor w -textvariable confgene(temps,fushoraire)
-	         pack $This.lab21 -in $This.frame12 -anchor w -side top -padx 5 -pady 0
+               pack $This.lab21 -in $This.frame12 -anchor w -side top -padx 5 -pady 0
                #--- Cree le label hhiverete
                label $This.lab22 -text "$caption(audecom,hhiverete)"
-	         pack $This.lab22 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
+               pack $This.lab22 -in $This.frame11 -anchor w -side top -padx 25 -pady 0
                label $This.lab23 -borderwidth 1 -width 8 -anchor w
-	         pack $This.lab23 -in $This.frame12 -anchor w -side top -padx 5 -pady 0
+               pack $This.lab23 -in $This.frame12 -anchor w -side top -padx 5 -pady 0
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $This
             }
@@ -1588,9 +1588,9 @@ namespace eval confAudecomKing {
          #--- Active ou non le suivi a la vitesse de King
          if { $conf(audecom,king) == "1" } {
             set corking [ expr $conf(audecom,dsuivinom) / ( 1 - $confAudecomKing(coefking) ) ]
-		set corking [ expr round($corking) ]
+            set corking [ expr round($corking) ]
             if { $corking > "99999999" } { set corking "99999999" }
-		if { $corking < "-99999999" } { set corking "-99999999" }
+            if { $corking < "-99999999" } { set corking "-99999999" }
             tel$audace(telNo) king $corking
          } else {
             tel$audace(telNo) king "99999999"
@@ -1703,9 +1703,9 @@ namespace eval confAudecomMobile {
       wm resizable $This 0 0
 
       #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomMobile(conf_audecom,ad)   $confTel(conf_audecom,ad)
-      set confAudecomMobile(conf_audecom,dec)  $confTel(conf_audecom,dec)
-      set confAudecomMobile(conf_audecom,type) $confTel(conf_audecom,type)
+      set confAudecomMobile(audecom,ad)   $confTel(audecom,ad)
+      set confAudecomMobile(audecom,dec)  $confTel(audecom,dec)
+      set confAudecomMobile(audecom,type) $confTel(audecom,type)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -1735,53 +1735,53 @@ namespace eval confAudecomMobile {
       frame $This.frame9 -borderwidth 0 -relief raised
       pack $This.frame9 -in $This.frame7 -side top -fill both -expand 1
 
-     	#--- Radio-bouton Lune
+      #--- Radio-bouton Lune
       radiobutton $This.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(audecom,para_mobile_lune)" \
-         -value 0 -variable confAudecomMobile(conf_audecom,type) \
+         -value 0 -variable confAudecomMobile(audecom,type) \
          -command { ::confAudecomMobile::griser "$audace(base).confAudecomMobile" }
-	pack $This.rad1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+      pack $This.rad1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
 
       #--- Radio-bouton Soleil
       radiobutton $This.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(audecom,para_mobile_soleil)" \
-         -value 1 -variable confAudecomMobile(conf_audecom,type) \
+         -value 1 -variable confAudecomMobile(audecom,type) \
          -command { ::confAudecomMobile::griser "$audace(base).confAudecomMobile" }
-	pack $This.rad2 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
+      pack $This.rad2 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
 
       #--- Radio-bouton comete, etc.
       radiobutton $This.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(audecom,para_mobile_comete)" \
-         -value 2 -variable confAudecomMobile(conf_audecom,type) \
+         -value 2 -variable confAudecomMobile(audecom,type) \
          -command { ::confAudecomMobile::activer "$audace(base).confAudecomMobile" }
-	pack $This.rad3 -in $This.frame6 -anchor n -side left -padx 10 -pady 5
+      pack $This.rad3 -in $This.frame6 -anchor n -side left -padx 10 -pady 5
 
       #--- Radio-bouton etoile
      # radiobutton $This.rad4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
      #    -text "$caption(audecom,para_mobile_etoile)" \
-     #    -value 3 -variable confAudecomMobile(conf_audecom,type) \
+     #    -value 3 -variable confAudecomMobile(audecom,type) \
      #    -command { ::confAudecomMobile::griser "$audace(base).confAudecomMobile" }
      # pack $This.rad4 -in $This.frame6 -anchor s -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en asension droite
       catch {
-         entry $This.vitmotad -textvariable confAudecomMobile(conf_audecom,ad) -width 10 -justify center
-	   pack $This.vitmotad -in $This.frame8 -anchor n -side left -padx 5 -pady 5
+         entry $This.vitmotad -textvariable confAudecomMobile(audecom,ad) -width 10 -justify center
+         pack $This.vitmotad -in $This.frame8 -anchor n -side left -padx 5 -pady 5
       }
 
       #--- Etiquette vitesse d'ascension droite
       label $This.lab1 -text "$caption(audecom,para_mobile_ad)"
-	pack $This.lab1 -in $This.frame8 -anchor n -side left -padx 10 -pady 5
+      pack $This.lab1 -in $This.frame8 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en declinaison
       catch {
-         entry $This.vitmotdec -textvariable confAudecomMobile(conf_audecom,dec) -width 10 -justify center
-	   pack $This.vitmotdec -in $This.frame9 -anchor n -side left -padx 5 -pady 5
+         entry $This.vitmotdec -textvariable confAudecomMobile(audecom,dec) -width 10 -justify center
+         pack $This.vitmotdec -in $This.frame9 -anchor n -side left -padx 5 -pady 5
       }
 
       #--- Etiquette vitesse de declinaison
       label $This.lab2 -text "$caption(audecom,para_mobile_dec)"
-	pack $This.lab2 -in $This.frame9 -anchor n -side left -padx 10 -pady 5
+      pack $This.lab2 -in $This.frame9 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree le bouton 'OK' 
       button $This.but_ok -text "$caption(audecom,ok)" -width 7 -borderwidth 2 \
@@ -1800,7 +1800,7 @@ namespace eval confAudecomMobile {
       $This.lst1 insert end "$caption(audecom,para_mobile,aide0)\n"
 
       #--- Entry actives ou non
-      if { $confAudecomMobile(conf_audecom,type) != "2" } {
+      if { $confAudecomMobile(audecom,type) != "2" } {
          ::confAudecomMobile::griser "$audace(base).confAudecomMobile"
       } else {
          ::confAudecomMobile::activer "$audace(base).confAudecomMobile"
@@ -1824,9 +1824,9 @@ namespace eval confAudecomMobile {
       global confAudecomMobile
       global confTel
 
-      set confTel(conf_audecom,ad)   $confAudecomMobile(conf_audecom,ad)
-      set confTel(conf_audecom,dec)  $confAudecomMobile(conf_audecom,dec)
-      set confTel(conf_audecom,type) $confAudecomMobile(conf_audecom,type)
+      set confTel(audecom,ad)   $confAudecomMobile(audecom,ad)
+      set confTel(audecom,dec)  $confAudecomMobile(audecom,dec)
+      set confTel(audecom,type) $confAudecomMobile(audecom,type)
    }
 }
 
