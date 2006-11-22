@@ -47,12 +47,14 @@ public :
 	unsigned short lireAuxiliaire(unsigned int ligne);
 	bool ecrireport ( char donnee);
 	bool calculecarttype (double *sigma1,double *sigma2,double *sigma3,double *sigma4);
+	bool NombreEchant(int nombreechant);
+
 
 	bool savePLU(int savePLUon);// modif tb traitement d'image mars 2006 
 	
 private :
-	char blancfile[500];
-	char noirfile[500];
+	char blancfile[100];
+	char noirfile[100];
 	int mode_bias;
 	double moy_blanc;
 	unsigned short *img_blanc; 
@@ -60,7 +62,7 @@ private :
 	int traitement; 
 	unsigned long moyennePLU;  
 	unsigned short PLU[2080*2080];
-//modif tb écart type
+//modif tb écart type...temporaire/pour les tests 
 	unsigned short cadran1[1500]; 
 	unsigned short cadran2[1500]; 
 	unsigned short cadran3[1500]; 
@@ -133,6 +135,7 @@ public:
 	// télécharger en slave serial le code des FPGA
 	bool SerialDownload(void);
 	bool ModeBias(short modebiasvalue);
+	bool RESET();
 
 };
 

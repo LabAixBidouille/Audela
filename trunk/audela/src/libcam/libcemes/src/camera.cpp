@@ -43,17 +43,21 @@
 #endif
 
 #if defined(OS_LIN)
-#include <unistd.h>
+#include <unistd.h>    
 #endif
 
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <time.h>    
 #include <stdio.h>
 #include <math.h>
 
-#include "camera.h"
+
+
 #include <libcam/util.h>
+#include "camera.h"
+unsigned int mean1, mean2, mean3, mean4;
+
 
 /*
  *  Definition of different cameras supported by this driver
@@ -153,6 +157,12 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
 	unsigned int error;
+
+	mean1=0;
+	mean2=0;
+	mean3=0;
+	mean4=0;
+
 	cam->status=0;
 
 
@@ -217,7 +227,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		binning=3;			
 
 	error=SetModeBinning(cam->HV, binning, cam->vitesse, cam->debug); 
-	//error=SetModeBinning(0,binning,0,0);	
 	if (error==1) {
 	    sprintf(cam->msg,"SetModeBinning returns %d",error);
   	    cam->status=1;
@@ -226,7 +235,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	cam_update_window(cam);
 	
 	error=SetModeTension(cam->HV, binning);
-	//error=SetModeTension(0,binning);                     
 	if (error==1) {
 		sprintf(cam->msg,"SetModeTension returns %d",error);
   		cam->status=2;
@@ -266,9 +274,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		obtu=1;			//obturateur ouvert
 	}
 
-	error=SetAmplisObtu(cam->ampliautoman,automan,cam->amplionoff,obtu,cam->obtumode);
+	error=SetAmplisObtu(cam->ampliautoman,automan,cam->amplionoff,obtu,cam->obtumode);  //Regler les parameters d'amplificateur et d'obturateur
 
-	//error=SetAmplisObtu(cam->ampliautoman,cam->obtuautoman,cam->amplionoff,cam->obtuonoff,cam->obtumode);	//Regler les parameters d'amplificateur et d'obturateur
 	if (error==1) {
 	    sprintf(cam->msg,"SetAmplisObtu returns %d",error);
   	    cam->status=6;
@@ -276,8 +283,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	}
 	control->SetDebugLevel(0);			
 	
-	//SetImageSize(sx,sy);   ?
-
 	error=Stop(1);
 	if (error==1) {
 	    sprintf(cam->msg,"Stop returns %d",error);
@@ -295,7 +300,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-	Stop(1);//abort
+	Abort(1);//Stop(1)?
 }
 
 
@@ -310,11 +315,15 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	int nb_image;				
 	int nbimages=0;
 	unsigned long size = 0;
-	//int taille=(2048/cam->binx)*(2048/cam->biny)*sizeof(unsigned short);	//taille c'est le numero de bytes de l'image 
-	int taille=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny)*sizeof(unsigned short);	//cam->nb_photox=2048
+	unsigned int taille=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny)*sizeof(unsigned short);	//cam->nb_photox=2048
 	sdata=(unsigned short *)malloc(taille);
 	sdata1=(unsigned short *)malloc(taille);
 	unsigned short val;
+	unsigned int somamedia,moyennetotal,moyenne1voie,ecarttype,i,j;
+	unsigned int somadesvio=0;
+	unsigned long sum=0;
+	unsigned int equilibrer=1;
+
 
 	if (cam->status!=0) {
 		return;
@@ -333,7 +342,6 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	Stop(1);   
 	size=0;
 
-	//tailletotal=(2048/cam->binx)*(2048/cam->biny);
 	tailletotal=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny);
 
 	//Dans ce boucle on rempli le pointeur *p avec l'image capturée
@@ -351,7 +359,84 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 			val=sdata1[k];
 			p[k] = val;	
 		}
+
+		//FIRST SQUARE
+		for (i=0;i<1024;i++)
+		{
+			for (j=0;j<1024;j++)	
+			{
+				sum=p[2048*i+j]+sum;
+			}
+		}
+		mean1=sum/(tailletotal/4);
+	
+		//SECOND SQUARE
+		sum = 0;
+		for (i=0;i<1024;i++)
+		{
+			for (j=0;j<1024;j++)	
+			{
+				sum=p[2048*i+1024+j]+sum;
+			}
+		}
+		mean2=sum/(tailletotal/4);
+
+		//THIRD SQUARE
+		sum = 0;
+		for (i=0;i<1024;i++)
+		{
+			for (j=0;j<1024;j++)	
+			{
+				sum=p[2048*i+(tailletotal/2)+j]+sum;
+			}
+		}
+		mean3=sum/(tailletotal/4);
+
+		//FOURTH SQUARE
+		sum = 0;
+		for (i=0;i<1024;i++)
+		{
+			for (j=0;j<1024;j++)	
+			{
+				sum=p[2048*i+(tailletotal/2)+1024+j]+sum;
+			}
+		}
+		mean4=sum/(tailletotal/4);
+	
+		//NOW WE'VE GOT THE MEANS!
 	}	
+
+	if (cam->binx==1)
+	{
+		//Calculer la moyenne des 4 voies  
+		somamedia=0;
+		for (i=0;i<tailletotal;i++)
+		{
+			somamedia=somamedia+p[i];
+		}
+
+		moyennetotal=somamedia/tailletotal;
+
+		//Calculer la moyenne de la premiere voie
+		somamedia=0;
+		for (i=0;i<1024;i++)
+		{
+			for (j=0;j<1024;j++)
+			{
+				somamedia=somamedia+p[i*2048+j];
+			}
+		}
+
+		moyenne1voie=somamedia/(tailletotal/4);
+
+		//Calculer l'ecart type
+		for (i=0;i<tailletotal;i++)
+		{
+			somadesvio=somadesvio+((p[i]-moyennetotal)*(p[i]-moyennetotal));
+		}
+		ecarttype=somadesvio/tailletotal;
+		//ecarttype=sqrt(ecarttype);
+	}
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -399,14 +484,14 @@ void cam_cooler_check(struct camprop *cam)
 	if (temp>=-30.) { consigne = 7900; cam->check_temperature=-30.; }
 	else if (temp<=-50.) { consigne = 25500; cam->check_temperature=-50.; }
 	else {
-		consigne=(unsigned int)pow(10.,2.6551e-6*temp*temp*temp+4.9964e-4*temp*temp+1.516e-3*temp+3.565199);
+		consigne=(unsigned int)pow(10.,2.6551e-6*temp*temp*temp+4.9964e-4*temp*temp+1.516e-3*temp+3.565199); //conversion temp->consigne
 	}
     SetPeltierConsigne(consigne);
 }
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
-	//bin doit etre egale a 1, 2, 4 ou 8
+	//bin doit etre 1, 2, 4 ou 8
 	if ((binx!=1) && (binx!=2) && (binx!=4) && (binx!=8) && (binx!=1) && (binx!=2) && (biny!=4) && (biny!=8))
 	{
 		sprintf(cam->msg,"The binning must be 1, 2, 4 or 8");
@@ -486,6 +571,70 @@ void AlimsStop()
 	}
 }
 
+void equilibrer(unsigned int stat_dina)
+{
+	//EQUILIBRER EN CAS DE BINNING = 1
+	short dif1,dif2,dif3,dif4;
+
+	//MAINTENANT IL FAUT EQUILIBRER L'IMAGE FINALE
+		
+	//equilibrage statique 
+	if (stat_dina==0)
+	{
+		dif1=50-mean1;
+		dif2=50-mean2;
+		dif3=50-mean3;
+		dif4=50-mean4;
+		SetDECALAGE(13,(1959+(dif1/(16*6))));
+		SetDECALAGE(14,(2208+(dif2/(16*6))));
+		SetDECALAGE(15,(1867+(dif3/(16*6))));
+		SetDECALAGE(16,(2235+(dif4/(16*6))));
+		/*	SetDECALAGE(13,((ReadMyDoubleKey(_T("Controleur"), "DEC1", 2000))+(dif1/(16*6))));
+		SetDECALAGE(14,((ReadMyDoubleKey(_T("Controleur"), "DEC2", 2000))+(dif2/(16*6))));
+		SetDECALAGE(15,((ReadMyDoubleKey(_T("Controleur"), "DEC3", 2000))+(dif3/(16*6))));
+		SetDECALAGE(16,((ReadMyDoubleKey(_T("Controleur"), "DEC4", 2000))+(dif4/(16*6))));*/
+		control->SaveRegistry();
+	}
+
+	//equilibrage dinamique
+	if (stat_dina==1)
+	{
+		dif1=150-mean1;
+		dif2=150-mean2;
+		dif3=150-mean3;
+		dif4=150-mean4;
+		SetDECALAGE(17,(2859+(dif1/(16*6))));
+		SetDECALAGE(18,(2818+(dif2/(16*6))));
+		SetDECALAGE(19,(2931+(dif3/(16*6))));
+		SetDECALAGE(20,(2557+(dif4/(16*6))));
+		/*SetDECALAGE(17,((ReadMyDoubleKey(_T("Controleur"), "DECD1", 2000))+(dif1/(16*6))));
+		SetDECALAGE(18,((ReadMyDoubleKey(_T("Controleur"), "DECD2", 2000))+(dif2/(16*6))));
+		SetDECALAGE(19,((ReadMyDoubleKey(_T("Controleur"), "DECD3", 2000))+(dif3/(16*6))));
+		SetDECALAGE(20,((ReadMyDoubleKey(_T("Controleur"), "DECD4", 2000))+(dif4/(16*6))));*/
+		control->SaveRegistry();
+	}
+}
+
+unsigned int SetConfCalcul(short ConfCalcul)
+{
+	bool ret=control->SetConfCalcul(ConfCalcul);
+
+	unsigned int error;
+	if (ret==true) { error = 0 ; }
+	else { error = 1; }
+	return error;
+}
+
+unsigned int SetDECALAGE(unsigned int n, unsigned int val)
+{
+	bool ret=control->SetDECALAGE(n, val);
+
+	unsigned int error;
+	if (ret==true) { error = 0 ; }
+	else { error = 1; }
+	return error;
+}
+
 unsigned int SetBasseTension(int onoff)
 {
 	bool btruefalse;
@@ -516,7 +665,7 @@ unsigned int SetModeTension(int HR, unsigned int binning)
 
 unsigned int GetTemperature(int n, double *temp)
 {
-	bool ret=calim->GetTemperature(n, temp);  //metemos & no temp
+	bool ret=calim->GetTemperature(n, temp);
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }
@@ -581,7 +730,7 @@ unsigned int SetModeBinning(int HV, unsigned int binning, unsigned int vitesse,i
 unsigned int SetTempsExposition(double pose, unsigned int *erreur)
 {
 	bool erreurbool=0;
-	bool ret=control->SetTempsExposition(pose, &erreurbool); //tirou-se os &
+	bool ret=control->SetTempsExposition(pose, &erreurbool);
 	if (erreurbool==false) { *erreur=0; }
 	else { *erreur=1; }
 
@@ -660,7 +809,7 @@ void Initialise(int initls)
 unsigned int GetTempsExposition(double *pose, unsigned int *erreur)
 {
 		bool erreurbool=0;
-		bool ret=control->GetTempsExposition(pose, &erreurbool); //tirou-se os &
+		bool ret=control->GetTempsExposition(pose, &erreurbool);
 		if (erreurbool==true) { *erreur=0; }
 		else { *erreur=1; }
 
@@ -682,7 +831,7 @@ unsigned int SetImageSize(unsigned long sx, unsigned long sy)
   
 unsigned int GetImageSize(unsigned long *sx, unsigned long *sy)
 {
-	bool ret=control->GetImageSize(sx,sy); //tirou-se os &
+	bool ret=control->GetImageSize(sx,sy);
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }
@@ -808,7 +957,6 @@ unsigned int SetAmplisObtu(int onoff, int onoff2, int onoff3, int onoff4, int on
 	on5int=onoff5;
 
 	bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL, on5int);
-	//bool ret=control->SetAmplisObtu(onBOOL, on2BOOL, on3BOOL, on4BOOL);
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }
@@ -849,3 +997,5 @@ void cemes_updatelog(struct camprop *cam, char *filename, char *comment)
     return;
 	*/
 }
+
+

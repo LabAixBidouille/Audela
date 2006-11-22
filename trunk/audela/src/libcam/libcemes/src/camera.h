@@ -71,13 +71,10 @@ struct camprop {
 };
 
 #ifdef __cplusplus
-//<<<<<<< camera.h
-#include "E:\Projet CID\luis&leandro\audela - 1.4.0\src\libcam\libcemes\CID_HL\alims.h"  //Deviamos mudar para nova directoria nao?
-#include "E:\Projet CID\luis&leandro\audela - 1.4.0\src\libcam\libcemes\CID_HL\controleur.h"  //Deviamos mudar para nova directoria nao?
-//=======
-//#include "alims.h"
-//#include "controleur.h"
-//>>>>>>> 1.2
+
+#include "alims.h"
+#include "controleur.h"
+
 #endif
 
 void AlimsInit(void);
@@ -107,6 +104,10 @@ unsigned int SetPeltierConsigne(int temp);
 unsigned int GetStatusAmplis(int comG, int comBP, int comL, int ampliam, int ampliof);
 unsigned int GetStatusObtu(int onoff, int am, int ouvfer);
 unsigned int SetAmplisObtu(int onoff, int onoff2, int onoff3, int onoff4, int onoff5);
+unsigned int SetDECALAGE(unsigned int n, unsigned int val);
+unsigned int SetConfCalcul(short ConfCalcul);
+void equilibrer(unsigned int stat_dina);
+
 
 void cemes_updatelog(struct camprop *cam, char *filename, char *comment);
 
