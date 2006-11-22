@@ -2,16 +2,13 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.40 2006-11-16 22:12:54 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.41 2006-11-22 08:00:55 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
 
 #--- Chargement du package BWidget
 package require BWidget
-
-#--- Chargement d'un package
-source audnet.tcl
 
 #--- Ce n'est pas des packages, mais des outils
 source notebook.tcl
@@ -28,6 +25,7 @@ source aud_menu_6.tcl
 source aud_menu_7.tcl
 source aud_menu_8.tcl
 source aud_proc.tcl
+source audnet.tcl
 source console.tcl
 source confgene.tcl
 source surchaud.tcl
@@ -752,7 +750,7 @@ namespace eval ::audace {
       #--- Affichage des outils du menu Outils
       ::audace::affiche_Outil $visuNo
       Menu_Separator $visuNo "$caption(audace,menu,outils)"
-      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,choix_outils)..." \
          { ::confChoixOutil::run "$audace(base).confChoixOutil" }
 
       Menu           $visuNo "$caption(audace,menu,configuration)"
@@ -762,19 +760,19 @@ namespace eval ::audace {
          { ::cwdWindow::run "$audace(base).cwdWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,editeur)..." \
          { ::confEditScript::run "$audace(base).confEditScript" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,temps)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,temps)..." \
          { ::confTemps::run "$audace(base).confTemps" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,position)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,position)..." \
          { ::confPosObs::run "$audace(base).confPosObs" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,fichier_image)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,fichier_image)..." \
          { ::confFichierIma::run "$audace(base).confFichierIma" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,alarme)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,alarme)..." \
          { ::confAlarmeFinPose::run "$audace(base).confAlarmeFinPose" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,tempo_scan)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,tempo_scan)..." \
          { ::confTempoScan::run "$audace(base).confTempoScan" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,messages_console)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,messages_console)..." \
          { ::confMessages_Console::run "$audace(base).confMessages_Console" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(confgene,type_fenetre)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,type_fenetre)..." \
          { ::confTypeFenetre::run "$audace(base).confTypeFenetre" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,apparence)..." \
          "::confColor::run $visuNo"

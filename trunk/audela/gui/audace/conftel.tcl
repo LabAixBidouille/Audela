@@ -1,16 +1,16 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.15 2006-11-19 17:14:31 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.16 2006-11-22 08:02:01 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
 global confTel
 
-set confTel(conf_lx200,connect)     "0"
-set confTel(conf_temma,connect)     "0"
-set confTel(conf_ascom,connect)     "0"
-set confTel(conf_celestron,connect) "0"
+set confTel(lx200,connect)          "0"
+set confTel(temma,connect)          "0"
+set confTel(ascom,connect)          "0"
+set confTel(celestron,connect)      "0"
 set confTel(fenetre,mobile,valider) "0"
 
 namespace eval ::confTel {
@@ -168,7 +168,7 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp1)
-         if { $confTel(conf_lx200,connect) == "1" } {
+         if { $confTel(lx200,connect) == "1" } {
             if { $conf(lx200,modele) == "$caption(conftel,modele_lx200)" } {
                $frm.majpara configure -state normal -command {
                   catch {
@@ -208,12 +208,12 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp1)
-         if { $confTel(conf_lx200,modele) == "$caption(conftel,modele_ite-lente)" } {
+         if { $confTel(lx200,modele) == "$caption(conftel,modele_ite-lente)" } {
             #--- Label de la tempo Ite-lente
             label $frm.lab4 -text "$caption(conftel,ite-lente_tempo)"
             pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
             #--- Entree de la tempo Ite-lente
-            entry $frm.tempo -textvariable confTel(conf_lx200,ite-lente_tempo) -justify center -width 5
+            entry $frm.tempo -textvariable confTel(lx200,ite-lente_tempo) -justify center -width 5
             pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
          } else {
             destroy $frm.lab4 ; destroy $frm.tempo
@@ -236,21 +236,21 @@ namespace eval ::confTel {
             $frm.but_init configure -relief raised -state normal -command { ::OuranosCom::find_res }
             $frm.but_close configure -relief raised -state normal -command { ::OuranosCom::close_com }
             $frm.but_read configure -relief raised -state normal -command { ::OuranosCom::go_ouranos }
-            if { $confTel(conf_ouranos,show_coord) == "1" } {
+            if { $confTel(ouranos,show_coord) == "1" } {
                $frm.rad0 configure -state normal -command {
-                     set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
+                     set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
                      ::cataGoto::CataEtoiles
                   }
                $frm.rad1 configure -state normal -command {
-                     set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_messier)
+                     set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_messier)
                      ::cataGoto::CataObjet $caption(conftel,ouranos_messier)
                   }
                $frm.rad2 configure -state normal -command {
-                     set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
+                     set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
                      ::cataGoto::CataObjet $caption(conftel,ouranos_ngc)
                   }
                $frm.rad3 configure -state normal -command {
-                     set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ic)
+                     set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_ic)
                      ::cataGoto::CataObjet $caption(conftel,ouranos_ic)
                   }
             } else {
@@ -286,7 +286,7 @@ namespace eval ::confTel {
          destroy $frm.match_dec
          destroy $frm.match_dec_entry
 
-         if { $confTel(conf_ouranos,show_coord) == "1" } {
+         if { $confTel(ouranos,show_coord) == "1" } {
             if { $ouranoscom(lecture) == "0" } {
                #--- Bouton MATCH avec entry inactif
                $frm.but_match configure -state disabled
@@ -297,7 +297,7 @@ namespace eval ::confTel {
                update
             }
             #--- Valeur Dec. en ° ' "
-            entry $frm.match_dec_entry -textvariable confTel(conf_ouranos,match_dec) -justify center -width 12
+            entry $frm.match_dec_entry -textvariable confTel(ouranos,match_dec) -justify center -width 12
             pack $frm.match_dec_entry -in $frm.frame4 -anchor center -side right -padx 10
             #--- Commentaires Dec.
             label $frm.match_dec -text "$caption(conftel,dec) $caption(conftel,dms_angle)"
@@ -306,7 +306,7 @@ namespace eval ::confTel {
             bind $frm.match_dec_entry <Enter> { ::confTel::Format_Match_Dec }
             bind $frm.match_dec_entry <Leave> { destroy $audace(base).format_match_dec }
             #--- Valeur AD en h mn s
-            entry $frm.match_ra_entry -textvariable confTel(conf_ouranos,match_ra) -justify center -width 12
+            entry $frm.match_ra_entry -textvariable confTel(ouranos,match_ra) -justify center -width 12
             pack $frm.match_ra_entry -in $frm.frame4 -anchor center -side right -padx 10
             #--- Commentaires AD
             label $frm.match_ra -text "$caption(conftel,ra) $caption(conftel,hms_angle)"
@@ -332,21 +332,21 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp2)
-         if { ( $confTel(conf_ouranos,show_coord) == "1" ) && ( $confTel(ouranos,connect) == "1" ) } {
+         if { ( $confTel(ouranos,show_coord) == "1" ) && ( $confTel(ouranos,connect) == "1" ) } {
             $frm.rad0 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
+                  set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
                   ::cataGoto::CataEtoiles
                }
             $frm.rad1 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_messier)
+                  set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_messier)
                   ::cataGoto::CataObjet $caption(conftel,ouranos_messier)
                }
             $frm.rad2 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
+                  set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
                   ::cataGoto::CataObjet $caption(conftel,ouranos_ngc)
                }
             $frm.rad3 configure -state normal -command {
-                  set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ic)
+                  set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_ic)
                   ::cataGoto::CataObjet $caption(conftel,ouranos_ic)
                }
          } else {
@@ -393,7 +393,7 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp3)
-         if { $confTel(conf_audecom,german) == "1" } {
+         if { $confTel(audecom,german) == "1" } {
             #---
             destroy $frm.pos_tel
             destroy $frm.pos_tel_ew
@@ -445,7 +445,7 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp4)
-         if { $confTel(conf_temma,connect) == "1" } {
+         if { $confTel(temma,connect) == "1" } {
             $frm.init_zenith configure -state normal -command {
                tel$audace(telNo) initzenith
                ::telescope::afficheCoord
@@ -475,7 +475,7 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp4)
-         if { $confTel(conf_temma,liaison) != "1" } {
+         if { $confTel(temma,liaison) != "1" } {
 
             destroy $frm.lab3
             destroy $frm.liaison
@@ -489,7 +489,7 @@ namespace eval ::confTel {
 
             #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
             checkbutton $frm.liaison -text "$caption(conftel,temma_liaison_AD_Dec)" -highlightthickness 0 \
-               -variable confTel(conf_temma,liaison) -command { ::confTel::config_correc_Temma }
+               -variable confTel(temma,liaison) -command { ::confTel::config_correc_Temma }
             pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
             #--- Label de la correction en Dec
@@ -498,12 +498,12 @@ namespace eval ::confTel {
 
             #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
             scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-               -borderwidth 2 -relief groove -variable confTel(conf_temma,correc_AD) -width 10
+               -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
             pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
             #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
             scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-               -borderwidth 2 -relief groove -variable confTel(conf_temma,correc_Dec) -width 10
+               -borderwidth 2 -relief groove -variable confTel(temma,correc_Dec) -width 10
             pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
 
          } else {
@@ -520,7 +520,7 @@ namespace eval ::confTel {
 
             #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
             checkbutton $frm.liaison -text "$caption(conftel,temma_liaison_AD_Dec)" -highlightthickness 0 \
-               -variable confTel(conf_temma,liaison) -command { ::confTel::config_correc_Temma }
+               -variable confTel(temma,liaison) -command { ::confTel::config_correc_Temma }
             pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
             #--- Label de la correction en Dec
@@ -529,11 +529,11 @@ namespace eval ::confTel {
 
             #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
             scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-               -borderwidth 2 -relief groove -variable confTel(conf_temma,correc_AD) -width 10
+               -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
             pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
             #--- Liaison des corrections en AD et en Dec.
-            set confTel(conf_temma,correc_Dec) $confTel(conf_temma,correc_AD)
+            set confTel(temma,correc_Dec) $confTel(temma,correc_AD)
 
          }
          #--- Mise a jour dynamique des couleurs
@@ -551,7 +551,7 @@ namespace eval ::confTel {
 
       catch {
          set frm $frmm(Telscp6)
-         if { $confTel(conf_celestron,connect) == "1" } {
+         if { $confTel(celestron,connect) == "1" } {
             $frm.majpara configure -state normal -command {
                catch {
                   tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
@@ -663,18 +663,20 @@ namespace eval ::confTel {
    proc fillPage1 { nn } {
       global audace caption color conf confTel frmm
 
+      #--- Prise en compte des liaisons
+      set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
+
       #--- initConf
-      if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
+      if { ! [ info exists conf(lx200,port) ] }            { set conf(lx200,port)            [ lindex $list_connexion 0 ] }
       if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
-      if { ! [ info exists conf(lx200,port) ] }            { set conf(lx200,port)            [ lindex "$audace(list_com)" 0 ] }
+      if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
       if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
 
       #--- confToWidget
-      set confTel(conf_lx200,format)          [ lindex "$caption(conftel,format_court_long)" $conf(lx200,format) ]
-      set confTel(conf_lx200,modele)          $conf(lx200,modele)
-      set confTel(conf_lx200,port)            $conf(lx200,port)
-      set confTel(conf_lx200,ite-lente_tempo) $conf(lx200,ite-lente_tempo)
-
+      set confTel(lx200,port)            $conf(lx200,port)
+      set confTel(lx200,modele)          $conf(lx200,modele)
+      set confTel(lx200,format)          [ lindex "$caption(conftel,format_court_long)" $conf(lx200,format) ]
+      set confTel(lx200,ite-lente_tempo) $conf(lx200,ite-lente_tempo)
       set confTel(raquette)                   $conf(raquette)
 
       #--- Initialisation
@@ -716,20 +718,17 @@ namespace eval ::confTel {
       label $frm.lab1 -text "$caption(conftel,port_liaison)"
       pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
-      #--- Prise en compte des liaisons
-      set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
-
-      #--- je verifie le contenu de la liste
-      if { [llength $list_connexion ] > 0 } {
-         #--- si la liste n'est pas vide,
+      #--- Je verifie le contenu de la liste
+      if { [ llength $list_connexion ] > 0 } {
+         #--- Si la liste n'est pas vide,
          #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_connexion $confTel(conf_lx200,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
+         if { [ lsearch -exact $list_connexion $confTel(lx200,port) ] == -1 } {
+            #--- Si la valeur par defaut n'existe pas dans la liste,
             #--- je la remplace par le premier item de la liste
-            set confTel(conf_lx200,port) [lindex $list_connexion 0]
+            set confTel(lx200,port) [ lindex $list_connexion 0 ]
          }
       } else {
-         #--- si la liste est vide, on continue quand meme
+         #--- Si la liste est vide, on continue quand meme
       }
 
       ComboBox $frm.port \
@@ -737,17 +736,17 @@ namespace eval ::confTel {
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_lx200,port) \
+         -textvariable confTel(lx200,port) \
          -editable 0       \
          -values $list_connexion \
          -modifycmd {
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(conf_lx200,port) { serialport audinet } "controle LX200"
+            ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200"
          }
       pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
 
       #--- Bouton de configuration des liaisons
-      button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command { ::confLink::run ::confTel(conf_lx200,port)  { serialport audinet } "controle LX200"  }
+      button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command { ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200"  }
       pack $frm.configure -in $frm.frame6 -anchor n -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
       #--- Definition du LX200 ou du clone
@@ -762,7 +761,7 @@ namespace eval ::confTel {
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_lx200,modele) \
+         -textvariable confTel(lx200,modele) \
          -modifycmd { ::confTel::connectIte-lente } \
          -editable 0       \
          -values $list_combobox
@@ -778,7 +777,7 @@ namespace eval ::confTel {
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_lx200,format) \
+         -textvariable confTel(lx200,format) \
          -editable 0       \
          -values $list_combobox
       pack $frm.formatradec -in $frm.frame9 -anchor center -side right -padx 10 -pady 10
@@ -796,7 +795,7 @@ namespace eval ::confTel {
       label $frm.lab4 -text "$caption(conftel,ite-lente_tempo)"
       pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
-      entry $frm.tempo -textvariable confTel(conf_lx200,ite-lente_tempo) -justify center -width 5
+      entry $frm.tempo -textvariable confTel(lx200,ite-lente_tempo) -justify center -width 5
       pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
       #--- Gestion du bouton actif/inactif
@@ -867,18 +866,21 @@ namespace eval ::confTel {
    proc fillPage2 { nn } {
       global audace caption color conf confTel frmm ouranoscom
 
+      #--- Prise en compte des liaisons
+      set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
+
       #--- Initialisation des fenetres d'affichage des coordonnees AD et Dec.
       if { ! [ info exists conf(ouranos,wmgeometry) ] }     { set conf(ouranos,wmgeometry)     "200x70+640+268" }
       if { ! [ info exists conf(ouranos,x10,wmgeometry) ] } { set conf(ouranos,x10,wmgeometry) "850x500+0+0" }
 
       #--- initConf
-      if { ! [ info exists conf(ouranos,cod_dec) ] }        { set conf(ouranos,cod_dec)     "32768" }
+      if { ! [ info exists conf(ouranos,port) ] }           { set conf(ouranos,port)        [ lindex $list_connexion 0 ] }
       if { ! [ info exists conf(ouranos,cod_ra) ] }         { set conf(ouranos,cod_ra)      "32768" }
+      if { ! [ info exists conf(ouranos,cod_dec) ] }        { set conf(ouranos,cod_dec)     "32768" }
       if { ! [ info exists conf(ouranos,freq) ] }           { set conf(ouranos,freq)        "1" }
       if { ! [ info exists conf(ouranos,init) ] }           { set conf(ouranos,init)        "0" }
-      if { ! [ info exists conf(ouranos,inv_dec) ] }        { set conf(ouranos,inv_dec)     "1" }
       if { ! [ info exists conf(ouranos,inv_ra) ] }         { set conf(ouranos,inv_ra)      "1" }
-      if { ! [ info exists conf(ouranos,port) ] }           { set conf(ouranos,port)        [ lindex $audace(list_com) 0 ] }
+      if { ! [ info exists conf(ouranos,inv_dec) ] }        { set conf(ouranos,inv_dec)     "1" }
       if { ! [ info exists conf(ouranos,show_coord) ] }     { set conf(ouranos,show_coord)  "1" }
       if { ! [ info exists conf(ouranos,tjrsvisible) ] }    { set conf(ouranos,tjrsvisible) "0" }
 
@@ -942,29 +944,46 @@ namespace eval ::confTel {
       label $frm.lab1 -text "$caption(conftel,port)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
-      entry $frm.status -font $audace(font,arial_8_b) -textvariable confTel(conf_ouranos,status) -width 4 \
+      entry $frm.status -font $audace(font,arial_8_b) -textvariable confTel(ouranos,status) -width 4 \
          -justify center -bg $color(red)
       pack $frm.status -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
+      #--- Je verifie le contenu de la liste
+      if { [ llength $list_connexion ] > 0 } {
+         #--- Si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $list_connexion $confTel(ouranos,port) ] == -1 } {
+            #--- Si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confTel(ouranos,port) [ lindex $list_connexion 0 ]
+         }
+      } else {
+         #--- Si la liste est vide, on continue quand meme
+      }
+
       ComboBox $frm.port \
          -width 14         \
-         -height [ llength $audace(list_com) ] \
+         -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(ouranos,port) \
          -editable 0       \
-         -values $audace(list_com)
+         -values $list_connexion \
+         -modifycmd {
+            #--- Ouvre la configuration des liaisons sur le bon onglet
+            ::confLink::run ::confTel(ouranos,port) { serialport } "controle Ouranos"
+         }
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 13 -pady 5
 
       #--- Selection affichage toujours visibles ou non
       checkbutton $frm.visible -text "$caption(conftel,ouranos_visible)" -highlightthickness 0 \
-         -variable confTel(conf_ouranos,tjrsvisible) -onvalue 1 -offvalue 0 \
-         -command { set confTel(conf_ouranos,dim) "0" ; ::OuranosCom::TjrsVisible }
+         -variable confTel(ouranos,tjrsvisible) -onvalue 1 -offvalue 0 \
+         -command { set confTel(ouranos,dim) "0" ; ::OuranosCom::TjrsVisible }
       pack $frm.visible -in $frm.frame1 -anchor center -side right -padx 11 -pady 5
 
       #--- Definition des unités de l'affichage (pas encodeurs ou coordonnées)
       checkbutton $frm.unites -text "$caption(conftel,ouranos_unites)" -highlightthickness 0 \
-         -variable confTel(conf_ouranos,show_coord) -onvalue 1 -offvalue 0 \
+         -variable confTel(ouranos,show_coord) -onvalue 1 -offvalue 0 \
          -command { ::confTel::radio_bouton_Ouranos ; ::confTel::MatchOuranos ; ::OuranosCom::show1 }
       pack $frm.unites -in $frm.frame1 -anchor center -side right -pady 5
 
@@ -973,12 +992,12 @@ namespace eval ::confTel {
       pack $frm.ra -in $frm.frame12 -anchor center -side left -padx 10 -pady 5
 
       #--- Valeur des pas encodeurs RA pour 1 tour
-      entry $frm.codRA -textvariable confTel(conf_ouranos,cod_ra) -justify center -width 7
+      entry $frm.codRA -textvariable confTel(ouranos,cod_ra) -justify center -width 7
       pack $frm.codRA -in $frm.frame12 -anchor center -side left -padx 10 -pady 5
 
       #--- Definition de l'inversion de RA
       checkbutton $frm.invra -text "$caption(conftel,ouranos_inv)" -highlightthickness 0 \
-         -variable confTel(conf_ouranos,inv_ra) -onvalue -1 -offvalue 1
+         -variable confTel(ouranos,inv_ra) -onvalue -1 -offvalue 1
       pack $frm.invra -in $frm.frame14 -anchor center -side left -padx 10 -pady 5
 
       #--- Label pour les coordonnées RA
@@ -986,7 +1005,7 @@ namespace eval ::confTel {
       pack $frm.encRA -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
 
       #--- Fenêtre de lecture de RA
-      label $frm.coordRA -font $audace(font,arial_8_b) -textvariable confTel(conf_ouranos,coord_ra) \
+      label $frm.coordRA -font $audace(font,arial_8_b) -textvariable confTel(ouranos,coord_ra) \
          -justify left -width 12
       pack $frm.coordRA -in $frm.frame9 -anchor center -side top -padx 10 -pady 7
 
@@ -995,12 +1014,12 @@ namespace eval ::confTel {
       pack $frm.dec -in $frm.frame13 -anchor center -side left -padx 10 -pady 5
 
       #--- Valeur des pas encodeurs DEC pour 1 tour
-      entry $frm.codDEC -textvariable confTel(conf_ouranos,cod_dec) -justify center -width 7
+      entry $frm.codDEC -textvariable confTel(ouranos,cod_dec) -justify center -width 7
       pack $frm.codDEC -in $frm.frame13 -anchor center -side left -padx 10 -pady 5
 
       #--- Definition de l'inversion de DEC
       checkbutton $frm.invdec -text "$caption(conftel,ouranos_inv)" -highlightthickness 0 \
-         -variable confTel(conf_ouranos,inv_dec) -onvalue -1 -offvalue 1
+         -variable confTel(ouranos,inv_dec) -onvalue -1 -offvalue 1
       pack $frm.invdec -in $frm.frame15 -anchor center -side left -padx 10 -pady 5
 
       #--- Label pour les coordonnées DEC
@@ -1008,17 +1027,17 @@ namespace eval ::confTel {
       pack $frm.encDEC -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
       #--- Fenêtre de lecture de DEC
-      label $frm.coordDEC -font $audace(font,arial_8_b) -textvariable confTel(conf_ouranos,coord_dec) \
+      label $frm.coordDEC -font $audace(font,arial_8_b) -textvariable confTel(ouranos,coord_dec) \
          -justify left -width 12
       pack $frm.coordDEC -in $frm.frame9 -anchor center -side bottom -padx 10 -pady 7
 
       #--- Definition de l'initialisation DEC
       radiobutton $frm.dec90 -text "$caption(conftel,ouranos_init1)" -highlightthickness 0 \
-                  -indicatoron 1 -variable confTel(conf_ouranos,init) -value 0 -command { ::OuranosCom::set_dec_ra }
+                  -indicatoron 1 -variable confTel(ouranos,init) -value 0 -command { ::OuranosCom::set_dec_ra }
       pack $frm.dec90 -in $frm.frame10 -anchor w -side top -padx 5
 
       radiobutton $frm.dec0 -text "$caption(conftel,ouranos_init2)" -highlightthickness 0 \
-                  -indicatoron 1 -variable confTel(conf_ouranos,init) -value 1 -command { ::OuranosCom::set_dec_ra }
+                  -indicatoron 1 -variable confTel(ouranos,init) -value 1 -command { ::OuranosCom::set_dec_ra }
       pack $frm.dec0 -in $frm.frame10 -anchor w -side top -padx 5
 
       #--- Les boutons de commande
@@ -1045,20 +1064,20 @@ namespace eval ::confTel {
       label  $frm.title1 -text "$caption(conftel,ouranos_seconde)"
       pack $frm.title1 -in $frm.frame11 -anchor center -side right -padx 5 -pady 5
 
-      entry $frm.freq -textvariable confTel(conf_ouranos,freq) -justify center -width 5
+      entry $frm.freq -textvariable confTel(ouranos,freq) -justify center -width 5
       pack $frm.freq -in $frm.frame11 -anchor center -side right -padx 5 -pady 5
 
       label  $frm.title -text "$caption(conftel,ouranos_frequence)"
       pack $frm.title -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
 
       #--- Gestion du bouton MATCH et des coordonnees pour MATCH
-      set confTel(conf_ouranos,show_coord) $conf(ouranos,show_coord)
-      if { $confTel(conf_ouranos,show_coord) == "1" } {
+      set confTel(ouranos,show_coord) $conf(ouranos,show_coord)
+      if { $confTel(ouranos,show_coord) == "1" } {
          #--- Bouton MATCH avec entry inactif
          button $frm.but_match -text "$caption(conftel,ouranos_match)" -width 8 -state disabled
          pack $frm.but_match -in $frm.frame4 -anchor center -side left -padx 20 -ipady 5
          #--- Valeur Dec. en ° ' "
-         entry $frm.match_dec_entry -textvariable confTel(conf_ouranos,match_dec) -justify center -width 12
+         entry $frm.match_dec_entry -textvariable confTel(ouranos,match_dec) -justify center -width 12
          pack $frm.match_dec_entry -in $frm.frame4 -anchor center -side right -padx 10
          #--- Commentaires Dec.
          label $frm.match_dec -text "$caption(conftel,dec) $caption(conftel,dms_angle)"
@@ -1067,7 +1086,7 @@ namespace eval ::confTel {
          bind $frm.match_dec_entry <Enter> { ::confTel::Format_Match_Dec }
          bind $frm.match_dec_entry <Leave> { destroy $audace(base).format_match_dec }
          #--- Valeur AD en h mn s
-         entry $frm.match_ra_entry -textvariable confTel(conf_ouranos,match_ra) -justify center -width 12
+         entry $frm.match_ra_entry -textvariable confTel(ouranos,match_ra) -justify center -width 12
          pack $frm.match_ra_entry -in $frm.frame4 -anchor center -side right -padx 10
          #--- Commentaires AD
          label $frm.match_ra -text "$caption(conftel,ra) $caption(conftel,hms_angle)"
@@ -1082,51 +1101,51 @@ namespace eval ::confTel {
       }
 
       #--- Gestion des catalogues
-      if { ( $confTel(ouranos,connect) == "1" ) && ( $confTel(conf_ouranos,show_coord) == "1" ) } {
+      if { ( $confTel(ouranos,connect) == "1" ) && ( $confTel(ouranos,show_coord) == "1" ) } {
          #--- Bouton radio Etoile
          radiobutton $frm.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "$caption(conftel,ouranos_etoile)" -value 0 -variable confTel(conf_ouranos,objet) -command {
-               set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
+            -text "$caption(conftel,ouranos_etoile)" -value 0 -variable confTel(ouranos,objet) -command {
+               set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_etoile)
                ::cataGoto::CataEtoiles
             }
          pack $frm.rad0 -in $frm.frame5 -anchor center -side left -padx 30
          #--- Bouton radio Messier
          radiobutton $frm.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "$caption(conftel,ouranos_messier)" -value 1 -variable confTel(conf_ouranos,objet) -command {
-               set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_messier)
+            -text "$caption(conftel,ouranos_messier)" -value 1 -variable confTel(ouranos,objet) -command {
+               set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_messier)
                ::cataGoto::CataObjet $caption(conftel,ouranos_messier)
             }
          pack $frm.rad1 -in $frm.frame5 -anchor center -side left -padx 30
          #--- Bouton radio NGC
          radiobutton $frm.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "$caption(conftel,ouranos_ngc)" -value 2 -variable confTel(conf_ouranos,objet) -command {
-               set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
+            -text "$caption(conftel,ouranos_ngc)" -value 2 -variable confTel(ouranos,objet) -command {
+               set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_ngc)
                ::cataGoto::CataObjet $caption(conftel,ouranos_ngc)
             }
          pack $frm.rad2 -in $frm.frame5 -anchor center -side left -padx 30
          #--- Bouton radio IC
          radiobutton $frm.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "$caption(conftel,ouranos_ic)" -value 3 -variable confTel(conf_ouranos,objet) -command {
-               set confTel(conf_ouranos,obj_choisi) $caption(conftel,ouranos_ic)
+            -text "$caption(conftel,ouranos_ic)" -value 3 -variable confTel(ouranos,objet) -command {
+               set confTel(ouranos,obj_choisi) $caption(conftel,ouranos_ic)
                ::cataGoto::CataObjet $caption(conftel,ouranos_ic)
          }
          pack $frm.rad3 -in $frm.frame5 -anchor center -side left -padx 30
       } else {
          #--- Bouton radio Etoile
          radiobutton $frm.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state disabled \
-            -text "$caption(conftel,ouranos_etoile)" -value 0 -variable confTel(conf_ouranos,objet)
+            -text "$caption(conftel,ouranos_etoile)" -value 0 -variable confTel(ouranos,objet)
          pack $frm.rad0 -in $frm.frame5 -anchor center -side left -padx 30
          #--- Bouton radio Messier
          radiobutton $frm.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state disabled \
-            -text "$caption(conftel,ouranos_messier)" -value 1 -variable confTel(conf_ouranos,objet)
+            -text "$caption(conftel,ouranos_messier)" -value 1 -variable confTel(ouranos,objet)
          pack $frm.rad1 -in $frm.frame5 -anchor center -side left -padx 30
          #--- Bouton radio NGC
          radiobutton $frm.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state disabled \
-            -text "$caption(conftel,ouranos_ngc)" -value 2 -variable confTel(conf_ouranos,objet)
+            -text "$caption(conftel,ouranos_ngc)" -value 2 -variable confTel(ouranos,objet)
          pack $frm.rad2 -in $frm.frame5 -anchor center -side left -padx 30
          #--- Bouton radio IC
          radiobutton $frm.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state disabled \
-            -text "$caption(conftel,ouranos_ic)" -value 3 -variable confTel(conf_ouranos,objet)
+            -text "$caption(conftel,ouranos_ic)" -value 3 -variable confTel(ouranos,objet)
          pack $frm.rad3 -in $frm.frame5 -anchor center -side left -padx 30
       }
 
@@ -1155,14 +1174,14 @@ namespace eval ::confTel {
 
       #---
       if [ winfo exists $audace(base).tjrsvisible ] {
-         set confTel(conf_ouranos,tjrsvisible) "1"
+         set confTel(ouranos,tjrsvisible) "1"
       }
       if { $ouranoscom(lecture) == "1" } {
          #--- Traitement graphique du bouton 'Lire'
          $frm.but_read configure -text "$caption(conftel,ouranos_lire)" -relief groove -state disabled
          #--- Traitement graphique du bouton 'Regler'
          $frm.but_init configure -text "$caption(conftel,ouranos_reglage)" -state disabled
-         if { $confTel(conf_ouranos,show_coord) == "1" } {
+         if { $confTel(ouranos,show_coord) == "1" } {
             #--- Bouton MATCH avec entry actif
             $frm.but_match configure -text "$caption(conftel,ouranos_match)" -state normal
          } else {
@@ -1180,6 +1199,9 @@ namespace eval ::confTel {
    #
    proc fillPage3 { nn } {
       global audace caption color conf confTel frmm
+
+      #--- Prise en compte des liaisons
+      set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
       #--- Initialisation des parametres de la monture lies a la reduction des axes AD et Dec. (par editeur de texte)
       if { ! [ info exists conf(audecom,dlimp) ] }        { set conf(audecom,dlimp)        "100" }
@@ -1200,6 +1222,7 @@ namespace eval ::confTel {
       if { ! [ info exists conf(audecom,internom) ] }     { set conf(audecom,internom)     "197.4791" }
 
       #--- initConf
+      if { ! [ info exists conf(audecom,port) ] }         { set conf(audecom,port)         [ lindex $list_connexion 0 ] }
       if { ! [ info exists conf(audecom,ad) ] }           { set conf(audecom,ad)           "999999" }
       if { ! [ info exists conf(audecom,dec) ] }          { set conf(audecom,dec)          "999999" }
       if { ! [ info exists conf(audecom,dep_val) ] }      { set conf(audecom,dep_val)      "250" }
@@ -1213,7 +1236,6 @@ namespace eval ::confTel {
       if { ! [ info exists conf(audecom,maxdec) ] }       { set conf(audecom,maxdec)       "16" }
       if { ! [ info exists conf(audecom,mobile) ] }       { set conf(audecom,mobile)       "0" }
       if { ! [ info exists conf(audecom,pec) ] }          { set conf(audecom,pec)          "1" }
-      if { ! [ info exists conf(audecom,port) ] }         { set conf(audecom,port)         [ lindex $audace(list_com) 0 ] }
       if { ! [ info exists conf(audecom,rat_ad) ] }       { set conf(audecom,rat_ad)       "0.5" }
       if { ! [ info exists conf(audecom,rat_dec) ] }      { set conf(audecom,rat_dec)      "0.5" }
       if { ! [ info exists conf(audecom,rpec) ] }         { set conf(audecom,rpec)         "6" }
@@ -1241,49 +1263,48 @@ namespace eval ::confTel {
       if { ! [ info exists conf(audecom,vitesse) ] }      { set conf(audecom,vitesse)      "30" }
 
       #--- confToWidget
-      set confTel(conf_audecom,port)         $conf(audecom,port)
-      set confTel(conf_audecom,pec)          $conf(audecom,pec)
-      set confTel(conf_audecom,king)         $conf(audecom,king)
-      set confTel(conf_audecom,mobile)       $conf(audecom,mobile)
-      set confTel(conf_audecom,german)       $conf(audecom,german)
+      set confTel(audecom,port)         $conf(audecom,port)
+      set confTel(audecom,pec)          $conf(audecom,pec)
+      set confTel(audecom,king)         $conf(audecom,king)
+      set confTel(audecom,mobile)       $conf(audecom,mobile)
+      set confTel(audecom,german)       $conf(audecom,german)
       #--- Pour la fenetre de configuration des parametres moteurs
-      set confTel(conf_audecom,limp)         $conf(audecom,limp)
-      set confTel(conf_audecom,maxad)        $conf(audecom,maxad)
-      set confTel(conf_audecom,maxdec)       $conf(audecom,maxdec)
-      set confTel(conf_audecom,rat_ad)       $conf(audecom,rat_ad)
-      set confTel(conf_audecom,rat_dec)      $conf(audecom,rat_dec)
+      set confTel(audecom,limp)         $conf(audecom,limp)
+      set confTel(audecom,maxad)        $conf(audecom,maxad)
+      set confTel(audecom,maxdec)       $conf(audecom,maxdec)
+      set confTel(audecom,rat_ad)       $conf(audecom,rat_ad)
+      set confTel(audecom,rat_dec)      $conf(audecom,rat_dec)
       #--- Pour la fenetre de configuration des parametres de la focalisation
-      set confTel(conf_audecom,dep_val)      $conf(audecom,dep_val)
-      set confTel(conf_audecom,intra_extra)  $conf(audecom,intra_extra)
-      set confTel(conf_audecom,inv_rot)      $conf(audecom,inv_rot)
-      set confTel(conf_audecom,vitesse)      $conf(audecom,vitesse)
+      set confTel(audecom,dep_val)      $conf(audecom,dep_val)
+      set confTel(audecom,intra_extra)  $conf(audecom,intra_extra)
+      set confTel(audecom,inv_rot)      $conf(audecom,inv_rot)
+      set confTel(audecom,vitesse)      $conf(audecom,vitesse)
       #--- Pour la fenetre de configuration de la programmation du PEC
-      set confTel(conf_audecom,rpec)         $conf(audecom,rpec)
-      set confTel(conf_audecom,t0)           $conf(audecom,t0)
-      set confTel(conf_audecom,t1)           $conf(audecom,t1)
-      set confTel(conf_audecom,t2)           $conf(audecom,t2)
-      set confTel(conf_audecom,t3)           $conf(audecom,t3)
-      set confTel(conf_audecom,t4)           $conf(audecom,t4)
-      set confTel(conf_audecom,t5)           $conf(audecom,t5)
-      set confTel(conf_audecom,t6)           $conf(audecom,t6)
-      set confTel(conf_audecom,t7)           $conf(audecom,t7)
-      set confTel(conf_audecom,t8)           $conf(audecom,t8)
-      set confTel(conf_audecom,t9)           $conf(audecom,t9)
-      set confTel(conf_audecom,t10)          $conf(audecom,t10)
-      set confTel(conf_audecom,t11)          $conf(audecom,t11)
-      set confTel(conf_audecom,t12)          $conf(audecom,t12)
-      set confTel(conf_audecom,t13)          $conf(audecom,t13)
-      set confTel(conf_audecom,t14)          $conf(audecom,t14)
-      set confTel(conf_audecom,t15)          $conf(audecom,t15)
-      set confTel(conf_audecom,t16)          $conf(audecom,t16)
-      set confTel(conf_audecom,t17)          $conf(audecom,t17)
-      set confTel(conf_audecom,t18)          $conf(audecom,t18)
-      set confTel(conf_audecom,t19)          $conf(audecom,t19)
+      set confTel(audecom,rpec)         $conf(audecom,rpec)
+      set confTel(audecom,t0)           $conf(audecom,t0)
+      set confTel(audecom,t1)           $conf(audecom,t1)
+      set confTel(audecom,t2)           $conf(audecom,t2)
+      set confTel(audecom,t3)           $conf(audecom,t3)
+      set confTel(audecom,t4)           $conf(audecom,t4)
+      set confTel(audecom,t5)           $conf(audecom,t5)
+      set confTel(audecom,t6)           $conf(audecom,t6)
+      set confTel(audecom,t7)           $conf(audecom,t7)
+      set confTel(audecom,t8)           $conf(audecom,t8)
+      set confTel(audecom,t9)           $conf(audecom,t9)
+      set confTel(audecom,t10)          $conf(audecom,t10)
+      set confTel(audecom,t11)          $conf(audecom,t11)
+      set confTel(audecom,t12)          $conf(audecom,t12)
+      set confTel(audecom,t13)          $conf(audecom,t13)
+      set confTel(audecom,t14)          $conf(audecom,t14)
+      set confTel(audecom,t15)          $conf(audecom,t15)
+      set confTel(audecom,t16)          $conf(audecom,t16)
+      set confTel(audecom,t17)          $conf(audecom,t17)
+      set confTel(audecom,t18)          $conf(audecom,t18)
+      set confTel(audecom,t19)          $conf(audecom,t19)
       #--- Pour la fenetre de configuration du suivi des objets mobiles
-      set confTel(conf_audecom,ad)           $conf(audecom,ad)
-      set confTel(conf_audecom,dec)          $conf(audecom,dec)
-      set confTel(conf_audecom,type)         $conf(audecom,type)
-
+      set confTel(audecom,ad)           $conf(audecom,ad)
+      set confTel(audecom,dec)          $conf(audecom,dec)
+      set confTel(audecom,type)         $conf(audecom,type)
       set confTel(raquette)                  $conf(raquette)
 
       #--- Initialisation
@@ -1352,14 +1373,31 @@ namespace eval ::confTel {
       label $frm.lab1 -text "$caption(conftel,port)"
         pack $frm.lab1 -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
 
+      #--- Je verifie le contenu de la liste
+      if { [ llength $list_connexion ] > 0 } {
+         #--- Si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $list_connexion $confTel(audecom,port) ] == -1 } {
+            #--- Si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confTel(audecom,port) [ lindex $list_connexion 0 ]
+         }
+      } else {
+         #--- Si la liste est vide, on continue quand meme
+      }
+
       ComboBox $frm.port \
          -width 14         \
-         -height [ llength $audace(list_com) ] \
+         -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_audecom,port) \
+         -textvariable confTel(audecom,port) \
          -editable 0       \
-         -values $audace(list_com)
+         -values $list_connexion \
+         -modifycmd {
+            #--- Ouvre la configuration des liaisons sur le bon onglet
+            ::confLink::run ::confTel(audecom,port) { serialport } "controle AudeCom"
+         }
       pack $frm.port -in $frm.frame6 -anchor center -side left -padx 10 -pady 8
 
       #--- Intercallaire
@@ -1368,15 +1406,15 @@ namespace eval ::confTel {
 
       #--- Les checkbuttons
       checkbutton $frm.mobile -text "$caption(conftel,audecom_mobile)" -highlightthickness 0 \
-         -variable confTel(conf_audecom,mobile)
+         -variable confTel(audecom,mobile)
       pack $frm.mobile -in $frm.frame8 -anchor center -side left -padx 10 -pady 8
 
       checkbutton $frm.king -text "$caption(conftel,audecom_king)" -highlightthickness 0 \
-         -variable confTel(conf_audecom,king)
+         -variable confTel(audecom,king)
       pack $frm.king -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
 
       checkbutton $frm.pec -text "$caption(conftel,audecom_pec)" -highlightthickness 0 \
-         -variable confTel(conf_audecom,pec)
+         -variable confTel(audecom,pec)
       pack $frm.pec -in $frm.frame10 -anchor center -side left -padx 10 -pady 8
 
       #--- Les boutons de commande
@@ -1442,11 +1480,11 @@ namespace eval ::confTel {
 
       #--- Le checkbutton pour la monture equatoriale allemande
       checkbutton $frm.german -text "$caption(conftel,audecom_mont_allemande)" -highlightthickness 0 \
-         -variable confTel(conf_audecom,german) -command { ::confTel::config_equatorial_audecom }
+         -variable confTel(audecom,german) -command { ::confTel::config_equatorial_audecom }
       pack $frm.german -in $frm.frame18 -anchor nw -side left -padx 10 -pady 8
 
       #--- Gestion de l'option monture equatoriale allemande
-      if { $confTel(conf_audecom,german) == "1" } {
+      if { $confTel(audecom,german) == "1" } {
          #--- Position du telescope sur la monture equatoriale allemande : A l'est ou a l'ouest
          label $frm.pos_tel -text "$caption(conftel,position_telescope)"
          pack $frm.pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
@@ -1507,26 +1545,28 @@ namespace eval ::confTel {
    proc fillPage4 { nn } {
       global audace caption color conf confTel frmm
 
+      #--- Prise en compte des liaisons
+      set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
+
       #--- initConf
+      if { ! [ info exists conf(temma,port) ] }       { set conf(temma,port)       [ lindex $list_connexion 0 ] }
       if { ! [ info exists conf(temma,correc_AD) ] }  { set conf(temma,correc_AD)  "50" }
       if { ! [ info exists conf(temma,correc_Dec) ] } { set conf(temma,correc_Dec) "50" }
       if { ! [ info exists conf(temma,liaison) ] }    { set conf(temma,liaison)    "1" }
       if { ! [ info exists conf(temma,modele) ] }     { set conf(temma,modele)     "0" }
-      if { ! [ info exists conf(temma,port) ] }       { set conf(temma,port)       [ lindex $audace(list_com) 0 ] }
       if { ! [ info exists conf(temma,suivi_ad) ] }   { set conf(temma,suivi_ad)   "0" }
       if { ! [ info exists conf(temma,suivi_dec) ] }  { set conf(temma,suivi_dec)  "0" }
       if { ! [ info exists conf(temma,type) ] }       { set conf(temma,type)       "0" }
 
       #--- confToWidget
-      set confTel(conf_temma,correc_AD)   $conf(temma,correc_AD)
-      set confTel(conf_temma,correc_Dec)  $conf(temma,correc_Dec)
-      set confTel(conf_temma,liaison)     $conf(temma,liaison)
-      set confTel(conf_temma,modele)      [ lindex "$caption(conftel,temma_modele_1) $caption(conftel,temma_modele_2) $caption(conftel,temma_modele_3)" $conf(temma,modele) ]
-      set confTel(conf_temma,port)        $conf(temma,port)
-      set confTel(conf_temma,suivi_ad)    $conf(temma,suivi_ad)
-      set confTel(conf_temma,suivi_dec)   $conf(temma,suivi_dec)
-      set confTel(conf_temma,type)        $conf(temma,type)
-
+      set confTel(temma,port)        $conf(temma,port)
+      set confTel(temma,correc_AD)   $conf(temma,correc_AD)
+      set confTel(temma,correc_Dec)  $conf(temma,correc_Dec)
+      set confTel(temma,liaison)     $conf(temma,liaison)
+      set confTel(temma,modele)      [ lindex "$caption(conftel,temma_modele_1) $caption(conftel,temma_modele_2) $caption(conftel,temma_modele_3)" $conf(temma,modele) ]
+      set confTel(temma,suivi_ad)    $conf(temma,suivi_ad)
+      set confTel(temma,suivi_dec)   $conf(temma,suivi_dec)
+      set confTel(temma,type)        $conf(temma,type)
       set confTel(raquette)               $conf(raquette)
 
       #--- Initialisation
@@ -1562,14 +1602,31 @@ namespace eval ::confTel {
       label $frm.lab1 -text "$caption(conftel,port)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
+      #--- Je verifie le contenu de la liste
+      if { [ llength $list_connexion ] > 0 } {
+         #--- Si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $list_connexion $confTel(temma,port) ] == -1 } {
+            #--- Si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confTel(temma,port) [ lindex $list_connexion 0 ]
+         }
+      } else {
+         #--- Si la liste est vide, on continue quand meme
+      }
+
       ComboBox $frm.port \
          -width 14         \
-         -height [ llength $audace(list_com) ] \
+         -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_temma,port) \
+         -textvariable confTel(temma,port) \
          -editable 0       \
-         -values $audace(list_com)
+         -values $list_connexion \
+         -modifycmd {
+            #--- Ouvre la configuration des liaisons sur le bon onglet
+            ::confLink::run ::confTel(temma,port) { serialport } "controle Temma"
+         }
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       #--- Definition du modele Temma
@@ -1580,7 +1637,7 @@ namespace eval ::confTel {
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_temma,modele) \
+         -textvariable confTel(temma,modele) \
          -editable 0       \
          -values $list_combobox
       pack $frm.modele -in $frm.frame1 -anchor center -side right -padx 10 -pady 10
@@ -1589,7 +1646,7 @@ namespace eval ::confTel {
       pack $frm.lab2 -in $frm.frame1 -anchor center -side right -padx 10 -pady 10
 
       #--- Liaison des curseurs d'AD et de Dec.
-      if { $confTel(conf_temma,liaison) != "1" } {
+      if { $confTel(temma,liaison) != "1" } {
 
          #--- Label de la correction en AD
          label $frm.lab3 -text "$caption(conftel,temma_correc_AD)"
@@ -1597,7 +1654,7 @@ namespace eval ::confTel {
 
          #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
          checkbutton $frm.liaison -text "$caption(conftel,temma_liaison_AD_Dec)" -highlightthickness 0 \
-            -variable confTel(conf_temma,liaison) -onvalue 1 -offvalue 0 -command { ::confTel::config_correc_Temma }
+            -variable confTel(temma,liaison) -onvalue 1 -offvalue 0 -command { ::confTel::config_correc_Temma }
          pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
          #--- Label de la correction en Dec
@@ -1606,12 +1663,12 @@ namespace eval ::confTel {
 
          #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
          scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-            -borderwidth 2 -relief groove -variable confTel(conf_temma,correc_AD) -width 10
+            -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
          pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
          #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
          scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-            -borderwidth 2 -relief groove -variable confTel(conf_temma,correc_Dec) -width 10
+            -borderwidth 2 -relief groove -variable confTel(temma,correc_Dec) -width 10
          pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
 
       } else {
@@ -1622,7 +1679,7 @@ namespace eval ::confTel {
 
          #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
          checkbutton $frm.liaison -text "$caption(conftel,temma_liaison_AD_Dec)" -highlightthickness 0 \
-            -variable confTel(conf_temma,liaison) -command { ::confTel::config_correc_Temma }
+            -variable confTel(temma,liaison) -command { ::confTel::config_correc_Temma }
          pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
          #--- Label de la correction en Dec
@@ -1631,11 +1688,11 @@ namespace eval ::confTel {
 
          #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
          scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-            -borderwidth 2 -relief groove -variable confTel(conf_temma,correc_AD) -width 10
+            -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
          pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
          #--- Liaison des corrections en AD et en Dec.
-         set confTel(conf_temma,correc_Dec) $confTel(conf_temma,correc_AD)
+         set confTel(temma,correc_Dec) $confTel(temma,correc_AD)
 
       }
 
@@ -1647,7 +1704,7 @@ namespace eval ::confTel {
       pack $frm.pos_tel_ew -in $frm.frame3 -anchor center -side left -pady 10
 
       #--- Initialisation de l'instrument au zenith
-      if { $confTel(conf_temma,connect) == "1" } {
+      if { $confTel(temma,connect) == "1" } {
          button $frm.init_zenith -text "$caption(conftel,temma_init_zenith)" -relief raised -state normal -command {
             tel$audace(telNo) initzenith
             ::telescope::afficheCoord
@@ -1662,7 +1719,7 @@ namespace eval ::confTel {
       label $frm.pos_tel_est -text "$caption(conftel,change_position_telescope)"
       pack $frm.pos_tel_est -in $frm.frame6 -anchor center -side left -padx 10 -pady 5
 
-      if { $confTel(conf_temma,connect) == "1" } {
+      if { $confTel(temma,connect) == "1" } {
          button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
             set pos_tel [ tel$audace(telNo) german ]
             if { $pos_tel == "E" } {
@@ -1684,7 +1741,7 @@ namespace eval ::confTel {
       pack $frm.tracking -in $frm.frame6 -anchor center -side right -padx 10 -pady 10 -ipadx 5 -ipady 5
 
       #--- Rafraichissement de la position du telescope par rapport a la monture
-      if { $confTel(conf_temma,connect) == "1" } {
+      if { $confTel(temma,connect) == "1" } {
          #--- Affichage de la position du telescope
          ::telescope::monture_allemande
       }
@@ -1782,8 +1839,7 @@ namespace eval ::confTel {
       if { ! [ info exists conf(ascom,driver) ] } { set conf(ascom,driver) [ lindex $confTel(ascom_drivers) 0 ] }
 
       #--- confToWidget
-      set confTel(conf_ascom,driver) $conf(ascom,driver)
-
+      set confTel(ascom,driver) $conf(ascom,driver)
       set confTel(raquette)          $conf(raquette)
 
       #--- Initialisation
@@ -1812,7 +1868,7 @@ namespace eval ::confTel {
          -height [ llength $confTel(ascom_drivers) ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_ascom,driver) \
+         -textvariable confTel(ascom,driver) \
          -editable 0       \
          -values $confTel(ascom_drivers)
       pack $frm.driver -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
@@ -1879,15 +1935,17 @@ namespace eval ::confTel {
    proc fillPage6 { nn } {
       global audace caption color conf confTel frmm
 
+      #--- Prise en compte des liaisons
+      set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
+
       #--- initConf
+      if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   [ lindex $list_connexion 0 ] }
       if { ! [ info exists conf(celestron,format) ] } { set conf(celestron,format) "1" }
-      if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   [ lindex "$audace(list_com)" 0 ] }
 
       #--- confToWidget
-      set confTel(conf_celestron,format) [ lindex "$caption(conftel,format_court_long)" $conf(celestron,format) ]
-      set confTel(conf_celestron,port)   $conf(celestron,port)
-
-      set confTel(raquette)          $conf(raquette)
+      set confTel(celestron,port)   $conf(celestron,port)
+      set confTel(celestron,format) [ lindex "$caption(conftel,format_court_long)" $conf(celestron,format) ]
+      set confTel(raquette)              $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp6) [ Rnotebook:frame $nn 6 ]
@@ -1906,9 +1964,6 @@ namespace eval ::confTel {
       frame $frm.frame4 -borderwidth 0 -relief raised
       pack $frm.frame4 -side top -fill x
 
-      frame $frm.frame4a -borderwidth 0 -relief raised
-      pack $frm.frame4a -side top -fill x
-
       frame $frm.frame5 -borderwidth 0 -relief raised
       pack $frm.frame5 -side bottom -fill x -pady 2
 
@@ -1921,27 +1976,21 @@ namespace eval ::confTel {
       frame $frm.frame8 -borderwidth 0 -relief raised
       pack $frm.frame8 -in $frm.frame7 -side top -fill x
 
-      frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -in $frm.frame7 -side top -fill x
-
       #--- Definition du port
       label $frm.lab1 -text "$caption(conftel,port_liaison)"
       pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
-      #--- Prise en compte des liaisons
-      set list_connexion [::confLink::getLinkLabels { "serialport" } ]
-
-      #--- je verifie le contenu de la liste
-      if { [llength $list_connexion ] > 0 } {
-         #--- si la liste n'est pas vide,
+      #--- Je verifie le contenu de la liste
+      if { [ llength $list_connexion ] > 0 } {
+         #--- Si la liste n'est pas vide,
          #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_connexion $confTel(conf_celestron,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
+         if { [ lsearch -exact $list_connexion $confTel(celestron,port) ] == -1 } {
+            #--- Si la valeur par defaut n'existe pas dans la liste,
             #--- je la remplace par le premier item de la liste
-            set confTel(conf_celestron,port) [lindex $list_connexion 0]
+            set confTel(celestron,port) [ lindex $list_connexion 0 ]
          }
       } else {
-         #--- si la liste est vide, on continue quand meme
+         #--- Si la liste est vide, on continue quand meme
       }
 
       ComboBox $frm.port \
@@ -1949,39 +1998,18 @@ namespace eval ::confTel {
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_celestron,port) \
+         -textvariable confTel(celestron,port) \
          -editable 0       \
          -values $list_connexion \
          -modifycmd {
             #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(conf_celestron,port) { serialport } "controle Celestron"
+            ::confLink::run ::confTel(celestron,port) { serialport } "controle Celestron"
          }
       pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
 
-     # #--- Bouton de configuration des liaisons
-     # button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command { ::confLink::run ::confTel(conf_celestron,port) { serialport } "controle Celestron"  }
-     # pack $frm.configure -in $frm.frame6 -anchor n -side right -pady 10 -ipadx 10 -ipady 1 -expand true
-
-     # #--- Definition du LX200 ou du clone
-     # label $frm.lab3 -text "$caption(conftel,modele)"
-     # pack $frm.lab3 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
-
-     # set list_combobox [ list $caption(conftel,modele_lx200) $caption(conftel,modele_audecom) \
-     #    $caption(conftel,modele_skysensor) $caption(conftel,modele_gemini) $caption(conftel,modele_ite-lente) ]
-     # ComboBox $frm.modele \
-     #    -width 17         \
-     #    -height [ llength $list_combobox ] \
-     #    -relief sunken    \
-     #    -borderwidth 1    \
-     #    -textvariable confTel(conf_celestron,modele) \
-     #    -modifycmd { ::confTel::connectIte-lente } \
-     #    -editable 0       \
-     #    -values $list_combobox
-     # pack $frm.modele -in $frm.frame8 -anchor center -side right -padx 10 -pady 10
-
       #--- Definition du format des donnees transmises au Celestron
       label $frm.lab2 -text "$caption(conftel,format)"
-      pack $frm.lab2 -in $frm.frame9 -anchor center -side left -padx 10 -pady 10
+      pack $frm.lab2 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
 
       set list_combobox "$caption(conftel,format_court_long)"
       ComboBox $frm.formatradec \
@@ -1989,10 +2017,10 @@ namespace eval ::confTel {
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
-         -textvariable confTel(conf_celestron,format) \
+         -textvariable confTel(celestron,format) \
          -editable 0       \
          -values $list_combobox
-      pack $frm.formatradec -in $frm.frame9 -anchor center -side right -padx 10 -pady 10
+      pack $frm.formatradec -in $frm.frame8 -anchor center -side right -padx 10 -pady 10
 
       #--- Le bouton de commande maj heure et position du Celestron
       button $frm.majpara -text "$caption(conftel,maj_celestron)" -relief raised -command {
@@ -2002,13 +2030,6 @@ namespace eval ::confTel {
          }
       }
       pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
-
-     # #--- Entree de la tempo Ite-lente
-     # label $frm.lab4 -text "$caption(conftel,ite-lente_tempo)"
-     # pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
-
-     # entry $frm.tempo -textvariable confTel(conf_celestron,ite-lente_tempo) -justify center -width 5
-     # pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
       #--- Gestion du bouton actif/inactif
       ::confTel::connectCelestron
@@ -2229,12 +2250,12 @@ namespace eval ::confTel {
 
       switch -exact -- $conf(telescope) {
          audecom {
-               set confTel(conf_lx200,connect)     "0"
-               set confTel(ouranos,connect)        "0"
-               set confTel(audecom,connect)        "1"
-               set confTel(conf_temma,connect)     "0"
-               set confTel(conf_ascom,connect)     "0"
-               set confTel(conf_celestron,connect) "0"
+               set confTel(lx200,connect)     "0"
+               set confTel(ouranos,connect)   "0"
+               set confTel(audecom,connect)   "1"
+               set confTel(temma,connect)     "0"
+               set confTel(ascom,connect)     "0"
+               set confTel(celestron,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create audecom $conf(audecom,port) } msg ]
                if { $erreur == "1" } {
@@ -2282,8 +2303,8 @@ namespace eval ::confTel {
                      }
                   } else {
                      catch { set frm $frmm(Telscp3) }
-                     set confTel(conf_audecom,mobile) "0"
-                     set conf(audecom,mobile)         "0"
+                     set confTel(audecom,mobile) "0"
+                     set conf(audecom,mobile)    "0"
                      if { $conf(telescope,start) != "1" } {
                         $frm.mobile configure
                      }
@@ -2310,13 +2331,13 @@ namespace eval ::confTel {
                }
             }
          ouranos {
-               set conf(raquette)                  "0"
-               set confTel(conf_lx200,connect)     "0"
-               set confTel(ouranos,connect)        "1"
-               set confTel(audecom,connect)        "0"
-               set confTel(conf_temma,connect)     "0"
-               set confTel(conf_ascom,connect)     "0"
-               set confTel(conf_celestron,connect) "0"
+               set conf(raquette)             "0"
+               set confTel(lx200,connect)     "0"
+               set confTel(ouranos,connect)   "1"
+               set confTel(audecom,connect)   "0"
+               set confTel(temma,connect)     "0"
+               set confTel(ascom,connect)     "0"
+               set confTel(celestron,connect) "0"
                #--- Arrete la lecture des coordonnees
                set ouranoscom(lecture) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
@@ -2341,10 +2362,10 @@ namespace eval ::confTel {
                   tel$audace(telNo) invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
                   tel$audace(telNo) resolution $conf(ouranos,cod_ra) $conf(ouranos,cod_dec)
                   #--- Initialisation de l'affichage
-                  set confTel(conf_ouranos,coord_ra) ""
-                  set confTel(conf_ouranos,coord_dec) ""
+                  set confTel(ouranos,coord_ra) ""
+                  set confTel(ouranos,coord_dec) ""
                   #--- Statut du port
-                  set confTel(conf_ouranos,status) $caption(conftel,ouranos_on)
+                  set confTel(ouranos,status) $caption(conftel,ouranos_on)
                }
                #--- Gestion des boutons actifs/inactifs
                ::confTel::MatchOuranos
@@ -2352,11 +2373,12 @@ namespace eval ::confTel {
          lx200 {
             switch [::confLink::getLinkNamespace $conf(lx200,port)] {
                audinet {
-                  set confTel(conf_lx200,connect) "1"
-                  set confTel(ouranos,connect)    "0"
-                  set confTel(audecom,connect)    "0"
-                  set confTel(conf_temma,connect) "0"
-                  set confTel(conf_ascom,connect) "0"
+                  set confTel(lx200,connect)     "1"
+                  set confTel(ouranos,connect)   "0"
+                  set confTel(audecom,connect)   "0"
+                  set confTel(temma,connect)     "0"
+                  set confTel(ascom,connect)     "0"
+                  set confTel(celestron,connect) "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                   set erreur [ catch { set audace(telNo) [ tel::create lxnet $conf(lx200,port) -name lxnet \
                         -host $conf(audinet,host) \
@@ -2380,15 +2402,16 @@ namespace eval ::confTel {
                         tel$audace(telNo) longformat on
                      }
                      #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [confLink::create $confTel(conf_lx200,port) "tel$audace(telNo)" "control" ""]
+                     set linkNo [confLink::create $confTel(lx200,port) "tel$audace(telNo)" "control" ""]
                   }
                }
                serialport {
-                  set confTel(conf_lx200,connect) "1"
-                  set confTel(ouranos,connect)    "0"
-                  set confTel(audecom,connect)    "0"
-                  set confTel(conf_temma,connect) "0"
-                  set confTel(conf_ascom,connect) "0"
+                  set confTel(lx200,connect)     "1"
+                  set confTel(ouranos,connect)   "0"
+                  set confTel(audecom,connect)   "0"
+                  set confTel(temma,connect)     "0"
+                  set confTel(ascom,connect)     "0"
+                  set confTel(celestron,connect) "0"
                   if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                   set erreur [ catch { tel::create lx200 $conf(lx200,port) } msg ]
                   if { $erreur == "1" } {
@@ -2417,12 +2440,12 @@ namespace eval ::confTel {
             }
          }
          temma {
-               set confTel(conf_lx200,connect)     "0"
-               set confTel(ouranos,connect)        "0"
-               set confTel(audecom,connect)        "0"
-               set confTel(conf_temma,connect)     "1"
-               set confTel(conf_ascom,connect)     "0"
-               set confTel(conf_celestron,connect) "0"
+               set confTel(lx200,connect)     "0"
+               set confTel(ouranos,connect)   "0"
+               set confTel(audecom,connect)   "0"
+               set confTel(temma,connect)     "1"
+               set confTel(ascom,connect)     "0"
+               set confTel(celestron,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create temma $conf(temma,port) } msg ]
                if { $erreur == "1" } {
@@ -2433,13 +2456,13 @@ namespace eval ::confTel {
                   tk_messageBox -message "$msg" -icon error
                } else {
                   if { $conf(temma,modele) == "0" } {
-                     set confTel(conf_temma,modele) $caption(conftel,temma_modele_1)
+                     set confTel(temma,modele) $caption(conftel,temma_modele_1)
                   } elseif { $conf(temma,modele) == "1" } {
-                     set confTel(conf_temma,modele) $caption(conftel,temma_modele_2)
+                     set confTel(temma,modele) $caption(conftel,temma_modele_2)
                   } else {
-                     set confTel(conf_temma,modele) $caption(conftel,temma_modele_3)
+                     set confTel(temma,modele) $caption(conftel,temma_modele_3)
                   }
-                  console::affiche_erreur "$caption(conftel,port_temma) ($confTel(conf_temma,modele)) \
+                  console::affiche_erreur "$caption(conftel,port_temma) ($confTel(temma,modele)) \
                      $caption(conftel,2points) $conf(temma,port)\n"
                   set audace(telNo) $msg
                   #--- Lit et affiche la version du Temma
@@ -2495,12 +2518,12 @@ namespace eval ::confTel {
                ::confTel::config_correc_Temma
             }
          ascom {
-               set confTel(conf_lx200,connect)     "0"
-               set confTel(ouranos,connect)        "0"
-               set confTel(audecom,connect)        "0"
-               set confTel(conf_temma,connect)     "0"
-               set confTel(conf_ascom,connect)     "1"
-               set confTel(conf_celestron,connect) "0"
+               set confTel(lx200,connect)     "0"
+               set confTel(ouranos,connect)   "0"
+               set confTel(audecom,connect)   "0"
+               set confTel(temma,connect)     "0"
+               set confTel(ascom,connect)     "1"
+               set confTel(celestron,connect) "0"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] } msg ]
                if { $erreur == "1" } {
@@ -2517,12 +2540,12 @@ namespace eval ::confTel {
                }
             }
          celestron {
-               set confTel(conf_lx200,connect)     "0"
-               set confTel(ouranos,connect)        "0"
-               set confTel(audecom,connect)        "0"
-               set confTel(conf_temma,connect)     "0"
-               set confTel(conf_ascom,connect)     "0"
-               set confTel(conf_celestron,connect) "1"
+               set confTel(lx200,connect)     "0"
+               set confTel(ouranos,connect)   "0"
+               set confTel(audecom,connect)   "0"
+               set confTel(temma,connect)     "0"
+               set confTel(ascom,connect)     "0"
+               set confTel(celestron,connect) "1"
                if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
                set erreur [ catch { tel::create celestron $conf(celestron,port) } msg ]
                if { $erreur == "1" } {
@@ -2570,14 +2593,14 @@ namespace eval ::confTel {
          #--- En cas de probleme, je desactive le demarrage automatique
          set conf(telescope,start) "0"
          #--- En cas de probleme, telescope par defaut
-         set conf(telescope)             "lx200"
-         set conf(lx200,port)            [ lindex $audace(list_com) 0 ]
-         set confTel(conf_lx200,connect)     "0"
-         set confTel(ouranos,connect)        "0"
-         set confTel(audecom,connect)        "0"
-         set confTel(conf_temma,connect)     "0"
-         set confTel(conf_ascom,connect)     "0"
-         set confTel(conf_celestron,connect) "0"
+         set conf(telescope)            "lx200"
+         set conf(lx200,port)           [ lindex $audace(list_com) 0 ]
+         set confTel(lx200,connect)     "0"
+         set confTel(ouranos,connect)   "0"
+         set confTel(audecom,connect)   "0"
+         set confTel(temma,connect)     "0"
+         set confTel(ascom,connect)     "0"
+         set confTel(celestron,connect) "0"
          $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,tiret)" -fg $color(blue)
       } else {
          $audace(base).fra1.labTel_name_labURL configure -text "$conf(telescope)" -fg $color(blue)
@@ -2614,81 +2637,81 @@ namespace eval ::confTel {
       set conf(raquette)                 $confTel(raquette)
       #--- Memorise la configuration du LX200 dans le tableau conf(lx200,...)
       set frm [ Rnotebook:frame $nn 1 ]
-      set conf(lx200,port)            $confTel(conf_lx200,port)
-      set conf(lx200,format)          [ lsearch "$caption(conftel,format_court_long)" "$confTel(conf_lx200,format)" ]
-      set conf(lx200,modele)          $confTel(conf_lx200,modele)
-      set conf(lx200,ite-lente_tempo) $confTel(conf_lx200,ite-lente_tempo)
+      set conf(lx200,port)            $confTel(lx200,port)
+      set conf(lx200,format)          [ lsearch "$caption(conftel,format_court_long)" "$confTel(lx200,format)" ]
+      set conf(lx200,modele)          $confTel(lx200,modele)
+      set conf(lx200,ite-lente_tempo) $confTel(lx200,ite-lente_tempo)
       #--- Memorise la configuration de Ouranos dans le tableau conf(ouranos,...)
       set frm [ Rnotebook:frame $nn 2 ]
-      set conf(ouranos,cod_dec)       $confTel(conf_ouranos,cod_dec)
-      set conf(ouranos,cod_ra)        $confTel(conf_ouranos,cod_ra)
-      set conf(ouranos,freq)          $confTel(conf_ouranos,freq)
-      set conf(ouranos,init)          $confTel(conf_ouranos,init)
-      set conf(ouranos,inv_dec)       $confTel(conf_ouranos,inv_dec)
-      set conf(ouranos,inv_ra)        $confTel(conf_ouranos,inv_ra)
+      set conf(ouranos,cod_dec)       $confTel(ouranos,cod_dec)
+      set conf(ouranos,cod_ra)        $confTel(ouranos,cod_ra)
+      set conf(ouranos,freq)          $confTel(ouranos,freq)
+      set conf(ouranos,init)          $confTel(ouranos,init)
+      set conf(ouranos,inv_dec)       $confTel(ouranos,inv_dec)
+      set conf(ouranos,inv_ra)        $confTel(ouranos,inv_ra)
       set conf(ouranos,port)          $confTel(ouranos,port)
-      set conf(ouranos,show_coord)    $confTel(conf_ouranos,show_coord)
+      set conf(ouranos,show_coord)    $confTel(ouranos,show_coord)
       #--- Memorise la configuration de AudeCom dans le tableau conf(audecom,...)
       set frm [ Rnotebook:frame $nn 3 ]
-      set conf(audecom,port)          $confTel(conf_audecom,port)
-      set conf(audecom,pec)           $confTel(conf_audecom,pec)
-      set conf(audecom,king)          $confTel(conf_audecom,king)
-      set conf(audecom,mobile)        $confTel(conf_audecom,mobile)
-      set conf(audecom,german)        $confTel(conf_audecom,german)
+      set conf(audecom,port)          $confTel(audecom,port)
+      set conf(audecom,pec)           $confTel(audecom,pec)
+      set conf(audecom,king)          $confTel(audecom,king)
+      set conf(audecom,mobile)        $confTel(audecom,mobile)
+      set conf(audecom,german)        $confTel(audecom,german)
       #--- Vient de la fenetre de configuration des parametres moteurs
-      set conf(audecom,limp)          $confTel(conf_audecom,limp)
-      set conf(audecom,maxad)         $confTel(conf_audecom,maxad)
-      set conf(audecom,maxdec)        $confTel(conf_audecom,maxdec)
-      set conf(audecom,rat_ad)        $confTel(conf_audecom,rat_ad)
-      set conf(audecom,rat_dec)       $confTel(conf_audecom,rat_dec)
+      set conf(audecom,limp)          $confTel(audecom,limp)
+      set conf(audecom,maxad)         $confTel(audecom,maxad)
+      set conf(audecom,maxdec)        $confTel(audecom,maxdec)
+      set conf(audecom,rat_ad)        $confTel(audecom,rat_ad)
+      set conf(audecom,rat_dec)       $confTel(audecom,rat_dec)
       #--- Vient de la fenetre de configuration des parametres de la focalisation
-      set conf(audecom,dep_val)       $confTel(conf_audecom,dep_val)
-      set conf(audecom,intra_extra)   $confTel(conf_audecom,intra_extra)
-      set conf(audecom,inv_rot)       $confTel(conf_audecom,inv_rot)
-      set conf(audecom,vitesse)       $confTel(conf_audecom,vitesse)
+      set conf(audecom,dep_val)       $confTel(audecom,dep_val)
+      set conf(audecom,intra_extra)   $confTel(audecom,intra_extra)
+      set conf(audecom,inv_rot)       $confTel(audecom,inv_rot)
+      set conf(audecom,vitesse)       $confTel(audecom,vitesse)
       #--- Vient de la fenetre de configuration de la programmation PEC
-      set conf(audecom,rpec)          $confTel(conf_audecom,rpec)
-      set conf(audecom,t0)            $confTel(conf_audecom,t0)
-      set conf(audecom,t1)            $confTel(conf_audecom,t1)
-      set conf(audecom,t2)            $confTel(conf_audecom,t2)
-      set conf(audecom,t3)            $confTel(conf_audecom,t3)
-      set conf(audecom,t4)            $confTel(conf_audecom,t4)
-      set conf(audecom,t5)            $confTel(conf_audecom,t5)
-      set conf(audecom,t6)            $confTel(conf_audecom,t6)
-      set conf(audecom,t7)            $confTel(conf_audecom,t7)
-      set conf(audecom,t8)            $confTel(conf_audecom,t8)
-      set conf(audecom,t9)            $confTel(conf_audecom,t9)
-      set conf(audecom,t10)           $confTel(conf_audecom,t10)
-      set conf(audecom,t11)           $confTel(conf_audecom,t11)
-      set conf(audecom,t12)           $confTel(conf_audecom,t12)
-      set conf(audecom,t13)           $confTel(conf_audecom,t13)
-      set conf(audecom,t14)           $confTel(conf_audecom,t14)
-      set conf(audecom,t15)           $confTel(conf_audecom,t15)
-      set conf(audecom,t16)           $confTel(conf_audecom,t16)
-      set conf(audecom,t17)           $confTel(conf_audecom,t17)
-      set conf(audecom,t18)           $confTel(conf_audecom,t18)
-      set conf(audecom,t19)           $confTel(conf_audecom,t19)
+      set conf(audecom,rpec)          $confTel(audecom,rpec)
+      set conf(audecom,t0)            $confTel(audecom,t0)
+      set conf(audecom,t1)            $confTel(audecom,t1)
+      set conf(audecom,t2)            $confTel(audecom,t2)
+      set conf(audecom,t3)            $confTel(audecom,t3)
+      set conf(audecom,t4)            $confTel(audecom,t4)
+      set conf(audecom,t5)            $confTel(audecom,t5)
+      set conf(audecom,t6)            $confTel(audecom,t6)
+      set conf(audecom,t7)            $confTel(audecom,t7)
+      set conf(audecom,t8)            $confTel(audecom,t8)
+      set conf(audecom,t9)            $confTel(audecom,t9)
+      set conf(audecom,t10)           $confTel(audecom,t10)
+      set conf(audecom,t11)           $confTel(audecom,t11)
+      set conf(audecom,t12)           $confTel(audecom,t12)
+      set conf(audecom,t13)           $confTel(audecom,t13)
+      set conf(audecom,t14)           $confTel(audecom,t14)
+      set conf(audecom,t15)           $confTel(audecom,t15)
+      set conf(audecom,t16)           $confTel(audecom,t16)
+      set conf(audecom,t17)           $confTel(audecom,t17)
+      set conf(audecom,t18)           $confTel(audecom,t18)
+      set conf(audecom,t19)           $confTel(audecom,t19)
       #--- Vient de la fenetre de configuration de suivi
-      set conf(audecom,ad)            $confTel(conf_audecom,ad)
-      set conf(audecom,dec)           $confTel(conf_audecom,dec)
-      set conf(audecom,type)          $confTel(conf_audecom,type)
+      set conf(audecom,ad)            $confTel(audecom,ad)
+      set conf(audecom,dec)           $confTel(audecom,dec)
+      set conf(audecom,type)          $confTel(audecom,type)
       #--- Memorise la configuration du module temma dans le tableau conf(temma,...)
       set frm [ Rnotebook:frame $nn 4 ]
-      set conf(temma,correc_AD)       $confTel(conf_temma,correc_AD)
-      set conf(temma,correc_Dec)      $confTel(conf_temma,correc_Dec)
-      set conf(temma,liaison)         $confTel(conf_temma,liaison)
-      set conf(temma,modele)          [ lsearch "$caption(conftel,temma_modele_1) $caption(conftel,temma_modele_2) $caption(conftel,temma_modele_3)" "$confTel(conf_temma,modele)" ]
-      set conf(temma,port)            $confTel(conf_temma,port)
-      set conf(temma,suivi_ad)        $confTel(conf_temma,suivi_ad)
-      set conf(temma,suivi_dec)       $confTel(conf_temma,suivi_dec)
-      set conf(temma,type)            $confTel(conf_temma,type)
+      set conf(temma,correc_AD)       $confTel(temma,correc_AD)
+      set conf(temma,correc_Dec)      $confTel(temma,correc_Dec)
+      set conf(temma,liaison)         $confTel(temma,liaison)
+      set conf(temma,modele)          [ lsearch "$caption(conftel,temma_modele_1) $caption(conftel,temma_modele_2) $caption(conftel,temma_modele_3)" "$confTel(temma,modele)" ]
+      set conf(temma,port)            $confTel(temma,port)
+      set conf(temma,suivi_ad)        $confTel(temma,suivi_ad)
+      set conf(temma,suivi_dec)       $confTel(temma,suivi_dec)
+      set conf(temma,type)            $confTel(temma,type)
       #--- Memorise la configuration du driver ASCOM dans le tableau conf(ascom,...)
       set frm [ Rnotebook:frame $nn 5 ]
-      set conf(ascom,driver)          $confTel(conf_ascom,driver)
+      set conf(ascom,driver)          $confTel(ascom,driver)
       #--- Memorise la configuration du Celestron dans le tableau conf(celestron,...)
       set frm [ Rnotebook:frame $nn 6 ]
-      set conf(celestron,port)        $confTel(conf_celestron,port)
-      set conf(celestron,format)      [ lsearch "$caption(conftel,format_court_long)" "$confTel(conf_celestron,format)" ]
+      set conf(celestron,port)        $confTel(celestron,port)
+      set conf(celestron,format)      [ lsearch "$caption(conftel,format_court_long)" "$confTel(celestron,format)" ]
    }
 }
 

@@ -2,30 +2,47 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.4 2006-06-21 17:35:59 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.5 2006-11-22 08:01:17 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
+#     init              : Initialise le namespace (appelee pendant le chargement de ce source)
+#     getLabel          : Retourne le nom affichable du driver
+#     getHelp           : Retourne la documentation htm associee
+#     getDriverType     : Retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : Initialise les parametres de configuration s'ils n'existent pas dans le tableau conf()
+#     fillConfigPage    : Affiche la fenetre de configuration de ce driver
+#     confToWidget      : Copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : Copie les variables des widgets dans le tableau conf()
+#     configureDriver   : Configure le driver
+#     stopDriver        : Arrete le driver et libere les ressources occupees
+#     isReady           : Informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     run               : affiche la raquette 
-#     fermer            : ferme la raquette
-#    
+#     Representation_roue_a_filtres : Representation graphique de la roue a filtres
+#     choix_nom_bouton              : Choix du nom des boutons (couleur des filtres)
+#     choix_couleur                 : Choix des couleurs des filtres
+#     filtre_init                   : Initialisation de la roue a filtres
+#     cmd_roue_filtres              : Commande la roue a filtres
+#     filtre_1                      : Positionne le filtre n°1 sur le chemin optique
+#     filtre_2                      : Positionne le filtre n°2 sur le chemin optique
+#     filtre_3                      : Positionne le filtre n°3 sur le chemin optique
+#     filtre_4                      : Positionne le filtre n°4 sur le chemin optique
+#     filtre_5                      : Positionne le filtre n°5 sur le chemin optique
+#     connectBerMasAude             : Permet de rendre actifs ou inactifs les boutons
+#
+#     bermasaude_create             : Creation de la liaison serie
+#     bermasaude_delete             : Fermeture de la liaison serie
+#     bermasaude_reset              : Reset de l'electronique de la roue a filtres
+#     bermasaude_v_firmware         : Retourne la version du firmware
+#     bermasaude_etat_roue          : Retourne l'etat de la roue (0 a l'arret - 1 en rotation)
+#     bermasaude_nbr_filtres        : Retourne le nombre de filtres de la roue
+#     bermasaude_aller_a            : Permet d'aller au filtre n
+#     bermasaude_position           : Retourne la position du filtre sur le chemin optique
+#
 
 namespace eval bermasaude {
    variable widget
@@ -102,11 +119,16 @@ namespace eval bermasaude {
    #  return rien
    #------------------------------------------------------------
    proc initConf { } {
+      variable widget
       global conf
       global audace
 
+      #--- Prise en compte des liaisons
+      set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
+
+      #--- 
+      if { ! [ info exists conf(bermasaude,port) ] }  { set conf(bermasaude,port)  [ lindex $widget(list_connexion) 0 ] }
       if { ! [ info exists conf(bermasaude,combi) ] } { set conf(bermasaude,combi) "0" }
-      if { ! [ info exists conf(bermasaude,port) ] }  { set conf(bermasaude,port)  [ lindex $audace(list_com) 0 ] }
 
       return
    }
@@ -122,9 +144,9 @@ namespace eval bermasaude {
       global conf
       global caption
 
+      set widget(port)  $conf(bermasaude,port)
       set widget(combi) [ lindex "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
          $conf(bermasaude,combi) ]
-      set widget(port)  $conf(bermasaude,port)
    }
 
    #------------------------------------------------------------
@@ -139,9 +161,9 @@ namespace eval bermasaude {
       global caption
 
       #--- Memorise la configuration de la roue a filtres BerMasAude dans le tableau conf(bermasaude,...)
+      set conf(bermasaude,port)  $widget(port)
       set conf(bermasaude,combi) [ lsearch "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
          "$widget(combi)" ]
-      set conf(bermasaude,port)  $widget(port)
    }
 
    #------------------------------------------------------------
@@ -186,14 +208,31 @@ namespace eval bermasaude {
       label $frm.lab1 -text "$caption(bermasaude,port)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 20 -pady 10
 
+      #--- Je verifie le contenu de la liste
+      if { [ llength $widget(list_connexion) ] > 0 } {
+         #--- Si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $widget(list_connexion) $::bermasaude::widget(port) ] == -1 } {
+            #--- Si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set ::bermasaude::widget(port) [ lindex $widget(list_connexion) 0 ]
+         }
+      } else {
+         #--- Si la liste est vide, on continue quand meme
+      }
+
       ComboBox $frm.port \
          -width 14         \
-         -height [ llength $audace(list_com) ]  \
+         -height [ llength $widget(list_connexion) ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable ::bermasaude::widget(port) \
          -editable 0       \
-         -values $audace(list_com)
+         -values $widget(list_connexion) \
+         -modifycmd {
+            #--- Ouvre la configuration des liaisons sur le bon onglet
+            ::confLink::run ::bermasaude::widget(port) { serialport } "controle BerMasAude"
+         }
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       #--- Definition de la combinaison des filtres
@@ -639,7 +678,7 @@ namespace eval bermasaude {
    }
 
 #------------------------------------------------------------
-# Proc's du driver de la roue a filtres (BerMasAude)
+# Procedures du driver de la roue a filtres (BerMasAude)
 #------------------------------------------------------------
 
     proc bermasaude_create { port } { 

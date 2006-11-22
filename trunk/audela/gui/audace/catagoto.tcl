@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.4 2006-09-01 14:18:51 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.5 2006-11-22 07:59:43 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -774,7 +774,7 @@ namespace eval cataGoto {
          wm protocol $audace(base).cataObjet WM_DELETE_WINDOW {
             ::cataGoto::recup_position
             destroy $audace(base).cataObjet
-            set confTel(conf_ouranos,objet) "4"
+            set confTel(ouranos,objet) "4"
          }
       } else {
          wm transient $audace(base).cataObjet $audace(base)
@@ -906,7 +906,7 @@ namespace eval cataGoto {
                set cataGoto(carte,validation) "0"
                set cataGoto(carte,avant_plan) "0"
                destroy $audace(base).cataObjet
-               set confTel(conf_ouranos,objet) "4"
+               set confTel(ouranos,objet) "4"
             }
          } else {
             button $audace(base).cataObjet.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
@@ -1067,7 +1067,7 @@ namespace eval cataGoto {
          wm protocol $audace(base).cataEtoile WM_DELETE_WINDOW {
             ::cataGoto::recup_position
             destroy $audace(base).cataEtoile
-            set confTel(conf_ouranos,objet) "4"
+            set confTel(ouranos,objet) "4"
          }
       } else {
          wm transient $audace(base).cataEtoile $audace(base)
@@ -1109,7 +1109,7 @@ namespace eval cataGoto {
                   set cataGoto(carte,validation) "0"
                   set cataGoto(carte,avant_plan) "0"
                   destroy $audace(base).cataEtoile
-                  set confTel(conf_ouranos,objet) "4"
+                  set confTel(ouranos,objet) "4"
                }
          } else {
             button $audace(base).cataEtoile.frame9.fermer -text "$caption(catagoto,fermer)" -width 7 -state disabled \
