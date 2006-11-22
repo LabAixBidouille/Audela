@@ -348,3 +348,62 @@ int cmdCemesObtu(ClientData clientData, Tcl_Interp * interp, int argc, char *arg
 	return result;
 }
 
+int cmdStatique_dinamique(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	char ligne[256];
+	
+	if (argc!=3)
+	{
+		sprintf(ligne, "Usage: %s %s 0=static/1=dynamic\n", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		result = TCL_ERROR;
+		return result;
+	}
+	else
+	{
+		if (atoi(argv[2])==0) 
+		{
+			//statique
+			SetConfCalcul(2);
+		}
+		else 
+		{
+			//dinamique
+			SetConfCalcul(7);
+		}
+	}
+
+	return result;
+}
+
+int cmdBalance(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	char ligne[256];
+	
+	if (argc!=3)
+	{
+		sprintf(ligne, "Usage: %s %s 0=static/1=dynamic\n", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		result = TCL_ERROR;
+		return result;
+	}
+	else
+	{
+		if (atoi(argv[2])==0) 
+		{
+			//statique
+			equilibrer(0);
+		}
+		else 
+		{
+			//dinamique
+			equilibrer(1);
+		}
+	}
+
+	return result;
+}
+
+

@@ -22,6 +22,8 @@
 class CID_API Ccontroleur  
 {
 public:
+	bool ReadRegister(int add, long *octet);
+	bool WriteRegister(int add, int val);
 	bool savePLU(int savePLUon);//modif tb traitement image mars 2006
 	bool SetImageSize(unsigned long sx, unsigned long sy);
 	bool GetImageSize(unsigned long *sx, unsigned long *sy);
@@ -36,7 +38,7 @@ public:
 	CarteADLink *adlink;
 	virtual ~Ccontroleur();
 	bool GetStatusCamera(bool *etat0, bool *etat1);
-	bool SetAmplisObtu(bool on,bool on2,bool on3,bool on4);
+	bool SetAmplisObtu(bool on,bool on2,bool on3,bool on4,int on5);
 	void GetPOLALimits(int voie, float * min1,  float *max1);
 	bool SetPOLA(unsigned int n, float val);
 	bool SetDECALAGE(unsigned int n, unsigned int val);
@@ -49,6 +51,7 @@ public:
 	unsigned short LireAuxiliaire( unsigned int  ligne);
 	bool EcrirePORT (unsigned short donnee);
 	bool CalculEcartType (double *sigma1,double *sigma2,double *sigma3,double *sigma4);
+	bool nombreEchant(int nombreechant);
 	bool SerialDownload();
 	bool ModeBias(short modebiasvalue);
 
@@ -70,9 +73,11 @@ private:
 	unsigned int polatoentier(unsigned char voie, float v);
 	bool m_polchanged;
 	bool m_amplison;
-	double m_pol[25];
-	double polHV[25];
-	double polHR[25];
+	double m_pol[30];
+	double m_polHV[30];
+	double polHV[30];
+	double polHR[30];
+	bool debugfpga;
 		
 	char m_portname[20];
 	char m_logname[200];
@@ -95,7 +100,7 @@ public:
 	bool SetArea(unsigned short x0, unsigned short y0, unsigned short xb = 10000, unsigned short yb = 10000);
 	bool GetArea(unsigned short *x0, unsigned short *y0, unsigned short *xb, unsigned short *yb);
 	// Lit les données d'une images
-	unsigned long GetNextImage(unsigned char * data, bool parbandes, bool *fin_image, int *nbimage);
+	unsigned long GetNextImage(unsigned short * data, bool parbandes, bool *fin_image, int *nbimage);
 	void SetDebugLevel(int level);
 	bool SetModeBinning(bool HV, unsigned int binning, unsigned int vitesse, bool debug);
 
@@ -104,6 +109,13 @@ public:
 	bool GetStatusWordCameraVhdl(long *mot);
 	
 	bool GetTempsExposition(double *pose,bool *erreur );
+	bool ResetADLINK();
+	bool GetTargetRegistry(int *TargetStatic, int *TargetDynamic, int *TargetStaticB,int *TargetDynamicB,int *TargetStaticHV,int *TargetDynamicHV);
+	bool SetTempsExposition2(double pose, bool *erreur);
+	bool GetTempsExposition2(double *pose, bool *erreur );
+	bool SetTempsExpositionLimit(double pose, bool *erreur);
+	bool GetTempsExpositionLimit(double *pose, bool *erreur); 
+
 
 };
 

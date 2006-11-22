@@ -25,6 +25,8 @@
 
 #define SPECIFIC_CMDLIST \
    {"parameter",        (Tcl_CmdProc *)cmdCemesParam}, \
+   {"stat_dina",     (Tcl_CmdProc *)cmdStatique_dinamique}, \
+   {"balance",     (Tcl_CmdProc *)cmdBalance}, \
    {"peltON",     (Tcl_CmdProc *)cmdPeltierMarche}, \
    {"peltOFF",     (Tcl_CmdProc *)cmdPeltierArret}, \
    {"settemp",     (Tcl_CmdProc *)cmdCemesSetTemp}, \
@@ -41,8 +43,9 @@ int cmdPeltierArret(ClientData clientData, Tcl_Interp * interp, int argc, char *
 int cmdCemesParam(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesObtu(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesGetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdStatique_dinamique(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdBalance(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesSetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-
 
 #ifdef __cplusplus
 }
