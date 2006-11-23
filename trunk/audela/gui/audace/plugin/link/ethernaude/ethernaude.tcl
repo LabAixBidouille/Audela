@@ -2,29 +2,33 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.10 2006-11-03 21:26:40 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.11 2006-11-23 23:14:30 robertdelmas Exp $
 #
 
 package provide ethernaude 1.0
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
+#     init              : Initialise le namespace (appelee pendant le chargement de ce source)
+#     getLabel          : Retourne le nom affichable du driver
+#     getHelp           : Retourne la documentation htm associee
+#     getDriverType     : Retourne le type de driver (pour classer le driver dans le menu principal)
+#     initConf          : Initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
+#     fillConfigPage    : Affiche la fenetre de configuration de ce driver
+#     confToWidget      : Copie le tableau conf() dans les variables des widgets
+#     widgetToConf      : Copie les variables des widgets dans le tableau conf()
+#     configureDriver   : Configure le driver
+#     isReady           : Informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     testping          : teste la connexion d'un appareil
-#     ConfEthernAude    : gestion des boutons
+#     create               : Demarre la liaison
+#     delete               : Arrete la liaison et libere les ressources occupees
+#     testping             : Teste la connexion d'un appareil
+#     ConfEthernAude       : Gestion des boutons
+#     selectConfigItem     : Selectionne un link dans la fenetre de configuration
+#     getSelectedLinkLabel : Retourne le link choisi
+#     getLinkLabels        : Retourne la seule instance ethernaude
+#     getLinkIndex         : Retourne l'index du link
 #.....
 
 namespace eval ethernaude {
@@ -174,10 +178,12 @@ proc ::ethernaude::fillConfigPage { frm } {
    label $frm.lab2 -text "$caption(ethernaude,lecture_pixel)"
    pack $frm.lab2 -in $frm.frame3 -anchor center -side left -padx 10 -pady 2
 
-   entry $frm.lecture_pixel -textvariable ::ethernaude::widget(ethernaude,canspeed) -width 3 -justify center
-   pack $frm.lecture_pixel -in $frm.frame3 -anchor center -side left -pady 2
+   scale $frm.lecture_pixel_variant -from "5.0" -to "15.0" -length 300 \
+      -orient horizontal -showvalue true -tickinterval 1 -resolution 1 \
+      -borderwidth 2 -relief groove -variable ::ethernaude::widget(ethernaude,canspeed) -width 10
+   pack $frm.lecture_pixel_variant -in $frm.frame3 -anchor center -side left -pady 0
 
-   label $frm.lab3 -text "$caption(ethernaude,micro_sec_bornes)"
+   label $frm.lab3 -text "$caption(ethernaude,micro_sec)"
    pack $frm.lab3 -in $frm.frame3 -anchor center -side left -padx 2 -pady 2
 
    #--- Coordonnees GPS de l'observateur
