@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.16 2006-11-22 08:02:01 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.17 2006-11-23 22:54:46 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -731,23 +731,20 @@ namespace eval ::confTel {
          #--- Si la liste est vide, on continue quand meme
       }
 
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200" }
+      pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 14         \
+         -width 9          \
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(lx200,port) \
          -editable 0       \
-         -values $list_connexion \
-         -modifycmd {
-            #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200"
-         }
-      pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
-
-      #--- Bouton de configuration des liaisons
-      button $frm.configure -text "$caption(conftel,link_configure)" -relief raised -command { ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200"  }
-      pack $frm.configure -in $frm.frame6 -anchor n -side right -pady 10 -ipadx 10 -ipady 1 -expand true
+         -values $list_connexion
+      pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
       #--- Definition du LX200 ou du clone
       label $frm.lab3 -text "$caption(conftel,modele)"
@@ -810,7 +807,7 @@ namespace eval ::confTel {
       pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
       ComboBox $frm.nom_raquette \
          -width 10         \
-         -height [ llength $::confPad::private(driverlist) ]  \
+         -height [ llength $::confPad::private(driverlist) ] \
          -relief sunken    \
          -borderwidth 1    \
          -modifycmd {
@@ -822,7 +819,6 @@ namespace eval ::confTel {
                set ::confPad::private(conf_confPad) ""
             }
             set conf(confPad) $::confPad::private(conf_confPad)
-
             ::confPad::run
          } \
          -textvariable audace(nom_raquette) \
@@ -832,7 +828,7 @@ namespace eval ::confTel {
 
       #--- Choix de la raquette
       button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 20 -ipady 5 -expand true
+      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel du LX200
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -946,7 +942,7 @@ namespace eval ::confTel {
 
       entry $frm.status -font $audace(font,arial_8_b) -textvariable confTel(ouranos,status) -width 4 \
          -justify center -bg $color(red)
-      pack $frm.status -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.status -in $frm.frame1 -anchor center -side left -padx 0 -pady 5
 
       #--- Je verifie le contenu de la liste
       if { [ llength $list_connexion ] > 0 } {
@@ -961,31 +957,32 @@ namespace eval ::confTel {
          #--- Si la liste est vide, on continue quand meme
       }
 
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(ouranos,port) { serialport } "controle Ouranos" }
+      pack $frm.configure -in $frm.frame1 -anchor n -side left -padx 10 -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 14         \
+         -width 7          \
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(ouranos,port) \
          -editable 0       \
-         -values $list_connexion \
-         -modifycmd {
-            #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(ouranos,port) { serialport } "controle Ouranos"
-         }
-      pack $frm.port -in $frm.frame1 -anchor center -side left -padx 13 -pady 5
+         -values $list_connexion
+      pack $frm.port -in $frm.frame1 -anchor center -side left -padx 0 -pady 5
 
       #--- Selection affichage toujours visibles ou non
       checkbutton $frm.visible -text "$caption(conftel,ouranos_visible)" -highlightthickness 0 \
          -variable confTel(ouranos,tjrsvisible) -onvalue 1 -offvalue 0 \
          -command { set confTel(ouranos,dim) "0" ; ::OuranosCom::TjrsVisible }
-      pack $frm.visible -in $frm.frame1 -anchor center -side right -padx 11 -pady 5
+      pack $frm.visible -in $frm.frame1 -anchor center -side right -padx 13 -pady 5
 
       #--- Definition des unités de l'affichage (pas encodeurs ou coordonnées)
       checkbutton $frm.unites -text "$caption(conftel,ouranos_unites)" -highlightthickness 0 \
          -variable confTel(ouranos,show_coord) -onvalue 1 -offvalue 0 \
          -command { ::confTel::radio_bouton_Ouranos ; ::confTel::MatchOuranos ; ::OuranosCom::show1 }
-      pack $frm.unites -in $frm.frame1 -anchor center -side right -pady 5
+      pack $frm.unites -in $frm.frame1 -anchor center -side right -padx 0 -pady 5
 
       #--- Informations concernant le codeur RA
       label $frm.ra -text "$caption(conftel,ouranos_res_codeur)"
@@ -1386,18 +1383,19 @@ namespace eval ::confTel {
          #--- Si la liste est vide, on continue quand meme
       }
 
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(audecom,port) { serialport } "controle AudeCom" }
+      pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 14         \
+         -width 7          \
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(audecom,port) \
          -editable 0       \
-         -values $list_connexion \
-         -modifycmd {
-            #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(audecom,port) { serialport } "controle AudeCom"
-         }
+         -values $list_connexion
       pack $frm.port -in $frm.frame6 -anchor center -side left -padx 10 -pady 8
 
       #--- Intercallaire
@@ -1454,7 +1452,7 @@ namespace eval ::confTel {
       pack $frm.raquette -in $frm.frame16 -anchor center -side left -padx 10 -pady 8
       ComboBox $frm.nom_raquette \
          -width 10         \
-         -height [ llength $::confPad::private(driverlist) ]  \
+         -height [ llength $::confPad::private(driverlist) ] \
          -relief sunken    \
          -borderwidth 1    \
          -modifycmd {
@@ -1466,7 +1464,6 @@ namespace eval ::confTel {
                set ::confPad::private(conf_confPad) ""
             }
             set conf(confPad) $::confPad::private(conf_confPad)
-
             ::confPad::run
          } \
          -textvariable audace(nom_raquette) \
@@ -1476,7 +1473,7 @@ namespace eval ::confTel {
 
       #--- Choix de la raquette
       button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame17 -anchor center -side left -padx 10 -pady 3 -ipadx 20 -ipady 5 -expand true
+      pack $frm.choix_raquette -in $frm.frame17 -anchor center -side left -padx 10 -pady 3 -ipadx 10 -ipady 5 -expand true
 
       #--- Le checkbutton pour la monture equatoriale allemande
       checkbutton $frm.german -text "$caption(conftel,audecom_mont_allemande)" -highlightthickness 0 \
@@ -1615,18 +1612,19 @@ namespace eval ::confTel {
          #--- Si la liste est vide, on continue quand meme
       }
 
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(temma,port) { serialport } "controle Temma" }
+      pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 14         \
+         -width 7          \
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(temma,port) \
          -editable 0       \
-         -values $list_connexion \
-         -modifycmd {
-            #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(temma,port) { serialport } "controle Temma"
-         }
+         -values $list_connexion
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       #--- Definition du modele Temma
@@ -1709,10 +1707,10 @@ namespace eval ::confTel {
             tel$audace(telNo) initzenith
             ::telescope::afficheCoord
          }
-         pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 5 -ipady 5
+         pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
       } else {
          button $frm.init_zenith -text "$caption(conftel,temma_init_zenith)" -relief raised -state disabled
-         pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 5 -ipady 5
+         pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
       }
 
       #--- Nouvelle position d'origine du telescope : A l'est ou a l'ouest
@@ -1729,16 +1727,16 @@ namespace eval ::confTel {
             }
             ::telescope::monture_allemande
          }
-         pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 5 -ipady 5
+         pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 10 -ipady 5
       } else {
          button $frm.chg_pos_tel -text "  ?  " -relief raised -state disabled
-         pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 5 -ipady 5
+         pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 10 -ipady 5
       }
 
       #--- Bouton de controle de la vitesse de suivi
       button $frm.tracking -text "$caption(conftel,temma_ctl_mobile)" -state normal \
          -command { ::confTemmaMobile::run "$audace(base).confTemmaMobile" }
-      pack $frm.tracking -in $frm.frame6 -anchor center -side right -padx 10 -pady 10 -ipadx 5 -ipady 5
+      pack $frm.tracking -in $frm.frame6 -anchor center -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
 
       #--- Rafraichissement de la position du telescope par rapport a la monture
       if { $confTel(temma,connect) == "1" } {
@@ -1752,7 +1750,7 @@ namespace eval ::confTel {
       pack $frm.raquette -in $frm.frame7 -anchor nw -side left -padx 10 -pady 10
       ComboBox $frm.nom_raquette \
          -width 10         \
-         -height [ llength $::confPad::private(driverlist) ]  \
+         -height [ llength $::confPad::private(driverlist) ] \
          -relief sunken    \
          -borderwidth 1    \
          -modifycmd {
@@ -1764,7 +1762,6 @@ namespace eval ::confTel {
                set ::confPad::private(conf_confPad) ""
             }
             set conf(confPad) $::confPad::private(conf_confPad)
-
             ::confPad::run
          } \
          -textvariable audace(nom_raquette) \
@@ -1774,7 +1771,7 @@ namespace eval ::confTel {
 
       #--- Choix de la raquette
       button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame7 -anchor center -side top -padx 10 -pady 5 -ipadx 20 -ipady 5 -expand true
+      pack $frm.choix_raquette -in $frm.frame7 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel Temma et Takahashi
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -1879,7 +1876,7 @@ namespace eval ::confTel {
       pack $frm.raquette -in $frm.frame2 -anchor n -side left -padx 10 -pady 10
       ComboBox $frm.nom_raquette \
          -width 10         \
-         -height [ llength $::confPad::private(driverlist) ]  \
+         -height [ llength $::confPad::private(driverlist) ] \
          -relief sunken    \
          -borderwidth 1    \
          -modifycmd {
@@ -1891,7 +1888,6 @@ namespace eval ::confTel {
                set ::confPad::private(conf_confPad) ""
             }
             set conf(confPad) $::confPad::private(conf_confPad)
-
             ::confPad::run
          } \
          -textvariable audace(nom_raquette) \
@@ -1901,7 +1897,7 @@ namespace eval ::confTel {
 
       #--- Choix de la raquette
       button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame2 -anchor n -side top -padx 10 -pady 10 -ipadx 20 -ipady 5 -expand true
+      pack $frm.choix_raquette -in $frm.frame2 -anchor n -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel des drivers ASCOM
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -1977,7 +1973,7 @@ namespace eval ::confTel {
       pack $frm.frame8 -in $frm.frame7 -side top -fill x
 
       #--- Definition du port
-      label $frm.lab1 -text "$caption(conftel,port_liaison)"
+      label $frm.lab1 -text "$caption(conftel,port)"
       pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
       #--- Je verifie le contenu de la liste
@@ -1993,19 +1989,20 @@ namespace eval ::confTel {
          #--- Si la liste est vide, on continue quand meme
       }
 
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(celestron,port) { serialport } "controle Celestron" }
+      pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 14         \
+         -width 7          \
          -height [ llength $list_connexion ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable confTel(celestron,port) \
          -editable 0       \
-         -values $list_connexion \
-         -modifycmd {
-            #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::confTel(celestron,port) { serialport } "controle Celestron"
-         }
-      pack $frm.port -in $frm.frame6 -anchor n -side right -padx 10 -pady 10
+         -values $list_connexion
+      pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
       #--- Definition du format des donnees transmises au Celestron
       label $frm.lab2 -text "$caption(conftel,format)"
@@ -2020,7 +2017,7 @@ namespace eval ::confTel {
          -textvariable confTel(celestron,format) \
          -editable 0       \
          -values $list_combobox
-      pack $frm.formatradec -in $frm.frame8 -anchor center -side right -padx 10 -pady 10
+      pack $frm.formatradec -in $frm.frame8 -anchor center -side left -padx 30 -pady 10
 
       #--- Le bouton de commande maj heure et position du Celestron
       button $frm.majpara -text "$caption(conftel,maj_celestron)" -relief raised -command {
@@ -2040,7 +2037,7 @@ namespace eval ::confTel {
       pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
       ComboBox $frm.nom_raquette \
          -width 10         \
-         -height [ llength $::confPad::private(driverlist) ]  \
+         -height [ llength $::confPad::private(driverlist) ] \
          -relief sunken    \
          -borderwidth 1    \
          -modifycmd {
@@ -2052,7 +2049,6 @@ namespace eval ::confTel {
                set ::confPad::private(conf_confPad) ""
             }
             set conf(confPad) $::confPad::private(conf_confPad)
-
             ::confPad::run
          } \
          -textvariable audace(nom_raquette) \
@@ -2062,7 +2058,7 @@ namespace eval ::confTel {
 
       #--- Choix de la raquette
       button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 20 -ipady 5 -expand true
+      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel du Celestron
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
