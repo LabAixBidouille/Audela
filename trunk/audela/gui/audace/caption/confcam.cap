@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.21 2006-11-10 13:08:44 audelateam Exp $
+# Mise a jour $Id: confcam.cap,v 1.22 2006-11-24 15:48:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,12 +26,10 @@ set caption(confcam,audine)                     "Audine"
 
 set caption(confcam,port)                       "Port"
 set caption(confcam,port_liaison)               "Port / Link"
-set caption(confcam,lpt1)                       "lpt1"
-set caption(confcam,lpt2)                       "lpt2"
 set caption(confcam,quicka)                     "QuickAudine"
 set caption(confcam,quickremote)                "QuickRemote"
 set caption(confcam,ethernaude)                 "EthernAude"
-set caption(confcam,link_configure)             "Set up"
+set caption(confcam,configurer)                 "Set up"
 set caption(confcam,miroir_x)                   "Horizontal Mirror"
 set caption(confcam,miroir_y)                   "Vertical Mirror"
 set caption(confcam,ampli_ccd)                  "CCD Amplifier"
@@ -73,7 +71,6 @@ set caption(confcam,hisis_43)                   "Hi-SIS 43"
 set caption(confcam,hisis_44)                   "Hi-SIS 44"
 set caption(confcam,hisis_48)                   "Hi-SIS 48"
 
-set caption(confcam,lpt3)                       "lpt3"
 set caption(confcam,usb)                        "USB"
 set caption(confcam,ethernet)                   "Ethernet"
 set caption(confcam,host_sbig)                  "Host SBIG (Only for Ethernet)"
@@ -189,12 +186,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Liaison"
-   set caption(confcam,lpt1)                    "lpt1"
-   set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
    set caption(confcam,quickremote)             "QuickRemote"
    set caption(confcam,ethernaude)              "EthernAude"
-   set caption(confcam,link_configure)          "Configurer"
+   set caption(confcam,configurer)              "Configurer"
    set caption(confcam,miroir_x)                "Miroir horizontal"
    set caption(confcam,miroir_y)                "Miroir vertical"
    set caption(confcam,ampli_ccd)               "Amplificateur du CCD"
@@ -236,7 +231,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,hisis_44)                "Hi-SIS 44"
    set caption(confcam,hisis_48)                "Hi-SIS 48"
 
-   set caption(confcam,lpt3)                    "lpt3"
    set caption(confcam,usb)                     "USB"
    set caption(confcam,ethernet)                "Ethernet"
    set caption(confcam,host_sbig)               "Host SBIG (seulement pour Ethernet)"
@@ -352,12 +346,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,port)                    "Porte"
    set caption(confcam,port_liaison)            "Porte / Collegamento"
-   set caption(confcam,lpt1)                    "lpt1"
-   set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
    set caption(confcam,quickremote)             "QuickRemote"
    set caption(confcam,ethernaude)              "EthernAude"
-   set caption(confcam,link_configure)          "Configurare"
+   set caption(confcam,configurer)              "Configurare"
    set caption(confcam,miroir_x)                "Specchio orizzontale"
    set caption(confcam,miroir_y)                "Specchio verticale"
    set caption(confcam,ampli_ccd)               "Amplificatore del CCD"
@@ -399,7 +391,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,hisis_44)                "Hi-SIS 44"
    set caption(confcam,hisis_48)                "Hi-SIS 48"
 
-   set caption(confcam,lpt3)                    "lpt3"
    set caption(confcam,usb)                     "USB"
    set caption(confcam,ethernet)                "Ethernet"
    set caption(confcam,host_sbig)               "Host SBIG (Solamente per Ethernet)"
@@ -515,12 +506,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,port)                    "Puerto"
    set caption(confcam,port_liaison)            "Puerto / Enlace"
-   set caption(confcam,lpt1)                    "lpt1"
-   set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
    set caption(confcam,quickremote)             "QuickRemote"
    set caption(confcam,ethernaude)              "EthernAude"
-   set caption(confcam,link_configure)          "Configurar"
+   set caption(confcam,configurer)              "Configurar"
    set caption(confcam,miroir_x)                "Espejo horizontal"
    set caption(confcam,miroir_y)                "Espejo vertical"
    set caption(confcam,ampli_ccd)               "Ampilificador de la CCD"
@@ -562,7 +551,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,hisis_44)                "Hi-SIS 44"
    set caption(confcam,hisis_48)                "Hi-SIS 48"
 
-   set caption(confcam,lpt3)                    "lpt3"
    set caption(confcam,usb)                     "USB"
    set caption(confcam,ethernet)                "Ethernet"
    set caption(confcam,host_sbig)               "Host SBIG (Sólo para Ethernet)"
@@ -678,12 +666,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
-   set caption(confcam,lpt1)                    "lpt1"
-   set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
    set caption(confcam,quickremote)             "QuickRemote"
    set caption(confcam,ethernaude)              "EthernAude"
-   set caption(confcam,link_configure)          "Konfigurieren"
+   set caption(confcam,configurer)              "Konfigurieren"
    set caption(confcam,miroir_x)                "Horizontale Spiegel"
    set caption(confcam,miroir_y)                "Verticale Spiegel"
    set caption(confcam,ampli_ccd)               "CCD Verstärker"
@@ -725,7 +711,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,hisis_44)                "Hi-SIS 44"
    set caption(confcam,hisis_48)                "Hi-SIS 48"
 
-   set caption(confcam,lpt3)                    "lpt3"
    set caption(confcam,usb)                     "USB"
    set caption(confcam,ethernet)                "Ethernet"
    set caption(confcam,host_sbig)               "Host SBIG (Nur für Ethernet)"
@@ -841,12 +826,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,port)                    "Porta"
    set caption(confcam,port_liaison)            "Porta / Ligação"
-   set caption(confcam,lpt1)                    "lpt1"
-   set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
    set caption(confcam,quickremote)             "QuickRemote"
    set caption(confcam,ethernaude)              "EthernAude"
-   set caption(confcam,link_configure)          "Configurar"
+   set caption(confcam,configurer)              "Configurar"
    set caption(confcam,miroir_x)                "Espelho Horizontal"
    set caption(confcam,miroir_y)                "Espelho Vertical"
    set caption(confcam,ampli_ccd)               "Amplificador CCD"
@@ -888,7 +871,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,hisis_44)                "Hi-SIS 44"
    set caption(confcam,hisis_48)                "Hi-SIS 48"
 
-   set caption(confcam,lpt3)                    "lpt3"
    set caption(confcam,usb)                     "USB"
    set caption(confcam,ethernet)                "Ethernet"
    set caption(confcam,host_sbig)               "Host SBIG (Só para Ethernet)"
@@ -1004,12 +986,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
-   set caption(confcam,lpt1)                    "lpt1"
-   set caption(confcam,lpt2)                    "lpt2"
    set caption(confcam,quicka)                  "QuickAudine"
    set caption(confcam,quickremote)             "QuickRemote"
    set caption(confcam,ethernaude)              "EthernAude"
-   set caption(confcam,link_configure)          "Set up"
+   set caption(confcam,configurer)              "Set up"
    set caption(confcam,miroir_x)                "Horisontal spejl"
    set caption(confcam,miroir_y)                "Vertikal spejl"
    set caption(confcam,ampli_ccd)               "CCD Amplifier"
@@ -1051,7 +1031,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,hisis_44)                "Hi-SIS 44"
    set caption(confcam,hisis_48)                "Hi-SIS 48"
 
-   set caption(confcam,lpt3)                    "lpt3"
    set caption(confcam,usb)                     "USB"
    set caption(confcam,ethernet)                "Ethernet"
    set caption(confcam,host_sbig)               "Host SBIG (Only for Ethernet)"

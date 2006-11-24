@@ -1,18 +1,14 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.42 2006-11-14 21:49:12 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.43 2006-11-24 15:48:39 robertdelmas Exp $
 #
-
-global confCam
 
 namespace eval ::confCam {
    namespace export run
    namespace export ok
    namespace export appliquer
    namespace export fermer
-   variable This
-   global confCam
 
    #
    # confCam::init (est lance automatiquement au chargement de ce fichier tcl)
@@ -62,7 +58,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(hisis,mirh) ] }     { set conf(hisis,mirh)     "0" }
       if { ! [ info exists conf(hisis,mirv) ] }     { set conf(hisis,mirv)     "0" }
       if { ! [ info exists conf(hisis,modele) ] }   { set conf(hisis,modele)   "22" }
-      if { ! [ info exists conf(hisis,port) ] }     { set conf(hisis,port)     "lpt1" }
+      if { ! [ info exists conf(hisis,port) ] }     { set conf(hisis,port)     "LPT1:" }
       if { ! [ info exists conf(hisis,res) ] }      { set conf(hisis,res)      "12 bits" }
 
       #--- initConf 3
@@ -71,27 +67,27 @@ namespace eval ::confCam {
       if { ! [ info exists conf(sbig,host) ] }     { set conf(sbig,host)     "192.168.0.2" }
       if { ! [ info exists conf(sbig,mirh) ] }     { set conf(sbig,mirh)     "0" }
       if { ! [ info exists conf(sbig,mirv) ] }     { set conf(sbig,mirv)     "0" }
-      if { ! [ info exists conf(sbig,port) ] }     { set conf(sbig,port)     "lpt1" }
+      if { ! [ info exists conf(sbig,port) ] }     { set conf(sbig,port)     "LPT1:" }
       if { ! [ info exists conf(sbig,temp) ] }     { set conf(sbig,temp)     "0" }
 
       #--- initConf 4
       if { ! [ info exists conf(cookbook,mirh) ] } { set conf(cookbook,mirh) "0" }
       if { ! [ info exists conf(cookbook,mirv) ] } { set conf(cookbook,mirv) "0" }
-      if { ! [ info exists conf(cookbook,port) ] } { set conf(cookbook,port) "lpt1" }
+      if { ! [ info exists conf(cookbook,port) ] } { set conf(cookbook,port) "LPT1:" }
 
       #--- initConf 5
       if { ! [ info exists conf(starlight,acc) ] }    { set conf(starlight,acc)    "0" }
       if { ! [ info exists conf(starlight,mirh) ] }   { set conf(starlight,mirh)   "0" }
       if { ! [ info exists conf(starlight,mirv) ] }   { set conf(starlight,mirv)   "0" }
       if { ! [ info exists conf(starlight,modele) ] } { set conf(starlight,modele) "MX516" }
-      if { ! [ info exists conf(starlight,port) ] }   { set conf(starlight,port)   "lpt1" }
+      if { ! [ info exists conf(starlight,port) ] }   { set conf(starlight,port)   "LPT1:" }
 
       #--- initConf 6
       if { ! [ info exists conf(kitty,captemp) ] } { set conf(kitty,captemp) "0" }
       if { ! [ info exists conf(kitty,mirh) ] }    { set conf(kitty,mirh)    "0" }
       if { ! [ info exists conf(kitty,mirv) ] }    { set conf(kitty,mirv)    "0" }
       if { ! [ info exists conf(kitty,modele) ] }  { set conf(kitty,modele)  "237" }
-      if { ! [ info exists conf(kitty,port) ] }    { set conf(kitty,port)    "lpt1" }
+      if { ! [ info exists conf(kitty,port) ] }    { set conf(kitty,port)    "LPT1:" }
       if { ! [ info exists conf(kitty,res) ] }     { set conf(kitty,res)     "12 bits" }
       if { ! [ info exists conf(kitty,on_off) ] }  { set conf(kitty,on_off)  "1" }
 
@@ -103,7 +99,6 @@ namespace eval ::confCam {
       if { ! [ info exists conf(webcam,longueposestopvalue) ] }  { set conf(webcam,longueposestopvalue)  "1" }
       if { ! [ info exists conf(webcam,mirh) ] }                 { set conf(webcam,mirh)                 "0" }
       if { ! [ info exists conf(webcam,mirv) ] }                 { set conf(webcam,mirv)                 "0" }
-      if { ! [ info exists conf(webcam,port) ] }                 { set conf(webcam,port)                 "usb" }
       if { ! [ info exists conf(webcam,channel) ] }              { set conf(webcam,channel)              "0" }
       if { ! [ info exists conf(webcam,ccd_N_B) ] }              { set conf(webcam,ccd_N_B)              "0" }
       if { ! [ info exists conf(webcam,dim_ccd_N_B) ] }          { set conf(webcam,dim_ccd_N_B)          "1/4''" }
@@ -112,12 +107,12 @@ namespace eval ::confCam {
       if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
       if { ! [ info exists conf(th7852a,mirh) ] } { set conf(th7852a,mirh) "0" }
       if { ! [ info exists conf(th7852a,mirv) ] } { set conf(th7852a,mirv) "0" }
-      if { ! [ info exists conf(th7852a,port) ] } { set conf(th7852a,port) "lpt1" }
+      if { ! [ info exists conf(th7852a,port) ] } { set conf(th7852a,port) "LPT1:" }
 
       #--- initConf 9
       if { ! [ info exists conf(scr1300xtc,mirh) ] } { set conf(scr1300xtc,mirh) "0" }
       if { ! [ info exists conf(scr1300xtc,mirv) ] } { set conf(scr1300xtc,mirv) "0" }
-      if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "lpt1" }
+      if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "LPT1:" }
 
       #--- initConf 10
       if { ! [ info exists conf(dslr,port) ] }                 { set conf(dslr,port)                 "gphoto2" }
@@ -706,10 +701,10 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port_liaison)"
       pack $frm.lab1 -in $frm.frame10 -anchor center -side left -padx 10
 
-      #--- je constitue la liste des liaisons pour l'acquisition des images
-      set list_combobox [::confLink::getLinkLabels { "parallelport" "quickaudine" "ethernaude" "audinet" } ]
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickaudine" "ethernaude" "audinet" } ]
 
-      #--- je verifie le contenu de la liste
+      #--- Je verifie le contenu de la liste
       if { [llength $list_combobox ] > 0 } {
          #--- si la liste n'est pas vide,
          #--- je verifie que la valeur par defaut existe dans la liste
@@ -722,6 +717,7 @@ namespace eval ::confCam {
          #--- si la liste est vide, on continue quand meme
       }
 
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 11         \
          -height [ llength $list_combobox ] \
@@ -729,12 +725,15 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(audine,port) \
-         -values $list_combobox \
-         -modifycmd { ::confCam::configureAudineLink }
+         -values $list_combobox
       pack $frm.port -in $frm.frame10 -anchor center -side right -padx 10
 
       #--- Bouton de configuration des liaisons
-      button $frm.configure -text "$caption(confcam,link_configure)" -relief raised -command "::confCam::configureAudineLink"
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(audine,port) \
+               { parallelport ethernaude quickaudine audinet } "- Audine - $caption(confcam,acquisition)"
+         }
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
       #--- Definition du format du CCD
@@ -1244,10 +1243,34 @@ namespace eval ::confCam {
          }
          pack $frm.radio9 -in $frm.frame2 -anchor center -side left -padx 10
 
-      #--- Choix du port
+      #--- Definition du port
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame11 -anchor center -side left -padx 10
-      set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
+
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(hisis,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(hisis,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(hisis,port) { parallelport } "- Hi-SIS - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame11 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -1256,7 +1279,8 @@ namespace eval ::confCam {
          -editable 0       \
          -textvariable confCam(hisis,port) \
          -values $list_combobox
-      pack $frm.port -in $frm.frame11 -anchor center -side right -padx 20
+      pack $frm.port -in $frm.frame11 -anchor center -side left -padx 20
+
       #--- Choix de la resolution et des delais
       if { $confCam(hisis,modele) == "1" } {
          set confCam(hisis,delai_a) $conf(hisis,delai_a)
@@ -1406,13 +1430,35 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10
 
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
       if { $::tcl_platform(os) == "Linux" } {
-         set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) \
-            $caption(confcam,lpt3) ]
+         set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
       } else {
-         set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) $caption(confcam,lpt3) \
-            $caption(confcam,usb) $caption(confcam,ethernet) ]
+         set list_combobox "[ ::confLink::getLinkLabels { "parallelport" } ] \
+            $caption(confcam,usb) $caption(confcam,ethernet)"
       }
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(sbig,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(sbig,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(sbig,port) { parallelport } "- SBIG - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame1 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -1542,7 +1588,30 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame5 -anchor center -side left -padx 10 -pady 10
 
-      set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(cookbook,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(cookbook,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(cookbook,port) { parallelport } "- CB245 - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame5 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -1653,7 +1722,30 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame7 -anchor n -side left -padx 10 -pady 15
 
-      set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(starlight,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(starlight,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(starlight,port) { parallelport } "- Starlight - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame7 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -1909,7 +2001,30 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame9 -anchor center -side left -padx 10
 
-      set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(kitty,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(kitty,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(kitty,port) { parallelport } "- Kitty - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame9 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -2050,8 +2165,11 @@ namespace eval ::confCam {
       frame $frm.frame3 -borderwidth 0 -relief raised
       pack $frm.frame3 -in $frm.frame1 -side left -fill both -expand 1
 
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -in $frm.frame1 -side left -fill both -expand 1
+      frame $frm.frame3a -borderwidth 0 -relief raised
+      pack $frm.frame3a -in $frm.frame1 -side left -fill both -expand 1
+
+      frame $frm.frame4 -borderwidth 1 -relief solid
+      pack $frm.frame4 -in $frm.frame3a -side top -fill x
 
       frame $frm.frame5 -borderwidth 0 -relief raised
       pack $frm.frame5 -in $frm.frame3 -side bottom -fill x -pady 5
@@ -2078,7 +2196,7 @@ namespace eval ::confCam {
       pack $frm.frame12 -in $frm.frame4 -side top -fill x -pady 5
 
       frame $frm.frame13 -borderwidth 0 -relief raised
-      pack $frm.frame13 -in $frm.frame4 -side top -fill x -pady 5
+      pack $frm.frame13 -in $frm.frame3a -side bottom -fill x -pady 5
 
       frame $frm.frame14 -borderwidth 0 -relief raised
       pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
@@ -2087,7 +2205,10 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,webcam_canal_usb)"
       pack $frm.lab1 -in $frm.frame7 -anchor center -side left -padx 10
 
+      #--- Je constitue la liste des canaux USB
       set list_combobox [ list 0 1 2 3 4 5 6 7 8 9 ]
+
+      #--- Choix du canal USB
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -2128,10 +2249,10 @@ namespace eval ::confCam {
       label $frm.lab2 -text "$caption(confcam,webcam_longueposeport)"
       pack $frm.lab2 -in $frm.frame10 -anchor center -side left -padx 3 -pady 5
 
-      #--- je constitue la liste des liaisons pour la longuepose
-      set list_combobox [::confLink::getLinkLabels { "parallelport" "quickremote" } ]
+      #--- Je constitue la liste des liaisons pour la longuepose
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" } ]
 
-      #--- je verifie le contenu de la liste
+      #--- Je verifie le contenu de la liste
       if { [llength $list_combobox ] > 0 } {
          #--- si la liste n'est pas vide,
          #--- je verifie que la valeur par defaut existe dans la liste
@@ -2149,6 +2270,7 @@ namespace eval ::confCam {
          $frm.longuepose configure -state disable
       }
 
+      #--- Choix du port ou de la liaison
       ComboBox $frm.lpport \
          -width 13         \
          -height [ llength $list_combobox ] \
@@ -2156,11 +2278,16 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(webcam,longueposeport) \
-         -values $list_combobox \
-         -modifycmd { ::confCam::configureWebcamLinkLonguePose }
+         -values $list_combobox
       pack $frm.lpport -in $frm.frame10 -anchor center -side right -padx 10 -pady 5
 
-      button $frm.configure -text "$caption(confcam,link_configure)" -relief raised -command "::confCam::configureWebcamLinkLonguePose"
+      #--- Bouton de configuration des liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(webcam,longueposeport) \
+               { parallelport quickremote } "- WebCam - $caption(confcam,dslr_longuepose)"
+            ::confCam::configureWebcamLinkLonguePose
+         }
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
       label $frm.lab3 -text "$caption(confcam,webcam_longueposebit)"
@@ -2289,7 +2416,30 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 14
 
-      set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(th7852a,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(th7852a,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(th7852a,port) { parallelport } "- TH7852A - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame6 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -2384,7 +2534,30 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,port)"
       pack $frm.lab1 -in $frm.frame5 -anchor center -side left -padx 10 -pady 10
 
-      set list_combobox [ list $caption(confcam,lpt1) $caption(confcam,lpt2) ]
+      #--- Je constitue la liste des liaisons pour l'acquisition des images
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+      #--- Je verifie le contenu de la liste
+      if { [llength $list_combobox ] > 0 } {
+         #--- si la liste n'est pas vide,
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [lsearch -exact $list_combobox $confCam(scr1300xtc,port)] == -1 } {
+            #--- si la valeur par defaut n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set confCam(scr1300xtc,port) [lindex $list_combobox 0]
+         }
+      } else {
+         #--- si la liste est vide, on continue quand meme
+      }
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(scr1300xtc,port) { parallelport } "- SCR1300XTC - $caption(confcam,acquisition)"
+         }
+      pack $frm.configure -in $frm.frame5 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 7          \
          -height [ llength $list_combobox ] \
@@ -2476,7 +2649,7 @@ namespace eval ::confCam {
       frame $frm.frame6 -borderwidth 0 -relief raised
       pack $frm.frame6 -in $frm.frame4 -anchor n -side left -fill x
 
-      frame $frm.frame7 -borderwidth 0 -relief raised
+      frame $frm.frame7 -borderwidth 1 -relief solid
       pack $frm.frame7 -in $frm.frame1 -anchor n -side right -fill x
 
       frame $frm.frame8 -borderwidth 0 -relief raised
@@ -2501,12 +2674,8 @@ namespace eval ::confCam {
       label $frm.lab1 -text "$caption(confcam,dslr_liaison)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10
 
-      #--- Bouton de configuration des liaisons
-      button $frm.configure -text "$caption(confcam,link_configure)" -relief raised -command "::confCam::configureApnLink"
-      pack $frm.configure -in $frm.frame1 -side left -pady 10 -ipadx 10 -ipady 1
-
       #--- Je constitue la liste des liaisons pour l'acquisition des images
-      set list_combobox [::confLink::getLinkLabels { "gphoto2" "photopc" } ]
+      set list_combobox [ ::confLink::getLinkLabels { "gphoto2" "photopc" } ]
 
       #--- Je verifie le contenu de la liste
       if { [llength $list_combobox ] > 0 } {
@@ -2521,7 +2690,16 @@ namespace eval ::confCam {
          #--- si la liste est vide, on continue quand meme
       }
 
-      #--- Selection de la liaison pour l'acquisistion des images
+      #--- Bouton de configuration des liaisons
+      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(dslr,port) { gphoto2 photopc } \
+               "- $caption(confcam,dslr) - $caption(confcam,acquisition)"
+            ::confCam::configureApnLink
+         } 
+      pack $frm.configure -in $frm.frame1 -side left -pady 10 -ipadx 10 -ipady 1
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
          -width 11         \
          -height [ llength $list_combobox ] \
@@ -2529,8 +2707,7 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(dslr,port) \
-         -values $list_combobox \
-         -modifycmd { ::confCam::configureApnLink }
+         -values $list_combobox
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 20 -pady 5
 
       #--- Definition du port serie
@@ -2562,10 +2739,10 @@ namespace eval ::confCam {
          -values $list_combobox
       pack $frm.liste1 -in $frm.frame3 -anchor e -side left -padx 5 -pady 10
 
-      #--- Selection de la liaison pour la longue pose
-      set list_combobox [::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
+      #--- Je constitue la liste des liaisons pour la longuepose
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
 
-      #--- je verifie le contenu de la liste
+      #--- Je verifie le contenu de la liste
       if { [llength $list_combobox ] > 0 } {
          #--- si la liste n'est pas vide,
          #--- je verifie que la valeur par defaut existe dans la liste
@@ -2583,6 +2760,7 @@ namespace eval ::confCam {
          $frm.longuepose configure -state disable
       }
 
+      #--- Choix du port ou de la liaison
       ComboBox $frm.moyen_longuepose \
          -width 13         \
          -height [ llength $list_combobox ] \
@@ -2590,12 +2768,15 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(dslr,longueposeport) \
-         -values $list_combobox \
-         -modifycmd { ::confCam::configureApnLinkLonguePose }
+         -values $list_combobox
       pack $frm.moyen_longuepose -in $frm.frame8 -anchor center -side right -padx 20
 
-      #--- Bouton de configuration des liaisons pour la longue pose
-      button $frm.configure_longuepose -text "$caption(confcam,link_configure)" -relief raised -command "::confCam::configureApnLinkLonguePose"
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure_longuepose -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::confCam(dslr,longueposeport) \
+               { parallelport quickremote external } "- $caption(confcam,dslr) - $caption(confcam,dslr_longuepose)"
+         }
       pack $frm.configure_longuepose -in $frm.frame8 -side right -pady 10 -ipadx 10 -ipady 1
 
       #--- Utilisation de la longue pose
@@ -3441,17 +3622,13 @@ namespace eval ::confCam {
    #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la camera APN
    #
    proc configureApnLink { } {
-      global caption
-      global conf
       global confCam
       global frmm
-
-      ::confLink::run ::confCam(dslr,port) { gphoto2 photopc } "- $caption(confcam,dslr) - $caption(confcam,acquisition)"
 
       #--- Initialisation pour l'onglet APN
       set frm $frmm(Camera10)
       #--- Gestion des 2 types de liaisons suivant les APN (DSLR) utilisés
-      if { [::confLink::getLinkNamespace $confCam(dslr,port) ] == "photopc" } {
+      if { [ ::confLink::getLinkNamespace $confCam(dslr,port) ] == "photopc" } {
          pack $frm.frame2 -side top -fill x
          pack $frm.frame3 -side top -fill x
          pack forget $frm.frame4
@@ -3464,7 +3641,7 @@ namespace eval ::confCam {
          pack forget $frm.frame11
          pack $frm.frame12 -side bottom -fill x -pady 2
          pack forget $frm.frame13
-      } elseif { [::confLink::getLinkNamespace $confCam(dslr,port) ] == "gphoto2" } {
+      } elseif { [ ::confLink::getLinkNamespace $confCam(dslr,port) ] == "gphoto2" } {
          pack forget $frm.frame2
          pack forget $frm.frame3
          pack $frm.frame4 -side top -fill x
@@ -3481,42 +3658,15 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::configureApnLinkLonguePose
-   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la camera APN
-   #
-   proc configureApnLinkLonguePose { } {
-      global caption
-
-      ::confLink::run ::confCam(dslr,longueposeport) \
-          { parallelport quickremote external } "- $caption(confcam,dslr) - $caption(confcam,dslr_longuepose)"
-   }
-
-   #
-   # confCam::configureAudineLink
-   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la camera Audine
-   #
-   proc configureAudineLink { } {
-      global caption
-
-      ::confLink::run ::confCam(audine,port) \
-          { parallelport ethernaude quickaudine audinet } "- $caption(confcam,audine) - $caption(confcam,acquisition)"
-   }
-
-   #
    # confCam::setconfLink_WebCam
    #    Positionne la liaison sur celle qui vient d'etre selectionnee pour
    #    la longue pose de la camera WebCam
    #
    proc configureWebcamLinkLonguePose { } {
       global confCam
-      global caption
 
-      #--- j'ouvre la fenetre de configuration de la liaison
-      ::confLink::run ::confCam(webcam,longueposeport) \
-          { parallelport quickremote } "- $caption(confcam,webcam) - $caption(confcam,dslr_longuepose)"
-
-      #--- je positionne startvalue par defaut en fonction du type de liaison
-      if { [::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "parallelport" } {
+      #--- Je positionne startvalue par defaut en fonction du type de liaison
+      if { [ ::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "parallelport" } {
          set confCam(webcam,longueposestartvalue) "0"
          set confCam(webcam,longueposestopvalue)  "1"
       } else {

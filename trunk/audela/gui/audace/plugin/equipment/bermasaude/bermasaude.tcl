@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.5 2006-11-22 08:01:17 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.6 2006-11-24 15:47:16 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
@@ -45,8 +45,6 @@ package provide bermasaude 1.0
 #
 
 namespace eval bermasaude {
-   variable widget
-   global bermasaude
 
    #==============================================================
    # Procedures generiques de configuration des drivers
@@ -221,18 +219,20 @@ namespace eval bermasaude {
          #--- Si la liste est vide, on continue quand meme
       }
 
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure -text "$caption(bermasaude,configurer)" -relief raised \
+         -command { ::confLink::run ::bermasaude::widget(port) { serialport } "controle BerMasAude" }
+      pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 14         \
+         -width 7          \
          -height [ llength $widget(list_connexion) ] \
          -relief sunken    \
          -borderwidth 1    \
          -textvariable ::bermasaude::widget(port) \
          -editable 0       \
-         -values $widget(list_connexion) \
-         -modifycmd {
-            #--- Ouvre la configuration des liaisons sur le bon onglet
-            ::confLink::run ::bermasaude::widget(port) { serialport } "controle BerMasAude"
-         }
+         -values $widget(list_connexion)
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       #--- Definition de la combinaison des filtres
