@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.7 2006-11-10 13:12:26 audelateam Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.8 2006-11-24 15:46:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,6 +14,7 @@ global caption
 set caption(bermasaude,titre)                          "Filter Wheel"
 
 set caption(bermasaude,port)                           "Port"
+set caption(bermasaude,configurer)                     "Set up"
 set caption(bermasaude,bermasaude_combinaison)         "Chosen Combination"
 set caption(bermasaude,bermasaude_bvri)                "BGRI"
 set caption(bermasaude,bermasaude_cmj)                 "CMY"
@@ -48,6 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Roue à filtres"
 
    set caption(bermasaude,port)                        "Port"
+   set caption(bermasaude,configurer)                  "Configurer"
    set caption(bermasaude,bermasaude_combinaison)      "Combinaison choisie"
    set caption(bermasaude,bermasaude_bvri)             "BVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMJ"
@@ -82,6 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Ruota portafiltri"
 
    set caption(bermasaude,port)                        "Porte"
+   set caption(bermasaude,configurer)                  "Configurare"
    set caption(bermasaude,bermasaude_combinaison)      "Combinazione richiesta"
    set caption(bermasaude,bermasaude_bvri)             "BVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMG"
@@ -116,6 +119,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Rueda de filtros"
 
    set caption(bermasaude,port)                        "Puerto"
+   set caption(bermasaude,configurer)                  "Configurar"
    set caption(bermasaude,bermasaude_combinaison)      "Combinación elegida"
    set caption(bermasaude,bermasaude_bvri)             "AVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMA"
@@ -150,6 +154,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Filterrad"
 
    set caption(bermasaude,port)                        "Port"
+   set caption(bermasaude,configurer)                  "Konfigurieren"
    set caption(bermasaude,bermasaude_combinaison)      "Gewähtes Kombination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMY"
@@ -184,6 +189,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Roda de filtros"
 
    set caption(bermasaude,port)                        "Porta"
+   set caption(bermasaude,configurer)                  "Configuração"
    set caption(bermasaude,bermasaude_combinaison)      "Combinação escolhida"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMY"
@@ -218,6 +224,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Filterhjul"
 
    set caption(bermasaude,port)                        "Port"
+   set caption(bermasaude,configurer)                  "Opsætning"
    set caption(bermasaude,bermasaude_combinaison)      "Valgt combination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMG"

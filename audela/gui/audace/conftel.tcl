@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.17 2006-11-23 22:54:46 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.18 2006-11-24 15:51:43 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -18,8 +18,6 @@ namespace eval ::confTel {
    namespace export ok
    namespace export appliquer
    namespace export fermer
-   variable This
-   global confTel
 
    #
    # confTel::init (est lance automatiquement au chargement de ce fichier tcl)
@@ -497,13 +495,13 @@ namespace eval ::confTel {
             pack $frm.lab4 -in $frm.frame4 -anchor e -side top -pady 7
 
             #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-            scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-               -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
+            scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+               -tickinterval 10 -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
             pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
             #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
-            scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-               -borderwidth 2 -relief groove -variable confTel(temma,correc_Dec) -width 10
+            scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+               -tickinterval 10 -borderwidth 2 -relief groove -variable confTel(temma,correc_Dec) -width 10
             pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
 
          } else {
@@ -528,8 +526,8 @@ namespace eval ::confTel {
             pack $frm.lab4 -in $frm.frame4 -anchor e -side top
 
             #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-            scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-               -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
+            scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+               -tickinterval 10 -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
             pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
             #--- Liaison des corrections en AD et en Dec.
@@ -677,7 +675,7 @@ namespace eval ::confTel {
       set confTel(lx200,modele)          $conf(lx200,modele)
       set confTel(lx200,format)          [ lindex "$caption(conftel,format_court_long)" $conf(lx200,format) ]
       set confTel(lx200,ite-lente_tempo) $conf(lx200,ite-lente_tempo)
-      set confTel(raquette)                   $conf(raquette)
+      set confTel(raquette)              $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp1) [ Rnotebook:frame $nn 1 ]
@@ -732,7 +730,8 @@ namespace eval ::confTel {
       }
 
       #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200" }
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
+         -command { ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200" }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -958,7 +957,8 @@ namespace eval ::confTel {
       }
 
       #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(ouranos,port) { serialport } "controle Ouranos" }
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
+         -command { ::confLink::run ::confTel(ouranos,port) { serialport } "controle Ouranos" }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -padx 10 -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -1302,7 +1302,7 @@ namespace eval ::confTel {
       set confTel(audecom,ad)           $conf(audecom,ad)
       set confTel(audecom,dec)          $conf(audecom,dec)
       set confTel(audecom,type)         $conf(audecom,type)
-      set confTel(raquette)                  $conf(raquette)
+      set confTel(raquette)             $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp3) [ Rnotebook:frame $nn 3 ]
@@ -1384,7 +1384,8 @@ namespace eval ::confTel {
       }
 
       #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(audecom,port) { serialport } "controle AudeCom" }
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
+         -command { ::confLink::run ::confTel(audecom,port) { serialport } "controle AudeCom" }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -1564,7 +1565,7 @@ namespace eval ::confTel {
       set confTel(temma,suivi_ad)    $conf(temma,suivi_ad)
       set confTel(temma,suivi_dec)   $conf(temma,suivi_dec)
       set confTel(temma,type)        $conf(temma,type)
-      set confTel(raquette)               $conf(raquette)
+      set confTel(raquette)          $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp4) [ Rnotebook:frame $nn 4 ]
@@ -1613,7 +1614,8 @@ namespace eval ::confTel {
       }
 
       #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(temma,port) { serialport } "controle Temma" }
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
+         -command { ::confLink::run ::confTel(temma,port) { serialport } "controle Temma" }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -1660,13 +1662,13 @@ namespace eval ::confTel {
          pack $frm.lab4 -in $frm.frame4 -anchor e -side top -pady 7
 
          #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-         scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-            -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
+         scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+            -tickinterval 10 -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
          pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
          #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
-         scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-            -borderwidth 2 -relief groove -variable confTel(temma,correc_Dec) -width 10
+         scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+            -tickinterval 10 -borderwidth 2 -relief groove -variable confTel(temma,correc_Dec) -width 10
          pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
 
       } else {
@@ -1685,8 +1687,8 @@ namespace eval ::confTel {
          pack $frm.lab4 -in $frm.frame4 -anchor e -side top
 
          #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-         scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true -tickinterval 10 \
-            -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
+         scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+            -tickinterval 10 -borderwidth 2 -relief groove -variable confTel(temma,correc_AD) -width 10
          pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
 
          #--- Liaison des corrections en AD et en Dec.
@@ -1837,7 +1839,7 @@ namespace eval ::confTel {
 
       #--- confToWidget
       set confTel(ascom,driver) $conf(ascom,driver)
-      set confTel(raquette)          $conf(raquette)
+      set confTel(raquette)     $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp5) [Rnotebook:frame $nn 5]
@@ -1941,7 +1943,7 @@ namespace eval ::confTel {
       #--- confToWidget
       set confTel(celestron,port)   $conf(celestron,port)
       set confTel(celestron,format) [ lindex "$caption(conftel,format_court_long)" $conf(celestron,format) ]
-      set confTel(raquette)              $conf(raquette)
+      set confTel(raquette)         $conf(raquette)
 
       #--- Initialisation
       set frmm(Telscp6) [ Rnotebook:frame $nn 6 ]
@@ -1990,7 +1992,8 @@ namespace eval ::confTel {
       }
 
       #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(conftel,configurer)" -relief raised -command { ::confLink::run ::confTel(celestron,port) { serialport } "controle Celestron" }
+      button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
+         -command { ::confLink::run ::confTel(celestron,port) { serialport } "controle Celestron" }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -2213,12 +2216,12 @@ namespace eval ::confTel {
       set nn $This.usr.book
       set confTel(tel) $tel
       switch -exact -- $tel {
-         celestron { Rnotebook:raise $nn 6 }
-         ascom     { Rnotebook:raise $nn 5 }
-         temma     { Rnotebook:raise $nn 4 }
-         audecom   { Rnotebook:raise $nn 3 }
-         ouranos   { Rnotebook:raise $nn 2 }
          lx200     { Rnotebook:raise $nn 1 }
+         ouranos   { Rnotebook:raise $nn 2 }
+         audecom   { Rnotebook:raise $nn 3 }
+         temma     { Rnotebook:raise $nn 4 }
+         ascom     { Rnotebook:raise $nn 5 }
+         celestron { Rnotebook:raise $nn 6 }
       }
    }
 
@@ -2630,7 +2633,7 @@ namespace eval ::confTel {
 
       set nn $This.usr.book
       set conf(telescope)             $confTel(tel)
-      set conf(raquette)                 $confTel(raquette)
+      set conf(raquette)              $confTel(raquette)
       #--- Memorise la configuration du LX200 dans le tableau conf(lx200,...)
       set frm [ Rnotebook:frame $nn 1 ]
       set conf(lx200,port)            $confTel(lx200,port)

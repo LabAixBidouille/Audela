@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.16 2006-09-28 19:58:57 michelpujol Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.17 2006-11-24 15:46:11 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -342,7 +342,7 @@ namespace eval ::Scanfast {
             cam$audace(camNo) shutter synchro
 
             #--- Declenchement de l'acquisition
-            if { ( $conf(audine,port) == "$caption(confcam,lpt1)" ) || ( $conf(audine,port) == "$caption(confcam,lpt2)" ) } {
+            if { ( $conf(audine,port) == "LPT1:" ) || ( $conf(audine,port) == "LPT2:" ) || ( $conf(audine,port) == "LPT3:" ) } {
                #--- Destruction de la fenetre indiquant l'attente
                if [ winfo exists $audace(base).progress_scan ] {
                   destroy $audace(base).progress_scan
@@ -515,9 +515,11 @@ namespace eval ::Scanfast {
          $This.fra3.bin.lab_bin configure -textvariable panneau(Scanfast,binning)
          update
       }
-      if { $conf(audine,port) == "$caption(confcam,lpt1)" } {
+      if { $conf(audine,port) == "LPT1:" } {
          ::Scanfast::cmdCalcul
-      } elseif { $conf(audine,port) == "$caption(confcam,lpt2)" } {
+      } elseif { $conf(audine,port) == "LPT2:" } {
+         ::Scanfast::cmdCalcul
+      } elseif { $conf(audine,port) == "LPT3:" } {
          ::Scanfast::cmdCalcul
       }
    }
