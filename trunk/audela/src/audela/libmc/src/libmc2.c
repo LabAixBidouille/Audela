@@ -2939,7 +2939,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
    double jj;
    int planetnum;
    char s[65000];
-   char objename[100],orbitformat[15],orbitstring[300],orbitfile[1024],filename_relief[1024],filename_albedo[1024];
+   char objename[100],orbitformat[15],orbitstring[300],orbitfile[1024],filename_relief1[1024],filename_albedo1[1024],filename_relief2[1024],filename_albedo2[1024];
    double asd,dec,delta;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
@@ -2957,13 +2957,15 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
    int n,k;
    mc_cdrpos *cdrpos=NULL;
    mc_cdr cdr;
-   double *relief=NULL;
-   double *albedo=NULL;
+   double *relief1=NULL;
+   double *albedo1=NULL;
+   double *relief2=NULL;
+   double *albedo2=NULL;
    int klon,klat,nlon,nlat;
 //double dlt;
 
    if(argc<14) {
-      sprintf(s,"Usage: %s Planet Date_TT HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0_TT sideral_period_h lonpole latpole a_m ?genefilename?", argv[0]);
+      sprintf(s,"Usage: %s Planet Date_TT HTM_level filename_relief1 filename_albedo1 filename_relief2 filename_albedo2 frame_coord frame_center lon_phase0 Date_phase0_TT sideral_period_h lonpole latpole a_m ?genefilename?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -2983,20 +2985,22 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
 	  	mctcl_decode_date(interp,argv[2],&jj);
       /* --- decode les parametres physiques ---*/
       cdr.htmlevel=atoi(argv[3]);
-      strcpy(filename_relief,argv[4]);
-      strcpy(filename_albedo,argv[5]);
-      cdr.frame_coord=atoi(argv[6]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
-      cdr.frame_center=atoi(argv[7]);  /* =0 heliocentric.  =1 geocentric. */
-      cdr.lon_phase0=atof(argv[8]);
+      strcpy(filename_relief1,argv[4]);
+      strcpy(filename_albedo1,argv[5]);
+      strcpy(filename_relief2,argv[6]);
+      strcpy(filename_albedo2,argv[7]);
+      cdr.frame_coord=atoi(argv[8]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
+      cdr.frame_center=atoi(argv[9]);  /* =0 heliocentric.  =1 geocentric. */
+      cdr.lon_phase0=atof(argv[10]);
       /*cdr.lon_phase0=0.;*/
-      mctcl_decode_date(interp,argv[9],&cdr.jd_phase0);
-      cdr.period=atof(argv[10])/24.;
-      cdr.lonpole=atof(argv[11]);
-      cdr.latpole=atof(argv[12]);
-      cdr.a=atof(argv[13]); /* demi-grand axe */
+      mctcl_decode_date(interp,argv[11],&cdr.jd_phase0);
+      cdr.period=atof(argv[12])/24.;
+      cdr.lonpole=atof(argv[13]);
+      cdr.latpole=atof(argv[14]);
+      cdr.a=atof(argv[15]); /* demi-grand axe */
       cdr.density=1.; /* assumed but will be recomputed */
       if (argc>=15) {
-         genefilename=argv[14];
+         genefilename=argv[16];
       } else {
          genefilename=NULL;
       }
@@ -3011,14 +3015,14 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       /* === */
       nlon=360;
       nlat=181;
-      relief=(double*)calloc(nlon*nlat,sizeof(double));
-      if (relief==NULL) {
-         strcpy(s,"Error : memory allocation for relief");
+      relief1=(double*)calloc(nlon*nlat,sizeof(double));
+      if (relief1==NULL) {
+         strcpy(s,"Error : memory allocation for relief1");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if ((fichier_relief=fopen(filename_relief,"rt") ) == NULL) {
-         free(relief);
+      if ((fichier_relief=fopen(filename_relief1,"rt") ) == NULL) {
+         free(relief1);
          sprintf(s,"Error : file %s cannot be read: %s",argv[4],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
@@ -3026,7 +3030,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       }
       for (klat=0;klat<nlat;klat++) {
          if (fgets(s,65000,fichier_relief)==NULL) {
-               /*--- pb dans le fichier de  la carte de relief ---*/
+            /*--- pb dans le fichier de  la carte de relief ---*/
             nlon=nlon;
          } else {
             token=strtok(s," ");
@@ -3034,13 +3038,13 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
                if (token==NULL) {
                   /*--- pb dans le fichier de  la carte de relief ---*/
                }
-               relief[klon*nlat+klat]=atof(token);
+               relief1[klon*nlat+klat]=atof(token);
                token=strtok(NULL," ");
             }
          }
       }
       if (fclose(fichier_relief)!=0) {
-         free(relief);
+         free(relief1);
          sprintf(s,"Error : file %s cannot be closed: %s",argv[4],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
@@ -3048,16 +3052,16 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       /* === */
 	   /* === Lecture de la carte d'albedo ===*/
       /* === */
-      albedo=(double*)calloc(nlon*nlat,sizeof(double));
-      if (relief==NULL) {
-         free(relief);
-         strcpy(s,"Error : memory allocation for albedo");
+      albedo1=(double*)calloc(nlon*nlat,sizeof(double));
+      if (albedo1==NULL) {
+         free(relief1);
+         strcpy(s,"Error : memory allocation for albedo1");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if ((fichier_albedo=fopen(filename_albedo,"rt") ) == NULL) {
-         free(relief);
-         free(albedo);
+      if ((fichier_albedo=fopen(filename_albedo1,"rt") ) == NULL) {
+         free(relief1);
+         free(albedo1);
          sprintf(s,"Error : file %s cannot be read",argv[4]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
@@ -3065,7 +3069,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       }
       for (klat=0;klat<nlat;klat++) {
          if (fgets(s,65000,fichier_albedo)==NULL) {
-               /*--- pb dans le fichier de  la carte de relief ---*/
+            /*--- pb dans le fichier de  la carte de relief ---*/
             nlon=nlon;
          }
          token=strtok(s," ");
@@ -3073,7 +3077,85 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
             if (token==NULL) {
                /*--- pb dans le fichier de  la carte de relief ---*/
             }
-            albedo[klon*nlat+klat]=atof(token);
+            albedo1[klon*nlat+klat]=atof(token);
+            token=strtok(NULL," ");
+         }
+      }
+      fclose(fichier_albedo);
+      /* === objet 2 **/
+      relief2=(double*)calloc(nlon*nlat,sizeof(double));
+      if (relief2==NULL) {
+         free(relief1);
+         free(albedo1);
+         strcpy(s,"Error : memory allocation for relief2");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      if ((fichier_relief=fopen(filename_relief2,"rt") ) == NULL) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         sprintf(s,"Error : file %s cannot be read: %s",argv[4],strerror( errno ));
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+
+      }
+      for (klat=0;klat<nlat;klat++) {
+         if (fgets(s,65000,fichier_relief)==NULL) {
+            /*--- pb dans le fichier de  la carte de relief ---*/
+            nlon=nlon;
+         } else {
+            token=strtok(s," ");
+            for (klon=0;klon<nlon;klon++) {
+               if (token==NULL) {
+                  /*--- pb dans le fichier de  la carte de relief ---*/
+               }
+               relief2[klon*nlat+klat]=atof(token);
+               token=strtok(NULL," ");
+            }
+         }
+      }
+      if (fclose(fichier_relief)!=0) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         sprintf(s,"Error : file %s cannot be closed: %s",argv[4],strerror( errno ));
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      /* === */
+	   /* === Lecture de la carte d'albedo ===*/
+      /* === */
+      albedo2=(double*)calloc(nlon*nlat,sizeof(double));
+      if (albedo2==NULL) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         strcpy(s,"Error : memory allocation for albedo2");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      if ((fichier_albedo=fopen(filename_albedo2,"rt") ) == NULL) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(albedo2);
+         sprintf(s,"Error : file %s cannot be read",argv[4]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+
+      }
+      for (klat=0;klat<nlat;klat++) {
+         if (fgets(s,65000,fichier_albedo)==NULL) {
+            /*--- pb dans le fichier de  la carte de relief ---*/
+            nlon=nlon;
+         }
+         token=strtok(s," ");
+         for (klon=0;klon<nlon;klon++) {
+            if (token==NULL) {
+               /*--- pb dans le fichier de  la carte de relief ---*/
+            }
+            albedo2[klon*nlat+klat]=atof(token);
             token=strtok(NULL," ");
          }
       }
@@ -3087,9 +3169,12 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
   	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
-            sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
+            sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
-            free(relief);
+            free(relief1);
+            free(albedo1);
+            free(relief2);
+            free(albedo2);
             return TCL_ERROR;
 		   }
       }
@@ -3123,8 +3208,10 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
          /* --- la planete n'a pas ete trouvee dans fichier d'orbite : il faut sortir ---*/
          sprintf(s,"Error : Planet %s (type %d) not found in the file %s",objename,planetnum,orbitfile);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(relief);
-         free(albedo);
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(albedo2);
          return TCL_ERROR;
       }
       mc_aster2elem(aster,&elem);
@@ -3136,8 +3223,10 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       if (cdrpos==NULL) {
          strcpy(s,"Error : memory allocation for cdrpos");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(relief);
-         free(albedo);
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(albedo2);
          return TCL_ERROR;
       }
       /*phi=cdr.jd_phase0-cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);*/
@@ -3179,7 +3268,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       /* === */
 	   /* === Calcul de la courbe de lumiere ===*/
       /* === */
-      mc_simulcbin(cdr,relief,albedo,cdrpos,n,genefilename);
+      mc_simulcbin(cdr,relief1,albedo1,relief2,albedo2,cdrpos,n,genefilename);
       /* === */
 	   /* === Sortie des resultats ===*/
       /* === */
@@ -3206,8 +3295,10 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       Tcl_DStringAppend(&dsptr,"} ",-1);
       /* === sortie et destructeurs ===*/
       free(cdrpos);
-      free(relief);
-      free(albedo);
+      free(relief1);
+      free(albedo1);
+      free(relief2);
+      free(albedo2);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
    }
@@ -3250,8 +3341,10 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Refdates : =0 TT, =1 dans le repere de l'asteroide */
 /* HTM_level  : niveau du découpage HTM                                     */
-/* filename_relief : carte de relief creee avec mc_simurelief               */
-/* filename_albedo : carte d'albedo creee avec mc_simurelief                */
+/* filename_relief1 : carte de relief obj1 creee avec mc_simurelief         */
+/* filename_albedo1 : carte d'albedo obj1 creee avec mc_simurelief          */
+/* filename_relief2 : carte de relief obj2 creee avec mc_simurelief         */
+/* filename_albedo2 : carte d'albedo obj2 creee avec mc_simurelief          */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
@@ -3274,7 +3367,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 {
    int planetnum;
    char s[65000];
-   char objename[100],orbitformat[15],orbitstring[300],orbitfile[1024],filename_relief[1024],filename_albedo[1024];
+   char objename[100],orbitformat[15],orbitstring[300],orbitfile[1024],filename_relief1[1024],filename_albedo1[1024],filename_relief2[1024],filename_albedo2[1024];
    double asd,dec,delta;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
@@ -3292,16 +3385,18 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
    int n,k;
    mc_cdrpos *cdrpos=NULL;
    mc_cdr cdr;
-   double *relief=NULL;
-   double *albedo=NULL;
+   double *relief1=NULL;
+   double *albedo1=NULL;
+   double *relief2=NULL;
+   double *albedo2=NULL;
    int klon,klat,nlon,nlat;
    char **argvv=NULL;
    int argcc,njd,code;
    double *jds,jdk;
 //double dlt;
 
-   if(argc<15) {
-      sprintf(s,"Usage: %s Planet Dates Ref_dates HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0 sideral_period_h lonpole latpole a_m ?genefilename?", argv[0]);
+   if(argc<17) {
+      sprintf(s,"Usage: %s Planet Dates Ref_dates HTM_level filename_relief_obj1 filename_albedo_obj1 filename_relief_obj2 filename_albedo_obj2 frame_coord frame_center lon_phase0 Date_phase0 sideral_period_h lonpole latpole a_m ?genefilename?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -3336,19 +3431,21 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       cdr.frame_time=atoi(argv[3]);
       /* --- decode les parametres physiques ---*/
       cdr.htmlevel=atoi(argv[4]);
-      strcpy(filename_relief,argv[5]);
-      strcpy(filename_albedo,argv[6]);
-      cdr.frame_coord=atoi(argv[7]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
-      cdr.frame_center=atoi(argv[8]);  /* =0 heliocentric.  =1 geocentric. */
-      cdr.lon_phase0=atof(argv[9]);
-      mctcl_decode_date(interp,argv[10],&cdr.jd_phase0);
-      cdr.period=atof(argv[11])/24.;
-      cdr.lonpole=atof(argv[12]);
-      cdr.latpole=atof(argv[13]);
-      cdr.a=atof(argv[14]); /* demi-grand axe */
+      strcpy(filename_relief1,argv[5]);
+      strcpy(filename_albedo1,argv[6]);
+      strcpy(filename_relief2,argv[7]);
+      strcpy(filename_albedo2,argv[8]);
+      cdr.frame_coord=atoi(argv[9]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
+      cdr.frame_center=atoi(argv[10]);  /* =0 heliocentric.  =1 geocentric. */
+      cdr.lon_phase0=atof(argv[11]);
+      mctcl_decode_date(interp,argv[12],&cdr.jd_phase0);
+      cdr.period=atof(argv[13])/24.;
+      cdr.lonpole=atof(argv[14]);
+      cdr.latpole=atof(argv[15]);
+      cdr.a=atof(argv[16]); /* demi-grand axe */
       cdr.density=1.; /* assumed but will be recomputed */
       if (argc>=16) {
-         genefilename=argv[15];
+         genefilename=argv[17];
       } else {
          genefilename=NULL;
       }
@@ -3363,15 +3460,15 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       /* === */
       nlon=360;
       nlat=181;
-      relief=(double*)calloc(nlon*nlat,sizeof(double));
-      if (relief==NULL) {
-         strcpy(s,"Error : memory allocation for relief");
+      relief1=(double*)calloc(nlon*nlat,sizeof(double));
+      if (relief1==NULL) {
+         strcpy(s,"Error : memory allocation for relief1");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
          return TCL_ERROR;
       }
-      if ((fichier_relief=fopen(filename_relief,"rt") ) == NULL) {
-         free(relief);
+      if ((fichier_relief=fopen(filename_relief1,"rt") ) == NULL) {
+         free(relief1);
          sprintf(s,"Error : file %s cannot be read: %s",argv[5],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
@@ -3388,13 +3485,13 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
                if (token==NULL) {
                   /*--- pb dans le fichier de  la carte de relief ---*/
                }
-               relief[klon*nlat+klat]=atof(token);
+               relief1[klon*nlat+klat]=atof(token);
                token=strtok(NULL," ");
             }
          }
       }
       if (fclose(fichier_relief)!=0) {
-         free(relief);
+         free(relief1);
          sprintf(s,"Error : file %s cannot be closed: %s",argv[6],strerror( errno ));
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
@@ -3403,17 +3500,17 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       /* === */
 	   /* === Lecture de la carte d'albedo ===*/
       /* === */
-      albedo=(double*)calloc(nlon*nlat,sizeof(double));
-      if (relief==NULL) {
-         free(relief);
-         strcpy(s,"Error : memory allocation for albedo");
+      albedo1=(double*)calloc(nlon*nlat,sizeof(double));
+      if (albedo1==NULL) {
+         free(relief1);
+         strcpy(s,"Error : memory allocation for albedo1");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
          return TCL_ERROR;
       }
-      if ((fichier_albedo=fopen(filename_albedo,"rt") ) == NULL) {
-         free(relief);
-         free(albedo);
+      if ((fichier_albedo=fopen(filename_albedo1,"rt") ) == NULL) {
+         free(relief1);
+         free(albedo1);
          sprintf(s,"Error : file %s cannot be read",argv[4]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          free(jds);
@@ -3430,7 +3527,95 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
             if (token==NULL) {
                /*--- pb dans le fichier de  la carte de relief ---*/
             }
-            albedo[klon*nlat+klat]=atof(token);
+            albedo1[klon*nlat+klat]=atof(token);
+            token=strtok(NULL," ");
+         }
+      }
+      fclose(fichier_albedo);
+      /* === */
+	   /* === Lecture de la carte de relief ===*/
+      /* === */
+      nlon=360;
+      nlat=181;
+      relief2=(double*)calloc(nlon*nlat,sizeof(double));
+      if (relief2==NULL) {
+         strcpy(s,"Error : memory allocation for relief2");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         free(relief1);
+         free(albedo1);
+         free(jds);
+         return TCL_ERROR;
+      }
+      if ((fichier_relief=fopen(filename_relief2,"rt") ) == NULL) {
+         sprintf(s,"Error : file %s cannot be read: %s",argv[5],strerror( errno ));
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(jds);
+         return TCL_ERROR;
+
+      }
+      for (klat=0;klat<nlat;klat++) {
+         if (fgets(s,65000,fichier_relief)==NULL) {
+               /*--- pb dans le fichier de  la carte de relief ---*/
+            nlon=nlon;
+         } else {
+            token=strtok(s," ");
+            for (klon=0;klon<nlon;klon++) {
+               if (token==NULL) {
+                  /*--- pb dans le fichier de  la carte de relief ---*/
+               }
+               relief2[klon*nlat+klat]=atof(token);
+               token=strtok(NULL," ");
+            }
+         }
+      }
+      if (fclose(fichier_relief)!=0) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(jds);
+         sprintf(s,"Error : file %s cannot be closed: %s",argv[6],strerror( errno ));
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         free(jds);
+         return TCL_ERROR;
+      }
+      /* === */
+	   /* === Lecture de la carte d'albedo ===*/
+      /* === */
+      albedo2=(double*)calloc(nlon*nlat,sizeof(double));
+      if (albedo2==NULL) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(jds);
+         strcpy(s,"Error : memory allocation for albedo1");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      if ((fichier_albedo=fopen(filename_albedo2,"rt") ) == NULL) {
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(albedo2);
+         free(jds);
+         sprintf(s,"Error : file %s cannot be read",argv[4]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+
+      }
+      for (klat=0;klat<nlat;klat++) {
+         if (fgets(s,65000,fichier_albedo)==NULL) {
+               /*--- pb dans le fichier de  la carte de relief ---*/
+            nlon=nlon;
+         }
+         token=strtok(s," ");
+         for (klon=0;klon<nlon;klon++) {
+            if (token==NULL) {
+               /*--- pb dans le fichier de  la carte de relief ---*/
+            }
+            albedo2[klon*nlat+klat]=atof(token);
             token=strtok(NULL," ");
          }
       }
@@ -3446,7 +3631,10 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
             sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
-            free(relief);
+            free(relief1);
+            free(albedo1);
+            free(relief2);
+            free(albedo2);
             free(jds);
             return TCL_ERROR;
 		   }
@@ -3481,8 +3669,10 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
          /* --- la planete n'a pas ete trouvee dans fichier d'orbite : il faut sortir ---*/
          sprintf(s,"Error : Planet %s (type %d) not found in the file %s",objename,planetnum,orbitfile);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(relief);
-         free(albedo);
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(albedo2);
          free(jds);
          return TCL_ERROR;
       }
@@ -3495,8 +3685,10 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       if (cdrpos==NULL) {
          strcpy(s,"Error : memory allocation for cdrpos");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
-         free(relief);
-         free(albedo);
+         free(relief1);
+         free(albedo1);
+         free(relief2);
+         free(albedo2);
          free(jds);
          return TCL_ERROR;
       }
@@ -3573,7 +3765,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       /* === */
 	   /* === Calcul de la courbe de lumiere ===*/
       /* === */
-      mc_simulcbin(cdr,relief,albedo,cdrpos,n,genefilename);
+      mc_simulcbin(cdr,relief1,albedo1,relief2,albedo2,cdrpos,n,genefilename);
       /* === */
 	   /* === Sortie des resultats ===*/
       /* === */
@@ -3646,8 +3838,10 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       /* === sortie et destructeurs ===*/
       free(jds);
       free(cdrpos);
-      free(relief);
-      free(albedo);
+      free(relief1);
+      free(albedo1);
+      free(relief2);
+      free(albedo2);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
    }
@@ -4136,7 +4330,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
                /* === */
                cdr.lonpole=lonpoles[klon];
                cdr.latpole=latpoles[klat];
-               mc_simulcbin(cdr,relief,albedo,cdrpos100,njd,genefilename);
+               mc_simulcbin(cdr,relief,albedo,relief,albedo,cdrpos100,njd,genefilename);
                /* --- boucle sur les longitudes initiales ---*/
                stdmagmin=1e20;
                for (kjd=0;kjd<njd;kjd++) {

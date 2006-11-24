@@ -1286,7 +1286,7 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
    free(kdist);
 }
 
-void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename)
+void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename)
 /***************************************************************************/
 /* simulation de la courbe de lumiere d'un asteroide SSB                   */
 /***************************************************************************/
@@ -1311,7 +1311,7 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    /*double trtotmin,trtotmax;*/
    int khtms,nhtms;
    mc_htm *htms,*htm1s,*htm2s;
-   double pmaxi,rmini;
+   double pmaxi=0.,rmini;
    double rsx,rsy,rsz,lrs,brs,lc,bc,rs;
    double field;
    int k1,k2;
@@ -1323,10 +1323,11 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    int *kdist=NULL,*kdist1=NULL,*kdist2=NULL;
    double pixx[3],pixy[3],x,y,z,frac;
    double albedomean;
-   double volume,volumetot,masstot,xg,yg,zg;
+   double volume,volumetot,masstot,masstot1,masstot2,xg,yg,zg;
    mc_cdrpos *cdrpos1,*cdrpos2,*cdrpos12;
    double pmaxibin,rr1,rr2;
    int *kfarsun,*kfarearth; /* index of the asteroid farest from the sun & earth respectively */
+   double a1,a2;
 
    int nlon,nlat,klon,klat;
    double lon,lat;
@@ -1356,87 +1357,11 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    coslpsini=coslp*sini;
    sinlpsini=sinlp*sini;
 
-   /* --- shift of the asteroid position on the orbit of binaries --- */
-   kfarsun=(int*)malloc(n*sizeof(int));
-   if (kfarsun==NULL) {
-      /* --- TBD error */
-      return;
-   }
-   kfarearth=(int*)malloc(n*sizeof(int));
-   if (kfarearth==NULL) {
-      /* --- TBD error */
-      free(kfarsun);
-      return;
-   }
-   cdrpos1=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
-   if (cdrpos1==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      /* --- TBD error */
-      return;
-   }
-   cdrpos2=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
-   if (cdrpos2==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      /* --- TBD error */
-      return;
-   }
-   pmaxibin=0.;
-   for (kt=0;kt<n;kt++) {
-     cdrpos1[kt]=cdrpos[kt];
-     cdrpos2[kt]=cdrpos[kt];
-     dl=fmod(l0/(DR)+360.*(cdrpos[kt].jd-date0)/period,360.)*(DR);
-     /* - F5 -*/
-     l1=dl;
-     b1=0.;
-     /* - F3 -*/
-     cosb=cos(b1);
-     sinb=sin(b1);
-     coslcosb=cos(l1)*cosb;
-     sinlcosb=sin(l1)*cosb;
-     /* - -*/
-     x1=cdr.a*coslcosb/(UA);
-     y1=cdr.a*sinlcosb/(UA);
-     z1=cdr.a*sinb/(UA);
-     /* - F7 -*/
-     x=coslpcosi*x1-sinlp*y1-coslpsini*z1;
-     y=sinlpcosi*x1+coslp*y1-sinlpsini*z1;
-     z=sini*x1+cosi*z1;
-     rr=x*x+y*y+z*z;
-     r=sqrt(rr)*(UA);
-     if (r>pmaxibin) { pmaxibin=r; }
-     /* - distance from the sun ---*/
-     cdrpos1[kt].xaster+=x;
-     cdrpos1[kt].yaster+=y;
-     cdrpos1[kt].zaster+=z;
-     rr1=cdrpos1[kt].xaster*cdrpos1[kt].xaster+cdrpos1[kt].yaster*cdrpos1[kt].yaster+cdrpos1[kt].zaster*cdrpos1[kt].zaster;
-     cdrpos2[kt].xaster-=x;
-     cdrpos2[kt].yaster-=y;
-     cdrpos2[kt].zaster-=z;
-     rr2=cdrpos2[kt].xaster*cdrpos2[kt].xaster+cdrpos2[kt].yaster*cdrpos2[kt].yaster+cdrpos2[kt].zaster*cdrpos2[kt].zaster;
-     if (rr1>rr2) {
-        kfarsun[kt]=1;
-     } else {
-        kfarsun[kt]=2;
-     }
-     /* - distance from the earth ---*/
-     x=cdrpos1[kt].xaster-cdrpos[kt].xearth;
-     y=cdrpos1[kt].yaster-cdrpos[kt].yearth;
-     z=cdrpos1[kt].zaster-cdrpos[kt].zearth;
-     rr1=x*x+y*y+z*z;
-     x=cdrpos2[kt].xaster-cdrpos[kt].xearth;
-     y=cdrpos2[kt].yaster-cdrpos[kt].yearth;
-     z=cdrpos2[kt].zaster-cdrpos[kt].zearth;
-     rr2=x*x+y*y+z*z;
-     if (rr1>rr2) {
-        kfarearth[kt]=1;
-     } else {
-        kfarearth[kt]=2;
-     }
-   }
-
+   /******************************************************************************/
+   /******************************************************************************/
+   /**** Compute the HTM shape of each object relative to the center of masse ****/
+   /******************************************************************************/
+   /******************************************************************************/
    e0=1400.; /* W/m2 at 1 A.U. */
    fourpi=4.*(PI);
    /* --- total number of triangles in each hemsiphere ---*/
@@ -1448,30 +1373,17 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    if (level<0) { level=0; }
    htm1s=(mc_htm*)calloc(nhtms,sizeof(mc_htm));
    if (htm1s==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      free(cdrpos2);
       /* --- TBD error */
       return;
    }
-   htms=htm1s;
    htm2s=(mc_htm*)calloc(nhtms,sizeof(mc_htm));
    if (htm2s==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      free(cdrpos2);
       free(htm1s);
       /* --- TBD error */
       return;
    }
    dist1=(double*)calloc(nhtms,sizeof(double));
    if (dist1==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      free(cdrpos2);
       free(htm1s);
       free(htm2s);
       /* --- TBD error */
@@ -1479,10 +1391,6 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    }
    dist2=(double*)calloc(nhtms,sizeof(double));
    if (dist2==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      free(cdrpos2);
       free(htm1s);
       free(htm2s);
       free(dist1);
@@ -1491,10 +1399,6 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    }
    kdist1=(int*)calloc(nhtms,sizeof(int));
    if (kdist1==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      free(cdrpos2);
       free(htm1s);
       free(htm2s);
       free(dist1);
@@ -1504,10 +1408,6 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
    }
    kdist2=(int*)calloc(nhtms,sizeof(int));
    if (kdist2==NULL) {
-      free(kfarsun);
-      free(kfarearth);
-      free(cdrpos1);
-      free(cdrpos2);
       free(htm1s);
       free(htm2s);
       free(dist1);
@@ -1516,6 +1416,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
       /* --- TBD error */
       return;
    }
+   /* --- computation for the object 1 ---*/
+   htms=htm1s;
    khtms=0;
    for (khemis=0;khemis<=1;khemis++) {
       for (khtm=0;khtm<nhtm;khtm++) {
@@ -1545,7 +1447,6 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
          khtms++;
       }
    }
-   free(htm);
    /* --- fill the HTM structure by the relief and albedo maps ---*/
    nlon=360;
    nlat=181;
@@ -1563,8 +1464,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
       if (klon>nlon) {klon=nlon-1;}
       klat=(int)(((lat+(PI)/2)/(DR))/1.);
       if (klat<0) {klat=0;}
-      htms[khtms].r1=relief[klon*nlat+klat];
-      albedomean+=albedo[klon*nlat+klat];
+      htms[khtms].r1=relief1[klon*nlat+klat];
+      albedomean+=albedo1[klon*nlat+klat];
       lon=htms[khtms].l2;
       lat=htms[khtms].b2;
       klon=(int)(lon/(DR)/1.);
@@ -1572,8 +1473,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
       if (klon>nlon) {klon=nlon-1;}
       klat=(int)(((lat+(PI)/2)/(DR))/1.);
       if (klat<0) {klat=0;}
-      htms[khtms].r2=relief[klon*nlat+klat];
-      albedomean+=albedo[klon*nlat+klat];
+      htms[khtms].r2=relief1[klon*nlat+klat];
+      albedomean+=albedo1[klon*nlat+klat];
       lon=htms[khtms].l3;
       lat=htms[khtms].b3;
       klon=(int)(lon/(DR)/1.);
@@ -1581,8 +1482,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
       if (klon>nlon) {klon=nlon-1;}
       klat=(int)(((lat+(PI)/2)/(DR))/1.);
       if (klat<0) {klat=0;}
-      htms[khtms].r3=relief[klon*nlat+klat];
-      albedomean+=albedo[klon*nlat+klat];
+      htms[khtms].r3=relief1[klon*nlat+klat];
+      albedomean+=albedo1[klon*nlat+klat];
       htms[khtms].albedo=albedomean/3.;
       /* --- compute the volume of the tetraedron ---*/
       lon=htms[khtms].l1;
@@ -1678,7 +1579,7 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
          z+=(htms[khtms].zg*htms[khtms].mass);
          masstot+=htms[khtms].mass;
          volumetot+=volume;
-         htm2s[khtms]=htms[khtms];
+         /*htm2s[khtms]=htms[khtms];*/
       }
       /* --- center of gravity should converge to (0,0,0) --- */
       xg=x/masstot;
@@ -1686,12 +1587,311 @@ void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int
       zg=z/masstot;
    }
    /* --- searching for the largest altitude from the gravity center ---*/
-   pmaxi=0.;
    for (khtms=0;khtms<nhtms;khtms++) {
       if (htms[khtms].r1>pmaxi) {pmaxi=htms[khtms].r1;}
       if (htms[khtms].r2>pmaxi) {pmaxi=htms[khtms].r2;}
       if (htms[khtms].r3>pmaxi) {pmaxi=htms[khtms].r3;}
    }
+   masstot1=masstot;
+   /* --- computation for the object 2 ---*/
+   htms=htm2s;
+   khtms=0;
+   for (khemis=0;khemis<=1;khemis++) {
+      for (khtm=0;khtm<nhtm;khtm++) {
+         /* --- build the HTM code ---*/
+         if (khemis==0) { htm[0]='S'; } else { htm[0]='N'; }
+         exp=(int)pow(4,level);
+         khtm0=khtm;
+         for (k=0;k<=level;k++) {
+            htm[k+1]=khtm0/exp;
+            khtm0-=(htm[k+1]*exp);
+            htm[k+1]+=48;
+            exp/=4;
+         }
+         htm[k+1]='\0';
+         /* --- F1 : compute the corner coordinates ---*/
+         mc_htm2radec(htm,&lll,&bbb,&level,&l1,&b1,&l2,&b2,&l3,&b3);
+         /* --- fill the structure ---*/
+         strcpy(htms[khtms].index,htm);
+         htms[khtms].l=lll;
+         htms[khtms].b=bbb;
+         htms[khtms].l1=l1;
+         htms[khtms].b1=b1;
+         htms[khtms].l2=l2;
+         htms[khtms].b2=b2;
+         htms[khtms].l3=l3;
+         htms[khtms].b3=b3;
+         khtms++;
+      }
+   }
+   free(htm);
+   /* --- fill the HTM structure by the relief and albedo maps ---*/
+   nlon=360;
+   nlat=181;
+   volumetot=0;
+   masstot=0;
+   x=y=z=0.;
+   xg=yg=zg=0.;
+   for (khtms=0;khtms<nhtms;khtms++) {
+      /* --- F2 : compute the distance of surface to center for corners (m) ---*/
+      albedomean=0.;
+      lon=htms[khtms].l1;
+      lat=htms[khtms].b1;
+      klon=(int)(lon/(DR)/1.);
+      if (klon<0) {klon=0;}
+      if (klon>nlon) {klon=nlon-1;}
+      klat=(int)(((lat+(PI)/2)/(DR))/1.);
+      if (klat<0) {klat=0;}
+      htms[khtms].r1=relief2[klon*nlat+klat];
+      albedomean+=albedo2[klon*nlat+klat];
+      lon=htms[khtms].l2;
+      lat=htms[khtms].b2;
+      klon=(int)(lon/(DR)/1.);
+      if (klon<0) {klon=0;}
+      if (klon>nlon) {klon=nlon-1;}
+      klat=(int)(((lat+(PI)/2)/(DR))/1.);
+      if (klat<0) {klat=0;}
+      htms[khtms].r2=relief2[klon*nlat+klat];
+      albedomean+=albedo2[klon*nlat+klat];
+      lon=htms[khtms].l3;
+      lat=htms[khtms].b3;
+      klon=(int)(lon/(DR)/1.);
+      if (klon<0) {klon=0;}
+      if (klon>nlon) {klon=nlon-1;}
+      klat=(int)(((lat+(PI)/2)/(DR))/1.);
+      if (klat<0) {klat=0;}
+      htms[khtms].r3=relief2[klon*nlat+klat];
+      albedomean+=albedo2[klon*nlat+klat];
+      htms[khtms].albedo=albedomean/3.;
+      /* --- compute the volume of the tetraedron ---*/
+      lon=htms[khtms].l1;
+      lat=htms[khtms].b1;
+      cosb=cos(lat);
+      sinb=sin(lat);
+      coslcosb=cos(lon)*cosb;
+      sinlcosb=sin(lon)*cosb;
+      x1=htms[khtms].x1=htms[khtms].r1*coslcosb;
+      y1=htms[khtms].y1=htms[khtms].r1*sinlcosb;
+      z1=htms[khtms].z1=htms[khtms].r1*sinb;
+      lon=htms[khtms].l2;
+      lat=htms[khtms].b2;
+      cosb=cos(lat);
+      sinb=sin(lat);
+      coslcosb=cos(lon)*cosb;
+      sinlcosb=sin(lon)*cosb;
+      x2=htms[khtms].x2=htms[khtms].r2*coslcosb;
+      y2=htms[khtms].y2=htms[khtms].r2*sinlcosb;
+      z2=htms[khtms].z2=htms[khtms].r2*sinb;
+      lon=htms[khtms].l3;
+      lat=htms[khtms].b3;
+      cosb=cos(lat);
+      sinb=sin(lat);
+      coslcosb=cos(lon)*cosb;
+      sinlcosb=sin(lon)*cosb;
+      x3=htms[khtms].x3=htms[khtms].r3*coslcosb;
+      y3=htms[khtms].y3=htms[khtms].r3*sinlcosb;
+      z3=htms[khtms].z3=htms[khtms].r3*sinb;
+      /* --- center of gravity of the tetraedron --- */
+      volume=-1./6.*(-x1*(y2*z3-y3*z2)+x2*(y1*z3-y3*z1)-x3*(y1*z2-y2*z1));
+      htms[khtms].volume=volume;
+      htms[khtms].density=cdr.density;
+      htms[khtms].mass=volume*htms[khtms].density;
+      htms[khtms].xg=2./3.*(x1+x2+x3)/3.;
+      htms[khtms].yg=2./3.*(y1+y2+y3)/3.;
+      htms[khtms].zg=2./3.*(z1+z2+z3)/3.;
+      /* --- add to determine the center of gravity of the body --- */
+      x+=(htms[khtms].xg*htms[khtms].mass);
+      y+=(htms[khtms].yg*htms[khtms].mass);
+      z+=(htms[khtms].zg*htms[khtms].mass);
+      masstot+=htms[khtms].mass;
+      volumetot+=volume;
+   }
+   /* --- center of gravity (m) --- */
+   xg=x/masstot;
+   yg=y/masstot;
+   zg=z/masstot;
+   /* --- iterating corrections due to the offcentering of the center of gravity --- */
+   for (kt=0;kt<4;kt++) {
+      x=y=z=0.;
+      volumetot=0;
+      masstot=0;
+      for (khtms=0;khtms<nhtms;khtms++) {
+         htms[khtms].x1-=xg;
+         htms[khtms].y1-=yg;
+         htms[khtms].z1-=zg;
+         x1=htms[khtms].x1;
+         y1=htms[khtms].y1;
+         z1=htms[khtms].z1;
+         htms[khtms].r1=sqrt(x1*x1+y1*y1+z1*z1);
+         htms[khtms].l1=atan2(htms[khtms].y1,htms[khtms].x1);
+         htms[khtms].b1=asin(htms[khtms].z1/htms[khtms].r1);
+         htms[khtms].x2-=xg;
+         htms[khtms].y2-=yg;
+         htms[khtms].z2-=zg;
+         x2=htms[khtms].x2;
+         y2=htms[khtms].y2;
+         z2=htms[khtms].z2;
+         htms[khtms].r2=sqrt(x2*x2+y2*y2+z2*z2);
+         htms[khtms].l2=atan2(htms[khtms].y2,htms[khtms].x2);
+         htms[khtms].b2=asin(htms[khtms].z2/htms[khtms].r2);
+         htms[khtms].x3-=xg;
+         htms[khtms].y3-=yg;
+         htms[khtms].z3-=zg;
+         x3=htms[khtms].x3;
+         y3=htms[khtms].y3;
+         z3=htms[khtms].z3;
+         htms[khtms].r3=sqrt(x3*x3+y3*y3+z3*z3);
+         htms[khtms].l3=atan2(htms[khtms].y3,htms[khtms].x3);
+         htms[khtms].b3=asin(htms[khtms].z3/htms[khtms].r3);
+         /* --- center of gravity of the tetraedron --- */
+         volume=-1./6.*(-x1*(y2*z3-y3*z2)+x2*(y1*z3-y3*z1)-x3*(y1*z2-y2*z1));
+         htms[khtms].volume=volume;
+         htms[khtms].density=cdr.density;
+         htms[khtms].mass=volume*htms[khtms].density;
+         htms[khtms].xg=2./3.*(x1+x2+x3)/3.;
+         htms[khtms].yg=2./3.*(y1+y2+y3)/3.;
+         htms[khtms].zg=2./3.*(z1+z2+z3)/3.;
+         /* --- add to determine the center of gravity of the body --- */
+         x+=(htms[khtms].xg*htms[khtms].mass);
+         y+=(htms[khtms].yg*htms[khtms].mass);
+         z+=(htms[khtms].zg*htms[khtms].mass);
+         masstot+=htms[khtms].mass;
+         volumetot+=volume;
+      }
+      /* --- center of gravity should converge to (0,0,0) --- */
+      xg=x/masstot;
+      yg=y/masstot;
+      zg=z/masstot;
+   }
+   /* --- searching for the largest altitude from the gravity center ---*/
+   for (khtms=0;khtms<nhtms;khtms++) {
+      if (htms[khtms].r1>pmaxi) {pmaxi=htms[khtms].r1;}
+      if (htms[khtms].r2>pmaxi) {pmaxi=htms[khtms].r2;}
+      if (htms[khtms].r3>pmaxi) {pmaxi=htms[khtms].r3;}
+   }
+   masstot2=masstot;
+
+   /*************************************************************/
+   /*************************************************************/
+   /**** complete the orbit position of each object          ****/
+   /*************************************************************/
+   /*************************************************************/
+   /* --- shift of the asteroid position on the orbit of binaries --- */
+   kfarsun=(int*)malloc(n*sizeof(int));
+   if (kfarsun==NULL) {
+      /* --- TBD error */
+      free(htm1s);
+      free(htm2s);
+      free(dist1);
+      free(dist2);
+      free(kdist1);
+      return;
+   }
+   kfarearth=(int*)malloc(n*sizeof(int));
+   if (kfarearth==NULL) {
+      /* --- TBD error */
+      free(htm1s);
+      free(htm2s);
+      free(dist1);
+      free(dist2);
+      free(kdist1);
+      free(kfarsun);
+      return;
+   }
+   cdrpos1=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
+   if (cdrpos1==NULL) {
+      free(htm1s);
+      free(htm2s);
+      free(dist1);
+      free(dist2);
+      free(kdist1);
+      free(kfarsun);
+      free(kfarearth);
+      /* --- TBD error */
+      return;
+   }
+   cdrpos2=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
+   if (cdrpos2==NULL) {
+      free(htm1s);
+      free(htm2s);
+      free(dist1);
+      free(dist2);
+      free(kdist1);
+      free(kfarsun);
+      free(kfarearth);
+      free(cdrpos1);
+      /* --- TBD error */
+      return;
+   }
+   pmaxibin=0.;
+   for (kt=0;kt<n;kt++) {
+     cdrpos1[kt]=cdrpos[kt];
+     cdrpos2[kt]=cdrpos[kt];
+     dl=fmod(l0/(DR)+360.*(cdrpos[kt].jd-date0)/period,360.)*(DR);
+     /* - F5 -*/
+     l1=dl;
+     b1=0.;
+     /* - F3 -*/
+     cosb=cos(b1);
+     sinb=sin(b1);
+     coslcosb=cos(l1)*cosb;
+     sinlcosb=sin(l1)*cosb;
+     /* = object 1 -*/
+     a1=2.*cdr.a*masstot2/(masstot1+masstot2);
+     x1=a1*coslcosb/(UA);
+     y1=a1*sinlcosb/(UA);
+     z1=a1*sinb/(UA);
+     /* - F7 -*/
+     x=coslpcosi*x1-sinlp*y1-coslpsini*z1;
+     y=sinlpcosi*x1+coslp*y1-sinlpsini*z1;
+     z=sini*x1+cosi*z1;
+     rr=x*x+y*y+z*z;
+     r=sqrt(rr)*(UA);
+     if (r>pmaxibin) { pmaxibin=r; }
+     /* - distance from the sun ---*/
+     cdrpos1[kt].xaster+=x;
+     cdrpos1[kt].yaster+=y;
+     cdrpos1[kt].zaster+=z;
+     rr1=cdrpos1[kt].xaster*cdrpos1[kt].xaster+cdrpos1[kt].yaster*cdrpos1[kt].yaster+cdrpos1[kt].zaster*cdrpos1[kt].zaster;
+     /* = object 2 -*/
+     a2=2.*cdr.a*masstot1/(masstot1+masstot2);
+     x1=a2*coslcosb/(UA);
+     y1=a2*sinlcosb/(UA);
+     z1=a2*sinb/(UA);
+     /* - F7 -*/
+     x=coslpcosi*x1-sinlp*y1-coslpsini*z1;
+     y=sinlpcosi*x1+coslp*y1-sinlpsini*z1;
+     z=sini*x1+cosi*z1;
+     rr=x*x+y*y+z*z;
+     r=sqrt(rr)*(UA);
+     if (r>pmaxibin) { pmaxibin=r; }
+     /* - distance from the sun ---*/
+     cdrpos2[kt].xaster-=x;
+     cdrpos2[kt].yaster-=y;
+     cdrpos2[kt].zaster-=z;
+     rr2=cdrpos2[kt].xaster*cdrpos2[kt].xaster+cdrpos2[kt].yaster*cdrpos2[kt].yaster+cdrpos2[kt].zaster*cdrpos2[kt].zaster;
+     /* - -*/
+     if (rr1>rr2) {
+        kfarsun[kt]=1;
+     } else {
+        kfarsun[kt]=2;
+     }
+     /* - distance from the earth ---*/
+     x=cdrpos1[kt].xaster-cdrpos[kt].xearth;
+     y=cdrpos1[kt].yaster-cdrpos[kt].yearth;
+     z=cdrpos1[kt].zaster-cdrpos[kt].zearth;
+     rr1=x*x+y*y+z*z;
+     x=cdrpos2[kt].xaster-cdrpos[kt].xearth;
+     y=cdrpos2[kt].yaster-cdrpos[kt].yearth;
+     z=cdrpos2[kt].zaster-cdrpos[kt].zearth;
+     rr2=x*x+y*y+z*z;
+     if (rr1>rr2) {
+        kfarearth[kt]=1;
+     } else {
+        kfarearth[kt]=2;
+     }
+   }
+
    /*************************************************************/
    /*************************************************************/
    /**** init image of the farest object viewed from the sun ****/
