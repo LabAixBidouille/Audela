@@ -1008,26 +1008,27 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       if ((cat=fopen(nom,"rt"))==NULL) {
          sprintf(message,"File %s of personal catalog not found\n",nom);
          tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
+         fclose(out_file);
          tt_free2((void**)&p_index,"p_index");
          return(PB_DLL);
       }
       do {
          if (fgets(ligne,TT_MAXLIGNE,cat)!=NULL) {
             strcpy(texte,"");
-	    sscanf(ligne,"%s",texte);
-	    if ( (strcmp(texte,"")!=0) ) {
+            sscanf(ligne,"%s",texte);
+            if ( (strcmp(texte,"")!=0) ) {
                k++;
                sscanf(ligne,"%lf %lf %lf",&ra,&dec,&mag_red);
                mag_bleue=mag_red;
                tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
-	       if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-               /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
+               if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
+                  /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
                   /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
                   ppx=(double)XXX;
                   ppy=(double)YYY;
                   compteur=compteur+1;
                   if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
-                   compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+                     compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
                      sprintf(message,"A line in file %s cannot be created\n",name);
                      tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
                      fclose(cat);
@@ -1035,7 +1036,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                      tt_free2((void**)&p_index,"p_index");
                      return(PB_DLL);
                   }
-               j++;
+                  j++;
                }
             }
             k++;
@@ -1068,43 +1069,43 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       tt_tblcatcreater(p_out->catalist,nbe);
       sprintf(name,"usno%s.lst",tt_tmpfile_ext);
       if ((out_file=fopen(name,"r"))==NULL) {
-	 sprintf(message,"File %s not found\n",name);
-	 tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
-	 return(PB_DLL);
+         sprintf(message,"File %s not found\n",name);
+         tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
+         return(PB_DLL);
       }
       j=0;
       do {
-	 if (fgets(ligne,TT_MAXLIGNE,out_file)!=NULL) {
-	    strcpy(texte,"");
-	    sscanf(ligne,"%s",texte);
-	    if ( (strcmp(texte,"")!=0) ) {
+         if (fgets(ligne,TT_MAXLIGNE,out_file)!=NULL) {
+            strcpy(texte,"");
+            sscanf(ligne,"%s",texte);
+            if ( (strcmp(texte,"")!=0) ) {
 #ifdef OS_LINUX_GCC_SO
-	       sscanf(ligne,"%d %lf %lf %lf %lf %lf %lf %lf",
-		&compteur,&ppx,&ppy,&mag_red,&ra,&de,&mag_red,&mag_bleue);
+               sscanf(ligne,"%d %lf %lf %lf %lf %lf %lf %lf",
+                  &compteur,&ppx,&ppy,&mag_red,&ra,&de,&mag_red,&mag_bleue);
 #else
-	       sscanf(ligne,"%ld %lf %lf %lf %lf %lf %lf %lf",
-		&compteur,&ppx,&ppy,&mag_red,&ra,&de,&mag_red,&mag_bleue);
+               sscanf(ligne,"%ld %lf %lf %lf %lf %lf %lf %lf",
+                  &compteur,&ppx,&ppy,&mag_red,&ra,&de,&mag_red,&mag_bleue);
 #endif
-	       if (j<nbe) {
+               if (j<nbe) {
                   magv=(mag_bleue+mag_red)/2.;
                   magi=mag_red;
-		  p_out->catalist->x[j]=(double)(ppx);
-		  p_out->catalist->y[j]=(double)(ppy);
-		  p_out->catalist->ra[j]=(double)(ra);
-		  p_out->catalist->dec[j]=(double)(de);
-		  p_out->catalist->ident[j]=(short)(TT_STAR);
-		  p_out->catalist->magb[j]=(double)(mag_bleue);
-		  p_out->catalist->magv[j]=(double)(magv);
-		  p_out->catalist->magr[j]=(double)(mag_red);
-		  p_out->catalist->magi[j]=(double)(magi);
-	       }
-	       j++;
-	    }
-	 }
+                  p_out->catalist->x[j]=(double)(ppx);
+                  p_out->catalist->y[j]=(double)(ppy);
+                  p_out->catalist->ra[j]=(double)(ra);
+                  p_out->catalist->dec[j]=(double)(de);
+                  p_out->catalist->ident[j]=(short)(TT_STAR);
+                  p_out->catalist->magb[j]=(double)(mag_bleue);
+                  p_out->catalist->magv[j]=(double)(magv);
+                  p_out->catalist->magr[j]=(double)(mag_red);
+                  p_out->catalist->magi[j]=(double)(magi);
+               }
+               j++;
+            }
+         }
       } while (feof(out_file)==0);
       fclose(out_file);
    }
-
+   
    /* --- calcul de l'image de sortie ---*/
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       dvalue=p_in->p[kkk];
