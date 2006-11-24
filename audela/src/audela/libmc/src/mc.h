@@ -588,7 +588,7 @@ void mc_ephem2(char *nom_fichier_ele,double jj, double rangetq, double pastq, do
 void mc_paradist(char *nom_fichier_obs,char *nom_fichier_ele,char *nom_fichier_out);
 void mc_paradist_calc(struct observ *obs,int k1, int k2,double *parallaxe,double *corde,double *dist);
 void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
-void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
+void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename);
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
 
 /***************************************************************************/
@@ -897,7 +897,7 @@ void mc_paradist_calc(struct observ *obs,int k1, int k2,double *parallaxe,double
    en seux sites differents. Methode de la parallaxe.
 void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
    Simulation de la courbe de lumiere d'un asteroide.
-void mc_simulcbin(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
+void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename);
    Simulation de la courbe de lumiere d'un asteroide SSB.
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
    Save the *mat as a FITS file
