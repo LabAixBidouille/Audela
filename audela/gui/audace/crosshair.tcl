@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: crosshair.tcl,v 1.6 2006-10-29 14:30:28 michelpujol Exp $
+# Mise a jour $Id: crosshair.tcl,v 1.7 2006-11-25 10:15:20 michelpujol Exp $
 #
 
 namespace eval ::Crosshair {
@@ -37,6 +37,18 @@ namespace eval ::Crosshair {
       if { ! [ info exists conf(crosshair,color) ] }        { set conf(crosshair,color)        "#FF0000" }
       if { ! [ info exists conf(crosshair,defaultstate) ] } { set conf(crosshair,defaultstate) "0" }
    }
+
+   #------------------------------------------------------------
+   #  run
+   #     affiche la fenetre de configuration
+   #------------------------------------------------------------
+   proc run  { visuNo } {
+      global conf
+
+      ::confGenerique::run [confVisu::getBase $visuNo].confCrossHair ::Crosshair $visuNo nomodal"
+   }
+
+
 
    #==============================================================
    # Fonctions de configuration generiques
