@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.22 2006-11-24 15:48:01 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.23 2006-11-25 21:51:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,7 +22,20 @@ set caption(confcam,arreter)                    "Stop"
 
 set caption(confcam,acquisition)                "Acquisition"
 set caption(confcam,camera)                     "Camera:"
+
 set caption(confcam,audine)                     "Audine"
+set caption(confcam,hisis)                      "Hi-SIS"
+set caption(confcam,sbig)                       "SBIG"
+set caption(confcam,cookbook)                   "CB245"
+set caption(confcam,starlight)                  "Starlight"
+set caption(confcam,kitty)                      "Kitty"
+set caption(confcam,webcam)                     "WebCam"
+set caption(confcam,th7852A)                    "TH7852A"
+set caption(confcam,scr1300xtc)                 "SCR1300XTC"
+set caption(confcam,dslr)                       "Digital Camera"
+set caption(confcam,andor)                      "Andor"
+set caption(confcam,fingerlakes)                "FLI"
+set caption(confcam,cemes)                      "CEMES"
 
 set caption(confcam,port)                       "Port"
 set caption(confcam,port_liaison)               "Port / Link"
@@ -100,7 +113,6 @@ set caption(confcam,refroidissement_off)        "Off"
 set caption(confcam,temperature_CCD)            "CCD Temperature:"
 set caption(confcam,test)                       "SX28 Test"
 
-set caption(confcam,webcam)                     "WebCam"
 set caption(confcam,webcam_canal_usb)           "USB Video Channel"
 set caption(confcam,webcam_longuepose)          "S. Chambers Long Exposure Option"
 set caption(confcam,webcam_longueposeport)      "Control Port for the Option"
@@ -112,7 +124,6 @@ set caption(confcam,ccd_N_B)                    "B&W CCD Modified Webcam"
 
 set caption(confcam,coef_th7852a)               "Coefficient"
 
-set caption(confcam,dslr)                       "Digital Camera"
 set caption(confcam,dslr_name)                  "Digital Camera"
 set caption(confcam,dslr_liaison)               "Link"
 set caption(confcam,dslr_photopc)               "PhotoPC"
@@ -151,6 +162,7 @@ set caption(confcam,port_th7852a)               "TH7852A Port"
 set caption(confcam,port_scr1300xtc)            "SCR1300XTC Port"
 set caption(confcam,port_andor)                 "Andor Port"
 set caption(confcam,port_fingerlakes)           "FLI Port"
+set caption(confcam,port_cemes)                 "CEMES Port"
 
 set caption(confcam,site_web_ref)               "Reference Web Site:"
 set caption(confcam,site_audine)                "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -182,7 +194,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,acquisition)             "Acquisition"
    set caption(confcam,camera)                  "Caméra :"
+
    set caption(confcam,audine)                  "Audine"
+   set caption(confcam,hisis)                   "Hi-SIS"
+   set caption(confcam,sbig)                    "SBIG"
+   set caption(confcam,cookbook)                "CB245"
+   set caption(confcam,starlight)               "Starlight"
+   set caption(confcam,kitty)                   "Kitty"
+   set caption(confcam,webcam)                  "WebCam"
+   set caption(confcam,th7852A)                 "TH7852A"
+   set caption(confcam,scr1300xtc)              "SCR1300XTC"
+   set caption(confcam,dslr)                    "APN"
+   set caption(confcam,andor)                   "Andor"
+   set caption(confcam,fingerlakes)             "FLI"
+   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Liaison"
@@ -260,7 +285,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Température du CCD :"
    set caption(confcam,test)                    "Test du SX28"
 
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "Canal vidéo USB"
    set caption(confcam,webcam_longuepose)       "Option longue pose (S. Chambers)"
    set caption(confcam,webcam_longueposeport)   "Port de contrôle de l'option"
@@ -272,7 +296,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
-   set caption(confcam,dslr)                    "APN"
    set caption(confcam,dslr_name)               "Appareil Photo Numérique"
    set caption(confcam,dslr_liaison)            "Liaison"
    set caption(confcam,dslr_photopc)            "PhotoPC"
@@ -311,6 +334,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Port SCR1300XTC"
    set caption(confcam,port_andor)              "Port Andor"
    set caption(confcam,port_fingerlakes)        "Port FLI"
+   set caption(confcam,port_cemes)              "Port CEMES"
 
    set caption(confcam,site_web_ref)            "Site Web de référence :"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/index_fr.htm"
@@ -342,7 +366,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,acquisition)             "Acquisizione"
    set caption(confcam,camera)                  "Camera:"
+
    set caption(confcam,audine)                  "Audine"
+   set caption(confcam,hisis)                   "Hi-SIS"
+   set caption(confcam,sbig)                    "SBIG"
+   set caption(confcam,cookbook)                "CB245"
+   set caption(confcam,starlight)               "Starlight"
+   set caption(confcam,kitty)                   "Kitty"
+   set caption(confcam,webcam)                  "WebCam"
+   set caption(confcam,th7852A)                 "TH7852A"
+   set caption(confcam,scr1300xtc)              "SCR1300XTC"
+   set caption(confcam,dslr)                    "Fotocamera digitale"
+   set caption(confcam,andor)                   "Andor"
+   set caption(confcam,fingerlakes)             "FLI"
+   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Porte"
    set caption(confcam,port_liaison)            "Porte / Collegamento"
@@ -420,7 +457,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "CCD Temperatura:"
    set caption(confcam,test)                    "SX28 Test"
 
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "Canale video USB"
    set caption(confcam,webcam_longuepose)       "Opzione lunga posa (S. Chambers)"
    set caption(confcam,webcam_longueposeport)   "Porta di controllo dell'opzione"
@@ -432,7 +468,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coefficiente"
 
-   set caption(confcam,dslr)                    "Fotocamera digitale"
    set caption(confcam,dslr_name)               "Fotocamera digitale"
    set caption(confcam,dslr_liaison)            "Collegamento"
    set caption(confcam,dslr_photopc)            "PhotoPC"
@@ -471,6 +506,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
    set caption(confcam,port_fingerlakes)        "Porta FLI"
+   set caption(confcam,port_cemes)              "Porta CEMES"
 
    set caption(confcam,site_web_ref)            "Sito Web di riferimento:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -502,7 +538,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,acquisition)             "Adquisición"
    set caption(confcam,camera)                  "Cámara:"
+
    set caption(confcam,audine)                  "Audine"
+   set caption(confcam,hisis)                   "Hi-SIS"
+   set caption(confcam,sbig)                    "SBIG"
+   set caption(confcam,cookbook)                "CB245"
+   set caption(confcam,starlight)               "Starlight"
+   set caption(confcam,kitty)                   "Kitty"
+   set caption(confcam,webcam)                  "WebCam"
+   set caption(confcam,th7852A)                 "TH7852A"
+   set caption(confcam,scr1300xtc)              "SCR1300XTC"
+   set caption(confcam,dslr)                    "Cámara digital"
+   set caption(confcam,andor)                   "Andor"
+   set caption(confcam,fingerlakes)             "FLI"
+   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Puerto"
    set caption(confcam,port_liaison)            "Puerto / Enlace"
@@ -580,7 +629,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Temperatura CCD:"
    set caption(confcam,test)                    "Test SX28"
 
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "Canal vídeo USB"
    set caption(confcam,webcam_longuepose)       "Opcion de exposición larga (S. Chambers)"
    set caption(confcam,webcam_longueposeport)   "Puerto de control para la opcion"
@@ -592,7 +640,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coeficiente"
 
-   set caption(confcam,dslr)                    "Cámara digital"
    set caption(confcam,dslr_name)               "Cámara digital"
    set caption(confcam,dslr_liaison)            "Enlace"
    set caption(confcam,dslr_photopc)            "PhotoPC"
@@ -631,6 +678,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Puerto SCR1300XTC"
    set caption(confcam,port_andor)              "Puerto Andor"
    set caption(confcam,port_fingerlakes)        "Puerto FLI"
+   set caption(confcam,port_cemes)              "Puerto CEMES"
 
    set caption(confcam,site_web_ref)            "Sitio Web de referencia:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -662,7 +710,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,acquisition)             "Anschaffung"
    set caption(confcam,camera)                  "Kamera:"
+
    set caption(confcam,audine)                  "Audine"
+   set caption(confcam,hisis)                   "Hi-SIS"
+   set caption(confcam,sbig)                    "SBIG"
+   set caption(confcam,cookbook)                "CB245"
+   set caption(confcam,starlight)               "Starlight"
+   set caption(confcam,kitty)                   "Kitty"
+   set caption(confcam,webcam)                  "WebCam"
+   set caption(confcam,th7852A)                 "TH7852A"
+   set caption(confcam,scr1300xtc)              "SCR1300XTC"
+   set caption(confcam,dslr)                    "Digital Fotoapparat"
+   set caption(confcam,andor)                   "Andor"
+   set caption(confcam,fingerlakes)             "FLI"
+   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -740,7 +801,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Temperatur CCD:"
    set caption(confcam,test)                    "Test SX28"
 
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "USB Video Kanal"
    set caption(confcam,webcam_longuepose)       "Lange Belichtung Option (S. Chambers)"
    set caption(confcam,webcam_longueposeport)   "Kontroll Port der Option"
@@ -752,7 +812,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Faktor"
 
-   set caption(confcam,dslr)                    "Digital Fotoapparat"
    set caption(confcam,dslr_name)               "Digital Fotoapparat"
    set caption(confcam,dslr_liaison)            "Link"
    set caption(confcam,dslr_photopc)            "PhotoPC"
@@ -791,6 +850,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
    set caption(confcam,port_fingerlakes)        "FLI Port"
+   set caption(confcam,port_cemes)              "CEMES Port"
 
    set caption(confcam,site_web_ref)            "Referenz Webseite:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -822,7 +882,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,acquisition)             "Aquisição"
    set caption(confcam,camera)                  "Câmara:"
+
    set caption(confcam,audine)                  "Audine"
+   set caption(confcam,hisis)                   "Hi-SIS"
+   set caption(confcam,sbig)                    "SBIG"
+   set caption(confcam,cookbook)                "CB245"
+   set caption(confcam,starlight)               "Starlight"
+   set caption(confcam,kitty)                   "Kitty"
+   set caption(confcam,webcam)                  "WebCam"
+   set caption(confcam,th7852A)                 "TH7852A"
+   set caption(confcam,scr1300xtc)              "SCR1300XTC"
+   set caption(confcam,dslr)                    "Digital Camera"
+   set caption(confcam,andor)                   "Andor"
+   set caption(confcam,fingerlakes)             "FLI"
+   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Porta"
    set caption(confcam,port_liaison)            "Porta / Ligação"
@@ -900,7 +973,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Temperatura do CCD:"
    set caption(confcam,test)                    "Teste SX28"
 
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "Canal Video USB"
    set caption(confcam,webcam_longuepose)       "Opção de Longa Exposição S. Chambers"
    set caption(confcam,webcam_longueposeport)   "Controlo do Porto para a Opção"
@@ -951,6 +1023,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
    set caption(confcam,port_fingerlakes)        "Porta FLI"
+   set caption(confcam,port_cemes)              "Porta CEMES"
 
    set caption(confcam,site_web_ref)            "Site Web de referência:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -982,7 +1055,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,acquisition)             "Acquisition"
    set caption(confcam,camera)                  "Camera:"
+
    set caption(confcam,audine)                  "Audine"
+   set caption(confcam,hisis)                   "Hi-SIS"
+   set caption(confcam,sbig)                    "SBIG"
+   set caption(confcam,cookbook)                "CB245"
+   set caption(confcam,starlight)               "Starlight"
+   set caption(confcam,kitty)                   "Kitty"
+   set caption(confcam,webcam)                  "WebCam"
+   set caption(confcam,th7852A)                 "TH7852A"
+   set caption(confcam,scr1300xtc)              "SCR1300XTC"
+   set caption(confcam,dslr)                    "Digital Camera"
+   set caption(confcam,andor)                   "Andor"
+   set caption(confcam,fingerlakes)             "FLI"
+   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -1060,7 +1146,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "CCD Temperature:"
    set caption(confcam,test)                    "SX28 Test"
 
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,webcam_canal_usb)        "USB Video Channel"
    set caption(confcam,webcam_longuepose)       "S. Chambers Long Exposure Option"
    set caption(confcam,webcam_longueposeport)   "Control Port for the Option"
@@ -1072,7 +1157,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coefficient"
 
-   set caption(confcam,dslr)                    "Digital Camera"
    set caption(confcam,dslr_name)               "Digital Camera"
    set caption(confcam,dslr_liaison)            "Link"
    set caption(confcam,dslr_photopc)            "PhotoPC"
@@ -1111,6 +1195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
    set caption(confcam,port_fingerlakes)        "FLI Port"
+   set caption(confcam,port_cemes)              "CEMES Port"
 
    set caption(confcam,site_web_ref)            "Reference Web Site:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
