@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.8 2006-11-24 15:46:57 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.9 2006-11-25 21:00:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,7 @@ set caption(bermasaude,titre)                          "Filter Wheel"
 
 set caption(bermasaude,port)                           "Port"
 set caption(bermasaude,configurer)                     "Set up"
+set caption(bermasaude,controle)                       "Control"
 set caption(bermasaude,bermasaude_combinaison)         "Chosen Combination"
 set caption(bermasaude,bermasaude_bvri)                "BGRI"
 set caption(bermasaude,bermasaude_cmj)                 "CMY"
@@ -50,6 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Port"
    set caption(bermasaude,configurer)                  "Configurer"
+   set caption(bermasaude,controle)                    "Contrôle"
    set caption(bermasaude,bermasaude_combinaison)      "Combinaison choisie"
    set caption(bermasaude,bermasaude_bvri)             "BVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMJ"
@@ -85,6 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Porte"
    set caption(bermasaude,configurer)                  "Configurare"
+   set caption(bermasaude,controle)                    "Controllo"
    set caption(bermasaude,bermasaude_combinaison)      "Combinazione richiesta"
    set caption(bermasaude,bermasaude_bvri)             "BVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMG"
@@ -120,6 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Puerto"
    set caption(bermasaude,configurer)                  "Configurar"
+   set caption(bermasaude,controle)                    "Control"
    set caption(bermasaude,bermasaude_combinaison)      "Combinación elegida"
    set caption(bermasaude,bermasaude_bvri)             "AVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMA"
@@ -155,6 +159,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Port"
    set caption(bermasaude,configurer)                  "Konfigurieren"
+   set caption(bermasaude,controle)                    "Kontroll"
    set caption(bermasaude,bermasaude_combinaison)      "Gewähtes Kombination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMY"
@@ -190,6 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Porta"
    set caption(bermasaude,configurer)                  "Configuração"
+   set caption(bermasaude,controle)                    "Controlo"
    set caption(bermasaude,bermasaude_combinaison)      "Combinação escolhida"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMY"
@@ -225,6 +231,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Port"
    set caption(bermasaude,configurer)                  "Opsætning"
+   set caption(bermasaude,controle)                    "# Contrôle"
    set caption(bermasaude,bermasaude_combinaison)      "Valgt combination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMG"

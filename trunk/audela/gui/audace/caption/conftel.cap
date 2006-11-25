@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.19 2006-11-23 22:55:13 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.20 2006-11-25 21:03:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,10 +21,18 @@ set caption(conftel,aide)                             "Help"
 set caption(conftel,raquette_tel)                     "Hand controller on screen"
 set caption(conftel,config_raquette)                  "Hand Controller Setup"
 
+set caption(conftel,lx200)                            "LX200"
+set caption(conftel,ouranos)                          "Ouranos"
+set caption(conftel,audecom)                          "AudeCom"
+set caption(conftel,temma)                            "Temma"
+set caption(conftel,ascom)                            "ASCOM"
+set caption(conftel,celestron)                        "Celestron"
+
 set caption(conftel,port)                             "Port"
 set caption(conftel,port_liaison)                     "Port / Link"
 set caption(conftel,audinet)                          "AudiNet"
 set caption(conftel,configurer)                       "Set up"
+set caption(conftel,controle)                         "Control"
 set caption(conftel,format)                           "Format"
 set caption(conftel,format_court_long)                "Short Long"
 set caption(conftel,modele)                           "Model"
@@ -144,10 +152,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,raquette_tel)                  "Raquette à l'écran"
    set caption(conftel,config_raquette)               "Configuration de la raquette"
 
+   set caption(conftel,lx200)                         "LX200"
+   set caption(conftel,ouranos)                       "Ouranos"
+   set caption(conftel,audecom)                       "AudeCom"
+   set caption(conftel,temma)                         "Temma"
+   set caption(conftel,ascom)                         "ASCOM"
+   set caption(conftel,celestron)                     "Celestron"
+
    set caption(conftel,port)                          "Port"
    set caption(conftel,port_liaison)                  "Port / Liaison"
    set caption(conftel,audinet)                       "AudiNet"
    set caption(conftel,configurer)                    "Configurer"
+   set caption(conftel,controle)                      "Contrôle"
    set caption(conftel,format)                        "Format"
    set caption(conftel,format_court_long)             "court long"
    set caption(conftel,modele)                        "Modèle"
@@ -267,10 +283,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,raquette_tel)                  "Pulsantiera a schermo"
    set caption(conftel,config_raquette)               "Configurazione pulsantiera"
 
+   set caption(conftel,lx200)                         "LX200"
+   set caption(conftel,ouranos)                       "Ouranos"
+   set caption(conftel,audecom)                       "AudeCom"
+   set caption(conftel,temma)                         "Temma"
+   set caption(conftel,ascom)                         "ASCOM"
+   set caption(conftel,celestron)                     "Celestron"
+
    set caption(conftel,port)                          "Porte"
    set caption(conftel,port_liaison)                  "Porte / Collegamento"
    set caption(conftel,audinet)                       "AudiNet"
    set caption(conftel,configurer)                    "Configurare"
+   set caption(conftel,controle)                      "Controllo"
    set caption(conftel,format)                        "Formato"
    set caption(conftel,format_court_long)             "corto lungo"
    set caption(conftel,modele)                        "Modello"
@@ -390,10 +414,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,raquette_tel)                  "Controlador virtual"
    set caption(conftel,config_raquette)               "Configuración del controlador de mano"
 
+   set caption(conftel,lx200)                         "LX200"
+   set caption(conftel,ouranos)                       "Ouranos"
+   set caption(conftel,audecom)                       "AudeCom"
+   set caption(conftel,temma)                         "Temma"
+   set caption(conftel,ascom)                         "ASCOM"
+   set caption(conftel,celestron)                     "Celestron"
+
    set caption(conftel,port)                          "Puerto"
    set caption(conftel,port_liaison)                  "Puerto / Enlace"
    set caption(conftel,audinet)                       "AudiNet"
    set caption(conftel,configurer)                    "Configurar"
+   set caption(conftel,controle)                      "Control"
    set caption(conftel,format)                        "Formato"
    set caption(conftel,format_court_long)             "corto largo"
    set caption(conftel,modele)                        "Modelo"
@@ -513,10 +545,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,raquette_tel)                  "Hand Kontroller am Bildschirm"
    set caption(conftel,config_raquette)               "Handsteuerung Konfiguration"
 
+   set caption(conftel,lx200)                         "LX200"
+   set caption(conftel,ouranos)                       "Ouranos"
+   set caption(conftel,audecom)                       "AudeCom"
+   set caption(conftel,temma)                         "Temma"
+   set caption(conftel,ascom)                         "ASCOM"
+   set caption(conftel,celestron)                     "Celestron"
+
    set caption(conftel,port)                          "Port"
    set caption(conftel,port_liaison)                  "Port / Link"
    set caption(conftel,audinet)                       "AudiNet"
    set caption(conftel,configurer)                    "Konfigurieren"
+   set caption(conftel,controle)                      "Kontroll"
    set caption(conftel,format)                        "Format"
    set caption(conftel,format_court_long)             "kurz lang"
    set caption(conftel,modele)                        "Modell"
@@ -636,10 +676,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,raquette_tel)                  "Controlador de mão no ecrã"
    set caption(conftel,config_raquette)               "Configuração do controlador de mão"
 
+   set caption(conftel,lx200)                         "LX200"
+   set caption(conftel,ouranos)                       "Ouranos"
+   set caption(conftel,audecom)                       "AudeCom"
+   set caption(conftel,temma)                         "Temma"
+   set caption(conftel,ascom)                         "ASCOM"
+   set caption(conftel,celestron)                     "Celestron"
+
    set caption(conftel,port)                          "Porta"
    set caption(conftel,port_liaison)                  "Porta / Ligação"
    set caption(conftel,audinet)                       "AudiNet"
    set caption(conftel,configurer)                    "Configuração"
+   set caption(conftel,controle)                      "Controlo"
    set caption(conftel,format)                        "Formato"
    set caption(conftel,format_court_long)             "Curto Longo"
    set caption(conftel,modele)                        "Modelo"
@@ -759,10 +807,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,raquette_tel)                  "Hand controller on screen"
    set caption(conftel,config_raquette)               "Hand Controller Setup"
 
+   set caption(conftel,lx200)                         "LX200"
+   set caption(conftel,ouranos)                       "Ouranos"
+   set caption(conftel,audecom)                       "AudeCom"
+   set caption(conftel,temma)                         "Temma"
+   set caption(conftel,ascom)                         "ASCOM"
+   set caption(conftel,celestron)                     "Celestron"
+
    set caption(conftel,port)                          "Port"
    set caption(conftel,port_liaison)                  "Port / Link"
    set caption(conftel,audinet)                       "AudiNet"
    set caption(conftel,configurer)                    "Set up"
+   set caption(conftel,controle)                      "Control"
    set caption(conftel,format)                        "Format"
    set caption(conftel,format_court_long)             "Short Long"
    set caption(conftel,modele)                        "Model"
