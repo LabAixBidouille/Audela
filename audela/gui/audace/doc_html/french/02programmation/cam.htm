@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 03 novembre 2006</p>
+<p class="date">Date de mise &agrave; jour : 26 novembre 2006</p>
 <h1>Cam&eacute;ra </h1>
 <p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS. </p>
 <p>Il est important de savoir que les auteurs ne disposent pas personnellement de ces cam&eacute;ras, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
@@ -74,7 +74,7 @@
 <h3> <a name="window" id="window"></a>cam1 window <em>?coords?</em></h3>
 <p>R&eacute;glage des coordonn&eacute;es de la fen&ecirc;tre de num&eacute;risation du CCD. Lorsque le param&egrave;tre optionnel est pr&eacute;cis&eacute;, il doit s'agir d'une liste de 4 entiers qui correspondent &agrave; l'abscisse et l'ordonn&eacute;e du coin inf&eacute;rieur gauche, et &agrave; l'abscisse et l'ordonn&eacute;e du coin sup&eacute;rieur droit. Le syst&egrave;me de coordonn&eacute;es a pour origine le premier pixel dans le coin inf&eacute;rieur gauche, et a pour coordonn&eacute;es (1,1). Les coordonn&eacute;es de la fen&ecirc;tre s'expriment hors de tout facteur de binning : par exemple, une image pleine trame en binning 2x2 a quand m&ecirc;me un fen&ecirc;trage &agrave; (1,1)-(768,512) pour un CCD comme celui de Audine.</p>
 <h3> <a name="port" id="port"></a>cam1 port</h3>
-<p>Retourne le nom du port de communication (LPT1:, usb, quickaudine0, etc.).</p>
+<p>Retourne le nom du port de communication (LPT1:, USB, quickaudine0, etc.).</p>
 <h3> <a name="buf" id="buf"></a>cam1 buf ?<em>bufNo</em>?</h3>
 <p>Cette commande permet de savoir, ou de modifier, le buffer dans lequel sera stock&eacute;e l'image d'acquisition. L'argument optionnel, tout comme la valeur renvoy&eacute;e est un nombre qui est le num&eacute;ro du buffer. Ainsi, si "cam1 buf" renvoie 2, la commande qui permet d'avoir acc&egrave;s &agrave; l'image acquise est "buf2 ...".</p>
 <h3> <a name="tel" id="tel"></a>cam1 tel ?<em>telNo</em>?</h3>
