@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.41 2006-11-22 08:00:55 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.42 2006-11-25 10:15:20 michelpujol Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -607,7 +607,7 @@ namespace eval ::audace {
          "
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
-              "::confGenerique::run $audace(base).confCrossHair ::Crosshair $visuNo"
+              "::Crosshair::run $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_x)" {

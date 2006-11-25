@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.38 2006-11-15 20:43:22 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.39 2006-11-25 10:15:20 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -1339,7 +1339,7 @@ namespace eval ::confVisu {
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
 
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
-         "::confGenerique::run $This.confCrossHair ::Crosshair $visuNo"
+              "::Crosshair::run $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,analyse)"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
