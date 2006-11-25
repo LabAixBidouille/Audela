@@ -2,16 +2,16 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.10 2006-10-07 10:30:11 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.11 2006-11-25 21:03:41 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
 }
 
 #------------------------------------------------------------
-# init ( est lance automatiquement au chargement de ce fichier tcl)
-# initialise les variable conf(..) et caption(..)
-# demarrer le driver selectionne par defaut
+# ::confLink::init ( est lance automatiquement au chargement de ce fichier tcl)
+#    Initialise les variable conf(..) et caption(..)
+#    Demarre le driver selectionne par defaut
 #------------------------------------------------------------
 proc ::confLink::init { } {
    variable private
@@ -40,8 +40,8 @@ proc ::confLink::init { } {
 }
 
 #------------------------------------------------------------
-# afficheAide
-# Fonction appellee lors de l'appui sur le bouton 'Aide'
+# ::confLink::afficheAide
+#    Fonction appellee lors de l'appui sur le bouton 'Aide'
 #------------------------------------------------------------
 proc ::confLink::afficheAide { } {
    variable private
@@ -74,9 +74,9 @@ proc ::confLink::afficheAide { } {
 }
 
 #------------------------------------------------------------
-# appliquer
-# Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
-# memoriser et appliquer la configuration
+# ::confLink::appliquer
+#    Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
+#    memoriser et appliquer la configuration
 #------------------------------------------------------------
 proc ::confLink::appliquer { } {
    variable private
@@ -127,8 +127,8 @@ proc ::confLink::appliquer { } {
 }
 
 #------------------------------------------------------------
-# getLabel
-#    retourne le titre de la fenetre
+# ::confLink::getLabel
+#    Retourne le titre de la fenetre
 #
 # return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
@@ -139,9 +139,9 @@ proc ::confLink::getLabel { } {
 }
 
 #------------------------------------------------------------
-# ok
-# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-# la configuration, et fermer la fenetre de reglage
+# ::confLink::ok
+#    Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+#    la configuration, et fermer la fenetre de reglage
 #------------------------------------------------------------
 proc ::confLink::ok { } {
    variable private
@@ -154,8 +154,8 @@ proc ::confLink::ok { } {
 }
 
 #------------------------------------------------------------
-# fermer
-# Fonction appellee lors de l'appui sur le bouton 'Fermer'
+# ::confLink::fermer
+#    Fonction appellee lors de l'appui sur le bouton 'Fermer'
 #------------------------------------------------------------
 proc ::confLink::fermer { } {
    variable private
@@ -168,9 +168,9 @@ proc ::confLink::fermer { } {
 }
 
 #------------------------------------------------------------
-# confLink::recup_position
-# Permet de recuperer et de sauvegarder la position de la
-# fenetre de configuration de la liaison
+# ::confLink::recup_position
+#    Permet de recuperer et de sauvegarder la position de la
+#    fenetre de configuration de la liaison
 #------------------------------------------------------------
 proc ::confLink::recup_position { } {
    variable private
@@ -185,13 +185,13 @@ proc ::confLink::recup_position { } {
 }
 
 #------------------------------------------------------------
-# createDialog
+# ::confLink::createDialog
 #    Affiche la fenetre a onglet
 # 
-# Parametres : 
-#    authorizedNamespaces : liste des onglets a afficher
-#        si la chaine est vide tous les onglets sont affiches
-#    configurationTitle : titre complementaire de la fenetres de dialogue
+# Parametres :
+#    authorizedNamespaces : Liste des onglets a afficher
+#      Si la chaine est vide tous les onglets sont affiches
+#    configurationTitle : Titre complementaire de la fenetres de dialogue
 # return 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
@@ -299,20 +299,20 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 
 #------------------------------------------------------------
 # ::confLink::create
-#    cree une liaison
-#   
-#    retourne le numero du link
-#      le numero du link est attribue automatiquement
-#      si ce link est deja cree, on retourne le numero du link existant
+#    Cree une liaison
 #
-#   retourne une chaine vide si le type du lien n'existe pas
-#   exemple :
-#   ::confLink::create "Quickaudine0" "cam1" "acquisition" "bit 1"
-#   1  
-#   ::confLink::create "QuickRemote1" "cam1" "longuepose" "bit 1"
-#   2  
-#   ::confLink::create "QuickRemote1" "cam2" "longuepose" "bit 2"
-#   2  
+#    Retourne le numero du link
+#      Le numero du link est attribue automatiquement
+#      Si ce link est deja cree, on retourne le numero du link existant
+#
+#    Retourne une chaine vide si le type du lien n'existe pas
+#    Exemple :
+#    ::confLink::create "quickaudine0" "cam1" "acquisition" "bit 1"
+#    1
+#    ::confLink::create "quickremote1" "cam1" "longuepose" "bit 1"
+#    2
+#    ::confLink::create "quickremote1" "cam2" "longuepose" "bit 2"
+#    2
 #------------------------------------------------------------
 proc ::confLink::create { linkLabel deviceId usage comment } {
    set linkNamespace [getLinkNamespace $linkLabel]
@@ -326,13 +326,13 @@ proc ::confLink::create { linkLabel deviceId usage comment } {
 
 #------------------------------------------------------------
 # ::confLink::delete 
-#    supprime une utilisation d'une liaison
-#    et supprime la liaison si elle n'est plus utilisee par aucun autre peripherique
-#   
-#    retourne rien
+#    Supprime une utilisation d'une liaisonet supprime la
+#    liaison si elle n'est plus utilisee par aucun autre peripherique
 #
-#   exemple :
-#   ::confLink::delete  "QuickRemote0"  "cam1" "longuepose"
+#    Retourne rien
+#
+#    Exemple :
+#    ::confLink::delete "quickremote0" "cam1" "longuepose"
 #------------------------------------------------------------
 proc ::confLink::delete { linkLabel deviceId usage } {
    set linkNamespace [getLinkNamespace $linkLabel]
@@ -342,9 +342,9 @@ proc ::confLink::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-# select [label]
-# Selectionne un onglet correspondant au namespace donne en parametre
-# Si linkNamespace est omis ou inconnu, le premier onglet est selectionne
+# ::confLink::select [label]
+#    Selectionne un onglet correspondant au namespace donne en parametre
+#    Si linkNamespace est omis ou inconnu, le premier onglet est selectionne
 #------------------------------------------------------------
 proc ::confLink::select { { linkNamespace "" } } {
    variable private
@@ -361,8 +361,8 @@ proc ::confLink::select { { linkNamespace "" } } {
 }
 
 #------------------------------------------------------------
-# configureDriver
-# configure le driver dont le label est dans private(linkLabel)
+# ::confLink::configureDriver
+#    Configure le driver dont le label est dans private(linkLabel)
 #------------------------------------------------------------
 proc ::confLink::configureDriver { } {
    variable private
@@ -386,9 +386,9 @@ proc ::confLink::configureDriver { } {
 }
 
 #------------------------------------------------------------
-# stopDriver
-#    arrete un link, si le nom d'un link est donne en parametre
-#    arrete tous les links, si aucun link est donne en parametre
+# ::confLink::stopDriver
+#    Arrete un link, si le nom d'un link est donne en parametre
+#    Arrete tous les links, si aucun link est donne en parametre
 # return rien
 #------------------------------------------------------------
 proc ::confLink::stopDriver { { linkLabel "" } } {
@@ -401,17 +401,17 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 }
 
 #------------------------------------------------------------
-# findDriver
-# recherche les fichiers .tcl presents dans driverPattern
+# ::confLink::findDriver
+#    Recherche les fichiers .tcl presents dans driverPattern
 #
-# conditions :
-#  - le driver doit retourner un namespace non nul quand on charge son source .tcl
-#  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
-#  - le driver doit avoir une procedure getlabel
-# 
-# si le driver remplit les conditions
-#    son label est ajoute dans la liste driverlist, et son namespace est ajoute dans namespacelist
-#    sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
+#    Conditions :
+#      - Le driver doit retourner un namespace non nul quand on charge son source .tcl
+#      - Le driver doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
+#      - Le driver doit avoir une procedure getlabel
+#
+#    Si le driver remplit les conditions :
+#      Son label est ajoute dans la liste driverlist, et son namespace est ajoute dans namespacelist
+#      Sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
 #
 # retrun 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
@@ -467,8 +467,8 @@ proc ::confLink::findDriver { } {
 }
 
 #------------------------------------------------------------
-# displayConnectMessage
-# Affichage d'un message d'alerte pendant la connexion d'une liaison au demarrage
+# ::confLink::displayConnectMessage
+#    Affichage d'un message d'alerte pendant la connexion d'une liaison au demarrage
 #------------------------------------------------------------
 proc ::confLink::displayConnectMessage { } {
    variable private
@@ -510,15 +510,15 @@ proc ::confLink::displayConnectMessage { } {
 }
 
 #------------------------------------------------------------
-# ::confLink::getLinkLabels 
-#    retourne les libelles des link disponibles correspondant aux
+# ::confLink::getLinkLabels
+#    Retourne les libelles des link disponibles correspondant aux
 #    namespaces fourni en parametre
-#   
-#    retourne une liste vide si namespace n'existe pas
 #
-#   exemple :
-#   getInstanceLabels  { quickremote parallelport }
-#     { "QuickRemote0" "QuickRemote1" "Port_parallèle1" "Port_parallèle2" }
+#    Retourne une liste vide si namespace n'existe pas
+#
+#    Exemple :
+#    getLinkLabels { quickremote parallelport }
+#      { "quickremote0" "quickremote1" "LPT1:" "LPT2:" }
 #------------------------------------------------------------
 proc ::confLink::getLinkLabels { namespaces } {
    variable private
@@ -538,13 +538,13 @@ proc ::confLink::getLinkLabels { namespaces } {
 
 #------------------------------------------------------------
 # ::confLink::getNamespaceLabel 
-#    retourne le libelle du namespace
-#   
-#    retourne une chaine vide si namespace n'existe pas
+#    Retourne le libelle du namespace
 #
-#   exemple :
-#   getInstanceLabels "parallelport"
-#     { "Port parallèle" }
+#    Retourne une chaine vide si namespace n'existe pas
+#
+#    Exemple :
+#    getNamespaceLabel "parallelport"
+#      { "Port parallèle" }
 #------------------------------------------------------------
 proc ::confLink::getNamespaceLabel { namespace } {
    variable private
@@ -560,13 +560,13 @@ proc ::confLink::getNamespaceLabel { namespace } {
 
 #------------------------------------------------------------
 # ::confLink::getLinkNamespace
-#  retourne le namespace du link
-#   
-#  retourne une chaine vide si le link n'existe pas
+#    Retourne le namespace du link
 #
-#  exemple :
-#  getInstanceLabels "QuickRemote1"
-#     quickremote
+#    Retourne une chaine vide si le link n'existe pas
+#
+#    Exemple :
+#    getLinkNamespace "LPT1:"
+#      parallelport
 #------------------------------------------------------------
 proc ::confLink::getLinkNamespace { linkLabel } {
    variable private
@@ -583,13 +583,13 @@ proc ::confLink::getLinkNamespace { linkLabel } {
 
 #------------------------------------------------------------
 # ::confLink::getLinkNo
-#    retourne le numero de la liaison
-#   
-#    retourne une chaine vide si la liaison est fermee
+#    Retourne le numero de la liaison
 #
-#   exemple :
-#   getInstanceLabels "QuickRemote1"
-#     1
+#    Retourne une chaine vide si la liaison est fermee
+#
+#    Exemple :
+#    getLinkNo "quickremote0"
+#      1
 #------------------------------------------------------------
 proc ::confLink::getLinkNo { linkLabel } {
    variable private
@@ -599,7 +599,7 @@ proc ::confLink::getLinkNo { linkLabel } {
 
    set linkNamespace [::confLink::getLinkNamespace $linkLabel]
    if { $linkNamespace != "" } {
-      set linkIndex   [$linkNamespace\:\:getLinkIndex $linkLabel]
+      set linkIndex [$linkNamespace\:\:getLinkIndex $linkLabel]
       #--- je recherche la liaison deja ouverte qui a le meme namespace et le meme index
       foreach linkNo [link::list] {
          if {    "[link$linkNo drivername]" ==  $linkNamespace
@@ -613,13 +613,13 @@ proc ::confLink::getLinkNo { linkLabel } {
 }
 
 #------------------------------------------------------------
-# run
-# Affiche la fenetre de choix et de configuration
+# ::confLink::run
+#    Affiche la fenetre de choix et de configuration
 # 
-#  parametres :
-#    linkLabel : link pre-selectionne
-#    authorizedNamespaces : namespaces autorises (optionel)
-#    configurationTitle : titre de la fenetre de configuration (optionel)
+#    Parametres :
+#      linkLabel : link pre-selectionne
+#      authorizedNamespaces : namespaces autorises (optionel)
+#      configurationTitle : titre de la fenetre de configuration (optionel)
 #------------------------------------------------------------
 proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { configurationTitle "" } } {
    variable private

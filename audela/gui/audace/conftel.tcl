@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.18 2006-11-24 15:51:43 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.19 2006-11-25 21:04:20 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -731,7 +731,10 @@ namespace eval ::confTel {
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
-         -command { ::confLink::run ::confTel(lx200,port) { serialport audinet } "controle LX200" }
+         -command {
+            ::confLink::run ::confTel(lx200,port) { serialport audinet } \
+               "- $caption(conftel,controle) - $caption(conftel,lx200)"
+         }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -958,7 +961,10 @@ namespace eval ::confTel {
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
-         -command { ::confLink::run ::confTel(ouranos,port) { serialport } "controle Ouranos" }
+         -command {
+            ::confLink::run ::confTel(ouranos,port) { serialport } \
+               "- $caption(conftel,controle) - $caption(conftel,ouranos)"
+         }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -padx 10 -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -1385,7 +1391,10 @@ namespace eval ::confTel {
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
-         -command { ::confLink::run ::confTel(audecom,port) { serialport } "controle AudeCom" }
+         -command {
+            ::confLink::run ::confTel(audecom,port) { serialport } \
+               "- $caption(conftel,controle) - $caption(conftel,audecom)"
+         }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -1615,7 +1624,10 @@ namespace eval ::confTel {
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
-         -command { ::confLink::run ::confTel(temma,port) { serialport } "controle Temma" }
+         -command {
+            ::confLink::run ::confTel(temma,port) { serialport } \
+               "- $caption(conftel,controle) - $caption(conftel,temma)"
+         }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -1993,7 +2005,10 @@ namespace eval ::confTel {
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
-         -command { ::confLink::run ::confTel(celestron,port) { serialport } "controle Celestron" }
+         -command {
+            ::confLink::run ::confTel(celestron,port) { serialport } \
+               "- $caption(conftel,controle) - $caption(conftel,celestron)"
+         }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -2248,127 +2263,6 @@ namespace eval ::confTel {
       }
 
       switch -exact -- $conf(telescope) {
-         audecom {
-               set confTel(lx200,connect)     "0"
-               set confTel(ouranos,connect)   "0"
-               set confTel(audecom,connect)   "1"
-               set confTel(temma,connect)     "0"
-               set confTel(ascom,connect)     "0"
-               set confTel(celestron,connect) "0"
-               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create audecom $conf(audecom,port) } msg ]
-               if { $erreur == "1" } {
-                  if { $audace(list_com) == "" } {
-                     #--- Commentaire uniquement en anglais (donc pas de caption)
-                     append msg "\nNo Port COM."
-                  }
-                  tk_messageBox -message "$msg" -icon error
-                  set confTel(audecom,connect) "0"
-               } else {
-                  console::affiche_erreur "$caption(conftel,port_audecom) $caption(conftel,2points)\
-                     $conf(audecom,port)\n"
-                  set audace(telNo) $msg
-                  ::confTel::connectAudeCom
-                  #--- Lit et affiche la version du firmware
-                  set v_firmware [ tel$audace(telNo) firmware ]
-                  set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
-                  console::affiche_erreur "$caption(conftel,audecom_ver_firmware)$v_firmware\n"
-                  console::affiche_saut "\n"
-                  #--- Transfere les parametres des moteurs dans le microcontroleur
-                  tel$audace(telNo) slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
-                  tel$audace(telNo) pulse $conf(audecom,limp)
-                  tel$audace(telNo) mechanicalplay $conf(audecom,rat_ad) $conf(audecom,rat_dec)
-                  tel$audace(telNo) focspeed $conf(audecom,vitesse)
-                  #--- R : Inhibe le PEC
-                  tel$audace(telNo) pec_period 0
-                  #--- Transfere les corrections pour le PEC dans le microcontroleur
-                  for { set i 0 } { $i <= 19 } { incr i } {
-                     tel$audace(telNo) pec_speed $conf(audecom,t$i)
-                  }
-                  #--- r : Active ou non le PEC
-                  if { $conf(audecom,pec) == "1" } {
-                     tel$audace(telNo) pec_period $conf(audecom,rpec)
-                  }
-                  #--- Transfere les parametres de derive dans le microcontroleur
-                  set vit_der_alpha "0" ; set vit_der_delta "0"
-                  if { $confTel(fenetre,mobile,valider) == "1" } {
-                     if { $conf(audecom,mobile) == "1" } {
-                        switch -exact -- $conf(audecom,type) {
-                           0 { set vit_der_alpha "43636" ; set vit_der_delta "0" } ; #--- Lune
-                           1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" } ; #--- Soleil
-                           2 { set vit_der_alpha $conf(audecom,ad) ; set vit_der_delta $conf(audecom,dec) } ; #--- Comete
-                           3 { set vit_der_alpha "0" ; set vit_der_delta "0" } ; #--- Etoile
-                        }
-                     }
-                  } else {
-                     catch { set frm $frmm(Telscp3) }
-                     set confTel(audecom,mobile) "0"
-                     set conf(audecom,mobile)    "0"
-                     if { $conf(telescope,start) != "1" } {
-                        $frm.mobile configure
-                     }
-                  }
-                  #--- Precaution pour ne jamais diviser par zero
-                  if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
-                  if { $vit_der_delta == "0" } { set vit_der_delta "1" }
-                  #--- Calcul de la correction
-                  set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
-                  set alpha [ expr round($alpha) ]
-                  set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
-                  set delta [ expr round($delta) ]
-                  #--- Bornage de la correction
-                  if { $alpha > "99999999" }  { set alpha "99999999" }
-                  if { $alpha < "-99999999" } { set alpha "-99999999" }
-                  if { $delta > "99999999" }  { set delta "99999999" }
-                  if { $delta < "-99999999" } { set delta "-99999999" }
-                  #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
-                  tel$audace(telNo) radec motor off
-                  tel$audace(telNo) driftspeed $alpha $delta
-                  tel$audace(telNo) radec motor on
-                  #--- Affichage de la position du telescope
-                 ### ::telescope::monture_allemande
-               }
-            }
-         ouranos {
-               set conf(raquette)             "0"
-               set confTel(lx200,connect)     "0"
-               set confTel(ouranos,connect)   "1"
-               set confTel(audecom,connect)   "0"
-               set confTel(temma,connect)     "0"
-               set confTel(ascom,connect)     "0"
-               set confTel(celestron,connect) "0"
-               #--- Arrete la lecture des coordonnees
-               set ouranoscom(lecture) "0"
-               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create ouranos $conf(ouranos,port) } msg ]
-               if { $erreur == "1" } {
-                  if { $audace(list_com) == "" } {
-                     #--- Commentaire uniquement en anglais (donc pas de caption)
-                     append msg "\nNo Port COM."
-                  }
-                  tk_messageBox -message "$msg" -icon error
-               } else {
-                  console::affiche_erreur "$caption(conftel,port_ouranos) $caption(conftel,2points)\
-                     $conf(ouranos,port)\n"
-                  console::affiche_erreur "$caption(conftel,ouranos_res_codeurs)\n"
-                  console::affiche_erreur "$caption(conftel,ra) $caption(conftel,2points)\
-                     $conf(ouranos,cod_ra) $caption(conftel,ouranos_pas) $caption(conftel,et) $caption(conftel,dec)\
-                     $caption(conftel,2points) $conf(ouranos,cod_dec) $caption(conftel,ouranos_pas)\n"
-                  console::affiche_saut "\n"
-                  set audace(telNo) $msg
-                  set ouranoscom(tty) [ tel$audace(telNo) channel ]
-                  #--- Initialisation de l'interface Ouranos
-                  tel$audace(telNo) invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
-                  tel$audace(telNo) resolution $conf(ouranos,cod_ra) $conf(ouranos,cod_dec)
-                  #--- Initialisation de l'affichage
-                  set confTel(ouranos,coord_ra) ""
-                  set confTel(ouranos,coord_dec) ""
-                  #--- Statut du port
-                  set confTel(ouranos,status) $caption(conftel,ouranos_on)
-               }
-               #--- Gestion des boutons actifs/inactifs
-               ::confTel::MatchOuranos
-            }
          lx200 {
             switch [::confLink::getLinkNamespace $conf(lx200,port)] {
                audinet {
@@ -2400,8 +2294,13 @@ namespace eval ::confTel {
                      } else {
                         tel$audace(telNo) longformat on
                      }
-                     #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [confLink::create $confTel(lx200,port) "tel$audace(telNo)" "control" ""]
+                     #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+                     set linkNo [::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
+                     #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                     if { [ winfo exists $audace(base).confLink ] } {
+                        ::serialport::refreshAvailableList
+                        ::serialport::selectConfigLink $conf(lx200,port)
+                     }
                   }
                }
                serialport {
@@ -2432,141 +2331,293 @@ namespace eval ::confTel {
                      if { $conf(lx200,modele) == "Ite-lente" } {
                         tel$audace(telNo) tempo $conf(lx200,ite-lente_tempo)
                      }
-                     #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
+                     #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+                     set linkNo [::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
+                     #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                     if { [ winfo exists $audace(base).confLink ] } {
+                        ::serialport::refreshAvailableList
+                        ::serialport::selectConfigLink $conf(lx200,port)
+                     }
                   }
                }
             }
          }
+         ouranos {
+            set conf(raquette)             "0"
+            set confTel(lx200,connect)     "0"
+            set confTel(ouranos,connect)   "1"
+            set confTel(audecom,connect)   "0"
+            set confTel(temma,connect)     "0"
+            set confTel(ascom,connect)     "0"
+            set confTel(celestron,connect) "0"
+            #--- Arrete la lecture des coordonnees
+            set ouranoscom(lecture) "0"
+            if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+            set erreur [ catch { tel::create ouranos $conf(ouranos,port) } msg ]
+            if { $erreur == "1" } {
+               if { $audace(list_com) == "" } {
+                  #--- Commentaire uniquement en anglais (donc pas de caption)
+                  append msg "\nNo Port COM."
+               }
+               tk_messageBox -message "$msg" -icon error
+            } else {
+               console::affiche_erreur "$caption(conftel,port_ouranos) $caption(conftel,2points)\
+                  $conf(ouranos,port)\n"
+               console::affiche_erreur "$caption(conftel,ouranos_res_codeurs)\n"
+               console::affiche_erreur "$caption(conftel,ra) $caption(conftel,2points)\
+                  $conf(ouranos,cod_ra) $caption(conftel,ouranos_pas) $caption(conftel,et) $caption(conftel,dec)\
+                  $caption(conftel,2points) $conf(ouranos,cod_dec) $caption(conftel,ouranos_pas)\n"
+               console::affiche_saut "\n"
+               set audace(telNo) $msg
+               set ouranoscom(tty) [ tel$audace(telNo) channel ]
+               #--- Initialisation de l'interface Ouranos
+               tel$audace(telNo) invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
+               tel$audace(telNo) resolution $conf(ouranos,cod_ra) $conf(ouranos,cod_dec)
+               #--- Initialisation de l'affichage
+               set confTel(ouranos,coord_ra) ""
+               set confTel(ouranos,coord_dec) ""
+               #--- Statut du port
+               set confTel(ouranos,status) $caption(conftel,ouranos_on)
+               #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+               set linkNo [::confLink::create $conf(ouranos,port) "tel$audace(telNo)" "control" ""]
+               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+               if { [ winfo exists $audace(base).confLink ] } {
+                  ::serialport::refreshAvailableList
+                  ::serialport::selectConfigLink $conf(ouranos,port)
+               }
+            }
+            #--- Gestion des boutons actifs/inactifs
+            ::confTel::MatchOuranos
+         }
+         audecom {
+            set confTel(lx200,connect)     "0"
+            set confTel(ouranos,connect)   "0"
+            set confTel(audecom,connect)   "1"
+            set confTel(temma,connect)     "0"
+            set confTel(ascom,connect)     "0"
+            set confTel(celestron,connect) "0"
+            if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+            set erreur [ catch { tel::create audecom $conf(audecom,port) } msg ]
+            if { $erreur == "1" } {
+               if { $audace(list_com) == "" } {
+                  #--- Commentaire uniquement en anglais (donc pas de caption)
+                  append msg "\nNo Port COM."
+               }
+               tk_messageBox -message "$msg" -icon error
+               set confTel(audecom,connect) "0"
+            } else {
+               console::affiche_erreur "$caption(conftel,port_audecom) $caption(conftel,2points)\
+                  $conf(audecom,port)\n"
+               set audace(telNo) $msg
+               ::confTel::connectAudeCom
+               #--- Lit et affiche la version du firmware
+               set v_firmware [ tel$audace(telNo) firmware ]
+               set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
+               console::affiche_erreur "$caption(conftel,audecom_ver_firmware)$v_firmware\n"
+               console::affiche_saut "\n"
+               #--- Transfere les parametres des moteurs dans le microcontroleur
+               tel$audace(telNo) slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
+               tel$audace(telNo) pulse $conf(audecom,limp)
+               tel$audace(telNo) mechanicalplay $conf(audecom,rat_ad) $conf(audecom,rat_dec)
+               tel$audace(telNo) focspeed $conf(audecom,vitesse)
+               #--- R : Inhibe le PEC
+               tel$audace(telNo) pec_period 0
+               #--- Transfere les corrections pour le PEC dans le microcontroleur
+               for { set i 0 } { $i <= 19 } { incr i } {
+                  tel$audace(telNo) pec_speed $conf(audecom,t$i)
+               }
+               #--- r : Active ou non le PEC
+               if { $conf(audecom,pec) == "1" } {
+                  tel$audace(telNo) pec_period $conf(audecom,rpec)
+               }
+               #--- Transfere les parametres de derive dans le microcontroleur
+               set vit_der_alpha "0" ; set vit_der_delta "0"
+               if { $confTel(fenetre,mobile,valider) == "1" } {
+                  if { $conf(audecom,mobile) == "1" } {
+                     switch -exact -- $conf(audecom,type) {
+                        0 { set vit_der_alpha "43636" ; set vit_der_delta "0" } ; #--- Lune
+                        1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" } ; #--- Soleil
+                        2 { set vit_der_alpha $conf(audecom,ad) ; set vit_der_delta $conf(audecom,dec) } ; #--- Comete
+                        3 { set vit_der_alpha "0" ; set vit_der_delta "0" } ; #--- Etoile
+                     }
+                  }
+               } else {
+                  catch { set frm $frmm(Telscp3) }
+                  set confTel(audecom,mobile) "0"
+                  set conf(audecom,mobile)    "0"
+                  if { $conf(telescope,start) != "1" } {
+                     $frm.mobile configure
+                  }
+               }
+               #--- Precaution pour ne jamais diviser par zero
+               if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
+               if { $vit_der_delta == "0" } { set vit_der_delta "1" }
+               #--- Calcul de la correction
+               set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
+               set alpha [ expr round($alpha) ]
+               set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
+               set delta [ expr round($delta) ]
+               #--- Bornage de la correction
+               if { $alpha > "99999999" }  { set alpha "99999999" }
+               if { $alpha < "-99999999" } { set alpha "-99999999" }
+               if { $delta > "99999999" }  { set delta "99999999" }
+               if { $delta < "-99999999" } { set delta "-99999999" }
+               #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
+               tel$audace(telNo) radec motor off
+               tel$audace(telNo) driftspeed $alpha $delta
+               tel$audace(telNo) radec motor on
+               #--- Affichage de la position du telescope
+              ### ::telescope::monture_allemande
+               #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+               set linkNo [::confLink::create $conf(audecom,port) "tel$audace(telNo)" "control" ""]
+               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+               if { [ winfo exists $audace(base).confLink ] } {
+                  ::serialport::refreshAvailableList
+                  ::serialport::selectConfigLink $conf(audecom,port)
+               }
+            }
+         }
          temma {
-               set confTel(lx200,connect)     "0"
-               set confTel(ouranos,connect)   "0"
-               set confTel(audecom,connect)   "0"
-               set confTel(temma,connect)     "1"
-               set confTel(ascom,connect)     "0"
-               set confTel(celestron,connect) "0"
-               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create temma $conf(temma,port) } msg ]
-               if { $erreur == "1" } {
-                  if { $audace(list_com) == "" } {
-                     #--- Commentaire uniquement en anglais (donc pas de caption)
-                     append msg "\nNo Port COM."
-                  }
-                  tk_messageBox -message "$msg" -icon error
-               } else {
-                  if { $conf(temma,modele) == "0" } {
-                     set confTel(temma,modele) $caption(conftel,temma_modele_1)
-                  } elseif { $conf(temma,modele) == "1" } {
-                     set confTel(temma,modele) $caption(conftel,temma_modele_2)
-                  } else {
-                     set confTel(temma,modele) $caption(conftel,temma_modele_3)
-                  }
-                  console::affiche_erreur "$caption(conftel,port_temma) ($confTel(temma,modele)) \
-                     $caption(conftel,2points) $conf(temma,port)\n"
-                  set audace(telNo) $msg
-                  #--- Lit et affiche la version du Temma
-                  set version [ tel$audace(telNo) firmware ]
-                  console::affiche_erreur "$caption(conftel,temma_version) $version\n"
-                  console::affiche_saut "\n"
-                  #--- Demande et recoit la latitude
-                  set latitude_temma [ tel$audace(telNo) getlatitude ]
-                  #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
-                  set signe_lat [ string range $latitude_temma 0 0 ]
-                  if { $signe_lat == "-" } {
-                     set signe_lat "S"
-                     set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
-                     set lat_deg [ string range $lat_deg 1 2 ]
-                  } else {
-                     set signe_lat "N"
-                     set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
-                  }
-                  set lat_min [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 1 ]
-                  set lat_min_deci [ format "%.1f" [ expr [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 2 ] / 60.0 ] ]
-                  set lat_min_deci [ string range $lat_min_deci 2 2 ]
-                  set latitude_temma "$signe_lat $lat_deg° $lat_min.$lat_min_deci'"
-                  #--- Affichage de la latitude
-                  ::console::affiche_erreur "$caption(conftel,temma_init_module)\n"
-                  ::console::affiche_erreur "$caption(conftel,temma_latitude) $latitude_temma\n\n"
-                  #--- Prise en compte des encodeurs
-                  tel$audace(telNo) encoder "1"
-                  #--- Force la mise en marche des moteurs
-                  tel$audace(telNo) radec motor on
-                  #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
-                  if { $conf(temma,liaison) == "1" } {
-                     tel$audace(telNo) correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
-                  } else {
-                     tel$audace(telNo) correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
-                  }
-                  #--- Correction de la vitesse de suivi en ad et en dec
-                  if { $conf(temma,type) == "0" } {
-                     tel$audace(telNo) driftspeed 0 0
-                     ::console::affiche_resultat "$caption(conftel,temma_mobile_etoile)\n\n"
-                  } elseif { $conf(temma,type) == "1" } {
-                     tel$audace(telNo) driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
-                     set correction_suivi [ tel$audace(telNo) driftspeed ]
-                     ::console::affiche_resultat "$caption(conftel,temma_ctl_mobile:)\n"
-                     ::console::affiche_resultat "$caption(conftel,temma_mobile_ad) $caption(conftel,2points)\
-                        [ lindex $correction_suivi 0 ]\n"
-                     ::console::affiche_resultat "$caption(conftel,temma_mobile_dec) $caption(conftel,2points)\
-                        [ lindex $correction_suivi 1 ]\n\n"
-                  }
-                  #--- Affichage de la position du telescope
-                  ::telescope::monture_allemande
+            set confTel(lx200,connect)     "0"
+            set confTel(ouranos,connect)   "0"
+            set confTel(audecom,connect)   "0"
+            set confTel(temma,connect)     "1"
+            set confTel(ascom,connect)     "0"
+            set confTel(celestron,connect) "0"
+            if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+            set erreur [ catch { tel::create temma $conf(temma,port) } msg ]
+            if { $erreur == "1" } {
+               if { $audace(list_com) == "" } {
+                  #--- Commentaire uniquement en anglais (donc pas de caption)
+                  append msg "\nNo Port COM."
                }
-               #--- Gestion des boutons actifs/inactifs
-               ::confTel::config_correc_Temma
+               tk_messageBox -message "$msg" -icon error
+            } else {
+               if { $conf(temma,modele) == "0" } {
+                  set confTel(temma,modele) $caption(conftel,temma_modele_1)
+               } elseif { $conf(temma,modele) == "1" } {
+                  set confTel(temma,modele) $caption(conftel,temma_modele_2)
+               } else {
+                  set confTel(temma,modele) $caption(conftel,temma_modele_3)
+               }
+               console::affiche_erreur "$caption(conftel,port_temma) ($confTel(temma,modele)) \
+                  $caption(conftel,2points) $conf(temma,port)\n"
+               set audace(telNo) $msg
+               #--- Lit et affiche la version du Temma
+               set version [ tel$audace(telNo) firmware ]
+               console::affiche_erreur "$caption(conftel,temma_version) $version\n"
+               console::affiche_saut "\n"
+               #--- Demande et recoit la latitude
+               set latitude_temma [ tel$audace(telNo) getlatitude ]
+               #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
+               set signe_lat [ string range $latitude_temma 0 0 ]
+               if { $signe_lat == "-" } {
+                  set signe_lat "S"
+                  set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
+                  set lat_deg [ string range $lat_deg 1 2 ]
+               } else {
+                  set signe_lat "N"
+                  set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
+               }
+               set lat_min [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 1 ]
+               set lat_min_deci [ format "%.1f" [ expr [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 2 ] / 60.0 ] ]
+               set lat_min_deci [ string range $lat_min_deci 2 2 ]
+               set latitude_temma "$signe_lat $lat_deg° $lat_min.$lat_min_deci'"
+               #--- Affichage de la latitude
+               ::console::affiche_erreur "$caption(conftel,temma_init_module)\n"
+               ::console::affiche_erreur "$caption(conftel,temma_latitude) $latitude_temma\n\n"
+               #--- Prise en compte des encodeurs
+               tel$audace(telNo) encoder "1"
+               #--- Force la mise en marche des moteurs
+               tel$audace(telNo) radec motor on
+               #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
+               if { $conf(temma,liaison) == "1" } {
+                  tel$audace(telNo) correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
+               } else {
+                  tel$audace(telNo) correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
+               }
+               #--- Correction de la vitesse de suivi en ad et en dec
+               if { $conf(temma,type) == "0" } {
+                  tel$audace(telNo) driftspeed 0 0
+                  ::console::affiche_resultat "$caption(conftel,temma_mobile_etoile)\n\n"
+               } elseif { $conf(temma,type) == "1" } {
+                  tel$audace(telNo) driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
+                  set correction_suivi [ tel$audace(telNo) driftspeed ]
+                  ::console::affiche_resultat "$caption(conftel,temma_ctl_mobile:)\n"
+                  ::console::affiche_resultat "$caption(conftel,temma_mobile_ad) $caption(conftel,2points)\
+                     [ lindex $correction_suivi 0 ]\n"
+                  ::console::affiche_resultat "$caption(conftel,temma_mobile_dec) $caption(conftel,2points)\
+                     [ lindex $correction_suivi 1 ]\n\n"
+               }
+               #--- Affichage de la position du telescope
+               ::telescope::monture_allemande
+               #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+               set linkNo [::confLink::create $conf(temma,port) "tel$audace(telNo)" "control" ""]
+               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+               if { [ winfo exists $audace(base).confLink ] } {
+                  ::serialport::refreshAvailableList
+                  ::serialport::selectConfigLink $conf(temma,port)
+               }
             }
+            #--- Gestion des boutons actifs/inactifs
+            ::confTel::config_correc_Temma
+         }
          ascom {
-               set confTel(lx200,connect)     "0"
-               set confTel(ouranos,connect)   "0"
-               set confTel(audecom,connect)   "0"
-               set confTel(temma,connect)     "0"
-               set confTel(ascom,connect)     "1"
-               set confTel(celestron,connect) "0"
-               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] } msg ]
-               if { $erreur == "1" } {
-                  if { $confTel(ascom_drivers) == "" } {
-                     #--- Commentaire uniquement en anglais (donc pas de caption)
-                     append msg "\nNo ASCOM Driver."
-                  }
-                  tk_messageBox -message "$msg" -icon error
-               } else {
-                  console::affiche_erreur "$caption(conftel,driver_ascom) \
-                     $caption(conftel,2points) [ lindex $conf(ascom,driver) 1 ] \n"
-                  console::affiche_saut "\n"
-                  set audace(telNo) $msg
+            set confTel(lx200,connect)     "0"
+            set confTel(ouranos,connect)   "0"
+            set confTel(audecom,connect)   "0"
+            set confTel(temma,connect)     "0"
+            set confTel(ascom,connect)     "1"
+            set confTel(celestron,connect) "0"
+            if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+            set erreur [ catch { tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] } msg ]
+            if { $erreur == "1" } {
+               if { $confTel(ascom_drivers) == "" } {
+                  #--- Commentaire uniquement en anglais (donc pas de caption)
+                  append msg "\nNo ASCOM Driver."
                }
+               tk_messageBox -message "$msg" -icon error
+            } else {
+               console::affiche_erreur "$caption(conftel,driver_ascom) \
+                  $caption(conftel,2points) [ lindex $conf(ascom,driver) 1 ] \n"
+               console::affiche_saut "\n"
+               set audace(telNo) $msg
             }
+         }
          celestron {
-               set confTel(lx200,connect)     "0"
-               set confTel(ouranos,connect)   "0"
-               set confTel(audecom,connect)   "0"
-               set confTel(temma,connect)     "0"
-               set confTel(ascom,connect)     "0"
-               set confTel(celestron,connect) "1"
-               if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
-               set erreur [ catch { tel::create celestron $conf(celestron,port) } msg ]
-               if { $erreur == "1" } {
-                  if { $audace(list_com) == "" } {
-                     #--- Commentaire uniquement en anglais (donc pas de caption)
-                     append msg "\nNo Port COM."
-                  }
-                  tk_messageBox -message "$msg" -icon error
+            set confTel(lx200,connect)     "0"
+            set confTel(ouranos,connect)   "0"
+            set confTel(audecom,connect)   "0"
+            set confTel(temma,connect)     "0"
+            set confTel(ascom,connect)     "0"
+            set confTel(celestron,connect) "1"
+            if { [ llength [ tel::list ] ] == "1" } { tel::delete [ tel::list ] }
+            set erreur [ catch { tel::create celestron $conf(celestron,port) } msg ]
+            if { $erreur == "1" } {
+               if { $audace(list_com) == "" } {
+                  #--- Commentaire uniquement en anglais (donc pas de caption)
+                  append msg "\nNo Port COM."
+               }
+               tk_messageBox -message "$msg" -icon error
+            } else {
+               console::affiche_erreur "$caption(conftel,port_celestron)\
+                  $caption(conftel,2points) $conf(celestron,port)\n"
+               console::affiche_saut "\n"
+               set audace(telNo) $msg
+               if { $conf(celestron,format) == "0" } {
+                  tel$audace(telNo) longformat off
                } else {
-                  console::affiche_erreur "$caption(conftel,port_celestron)\
-                     $caption(conftel,2points) $conf(celestron,port)\n"
-                  console::affiche_saut "\n"
-                  set audace(telNo) $msg
-                  if { $conf(celestron,format) == "0" } {
-                     tel$audace(telNo) longformat off
-                  } else {
-                     tel$audace(telNo) longformat on
-                  }
-                  #--- je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                  set linkNo [confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" ""]
+                  tel$audace(telNo) longformat on
+               }
+               #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+               set linkNo [::confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" ""]
+               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+               if { [ winfo exists $audace(base).confLink ] } {
+                  ::serialport::refreshAvailableList
+                  ::serialport::selectConfigLink $conf(celestron,port)
                }
             }
+         }
       }
 
       #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees

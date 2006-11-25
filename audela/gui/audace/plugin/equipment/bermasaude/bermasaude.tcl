@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.6 2006-11-24 15:47:16 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.7 2006-11-25 21:02:24 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
@@ -57,8 +57,7 @@ namespace eval bermasaude {
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
-      global audace
-      global bermasaude
+      global audace bermasaude
 
       #--- Initialisation
       set bermasaude(connect) "0"
@@ -83,7 +82,6 @@ namespace eval bermasaude {
    #  return "equipment"
    #------------------------------------------------------------
    proc getDriverType { } {
-
       return "equipment"
    }
 
@@ -106,7 +104,6 @@ namespace eval bermasaude {
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
-
       return "bermasaude.htm"
    }
 
@@ -119,7 +116,6 @@ namespace eval bermasaude {
    proc initConf { } {
       variable widget
       global conf
-      global audace
 
       #--- Prise en compte des liaisons
       set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
@@ -139,8 +135,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc confToWidget { } {
       variable widget
-      global conf
-      global caption
+      global caption conf
 
       set widget(port)  $conf(bermasaude,port)
       set widget(combi) [ lindex "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
@@ -155,8 +150,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc widgetToConf { } {
       variable widget
-      global conf
-      global caption
+      global caption conf
 
       #--- Memorise la configuration de la roue a filtres BerMasAude dans le tableau conf(bermasaude,...)
       set conf(bermasaude,port)  $widget(port)
@@ -172,11 +166,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace
-      global bermasaude
-      global caption
-      global color
-      global zone
+      global audace bermasaude caption color zone
 
       #--- Je memorise la reference de la frame 
       set widget(frm) $frm
@@ -221,7 +211,10 @@ namespace eval bermasaude {
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(bermasaude,configurer)" -relief raised \
-         -command { ::confLink::run ::bermasaude::widget(port) { serialport } "controle BerMasAude" }
+         -command {
+            ::confLink::run ::bermasaude::widget(port) { serialport } \
+               "- $caption(bermasaude,controle) - $caption(bermasaude,titre)"
+         }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
       #--- Choix du port ou de la liaison
@@ -318,8 +311,7 @@ namespace eval bermasaude {
    #    Representation graphique de la roue a filtres
    #------------------------------------------------------------
    proc Representation_roue_a_filtres { } {
-      global audace
-      global zone
+      global audace zone
 
       #--- Affichage de la representation
       if { [ winfo exists $audace(base).confeqt ] } {
@@ -339,11 +331,7 @@ namespace eval bermasaude {
    #  return nothing
    #------------------------------------------------------------
    proc configureDriver { } {
-      global conf
-      global audace
-      global caption
-      global bermasaude
-      global ttybermasaude
+      global audace bermasaude caption conf ttybermasaude
 
       #--- Affichage d'un message d'alerte si necessaire
       ::confEqt::Connect_Equipement
@@ -368,22 +356,26 @@ namespace eval bermasaude {
                while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
                   after 1000
                }
-               console::affiche_saut "\n"
                console::affiche_erreur "$caption(bermasaude,bermasaude_port)\
                   $caption(bermasaude,caractere_2points) $conf(bermasaude,port)\n"
                console::affiche_erreur "$caption(bermasaude,bermasaude_combinaison)\
                   $caption(bermasaude,caractere_2points) [ lindex "$caption(bermasaude,bermasaude_bvri) \
-                     $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
-               catch {
-                  #--- Demande et affiche la version du logiciel du microcontroleur
-                  set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
-                  console::affiche_erreur "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
-                  #--- Demande et affiche le nombre de filtres de la roue
-                  set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
-                  console::affiche_erreur "$caption(bermasaude,bermasaude_nbr_filtres_1)\
-                     $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
-               }
+                  $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
+               #--- Demande et affiche la version du logiciel du microcontroleur
+               set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
+               console::affiche_erreur "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
+               #--- Demande et affiche le nombre de filtres de la roue
+               set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
+               console::affiche_erreur "$caption(bermasaude,bermasaude_nbr_filtres_1)\
+                  $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
                set bermasaude(connect) "1"
+               #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
+               set linkNo [::confLink::create $conf(bermasaude,port) "$conf(confEqt)" "control" ""]
+               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+               if { [ winfo exists $audace(base).confLink ] } {
+                  ::serialport::refreshAvailableList
+                  ::serialport::selectConfigLink $conf(bermasaude,port)
+               }
             } else {
                set bermasaude(connect) "0"
             }
@@ -408,8 +400,7 @@ namespace eval bermasaude {
    #  return nothing
    #------------------------------------------------------------
    proc stopDriver { } {
-
-      return 
+      return
    }
 
    #------------------------------------------------------------
@@ -419,8 +410,7 @@ namespace eval bermasaude {
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
-
-      return  0
+      return 0
    }
 
    #==============================================================
@@ -468,8 +458,7 @@ namespace eval bermasaude {
    #    Choix des couleurs des filtres
    #------------------------------------------------------------
    proc choix_couleur { } {
-      global audace
-      global conf
+      global audace conf
 
       #--- Ouverture du fichier de parametrage des positions de la roue avec les couleurs des filtres
       if { $conf(bermasaude,combi) == "0" } {
@@ -489,9 +478,7 @@ namespace eval bermasaude {
    #    Choix du nom des boutons (couleur des filtres)
    #------------------------------------------------------------
    proc choix_nom_bouton { } {
-      global caption
-      global color
-      global bermasaude
+      global bermasaude caption color
 
       for { set i 1 } { $i <= 5 } { incr i } {
          if { $bermasaude(color_filtre_$i) == "$color(white)" } {
@@ -519,12 +506,7 @@ namespace eval bermasaude {
    #    Initialisation de la roue a filtres
    #------------------------------------------------------------
    proc filtre_init { } {
-      global audace
-      global conf
-      global caption
-      global bermasaude
-      global ttybermasaude
-      global zone
+      global audace bermasaude caption ttybermasaude zone
 
       #--- Choix des couleurs
       choix_couleur
@@ -632,11 +614,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc cmd_roue_filtres { } {
       variable widget
-      global audace
-      global caption
-      global bermasaude
-      global ttybermasaude
-      global zone
+      global audace bermasaude caption ttybermasaude zone
 
       #--- Gestion des boutons actifs/inactifs
       for { set i 1 } { $i <= 5 } { incr i } {
