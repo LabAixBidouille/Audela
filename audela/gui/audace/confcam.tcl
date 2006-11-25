@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.43 2006-11-24 15:48:39 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.44 2006-11-25 21:52:13 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -398,6 +398,15 @@ namespace eval ::confCam {
             $frm.conf_webcam configure -state disabled
             $frm.format_webcam configure -state disabled
          }
+         if { $confCam(webcam,longuepose) == "1" } {
+            pack $frm.frame10 -in $frm.frame4 -side top -fill x -pady 5
+            pack $frm.frame11 -in $frm.frame4 -side top -fill x -pady 5
+            pack $frm.frame12 -in $frm.frame4 -side top -fill x -pady 5
+         } else {
+            pack forget $frm.frame10
+            pack forget $frm.frame11
+            pack forget $frm.frame12
+         }
          if { $confCam(webcam,ccd_N_B) == "1" } {
             pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
          } else {
@@ -432,6 +441,17 @@ namespace eval ::confCam {
                #--- Bouton de configuration des APN (DSLR)
                $frm.config_telechargement configure -state disabled
             }
+         }
+         if { $confCam(dslr,longuepose) == "1" } {
+            pack $frm.configure_longuepose -in $frm.frame8 -side left -pady 10 -ipadx 10 -ipady 1
+            pack $frm.moyen_longuepose -in $frm.frame8 -anchor center -side left -padx 20
+            pack $frm.frame9 -in $frm.frame7 -anchor n -side top -fill x
+            pack $frm.frame10 -in $frm.frame7 -anchor n -side top -fill x
+         } else {
+            pack forget $frm.configure_longuepose
+            pack forget $frm.moyen_longuepose
+            pack forget $frm.frame9
+            pack forget $frm.frame10
          }
       }
    }
@@ -732,7 +752,8 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
             ::confLink::run ::confCam(audine,port) \
-               { parallelport ethernaude quickaudine audinet } "- Audine - $caption(confcam,acquisition)"
+               { parallelport ethernaude quickaudine audinet } \
+               "- $caption(confcam,acquisition) - $caption(confcam,audine)"
          }
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
@@ -853,7 +874,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera1)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -1266,7 +1286,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(hisis,port) { parallelport } "- Hi-SIS - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(hisis,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,hisis)"
          }
       pack $frm.configure -in $frm.frame11 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1371,7 +1392,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera2)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -1454,7 +1474,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(sbig,port) { parallelport } "- SBIG - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(sbig,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,sbig)"
          }
       pack $frm.configure -in $frm.frame1 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1542,7 +1563,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera3)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -1607,7 +1627,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(cookbook,port) { parallelport } "- CB245 - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(cookbook,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,cookbook)"
          }
       pack $frm.configure -in $frm.frame5 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1653,7 +1674,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera4)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -1741,7 +1761,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(starlight,port) { parallelport } "- Starlight - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(starlight,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,starlight)"
          }
       pack $frm.configure -in $frm.frame7 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1802,7 +1823,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera5)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -2020,7 +2040,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(kitty,port) { parallelport } "- Kitty - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(kitty,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,kitty)"
          }
       pack $frm.configure -in $frm.frame9 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -2125,7 +2146,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera6)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -2240,7 +2260,8 @@ namespace eval ::confCam {
       ::confCam::ConfWebCam
 
       #--- Option longue pose avec lien au site web de Steve Chambers
-      checkbutton $frm.longuepose -highlightthickness 0 -variable confCam(webcam,longuepose)
+      checkbutton $frm.longuepose -highlightthickness 0 -variable confCam(webcam,longuepose) \
+         -command { ::confCam::ConfWebCam }
       pack $frm.longuepose -in $frm.frame9 -anchor center -side left -pady 3
 
       label $frm.labURL_a -text "$caption(confcam,webcam_longuepose)" -font $audace(font,url) -fg $color(blue)
@@ -2278,15 +2299,18 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(webcam,longueposeport) \
-         -values $list_combobox
+         -values $list_combobox \
+         -modifycmd {
+            ::confCam::configureWebcamLinkLonguePose
+         }
       pack $frm.lpport -in $frm.frame10 -anchor center -side right -padx 10 -pady 5
 
       #--- Bouton de configuration des liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(webcam,longueposeport) \
-               { parallelport quickremote } "- WebCam - $caption(confcam,dslr_longuepose)"
             ::confCam::configureWebcamLinkLonguePose
+            ::confLink::run ::confCam(webcam,longueposeport) { parallelport quickremote } \
+               "- $caption(confcam,dslr_longuepose) - $caption(confcam,webcam)"
          }
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
@@ -2366,7 +2390,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera7)
          $frm.labURL_a configure -fg $color(blue)
       }
-
    }
 
    #
@@ -2435,7 +2458,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(th7852a,port) { parallelport } "- TH7852A - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(th7852a,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,th7852A)"
          }
       pack $frm.configure -in $frm.frame6 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -2488,7 +2512,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera8)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -2553,7 +2576,8 @@ namespace eval ::confCam {
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(scr1300xtc,port) { parallelport } "- SCR1300XTC - $caption(confcam,acquisition)"
+            ::confLink::run ::confCam(scr1300xtc,port) { parallelport } \
+               "- $caption(confcam,acquisition) - $caption(confcam,scr1300xtc)"
          }
       pack $frm.configure -in $frm.frame5 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -2599,7 +2623,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera9)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -2693,9 +2716,10 @@ namespace eval ::confCam {
       #--- Bouton de configuration des liaisons
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
-            ::confLink::run ::confCam(dslr,port) { gphoto2 photopc } \
-               "- $caption(confcam,dslr) - $caption(confcam,acquisition)"
             ::confCam::configureApnLink
+            ::confCam::ConfDSLR
+            ::confLink::run ::confCam(dslr,port) { gphoto2 photopc } \
+               "- $caption(confcam,acquisition) - $caption(confcam,dslr)"
          } 
       pack $frm.configure -in $frm.frame1 -side left -pady 10 -ipadx 10 -ipady 1
 
@@ -2707,7 +2731,11 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(dslr,port) \
-         -values $list_combobox
+         -values $list_combobox \
+         -modifycmd {
+            ::confCam::configureApnLink
+            ::confCam::ConfDSLR
+         }
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 20 -pady 5
 
       #--- Definition du port serie
@@ -2760,6 +2788,20 @@ namespace eval ::confCam {
          $frm.longuepose configure -state disable
       }
 
+      #--- Utilisation de la longue pose
+      checkbutton $frm.longuepose -text "$caption(confcam,dslr_longuepose)" -highlightthickness 0 \
+         -variable confCam(dslr,longuepose) -command { ::confCam::ConfDSLR }
+      pack $frm.longuepose -in $frm.frame8 -anchor w -side left -padx 10 -pady 10
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.configure_longuepose -text "$caption(confcam,configurer)" -relief raised \
+         -command {
+            ::confCam::configureAPNLinkLonguePose
+            ::confLink::run ::confCam(dslr,longueposeport) { parallelport quickremote external } \
+               "- $caption(confcam,dslr_longuepose) - $caption(confcam,dslr)"
+         }
+      pack $frm.configure_longuepose -in $frm.frame8 -side left -pady 10 -ipadx 10 -ipady 1
+
       #--- Choix du port ou de la liaison
       ComboBox $frm.moyen_longuepose \
          -width 13         \
@@ -2768,21 +2810,11 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(dslr,longueposeport) \
-         -values $list_combobox
-      pack $frm.moyen_longuepose -in $frm.frame8 -anchor center -side right -padx 20
-
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.configure_longuepose -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::confCam(dslr,longueposeport) \
-               { parallelport quickremote external } "- $caption(confcam,dslr) - $caption(confcam,dslr_longuepose)"
+         -values $list_combobox \
+         -modifycmd {
+            ::confCam::configureAPNLinkLonguePose
          }
-      pack $frm.configure_longuepose -in $frm.frame8 -side right -pady 10 -ipadx 10 -ipady 1
-
-      #--- Utilisation de la longue pose
-      checkbutton $frm.longuepose -text "$caption(confcam,dslr_longuepose)" -highlightthickness 0 \
-         -variable confCam(dslr,longuepose)
-      pack $frm.longuepose -in $frm.frame8 -anchor w -side right -padx 10 -pady 10
+      pack $frm.moyen_longuepose -in $frm.frame8 -anchor center -side left -padx 20
 
       #--- Choix du numero du bit pour la commande de la longue pose
       label $frm.lab4 -text "$caption(confcam,dslr_longueposebit)"
@@ -2902,7 +2934,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera10)
          $frm.labURLa configure -fg $color(blue)
       }
-
    }
 
    #
@@ -3060,7 +3091,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera11)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -3172,7 +3202,6 @@ namespace eval ::confCam {
          set frm $frmm(Camera12)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #
@@ -3658,7 +3687,7 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::setconfLink_WebCam
+   # confCam::configureWebcamLinkLonguePose
    #    Positionne la liaison sur celle qui vient d'etre selectionnee pour
    #    la longue pose de la camera WebCam
    #
@@ -3669,9 +3698,30 @@ namespace eval ::confCam {
       if { [ ::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "parallelport" } {
          set confCam(webcam,longueposestartvalue) "0"
          set confCam(webcam,longueposestopvalue)  "1"
-      } else {
+      } elseif { [ ::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "quickremote" } {
          set confCam(webcam,longueposestartvalue) "1"
          set confCam(webcam,longueposestopvalue)  "0"
+      }
+   }
+
+   #
+   # confCam::configureAPNLinkLonguePose
+   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour
+   #    la longue pose de la camera APN
+   #
+   proc configureAPNLinkLonguePose { } {
+      global confCam
+
+      #--- Je positionne startvalue par defaut en fonction du type de liaison
+      if { [ ::confLink::getLinkNamespace $confCam(dslr,longueposeport) ] == "parallelport" } {
+         set confCam(dslr,longueposestartvalue) "0"
+         set confCam(dslr,longueposestopvalue)  "1"
+      } elseif { [ ::confLink::getLinkNamespace $confCam(dslr,longueposeport) ] == "quickremote" } {
+         set confCam(dslr,longueposestartvalue) "1"
+         set confCam(dslr,longueposestopvalue)  "0"
+      } else {
+         set confCam(dslr,longueposestartvalue) "0"
+         set confCam(dslr,longueposestopvalue)  "1"
       }
    }
 
@@ -4116,10 +4166,10 @@ namespace eval ::confCam {
                }
             }
             webcam {
-               set camNo [ cam::create webcam usb -channel $conf(webcam,channel) \
+               set camNo [ cam::create webcam USB -channel $conf(webcam,channel) \
                   -lpport $conf(webcam,longueposeport) -name WEBCAM  ]
                console::affiche_erreur "$caption(confcam,webcam_canal_usb) ($caption(confcam,webcam))\
-                  $caption(confcam,2points) channel=$conf(webcam,channel)\n"
+                  $caption(confcam,2points) Channel = $conf(webcam,channel)\n"
                console::affiche_erreur "$caption(confcam,webcam_longuepose) $caption(confcam,2points)\
                   $conf(webcam,longuepose)\n"
                console::affiche_saut "\n"
@@ -4127,17 +4177,46 @@ namespace eval ::confCam {
                cam$camNo buf [visu$visuNo buf]
                cam$camNo mirrorh $conf(webcam,mirh)
                cam$camNo mirrorv $conf(webcam,mirv)
-               ::confVisu::visuDynamix $visuNo 255 -255
-               #--- Commande pour la Longue Pose
-               cam$camNo longuepose $conf(webcam,longuepose)
+               #--- Parametrage des longues poses
                if { $conf(webcam,longuepose) == "1" } {
-                  #--- Je cree la liaison longue pose
-                  set linkNo [::confLink::create $conf(webcam,longueposeport) cam$camNo longuepose "bit $conf(webcam,longueposelinkbit)"]
-                  cam$camNo longueposelinkno $linkNo
-                  cam$camNo longueposelinkbit $conf(webcam,longueposelinkbit)
-                  cam$camNo longueposestartvalue $conf(webcam,longueposestartvalue)
-                  cam$camNo longueposestopvalue $conf(webcam,longueposestopvalue)
+                  switch [::confLink::getLinkNamespace $conf(webcam,longueposeport)] {
+                     parallelport {
+                        #--- Je cree la liaison longue pose
+                        set linkNo [::confLink::create $conf(webcam,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,longueposelinkbit)"]
+                        #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                        if { [ winfo exists $audace(base).confLink ] } {
+                           ::parallelport::refreshAvailableList
+                           ::parallelport::selectConfigLink $conf(webcam,longueposeport)
+                        }
+                        #---
+                        cam$camNo longuepose 1
+                        cam$camNo longueposelinkno $linkNo
+                        cam$camNo longueposelinkbit $conf(webcam,longueposelinkbit)
+                        cam$camNo longueposestartvalue $conf(webcam,longueposestartvalue)
+                        cam$camNo longueposestopvalue $conf(webcam,longueposestopvalue)
+                     }
+                     quickremote {
+                        #--- Je cree la liaison longue pose
+                        set linkNo [::confLink::create $conf(webcam,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,longueposelinkbit)"]
+                        #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                        if { [ winfo exists $audace(base).confLink ] } {
+                           ::quickremote::refreshAvailableList
+                           ::quickremote::selectConfigLink $conf(webcam,longueposeport)
+                        }
+                        #---
+                        cam$camNo longuepose 1
+                        cam$camNo longueposelinkno $linkNo
+                        cam$camNo longueposelinkbit $conf(webcam,longueposelinkbit)
+                        cam$camNo longueposestartvalue $conf(webcam,longueposestartvalue)
+                        cam$camNo longueposestopvalue $conf(webcam,longueposestopvalue)
+                     }
+                  }
+               } else {
+                  #--- Pas de liaison longue pose
+                  cam$camNo longuepose 0
                }
+               #---
+               ::confVisu::visuDynamix $visuNo 255 -255
             }
             th7852a {
                set camNo [ cam::create camth $conf(th7852a,port) -name TH7852A  ]
@@ -4165,7 +4244,7 @@ namespace eval ::confCam {
             dslr {
                switch [::confLink::getLinkNamespace $conf(dslr,port)] {
                   gphoto2 {
-                     set camNo [ cam::create digicam usb -name DSLR ]
+                     set camNo [ cam::create digicam USB -name DSLR ]
                      set confCam($cam_item,camNo) $camNo
                      console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$camNo name ]\n"
@@ -4173,15 +4252,34 @@ namespace eval ::confCam {
                      cam$camNo buf $bufNo
                      cam$camNo mirrorh $conf(dslr,mirh)
                      cam$camNo mirrorv $conf(dslr,mirv)
-
                      #--- J'arrete le service WIA de Windows
                      cam$camNo systemservice 0
                      #--- Parametrage des longues poses
                      if { $conf(dslr,longuepose) == "1" } {
                         switch [::confLink::getLinkNamespace $conf(dslr,longueposeport)] {
+                           parallelport {
+                              #--- Je cree la liaison longue pose
+                              set linkNo [::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)"]
+                              #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                              if { [ winfo exists $audace(base).confLink ] } {
+                                 ::parallelport::refreshAvailableList
+                                 ::parallelport::selectConfigLink $conf(dslr,longueposeport)
+                              }
+                              #---
+                              cam$camNo longuepose 1
+                              cam$camNo longueposelinkno $linkNo
+                              cam$camNo longueposelinkbit $conf(dslr,longueposelinkbit)
+                              cam$camNo longueposestartvalue $conf(dslr,longueposestartvalue)
+                              cam$camNo longueposestopvalue  $conf(dslr,longueposestopvalue)
+                           }
                            quickremote {
-                              #--- Je cree la liaison
-                              set linkNo [::confLink::create $conf(dslr,longueposeport) cam$camNo longuepose "bit $conf(dslr,longueposelinkbit)"]
+                              #--- Je cree la liaison longue pose
+                              set linkNo [::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)"]
+                              #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                              if { [ winfo exists $audace(base).confLink ] } {
+                                 ::quickremote::refreshAvailableList
+                                 ::quickremote::selectConfigLink $conf(dslr,longueposeport)
+                              }
                               #---
                               cam$camNo longuepose 1
                               cam$camNo longueposelinkno $linkNo
@@ -4194,7 +4292,7 @@ namespace eval ::confCam {
                            }
                         }
                      } else {
-                        #--- pas de liaison longue pose
+                        #--- Pas de liaison longue pose
                         cam$camNo longuepose 0
                      }
                      #--- Parametrage du telechargement des images
@@ -4272,7 +4370,7 @@ namespace eval ::confCam {
                }
             }
             fingerlakes {
-               set camNo [ cam::create fingerlakes usb ]
+               set camNo [ cam::create fingerlakes USB ]
                set confCam($cam_item,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_fingerlakes) ([ cam$camNo name ]) \
                   $caption(confcam,2points) USB\n"
@@ -4319,12 +4417,22 @@ namespace eval ::confCam {
                      set camNo [cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
                      cam$camNo cantype $conf(audine,can)
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     #--- je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                     if { [ winfo exists $audace(base).confLink ] } {
+                        ::parallelport::refreshAvailableList
+                        ::parallelport::selectConfigLink $conf(audine,port)
+                     }
                   }
                   quickaudine {
                      set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     #--- je rafraichis l'affichage des liaisons si la fenetre est ouverte
+                     if { [ winfo exists $audace(base).confLink ] } {
+                        ::quickaudine::refreshAvailableList
+                        ::quickaudine::selectConfigLink $conf(audine,port)
+                     }
                   }
                   ethernaude {
                      ### set conf(ethernaude,host) [ ::audace::verifip $conf(ethernaude,host) ]
@@ -4344,32 +4452,32 @@ namespace eval ::confCam {
                      #--- Gestion du mode debug ou non de l'EthernAude
                      if { $conf(ethernaude,debug) == "0" } {
                         if { $conf(ethernaude,ipsetting) == "1" } {
-                           set camNo [cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                           set camNo [cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
                               -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] ]
                         } else {
-                           set camNo [ cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                           set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
                         }
                      } else {
                         if { $conf(ethernaude,ipsetting) == "1" } {
-                           set camNo [cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                           set camNo [cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
                               -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] -debug_eth ]
                         } else {
-                           set camNo [ cam::create ethernaude udp -ip $conf(ethernaude,host) \
+                           set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
                         }
                      }
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
                   }
                   audinet {
-                     set camNo [cam::create audinet "" -ccd $ccd -name Audine \
+                     set camNo [cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
                         -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                         -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
                   }
                }
                #--- fin switch conf(audine,port)
