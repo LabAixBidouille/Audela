@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.7 2006-11-10 12:30:13 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.8 2006-11-26 15:31:30 michelpujol Exp $
 #
 
 package provide autoguider 1.0
@@ -42,6 +42,7 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,angle)] }        { set conf(autoguider,angle) "0" }
    if { ! [ info exists conf(autoguider,originCoord)] }  { set conf(autoguider,originCoord) "" }
    if { ! [ info exists conf(autoguider,showTarget)] }   { set conf(autoguider,showTarget) "1" }
+   if { ! [ info exists conf(autoguider,showAlphaDeltaAxis)] }   { set conf(autoguider,showAlphaDeltaAxis) "1" }
 
    set private($visuNo,base)    $in
    set private($visuNo,This)    "$in.autoguider"
