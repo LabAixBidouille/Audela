@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.39 2006-11-25 10:15:20 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.40 2006-11-26 16:19:10 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -504,12 +504,11 @@ namespace eval ::confVisu {
       set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
 
       visu$visuNo zoom $private($visuNo,zoom)
-
       #--- rafraichissement de l'image avec le nouveau zoom
-      ###if { [ buf[getBufNo $visuNo] imageready ] == "1" } {
+      if { [ image type image[visu$visuNo image] ] == "photo" } {
          visu$visuNo clear
          visu$visuNo disp
-      ###} 
+      } 
 
       #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
       set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
@@ -1827,7 +1826,9 @@ namespace eval ::confVisu {
       variable private
 
       ComputeScaleRange $visuNo
-      visu$visuNo disp
+      if { [ image type image[visu$visuNo image] ] == "photo" } {
+         visu$visuNo disp
+      }
    }
 
    proc ComputeScaleRange { visuNo } {
