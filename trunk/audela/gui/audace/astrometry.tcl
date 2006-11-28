@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.11 2006-11-05 14:47:06 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.12 2006-11-28 18:27:19 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -16,25 +16,31 @@ namespace eval ::astrometry {
          $caption(astrometry,cat,personal) ]
 
       if { $::tcl_platform(os) == "Linux" } {
-         if { ! [ info exists conf(astrometry,catfolder) ] } { set conf(astrometry,catfolder) "/cdrom/" }
+         if { ! [ info exists conf(astrometry,catfolder) ] }  { set conf(astrometry,catfolder)     "/cdrom/" }
       } else {
-         if { ! [ info exists conf(astrometry,catfolder) ] } { set conf(astrometry,catfolder) "d:/" }
+         if { ! [ info exists conf(astrometry,catfolder) ] }  { set conf(astrometry,catfolder)     "d:/" }
       }
-      if { ! [ info exists conf(astrometry,cattype) ] }      { set conf(astrometry,cattype)   "0" }
-      if { ! [ info exists conf(astrometry,position) ] }     { set conf(astrometry,position)  "+150+100" }
+      if { ! [ info exists conf(astrometry,cattype) ] }       { set conf(astrometry,cattype)       "0" }
+      if { ! [ info exists conf(astrometry,position) ] }      { set conf(astrometry,position)      "+150+100" }
+      if { ! [ info exists conf(astrometry,delete_files) ] }  { set conf(astrometry,delete_files)  "1" }
+      if { ! [ info exists conf(astrometry,delete_images) ] } { set conf(astrometry,delete_images) "1" }
 
-      set astrom(catfolder) "$conf(astrometry,catfolder)"
-      set astrom(cattype)   [ lindex "$astrom(list_combobox)" $conf(astrometry,cattype) ]
-      set astrom(position)  "$conf(astrometry,position)"
+      set astrom(catfolder)     "$conf(astrometry,catfolder)"
+      set astrom(cattype)       [ lindex "$astrom(list_combobox)" $conf(astrometry,cattype) ]
+      set astrom(position)      "$conf(astrometry,position)"
+      set astrom(delete_files)  "$conf(astrometry,delete_files)"
+      set astrom(delete_images) "$conf(astrometry,delete_images)"
    }
 
    proc widgetToConf { } {
       variable astrom
       global caption conf
 
-      set conf(astrometry,catfolder) "$::astrometry::catvalues(catfolder)"
-      set conf(astrometry,cattype)   [ lsearch "$astrom(list_combobox)" "$::astrometry::catvalues(cattype)" ]
-      set conf(astrometry,position)  "$astrom(position)"
+      set conf(astrometry,catfolder)     "$::astrometry::catvalues(catfolder)"
+      set conf(astrometry,cattype)       [ lsearch "$astrom(list_combobox)" "$::astrometry::catvalues(cattype)" ]
+      set conf(astrometry,position)      "$astrom(position)"
+      set conf(astrometry,delete_files)  "$astrom(delete_files)"
+      set conf(astrometry,delete_images) "$astrom(delete_images)"
    }
 
    proc recup_position { } {
@@ -71,9 +77,6 @@ namespace eval ::astrometry {
       #---
       ::astrometry::confToWidget
       #---
-     ### if {[buf$audace(bufNo) pointer]==0} {
-     ###    return
-     ### }
       if { [info commands $astrom(This)]=="$astrom(This)" } {
          wm deiconify $astrom(This)
          return
@@ -91,9 +94,14 @@ namespace eval ::astrometry {
       label $astrom(This).lab1 -text "$caption(astrometry,title)"
       pack $astrom(This).lab1 -in $astrom(This) -anchor center -fill x -pady 1 -ipadx 15 -padx 5
       #--- Button for choosing the WCS type displayed
-      button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
-         -command {::astrometry::wcs_pack +}
-      pack $astrom(This).but1 -in $astrom(This) -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
+      frame $astrom(This).fra_a
+         button $astrom(This).but0 -text "$caption(astrometry,update_kwds)" \
+            -command {::astrometry::updatewcs}
+         pack $astrom(This).but0 -in $astrom(This).fra_a -side left -anchor center -pady 5 -ipadx 15 -padx 5 -ipady 5
+         button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
+            -command {::astrometry::wcs_pack +}
+         pack $astrom(This).but1 -in $astrom(This).fra_a -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
+      pack $astrom(This).fra_a -anchor center -fill x
       #--- Frames from the differents tpye of WCS
       frame $astrom(This).wcs
       pack $astrom(This).wcs -in $astrom(This) -anchor center -fill x
@@ -240,7 +248,7 @@ namespace eval ::astrometry {
          pack $astrom(This).cal.${cal}.fra_0.lab -side left
          set list_combobox $astrom(list_combobox)
          ComboBox $astrom(This).cal.${cal}.fra_0.cat \
-            -width 15         \
+            -width 10         \
             -height [llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \
@@ -255,11 +263,11 @@ namespace eval ::astrometry {
                set d [::astrometry::getdirname]
                if {$d!=""} {set ::astrometry::catvalues(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
             }
-         pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 2 -ipady 5
+         pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 5 -ipady 5
          label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
          pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 40
-         pack $astrom(This).cal.${cal}.fra_1.ent -side left
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 50
+         pack $astrom(This).cal.${cal}.fra_1.ent -side left -padx 5
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
       #--- Calibration from a file
       set cal file
@@ -277,27 +285,47 @@ namespace eval ::astrometry {
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
       #--- Button to start the calibration and help
       frame $astrom(This).cal.fra_2
-         button $astrom(This).cal.fra_2.but3 -text "$caption(astrometry,start)" -command {::astrometry::start}
-         pack $astrom(This).cal.fra_2.but3 -in $astrom(This).cal.fra_2 -side left -anchor center -fill x -expand true -pady 10 -ipadx 15 -padx 5 -ipady 5
-         button $astrom(This).cal.fra_2.but4 -text "$caption(astrometry,help)" -width 7 -command {::astrometry::afficheAide}
-         pack $astrom(This).cal.fra_2.but4 -in $astrom(This).cal.fra_2 -side left -anchor center -pady 5 -ipadx 15 -padx 5 -ipady 5
+         button $astrom(This).cal.fra_2.but3 -text "$caption(astrometry,start)" \
+            -command {::astrometry::start}
+         pack $astrom(This).cal.fra_2.but3 -in $astrom(This).cal.fra_2 -side left -anchor center \
+            -fill x -expand true -pady 10 -ipadx 15 -padx 5 -ipady 5
+         button $astrom(This).cal.fra_2.but4 -text "$caption(astrometry,help)" -width 7 \
+            -command {::astrometry::afficheAide}
+         pack $astrom(This).cal.fra_2.but4 -in $astrom(This).cal.fra_2 -side left -anchor center \
+            -pady 5 -ipadx 15 -padx 5 -ipady 5
       pack $astrom(This).cal.fra_2 -side bottom -anchor center -fill x
       #---
       frame $astrom(This).status
          label $astrom(This).status.lab -text ""
          pack $astrom(This).status.lab -side left
       pack $astrom(This).status -anchor center -fill x
+      #---
+      frame $astrom(This).delete_files
+         checkbutton $astrom(This).delete_files.chk -text "$caption(astrometry,delete_files)" \
+            -highlightthickness 0 -variable ::astrometry::astrom(delete_files)
+         pack $astrom(This).delete_files.chk -side left -pady 3
+      pack $astrom(This).delete_files -anchor center -fill x
+      #---
+      frame $astrom(This).delete_images
+         checkbutton $astrom(This).delete_images.chk -text "$caption(astrometry,delete_image)" \
+            -highlightthickness 0 -variable ::astrometry::astrom(delete_images)
+         pack $astrom(This).delete_images.chk -side left -pady 3
+      pack $astrom(This).delete_images -anchor center -fill x
 
       #---
       set astrom(currenttypewcs) [lindex $astrom(typewcs) 0]
       ::astrometry::wcs_pack $astrom(currenttypewcs)
+
       #---
       set astrom(currenttypecal) [lindex $astrom(typecal) 0]
       ::astrometry::cal_pack $astrom(currenttypecal)
+
       #--- Focus
       focus $astrom(This)
+
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $astrom(This) <Key-F1> { $audace(console)::GiveFocus }
+      bind $astrom(This) <Key-F1> { ::console::GiveFocus }
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $astrom(This)
    }
@@ -461,12 +489,21 @@ namespace eval ::astrometry {
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if { $erreur == "1" } {
             if {$silent=="no"} {
-               tk_messageBox -message "$caption(astrometry,erreur_catalog)" -icon error
+               if { $::astrometry::catvalues(cattype) == "$caption(astrometry,cat,usno)" } {
+                  ::astrometry::search_cata_USNO
+               } else {
+                  tk_messageBox -message "$caption(astrometry,erreur_catalog)" -icon error
+               }
             }
-            file delete [ file join [pwd] usno.lst ]
-            file delete [ file join $mypath ${sky}$ext ]
-            file delete [ file join $mypath ${sky}0$ext ]
-            file delete [ file join $mypath x${sky}$ext ]
+            #--- Suppression des fichiers temporaires
+            if { $astrom(delete_files) == "1" } {
+               ::astrometry::delete_lst
+            }
+            #--- Suppression des images temporaires
+            if { $astrom(delete_images) == "1" } {
+               ::astrometry::delete_dummy
+            }
+            #---
             $astrom(This).status.lab configure -text ""
             update
             return
@@ -890,7 +927,7 @@ namespace eval ::astrometry {
       }
       wm resizable $astrom(This_check) 1 1
       wm title $astrom(This_check) "$caption(astrometry,start,10)"
-      wm protocol $astrom(This_check) WM_DELETE_WINDOW { ::astrometry::delete_dummy_lst }
+      wm protocol $astrom(This_check) WM_DELETE_WINDOW { ::astrometry::close_jpeg }
 
       #--- Affichage de l'explication
       message $astrom(This_check).legende -text "$caption(astrometry,comment)" -justify center \
@@ -914,38 +951,286 @@ namespace eval ::astrometry {
       focus $astrom(This_check)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $astrom(This_check) <Key-F1> { $audace(console)::GiveFocus }
+      bind $astrom(This_check) <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $astrom(This_check)
    }
 
-   proc delete_dummy_lst { } {
+   proc close_jpeg { } {
       variable astrom
+
+      #---
+      image delete
+      #--- Suppression des fichiers temporaires
+      if { $astrom(delete_files) == "1" } {
+         ::astrometry::delete_lst
+      }
+      #--- Suppression des images temporaires
+      if { $astrom(delete_images) == "1" } {
+         ::astrometry::delete_dummy
+      }
+      #---
+      destroy $astrom(This_check)
+   }
+
+   proc delete_lst { } {
+      #--- Suppression des fichiers temporaires
+      if { [ file exists [ file join [pwd] ascii.txt ] ] } {
+         file delete [ file join [pwd] ascii.txt ]
+      }
+      if { [ file exists [ file join [pwd] catalog.cat ] ] } {
+         file delete [ file join [pwd] catalog.cat ]
+      }
+      if { [ file exists [ file join [pwd] com.lst ] ] } {
+         file delete [ file join [pwd] com.lst ]
+      }
+      if { [ file exists [ file join [pwd] dif.lst ] ] } {
+         file delete [ file join [pwd] dif.lst ]
+      }
+      if { [ file exists [ file join [pwd] eq.lst ] ] } {
+         file delete [ file join [pwd] eq.lst ]
+      }
+      if { [ file exists [ file join [pwd] obs.lst ] ] } {
+         file delete [ file join [pwd] obs.lst ]
+      }
+      if { [ file exists [ file join [pwd] pointzero.lst ] ] } {
+         file delete [ file join [pwd] pointzero.lst ]
+      }
+      if { [ file exists [ file join [pwd] usno.lst ] ] } {
+         file delete [ file join [pwd] usno.lst ]
+      }
+      if { [ file exists [ file join [pwd] signal.sex ] ] } {
+         file delete [ file join [pwd] signal.sex ]
+      }
+      if { [ file exists [ file join [pwd] xy.lst ] ] } {
+         file delete [ file join [pwd] xy.lst ]
+      }
+   }
+
+   proc delete_dummy { } {
       global audace
 
       set mypath "${audace(rep_images)}"
       set sky "dummy"
-      image delete
-      #--- Nettoyage des eventuels fichiers crees
-      set ext [buf$audace(bufNo) extension]
-      catch {
+      #--- Suppression des images temporaires
+      set ext [ buf$audace(bufNo) extension ]
+      if { [ file exists [ file join $mypath ${sky}a.jpg ] ] } {
          file delete [ file join $mypath ${sky}a.jpg ]
-         file delete [ file join $mypath ${sky}b.jpg ]
-         file delete [ file join $mypath ${sky}$ext ]
-         file delete [ file join $mypath ${sky}0$ext ]
-         file delete [ file join $mypath c${sky}$ext ]
-         file delete [ file join $mypath x${sky}$ext ]
-         file delete [ file join $mypath z${sky}$ext ]
-         file delete [ file join [pwd] com.lst ]
-         file delete [ file join [pwd] dif.lst ]
-         file delete [ file join [pwd] eq.lst ]
-         file delete [ file join [pwd] obs.lst ]
-         file delete [ file join [pwd] pointzero.lst ]
-         file delete [ file join [pwd] usno.lst ]
-         file delete [ file join [pwd] xy.lst ]
       }
-      destroy $astrom(This_check)
+      if { [ file exists [ file join $mypath ${sky}b.jpg ] ] } {
+         file delete [ file join $mypath ${sky}b.jpg ]
+      }
+      if { [ file exists [ file join $mypath ${sky}$ext ] ] } {
+         file delete [ file join $mypath ${sky}$ext ]
+      }
+      if { [ file exists [ file join $mypath ${sky}0$ext ] ] } {
+         file delete [ file join $mypath ${sky}0$ext ]
+      }
+      if { [ file exists [ file join $mypath c${sky}$ext ] ] } {
+         file delete [ file join $mypath c${sky}$ext ]
+      }
+      if { [ file exists [ file join $mypath x${sky}$ext ] ] } {
+         file delete [ file join $mypath x${sky}$ext ]
+      }
+      if { [ file exists [ file join $mypath z${sky}$ext ] ] } {
+         file delete [ file join $mypath z${sky}$ext ]
+      }
+   }
+
+   proc search_cata_USNO { } {
+      variable astrom
+      global audace caption
+
+      #--- Ouvre la fenetre de saisie des parametres
+      ::astrometry::box_search_cd
+      tkwait window $astrom(This).box
+      if { $::astrometry::astrom(flag) == "0" } {
+         return
+      }
+      #--- Initialisation des variables
+      set cata_USNO_1      ""
+      set nb_CD_USNO_1     ""
+      set cata_USNO_2      ""
+      set nb_CD_USNO_2     ""
+      set cata_USNO_3      ""
+      set nb_CD_USNO_3     ""
+      #--- Declinaisons inferieure et superieure de l'image
+      set dec_inf_image [ expr $astrom(dec_centre_image) - ( $astrom(champ_image_Dec) / ( 60.0 * 2.0 ) ) ]
+      set dec_sup_image [ expr $astrom(dec_centre_image) + ( $astrom(champ_image_Dec) / ( 60.0 * 2.0 ) ) ]
+      #--- Determination de la reference du ou des catalogues USNO necessaires
+      if { $astrom(dec_centre_image) != "" && $astrom(champ_image_Dec) != "" } {
+         for { set k 0 } { $k < 24 } { incr k } {
+            set borne_inf [ expr -90.0 + ( $k * 7.5 ) ]
+            set borne_sup [ expr -90.0 + ( ( $k + 1 ) * 7.5 ) ]
+            if { $astrom(dec_centre_image) < "$borne_sup" && $astrom(dec_centre_image) >= "$borne_inf" } {
+               if { $dec_sup_image <= "$borne_sup" && $dec_inf_image >= "$borne_inf" } {
+                  #--- 1 seul catalogue USNO
+                  set cata_USNO_1 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
+                  set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                  tk_messageBox \
+                     -message [ eval [ concat { format } { $caption(astrometry,erreur_USNO) \
+                        $cata_USNO_1 $nb_CD_USNO_1 } ] ] \
+                     -icon error
+               } elseif { $dec_sup_image > "$borne_sup" && $dec_inf_image >= "$borne_inf" } {
+                  #--- 1er catalogue USNO
+                  set cata_USNO_1 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
+                  set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                  #--- 2ieme catalogue USNO
+                  set cata_USNO_2 "ZONE[ format "%04.0f" [ expr ( $k + 1 ) * 7.5 *10 ] ]"
+                  set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
+                  tk_messageBox \
+                     -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
+                        $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
+                        \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                     -icon error
+               } elseif { $dec_sup_image <= "$borne_sup" && $dec_inf_image < "$borne_inf" } {
+                  #--- 1er catalogue USNO
+                  set cata_USNO_2 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
+                  set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
+                  #--- 2ieme catalogue USNO
+                  set cata_USNO_1 "ZONE[ format "%04.0f" [ expr ( $k - 1 ) * 7.5 *10 ] ]"
+                  set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                  tk_messageBox \
+                     -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
+                        $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
+                        \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                     -icon error
+               } elseif { $dec_sup_image > "$borne_sup" && $dec_inf_image < "$borne_inf" } {
+                  #--- 1er catalogue USNO
+                  set cata_USNO_1 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
+                  set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                  #--- 2ieme catalogue USNO
+                  set cata_USNO_2 "ZONE[ format "%04.0f" [ expr ( $k + 1 ) * 7.5 *10 ] ]"
+                  set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
+                  #--- 3ieme catalogue USNO
+                  set cata_USNO_3 "ZONE[ format "%04.0f" [ expr ( $k - 1 ) * 7.5 *10 ] ]"
+                  set nb_CD_USNO_3 [ ::astrometry::search_cd $cata_USNO_3 ]
+                  tk_messageBox \
+                     -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_4) \
+                        $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 $cata_USNO_3 $nb_CD_USNO_3 } ] ] \
+                        \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                     -icon error
+               }
+            }
+         }
+      } else {
+         return
+      }
+   }
+
+   proc box_search_cd { } {
+      variable astrom
+      global caption
+
+      #--- Initialisation des variables
+      set ::astrometry::astrom(flag)             "0"
+      set ::astrometry::astrom(dec_centre_image) ""
+      set ::astrometry::astrom(champ_image_Dec)  ""
+
+      #--- Cree la fenetre de niveau le plus haut
+      if [ winfo exists $astrom(This).box ] {
+         wm withdraw $astrom(This).box
+         wm deiconify $astrom(This).box
+         focus $astrom(This).box
+         return
+      }
+      toplevel $astrom(This).box -class toplevel
+      wm transient $astrom(This).box $astrom(This)
+      set posx_box [ lindex [ split [ wm geometry $astrom(This) ] "+" ] 1 ]
+      set posy_box [ lindex [ split [ wm geometry $astrom(This) ] "+" ] 2 ]
+      wm geometry $astrom(This).box +[ expr $posx_box + 5 ]+[ expr $posy_box + 141 ]
+      wm title $astrom(This).box "$caption(astrometry,titre)"
+      wm protocol $astrom(This).box WM_DELETE_WINDOW ::astrometry::rien
+
+      #--- Cree un frame pour la declinaison du centre de l'image
+      frame $astrom(This).box.frame1 -borderwidth 0 -cursor arrow
+
+         #--- Cree le label
+         label $astrom(This).box.frame1.lab1 -text "$caption(astrometry,dec_centre)"
+         pack $astrom(This).box.frame1.lab1 -in $astrom(This).box.frame1 -side left -anchor center -padx 3 -pady 5
+
+         #--- Cree l'entry
+         entry $astrom(This).box.frame1.ent -textvariable ::astrometry::astrom(dec_centre_image) -width 8 -justify center
+         pack $astrom(This).box.frame1.ent -in $astrom(This).box.frame1 -side left -anchor center -padx 10 -pady 5
+
+         #--- Cree le label
+         label $astrom(This).box.frame1.lab2 -text "$caption(astrometry,degres)"
+         pack $astrom(This).box.frame1.lab2 -in $astrom(This).box.frame1 -side left -anchor center -padx 3 -pady 5
+
+      pack $astrom(This).box.frame1 -in $astrom(This).box -anchor center -side top -expand 0 -fill x
+
+      #--- Cree un frame pour le champ en declinaison de l'image
+      frame $astrom(This).box.frame2 -borderwidth 0 -cursor arrow
+
+         #--- Cree le label
+         label $astrom(This).box.frame2.lab3 -text "$caption(astrometry,dec_champ)"
+         pack $astrom(This).box.frame2.lab3 -in $astrom(This).box.frame2 -side left -anchor center -padx 3 -pady 5
+
+         #--- Cree l'entry
+         entry $astrom(This).box.frame2.ent -textvariable ::astrometry::astrom(champ_image_Dec) -width 8 -justify center
+         pack $astrom(This).box.frame2.ent -in $astrom(This).box.frame2 -side left -anchor center -padx 10 -pady 5
+
+         #--- Cree le label
+         label $astrom(This).box.frame2.lab4 -text "$caption(astrometry,minutes)"
+         pack $astrom(This).box.frame2.lab4 -in $astrom(This).box.frame2 -side left -anchor center -padx 3 -pady 5
+
+      pack $astrom(This).box.frame2 -in $astrom(This).box -anchor center -side top -expand 0 -fill x
+
+      #--- Cree le bouton de validation des parametres
+      button $astrom(This).box.but_valid -text "$caption(astrometry,ok)" -borderwidth 2 -width 7 \
+         -command {
+            if { $::astrometry::astrom(dec_centre_image) != "" && $::astrometry::astrom(champ_image_Dec) != "" } {
+               set ::astrometry::astrom(flag) "1"
+               destroy $::astrometry::astrom(This).box
+            } else {
+               set ::astrometry::astrom(flag) "0"
+               destroy $::astrometry::astrom(This).box
+            }
+         } 
+      pack $astrom(This).box.but_valid -in $astrom(This).box -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- La nouvelle fenetre est active
+      focus $astrom(This).box
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $astrom(This).box <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $astrom(This).box
+   }
+
+   proc rien { } {
+      #--- Sert a bloquer l'affichage multiple de la fenêtre Quitter
+   }
+
+   proc search_cd { cata_USNO } {
+      switch -exact -- $cata_USNO {
+         ZONE0000 { return "1" }
+         ZONE0075 { return "1" }
+         ZONE0150 { return "9" }
+         ZONE0225 { return "7" }
+         ZONE0300 { return "5" }
+         ZONE0375 { return "4" }
+         ZONE0450 { return "3" }
+         ZONE0525 { return "2" }
+         ZONE0600 { return "1" }
+         ZONE0675 { return "6 }
+         ZONE0750 { return "7" }
+         ZONE0825 { return "10" }
+         ZONE0900 { return "9" }
+         ZONE0975 { return "8" }
+         ZONE1050 { return "8" }
+         ZONE1125 { return "11" }
+         ZONE1200 { return "10" }
+         ZONE1275 { return "11" }
+         ZONE1350 { return "6" }
+         ZONE1425 { return "4" }
+         ZONE1500 { return "2" }
+         ZONE1575 { return "3" }
+         ZONE1650 { return "3" }
+         ZONE1725 { return "2" }
+      }
    }
 
 }

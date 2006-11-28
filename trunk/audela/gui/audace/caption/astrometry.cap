@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.7 2006-11-10 13:08:44 audelateam Exp $
+# Mise a jour $Id: astrometry.cap,v 1.8 2006-11-28 18:26:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,7 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(astrometry,title)             "Astrometric Calibration"
+set caption(astrometry,update_kwds)       "Refresh Keywords"
 set caption(astrometry,wcs,optic)         "From the Keywords of the Optical Setup"
 set caption(astrometry,wcs,classic)       "From the Usual WCS Keywords"
 set caption(astrometry,wcs,matrix)        "From the Matrix WCS Keywords"
@@ -40,9 +41,23 @@ set caption(astrometry,start,9)           "Calibrated with the Keywords from the
 set caption(astrometry,start,10)          "Calibration Check"
 set caption(astrometry,start,11)          "WCS Keywords deleted"
 set caption(astrometry,help)              "Help"
+set caption(astrometry,delete_files)      "Temporary files are deleted"
+set caption(astrometry,delete_image)      "Temporary images are deleted"
 set caption(astrometry,error_no_image)    "Please display an image first."
 
+set caption(astrometry,titre)             "USO Catalog Search"
+set caption(astrometry,dec_centre)        "Declination of image center        "
+set caption(astrometry,dec_champ)         "Image field in the declination axis"
+set caption(astrometry,degres)            "(in degrees)         "
+set caption(astrometry,minutes)           "(in minutes of angle)"
+set caption(astrometry,ok)                "OK"
+
 set caption(astrometry,comment)           "Astrometric calibration is successful when each star is overlapped by a red dot."
+set caption(astrometry,erreur_USNO)       "The USNO %s catalog (CD n°%s USNO-A2.0) is required."
+set caption(astrometry,erreur_USNO_1)     "USNO %s (CD n°%s USNO-A2.0) and %s (CD n°%s USNO-A2.0) catalogs are simultaneously required."
+set caption(astrometry,erreur_USNO_2)     "They (.ACC and .CAT) must be copied in a hard disk folder."
+set caption(astrometry,erreur_USNO_3)     "The new path must be entered in the Astrometric Calibration application."
+set caption(astrometry,erreur_USNO_4)     "USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) and %s (CD n°%s USNO-A2.0) catalogs are simultaneously required."
 set caption(astrometry,erreur_catalog)    "Check if selected catalog is available."
 set caption(astrometry,erreur_file)       "Check if selected image is available."
 
@@ -57,6 +72,7 @@ set caption(astrometry,Y)                 "Y"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(astrometry,title)          "Calibration astrométrique"
+   set caption(astrometry,update_kwds)    "Rafraîchir les mots-clés"
    set caption(astrometry,wcs,optic)      "A partir des mots-clés de la configuration optique"
    set caption(astrometry,wcs,classic)    "A partir des mots-clés WCS classiques"
    set caption(astrometry,wcs,matrix)     "A partir des mots-clés WCS matrice"
@@ -85,9 +101,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Vérification de la calibration"
    set caption(astrometry,start,11)       "Mots-clés WCS effacés"
    set caption(astrometry,help)           "Aide"
+   set caption(astrometry,delete_files)   "Suppression des fichiers temporaires"
+   set caption(astrometry,delete_image)   "Suppression des images temporaires"
    set caption(astrometry,error_no_image) "Veuillez d'abord afficher une image."
 
+   set caption(astrometry,titre)          "Recherche des catalogues USNO"
+   set caption(astrometry,dec_centre)     "Déclinaison du centre de l'image   "
+   set caption(astrometry,dec_champ)      "Champ de l'image sur la déclinaison"
+   set caption(astrometry,degres)         "(en degrés)         "
+   set caption(astrometry,minutes)        "(en minutes d'angle)"
+   set caption(astrometry,ok)             "OK"
+
    set caption(astrometry,comment)        "La calibration astrométrique est réussie si tous les points rouges recouvrent des étoiles."
+   set caption(astrometry,erreur_USNO)    "Le catalogue USNO %s (CD n°%s USNO-A2.0) est nécessaire."
+   set caption(astrometry,erreur_USNO_1)  "Les catalogues USNO %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
+   set caption(astrometry,erreur_USNO_2)  "Ils (.ACC et .CAT) doivent être copiés dans un répertoire de votre disque dur."
+   set caption(astrometry,erreur_USNO_3)  "Vous devez préciser ce nouveau chemin à l'application Calibration astrométrique."
+   set caption(astrometry,erreur_USNO_4)  "Les catalogues USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
    set caption(astrometry,erreur_catalog) "Vérifier que le catalogue choisi est disponible."
    set caption(astrometry,erreur_file)    "Vérifier que l'image choisie est disponible."
 
@@ -102,6 +132,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(astrometry,title)          "Calibrazione astrometrica"
+   set caption(astrometry,update_kwds)    "# Rafraîchir les mots-clés"
    set caption(astrometry,wcs,optic)      "Dalle parole chiave della configurazione ottica"
    set caption(astrometry,wcs,classic)    "Dalle parole chiave WCS classiche"
    set caption(astrometry,wcs,matrix)     "Dalla matrice WCS"
@@ -130,9 +161,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Verifica della calibrazione"
    set caption(astrometry,start,11)       "Keyword WCS eliminate"
    set caption(astrometry,help)           "Aiuto"
+   set caption(astrometry,delete_files)   "# Suppression des fichiers temporaires"
+   set caption(astrometry,delete_image)   "# Suppression des images temporaires"
    set caption(astrometry,error_no_image) "Prima visualizzare un'immagine."
 
+   set caption(astrometry,titre)          "# Recherche des catalogues USNO"
+   set caption(astrometry,dec_centre)     "# Déclinaison du centre de l'image"
+   set caption(astrometry,dec_champ)      "# Champ de l'image sur la déclinaison"
+   set caption(astrometry,degres)         "# (en degrés)         "
+   set caption(astrometry,minutes)        "# (en minutes d'angle)"
+   set caption(astrometry,ok)             "OK"
+
    set caption(astrometry,comment)        "La calibrazione astrometrica e' riuscita se tutti i punti rossi si sovrappongono a delle stelle."
+   set caption(astrometry,erreur_USNO)    "# Le catalogue USNO %s (CD n°%s USNO-A2.0) est nécessaire."
+   set caption(astrometry,erreur_USNO_1)  "# Les catalogues USNO %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
+   set caption(astrometry,erreur_USNO_2)  "# Ils (.ACC et .CAT) doivent être copiés dans un répertoire de votre disque dur."
+   set caption(astrometry,erreur_USNO_3)  "# Vous devez préciser ce nouveau chemin à l'application Calibration astrométrique."
+   set caption(astrometry,erreur_USNO_4)  "# Les catalogues USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
    set caption(astrometry,erreur_catalog) "Verificare che il catalogo scelto sia disponibile."
    set caption(astrometry,erreur_file)    "Verificare la disponibilita' dell'immagine scelta."
 
@@ -147,6 +192,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(astrometry,title)          "Calibración Astrométrica"
+   set caption(astrometry,update_kwds)    "# Rafraîchir les mots-clés"
    set caption(astrometry,wcs,optic)      "A partir de las claves de la configuración óptica"
    set caption(astrometry,wcs,classic)    "A partir de las claves WCS"
    set caption(astrometry,wcs,matrix)     "De la matríz WCS"
@@ -175,9 +221,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Test de Calibración "
    set caption(astrometry,start,11)       "Claves WCS borradas"
    set caption(astrometry,help)           "Ayuda"
+   set caption(astrometry,delete_files)   "# Suppression des fichiers temporaires"
+   set caption(astrometry,delete_image)   "# Suppression des images temporaires"
    set caption(astrometry,error_no_image) "Por favor, muestre una imagen primero."
 
+   set caption(astrometry,titre)          "# Recherche des catalogues USNO"
+   set caption(astrometry,dec_centre)     "# Déclinaison du centre de l'image"
+   set caption(astrometry,dec_champ)      "# Champ de l'image sur la déclinaison"
+   set caption(astrometry,degres)         "# (en degrés)         "
+   set caption(astrometry,minutes)        "# (en minutes d'angle)"
+   set caption(astrometry,ok)             "OK"
+
    set caption(astrometry,comment)        "La calibración astrométrica ha tenido éxito cuando se superpone a cada estrella un punto rojo."
+   set caption(astrometry,erreur_USNO)    "# Le catalogue USNO %s (CD n°%s USNO-A2.0) est nécessaire."
+   set caption(astrometry,erreur_USNO_1)  "# Les catalogues USNO %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
+   set caption(astrometry,erreur_USNO_2)  "# Ils (.ACC et .CAT) doivent être copiés dans un répertoire de votre disque dur."
+   set caption(astrometry,erreur_USNO_3)  "# Vous devez préciser ce nouveau chemin à l'application Calibration astrométrique."
+   set caption(astrometry,erreur_USNO_4)  "# Les catalogues USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
    set caption(astrometry,erreur_catalog) "Compruebe que el catálogo seleccionado está disponible."
    set caption(astrometry,erreur_file)    "Compruebe que la imagen seleccionada está disponible."
 
@@ -192,6 +252,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(astrometry,title)          "Astrometrische Kalibration"
+   set caption(astrometry,update_kwds)    "# Rafraîchir les mots-clés"
    set caption(astrometry,wcs,optic)      "Von die Optische Konfiguration Schlüsselbegriffen"
    set caption(astrometry,wcs,classic)    "Von die klassische WCS Schlüsselbegriffen"
    set caption(astrometry,wcs,matrix)     "Von die Matrix WCS Schlüsselbegriffen"
@@ -220,9 +281,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Kalibrierung Nachprüfung"
    set caption(astrometry,start,11)       "Die Schlüsselbegriffen sind gelöscht"
    set caption(astrometry,help)           "Hilfe"
+   set caption(astrometry,delete_files)   "# Suppression des fichiers temporaires"
+   set caption(astrometry,delete_image)   "# Suppression des images temporaires"
    set caption(astrometry,error_no_image) "Bitte ein Bild erst anzeigen."
 
+   set caption(astrometry,titre)          "# Recherche des catalogues USNO"
+   set caption(astrometry,dec_centre)     "# Déclinaison du centre de l'image"
+   set caption(astrometry,dec_champ)      "# Champ de l'image sur la déclinaison"
+   set caption(astrometry,degres)         "# (en degrés)         "
+   set caption(astrometry,minutes)        "# (en minutes d'angle)"
+   set caption(astrometry,ok)             "OK"
+
    set caption(astrometry,comment)        "Die astromethische Kalibrierung ist erfolgreich wenn alle Rote Punkte sich mit Sterne überschneiden."
+   set caption(astrometry,erreur_USNO)    "# Le catalogue USNO %s (CD n°%s USNO-A2.0) est nécessaire."
+   set caption(astrometry,erreur_USNO_1)  "# Les catalogues USNO %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
+   set caption(astrometry,erreur_USNO_2)  "# Ils (.ACC et .CAT) doivent être copiés dans un répertoire de votre disque dur."
+   set caption(astrometry,erreur_USNO_3)  "# Vous devez préciser ce nouveau chemin à l'application Calibration astrométrique."
+   set caption(astrometry,erreur_USNO_4)  "# Les catalogues USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) et %s (CD n°%s USNO-A2.0) sont nécessaires simultanément."
    set caption(astrometry,erreur_catalog) "Ob der ausgewählten Katalog erhältlich ist kontrollieren."
    set caption(astrometry,erreur_file)    "Ob das gewähltes Bild erhältlich ist kontrollieren."
 
@@ -237,6 +312,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(astrometry,title)          "Calibração Astrométrica"
+   set caption(astrometry,update_kwds)    "Actualizar as palavras-chave"
    set caption(astrometry,wcs,optic)      "A partir das palavras-chave da configuração óptica"
    set caption(astrometry,wcs,classic)    "A partir das palavras-chave WCS"
    set caption(astrometry,wcs,matrix)     "A partir da matriz WCS"
@@ -265,9 +341,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Teste de Calibração"
    set caption(astrometry,start,11)       "Palavras-chave WCS apagadas"
    set caption(astrometry,help)           "Ajuda"
+   set caption(astrometry,delete_files)   "Supressão dos ficheiros temporários"
+   set caption(astrometry,delete_image)   "Supressão das imagens temporárias"
    set caption(astrometry,error_no_image) "Por favor, mostre primeiro uma imagem."
 
+   set caption(astrometry,titre)          "Pesquisa de catálogos USNO"
+   set caption(astrometry,dec_centre)     "Declinação do centro da imagem"
+   set caption(astrometry,dec_champ)      "Campo da imagem em declinação "
+   set caption(astrometry,degres)         "(em graus)          "
+   set caption(astrometry,minutes)        "(em minutos de arco)"
+   set caption(astrometry,ok)             "OK"
+
    set caption(astrometry,comment)        "A calibração astrométrica foi bem sucedida quando cada estrela é sobreposta por um ponto vermelho."
+   set caption(astrometry,erreur_USNO)    "O catálogo USNO %s (CD n°%s USNO-A2.0) é necessário."
+   set caption(astrometry,erreur_USNO_1)  "Os catálogos USNO %s (CD n°%s USNO-A2.0) e %s (CD n°%s USNO-A2.0) são necessários em simultâneo."
+   set caption(astrometry,erreur_USNO_2)  "Devem (.ACC e .CAT) ser copiados para um directório do seu disco rígido."
+   set caption(astrometry,erreur_USNO_3)  "Você deve precisar este novo caminho na aplicação Calibração Astrométrica."
+   set caption(astrometry,erreur_USNO_4)  "Os catálogos USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) e %s (CD n°%s USNO-A2.0) são necessários em simultâneo."
    set caption(astrometry,erreur_catalog) "Verifique se o catálogo seleccionado está disponível."
    set caption(astrometry,erreur_file)    "Verifique se a imagem seleccionada está disponível."
 
@@ -282,6 +372,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(astrometry,title)          "Astrometric Calibration"
+   set caption(astrometry,update_kwds)    "Refresh Keywords"
    set caption(astrometry,wcs,optic)      "From the Keywords of the Optical Setup"
    set caption(astrometry,wcs,classic)    "From the Usual WCS Keywords"
    set caption(astrometry,wcs,matrix)     "From the Matrix WCS Keywords"
@@ -310,9 +401,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,10)       "Calibration Check"
    set caption(astrometry,start,11)       "WCS Keywords deleted"
    set caption(astrometry,help)           "Help"
+   set caption(astrometry,delete_files)   "Temporary files are deleted"
+   set caption(astrometry,delete_image)   "Temporary images are deleted"
    set caption(astrometry,error_no_image) "Please display an image first."
 
+   set caption(astrometry,titre)          "USO Catalog Search"
+   set caption(astrometry,dec_centre)     "Declination of image center        "
+   set caption(astrometry,dec_champ)      "Image field in the declination axis"
+   set caption(astrometry,degres)         "(in degrees)         "
+   set caption(astrometry,minutes)        "(in minutes of angle)"
+   set caption(astrometry,ok)             "OK"
+
    set caption(astrometry,comment)        "Astrometric calibration is successful when each star is overlapped by a red dot."
+   set caption(astrometry,erreur_USNO)    "The USNO %s catalog (CD n°%s USNO-A2.0) is required."
+   set caption(astrometry,erreur_USNO_1)  "USNO %s (CD n°%s USNO-A2.0) and %s (CD n°%s USNO-A2.0) catalogs are simultaneously required."
+   set caption(astrometry,erreur_USNO_2)  "They (.ACC and .CAT) must be copied in a hard disk folder."
+   set caption(astrometry,erreur_USNO_3)  "The new path must be entered in the Astrometric Calibration application."
+   set caption(astrometry,erreur_USNO_4)  "USNO %s (CD n°%s USNO-A2.0), %s (CD n°%s USNO-A2.0) and %s (CD n°%s USNO-A2.0) catalogs are simultaneously required."
    set caption(astrometry,erreur_catalog) "Check if selected catalog is available."
    set caption(astrometry,erreur_file)    "Check if selected image is available."
 
