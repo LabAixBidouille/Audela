@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.17 2006-11-24 15:46:11 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.18 2006-11-28 18:27:43 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -23,7 +23,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "$caption(scanfast,comment2) [ expr int($hautpix*$dt*3/1000.) ] $caption(scanfast,secondes)\n"
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment3)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin 0 -fast 0 -firstpix $firstpix -tmpfile -biny $bin
+   cam$audace(camNo) scan $largpix $hautpix $bin 0 -firstpix $firstpix -fast 0 -tmpfile -biny $bin
    set tmort [ expr 1000.*[ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ] ]
    ::console::affiche_resultat "   $caption(scanfast,comment4) = $tmort $caption(scanfast,ms/ligne)\n"
    set dt0 [ expr $dt-$tmort ]
@@ -39,7 +39,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    set speed [ cam$audace(camNo) scanloop ]
    ::console::affiche_resultat "$caption(scanfast,iteration) 0 :\n"
    ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
+   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
    set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
    ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
    set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -47,7 +47,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,iteration) 1 :\n"
    ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
+   cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
    set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
    ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
    set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -56,7 +56,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    if { [ expr int($hautpix*$dt/1000.) ] < "20" } {
       ::console::affiche_resultat "$caption(scanfast,iteration) 2 :\n"
       ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
+      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
       ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
       set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -64,7 +64,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "$caption(scanfast,iteration) 3 :\n"
       ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
-      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin
+      cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
       ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
       set speed [ expr $dt/$dteff/1000.*$speed ];
@@ -72,7 +72,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "\n"
    }
    ::console::affiche_resultat "$caption(scanfast,comment10)\n"
-   ::console::affiche_resultat "cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -fast $speed -firstpix $firstpix -tmpfile -biny $bin \n"
+   ::console::affiche_resultat "cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin \n"
    ::console::affiche_resultat "\n"
    ::console::disp "\n"
    return [ list $dt0 $speed ]
@@ -202,7 +202,7 @@ namespace eval ::Scanfast {
             -command " "
       }
       #--- Cas particulier
-      switch [::confLink::getLinkNamespace $conf(audine,port)] {
+      switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
             pack forget $This.fra33
             pack $This.fra4 -side top -fill x
@@ -342,7 +342,7 @@ namespace eval ::Scanfast {
             cam$audace(camNo) shutter synchro
 
             #--- Declenchement de l'acquisition
-            if { ( $conf(audine,port) == "LPT1:" ) || ( $conf(audine,port) == "LPT2:" ) || ( $conf(audine,port) == "LPT3:" ) } {
+            if { [ ::confLink::getLinkNamespace $conf(audine,port) ] == "parallelport" } {
                #--- Destruction de la fenetre indiquant l'attente
                if [ winfo exists $audace(base).progress_scan ] {
                   destroy $audace(base).progress_scan
