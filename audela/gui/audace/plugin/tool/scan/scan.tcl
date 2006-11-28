@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.17 2006-11-22 07:59:23 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.18 2006-11-28 20:13:42 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -135,7 +135,7 @@ namespace eval ::Dscan {
             -command "::Dscan::cmdCalcul"
       }
       #--- Cas particulier
-      switch [::confLink::getLinkNamespace $conf(audine,port)] {
+      switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
             if { $panneau(Dscan,binning) == "4x4" } {
                set panneau(Dscan,binning) "2x2"
@@ -213,10 +213,10 @@ namespace eval ::Dscan {
             if { $panneau(Dscan,binning) == "2x2" } { set bin 2 }
             if { $panneau(Dscan,binning) == "1x1" } { set bin 1 }
 
-            #--- Definition des parametres du scan (w : largeur - h : hauteur - o : offset)
+            #--- Definition des parametres du scan (w : largeur - h : hauteur - f : firstpix)
             set w [ ::Dscan::int [ expr $panneau(Dscan,col2) - $panneau(Dscan,col1) + 1 ] ]
             set h [ ::Dscan::int $panneau(Dscan,lig1) ]
-            set o [ ::Dscan::int [ expr $panneau(Dscan,col1) - 1 ] ] ; #--- Offset = (numero colonne de debut) - 1
+            set f [ ::Dscan::int $panneau(Dscan,col1) ]
 
             #--- Gestion du moteur d'A.D.
             if { $motor == "motoroff" } {
@@ -255,7 +255,7 @@ namespace eval ::Dscan {
             set dt $panneau(Dscan,interlig1)
 
             #--- Appel a la fonction d'acquisition
-            ::Dscan::scan $w $h $bin $dt $o
+            ::Dscan::scan $w $h $bin $dt $f
 
             #--- Gestion graphique du bouton GO CCD
             $This.fra4.but1 configure -relief groove -text $panneau(Dscan,go2) -state disabled
@@ -285,7 +285,7 @@ namespace eval ::Dscan {
       }
    }
 
-   proc scan { w h bin dt o } {
+   proc scan { w h bin dt f } {
       global audace
       global panneau
 
@@ -301,10 +301,10 @@ namespace eval ::Dscan {
       cam$audace(camNo) shutter synchro
 
       #--- Declenchement de l'acquisition
-      if { $o == "0" } {
+      if { $f == "0" } {
          cam$audace(camNo) scan $w $h $bin $dt -biny $bin
       } else {
-         cam$audace(camNo) scan $w $h $bin $dt -offset $o -biny $bin
+         cam$audace(camNo) scan $w $h $bin $dt -firstpix $f -biny $bin
       }
 
       #--- Alarme sonore de fin de pose
