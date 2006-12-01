@@ -542,4 +542,134 @@ int tt_ima_stack_sk_1(TT_IMA_STACK *pstack)
    return(OK_DLL);
 }
 
+int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack)
+/***************************************************************************/
+/* Empilement de flats de temps de pose différents qui retourne le delais  */
+/* d'ouverture de l'obturateur                                             */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int kk,kkk;
+   double poids_pondere,value;
+   int base_adr;
+   TT_IMA *p_tmp=pstack->p_tmp;
+   TT_IMA *p_out=pstack->p_out;
+   long firstelem=pstack->firstelem;
+   long nelements=pstack->nelements;
+   long nelem=pstack->nelem;
+   long nelem0=pstack->nelem0;
+   int nbima=pstack->nbima;
+   double *poids=pstack->poids;
+   double *exptimes=pstack->exptimes;
+   double *piletri,val;
+   int *index;
+   int *index0,nbima0,k;
+   int nombre,taille,msg;
+   double *x,*y,a,b;
+   double s,sxx,sxy,sx,sy,delta,covb;
+
+   nombre=nbima;
+   taille=sizeof(int);
+   index0=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&index0,&nombre,&taille,"index0"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_shutter_1 (pointer index0)");
+      return(TT_ERR_PB_MALLOC);
+   }
+   poids_pondere=(double)(1.)/(double)(nelements);
+   nombre=nbima;
+   taille=sizeof(double);
+   piletri=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&piletri,&nombre,&taille,"piletri"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_shutter_1 (pointer piletri)");
+      tt_free(index0,"index0");
+      return(TT_ERR_PB_MALLOC);
+   }
+   nombre=nbima;
+   taille=sizeof(int);
+   index=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&index,&nombre,&taille,"index"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_shutter_1 (pointer index)");
+      tt_free(index0,"index0");tt_free(piletri,"piletri");
+      return(TT_ERR_PB_MALLOC);
+   }
+   nombre=nbima;
+   taille=sizeof(double);
+   x=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&x,&nombre,&taille,"x"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_shutter_1 (pointer x)");
+      tt_free(index0,"index0");tt_free(piletri,"piletri");tt_free(piletri,"index");
+      return(TT_ERR_PB_MALLOC);
+   }
+   nombre=nbima;
+   taille=sizeof(double);
+   y=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&y,&nombre,&taille,"y"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_shutter_1 (pointer y)");
+      tt_free(index0,"index0");tt_free(piletri,"piletri");tt_free(piletri,"index");
+      tt_free(piletri,"x");
+      return(TT_ERR_PB_MALLOC);
+   }
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+      for (nbima0=0,kk=0;kk<nbima;kk++) {
+	 base_adr=(int)(nelem0)*kk;
+	 val=(double)(p_tmp->p[base_adr+kkk]);
+	 if (pstack->nullpix_exist==TT_YES) {
+	    if (val>pstack->nullpix_value) {
+	       index0[kk]=TT_YES;
+	       piletri[nbima0]=val;
+	       index[nbima0]=kk;
+	       nbima0++;
+	    } else {
+	       index0[kk]=TT_NO;
+	    }
+	 } else {
+	    index0[kk]=TT_YES;
+	    piletri[nbima0]=val;
+	    index[nbima0]=kk;
+            x[nbima0]=pstack->exptimes[kk];
+            y[nbima0]=val;
+	    nbima0++;
+	 }
+      }
+      if (nbima0==0) {
+	 for (kk=0;kk<nbima;kk++) {
+	    poids[kk]+=(poids_pondere/(double)(nbima));
+	 }
+	 value=pstack->nullpix_value;
+      } else {
+         s=sxx=sxy=sx=sy=delta=0.;
+	 for (k=0;k<nbima0;k++) {
+            /* calcul de flux=a*exposure+b */
+            s+=1.;
+            sxx+=x[k]*x[k];
+            sxy+=x[k]*y[k];
+            sx+=x[k];
+            sy+=y[k];
+	 }
+         delta=s*sxx-sx*sx;
+         covb=0.;
+         if (delta==0.) {
+            a=0.;
+            b=0.;
+         } else {
+            b=(sxx*sy-sx*sxy)/delta;
+            a=(s*sxy-sx*sy)/delta;
+            covb=sqrt(fabs(sxx/delta));
+         }
+	 /*poids[index[k]]+=(poids_pondere/nbima0);*/
+         if (a==0) {
+            value=pstack->nullpix_value;
+         } else {
+            value=b;
+         }
+      }
+      p_out->p[(int)(firstelem)+kkk]=(TT_PTYPE)(value);
+   }
+   tt_free(piletri,"piletri");
+   tt_free(index,"index");
+   tt_free(index0,"index0");
+   tt_free(x,"x");
+   tt_free(y,"y");
+   return(OK_DLL);
+}
 

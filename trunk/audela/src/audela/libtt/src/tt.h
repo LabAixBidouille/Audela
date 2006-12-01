@@ -178,6 +178,7 @@
 #define TT_IMASTACK_SORT 4
 #define TT_IMASTACK_KS 5
 #define TT_IMASTACK_SIG 6
+#define TT_IMASTACK_SHUTTER 7
 
 #define TT_TBLPIX_X 0
 #define TT_TBLPIX_Y 1
@@ -696,6 +697,7 @@ typedef struct {
    int nbkeys;
    int numfct; /* numero de la fonction */
    double *poids;
+   double *exptimes;
    double percent;
    double kappa;
    int nullpix_exist;
@@ -1000,6 +1002,7 @@ int tt_ima_stack_add_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_med_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_sort_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_sk_1(TT_IMA_STACK *pstack);
+int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack);
 
 int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys);
 int tt_strupr(char *chaine);
