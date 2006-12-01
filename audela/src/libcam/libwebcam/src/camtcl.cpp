@@ -665,7 +665,7 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
 
@@ -693,7 +693,7 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
 

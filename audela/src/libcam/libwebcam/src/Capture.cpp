@@ -194,7 +194,10 @@ BOOL            CCapture::getLimitEnabled() { return capParms.fLimitEnabled; }
 void            CCapture::setLimitEnabled(BOOL value){ capParms.fLimitEnabled = value; }
 
 BOOL            CCapture::getCaptureAudio(){ return capParms.fCaptureAudio; }
-void            CCapture::setCaptureAudio(BOOL value){ capParms.fCaptureAudio = value; }
+void CCapture::setCaptureAudio(BOOL value){ 
+   capParms.fCaptureAudio = value; 
+   capCaptureSetSetup(hwndCap, &capParms, sizeof(capParms));
+}
 
 BOOL            CCapture::getCaptureToDisk(){ return capParms.fUsingDOSMemory  ; }
 void            CCapture::setCaptureToDisk(BOOL value){ capParms.fUsingDOSMemory  = value; }
@@ -681,8 +684,8 @@ int CCapture::readFrame( unsigned char * rgbBuffer)
       if (result == TRUE)  {
          // execute grab callback
          //result = grabFrameNoStop(); 
-         //result = grabFrameNoStop(); 
-         result = grabFrame();
+         result = grabFrameNoStop(); 
+         //result = grabFrame();
          // disable grab callback
          capSetCallbackOnFrame(hwndCap, NULL);
       }

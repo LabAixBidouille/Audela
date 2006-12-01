@@ -91,9 +91,7 @@ static unsigned int ng_clip[256 + 2 * CLIP];
  * Definition of different cameras supported by this driver
  * (see declaration in libstruc.h)
  */
-
-extern "C"
-struct camini CAM_INI[] = {
+extern "C" struct camini CAM_INI[] = {
    {"WEBCAM",        /* camera name */
     "webcam",        /* camera product */
     "ICX098BQ-A",        /* ccd name */
@@ -382,10 +380,11 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    // pour le mode video
    cam->capture->setPreview(FALSE);
+   cam->capture->setCaptureAudio(FALSE);
    cam->videoStatusVarNamePtr[0] = 0;	 
    cam->videoEndCaptureCommandPtr[0] = 0;
 
-
+   
 #endif
 
 #if defined(OS_LIN)
@@ -631,12 +630,12 @@ int cam_stop_longexposure(struct camprop *cam)
 {
    if (cam->longuepose == 1) {
 
-//#if defined(OS_WIN)
+#if defined(OS_WIN)
    // une première lecture pour se synchroniser 
-   //cam->capture->grabFrameNoStop();
-//#endif                          //OS_WIN
+   cam->capture->grabFrameNoStop();
+#endif                          //OS_WIN
 
-      // fin de la pose 
+   // fin de la pose 
       if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
          //error description in cam->msg
          return 1;
