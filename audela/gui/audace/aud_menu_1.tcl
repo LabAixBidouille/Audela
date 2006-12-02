@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.5 2006-11-12 16:08:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.6 2006-12-02 08:39:41 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -83,26 +83,30 @@ namespace eval ::audace {
    # ::audace::header visuNo
    # Affiche l'en-tete FITS d'un fichier
    #
-   proc header { visuNo } {
-      global audace caption color
+   proc header { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+      variable private
+      global audace caption color conf
 
-      #---
+      #--- Initialisation
       set base [ ::confVisu::getBase $visuNo ]
+      if { ! [ info exists conf(geometry_header_$visuNo) ] } { set conf(geometry_header_$visuNo) "632x303+3+75" }
+      #---
+      set private(geometry_header_$visuNo) $conf(geometry_header_$visuNo)
       #---
       set i 0
       if [winfo exists $base.header] {
-         destroy $base.header
+         ::audace::closeHeader $visuNo
       }
+      #---
       toplevel $base.header
       wm transient $base.header $base
       if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
          wm minsize $base.header 632 303
       }
-      wm resizable $base.header 0 1
-      wm title $base.header "$caption(audace,header_title) (visu$visuNo)"
-      set posx_header [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
-      set posy_header [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
-      wm geometry $base.header +[ expr $posx_header + 3 ]+[ expr $posy_header + 75 ]
+      wm resizable $base.header 1 1
+      wm title $base.header "$caption(audace,header_title) (visu$visuNo) - $::confVisu::private($visuNo,lastFileName)"
+      wm geometry $base.header $private(geometry_header_$visuNo)
+      wm protocol $base.header WM_DELETE_WINDOW "::audace::closeHeader $visuNo"
 
       if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
          Scrolled_Text $base.header.slb -width 87 -font $audace(font,en_tete_1) -height 20
@@ -134,6 +138,9 @@ namespace eval ::audace {
          pack $base.header.l -padx 20 -pady 10
       }
       update
+
+      #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::audace::header $visuNo"
 
       #--- Focus
       focus $base.header
@@ -363,6 +370,34 @@ namespace eval ::audace {
 ###################################################################################
 # Procedures annexes des procedures ci-dessus
 ###################################################################################
+
+namespace eval ::audace {
+
+   #
+   # ::audace::closeHeader visuNo
+   # Ferme l'en-tete FITS d'un fichier
+   #
+   proc closeHeader { visuNo } {
+      ::audace::headerRecupPosition $visuNo
+      ::confVisu::removeFileNameListener $visuNo "::audace::header $visuNo"
+      destroy [ ::confVisu::getBase $visuNo ].header
+   }
+
+   #
+   # audace::headerRecupPosition visuNo
+   # Permet de recuperer et de sauvegarder la dimension et la position de la fenetre de l'en-tete FITS
+   #
+   proc headerRecupPosition { visuNo } {
+      variable private
+      global conf
+
+      #---
+      set private(geometry_header_$visuNo) [ wm geometry [ ::confVisu::getBase $visuNo ].header ]
+      #---
+      set conf(geometry_header_$visuNo) $private(geometry_header_$visuNo)
+   }
+
+}
 
 namespace eval ::newScript {
 
