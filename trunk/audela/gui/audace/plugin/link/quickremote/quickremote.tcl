@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.8 2006-11-03 21:26:05 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.9 2006-12-02 19:22:57 robertdelmas Exp $
 #
 
 package provide quickremote 1.1
@@ -76,12 +76,22 @@ proc ::quickremote::confToWidget { } {
 #     2
 #------------------------------------------------------------
 proc ::quickremote::create { linkLabel deviceId usage comment } {
-   set linkIndex [getLinkIndex $linkLabel]
+   global audace
 
+   set linkIndex [getLinkIndex $linkLabel]
    #--- je cree le lien
    set linkno [::link::create quickremote $linkIndex]
    #--- j'ajoute l'utilisation
    link$linkno use add $deviceId $usage $comment
+   #--- je rafraichis la liste
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::quickremote::refreshAvailableList
+   }
+   #--- je selectionne le link
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::quickremote::selectConfigLink $linkLabel
+   }
+   #---
    return $linkno
 }
 
@@ -90,16 +100,22 @@ proc ::quickremote::create { linkLabel deviceId usage comment } {
 #     Supprime une utilisation d'une liaison
 #     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
 #     Ne fait rien si la liaison n'est pas ouverte
-#
+#  
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::delete { linkLabel deviceId usage } {
+   global audace
+
    set linkno [::confLink::getLinkNo $linkLabel]
    if { $linkno != "" } {
       link$linkno use remove $deviceId $usage
       if { [link$linkno use get] == "" } {
          #--- je supprime la liaison si elle n'est plus utilisee par aucun peripherique
          ::link::delete $linkno
+      }
+      #--- je rafraichis la liste
+      if { [ winfo exists $audace(base).confLink ] } {
+         ::quickremote::refreshAvailableList
       }
    }
 }
