@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.42 2006-11-25 10:15:20 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.43 2006-12-02 09:10:28 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -10,7 +10,7 @@
 #--- Chargement du package BWidget
 package require BWidget
 
-#--- Ce n'est pas des packages, mais des outils
+#--- Chargement de scripts d'utilitaires
 source notebook.tcl
 source mclistbox.tcl
 source menu.tcl
@@ -46,7 +46,6 @@ source sectiongraph.tcl
 source polydraw.tcl
 
 namespace eval ::audace {
-   variable This
 
    proc run { { this ".audace" } } {
       variable This
@@ -165,7 +164,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\""
 
       #--- Creation de la console
-      $audace(console)::create
+      ::console::create
 
       #--- Chargement des sources externes
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confcolor.tcl ]\""
@@ -206,25 +205,25 @@ namespace eval ::audace {
    }
 
    proc Default_exeutils { } {
-        global conf
+      global conf
 
       if { $::tcl_platform(os) == "Linux" } {
-              set path [ file join / usr bin ]
+         set path [ file join / usr bin ]
       } else {
-           set defaultpath [ file join C: "Program Files" ]
-           catch {
-              set testpath "$::env(ProgramFiles)"
-              set kend [expr [string length $testpath]-1]
-              for {set k 0} {$k<=$kend} {incr k} {
-                   set car [string index "$testpath" $k]
-                   if {$car=="\\"} {
-                      set testpath [string replace "$testpath" $k $k /]
-                 }
+         set defaultpath [ file join C: "Program Files" ]
+         catch {
+            set testpath "$::env(ProgramFiles)"
+            set kend [expr [string length $testpath]-1]
+            for {set k 0} {$k<=$kend} {incr k} {
+               set car [string index "$testpath" $k]
+               if {$car=="\\"} {
+                  set testpath [string replace "$testpath" $k $k /]
+               }
             }
-              set defaultpath "$testpath"
+            set defaultpath "$testpath"
          }
-           set path "$defaultpath"
-           set drive [ lindex [ file split "$path" ] 0 ]
+         set path "$defaultpath"
+         set drive [ lindex [ file split "$path" ] 0 ]
       }
       if { ! [ info exists conf(editnotice_pdf) ] } {
          if { $::tcl_platform(os) == "Linux" } {
@@ -233,15 +232,15 @@ namespace eval ::audace {
                set conf(editnotice_pdf) [ file join ${path} xpdf ]
             }
          } else {
-                set defaultname [ file join ${path} Adobe "Acrobat 4.0" Reader AcroRd32.exe ]
-                for { set k 10 } { $k > 1 } { incr k -1 } {
-                       set testname [ file join ${path} Adobe "Acrobat ${k}.0" Reader AcroRd32.exe ]
-                   if { [ file executable "$testname" ] == "1" } {
-                      set defaultname "$testname"
-                      break;
-                   }
-                }
-                set conf(editnotice_pdf) "$defaultname"
+            set defaultname [ file join ${path} Adobe "Acrobat 4.0" Reader AcroRd32.exe ]
+            for { set k 10 } { $k > 1 } { incr k -1 } {
+               set testname [ file join ${path} Adobe "Acrobat ${k}.0" Reader AcroRd32.exe ]
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
+            }
+            set conf(editnotice_pdf) "$defaultname"
          }
       }
       if { ! [ info exists conf(editscript) ] } {
@@ -251,7 +250,7 @@ namespace eval ::audace {
                set conf(editscript) [ file join ${path} emacs ]
             }
          } else {
-              set conf(editscript) "write"
+            set conf(editscript) "write"
          }
       }
       if { ! [ info exists conf(editsite_htm) ] } {
@@ -261,16 +260,16 @@ namespace eval ::audace {
                set conf(editsite_htm) [ file join ${path} mozilla ]
             }
          } else {
-                set defaultname [ file join ${path} "Internet Explorer" Iexplore.exe ]
-              set testnames [ list [ file join ${path} Netscape Netscape Netscp.exe ] \
-               [ file join ${path} Netscape Communicator Program Netscape.exe ] ]
-              foreach testname $testnames {
-                   if { [ file executable "$testname" ] == "1" } {
-                      set defaultname "$testname"
-                      break;
-                   }
-                }
-                set conf(editsite_htm) "$defaultname"
+            set defaultname [ file join ${path} "Internet Explorer" Iexplore.exe ]
+            set testnames [ list [ file join ${path} Netscape Netscape Netscp.exe ] \
+            [ file join ${path} Netscape Communicator Program Netscape.exe ] ]
+            foreach testname $testnames {
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
+            }
+            set conf(editsite_htm) "$defaultname"
          }
       }
       if { ! [ info exists conf(edit_viewer) ] } {
@@ -280,16 +279,16 @@ namespace eval ::audace {
                set conf(edit_viewer) ""
             }
          } else {
-                set defaultname ""
-              set testnames [ list [ file join ${path} "ACD Systems" "ACDSee" ACDSee.exe ] \
-               [ file join ${path} IrfanView i_view32.exe ] [ file join ${path} XnView xnview.exe ] ]
-              foreach testname $testnames {
-                   if { [ file executable "$testname" ] == "1" } {
-                      set defaultname "$testname"
-                      break;
-                   }
-                }
-                set conf(edit_viewer) "$defaultname"
+            set defaultname ""
+            set testnames [ list [ file join ${path} "ACD Systems" "ACDSee" ACDSee.exe ] \
+            [ file join ${path} IrfanView i_view32.exe ] [ file join ${path} XnView xnview.exe ] ]
+            foreach testname $testnames {
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
+            }
+            set conf(edit_viewer) "$defaultname"
          }
       }
    }
@@ -403,20 +402,19 @@ namespace eval ::audace {
    proc Recup_Config { { visuNo 1 } } {
       global conf
       global audace
-      global tmp
 
       #--- Initialisation
       if {[info exists conf]} {unset conf}
 
       #--- Ouverture du fichier de paramètres
       if { $::tcl_platform(os) == "Linux" } {
-              set fichier [ file join ~ .audela config.ini ]
-              #--- Si le dossier ~/.audela n'existe pas, on le cree
-              if { ! [ file exist [ file join ~ .audela ] ] } {
-                 file mkdir [ file join ~ .audela ]
-              }
+         set fichier [ file join ~ .audela config.ini ]
+         #--- Si le dossier ~/.audela n'existe pas, on le cree
+         if { ! [ file exist [ file join ~ .audela ] ] } {
+            file mkdir [ file join ~ .audela ]
+         }
       } else {
-              set fichier [ file join audace config.ini ]
+         set fichier [ file join audace config.ini ]
       }
       if { [ file exists $fichier ] } { uplevel #0 "source $fichier" }
 
@@ -429,7 +427,7 @@ namespace eval ::audace {
       ::confTemps::initConf
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
-      
+
       #--- Initialisation de variables de configuration
       if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
       if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
@@ -460,20 +458,19 @@ namespace eval ::audace {
       set ipmask "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2]"
       set ipnum  "[lindex $ip 3]"
       if {$ipmask!=$ipmaskhost} {
-           set ipmask $ipmaskhost
+         set ipmask $ipmaskhost
       }
       if {($ipnum==$ipnumhost)||($ipnum=="")} {
-           set ipnum [expr $ipnumhost+10]
-           if {$ipnum>255} {
-              set ipnum [expr $ipnumhost-10]
-           }
+         set ipnum [expr $ipnumhost+10]
+         if {$ipnum>255} {
+            set ipnum [expr $ipnumhost-10]
+         }
       }
       return "${ipmask}.${ipnum}"
    }
 
    proc createDialog { } {
       variable This
-      global conf
       global audace
       global caption
 
@@ -504,9 +501,9 @@ namespace eval ::audace {
          uplevel #0 "source $fichier"
          set nom [ file tail [ file dirname "$fichier" ] ]
          package require $nom
-         $audace(console)::affiche_prompt "# $fichier [ package present $nom ] \n"
+         ::console::affiche_prompt "# $fichier [ package present $nom ] \n"
       }
-      $audace(console)::disp "\n"
+      ::console::disp "\n"
 
       return $visuNo
    }
@@ -540,7 +537,7 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,editer_script)..." ::audace::editScript
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,lancer_script)..." ::audace::runScript
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" "::audace::quitter"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" "::audace::quitter"
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
@@ -738,7 +735,8 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" "scar $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,analyse)"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,astrometry)..." ::astrometry::create
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,astrometry)..." \
+         "::astrometry::create $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte_champ)..." \
          { ::mapWindow::run "$audace(base).mapWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
@@ -825,31 +823,24 @@ namespace eval ::audace {
       global audace
       global conf
       global caption
-      global confgene
       global tmp
 
       #--- Mise a jour des couleurs des interfaces
       ::confColor::applyColor $audace(base)
       ::confColor::applyColor $audace(Console)
 
+      #--- Prise en compte des dimensions et des positions des fenetres
       if { [ info exists conf(audace,visu$visuNo,wmgeometry) ] == "1" } {
-              wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
+         wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
       } else {
-              wm geometry $This 631x453+0+0
+         wm geometry $This 631x453+0+0
       }
-
       if { [ info exists conf(console,wmgeometry) ] == "1" } {
-              wm geometry $audace(Console) $conf(console,wmgeometry)
+         wm geometry $audace(Console) $conf(console,wmgeometry)
       } else {
-              wm geometry $audace(Console) 360x200+220+180
+         wm geometry $audace(Console) 360x200+220+180
       }
-
-      #--- Affichage des ports com disponibles
-      if { [ llength $audace(list_com) ] != "0" } {
-         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $audace(list_com) \n\n"
-      } else {
-         $audace(console)::affiche_resultat "$caption(audace,port_com_dispo) $caption(audace,pas_port_com) \n\n"
-      }
+      update
 
       #--- Définition d'un fichier palette temporaire, modifiable dynamiquement
       #--- On stocke le nom de ce fichier dans tmp(fichier_palette)
@@ -876,9 +867,9 @@ namespace eval ::audace {
          set no_administrator "PortTalk: You do not have rights to access"
          if { ( $res == "1" ) && ( [ file exists "[ file join $audace(rep_install) bin allowio.txt ]" ] == "0" ) } {
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               $audace(console)::affiche_erreur "$msg\n\n$caption(audace,porttalk_msg_erreur)\n"
+               ::console::affiche_erreur "$msg\n\n$caption(audace,porttalk_msg_erreur)\n"
             } else {
-               $audace(console)::affiche_erreur "$msg\n"
+               ::console::affiche_erreur "$msg\n"
             }
             set base ".allowio"
             toplevel $base
@@ -912,19 +903,19 @@ namespace eval ::audace {
             tkwait window $base
          } else {
             catch {
-               $audace(console)::affiche_prompt "$caption(audace,porttalk_titre) $result\n\n"
+               ::console::affiche_prompt "$caption(audace,porttalk_titre) $result\n\n"
             }
          }
       }
 
       #--- Connexion au demarrage des cameras
-      confCam::startDriver 
+      confCam::startDriver
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {
-         #if { $conf(confLink,start) == "1" } {
-         #   ::confLink::configureDriver
-         #}
+        # if { $conf(confLink,start) == "1" } {
+        #    ::confLink::configureDriver
+        # }
          ::confTel::configureTelescope
       }
 
@@ -964,10 +955,8 @@ namespace eval ::audace {
    # Cette fonction se re-appelle au bout d'une seconde
    #
    proc dispClock1 { } {
-      variable This
       global audace
       global caption
-      global conf
       global confgene
 
       #--- Systeme d'heure utilise
@@ -991,10 +980,7 @@ namespace eval ::audace {
    }
 
    proc date_sys2ut { { date now } } {
-      variable This
-      global audace
       global caption
-      global conf
       global confgene
 
       #--- Systeme d'heure utilise
@@ -1032,7 +1018,6 @@ namespace eval ::audace {
    #  autovisu
    #     rafraichit l'affichage
    #------------------------------------------------------------
-
    proc autovisu { visuNo { force "-no" } { fileName "" } } {
       ::confVisu::autovisu $visuNo $force $fileName
    }
@@ -1056,7 +1041,7 @@ namespace eval ::audace {
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
          if [catch $a_effectuer input] {
-           # $audace(console)::affiche_erreur "$caption(audace,console_rate)\n"
+           # ::console::affiche_erreur "$caption(audace,console_rate)\n"
             set confgene(EditScript,error_viewer) "0"
             ::confEditScript::run "$audace(base).confEditScript"
             set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
@@ -1065,10 +1050,10 @@ namespace eval ::audace {
             }
          } else {
             set audace(current_edit) $input
-           # $audace(console)::affiche_erreur "$caption(audace,console_gagne)\n"
+           # ::console::affiche_erreur "$caption(audace,console_gagne)\n"
          }
       } else {
-        # $audace(console)::affiche_erreur "$caption(audace,console_annule)\n"
+        # ::console::affiche_erreur "$caption(audace,console_annule)\n"
       }
       menustate normal
    }
@@ -1104,14 +1089,10 @@ namespace eval ::audace {
    }
 
    proc cursor { curs } {
-      global audace
-
       ::confVisu::cursor $curs
    }
 
    proc bg { coul } {
-      global audace
-
       ::confVisu::bg $coul
    }
 
@@ -1172,20 +1153,19 @@ namespace eval ::audace {
    # Renvoie 1 si il faut reecrire le fichier de configuration
    #
    proc ini_fileNeedWritten { f_a m_a } {
-      global audace
-
+      #---
       upvar $f_a file_array
       upvar $m_a mem_array
-
+      #---
       set file_names [array names file_array]
       set mem_names [array names mem_array]
       foreach a $mem_names {
          if {[lsearch -exact $file_names $a]==-1} {
-           # $audace(console)::affiche_erreur "$a not in file\n"
+           # ::console::affiche_erreur "$a not in file\n"
             return 1
          } else {
             if {[string compare [array get file_array $a] [array get mem_array $a]]!=0} {
-              # $audace(console)::affiche_erreur "$a different between file and mem : \"[array get file_array $a]\" \"[array get mem_array $a]\"\n"
+              # ::console::affiche_erreur "$a different between file and mem : \"[array get file_array $a]\" \"[array get mem_array $a]\"\n"
                return 1;
             }
          }
@@ -1213,7 +1193,6 @@ namespace eval ::audace {
    #
    proc ini_getArrayFromFile { filename } {
       global conf
-      global audace
 
       set tempinterp [interp create]
       catch {interp eval $tempinterp "source \"$filename\""} m
@@ -1248,10 +1227,10 @@ namespace eval ::audace {
 
       if { $::tcl_platform(os) == "Linux" } {
          set filename [ file join ~ .audela config.ini ]
-         set filebak [ file join ~ .audela config.bak ]
+         set filebak  [ file join ~ .audela config.bak ]
       } else {
          set filename [ file join $audace(rep_audela) audace config.ini ]
-         set filebak [ file join $audace(rep_audela) audace config.bak ]
+         set filebak  [ file join $audace(rep_audela) audace config.bak ]
       }
       set filename2 $filename
       catch {
@@ -1265,13 +1244,13 @@ namespace eval ::audace {
          if {$choice=="yes"} {
             array set theconf [ini_merge file_conf conf]
             ini_writeIniFile $filename2 theconf
-            $audace(console)::affiche_resultat "$caption(audace,enregistrer_config3)\n"
+            ::console::affiche_resultat "$caption(audace,enregistrer_config3)\n"
          } else {
-            $audace(console)::affiche_resultat "caption(audace,enregistrer_config5)\n"
+            ::console::affiche_resultat "caption(audace,enregistrer_config5)\n"
          }
          focus $old_focus
       } else {
-         $audace(console)::affiche_resultat "caption(audace,enregistrer_config4)\n\n"
+         ::console::affiche_resultat "caption(audace,enregistrer_config4)\n\n"
       }
    }
 
@@ -1283,7 +1262,6 @@ namespace eval ::audace {
    #    procedure a supprimer quand plus aucun programme de l'utilisera
    #------------------------------------------------------------
    proc visuDynamix { max min } {
-      variable private
       global audace
 
       ::confVisu::visuDynamix $audace(visuNo) $max $min
@@ -1297,7 +1275,6 @@ namespace eval ::audace {
 # Ref : Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392
 #
 proc Scrolled_Canvas { c args } {
-
    frame $c
    eval {canvas $c.canvas \
       -xscrollcommand [list $c.xscroll set] \
@@ -1314,7 +1291,6 @@ proc Scrolled_Canvas { c args } {
 }
 
 proc Scrolled_Text { f args } {
-
    frame $f
    text $f.list -xscrollcommand [list Scroll_Set $f.xscroll [list grid $f.xscroll -row 1 -column 0 -sticky we]] \
                 -yscrollcommand [list Scroll_Set $f.yscroll [list grid $f.yscroll -row 0 -column 1 -sticky ns]]
@@ -1328,8 +1304,6 @@ proc Scrolled_Text { f args } {
 }
 
 proc Scrolled_Listbox { f args } {
-   global audace
-
    frame $f
    listbox $f.list -xscrollcommand [list Scroll_Set $f.xscroll [list grid $f.xscroll -row 1 -column 0 -sticky we]] \
                    -yscrollcommand [list Scroll_Set $f.yscroll [list grid $f.yscroll -row 0 -column 1 -sticky ns]]
@@ -1439,5 +1413,5 @@ wm withdraw .
 
 ::audace::run
 focus -force $audace(Console)
-$audace(console)::GiveFocus
+::console::GiveFocus
 
