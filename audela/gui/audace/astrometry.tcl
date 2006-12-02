@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.12 2006-11-28 18:27:19 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.13 2006-12-02 14:08:22 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -54,14 +54,20 @@ namespace eval ::astrometry {
       ::astrometry::widgetToConf
    }
 
-   proc create { } {
+   proc create { visuNo } {
       variable astrom
       global audace
       global caption
 
-      #---
+      #--- Recherche une image dans le buffer
       if { [ buf$audace(bufNo) imageready ] == "0" } {
          tk_messageBox -message "$caption(astrometry,error_no_image)" -title "$caption(astrometry,title)" -icon error
+         return
+      }
+
+      #--- Recherche du type d'image
+      if { [lindex [buf$audace(bufNo) getkwd NAXIS ] 1] == "1" } {
+         tk_messageBox -message "$caption(astrometry,error_spectrum)" -title "$caption(astrometry,title)" -icon error
          return
       }
 
@@ -69,11 +75,11 @@ namespace eval ::astrometry {
       set astrom(This)     "$audace(base).astrometry"
       set astrom(typewcs)  {optic classic matrix}
       set astrom(typecal)  {catalog file manual delwcs}
-      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1       PIXSIZE2}
-      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um             um}
-      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double         double}
-      set astrom(values)   {""                       ""                        ""            ""            ""              ""               ""        ""        0.                        ""            ""            ""            ""            1.             18.            18.}
-      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size" "Y pixel size"}
+      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
+      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
+      set astrom(values)   {""                       ""                        ""            ""            ""              ""               ""        ""        ""                        ""            ""            ""            ""            ""             ""                              ""}
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
       #---
       ::astrometry::confToWidget
       #---
@@ -88,20 +94,15 @@ namespace eval ::astrometry {
       wm resizable $astrom(This) 1 1
       wm deiconify $astrom(This)
       wm title $astrom(This) "$caption(astrometry,title)"
-      wm protocol $astrom(This) WM_DELETE_WINDOW ::astrometry::quit
-      bind $astrom(This) <Destroy> ::astrometry::quit
+      wm protocol $astrom(This) WM_DELETE_WINDOW "::astrometry::quit $visuNo"
+      bind $astrom(This) <Destroy> "::astrometry::quit $visuNo"
       #---
-      label $astrom(This).lab1 -text "$caption(astrometry,title)"
-      pack $astrom(This).lab1 -in $astrom(This) -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+      label $astrom(This).lab1 -text "$caption(astrometry,title)" -font $audace(font,arial_12_b)
+      pack $astrom(This).lab1 -in $astrom(This) -anchor center -fill x -pady 5 -ipadx 15 -padx 5
       #--- Button for choosing the WCS type displayed
-      frame $astrom(This).fra_a
-         button $astrom(This).but0 -text "$caption(astrometry,update_kwds)" \
-            -command {::astrometry::updatewcs}
-         pack $astrom(This).but0 -in $astrom(This).fra_a -side left -anchor center -pady 5 -ipadx 15 -padx 5 -ipady 5
-         button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
-            -command {::astrometry::wcs_pack +}
-         pack $astrom(This).but1 -in $astrom(This).fra_a -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
-      pack $astrom(This).fra_a -anchor center -fill x
+      button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
+         -command {::astrometry::wcs_pack +}
+      pack $astrom(This).but1 -in $astrom(This) -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
       #--- Frames from the differents tpye of WCS
       frame $astrom(This).wcs
       pack $astrom(This).wcs -in $astrom(This) -anchor center -fill x
@@ -110,6 +111,205 @@ namespace eval ::astrometry {
       }
       #--- Read the values of header keywords
       ::astrometry::updatewcs
+      #--- Update the keywords that are voids
+      ::astrometry::update_keywords
+      #--- Button for choosing the Method for calibration
+      button $astrom(This).but2 -text "$caption(astrometry,cal,[lindex $astrom(typecal) 0])" \
+         -command {::astrometry::cal_pack +}
+      pack $astrom(This).but2 -in $astrom(This) -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
+      #--- Frames from the differents type of methods of calibration
+      frame $astrom(This).cal
+      pack $astrom(This).cal -in $astrom(This) -anchor center -fill x
+      foreach cal $astrom(typecal) {
+         frame $astrom(This).cal.${cal}
+      }
+      #--- Calibration from a catalog
+      set ::astrometry::catvalues(cattype)   $astrom(cattype)
+      set ::astrometry::catvalues(catfolder) $astrom(catfolder)
+      set cal catalog
+      frame $astrom(This).cal.${cal}.fra_0
+         label $astrom(This).cal.${cal}.fra_0.lab -text "$caption(astrometry,cal,catname)"
+         pack $astrom(This).cal.${cal}.fra_0.lab -side left
+         set list_combobox $astrom(list_combobox)
+         ComboBox $astrom(This).cal.${cal}.fra_0.cat \
+            -width 10         \
+            -height [llength $list_combobox ] \
+            -relief sunken    \
+            -borderwidth 1    \
+            -editable 0       \
+            -textvariable ::astrometry::catvalues(cattype) \
+            -values $list_combobox
+         pack $astrom(This).cal.${cal}.fra_0.cat -side left
+      pack $astrom(This).cal.${cal}.fra_0 -anchor center -fill x
+      frame $astrom(This).cal.${cal}.fra_1
+         button $astrom(This).cal.${cal}.fra_1.but -text ... \
+            -command {
+               set d [::astrometry::getdirname]
+               if {$d!=""} {set ::astrometry::catvalues(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
+            }
+         pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 5 -ipady 5
+         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
+         pack $astrom(This).cal.${cal}.fra_1.lab -side left
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 50
+         pack $astrom(This).cal.${cal}.fra_1.ent -side left -padx 5
+      pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
+      #--- Calibration from a file
+      set cal file
+      frame $astrom(This).cal.${cal}.fra_1
+         button $astrom(This).cal.${cal}.fra_1.but -text ... \
+            -command {
+               set d [ ::tkutil::box_load $::astrometry::astrom(This) $audace(rep_images) $audace(bufNo) "1" ]
+               if {$d!=""} {set ::astrometry::catvalues(reffile) $d ; update ; focus $::astrometry::astrom(This)}
+            }
+         pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 2 -ipady 5
+         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,filename)"
+         pack $astrom(This).cal.${cal}.fra_1.lab -side left
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(reffile) -width 40
+         pack $astrom(This).cal.${cal}.fra_1.ent -side left
+      pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
+      #--- Button to start the calibration and help
+      frame $astrom(This).cal.fra_2
+         button $astrom(This).cal.fra_2.but3 -text "$caption(astrometry,start)" \
+            -command {::astrometry::start}
+         pack $astrom(This).cal.fra_2.but3 -in $astrom(This).cal.fra_2 -side left -anchor center \
+            -fill x -expand true -pady 10 -ipadx 15 -padx 5 -ipady 5
+         button $astrom(This).cal.fra_2.but4 -text "$caption(astrometry,help)" -width 7 \
+            -command {::astrometry::afficheAide}
+         pack $astrom(This).cal.fra_2.but4 -in $astrom(This).cal.fra_2 -side left -anchor center \
+            -pady 5 -ipadx 15 -padx 5 -ipady 5
+      pack $astrom(This).cal.fra_2 -side bottom -anchor center -fill x
+      #---
+      frame $astrom(This).status
+         label $astrom(This).status.lab -text ""
+         pack $astrom(This).status.lab -side left
+      pack $astrom(This).status -anchor center -fill x
+      #---
+      frame $astrom(This).delete_files
+         checkbutton $astrom(This).delete_files.chk -text "$caption(astrometry,delete_files)" \
+            -highlightthickness 0 -variable ::astrometry::astrom(delete_files)
+         pack $astrom(This).delete_files.chk -side left -pady 3
+      pack $astrom(This).delete_files -anchor center -fill x
+      #---
+      frame $astrom(This).delete_images
+         checkbutton $astrom(This).delete_images.chk -text "$caption(astrometry,delete_image)" \
+            -highlightthickness 0 -variable ::astrometry::astrom(delete_images)
+         pack $astrom(This).delete_images.chk -side left -pady 3
+      pack $astrom(This).delete_images -anchor center -fill x
+
+      #---
+      set astrom(currenttypewcs) [lindex $astrom(typewcs) 0]
+      ::astrometry::wcs_pack $astrom(currenttypewcs)
+
+      #---
+      set astrom(currenttypecal) [lindex $astrom(typecal) 0]
+      ::astrometry::cal_pack $astrom(currenttypecal)
+
+      #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::astrometry::updatewcs"
+
+      #--- Focus
+      focus $astrom(This)
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $astrom(This) <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $astrom(This)
+   }
+
+   proc quit { visuNo } {
+      variable astrom
+
+      #--- Supprime la procedure appelee si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::astrometry::updatewcs"
+      #---
+      ::astrometry::recup_position
+      destroy $astrom(This)
+   }
+
+   proc afficheAide { } {
+      global help
+
+      ::audace::showHelpItem "$help(dir,analyse)" "1090astrometrie.htm"
+   }
+
+   proc updatewcs { { varname "" } { arrayindex "" } { operation "" } } {
+      variable astrom
+      global audace
+
+      #--- Read the values of header keywords
+      set k 0
+      foreach kwd $astrom(kwds) {
+         set d [buf$audace(bufNo) getkwd $kwd]
+         if {[lindex $d 1]==""} {
+            #--- The value does not exists in image, we take the default value
+            set ::astrometry::astrom(wcsvalues,$kwd) [lindex $astrom(values) $k]
+            set ::astrometry::astrom(wcsunits,$kwd) [lindex $astrom(units) $k]
+            set ::astrometry::astrom(wcscomments,$kwd) [lindex $astrom(comments) $k]
+            set ::astrometry::astrom(wcstypes,$kwd) [lindex $astrom(types) $k]
+         } else {
+            #--- The value does exists, we take the image header value
+            set ::astrometry::astrom(wcsvalues,$kwd) [lindex $d 1]
+            set ::astrometry::astrom(wcsunits,$kwd) [lindex $d 4]
+            set ::astrometry::astrom(wcscomments,$kwd) [lindex $d 3]
+            set ::astrometry::astrom(wcstypes,$kwd) [lindex $d 2]
+         }
+         incr k
+      }
+      #--- Fenetre active
+      focus $astrom(This)
+   }
+
+   proc wcsempty { } {
+      variable astrom
+      global caption
+
+      if { $astrom(currenttypewcs) == "optic" } {
+         set kwdscan { RA DEC FOCLEN PIXSIZE1 PIXSIZE2 CROTA2 CRPIX1 CRPIX2 }
+         #--- Read the values of header keywords
+         set k 0
+         foreach kwd $kwdscan {
+            if { $astrom(wcsvalues,$kwd) == "" } {
+               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" \
+                  -icon error
+               return 1
+            }
+            incr k
+         }
+         return 0
+      } elseif { $astrom(currenttypewcs) == "classic" } {
+         set kwdscan { CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CRPIX1 CRPIX2 }
+         #--- Read the values of header keywords
+         set k 0
+         foreach kwd $kwdscan {
+            if { $astrom(wcsvalues,$kwd) == "" } {
+               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" \
+                  -icon error
+               return 1
+            }
+            incr k
+         }
+         return 0
+      } elseif { $astrom(currenttypewcs) == "matrix" } {
+         set kwdscan { CRVAL1 CRVAL2 CD1_1 CD1_2 CD2_1 CD2_2 CRPIX1 CRPIX2 }
+         #--- Read the values of header keywords
+         set k 0
+         foreach kwd $kwdscan {
+            if { $astrom(wcsvalues,$kwd) == "" } {
+               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" \
+                  -icon error
+               return 1
+            }
+            incr k
+         }
+         return 0
+      }
+   }
+
+   proc update_keywords { } {
+      variable astrom
+      global audace
+
       #--- Update the keywords that are voids
       set dimx [lindex [buf$audace(bufNo) getkwd NAXIS1 ] 1]
       set dimy [lindex [buf$audace(bufNo) getkwd NAXIS2 ] 1]
@@ -120,16 +320,10 @@ namespace eval ::astrometry {
          set ::astrometry::astrom(wcsvalues,CRPIX2) [expr $dimy /2.]
       }
       #---
-      if {($::astrometry::astrom(wcsvalues,CRVAL1)=="")&&($::astrometry::astrom(wcsvalues,RA)=="")} {
-         set ::astrometry::astrom(wcsvalues,RA) 0.
-      }
       if {($::astrometry::astrom(wcsvalues,CRVAL1)=="")&&($::astrometry::astrom(wcsvalues,RA)!="")} {
          set ::astrometry::astrom(wcsvalues,CRVAL1) $::astrometry::astrom(wcsvalues,RA)
       } elseif {($::astrometry::astrom(wcsvalues,CRVAL1)!="")&&($::astrometry::astrom(wcsvalues,RA)=="")} {
          set ::astrometry::astrom(wcsvalues,RA) $::astrometry::astrom(wcsvalues,CRVAL1)
-      }
-      if {($::astrometry::astrom(wcsvalues,CRVAL2)=="")&&($::astrometry::astrom(wcsvalues,DEC)=="")} {
-         set ::astrometry::astrom(wcsvalues,DEC) 0.
       }
       if {($::astrometry::astrom(wcsvalues,CRVAL2)=="")&&($::astrometry::astrom(wcsvalues,DEC)!="")} {
          set ::astrometry::astrom(wcsvalues,CRVAL2) $::astrometry::astrom(wcsvalues,DEC)
@@ -229,149 +423,17 @@ namespace eval ::astrometry {
       ::astrometry::keyword matrix CD2_2
       ::astrometry::keyword matrix CRPIX1
       ::astrometry::keyword matrix CRPIX2
-      #--- Button for choosing the Method for calibration
-      button $astrom(This).but2 -text "$caption(astrometry,cal,[lindex $astrom(typecal) 0])" \
-         -command {::astrometry::cal_pack +}
-      pack $astrom(This).but2 -in $astrom(This) -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
-      #--- Frames from the differents type of methods of calibration
-      frame $astrom(This).cal
-      pack $astrom(This).cal -in $astrom(This) -anchor center -fill x
-      foreach cal $astrom(typecal) {
-         frame $astrom(This).cal.${cal}
-      }
-      #--- Calibration from a catalog
-      set ::astrometry::catvalues(cattype)   $astrom(cattype)
-      set ::astrometry::catvalues(catfolder) $astrom(catfolder)
-      set cal catalog
-      frame $astrom(This).cal.${cal}.fra_0
-         label $astrom(This).cal.${cal}.fra_0.lab -text "$caption(astrometry,cal,catname)"
-         pack $astrom(This).cal.${cal}.fra_0.lab -side left
-         set list_combobox $astrom(list_combobox)
-         ComboBox $astrom(This).cal.${cal}.fra_0.cat \
-            -width 10         \
-            -height [llength $list_combobox ] \
-            -relief sunken    \
-            -borderwidth 1    \
-            -editable 0       \
-            -textvariable ::astrometry::catvalues(cattype) \
-            -values $list_combobox
-         pack $astrom(This).cal.${cal}.fra_0.cat -side left
-      pack $astrom(This).cal.${cal}.fra_0 -anchor center -fill x
-      frame $astrom(This).cal.${cal}.fra_1
-         button $astrom(This).cal.${cal}.fra_1.but -text ... \
-            -command {
-               set d [::astrometry::getdirname]
-               if {$d!=""} {set ::astrometry::catvalues(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
-            }
-         pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 5 -ipady 5
-         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
-         pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 50
-         pack $astrom(This).cal.${cal}.fra_1.ent -side left -padx 5
-      pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
-      #--- Calibration from a file
-      set cal file
-      frame $astrom(This).cal.${cal}.fra_1
-         button $astrom(This).cal.${cal}.fra_1.but -text ... \
-            -command {
-               set d [ ::tkutil::box_load $::astrometry::astrom(This) $audace(rep_images) $audace(bufNo) "1" ]
-               if {$d!=""} {set ::astrometry::catvalues(reffile) $d ; update ; focus $::astrometry::astrom(This)}
-            }
-         pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 2 -ipady 5
-         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,filename)"
-         pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(reffile) -width 40
-         pack $astrom(This).cal.${cal}.fra_1.ent -side left
-      pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
-      #--- Button to start the calibration and help
-      frame $astrom(This).cal.fra_2
-         button $astrom(This).cal.fra_2.but3 -text "$caption(astrometry,start)" \
-            -command {::astrometry::start}
-         pack $astrom(This).cal.fra_2.but3 -in $astrom(This).cal.fra_2 -side left -anchor center \
-            -fill x -expand true -pady 10 -ipadx 15 -padx 5 -ipady 5
-         button $astrom(This).cal.fra_2.but4 -text "$caption(astrometry,help)" -width 7 \
-            -command {::astrometry::afficheAide}
-         pack $astrom(This).cal.fra_2.but4 -in $astrom(This).cal.fra_2 -side left -anchor center \
-            -pady 5 -ipadx 15 -padx 5 -ipady 5
-      pack $astrom(This).cal.fra_2 -side bottom -anchor center -fill x
-      #---
-      frame $astrom(This).status
-         label $astrom(This).status.lab -text ""
-         pack $astrom(This).status.lab -side left
-      pack $astrom(This).status -anchor center -fill x
-      #---
-      frame $astrom(This).delete_files
-         checkbutton $astrom(This).delete_files.chk -text "$caption(astrometry,delete_files)" \
-            -highlightthickness 0 -variable ::astrometry::astrom(delete_files)
-         pack $astrom(This).delete_files.chk -side left -pady 3
-      pack $astrom(This).delete_files -anchor center -fill x
-      #---
-      frame $astrom(This).delete_images
-         checkbutton $astrom(This).delete_images.chk -text "$caption(astrometry,delete_image)" \
-            -highlightthickness 0 -variable ::astrometry::astrom(delete_images)
-         pack $astrom(This).delete_images.chk -side left -pady 3
-      pack $astrom(This).delete_images -anchor center -fill x
-
-      #---
-      set astrom(currenttypewcs) [lindex $astrom(typewcs) 0]
-      ::astrometry::wcs_pack $astrom(currenttypewcs)
-
-      #---
-      set astrom(currenttypecal) [lindex $astrom(typecal) 0]
-      ::astrometry::cal_pack $astrom(currenttypecal)
-
-      #--- Focus
-      focus $astrom(This)
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $astrom(This) <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $astrom(This)
-   }
-
-   proc quit { } {
-      variable astrom
-
-      ::astrometry::recup_position
-      destroy $astrom(This)
-   }
-
-   proc afficheAide { } {
-      global help
-
-      ::audace::showHelpItem "$help(dir,analyse)" "1090astrometrie.htm"
-   }
-
-   proc updatewcs { } {
-      variable astrom
-      global audace
-
-      #--- Read the values of header keywords
-      set k 0
-      foreach kwd $astrom(kwds) {
-         set d [buf$audace(bufNo) getkwd $kwd]
-         if {[lindex $d 1]==""} {
-            #--- The value does not exists in image, we take the default value
-            set ::astrometry::astrom(wcsvalues,$kwd) [lindex $astrom(values) $k]
-            set ::astrometry::astrom(wcsunits,$kwd) [lindex $astrom(units) $k]
-            set ::astrometry::astrom(wcscomments,$kwd) [lindex $astrom(comments) $k]
-            set ::astrometry::astrom(wcstypes,$kwd) [lindex $astrom(types) $k]
-         } else {
-            #--- The value does exists, we take the image header value
-            set ::astrometry::astrom(wcsvalues,$kwd) [lindex $d 1]
-            set ::astrometry::astrom(wcsunits,$kwd) [lindex $d 4]
-            set ::astrometry::astrom(wcscomments,$kwd) [lindex $d 3]
-            set ::astrometry::astrom(wcstypes,$kwd) [lindex $d 2]
-         }
-         incr k
-      }
    }
 
    proc start { { sextractor no } { silent no } } {
       variable astrom
       global audace caption color
 
+      #--- Search empty header keywords
+      if { [ ::astrometry::wcsempty ] == "1" } {
+         return
+      }
+      #---
       set sextractor yes
       set starfile no
       #::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
@@ -1042,11 +1104,28 @@ namespace eval ::astrometry {
       variable astrom
       global audace caption
 
-      #--- Ouvre la fenetre de saisie des parametres
-      ::astrometry::box_search_cd
-      tkwait window $astrom(This).box
-      if { $::astrometry::astrom(flag) == "0" } {
-         return
+      #--- Recuperation de la declinaison du centre du champ
+      if { $astrom(currenttypewcs) == "optic" } {
+         set astrom(dec_centre_image) $astrom(wcsvalues,DEC)
+      } elseif { $astrom(currenttypewcs) == "classic" } {
+         set astrom(dec_centre_image) $astrom(wcsvalues,CRVAL2)
+      } elseif { $astrom(currenttypewcs) == "matrix" } {
+         set astrom(dec_centre_image) $astrom(wcsvalues,CRVAL2)
+      }
+      #--- Recuperation des donnees et calcul du champ de l'image sur l'axe de declinaison en minutes d'angle
+      if { $astrom(currenttypewcs) == "optic" } {
+         set nb_pix_y [ expr $astrom(wcsvalues,CRPIX2) * 2 ]
+         set pix_dim_y [ expr $astrom(wcsvalues,PIXSIZE2) ]
+         set foclen $astrom(wcsvalues,FOCLEN)
+         set astrom(champ_image_Dec) [ expr 206265 * $nb_pix_y * $pix_dim_y * 1e-6 / ( $foclen * 60. ) ]
+      } elseif { $astrom(currenttypewcs) == "classic" } {
+         set scale_y [ expr $astrom(wcsvalues,CDELT2) ]
+         set nb_pix_y [ expr $astrom(wcsvalues,CRPIX2) * 2 ]
+         set astrom(champ_image_Dec) [ expr abs($scale_y) * $nb_pix_y * 60.0 ]
+      } elseif { $astrom(currenttypewcs) == "matrix" } {
+         set scale_y $astrom(wcsvalues,CD2_2)
+         set naxis2 [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ]
+         set astrom(champ_image_Dec) [ expr abs($scale_y) * $naxis2 * 60.0 ]
       }
       #--- Initialisation des variables
       set cata_USNO_1      ""
@@ -1056,8 +1135,8 @@ namespace eval ::astrometry {
       set cata_USNO_3      ""
       set nb_CD_USNO_3     ""
       #--- Declinaisons inferieure et superieure de l'image
-      set dec_inf_image [ expr $astrom(dec_centre_image) - ( $astrom(champ_image_Dec) / ( 60.0 * 2.0 ) ) ]
-      set dec_sup_image [ expr $astrom(dec_centre_image) + ( $astrom(champ_image_Dec) / ( 60.0 * 2.0 ) ) ]
+      set dec_inf_image [ expr $astrom(dec_centre_image) - ( $astrom(champ_image_Dec) / ( 60.0 * 2.0 ) ) * 1.1 ]
+      set dec_sup_image [ expr $astrom(dec_centre_image) + ( $astrom(champ_image_Dec) / ( 60.0 * 2.0 ) ) * 1.1 ]
       #--- Determination de la reference du ou des catalogues USNO necessaires
       if { $astrom(dec_centre_image) != "" && $astrom(champ_image_Dec) != "" } {
          for { set k 0 } { $k < 24 } { incr k } {
@@ -1077,131 +1156,87 @@ namespace eval ::astrometry {
                   set cata_USNO_1 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
                   set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
                   #--- 2ieme catalogue USNO
-                  set cata_USNO_2 "ZONE[ format "%04.0f" [ expr ( $k + 1 ) * 7.5 *10 ] ]"
-                  set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
-                  tk_messageBox \
-                     -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
-                        $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
-                        \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
-                     -icon error
+                  if { [ expr ( $k + 1 ) ] < "24" } {
+                     set cata_USNO_2 "ZONE[ format "%04.0f" [ expr ( $k + 1 ) * 7.5 *10 ] ]"
+                     set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
+                     tk_messageBox \
+                        -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
+                           $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
+                           \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                        -icon error
+                  } else {
+                     #--- Sinon il n'y a pas de 2ieme catalogue USNO
+                     tk_messageBox \
+                        -message [ eval [ concat { format } { $caption(astrometry,erreur_USNO) \
+                           $cata_USNO_1 $nb_CD_USNO_1 } ] ] \
+                        -icon error
+                  }
                } elseif { $dec_sup_image <= "$borne_sup" && $dec_inf_image < "$borne_inf" } {
                   #--- 1er catalogue USNO
                   set cata_USNO_2 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
                   set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
                   #--- 2ieme catalogue USNO
-                  set cata_USNO_1 "ZONE[ format "%04.0f" [ expr ( $k - 1 ) * 7.5 *10 ] ]"
-                  set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
-                  tk_messageBox \
-                     -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
-                        $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
-                        \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
-                     -icon error
+                  if { [ expr ( $k - 1 ) ] >= "0" } {
+                     set cata_USNO_1 "ZONE[ format "%04.0f" [ expr ( $k - 1 ) * 7.5 *10 ] ]"
+                     set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                     tk_messageBox \
+                        -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
+                           $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
+                           \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                       -icon error
+                  } else {
+                     #--- Sinon il n'y a pas de 2ieme catalogue USNO
+                     tk_messageBox \
+                        -message [ eval [ concat { format } { $caption(astrometry,erreur_USNO) \
+                           $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
+                        -icon error
+                  }
                } elseif { $dec_sup_image > "$borne_sup" && $dec_inf_image < "$borne_inf" } {
+                  set flag(nbre_cata) "0"
                   #--- 1er catalogue USNO
-                  set cata_USNO_1 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
-                  set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                  if { [ expr ( $k - 1 ) ] >= "0" } {
+                     set cata_USNO_1 "ZONE[ format "%04.0f" [ expr ( $k - 1 ) * 7.5 *10 ] ]"
+                     set nb_CD_USNO_1 [ ::astrometry::search_cd $cata_USNO_1 ]
+                  } else {
+                     #--- Sinon il n'y a pas de 1er catalogue USNO
+                     set flag(nbre_cata) "1"
+                  }
                   #--- 2ieme catalogue USNO
-                  set cata_USNO_2 "ZONE[ format "%04.0f" [ expr ( $k + 1 ) * 7.5 *10 ] ]"
+                  set cata_USNO_2 "ZONE[ format "%04.0f" [ expr $k * 7.5 *10 ] ]"
                   set nb_CD_USNO_2 [ ::astrometry::search_cd $cata_USNO_2 ]
                   #--- 3ieme catalogue USNO
-                  set cata_USNO_3 "ZONE[ format "%04.0f" [ expr ( $k - 1 ) * 7.5 *10 ] ]"
-                  set nb_CD_USNO_3 [ ::astrometry::search_cd $cata_USNO_3 ]
-                  tk_messageBox \
-                     -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_4) \
-                        $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 $cata_USNO_3 $nb_CD_USNO_3 } ] ] \
-                        \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
-                     -icon error
+                  if { [ expr ( $k + 1 ) ] < "24" } {
+                     set cata_USNO_3 "ZONE[ format "%04.0f" [ expr ( $k + 1 ) * 7.5 *10 ] ]"
+                     set nb_CD_USNO_3 [ ::astrometry::search_cd $cata_USNO_3 ]
+                  } else {
+                     #--- Sinon il n'y a pas de 3ieme catalogue USNO
+                     set flag(nbre_cata) "2"
+                  }
+                  if { $flag(nbre_cata) == "0" } {
+                    tk_messageBox \
+                       -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_4) \
+                          $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 $cata_USNO_3 $nb_CD_USNO_3 } ] ] \
+                          \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                       -icon error
+                  } elseif { $flag(nbre_cata) == "1" } {
+                     tk_messageBox \
+                        -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
+                           $cata_USNO_2 $nb_CD_USNO_2 $cata_USNO_3 $nb_CD_USNO_3 } ] ] \
+                           \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                       -icon error
+                  } elseif { $flag(nbre_cata) == "2" } {
+                     tk_messageBox \
+                        -message "[ eval [ concat { format } { $caption(astrometry,erreur_USNO_1) \
+                           $cata_USNO_1 $nb_CD_USNO_1 $cata_USNO_2 $nb_CD_USNO_2 } ] ] \
+                           \n$caption(astrometry,erreur_USNO_2) \n$caption(astrometry,erreur_USNO_3)" \
+                       -icon error
+                  }
                }
             }
          }
       } else {
          return
       }
-   }
-
-   proc box_search_cd { } {
-      variable astrom
-      global caption
-
-      #--- Initialisation des variables
-      set ::astrometry::astrom(flag)             "0"
-      set ::astrometry::astrom(dec_centre_image) ""
-      set ::astrometry::astrom(champ_image_Dec)  ""
-
-      #--- Cree la fenetre de niveau le plus haut
-      if [ winfo exists $astrom(This).box ] {
-         wm withdraw $astrom(This).box
-         wm deiconify $astrom(This).box
-         focus $astrom(This).box
-         return
-      }
-      toplevel $astrom(This).box -class toplevel
-      wm transient $astrom(This).box $astrom(This)
-      set posx_box [ lindex [ split [ wm geometry $astrom(This) ] "+" ] 1 ]
-      set posy_box [ lindex [ split [ wm geometry $astrom(This) ] "+" ] 2 ]
-      wm geometry $astrom(This).box +[ expr $posx_box + 5 ]+[ expr $posy_box + 141 ]
-      wm title $astrom(This).box "$caption(astrometry,titre)"
-      wm protocol $astrom(This).box WM_DELETE_WINDOW ::astrometry::rien
-
-      #--- Cree un frame pour la declinaison du centre de l'image
-      frame $astrom(This).box.frame1 -borderwidth 0 -cursor arrow
-
-         #--- Cree le label
-         label $astrom(This).box.frame1.lab1 -text "$caption(astrometry,dec_centre)"
-         pack $astrom(This).box.frame1.lab1 -in $astrom(This).box.frame1 -side left -anchor center -padx 3 -pady 5
-
-         #--- Cree l'entry
-         entry $astrom(This).box.frame1.ent -textvariable ::astrometry::astrom(dec_centre_image) -width 8 -justify center
-         pack $astrom(This).box.frame1.ent -in $astrom(This).box.frame1 -side left -anchor center -padx 10 -pady 5
-
-         #--- Cree le label
-         label $astrom(This).box.frame1.lab2 -text "$caption(astrometry,degres)"
-         pack $astrom(This).box.frame1.lab2 -in $astrom(This).box.frame1 -side left -anchor center -padx 3 -pady 5
-
-      pack $astrom(This).box.frame1 -in $astrom(This).box -anchor center -side top -expand 0 -fill x
-
-      #--- Cree un frame pour le champ en declinaison de l'image
-      frame $astrom(This).box.frame2 -borderwidth 0 -cursor arrow
-
-         #--- Cree le label
-         label $astrom(This).box.frame2.lab3 -text "$caption(astrometry,dec_champ)"
-         pack $astrom(This).box.frame2.lab3 -in $astrom(This).box.frame2 -side left -anchor center -padx 3 -pady 5
-
-         #--- Cree l'entry
-         entry $astrom(This).box.frame2.ent -textvariable ::astrometry::astrom(champ_image_Dec) -width 8 -justify center
-         pack $astrom(This).box.frame2.ent -in $astrom(This).box.frame2 -side left -anchor center -padx 10 -pady 5
-
-         #--- Cree le label
-         label $astrom(This).box.frame2.lab4 -text "$caption(astrometry,minutes)"
-         pack $astrom(This).box.frame2.lab4 -in $astrom(This).box.frame2 -side left -anchor center -padx 3 -pady 5
-
-      pack $astrom(This).box.frame2 -in $astrom(This).box -anchor center -side top -expand 0 -fill x
-
-      #--- Cree le bouton de validation des parametres
-      button $astrom(This).box.but_valid -text "$caption(astrometry,ok)" -borderwidth 2 -width 7 \
-         -command {
-            if { $::astrometry::astrom(dec_centre_image) != "" && $::astrometry::astrom(champ_image_Dec) != "" } {
-               set ::astrometry::astrom(flag) "1"
-               destroy $::astrometry::astrom(This).box
-            } else {
-               set ::astrometry::astrom(flag) "0"
-               destroy $::astrometry::astrom(This).box
-            }
-         } 
-      pack $astrom(This).box.but_valid -in $astrom(This).box -side left -anchor w -padx 3 -pady 3 -ipady 5
-
-      #--- La nouvelle fenetre est active
-      focus $astrom(This).box
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $astrom(This).box <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $astrom(This).box
-   }
-
-   proc rien { } {
-      #--- Sert a bloquer l'affichage multiple de la fenêtre Quitter
    }
 
    proc search_cd { cata_USNO } {
@@ -1215,7 +1250,7 @@ namespace eval ::astrometry {
          ZONE0450 { return "3" }
          ZONE0525 { return "2" }
          ZONE0600 { return "1" }
-         ZONE0675 { return "6 }
+         ZONE0675 { return "6" }
          ZONE0750 { return "7" }
          ZONE0825 { return "10" }
          ZONE0900 { return "9" }
