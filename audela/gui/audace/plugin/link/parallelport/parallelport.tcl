@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.7 2006-11-03 21:26:28 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.8 2006-12-02 15:02:12 robertdelmas Exp $
 #
 
 package provide parallelport 1.0
@@ -76,12 +76,22 @@ proc ::parallelport::confToWidget { } {
 #     2
 #------------------------------------------------------------
 proc ::parallelport::create { linkLabel deviceId usage comment } {
-   set linkIndex [getLinkIndex $linkLabel]
+   global audace
 
+   set linkIndex [getLinkIndex $linkLabel]
    #--- je cree le lien
    set linkno [::link::create parallelport $linkIndex]
    #--- j'ajoute l'utilisation
    link$linkno use add $deviceId $usage $comment
+   #--- je rafraichis la liste
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::parallelport::refreshAvailableList
+   }
+   #--- je selectionne le link
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::parallelport::selectConfigLink $linkLabel
+   }
+   #---
    return $linkno
 }
 
@@ -94,12 +104,18 @@ proc ::parallelport::create { linkLabel deviceId usage comment } {
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::delete { linkLabel deviceId usage } {
+   global audace
+
    set linkno [::confLink::getLinkNo $linkLabel]
    if { $linkno != "" } {
       link$linkno use remove $deviceId $usage
       if { [link$linkno use get] == "" } {
          #--- je supprime la liaison si elle n'est plus utilisee par aucun peripherique
          ::link::delete $linkno
+      }
+      #--- je rafraichis la liste
+      if { [ winfo exists $audace(base).confLink ] } {
+         ::parallelport::refreshAvailableList
       }
    }
 }
