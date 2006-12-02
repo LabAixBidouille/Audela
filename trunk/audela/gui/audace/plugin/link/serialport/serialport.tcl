@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.9 2006-11-03 21:25:53 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.10 2006-12-02 15:02:27 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -68,12 +68,21 @@ proc ::serialport::confToWidget { } {
 #------------------------------------------------------------
 proc ::serialport::create { linkLabel deviceId usage comment } {
    variable private
+   global audace
 
    #--- pour l'instant, la liaison est cree par la librairie du peripherique
 
    #--- je stocke le commentaire d'utilisation
    set private($linkLabel,$deviceId,$usage) "$comment"
-
+   #--- je rafraichis la liste
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::serialport::refreshAvailableList
+   }
+   #--- je selectionne le link
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::serialport::selectConfigLink $linkLabel
+   }
+   #---
    return
 }
 
@@ -84,13 +93,19 @@ proc ::serialport::create { linkLabel deviceId usage comment } {
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::delete { linkLabel deviceId usage } {
+   global audace
+
    #--- pour l'instant, la liaison est arretee par le pilote du peripherique
 
    #--- je supprime le commentaire d'utilisation
    if { [info exists private($linklabel,$deviceId,$usage) } {
       unset private($linklabel,$deviceId,$usage)
    }
-
+   #--- je rafraichis la liste
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::serialport::refreshAvailableList
+   }
+   #---
    return
 }
 

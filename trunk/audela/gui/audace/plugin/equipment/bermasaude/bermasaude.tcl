@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.7 2006-11-25 21:02:24 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.8 2006-12-02 15:01:24 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
@@ -371,11 +371,6 @@ namespace eval bermasaude {
                set bermasaude(connect) "1"
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
                set linkNo [::confLink::create $conf(bermasaude,port) "$conf(confEqt)" "control" ""]
-               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-               if { [ winfo exists $audace(base).confLink ] } {
-                  ::serialport::refreshAvailableList
-                  ::serialport::selectConfigLink $conf(bermasaude,port)
-               }
             } else {
                set bermasaude(connect) "0"
             }

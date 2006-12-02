@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.19 2006-11-25 21:04:20 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.20 2006-12-02 15:01:47 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2296,11 +2296,6 @@ namespace eval ::confTel {
                      }
                      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
                      set linkNo [::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
-                     #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-                     if { [ winfo exists $audace(base).confLink ] } {
-                        ::serialport::refreshAvailableList
-                        ::serialport::selectConfigLink $conf(lx200,port)
-                     }
                   }
                }
                serialport {
@@ -2333,11 +2328,6 @@ namespace eval ::confTel {
                      }
                      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
                      set linkNo [::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
-                     #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-                     if { [ winfo exists $audace(base).confLink ] } {
-                        ::serialport::refreshAvailableList
-                        ::serialport::selectConfigLink $conf(lx200,port)
-                     }
                   }
                }
             }
@@ -2380,11 +2370,6 @@ namespace eval ::confTel {
                set confTel(ouranos,status) $caption(conftel,ouranos_on)
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
                set linkNo [::confLink::create $conf(ouranos,port) "tel$audace(telNo)" "control" ""]
-               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-               if { [ winfo exists $audace(base).confLink ] } {
-                  ::serialport::refreshAvailableList
-                  ::serialport::selectConfigLink $conf(ouranos,port)
-               }
             }
             #--- Gestion des boutons actifs/inactifs
             ::confTel::MatchOuranos
@@ -2470,11 +2455,6 @@ namespace eval ::confTel {
               ### ::telescope::monture_allemande
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
                set linkNo [::confLink::create $conf(audecom,port) "tel$audace(telNo)" "control" ""]
-               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-               if { [ winfo exists $audace(base).confLink ] } {
-                  ::serialport::refreshAvailableList
-                  ::serialport::selectConfigLink $conf(audecom,port)
-               }
             }
          }
          temma {
@@ -2553,11 +2533,6 @@ namespace eval ::confTel {
                ::telescope::monture_allemande
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
                set linkNo [::confLink::create $conf(temma,port) "tel$audace(telNo)" "control" ""]
-               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-               if { [ winfo exists $audace(base).confLink ] } {
-                  ::serialport::refreshAvailableList
-                  ::serialport::selectConfigLink $conf(temma,port)
-               }
             }
             #--- Gestion des boutons actifs/inactifs
             ::confTel::config_correc_Temma
@@ -2611,11 +2586,6 @@ namespace eval ::confTel {
                }
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
                set linkNo [::confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" ""]
-               #--- Je rafraichis l'affichage des liaisons si la fenetre est ouverte
-               if { [ winfo exists $audace(base).confLink ] } {
-                  ::serialport::refreshAvailableList
-                  ::serialport::selectConfigLink $conf(celestron,port)
-               }
             }
          }
       }
