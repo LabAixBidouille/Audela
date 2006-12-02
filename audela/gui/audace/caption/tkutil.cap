@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.7 2006-11-20 22:17:03 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.8 2006-12-02 09:11:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Vedi la guida utente (.pdf):"
    set caption(tkutil,editeur_page_web)   "Web browser:"
    set caption(tkutil,editeur_image)      "Visualizzatore di immagini:"
-   set caption(tkutil,editer_modpoi)      "# Sélectionner un modèle de pointage"
+   set caption(tkutil,editer_modpoi)      "Selezionere un modello di puntamento"
 
    set caption(tkutil,image_file)         "File Immagini"
    set caption(tkutil,image_fits)         "File FITS"

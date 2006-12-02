@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.10 2006-11-20 22:16:33 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.11 2006-12-02 09:10:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Modèle de pointage opérationnel."
    set caption(modpoi,modele_non_charge)     "Vous n'avez pas chargé de modèle de pointage."
-   set caption(modpoi,modele_precedent)      "Le modèle de pointage précédent est toujours\nopérationnel."
+   set caption(modpoi,modele_precedent)      "Le modèle de pointage précédent est toujours opérationnel."
 
    set caption(modpoi,modele,editer)         "Pour éditer un modèle de pointage, il faut d'abord l'ouvrir."
 
@@ -285,8 +285,8 @@ des directions :"
 } elseif { [ string compare $langage "italian" ] == 0 } {
 
    set caption(modpoi,modele_existe)         "Modello di puntamento pronto."
-   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
-   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
+   set caption(modpoi,modele_non_charge)     "Non e` stato caricato nessun modello di puntamento."
+   set caption(modpoi,modele_precedent)      "Il precedente modello di puntamento e` in corso."
 
    set caption(modpoi,modele,editer)         "Per editare un modello di puntamento, occorre prima aprirlo."
 
@@ -323,8 +323,8 @@ entrambe le parti del meridiano."
    set caption(modpoi,wiz1b,nstars1)         "Numero di stelle non valida."
    set caption(modpoi,wiz1b,catalog)         "Catalogo stellare"
    set caption(modpoi,wiz1b,acqauto)         "Puntamento automatico"
-   set caption(modpoi,wiz1b,refraction_1)    "# Nota: Questo telescopio tiene conto della\ncorrezione per la rifrazione nei GoTo.\n\
-Aud'ACE ne calcule pas cette correction pour lui."
+   set caption(modpoi,wiz1b,refraction_1)    "Nota: Questo telescopio tiene conto della\ncorrezione per la rifrazione nei GoTo.\n\
+In questo caso Aud'ACE non effettua il calcolo della correzione."
    set caption(modpoi,wiz1b,refraction_2)    "Nota: Questo telescopio non effettua la\ncorrezione di rifrazione atmosferica\n\
 per i movimenti di GoTo, ma Aud'ACE la esegue."
 
@@ -384,7 +384,7 @@ di direzione:"
    set caption(modpoi,wiz4,comment_auto)     "Centratura automatica in corso..."
 
    set caption(modpoi,wiz5,title)            "Modello di puntamento: Risultato dei calcoli"
-   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
+   set caption(modpoi,wiz5,title1)           "Modello di puntamento: Editing del modello di puntamento in corso"
 
    set caption(modpoi,wiz5,IH)               "h index error"
    set caption(modpoi,wiz5,ID)               "d index error"
@@ -413,9 +413,9 @@ di direzione:"
    set caption(modpoi,shift-e)               "Spostamento verso Est:"
    set caption(modpoi,iteration)             "Iterazione"
 
-   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,define_mame_modpoi)    "Definire il nome di un modello di puntamento"
    set caption(modpoi,parcourir)             "..."
-   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,name_modpoi)           "Nome di un modello di puntamento"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version espagnole ***************************
@@ -559,7 +559,7 @@ los mandos del telescopio:"
 
    set caption(modpoi,modele_existe)         "Operativ Schwenken Vorlage."
    set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
-   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours\nopérationnel."
+   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours opérationnel."
 
    set caption(modpoi,modele,editer)         "Um den Operativ Schwenken Vorlage zu editieren, muss man es erst öffnen."
 
