@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.8 2006-11-03 21:26:17 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.9 2006-12-02 19:23:13 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0
@@ -66,6 +66,16 @@ proc ::quickaudine::confToWidget { } {
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::create { linkLabel deviceId usage comment } {
+   global audace
+
+   #--- je rafraichis la liste
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::quickaudine::refreshAvailableList
+   }
+   #--- je selectionne le link
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::quickaudine::selectConfigLink $linkLabel
+   }
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
    return
 }
@@ -77,6 +87,12 @@ proc ::quickaudine::create { linkLabel deviceId usage comment } {
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::delete { linkLabel deviceId usage } {
+   global audace
+
+   #--- je rafraichis la liste
+   if { [ winfo exists $audace(base).confLink ] } {
+      ::quickaudine::refreshAvailableList
+   }
    #--- pour l'instant, la liaison est arretee par le pilote de la camera
    return
 }
