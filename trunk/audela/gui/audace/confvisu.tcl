@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.40 2006-11-26 16:19:10 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.41 2006-12-02 08:39:19 robertdelmas Exp $
 
 namespace eval ::confVisu {
 
@@ -83,9 +83,9 @@ namespace eval ::confVisu {
       set private($visuNo,lastFileName)    "?"
       set private($visuNo,maxdyn)          "32767"
       set private($visuNo,mindyn)          "-32768"
-      set private($visuNo,hCanvas)     $private($visuNo,This).can1.canvas
-      set private($visuNo,hCrosshairH) $private($visuNo,hCanvas).crosshairH
-      set private($visuNo,hCrosshairV) $private($visuNo,hCanvas).crosshairV
+      set private($visuNo,hCanvas)         $private($visuNo,This).can1.canvas
+      set private($visuNo,hCrosshairH)     $private($visuNo,hCanvas).crosshairH
+      set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).crosshairV
       set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
       set private($visuNo,menu)            ""
 
@@ -96,7 +96,7 @@ namespace eval ::confVisu {
       set private($visuNo,fullscreen)      "0"
       set private($visuNo,zoom)            "1"
       set private($visuNo,toolNameSpace)   ""
-      
+
       #--- Initialisation de variables pour le trace de repere
       set private($visuNo,boxSize)         ""
       set private($visuNo,hBox)            ""
@@ -239,10 +239,10 @@ namespace eval ::confVisu {
       if { $force == "-novisu" } {
          return
       }
-      
+
       #--- petit raccourci pour la suite
       set bufNo [visu$visuNo buf]
-      
+
       if { [ image type image[visu$visuNo image] ] == "video" } {
          #--- je recupere la largeur et la hauteur de la video
          set videoSize [cam$private($visuNo,camNo) nbpix ]
@@ -265,9 +265,9 @@ namespace eval ::confVisu {
             #--- dans le cas d'une image 2D ou plus, la hauteur est la valeur retournee par le buffer
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
          }
-   
-         set width   $private($visuNo,picture_w)
-         set height  $private($visuNo,picture_h)
+
+         set width  $private($visuNo,picture_w)
+         set height $private($visuNo,picture_h)
 
          #--- je supprime l'item video s'il existe
          Movie::deleteMovieWindow $private($visuNo,hCanvas)
@@ -508,7 +508,7 @@ namespace eval ::confVisu {
       if { [ image type image[visu$visuNo image] ] == "photo" } {
          visu$visuNo clear
          visu$visuNo disp
-      } 
+      }
 
       #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
       set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
@@ -523,7 +523,7 @@ namespace eval ::confVisu {
       set ymax [expr  [lindex $yFactor 1] * [lindex $scrollRegion 3] ]
       set deltax [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ]
       set deltay [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ]
-      
+
       #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible 
       if { $deltax < 0 } { set deltax 0 }
       if { $deltay < 0 } { set deltay 0 }
@@ -541,7 +541,6 @@ namespace eval ::confVisu {
 
       #--- Je mets a jour la taille du reticule
       ::confVisu::redrawCrosshair $visuNo
-
 
    }
 
@@ -751,7 +750,7 @@ namespace eval ::confVisu {
             set y0 [lindex $box 1]
             set x1 [lindex $box 2]
             set y1 [lindex $box 3]
-      }         
+      }
       #--- j'ajoute une unite en largeur et en hauteur pour que les scollbars 
       #--- permettent de voir l'ensemble de l'image
       set x1 [expr $x1 + 1 ]
@@ -764,7 +763,6 @@ namespace eval ::confVisu {
          -scrollregion [list [lindex $coord0 0] [lindex $coord1 1] [lindex $coord1 0] [lindex $coord0 1]]
    }
 
-
    #------------------------------------------------------------
    #  setVideo
    #     active/desactive le mode video pour une camera pour afficher
@@ -776,6 +774,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc setVideo { visuNo state } {
       variable private
+
       set imageNo [visu$visuNo image]
 
       if { $state == 1 } {
@@ -1430,7 +1429,7 @@ namespace eval ::confVisu {
       if { $private($visuNo,mirror_y) == 1 } {
          lset coord 1 [ expr $private($visuNo,picture_h)*$zoom - 1 - [lindex $coord 1] ]
       }
-      
+
       if {$zoom >= 1} {
          set xx [expr [lindex $coord 0] / $zoom + $x0]
          set yy [expr $y1 - [lindex $coord 1] / $zoom ]
@@ -1514,6 +1513,7 @@ namespace eval ::confVisu {
 
    proc onReleaseButton1 { visuNo x y } {
       variable private
+
       if { [string compare $private($visuNo,MouseState) dragging] == 0 } {
          set private($visuNo,MouseState) rien
          catch { ::confVisu::boxEnd $visuNo [list $x $y] }
@@ -1622,7 +1622,6 @@ namespace eval ::confVisu {
                set private($visuNo,labcoord_type) "xy"
                return
             }
-
             $This.fra1.labURLX configure -text "$caption(confVisu,RA) $caption(confVisu,egale) [ mc_angle2hms [ lindex $temp 0 ] 360 zero 1 auto string ]"
             $This.fra1.labURLY configure -text "$caption(confVisu,DEC) $caption(confVisu,egale) [ mc_angle2dms [ lindex $temp 1 ] 90 zero 0 + string ]"
          } else {
@@ -1653,6 +1652,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc getCanvas { visuNo } {
       variable private
+
       return $private($visuNo,hCanvas)
    }
 
@@ -1740,7 +1740,7 @@ namespace eval ::confVisu {
 
    proc deleteBox { { visuNo "1" } } {
       variable private
-      
+
       if { $private($visuNo,boxSize) != "" } {
          set private($visuNo,boxSize) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
