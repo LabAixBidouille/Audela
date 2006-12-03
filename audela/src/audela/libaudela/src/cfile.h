@@ -26,7 +26,7 @@
 #include "fitskw.h"
 #include "cpixels.h"
 
-typedef enum { DCFILE_FITS, DCFILE_JPEG, DCFILE_GIF, DCFILE_PNG, DCFILE_RAW, DCFILE_UNKNOWN} TDcFileFormat;
+typedef enum { CFILE_FITS, CFILE_JPEG, CFILE_GIF, CFILE_PNG, CFILE_RAW, CFILE_UNKNOWN} CFileFormat;
 
 
 class CFile  {
@@ -35,11 +35,16 @@ public:
    CFile();
    ~CFile();
 
-   static TDcFileFormat getFormat(char * filename);
-   static TDcFileFormat loadFile(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
-   
+   static CFileFormat getFormatFromHeader(char * filename);
+   static CFileFormat loadFile(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
+   static CFileFormat saveFile(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords);   
+
+
    static void loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
-   //static void saveFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
+   static void saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords);
+
+   //static void loadBmp(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
+   //static void saveBmp(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
 
    static void loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
    static void saveJpeg(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
@@ -52,6 +57,7 @@ public:
 
    static void loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
    //static void saveRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
+   static void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpolationMethod, CPixels **rgbPixels, CFitsKeywords **rgbKeywords );
 
 };
 
