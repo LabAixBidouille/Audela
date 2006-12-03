@@ -31,9 +31,12 @@
 
 #define VISU_PREFIXE "visu"
 
-
+//------------------------------------------------------------------------------
+// La variable globale est definie de maniere unique ici.
+//
 //  pool de visu
-extern CPool *visu_pool;
+CPool *visu_pool;
+
 
 //------------------------------------------------------------------------------
 // fonction pour gerer le pool de visu
