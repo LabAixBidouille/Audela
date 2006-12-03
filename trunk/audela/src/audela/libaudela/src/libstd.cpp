@@ -81,6 +81,7 @@ int CmdAudelaVersion(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 int ping(char * hostName, int nbTry, int receivedTimeOut, char *result);
 
+extern int CmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 static char audela_version[] = AUDELA_VERSION;
 
 
@@ -435,10 +436,11 @@ void audelaInit(Tcl_Interp *interp)
    strcpy(audela_start_dir,interp->result);
    Tcl_SetVar(interp,"audela_start_dir",audela_start_dir,TCL_GLOBAL_ONLY);
 
+   // libstd.cpp : Fonctions de traitement par lots 
    Tcl_CreateCommand(interp,"libstd_id",(Tcl_CmdProc *)CmdLibstdId,NULL,NULL);
    Tcl_CreateCommand(interp,"historik",(Tcl_CmdProc *)CmdHistory,NULL,NULL);
 
-   // Fonctions de traitement par lots
+   // tt.cpp : Fonctions de traitement par lots 
    Tcl_CreateCommand(interp,"ttscript",(Tcl_CmdProc *)CmdTtScript3,NULL,NULL);
    Tcl_CreateCommand(interp,"ttscript2",(Tcl_CmdProc *)CmdTtScript2,NULL,NULL);
 
@@ -450,32 +452,34 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"hostaddress",(Tcl_CmdProc *)CmdHostaddress,NULL,NULL);
    Tcl_CreateCommand(interp,"ping",(Tcl_CmdProc *)CmdPing,NULL,NULL);
 
+   // file_tcl.cpp : Gestion des fichiers RAW, JPEG, PNG
+   Tcl_CreateCommand(interp,"cfa2rgb",(Tcl_CmdProc *)CmdCfa2rgb,(void*)link_pool,NULL);
+
    // Access aux port parallele et serie pour Windows NT, 2000, XP
    Tcl_CreateCommand(interp,"porttalk",(Tcl_CmdProc *)CmdPortTalk,NULL,NULL);
 
-   // Gestion de la liste des buffers
+   // pool_tcl.cpp : Gestion de la liste des buffers
    Tcl_CreateCommand(interp,"::buf::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)buf_pool,NULL);
    Tcl_CreateCommand(interp,"::buf::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)buf_pool,NULL);
    Tcl_CreateCommand(interp,"::buf::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)buf_pool,NULL);
 
-   // Gestion de la liste des cameras
+   // pool_tcl.cpp : Gestion de la liste des cameras
    Tcl_CreateCommand(interp,"::cam::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)cam_pool,NULL);
    Tcl_CreateCommand(interp,"::cam::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)cam_pool,NULL);
    Tcl_CreateCommand(interp,"::cam::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)cam_pool,NULL);
 
-   // Gestion de la liste des telescopes
+   // pool_tcl.cpp : Gestion de la liste des telescopes
    Tcl_CreateCommand(interp,"::tel::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)tel_pool,NULL);
    Tcl_CreateCommand(interp,"::tel::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)tel_pool,NULL);
    Tcl_CreateCommand(interp,"::tel::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)tel_pool,NULL);
 
-//modif michel debut
-   // Gestion de la liste des liaisons
+   // pool_tcl.cpp : Gestion de la liste des liaisons
    Tcl_CreateCommand(interp,"::link::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::available",(Tcl_CmdProc *)CmdAvailablePoolItem,(void*)link_pool,NULL);
    Tcl_CreateCommand(interp,"::link::genericname",(Tcl_CmdProc *)CmdGetGenericNamePoolItem,(void*)link_pool,NULL);
-//modif michel fin
+
 
    Tcl_CreateCommand(interp,"audela_version",(Tcl_CmdProc *)CmdAudelaVersion,(void*)NULL,NULL);
 
