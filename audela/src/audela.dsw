@@ -2,6 +2,98 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 # WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
 
 ###############################################################################
+####   EXTERNAL
+###############################################################################
+
+###############################################################################
+
+Project: "libdcjpeg"=".\external\libdcjpeg\vc60\libdcjpeg.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libdcraw"=".\external\libdcraw\vc60\libdcraw.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+#  loader dynamique de DLL/SO  pour libgphoto2
+Project: "libltdl"=".\external\libgphoto2\libltdl\vc6\libltdl.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libgphoto2_port"=".\external\libgphoto2\libgphoto2_port\libgphoto2_port\vc6\libgphoto2_port.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libgphoto2_port_usb"=".\external\libgphoto2\libgphoto2_port\usb\vc6\libgphoto2_port_usb.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libgphoto2"=".\external\libgphoto2\libgphoto2\vc6\libgphoto2.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libgphoto2_canon"=".\external\libgphoto2\camlibs\canon\vc6\libgphoto2_canon.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+####   CONTRIB
+###############################################################################
+
+###############################################################################
 
 Project: "CCD_Driver"=".\contrib\ethernaude\vc60\CCD_Driver.dsp" - Package Owner=<4>
 
@@ -12,6 +104,47 @@ Package=<5>
 Package=<4>
 {{{
 }}}
+
+
+###############################################################################
+
+Project: "libbm"=".\contrib\libbm\vc60\libbm.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libgs"=".\contrib\libgs\vc60\libgs.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+##############################################################################
+
+Project: "quicka"=".\contrib\quicka\vc60\quicka.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+####   AUDELA
+###############################################################################
 
 ###############################################################################
 
@@ -123,18 +256,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libbm"=".\contrib\libbm\vc60\libbm.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "libcamth"=".\libcam\libcamth\vc60\libcamth.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -193,32 +314,6 @@ Package=<4>
 {{{
 }}}
 
-###############################################################################
-
-Project: "libdcjpeg"=".\external\libdcjpeg\vc60\libdcjpeg.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "libdcraw"=".\external\libdcraw\vc60\libdcraw.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "libdigicam"=".\libcam\libdigicam\vc60\libdigicam.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -244,18 +339,6 @@ Package=<4>
 ###############################################################################
 
 Project: "libfingerlakes"=".\libcam\libfingerlakes\vc60\libfingerlakes.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "libgs"=".\contrib\libgs\vc60\libgs.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -529,19 +612,7 @@ Package=<4>
 {{{
 }}}
 
-###############################################################################
-
-Project: "quicka"=".\contrib\quicka\vc60\quicka.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
+################################################################################
 
 Project: "temma"=".\libtel\libtemma\vc60\temma.dsp" - Package Owner=<4>
 
