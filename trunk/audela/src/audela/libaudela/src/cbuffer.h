@@ -100,7 +100,6 @@ protected:
    */
    char *fitsextension;
    CPixels        *pix;
-   int            naxis;
    CFitsKeywords  *keywords;
    float          initialMipsLo;
    float          initialMipsHi;
@@ -131,7 +130,7 @@ public:
    void Autocut(double *phicut,double *plocut,double *pmode);
    void BinX(int x1, int x2, int width);
    void BinY(int y1, int y2, int height);
-   void Cfa2rgb(int method);
+   void Cfa2Rgb(int method);
    void Clipmax(double value);
    void Clipmin(double value);
    static CBuffer * Chercher(int bufNo);
@@ -189,7 +188,6 @@ public:
    void RestoreInitialCut();
    void Rot(float x0, float y0, float angle);
    void SaveFits(char *filename);
-   void SaveFitsRGB(char *filename);
    void Save1d(char *filename,int iaxis2);
    void Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end);
    void SaveJpg(char *filename,int quality,int sbsh, double sb,double sh);

@@ -46,7 +46,6 @@ CBuffer::CBuffer() : CDevice()
    SetSavingType(USHORT_IMG);
    keywords = NULL;
    pix = NULL;
-   naxis = 0;
    p_ast = NULL;
    compress_type = BUFCOMPRESS_NONE;
    fitsextension = new char[CHAREXTENSION];
@@ -210,33 +209,38 @@ void CBuffer::LoadFile(char *filename)
 
    FreeBuffer(DONT_KEEP_KEYWORDS);
 
+   // je charge le fichier 
    CFile::loadFile(filename, TFLOAT, &pixels, &kwds);
+
+   // je verifie la presence du mot cle naxis
+   k = kwds->FindKeyword("NAXIS");
+   if(k == NULL  ) {
+      throw CError("LoadFile error : keyword NAXIS not found");
+   }
+
    this->pix = pixels;
    this->keywords = kwds;
 
    // je sauvegarde les seuils initiaux et je convertis les seuils en float
-   k = keywords->FindKeyword("MIPS-HI");      
+   k = this->keywords->FindKeyword("MIPS-HI");      
    if(k != NULL  ) {
+      // je convertis le seuil en float
       if( k->GetDatatype() == TINT ) {
-         // je convertis le seuil en float
-         initialMipsHi = (float) k->GetIntValue();
          keywords->Add("MIPS-HI",(char *) &initialMipsHi,TFLOAT,"Hight cut","ADU");
-      } else {
-         initialMipsHi = (float) k->GetFloatValue();
       }         
+      // je sauvegarde la valeur initale du seuil
+      initialMipsHi = (float) k->GetIntValue();
    }
    
-   k = keywords->FindKeyword("MIPS-LO");
+   k = this->keywords->FindKeyword("MIPS-LO");
    if(k) {
+      // je convertis le seuil en float
       if( k->GetDatatype() == TINT ) {
-         // je convertis le seuil en float
-         initialMipsLo = k->GetFloatValue();
-         keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
-      } else {
-         initialMipsLo = (float) k->GetFloatValue();
+         this->keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
       }         
+      // je sauvegarde la valeur initale du seuil
+      initialMipsLo = k->GetFloatValue();
    }
-
 }
 
 /**
@@ -321,13 +325,12 @@ void CBuffer::LoadFits(char *filename)
          throw CError("LoadFits error: plane number is not 1 or 3.");
       }
 
+      // je verifie la presence du mot cle naxis
       k = keywords->FindKeyword("NAXIS");
       if( k != NULL) {
-         naxis =k->GetIntValue();
-      } else {
          throw new CError(ELIBSTD_NO_NAXIS_KWD);
       }
-      
+
       // On reinitialise les parametres astrometriques
       p_ast->valid = 0;
       saving_type = keywords->FindKeyword("BITPIX")->GetIntValue();
@@ -554,50 +557,11 @@ void CBuffer::Load3d(char *filename,int iaxis3)
  */
 void CBuffer::SaveFits(char *filename)
 {
-   int msg;                         // Code erreur de libtt
    int datatype;                    // Type du pointeur de l'image
-   int bitpix;
-   int naxis1,naxis2;
-   int nb_keys;
-   char **keynames=NULL;
-   char **values=NULL;
-   char **comments=NULL;
-   char **units=NULL;
-   int *datatypes=NULL;
-   TYPE_PIXELS *ppix = NULL;
    CFitsKeyword *k = NULL;
    float fHi, fLo;
    int iHi, iLo;
  
-   datatype=TFLOAT;
-   bitpix = saving_type;
-
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
-
-   switch( pix->getPixelClass() ) {
-      case CLASS_RGB :  
-         SaveFitsRGB(filename);
-         return;
-      default :
-         ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
-         pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
-         break;
-   }
-
-   
-   // Collecte de renseignements pour la suite
-   nb_keys = keywords->GetKeywordNb();
-   
-   // Allocation de l'espace memoire pour les tableaux de mots-cles
-   if (nb_keys>0) {
-   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-      if(msg) {
-         free(ppix);
-         throw CErrorLibtt(msg);
-      }
-   }
-
    // Je transforme les seuils en entier si saving_type vaut byte, short ou ushort
    // Si les mots-cles n'existent pas, alors on ne fait rien. Merci Jacques !
    if( saving_type == BYTE_IMG || saving_type == SHORT_IMG || saving_type == USHORT_IMG ) {
@@ -614,10 +578,13 @@ void CBuffer::SaveFits(char *filename)
          keywords->Add("MIPS-LO",(void*)&iLo,TINT,"Low cut","ADU");
       }
    }
-   
-   // Conversion keywords vers tableaux 'Made in Klotz'
-   keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
-   
+
+   keywords->Add("BITPIX",&this->saving_type,TINT,"","");
+
+   // j'enregistre l'image dans le fichier
+   datatype=TFLOAT;
+   CFile::saveFits(filename, datatype,this->pix,this->keywords);
+
    // je restaure les valeur réelles des seuils 
    if( saving_type == BYTE_IMG || saving_type == SHORT_IMG || saving_type == USHORT_IMG ) {
       k = keywords->FindKeyword("MIPS-HI");
@@ -629,25 +596,6 @@ void CBuffer::SaveFits(char *filename)
          keywords->Add("MIPS-LO",(void*)&fLo,TFLOAT,"Low cut","ADU");
       }
    }
-
-   // Enregistrement proprement dit de l'image.
-   msg = Libtt_main(TT_PTR_SAVEIMA,12,filename,ppix,&datatype,&naxis1,&naxis2,
-      &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
-   if(msg) {
-      free(ppix);
-      throw CErrorLibtt(msg);
-   }
-   
-   // Liberation de la memoire allouee par libtt
-   if (nb_keys>0) {
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-      if(msg) {
-         free(ppix);
-         throw CErrorLibtt(msg);
-      }
-   }
-
-   free(ppix);
 }
 
 
@@ -825,76 +773,6 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
 
 }
 
-void CBuffer::SaveFitsRGB(char *filename)
-{
-   int msg;                         // Code erreur de libtt
-   int datatype;                    // Type du pointeur de l'image
-   int bitpix;
-   int naxis1,naxis2,naxis3;
-   int nb_keys;
-   char **keynames=NULL;
-   char **values=NULL;
-   char **comments=NULL;
-   char **units=NULL;
-   int *datatypes=NULL;
-   TYPE_PIXELS_RGB *pixels, *pixelsR, *pixelsG, *pixelsB;
-   
-   
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
-   naxis3 = 3;
-
-   pixels = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2*naxis3 * sizeof(TYPE_PIXELS_RGB));
-      pixelsR = pixels;
-      pixelsG = pixels + naxis1*naxis2; 
-      pixelsB = pixels + naxis1*naxis2*2; 
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (int) pixelsR);
-   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (int) pixelsG);
-   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (int) pixelsB);
-   
-   // format des pixels en entree de libtt
-   datatype = TSHORT;
-   // format des pixels dans le fichier de sortie de libtt
-   bitpix = saving_type;
-
-   // Collecte de renseignements pour la suite
-   nb_keys = keywords->GetKeywordNb();
-
-   // Allocation de l'espace memoire pour les tableaux de mots-cles
-   if (nb_keys>0) {
-   msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
-      if(msg) {
-         free(pixels);
-         throw CErrorLibtt(msg);
-      }
-   }
-
-   // Conversion keywords vers tableaux 'Made in Klotz'
-   keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
-
-   msg = Libtt_main(TT_PTR_SAVEIMA3D,13,filename,pixels,&datatype,&naxis1,&naxis2,&naxis3,
-         &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
-   if(msg) {
-      Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-      free(pixels);
-      throw CErrorLibtt(msg);
-   }
-
-   // Liberation de la memoire allouee par libtt
-   if (nb_keys>0) {
-   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-      if(msg) {
-         free(pixels);
-         throw CErrorLibtt(msg);
-      }
-   }
-
-   free(pixels);
-
-}
-
 void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
 {
    int msg;                         // Code erreur de libtt
@@ -935,7 +813,7 @@ void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
 }
 
 void CBuffer::SaveJpg(char *filename,int quality, float *cuts, unsigned char *palette[3], int mirrorx, int mirrory) {
-   unsigned char * buf;
+   unsigned char * buf256;
    int width, height, planes;
       
    // je recupere la taille 
@@ -943,26 +821,28 @@ void CBuffer::SaveJpg(char *filename,int quality, float *cuts, unsigned char *pa
    height = GetH();
    planes = this->pix->GetPlanes();
    
-   buf= (unsigned char *) calloc(width*height*3,sizeof(unsigned char));
-   if (buf==NULL) {
+   // je cree le buffer pour preparer l'image a 256 niveaux
+   buf256 = (unsigned char *) calloc(width*height*3,sizeof(unsigned char));
+   if (buf256==NULL) {
       throw CError("saveJpeg : not enouth memory for calloc ");
    }
    
-   // transformation de l'image sur 256 niveaux
+   // je transforme l'image sur 256 niveaux
    this->pix->GetPixelsVisu(
       0, 0, width-1, height-1,   // size
       mirrorx, mirrory,          // mirror
       cuts,                      // cuts
       palette,                   // palette
-      buf);       
-   CFile::saveJpeg(filename, buf, GetKeywords(), 3, width, height, quality);
-   free(buf);
+      buf256);       
+
+   // j'enregistre l'image dans le fichier
+   CFile::saveJpeg(filename, buf256, this->keywords, 3, width, height, quality);
+   free(buf256);
     
 }
 
 void CBuffer::SaveRawFile(char *filename)
 {
-
    size_t sizeWritten;
    FILE * ifp;
    FILE * ofp;
@@ -991,13 +871,43 @@ void CBuffer::SaveRawFile(char *filename)
 
 }
 
+/**
+ *  Cfa2Rgb
+ *  convertit une image CFA en image RGB
+ */
+
+void CBuffer::Cfa2Rgb(int interpolationMethod)
+{
+   CPixels *rgbPixels;
+   CFitsKeywords *rgbKeywords;
+
+   // je convertis les pixles (une exception est levee en cas d'erreur
+   CFile::cfa2Rgb(this->pix , this->keywords, interpolationMethod, &rgbPixels, &rgbKeywords);
+
+   // je supprimer l'image CFA
+   delete this->pix;
+   delete this->keywords;
+
+   // j'affecte l'image RGB
+   this->pix = rgbPixels;
+   this->keywords = rgbKeywords;
+}
+
+
 /*
  * int CBuffer::GetNaxis() --
  *  Renvoie le nombre d'axes de l'image
  */
 int CBuffer::GetNaxis()
 {
-   return naxis;
+   CFitsKeyword *k;
+
+   k = this->keywords->FindKeyword("NAXIS");
+   if(k != NULL  ) {
+      return k->GetIntValue();
+   } else {
+      return 0;
+   }
 }
 
 /*
@@ -1555,18 +1465,21 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
          }
       case COMPRESS_RAW :
          {
-            int width, height;
             int result = -1;
             unsigned short * decodedData;
             struct libdcraw_DataInfo dataInfo;
 
             result = libdcraw_bufferRaw2Cfa((unsigned short*) pixels, pixelSize, &dataInfo, &decodedData);
             if (result == 0 )  {
+               char  filter[70];
+               int width, height;
+
                width  = dataInfo.width;
                height = dataInfo.height;
                pixTemp = new CPixelsGray( width, height, FORMAT_SHORT, decodedData, reverseX, reverseY);
                libdcraw_freeBuffer(decodedData);
                // j'enregistre l'image brute RAW dans un fichier temporaire
+               // au cas ou je voudrais ensuite l'enregistrer a l'etat brut
                {
                   FILE * ofp;
                   size_t sizeWritten;
@@ -1577,6 +1490,12 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
                      fclose(ofp);
                   }
                }
+               // j'ajoute les mots cles specifique a une image RAW
+               sprintf(filter, "%u",dataInfo.filters); 
+               keywords->Add("RAW_FILTER",  &filter,          TSTRING, "", "" );
+               keywords->Add("RAW_COLORS",  &dataInfo.colors,  TINT,    "raw colors", "" );
+               keywords->Add("RAW_BLACK",   &dataInfo.black,   TINT,    "raw low cut", "" );
+               keywords->Add("RAW_MAXIMUM", &dataInfo.maximum, TINT,   "raw hight cut", "" );
 
             } else {
                throw CError("libdcraw_decodeBuffer error=%d", result);
@@ -1626,13 +1545,13 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
    }
 
    // s'il n'y a pas eu d'exception pendant la creation de pixTemp, je detruis l'ancienne image 
-	if (pix != NULL) {
-	   delete pix ;
-	   pix = NULL;
+	if (this->pix != NULL) {
+	   delete this->pix ;
+	   this->pix = NULL;
 	}
 
    // j'affecte la nouvelle image
-   pix = pixTemp;
+   this->pix = pixTemp;
 
 }
 
@@ -1685,7 +1604,7 @@ void CBuffer::SetKeyword(char *nom, char *data, char *datatype, char *comment, c
          pvData = (void*)&dDouble;
       } else if(strcmp(datatype,"string")==0) {
          iDatatype = TSTRING;
-         pvData = (void*)&(data);
+         pvData = (void*)data;
       } else {
          iDatatype = TINT;
          sscanf(data,"%d",&iInt);
