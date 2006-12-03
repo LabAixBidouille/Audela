@@ -24,20 +24,12 @@
 #include <stdlib.h>
 #include <tk.h>
 
-#include "cpool.h"
 #include "cbuffer.h"
 #include "cvisu.h"
 
 #include "cerror.h"
 #include "cvisu.h"
 
-
-#define VISU_PREFIXE "visu"
-
-//------------------------------------------------------------------------------
-// La variable globale est definie de maniere unique ici.
-//
-CPool *visu_pool;
 
 /*
  * Structure cmditem used to hold the TCL name of a command, and
@@ -321,22 +313,23 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    } else if(argc==2) {
       visu = (CVisu*)clientData;
 
-      buffer = (CBuffer*)visu_pool->Chercher(visu->bufnum);
+      buffer = CBuffer::Chercher(visu->bufnum);
       if (buffer != NULL ) {
          if( buffer->GetNaxis() == 2 || buffer->GetNaxis() == 1) {
             fsh= visu->GetGrayHicut();
             fsb= visu->GetGrayLocut();
-
-         sprintf(ligne,"%f %f",fsh,fsb);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            sprintf(ligne,"%f %f",fsh,fsb);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         } else {
+            float fshR, fsbR, fshG, fsbG, fshB, fsbB;
+            visu->GetRgbCuts(&fshR, &fsbR, &fshG, &fsbG, &fshB, &fsbB);
+            sprintf(ligne,"%f %f %f %f %f %f", fshR, fsbR, fshG, fsbG, fshB, fsbB);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         }
+      } else {
+         Tcl_SetResult(interp,"visu cut error : no buffer",TCL_VOLATILE);
+         result = TCL_ERROR;
       }
-   } else {
-         float fshR, fsbR, fshG, fsbG, fshB, fsbB;
-         visu->GetRgbCuts(&fshR, &fsbR, &fshG, &fsbG, &fshB, &fsbB);
-         sprintf(ligne,"%f %f %f %f %f %f", fshR, fsbR, fshG, fsbG, fshB, fsbB);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      }
-
    } else {
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
          sprintf(ligne,"Threshold struct not valid: must be { hicut locut }");
@@ -663,7 +656,7 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                   x2 = x1;
                   x1 = i;
                }
-               buffer = (CBuffer*)visu_pool->Chercher(visu->bufnum);
+               buffer = CBuffer::Chercher(visu->bufnum);
                int naxis1 = buffer->GetW();
                int naxis2 = buffer->GetH();
 
