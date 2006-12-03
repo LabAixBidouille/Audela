@@ -36,7 +36,6 @@ CPool *buf_pool;
 //------------------------------------------------------------------------------
 // Commande internes pour gerer les commandes d'un buffer
 //
-//int cmdFormat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdType(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdClear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -98,7 +97,6 @@ int cmdClipmax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdScale(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdScar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSaveJpg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdSaveFitsRGB(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdUnifyBg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
@@ -165,7 +163,6 @@ static struct cmditem cmdlist[] = {
    {"save", (Tcl_CmdProc *)cmdLoadSave},
    {"save1d", (Tcl_CmdProc *)cmdSave1d},
    {"save3d", (Tcl_CmdProc *)cmdSave3d},
-   {"savefitsrgb", (Tcl_CmdProc *)cmdSaveFitsRGB},
    {"savejpeg", (Tcl_CmdProc *)cmdSaveJpg},
    {"scale", (Tcl_CmdProc *)cmdScale},
    {"scar", (Tcl_CmdProc *)cmdScar},
@@ -806,7 +803,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       else {
          strcpy(extfits,"");
          strcpy(ext,interp->result); 
-         // je supprime le suffixe de l'extension (numero d'image d'un fichier fit en 3 dimensions
+         // je supprime le suffixe de l'extension (numero d'image d'un fichier fit en 3 dimensions)
          sprintf(ligne,"string tolower [lindex [split \"%s\" \";\"] 0]",ext); 
          Tcl_Eval(interp,ligne);
          strcpy(ext,interp->result); 
@@ -817,22 +814,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       
 
       try {
-     /*
-         if( strcmp(ext, ".bmp")== 0 
-            || strcmp(ext, ".gif")== 0 
-            || strcmp(ext, ".jpg")== 0 
-            || strcmp(ext, ".jpeg")== 0 
-            || strcmp(ext, ".png")== 0 
-            || strcmp(ext, ".ps")== 0 
-            || strcmp(ext, ".eps")== 0 
-            || strcmp(ext, ".tiff")== 0 
-            || strcmp(ext, ".tif")== 0 
-            || strcmp(ext, ".xbm")== 0 
-            || strcmp(ext, ".xpm")== 0 ) {   
-            // je verifie la présence de la libriairie Img 1.3
- */
          if(strcmp(argv[1],"save")==0) {
-
             //  save  JPEG
             if( strcmp(ext, ".jpg")== 0 || strcmp(ext, ".jpeg")== 0 ) {            
                unsigned char *palette[3];
@@ -842,7 +824,10 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                float cuts[6];
                CFitsKeyword *kwd;
                int width, height, planes;
-               int quality = 100;
+               int quality ;
+               int mirrorx;
+               int mirrory;
+
                
                // je fabrique une palette par défaut
                palette[0] = pal0;
@@ -870,8 +855,10 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                planes = Buffer->GetNaxis();
 
                quality = 80;
+               mirrorx = 0;
+               mirrory = 0;
             
-               Buffer->SaveJpg(nom_fichier, quality, cuts, palette, 0 , 0 ) ;
+               Buffer->SaveJpg(nom_fichier, quality, cuts, palette, mirrorx , mirrory ) ;
 
             } else if( strcmp(ext, ".crw")== 0   // canon raw image
                     || strcmp(ext, ".nef")== 0   // nikon raw image
@@ -1202,57 +1189,6 @@ int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             sprintf(ligne,"catch {file delete %s.gz}",nom_fichier); Tcl_Eval(interp,ligne);
             sprintf(ligne,"catch {gzip %s}",nom_fichier); Tcl_Eval(interp,ligne);
        	}
-
-      free(name);
-      free(ext);
-      free(path2);
-      free(nom_fichier);
-   }
-
-   delete ligne;
-   return retour;
-}
-
-//==============================================================================
-// buf$i savefitsrgb filename --
-//   Enregistrement d'une image FITS RGB . Si le contenu du buffer est
-//   vide, rien n'est fait.
-//
-int cmdSaveFitsRGB(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-{
-   char *name, *ext, *path2, *nom_fichier;
-   char *ligne;
-   int retour;
-   CBuffer *Buffer;
-
-   ligne = new char[1000];
-
-   if ((argc<=2)||(argc>=7)) {
-      sprintf(ligne,"Usage: %s %s filename ",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      retour = TCL_ERROR;
-   } else {
-      name = (char*)calloc(512,sizeof(char));
-      ext = (char*)calloc(128,sizeof(char));
-      path2 = (char*)calloc(256,sizeof(char));
-      nom_fichier = (char*)calloc(1000,sizeof(char));
-      Buffer = (CBuffer*)clientData;
-
-      // Decodage du nom de fichier : chemin, nom du fichier, etc.
-      sprintf(ligne,"file dirname [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
-      sprintf(ligne,"file tail [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
-      sprintf(ligne,"file extension \"%s\"",argv[2]); Tcl_Eval(interp,ligne);
-      if(strcmp(interp->result,"")==0) strcpy(ext,".jpg"); else strcpy(ext,"");
-      sprintf(ligne,"file join {%s} {%s%s}",path2,name,ext); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
-
-      try {
-         Buffer->SaveFitsRGB(nom_fichier);
-         retour = TCL_OK;
-      } catch(const CError& e) {
-         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      }
 
       free(name);
       free(ext);
@@ -4006,7 +3942,7 @@ int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          // Appel a la methode du buffer
          buffer = (CBuffer*)clientData;
          try {
-            //buffer->Cfa2rgb(method);
+            buffer->Cfa2Rgb(method);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
             retour = TCL_OK;
          } catch(const CError& e) {
