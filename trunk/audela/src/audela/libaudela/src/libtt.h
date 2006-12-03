@@ -214,7 +214,7 @@ void load_libtt(void);
 #define TT_PTR_SAVEIMA3D                213
 #define TT_PTR_LOADIMA3D                214
 #define TT_PTR_SAVEIMA1D                215
-#define TT_PTR_CFA2RGB                  216
+#define TT_PTR_SAVEIMAKEYDIM            216
 
 #define TT_PTR_IMASERIES                210
 
