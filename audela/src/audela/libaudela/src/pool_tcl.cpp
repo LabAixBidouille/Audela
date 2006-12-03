@@ -178,8 +178,6 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
    CBuffer *newBuffer;
    char *classname;
    int CASE=0;
-   int bufno = 1;
-   int imgno = 1;
    int dontCreateCommand = 0;
    int retour,kk;
    char s[256];
@@ -215,36 +213,6 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             if(toto) ENREGISTRER_CMD(CmdBuf);
          }
          break;
-      /*
-      case CASE_VISU :
-         if((argc<3)||(argc>4)) {
-            sprintf(ligne,"Usage: %s bufno imgno ?%snum?",argv[0],classname);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-            free(ligne);
-            return TCL_ERROR;
-         } else if(Tcl_GetInt(interp,argv[1],&bufno)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s bufno imgno ?%snum?\nbufno must be an integer > 0",argv[0],classname);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-            free(ligne);
-            return TCL_ERROR;
-         } else if(Tcl_GetInt(interp,argv[2],&imgno)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s bufno imgno ?%snum?\nimgno must be an integer > 0",argv[0],classname);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-            free(ligne);
-            return TCL_ERROR;
-         } else {
-            numero = 0;
-            if((argc==4)&&(Tcl_GetInt(interp,argv[3],&numero)!=TCL_OK)) {
-               sprintf(ligne,"Usage: %s bufno imgno ?%snum?\n%snum must be an integer > 0",argv[0],classname,classname);
-               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-               free(ligne);
-               return TCL_ERROR;
-            }
-            toto = pool->Ajouter(numero,new CVisu(interp,bufno,imgno));
-            if(toto) ENREGISTRER_CMD(CmdVisu);
-         }
-         break;
-      */
       case CASE_CAMERA :
          if(argc<2) {
             sprintf(ligne,"Usage: %s libcam_driver ?options?",argv[0]);
