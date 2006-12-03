@@ -1,12 +1,34 @@
-.PHONY: build install clean distclean
+###include ../Makefile.defs
 
-build:
 
-install:
-	cp -f include/libgphoto2.h ../include
+MYTARGETS = libltdl libgphoto2_port/libgphoto2_port libgphoto2_port/usb libgphoto2  camlibs/canon
 
-clean:
-	rm -f ../include/libgphoto2.h
+.PHONY: $(MYTARGETS) clean cleanall install
 
-distclean: clean
-	rm -f *~ *.bak
+all: $(MYTARGETS)
+
+
+
+$(MYTARGETS):
+	(cd $@/linux; make)
+
+clean cleanall:
+	@$(foreach DIR, $(MYTARGETS), make -C $(DIR)/linux $@ ; )
+
+
+
+.PHONY: local-clean dist-clean dist
+
+local-clean:
+	$(RM) *~
+
+dist-clean: local-clean
+	@$(foreach DIR, $(MYTARGETS), make -C $(DIR)/linux distclean -o makedep ; )
+
+dist: dist-clean
+	mkdir -p $(distdir)
+	cp -r * $(distdir)
+
+install: 
+	@$(foreach DIR, $(MYTARGETS), make -C $(DIR)/linux $@ install; )
+
