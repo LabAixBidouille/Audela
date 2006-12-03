@@ -218,16 +218,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
   - Repertoire src\external\jpeg6b,
     lancer vars.bat (regler les chemins si besoin), make.bat puis install.bat
 
-  - Repertoire src\external\libdcjpeg
-    ouvrir visual c++  vc60\libdcjpeg.dsw et compiler en mode Release
-
-  - Repertoire src\external\libdcraw
-    ouvrir visual c++  vc60\libdcraw.dsw et compiler en mode Release
-
   - Repertoire src\external\libftd2xx
-    lancer make.bat puis install.bat
-
-  - Repertoire src\external\libgphoto2
     lancer make.bat puis install.bat
 
   - Repertoire src\external\libusb
@@ -264,9 +255,9 @@ cibles que vous voulez compiler, et effectuez la compilation.
 5.1.3.1 Installation ftd2xx 
 ---------------------------
 
-   Ce driver est nécessaire seulement pour les liaisons avec quickremote
+   Ce driver est nécessaire seulement pour les liaisons avec quickremote et quickaudine
 
-   télécharger D10620.zip  pour quickremote
+   télécharger D10620.zip  
    URL:   http://www.ftdichip.com/Drivers/FT232-FT245/D2XX/Win/D10620.zip
    ou URL:   http://www.ftdichip.com/Drivers/D2XX/Win2000/D30104.zip
    dezipper le fichier dans un repertoire temporaire 
@@ -276,37 +267,11 @@ cibles que vous voulez compiler, et effectuez la compilation.
    Remarque : 
    Les drivers pour les autres version d'OS sont aussi sur le site http://www.ftdichip.com.
 
-5.1.3.2 Arreter le service ftdi_sio 
------------------------------------
-
-  Cette action est nécessaire seulement pour les liaisons avec quickremote.
-   
-  arreter les services hotplug qui surveillent le branchement des equipements 
-  qui ont le même identifiant USB que quickremote comme par exemple : ftdi_sio
-  Pour cela, lister les services ftdi avec la commande lsmod.
-  Si un  service existe, il l'arreter avec la commande rmmod.   
-
-  Exemple : 
-   $ su root
-   # lsmod |grep ftdi_sio
-   ftdi_sio               31940  0
-   usbserial              26920  1 ftdi_sio
-   usbcore               106008  5 ftdi_sio,usbserial,ehci-hcd,uhci-hcd
-   # rmmod ftdi_sio
-   # lsmod |grep ftdi_sio
-   #
-
-   Remarque : le service est relance automatiquement chaque fois que quickremote est 
-   rebranche. Je n'ai pas trouve la commande qui desactive definitivement le hotplug pour 
-   cet equipement.
-   Pour relancer le service hotplug manuellement, taper la commande "modprobe ftdi_sio" 
-   sous root.
-
 5.1.3.3 Installation libusb-win32 
 ---------------------------------
 
-   Ce driver est nécessaire seulement pour la liaison de la camera DSC (appareil
-   photo numerique) avec libgphoto2.
+   Ce driver est nécessaire seulement pour la liaison des appareils
+   photo numerique USB (libriairie libdigicam.dll et libgphoto2.dll).
    
    télécharger libusb-win32-filter-bin-0.1.10.1.exe disponible sur site
    http://libusb-win32.sourceforge.net , 
@@ -379,66 +344,8 @@ Vous pouvez tout compiler d'un coup :
 	Vous pouvez neanmoins supprimer ces modules dans le fichier Makefile.defs pour 
 	reprendre le cours normal de la compilation.
 
-5.2.2 Installation des drivers optionels
-----------------------------------------
 
-5.2.2.1 Installation ftd2xx
----------------------------
-
-   Ce driver est nécessaire seulement pour les liaisons avec quickremote 
-   et quickaudine.
-
-   Ce driver est livre avec AudeLA et il est installe automatiquement dans
-   audela/bin quand on installe les modules externes (voir ci-dessus).
-
-   Recommandations pour l'execution de AudeLA :
-      - ajouter le repertoire audela/bin dans la variable d'environnement
-        LD_LIBRARY_PATH avant de demarrer AudeLA.
-
-      - verifier que D_LIBRARY_PATH est correctement valorise :
-            $ cd audela/bin
-            $ ldd libquicka.so
-            libftd2xx.so.0 => libftd2xx.so.0 (0xb7e25000)
-         Si cette commande retourne libftd2xx.so.0 => not found  , verifier
-         LD_LIBRARY_PATH
-
-      - demarrer AudeLA avec un compte ayant les droits d'acces sur 
-        les ports USB (root par exemple)
-
-      - pour eviter les confits avec d'autres drivers FTDI, desactiver 
-        les hotplugs : 
-         Unload ftdi_sio and usbserial if it is attached to your device 
-         # rmmod ftdi_sio 
-         # rmmod usbserial 
-
-   Ce driver est fourni par FTDI 
-       http://www.ftdichip.com/Drivers/D2XX/Linux/libftd2xx0.4.10.tar.gz
-
-5.2.2.2 Installation libgphoto2 2.1.6
--------------------------------------
-
-   Ce driver est nécessaire seulement pour la camera DSLR (appareil photo numérique).
-   
-   AudeLA founit un patch pour supporter les longues poses supérieures à 30 secondes
-   pour les appareils Canon et Nikon.
-
-   Télécharger libgphoto2-2.1.6.tar.gz depuis le site http://www.gphoto.org/ , 
-   puis dezipper les modifications libgphoto2-2.1.6-patch-b.tar.gz ,
-   puis installer :
-
-   $ tar xzvf libgphoto2-2.1.6.tar.gz 
-   $ cd libgphoto2-2.1.6
-   $ tar xzvf libgphoto2-2.1.6-patch-b.tar.gz 
-   $ ./configure --with-drivers=canon,ptp2 --prefix=/usr 
-   $ make
-   $ su root
-   # make install
-
-   Remarque : 
-   il n'est pas necessaire d'installer gtkam et gphoto2.
-   Ne pas confondre gphoto2 avec libgphoto2 !!
-
-5.2.3 Pre-requis
+5.2.2 Pre-requis
 ----------------
 
 AudeLA necessite les modules externes suivants pour fonctionner:
@@ -451,6 +358,36 @@ Optionnel:
 Autres:
  - Img 1.3 (http://prdownloads.sourceforge.net/tkimg/tkimg1.3.tar.gz?download)
  - Blt 2.4 (http://prdownloads.sourceforge.net/blt/BLT2.4z.tar.gz?download)
+
+5.2.3 Arreter le service ftdi_sio 
+-----------------------------------
+
+  Cette action peut etre nécessaire seulement pour les liaisons avec quickremote et quickaudine.
+  
+  Il se peut que les services hotplug qui surveillent le branchement des equipements 
+  FTDI comme quickremote et quickaudine prennent la main de manière exlusive sur
+  ces périphériques.
+  
+  Dans ce cas il fauta arreter ces services hotplug avant de lancer AudeLA.
+  Pour cela, lister les services ftdi avec la commande lsmod.
+  Si un service existe, il l'arreter avec la commande rmmod.   
+
+  Exemple : 
+   $ su root
+   # lsmod |grep ftdi_sio
+   ftdi_sio               31940  0
+   usbserial              26920  1 ftdi_sio
+   usbcore               106008  5 ftdi_sio,usbserial,ehci-hcd,uhci-hcd
+   # rmmod ftdi_sio
+   # lsmod |grep ftdi_sio
+   #
+
+   Remarque : le service est relance automatiquement chaque fois que quickremote est 
+   rebranche. Je n'ai pas trouve la commande qui desactive definitivement le hotplug pour 
+   cet equipement.
+   Pour relancer le service hotplug manuellement, taper la commande "modprobe ftdi_sio" 
+   sous root.
+
 
 5.3 MAC OS-X
 ------------
