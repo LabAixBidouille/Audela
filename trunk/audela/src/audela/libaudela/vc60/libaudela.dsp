@@ -141,6 +141,10 @@ SOURCE=..\src\cpool.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\file_tcl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\fitskw.cpp
 # End Source File
 # Begin Source File
@@ -242,6 +246,14 @@ SOURCE=..\src\history.h
 # Begin Source File
 
 SOURCE=..\src\jpegmemscr.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\libdcjpeg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\libdcraw.h
 # End Source File
 # Begin Source File
 
