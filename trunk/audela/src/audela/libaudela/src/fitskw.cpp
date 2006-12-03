@@ -88,7 +88,7 @@ void CFitsKeyword::SetKeyword(
       switch(a_datatype) {
          case TSTRING :
             datatype = a_datatype;
-            strncpy(string_value,*(char**)a_data,FLEN_VALUE-1);
+            strncpy(string_value,(char*)a_data,FLEN_VALUE-1);
             int_value = (int)atoi(string_value);
             float_value = (float)atof(string_value);
             double_value = (double)atof(string_value);
@@ -123,13 +123,32 @@ void CFitsKeyword::SetKeyword(
 
 }
 
-
 void CFitsKeyword::GetIntValue(int*data,int*default_data)
 {
    if(datatype!=TINT) {
       *data = *default_data;
    } else {
       *data = int_value;
+   }
+}
+
+
+
+void * CFitsKeyword::GetPtrValue()
+{
+   switch(datatype) {
+      case TSTRING :
+         return string_value;
+         break;
+      case TINT :
+         return &int_value;
+         break;
+      case TFLOAT :
+         return &float_value;
+         break;
+      case TDOUBLE :
+         return &double_value;
+         break;
    }
 }
 
@@ -209,7 +228,7 @@ void CFitsKeyword::GetFromArray(
          data = (void*)&i_double;
          break;
       case TSTRING :
-         data = (void*)&(values[a_indice]);
+         data = (void*)values[a_indice];
          break;
       default :
          i_int = 0;
@@ -330,7 +349,7 @@ void CFitsKeywords::Add(char *nom, char *data, char *datatype, char *comment, ch
       pvData = (void*)&dDouble;
    } else if(strcmp(datatype,"string")==0) {
       iDatatype = TSTRING;
-      pvData = (void*)&(data);
+      pvData = (void*)(data);
    } else {
       iDatatype = TINT;
       sscanf(data,"%d",&iInt);

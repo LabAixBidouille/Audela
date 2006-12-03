@@ -68,6 +68,7 @@ class LIBAUDELA_API CFitsKeyword {
    double GetDoubleValue() { return double_value; };
    float GetFloatValue() { return float_value; };
    int GetIntValue() { return int_value; };
+   void * GetPtrValue();
 };
 
 class LIBAUDELA_API CFitsKeywords {
