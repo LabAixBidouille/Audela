@@ -76,14 +76,11 @@ public:
    virtual int  GetWidth(void)=0;
    virtual void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)=0;
    virtual void GetPixelsPointer(TYPE_PIXELS **pixels)=0;
-   virtual void GetPixels(int x1, int x2, int y1, int y2, TPixelFormat pixelFormat, TColorPlane plane,int pixels)=0;
+   virtual void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane,int pixels)=0;
    virtual void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels)=0;
    virtual void GetPixelsVisu( int x1,int y1,int x2, int y2,
                   int mirrorX, int mirrorY,
-                  //double hicutRed,   double locutRed, 
-                  //double hicutGreen, double locutGreen,
-                  //double hicutBlue,  double locutBlue,
-                  float *cuts,
+                   float *cuts,
                   unsigned char *palette[3], unsigned char *ptr)=0;
    void         Histogram(int n, float *adus, float *meanadus, long *histo,
                           int ismini,float mini,int ismaxi,float maxi);
