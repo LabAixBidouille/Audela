@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.7 2006-11-16 13:40:35 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.8 2006-12-04 13:38:54 audelateam Exp $
 #
 
 #=========================================================================
@@ -865,7 +865,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,hhiverete)               "Hora de inverno / Hora de verão :"
    set caption(audecom,tu)                      "Tempo Universal (TU) :"
    set caption(audecom,tsl)                     "Tempo Sideral Local (TSL) :"
-   set caption(audecom,angle_horaire)           "Angûlo horário :"
+   set caption(audecom,angle_horaire)           "Ângulo horário :"
    set caption(audecom,coef_king)               "Coeficiente King :"
    set caption(audecom,coef_k)                  "k :"
    set caption(audecom,metre)                   "m"

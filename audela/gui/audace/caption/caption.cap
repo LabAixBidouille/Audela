@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.42 2006-12-02 09:10:03 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.43 2006-12-04 13:32:05 audelateam Exp $
 #
 
 #=========================================================================
@@ -366,9 +366,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connecte)                "Cliente conectado correctamente"
    set caption(audace,reseau_serveur_retour)          "Servidor de imagens criado"
    set caption(audace,reseau_deconnecte)              "Cliente disconectado"
-   set caption(audace,reseau_deconnexion)             "Disconectado"
+   set caption(audace,reseau_deconnexion)             "Desconectado"
    set caption(audace,reseau_du_serveur)              "do servidor"
-   set caption(audace,reseau_connexion_client)        "Connecção através do cliente"
+   set caption(audace,reseau_connexion_client)        "Conexão através do cliente"
    set caption(audace,reseau_reponse_vers)            "Responder a"
 
    set caption(audace,image_acquisition)              "Aud'ACE - Acquisição de"

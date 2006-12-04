@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.21 2006-12-04 13:22:22 audelateam Exp $
+# Mise a jour $Id: conftel.cap,v 1.22 2006-12-04 13:36:02 audelateam Exp $
 #
 
 #=========================================================================
@@ -667,7 +667,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(conftel,config)                        "Configuração da montagem"
-   set caption(conftel,creer_au_demarrage)            "Ligar a montagem automáticamente da próxima vez que o software for executado"
+   set caption(conftel,creer_au_demarrage)            "Ligar a montagem automaticamente da próxima vez que o software for executado"
    set caption(conftel,ok)                            "OK"
    set caption(conftel,appliquer)                     "Aplicar"
    set caption(conftel,fermer)                        "Fechar"
