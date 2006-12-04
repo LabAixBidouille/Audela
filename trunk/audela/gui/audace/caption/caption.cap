@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.43 2006-12-04 13:32:05 audelateam Exp $
+# Mise a jour $Id: caption.cap,v 1.44 2006-12-04 13:57:46 audelateam Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,9 @@ set caption(audace,porttalk_titre)                    "PortTalk:"
 set caption(audace,porttalk_erreur)                   "Porttalk Error"
 set caption(audace,porttalk_msg_erreur)               "Run uninstallporttalk.exe from bin, delete porttalk.sys from the system32/drivers folder and run AudeLA again."
 set caption(audace,porttalk_message)                  "Do not display this message next time."
+
+set caption(audace,port_com_dispo)                    "Available COM Ports:"
+set caption(audace,pas_port_com)                      "No Port"
 
 set caption(audace,titre)                             "Aud'ACE"
 
@@ -82,6 +85,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,porttalk_msg_erreur)            "Lancer uninstallporttalk.exe depuis bin, supprimer porttalk.sys du répertoire system32/drivers et relancer AudeLA."
    set caption(audace,porttalk_message)               "Ne plus afficher ce message la prochaine fois."
 
+   set caption(audace,port_com_dispo)                 "Ports com disponibles :"
+   set caption(audace,pas_port_com)                   "Pas de port"
+
    set caption(audace,titre)                          "Aud'ACE"
 
    set caption(console,titre)                         "Console"
@@ -147,6 +153,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,porttalk_erreur)                "Errore Porttalk"
    set caption(audace,porttalk_msg_erreur)            "Eseguire uninstallporttalk.exe in bin, eliminare porttalk.sys dalla cartella system32/drivers ed eseguire nuovamente AudeLA."
    set caption(audace,porttalk_message)               "Non visualizzare piu` questo messaggio."
+
+   set caption(audace,port_com_dispo)                 "Porte COM disponibili:"
+   set caption(audace,pas_port_com)                   "Nessuna porta"
 
    set caption(audace,titre)                          "Aud'ACE"
 
@@ -214,6 +223,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,porttalk_msg_erreur)            "Ejecutar uninstallporttalk.exe desde bin, borrar porttalk.sys del directorio system32/drivers y ejecutar AudeLA otra vez."
    set caption(audace,porttalk_message)               "No mostrar este mensaje otra vez."
 
+   set caption(audace,port_com_dispo)                 "Puertos Serie (COM) disponibles:"
+   set caption(audace,pas_port_com)                   "No hay puerto"
+
    set caption(audace,titre)                          "Aud'ACE"
 
    set caption(console,titre)                         "Consola"
@@ -279,6 +291,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,porttalk_erreur)                "Porttak Irrtum"
    set caption(audace,porttalk_msg_erreur)            "uninstallporttalk.exe von bin anlassen, porttalk.sys vom system32/drivers Register löschen und AudeLA wieder laden."
    set caption(audace,porttalk_message)               "Diese Meldung nächste mahl nicht mehr anzeigen."
+
+   set caption(audace,port_com_dispo)                 "Verfügbaren COM Porten:"
+   set caption(audace,pas_port_com)                   "Kein Port"
 
    set caption(audace,titre)                          "Aud'ACE"
 
@@ -346,6 +361,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,porttalk_msg_erreur)            "Executar uninstallporttalk.exe desde bin, apagar porttalk.sys da pasta system32/drivers e correr o AudeLA novamente."
    set caption(audace,porttalk_message)               "Não mostrar esta imagem outra vez."
 
+   set caption(audace,port_com_dispo)                 "Portas COM disponíveis:"
+   set caption(audace,pas_port_com)                   "Sem porta"
+
    set caption(audace,titre)                          "Aud'ACE"
 
    set caption(console,titre)                         "Consola"
@@ -411,6 +429,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,porttalk_erreur)                "Porttalk fejl"
    set caption(audace,porttalk_msg_erreur)            "Kør uninstallporttalk.exe fra bin, slet porttalk.sys fra system32/drivers folderen og kør AudeLA igen."
    set caption(audace,porttalk_message)               "Vis ikke denne besked igen!"
+
+   set caption(audace,port_com_dispo)                 "Tilgængelige COM-porte:"
+   set caption(audace,pas_port_com)                   "Ingen port!"
 
    set caption(audace,titre)                          "Aud'ACE"
 
