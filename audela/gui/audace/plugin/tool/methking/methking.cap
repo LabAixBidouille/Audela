@@ -1,6 +1,6 @@
 #
 # Fichier : methking.cap
-# Mise a jour $Id: methking.cap,v 1.5 2006-11-09 13:17:49 audelateam Exp $
+# Mise a jour $Id: methking.cap,v 1.6 2006-12-04 13:46:20 audelateam Exp $
 #
 
 #=========================================================================
@@ -1011,7 +1011,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(king,etape_5)              "Etapa 5 : Para cada imagem (ou seja %s imagem(s))...\n"
    set caption(king,status_analyse)       "Análise de cada imagem"
    set caption(king,image_no)             "  ---> imagem %s\n"
-   set caption(king,decalage)             "    > Desfazamento aproximado : dx = %7.2f, dy = %7.2f\n"
+   set caption(king,decalage)             "    > Desfasamento aproximado : dx = %7.2f, dy = %7.2f\n"
    set caption(king,jj)                   "    > Dia Juliano : %s (%s)\n"
    set caption(king,centre_etoile)        "    > Centro da estrela %s : x = %7.2f y = %7.2f \n"
    set caption(king,non_val,-1)           "        Estrela não válida : Relação S/B insuficiente\n"

@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.5 2006-11-09 13:17:50 audelateam Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.6 2006-12-04 13:47:22 audelateam Exp $
 #
 
 #=========================================================================
@@ -814,12 +814,12 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,menu)                    "Pré-processamento"
    set caption(pretrfc,titre)                   "Pré-processamento"
    set caption(pretrfc,titrelong)               "Pré-processamento automático"
-   set caption(pretrfc,lance)                   "Lançar"
+   set caption(pretrfc,lance)                   "Executar"
    set caption(pretrfc,help,titre)              "Ajuda para esta ferramenta"
    set caption(pretrfc,pbouvfich)               "Impossível abrir o ficheiro \
       log.\nAltere imediatamente a ferramenta, e verifique\nse \
       o directório das imagens está acessível."
-   set caption(pretrfc,ouvsess)                 "----- Abertura de uma sessão de pre-processamento (rev %s)\n"
+   set caption(pretrfc,ouvsess)                 "----- Abertura de uma sessão de pré-processamento (rev %s)\n"
    set caption(pretrfc,affheure)                "%s, %s (Todas as horas deste ficheiro estão em TU)\n\n"
    set caption(pretrfc,finsess)                 "----- Fim da sessão às %s\n\n"
    set caption(pretrfc,pbfermfichcons)          "Problema durante o encerramento do ficheiro log\n"

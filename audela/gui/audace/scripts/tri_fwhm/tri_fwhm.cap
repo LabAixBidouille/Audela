@@ -1,6 +1,6 @@
 #
 # Fichier : tri_fwhm.cap
-# Mise a jour $Id: tri_fwhm.cap,v 1.5 2006-11-09 13:14:59 audelateam Exp $
+# Mise a jour $Id: tri_fwhm.cap,v 1.6 2006-12-04 13:50:18 audelateam Exp $
 #
 
 #=========================================================================
@@ -322,9 +322,9 @@ if { [string compare $langage "portuguese"] == 0 } {
    set cap_tri(mode_tri)            "Modo de triagem das imagens"
    set cap_tri(automatique)         "Automático"
    set cap_tri(manuel)              "Manual"
-   set cap_tri(valider)             "Validar e lançar"
+   set cap_tri(valider)             "Validar e executar"
    set cap_tri(annuler)             "Anular o procedimento"
-   set cap_tri(validation_seuil)    "Valide o valor de "
+   set cap_tri(validation_seuil)    "Valida o valor de "
    set cap_tri(validation_fwhm)     "Validação do limiar de FWHM"
    set cap_tri(recopie_1)           "Recopiar imagens"
    set cap_tri(recopie_2)           "que tenham um fwhm inferior ou igual a"
@@ -332,17 +332,17 @@ if { [string compare $langage "portuguese"] == 0 } {
    set cap_tri(fin_recopie_1)       "imagens escolhidas"
    set cap_tri(fin_recopie_2)       "foram criadas"
    set cap_tri(verification_nom)    "Verificação de que o nome dos ficheiros a triar e os triados são diferentes"
-   set cap_tri(erreur_verification) "Os ficheiros fonte e destino têm  mesmo nome"
+   set cap_tri(erreur_verification) "Os ficheiros fonte e destino têm mesmo nome"
    set cap_tri(recalage_1)          "Refixação das"
    set cap_tri(recalage_2)          "imagens"
    set cap_tri(recalage_3)          "em"
-   set cap_tri(recherche_decalage)  "Procura do deslocamente entre a primeira e última imagem."
+   set cap_tri(recherche_decalage)  "Procura do deslocamento entre a primeira e a última imagem."
    set cap_tri(recherche_taille)    "Procura do tamanho da imagem"
    set cap_tri(determination_cadre) "Determinação do quadro"
    set cap_tri(selection)           "Selecção"
    set cap_tri(selection_etoile)    "Selecção das estrelas"
-   set cap_tri(lancement_calcul)    "Lançamento do cálculo"
-   set cap_tri(annulation_calcul)   "Anulação do cálculo"
+   set cap_tri(lancement_calcul)    "Iniciar processamento"
+   set cap_tri(annulation_calcul)   "Cancelar processamento"
    set cap_tri(probleme)            "Problema"
    set cap_tri(etoile_hors_cadre)   "Estrela fora do quadro !"
    set cap_tri(etoile)              "Estrela"
