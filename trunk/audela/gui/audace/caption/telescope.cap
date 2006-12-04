@@ -1,6 +1,6 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.9 2006-11-10 13:08:45 audelateam Exp $
+# Mise a jour $Id: telescope.cap,v 1.10 2006-12-04 08:23:58 audelateam Exp $
 #
 
 #=========================================================================
@@ -261,7 +261,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,suivi_marche)    "Guiagem Ligada"
    set caption(telescope,suivi_arret)     "Guiagem Desligada"
 
-   set caption(telescope,inittelscp0)     "Initialização do Telescópio"
+   set caption(telescope,inittelscp0)     "Inicialização do Telescópio"
    set caption(telescope,inittelscp1)     "Depois de ter apontado o seu telescópio para Gamma"
    set caption(telescope,inittelscp2)     "Cassiopeia, inicialize o telescópio fazendo"
    set caption(telescope,inittelscp3)     "duplo-clique no botão de baixa velocidade do"
