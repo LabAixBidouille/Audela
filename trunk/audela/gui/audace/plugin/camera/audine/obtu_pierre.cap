@@ -1,6 +1,6 @@
 #
 # Fichier : obtu_pierre.cap
-# Mise a jour $Id: obtu_pierre.cap,v 1.5 2006-11-02 17:34:14 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.cap,v 1.6 2006-12-04 13:51:23 audelateam Exp $
 #
 
 #=========================================================================
@@ -100,7 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obtu_pierre,title_pth)     "Obturador do Pierre Thierry"
    set caption(obtu_pierre,valider)       "Validar estes valores"
    set caption(obtu_pierre,fermer)        "Fechar"
-   set caption(obtu_pierre,synchro)       "Synchro"
+   set caption(obtu_pierre,synchro)       "Sincro"
    set caption(obtu_pierre,ouvert)        "Aberto"
    set caption(obtu_pierre,ferme)         "Fechado"
    set caption(obtu_pierre,a)             "Fechado : 1080"

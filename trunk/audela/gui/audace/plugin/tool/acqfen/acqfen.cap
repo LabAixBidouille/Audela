@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.5 2006-11-09 13:17:48 audelateam Exp $
+# Mise a jour $Id: acqfen.cap,v 1.6 2006-12-04 13:45:25 audelateam Exp $
 #
 
 #=========================================================================
@@ -339,7 +339,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,fenreglfen22)    "1 sobre :"
    set caption(acqfen,fenreglfen23)    "Unicamente a última imagem da série"
    set caption(acqfen,fenreglfen3)     "Salvaguarda das imagens adquiridas"
-   set caption(acqfen,fenreglfen31)    "Progressivamente no disco duro"
+   set caption(acqfen,fenreglfen31)    "Progressivamente no disco rígido"
    set caption(acqfen,fenreglfen32)    "Guardar temporariamente em memória"
    set caption(acqfen,fenreglfen4)     "Correcção dos defeitos de seguimento"
    set caption(acqfen,fenreglfen41)    "Não corrigir"

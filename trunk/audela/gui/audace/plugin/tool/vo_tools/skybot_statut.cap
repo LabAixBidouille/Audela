@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_statut.cap
-# Mise a jour $Id: skybot_statut.cap,v 1.9 2006-11-09 13:17:52 audelateam Exp $
+# Mise a jour $Id: skybot_statut.cap,v 1.10 2006-12-04 13:49:01 audelateam Exp $
 #
 
 #=========================================================================
@@ -109,8 +109,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(statut,main_title)     "SkyBoT - Estado"
    set caption(statut,titre)          "Estado da base de dados SkyBoT"
    set caption(statut,label_ok)       "Estado .........................."
-   set caption(statut,label_periode)  "Periodo coberto ................"
-   set caption(statut,label_aster)    "Número de asteroides ............."
+   set caption(statut,label_periode)  "Período coberto ................"
+   set caption(statut,label_aster)    "Número de asteróides ............."
    set caption(statut,label_planet)   "Número de planetas .............."
    set caption(statut,label_satnat)   "Número de satélites naturais ..."
    set caption(statut,label_comet)    "Número de cometas ..............."

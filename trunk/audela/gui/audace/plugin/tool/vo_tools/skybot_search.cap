@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_search.cap
-# Mise a jour $Id: skybot_search.cap,v 1.10 2006-11-09 13:17:52 audelateam Exp $
+# Mise a jour $Id: skybot_search.cap,v 1.11 2006-12-04 13:49:14 audelateam Exp $
 #
 
 #=========================================================================
@@ -687,9 +687,9 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,liste_code_uai)     "Lista dos códigos UAI"
    set caption(search,info)               "\[ ? \]"
 
-   set caption(search,recherche)          "Lançar a\nprocura"
+   set caption(search,recherche)          "Iniciar a\nprocura"
    set caption(search,caract_objet)       "Características do\nobjecto seleccionado"
-   set caption(search,ephemerides_objet)  "Efémerides do\nobjecto seleccionado"
+   set caption(search,ephemerides_objet)  "Efemérides do\nobjecto seleccionado"
    set caption(search,view_aladin)        "Visualizar o FOV\ncom Aladin"
    set caption(search,apropos)            "A propósito"
    set caption(search,aide)               "Ajuda"
@@ -698,15 +698,15 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,fermer_B)           "Fechar (Crtl+Q)"
    set caption(search,fichier)            "Ficheiro"
    set caption(search,ouvre)              "Abrir (Ctrl+O)"
-   set caption(search,sauve)              "Salvar (Ctrl+S)"
-   set caption(search,sauvess)            "Salvar como... "
+   set caption(search,sauve)              "Guardar (Ctrl+S)"
+   set caption(search,sauvess)            "Guardar como... "
    set caption(search,image)              "Imagem"
    set caption(search,charge)             "Carregar (Ctrl+L)"
    set caption(search,code_uai)           "Códigos UAI"
    set caption(search,appliquer)          "Aplicar"
    set caption(search,default)            "Defeito"
 
-   set caption(search,asteroide)          "Asteroides"
+   set caption(search,asteroide)          "Asteróides"
    set caption(search,num)                "Número"
    set caption(search,name)               "Nome"
    set caption(search,rah)                "AR (h)"
@@ -757,8 +757,8 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,filtre_none)        "Nenhum filtro"
    set caption(search,filtre_mag)         "Magnitude"
    set caption(search,filtre_err)         "Erro de posição"
-   set caption(search,filtre_dig)         "Distância géocentrica"
-   set caption(search,filtre_dih)         "Distância héliocentrica"
+   set caption(search,filtre_dig)         "Distância geocêntrica"
+   set caption(search,filtre_dih)         "Distância heliocêntrica"
    set caption(search,filtre_ppm)         "Movimento correcto"
    set caption(search,filtre_param)       "Parâmetros dos filtros..."
 
@@ -775,7 +775,7 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,param_spinppm)      "Valores min e max dos movimentos correctos :"
 
    set caption(search,format_ad)          "Escolher ascenção recta do centro do campo de visão num dos formatos reconhecidos pelo Audela :\n   4h42m47s99 ou 123d23m12.56s ou ...\n\n(cf. tipo 'Angûlos' da libMC)"
-   set caption(search,format_dec)         "Escolher a déclinaison do centro do campo de visão num dos formatos\nreconhecidos elo Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. tipo 'Angûlos' da libMC)"
+   set caption(search,format_dec)         "Escolher a declição do centro do campo de visão num dos formatos\nreconhecidos elo Audela :\n   +23d31m01s48 ou -12d23m24.15s ou ...\n\n(cf. tipo 'Angûlos' da libMC)"
    set caption(search,format_taille)      "Escolher as dimensões RAxDEC do campo de visão em minutos de grau.\nO segundo parâmetro é opcional (considera-se então um campo circular de raio de valor seleccionado)"
    set caption(search,format_date)        "Escolher a data de observação do campo de visão num dos formatos reconhecidos pelo Audela :\n   aaaa-mm-ddThh:mm:ss.sss ou NOW ou jd ou ...\n\n(cf. tipo 'Data' da libMC)"
    set caption(search,format_filter)      "Escolher o valor do filtro, em segundos de grau, sobre os erros de posição dos objectos. Os corpos cujo erro em posição é superior ao valor\
@@ -789,8 +789,8 @@ um dos códigos reconhecidos : Marte, Spirit, Opportunity"
    set caption(search,format_basearrow)   "Escolher o comprimento base (em pixeis) das setas traçadas no filtro 'Movimento correcto' (valor por defeito 5)."
    set caption(search,format_spinmag)     "Filtro de magnitudes : escolher os valores min e max das magnitudes dos corpos a demonstrar"
    set caption(search,format_spinerr)     "Filtro de erros de posição : escolher os valores min e max dos erros de posição dos corpos a demonstrar (unidade: arcseg)"
-   set caption(search,format_spindig)     "Filtro de distâncias géocentriques : escolher os valores min e max das distâncias géocentricas dos corpos a demonstrar (unidade: UA)"
-   set caption(search,format_spindih)     "Filtro de distâncias héliocentriques : escolher os valores min e max das distâncias héliocentricas dos corpos a demonstrar (unidade: UA)"
+   set caption(search,format_spindig)     "Filtro de distâncias geocêntricas : escolher os valores min e max das distâncias geocêntricas dos corpos a demonstrar (unidade: UA)"
+   set caption(search,format_spindih)     "Filtro de distâncias heliocêntricas : escolher os valores min e max das distâncias heliocêntricas dos corpos a demonstrar (unidade: UA)"
    set caption(search,format_spinppm)     "Filtro de movimentos correctos : escolher os valores min e max dos movimentos correctos dos corpos a demonstrar (unidade: arcseg/h)."
 
 # *************** Version danoise *****************************

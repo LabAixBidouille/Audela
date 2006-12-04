@@ -1,6 +1,6 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.6 2006-11-09 13:17:48 audelateam Exp $
+# Mise a jour $Id: animate.cap,v 1.7 2006-12-04 13:45:41 audelateam Exp $
 #
 
 #=========================================================================
@@ -98,7 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_images)         "Número\nde imagens"
    set caption(animate,delai_ms)          "Atraso (ms)"
    set caption(animate,nb_boucles)        "Número de\nciclos"
-   set caption(animate,go_animation)      "Começar Animação"
+   set caption(animate,go_animation)      "Iniciar Animação"
    set caption(animate,attention)         "Atenção"
    set caption(animate,erreur_fichier1)   "O nome genérico das imagens"
    set caption(animate,erreur_fichier2)   "não existe ou elas não se encontram"

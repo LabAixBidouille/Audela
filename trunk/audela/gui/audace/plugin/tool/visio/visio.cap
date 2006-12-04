@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.5 2006-11-09 13:17:52 audelateam Exp $
+# Mise a jour $Id: visio.cap,v 1.6 2006-12-04 13:48:14 audelateam Exp $
 #
 
 #=========================================================================
@@ -334,7 +334,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,save_continue)       "Continuar"
    set caption(visio,save_stop)           "Parar"
    set caption(visio,init1)               "Introduza uma disquete no leitor A:."
-   set caption(visio,achtung)             "ATENçÃO : Todos os ficheiros inicialmente presentes nesta disquete serão destruídos."
+   set caption(visio,achtung)             "ATENCÃO : Todos os ficheiros inicialmente presentes nesta disquete serão destruídos."
    set caption(visio,full1)               "A disquete de destino está cheia."
    set caption(visio,full2)               "Introduza uma nova disquete no leitor A:."
 

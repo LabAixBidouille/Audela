@@ -1,6 +1,6 @@
 #
 # Fichier : snmacros.cap
-# Mise a jour $Id: snmacros.cap,v 1.5 2006-11-09 13:17:50 audelateam Exp $
+# Mise a jour $Id: snmacros.cap,v 1.6 2006-12-04 13:47:41 audelateam Exp $
 #
 
 #=========================================================================
@@ -106,7 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(snmacros,obscurite)        "A câmara deve estar colocada em meio completamente escuro."  ???????????
+   set caption(snmacros,obscurite)        "A câmara deve estar colocada em meio completamente escuro."
    set caption(snmacros,acqde1)           "Aquisição de"
    set caption(snmacros,bias)             "bias"
    set caption(snmacros,acqbias)          "Aquisição do bias"
