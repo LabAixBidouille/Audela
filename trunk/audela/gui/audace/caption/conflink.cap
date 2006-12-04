@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Mise a jour $Id: conflink.cap,v 1.6 2006-11-10 13:08:45 audelateam Exp $
+# Mise a jour $Id: conflink.cap,v 1.7 2006-12-04 13:22:33 audelateam Exp $
 #
 
 #=========================================================================
@@ -88,7 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,liaison)             "Ligação:"
    set caption(conflink,config)              "Configuração da ligação"
-   set caption(conflink,creer_au_demarrage)  "Establecer esta ligação automaticamente da próxima vez que o software for executado"
+   set caption(conflink,creer_au_demarrage)  "Estabelecer esta ligação automaticamente da próxima vez que o software for executado"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Aplicar"
    set caption(conflink,fermer)              "Fechar"

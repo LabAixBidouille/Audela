@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.5 2006-11-16 22:13:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.6 2006-12-04 13:24:05 audelateam Exp $
 #
 
 #=========================================================================
@@ -511,7 +511,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                 "Preprocessamento"
+   set caption(audace,menu,pretraite)                 "Pré-processamento"
    set caption(audace,menu,window1)                   "Recortar"
    set caption(audace,menu,r+v+b2rvb)                 "Conversão R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                 "Conversão RGB ---> R+G+B"
@@ -529,11 +529,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,mediane)                   "Mediana"
    set caption(audace,menu,somme)                     "Soma"
    set caption(audace,menu,moyenne)                   "Média"
-   set caption(audace,menu,ecart_type)                "Desviação Padrão"
+   set caption(audace,menu,ecart_type)                "Desvio Padrão"
    set caption(audace,menu,raw2cfa)                   "Conversão RAW ---> CFA"
-   set caption(audace,menu,faire_offset)              "Fazer um offset"
-   set caption(audace,menu,faire_dark)                "Fazer um dark"
-   set caption(audace,menu,faire_flat_field)          "Fazer um flat-field"
+   set caption(audace,menu,faire_offset)              "Executar um offset"
+   set caption(audace,menu,faire_dark)                "Executar dark"
+   set caption(audace,menu,faire_flat_field)          "Executar flat-field"
    set caption(audace,menu,cfa2rgb)                   "Conversão CFA ---> RGB"
 
    set caption(traiteImage,image_gene_entree_r+v+b)   "Nome genérico das imagens R, G e B de entrada:"
@@ -573,7 +573,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteImage,afficher_image_fin)        "Apresentar imagem no fim do processamento"
    set caption(traiteImage,operation_serie)           "Série de imagens:"
    set caption(traiteImage,choix_image_entree)        "Por favor escolha as imagens de entrada."
-   set caption(traiteImage,choix_nbre_images)         "Defina o numero the imagens."
+   set caption(traiteImage,choix_nbre_images)         "Defina o número the imagens."
    set caption(traiteImage,nbre_entier)               "O número de imagens tem de ser um inteiro."
    set caption(traiteImage,choix_image_sortie)        "Por favor escolha as imagens de saída."
    set caption(traiteImage,definir_operande)          "Seleccione a imagem C."

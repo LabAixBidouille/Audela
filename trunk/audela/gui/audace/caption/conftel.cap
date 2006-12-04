@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.20 2006-11-25 21:03:59 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.21 2006-12-04 13:22:22 audelateam Exp $
 #
 
 #=========================================================================
@@ -710,8 +710,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,ouranos_frequence)             "todos"
    set caption(conftel,ouranos_pas)                   "passos"
    set caption(conftel,ouranos_seconde)               "seg."
-   set caption(conftel,ouranos_res_codeur)            "Resolução do encoder"
-   set caption(conftel,ouranos_res_codeurs)           "Resolução dos encoders:"
+   set caption(conftel,ouranos_res_codeur)            "Resolução do codificador"
+   set caption(conftel,ouranos_res_codeurs)           "Resolução dos codificadores:"
    set caption(conftel,ouranos_reglage)               "Ajustar"
    set caption(conftel,ouranos_stop)                  "Parar"
    set caption(conftel,ouranos_lire)                  "Ler"
