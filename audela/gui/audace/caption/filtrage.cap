@@ -1,6 +1,6 @@
 #
 # Fichier : filtrage.cap
-# Mise a jour $Id: filtrage.cap,v 1.5 2006-11-10 13:08:45 audelateam Exp $
+# Mise a jour $Id: filtrage.cap,v 1.6 2006-12-04 13:22:10 audelateam Exp $
 #
 
 #=========================================================================
@@ -130,15 +130,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(filtrage,tracer)             "Por favor desenhe um quadrado com o rato."
 
    set caption(filtrage,masque_flou)        "Máscara de focagem"
-   set caption(filtrage,filtre_passe-bas)   "Filtro Passa Baixo"
-   set caption(filtrage,filtre_passe-haut)  "Filtro Passa Alto"
+   set caption(filtrage,filtre_passe-bas)   "Filtro Passa-Baixo"
+   set caption(filtrage,filtre_passe-haut)  "Filtro Passa-Alto"
    set caption(filtrage,filtre_median)      "Filtro Médio"
    set caption(filtrage,filtre_minimum)     "Filtro Mínimo"
    set caption(filtrage,filtre_maximum)     "Filtro Máximo"
    set caption(filtrage,filtre_gaussien)    "Filtro Gaussiano"
    set caption(filtrage,ond_morlet)         "Wavelet do Tipo Morlet"
    set caption(filtrage,ond_mexicain)       "Wavelet do Tipo Chapéu Mexicano"
-   set caption(filtrage,log)                "Logarítmo"
+   set caption(filtrage,log)                "Logaritmo"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.3 2006-11-12 16:07:32 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.4 2006-12-04 13:23:53 audelateam Exp $
 #
 
 #=========================================================================
@@ -226,12 +226,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,traitement)                  "Processando"
-   set caption(audace,menu,masque_flou)                 "Mascara de focagem"
-   set caption(audace,menu,filtre_passe-bas)            "Filtro passa baixo"
-   set caption(audace,menu,filtre_passe-haut)           "Filtro passa alto"
+   set caption(audace,menu,traitement)                  "Processamento"
+   set caption(audace,menu,masque_flou)                 "Máscara de focagem"
+   set caption(audace,menu,filtre_passe-bas)            "Filtro passa-baixo"
+   set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
    set caption(audace,menu,filtre_median)               "Filtro médio"
-   set caption(audace,menu,filtre_minimum)              "Filtro minimo"
+   set caption(audace,menu,filtre_minimum)              "Filtro mínimo"
    set caption(audace,menu,filtre_maximum)              "Filtro máximo"
    set caption(audace,menu,filtre_gaussien)             "Filtro gaussiano"
    set caption(audace,menu,ond_morlet)                  "Wavelet do tipo Morlet"
@@ -249,7 +249,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_mult)                 "Factor de multiplicação:"
    set caption(traiteFilters,coef_efficacite)           "Eficiência:"
    set caption(traiteFilters,efficacite_min)            "1: Sem Efeito"
-   set caption(traiteFilters,efficacite_max)            "0: Maxima Eficiência"
+   set caption(traiteFilters,efficacite_max)            "0: Máxima Eficiência"
    set caption(traiteFilters,offset)                    "Offset:"
 
    set caption(traiteFilters,ok)                        "OK"
@@ -264,7 +264,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,choix_coefficients)        "Defina os coeficientes."
    set caption(traiteFilters,coef_manquant)             "Defina os coeficientes que faltam."
    set caption(traiteFilters,coef_invalide)             "Coeficiente Inválido."
-   set caption(traiteFilters,coef_invalides)            "Coeficiente Inválido."
+   set caption(traiteFilters,coef_invalides)            "Coeficientes Inválidos."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
