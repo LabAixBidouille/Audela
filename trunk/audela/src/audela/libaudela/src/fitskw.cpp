@@ -123,6 +123,11 @@ void CFitsKeyword::SetKeyword(
 
 }
 
+/*
+ * CFitsKeyword::GetIntValue
+ *    retoune la valeur du mot cle sous forme d'un entier 
+ *   
+ */
 void CFitsKeyword::GetIntValue(int*data,int*default_data)
 {
    if(datatype!=TINT) {
@@ -133,7 +138,12 @@ void CFitsKeyword::GetIntValue(int*data,int*default_data)
 }
 
 
-
+/*
+ * CFitsKeyword::GetPtrValue
+ *    retoune la valeur du mot cle sous forme d'un pointeur 
+ *    sur la variable corresdant au datatype du mot clé
+ *   
+ */
 void * CFitsKeyword::GetPtrValue()
 {
    switch(datatype) {
@@ -149,6 +159,8 @@ void * CFitsKeyword::GetPtrValue()
       case TDOUBLE :
          return &double_value;
          break;
+      default:
+         return NULL;
    }
 }
 
