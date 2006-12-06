@@ -351,6 +351,8 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       // je recupere le nom de la camera
       sprintf(camera, "%s %s",dataInfo.make,dataInfo.model);  
       // je recupere le filtre 
+      // la valeur du filtre est convertie en chaine de caracteres 
+      // car les mots cles ne supportent pas les entiers non signés sur 4 octets
       sprintf(filter, "%u",dataInfo.filters); 
       
       // je copie les pixels dans la variable de sortie 
@@ -425,7 +427,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
       throw CError("convertCfa2Rgbnot keyword RAW_MAXIMUM not found");
    }
    if ( (kwd = cfaKeywords->FindKeyword("RAW_FILTER")) != NULL ) {      
-      dataInfo.filters = kwd->GetIntValue();
+      sscanf(kwd->GetStringValue(),"%u",&dataInfo.filters);
    } else {
       throw CError("convertCfa2Rgbnot keyword RAW_FILTER not found");
    }
