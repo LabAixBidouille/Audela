@@ -1303,9 +1303,6 @@ int tt_ptr_saveimakeydim(void *args)
    }
 
    /* --- remplit l'image p_out ---*/
-   if ((msg=tt_imabuilder(&p_out))!=OK_DLL) {
-      return(msg);
-   }
    if (naxis==0) {
       msg=TT_ERR_NAXIS_NULL;
       return(msg);
