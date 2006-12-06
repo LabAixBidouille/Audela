@@ -37,7 +37,7 @@ clean:
 	-$(RM) $(OBJS)$(DEPS)$(EXECUTABLES) libdcraw.so
 	-@echo ' '
 
-install :
+install : all
 	cp libdcraw.so       ../../../../bin
 	cp libdcraw.so       ../../lib
 	cp ../src/libdcraw.h ../../include

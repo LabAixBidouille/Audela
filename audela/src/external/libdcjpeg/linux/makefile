@@ -37,7 +37,7 @@ clean:
 	-$(RM) $(OBJS)$(DEPS)$(EXECUTABLES) libdcjpeg.so
 	-@echo ' '
 
-install :
+install: all
 	cp libdcjpeg.so       ../../../../bin
 	cp libdcjpeg.so       ../../lib
 	cp ../src/libdcjpeg.h ../../include
