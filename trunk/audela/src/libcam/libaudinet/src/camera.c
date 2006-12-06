@@ -26,7 +26,7 @@
  * La structure "camprop" peut etre adaptee
  * dans le fichier camera.h
  *
- * $Id: camera.c,v 1.4 2006-02-05 10:07:25 michelpujol Exp $
+ * $Id: camera.c,v 1.5 2006-12-06 08:01:33 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -753,7 +753,7 @@ int sendHttpRequest(char *httpHost, int httpPort, char *url)
 {
 
     int result = TRUE;
-    unsigned char data[3072];
+    char data[3072];
     int n;
 
 
@@ -773,7 +773,7 @@ int sendHttpRequest(char *httpHost, int httpPort, char *url)
 	    result = FALSE;
 	} else {
 	    /* je lis le debut de la  reponse */
-	    n = socktcp_recv((char *) data, sizeof data);
+	    n = socktcp_recv(data, sizeof data);
 
 	    /* je verifie que l'envoi de la requete est OK  */
 	    if (n >= 12) {
