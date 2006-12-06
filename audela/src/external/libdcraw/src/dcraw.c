@@ -19,8 +19,8 @@
    copy them from an earlier, non-GPL Revision of dcraw.c, or (c)
    purchase a license from the author.
 
-   $Revision: 1.4 $
-   $Date: 2006-11-18 14:21:30 $
+   $Revision: 1.5 $
+   $Date: 2006-12-06 07:43:36 $
  */
 
 #define VERSION "8.42"
@@ -30,8 +30,9 @@
 #define NO_LCMS
 #define M_PI  3.14159
 #include "time.h"
+#ifdef WIN32
 #define gmtime_r gmtime
-#
+#endif
 // modif michel fin
 
 #define _GNU_SOURCE
@@ -141,7 +142,11 @@ struct {
 } ph1;
 
 #define CLASS
-///#define fgetc getc_unlocked
+// modif michel debut
+#ifndef WIN32
+#define fgetc getc_unlocked
+#endif
+// modif michel fin
 
 #define FORC3 for (c=0; c < 3; c++)
 #define FORC4 for (c=0; c < 4; c++)
@@ -3283,64 +3288,66 @@ skip_block:
 void CLASS border_interpolate (int border)
 {
   unsigned row, col, y, x, f, c, sum[8];
-
+  
   for (row=0; row < height; row++)
-    for (col=0; col < width; col++) {
-      if (col==border && row >= border && row < height-border)
-	col = width-border;
-      memset (sum, 0, sizeof sum);
-      for (y=row-1; y != row+2; y++)
-	for (x=col-1; x != col+2; x++)
-	  if (y < height && x < width) {
-	    f = fc(y,x);
-	    sum[f] += image[y*width+x][f];
-	    sum[f+4]++;
-	  }
-      f = fc(row,col);
-      FORCC if (c != f && sum[c+4])
-	image[row*width+col][c] = sum[c] / sum[c+4];
-    }
+     for (col=0; col < width; col++) {
+        if (col==border && row >= border && row < height-border)
+           col = width-border;
+        memset (sum, 0, sizeof sum);
+        for (y=row-1; y != row+2; y++)
+           for (x=col-1; x != col+2; x++)
+              if (y < height && x < width) {
+                 f = fc(y,x);
+                 sum[f] += image[y*width+x][f];
+                 sum[f+4]++;
+              }
+              f = fc(row,col);
+              FORCC if (c != f && sum[c+4])
+                 image[row*width+col][c] = sum[c] / sum[c+4];
+     }
 }
 
 void CLASS lin_interpolate()
 {
-  int code[16][16][32], *ip, sum[4];
-  int c, i, x, y, row, col, shift, color;
-  ushort *pix;
+   int code[16][16][32], *ip, sum[4];
+   int c, i, x, y, row, col, shift, color;
+   ushort *pix;
+   
+   memset(*code,0, 16*16*32*sizeof(int));
+   
+   if (verbose) fprintf (stderr, "Bilinear interpolation...\n");
+   border_interpolate(1);
+   for (row=0; row < 16; row++)
+      for (col=0; col < 16; col++) {
+         ip = code[row][col];
+         memset (sum, 0, sizeof sum);
+         for (y=-1; y <= 1; y++)
+            for (x=-1; x <= 1; x++) {
+               shift = (y==0) + (x==0);
+               if (shift == 2) continue;
+               color = fc(row+y,col+x);
+               *ip++ = (width*y + x)*4 + color;
+               *ip++ = shift;
+               *ip++ = color;
+               sum[color] += 1 << shift;
+            }
+            FORCC
+               if (c != fc(row,col)) {
+                  *ip++ = c;
+                  *ip++ = sum[c];
+               }
+      }
 
-  if (verbose) fprintf (stderr, "Bilinear interpolation...\n");
-
-  border_interpolate(1);
-  for (row=0; row < 16; row++)
-    for (col=0; col < 16; col++) {
-      ip = code[row][col];
-      memset (sum, 0, sizeof sum);
-      for (y=-1; y <= 1; y++)
-	for (x=-1; x <= 1; x++) {
-	  shift = (y==0) + (x==0);
-	  if (shift == 2) continue;
-	  color = fc(row+y,col+x);
-	  *ip++ = (width*y + x)*4 + color;
-	  *ip++ = shift;
-	  *ip++ = color;
-	  sum[color] += 1 << shift;
-	}
-      FORCC
-	if (c != fc(row,col)) {
-	  *ip++ = c;
-	  *ip++ = sum[c];
-	}
-    }
-  for (row=1; row < height-1; row++)
-    for (col=1; col < width-1; col++) {
-      pix = image[row*width+col];
-      ip = code[row & 15][col & 15];
-      memset (sum, 0, sizeof sum);
-      for (i=8; i--; ip+=3)
-	sum[ip[2]] += pix[ip[0]] << ip[1];
-      for (i=colors; --i; ip+=2)
-	pix[ip[0]] = sum[ip[0]] / ip[1];
-    }
+   for (row=1; row < height-1; row++)
+      for (col=1; col < width-1; col++) {
+         pix = image[row*width+col];
+         ip = code[row & 15][col & 15];
+         memset (sum, 0, sizeof sum);
+         for (i=8; i--; ip+=3)
+            sum[ip[2]] += pix[ip[0]] << ip[1];
+         for (i=colors; --i; ip+=2)
+            pix[ip[0]] = sum[ip[0]] / ip[1];
+      }
 }
 
 /*
