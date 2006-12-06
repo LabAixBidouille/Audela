@@ -285,7 +285,7 @@ void tp_read_pel_fast2(struct camprop *cam)
 {
    unsigned short port = cam->port;
    int i;
-   int n_te2=1, n_tphir=1;
+   int n_te2=1;
    for (i = 0; i < n_te2    ; i++) { libcam_out(port, 0xFF); /* 11111111 */ }
    for (i = 0; i < n_te2    ; i++) { libcam_out(port, 0xFB); /* 11111011 */ }
 }
