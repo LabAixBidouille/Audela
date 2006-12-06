@@ -26,7 +26,7 @@
  * pour dialoguer a un périphérique connecte par liaison
  * ethernet
  *
- * $Id: socketaudinet.c,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
+ * $Id: socketaudinet.c,v 1.3 2006-12-06 22:45:23 michelpujol Exp $
  */
 
 
@@ -318,7 +318,7 @@ int sockudp_recv(char *buffer, int bufferLen)
     int n, result;
     struct timeval Time;
     SOCKADDR addr_Cli;
-    int clilen;
+    unsigned int clilen;
 
     //-- Prepare Client address to receive new data
     memset(&addr_Cli, 0, sizeof(addr_Cli));
@@ -437,7 +437,7 @@ int ping(char *hostName, int nbTry, int receivedTimeOut)
     struct sockaddr_in dest, from;
     struct hostent *hp;
     int bread, datasize;
-    int fromlen = sizeof(from);
+    unsigned int fromlen = sizeof(from);
 #if !defined(OS_LIN) || defined(OS_MACOS)
     int timeout = 1000;
 #endif
