@@ -13,7 +13,7 @@ include ../../../Makefile1
 
 
 CXXFLAGS += -I $(EXTINC)
-LDFLAGS += -L$(EXTLIB) -lgphoto2
+LDFLAGS += -L$(OUTPUTDIR) -lgphoto2
 
 
 
