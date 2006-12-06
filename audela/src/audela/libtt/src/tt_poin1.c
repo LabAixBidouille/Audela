@@ -1243,6 +1243,7 @@ int tt_ptr_saveimakeydim(void *args)
    char **comments=NULL;
    char **units=NULL;
    int *datatypes=NULL;
+   int valid=0;
 
    /* --- verification des arguments ---*/
    argu=(void**)(args);
@@ -1287,7 +1288,10 @@ int tt_ptr_saveimakeydim(void *args)
    for (k=0;k<nbkeys;k++) {
       tt_imanewkeychar(&p_out,keynames[k],values[k],datatypes[k],comments[k],units[k]);
    }
-   if ((bitpix!=BYTE_IMG)||(bitpix!=SHORT_IMG)||(bitpix!=LONG_IMG)||(bitpix!=FLOAT_IMG)||(bitpix!=DOUBLE_IMG)||(bitpix!=USHORT_IMG)||(bitpix!=ULONG_IMG)) {
+   if ((bitpix==BYTE_IMG)||(bitpix==SHORT_IMG)||(bitpix==LONG_IMG)||(bitpix==FLOAT_IMG)||(bitpix==DOUBLE_IMG)||(bitpix==USHORT_IMG)||(bitpix==ULONG_IMG)) {
+      valid=1;
+   }
+   if (valid==0) {
       msg=TT_ERR_BITPIX_NULL;
       return(msg);
    }
