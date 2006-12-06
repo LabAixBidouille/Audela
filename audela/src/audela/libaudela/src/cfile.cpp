@@ -493,9 +493,10 @@ CFileFormat CFile::getFormatFromHeader(char * filename)
 {
    int result;
    FILE *fichier_in ;
-   char line[11];
+   char line[11],*filename0;
    CFileFormat fileFormat;
    struct libdcraw_DataInfo dataInfo;
+   int n,k,kb=0;
 
    char FitsHeader[]  = "SIMPLE";
    char JpgHeader[]  = { (char) 0xFF, (char) 0xD8 };
@@ -507,10 +508,28 @@ CFileFormat CFile::getFormatFromHeader(char * filename)
       throw CError("filename is NULL or empty");
    }
 
+   // je retire l'extension [ ou ; pour le format etendu de FITSIO
+   n=strlen(filename);
+   kb=n;
+   for (k=0;k<n;k++) {
+      if ((filename[k]=='[')||(filename[k]==';')) {
+         kb=k;
+         break;
+      }
+   }
+   filename0=(char*)malloc((kb+1)*sizeof(char));
+   if (filename0==NULL) {
+      throw CError("Filename0 for %s not allocated",filename);
+   }
+   strncpy(filename0,filename,kb);
+   filename0[kb]='\0';
+
    // j'ouvre le fichier
-   if ( (fichier_in=fopen(filename, "rb")) == NULL) {
+   if ( (fichier_in=fopen(filename0, "rb")) == NULL) {
+      free(filename0);
       throw CError("File %s not found",filename);
    }
+   free(filename0);
 
    // je lis les 10 premiers  octets
    result = fread( line, 1, 10, fichier_in ); 
