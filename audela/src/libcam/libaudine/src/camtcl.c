@@ -280,111 +280,96 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
  * -----------------------------------------------------------------------------
  */
 {
-    int naxis1, naxis2, bin1, bin2;
-    char s[100];
-    unsigned short *p;		/* cameras de 1 a 16 bits non signes */
-    double ra, dec, exptime = 0.;
-    //float *pp;
-    //int t;
-    int status;
-    struct camprop *cam;
-    //Tcl_Interp *interp ;
-
-    cam = (struct camprop *) clientData;
-    interp = cam->interp;
-    naxis1 = cam->w;
-    naxis2 = cam->h;
-    bin1 = cam->binx;
-    bin2 = cam->biny;
-
-    p = (unsigned short*)malloc(naxis1*naxis2 * sizeof(unsigned short));
-
-    libcam_GetCurrentFITSDate(interp, cam->date_end);
-    libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
-
-    /*cam_stop_exp(cam); */
-    CAM_DRV.read_ccd(cam,p);
-
-    /*
-     * Ce test permet de savoir si le buffer existe
-     */
-    sprintf(s, "buf%d bitpix", cam->bufno);
-    if (Tcl_Eval(interp, s) == TCL_ERROR) {
-	/* Creation du buffer */
-	/*
-	   sprintf(s,"%s%s",CAM_LIBNAME,CAM_LIBVER);
-	   MessageBox(NULL,"Creation du buffer",s,MB_OK);
-	 */
-	sprintf(s, "buf::create %d", cam->bufno);
-	Tcl_Eval(interp, s);
-    }
-    //sprintf(s, "buf%d format %d %d", cam->bufno, naxis1, naxis2);
-    //Tcl_Eval(interp, s);
-    //sprintf(s, "buf%d pointer", cam->bufno);
-    //Tcl_Eval(interp, s);
-    //pp = (float *) atoi(interp->result);   
-    //t = naxis1 * naxis2;
-    //while (--t >= 0)
-    //   *(pp + t) = (float) *((unsigned short *) (p + t));   
-    //sprintf(s, "buf%d bitpix ushort", cam->bufno);
-    //Tcl_Eval(interp, s);
-
-    sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_SHORT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) p);
-    Tcl_Eval(interp, s);
-    /* Add FITS keywords */
-    sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
-    Tcl_Eval(interp, s);
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
-    } else {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
-    }
-    Tcl_Eval(interp, s);
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
-    } else {
-	sprintf(s, "expr (([mc_date2jd %s]-[mc_date2jd %s])*86400.)", cam->date_end, cam->date_obs);
-	Tcl_Eval(interp, s);
-	exptime = atof(interp->result);
-	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, exptime);
-    }
-    Tcl_Eval(interp, s);
-
-    libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-    if (status == 0) {
-	/* Add FITS keywords */
-	sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
-	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
-	Tcl_Eval(interp, s);
-    }
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "status_cam%d", cam->camno);
-    }
-    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-    cam->clockbegin = 0;
-
-    if (cam->timerExpiration != NULL) {
-	free(cam->timerExpiration->dateobs);
-	free(cam->timerExpiration);
-	cam->timerExpiration = NULL;
-    }
-    //free(p);
-
-    /*
-       struct camprop *cam;
-       cam = (struct camprop*)clientData;   
-       AcqRead((ClientData)cam);
-     */
-    return TCL_OK;
+   int naxis1, naxis2, bin1, bin2;
+   char s[100];
+   unsigned short *p;		/* cameras de 1 a 16 bits non signes */
+   double ra, dec, exptime = 0.;
+   int status;
+   struct camprop *cam;
+   
+   cam = (struct camprop *) clientData;
+   interp = cam->interp;
+   naxis1 = cam->w;
+   naxis2 = cam->h;
+   bin1 = cam->binx;
+   bin2 = cam->biny;
+   
+   p = (unsigned short*)malloc(naxis1*naxis2 * sizeof(unsigned short));
+   
+   libcam_GetCurrentFITSDate(interp, cam->date_end);
+   libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
+   
+   /*cam_stop_exp(cam); */
+   CAM_DRV.read_ccd(cam,p);
+   
+   /*
+   * Ce test permet de savoir si le buffer existe
+   */
+   sprintf(s, "buf%d bitpix", cam->bufno);
+   if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      // Creation du buffer 
+      sprintf(s, "buf::create %d", cam->bufno);
+      Tcl_Eval(interp, s);
+   }
+   
+   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_SHORT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) p);
+   Tcl_Eval(interp, s);
+   /* Add FITS keywords */
+   sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+   Tcl_Eval(interp, s);
+   if (cam->timerExpiration != NULL) {
+      sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
+   } else {
+      sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
+   }
+   Tcl_Eval(interp, s);
+   if (cam->timerExpiration != NULL) {
+      sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
+   } else {
+      sprintf(s, "expr (([mc_date2jd %s]-[mc_date2jd %s])*86400.)", cam->date_end, cam->date_obs);
+      Tcl_Eval(interp, s);
+      exptime = atof(interp->result);
+      sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, exptime);
+   }
+   Tcl_Eval(interp, s);
+   
+   libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
+   if (status == 0) {
+      /* Add FITS keywords */
+      sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
+      Tcl_Eval(interp, s);
+   }
+   if (cam->timerExpiration != NULL) {
+      sprintf(s, "status_cam%d", cam->camno);
+   }
+   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   cam->clockbegin = 0;
+   
+   if (cam->timerExpiration != NULL) {
+      free(cam->timerExpiration->dateobs);
+      free(cam->timerExpiration);
+      cam->timerExpiration = NULL;
+   }
+   free(p);
+   
+   /*
+   struct camprop *cam;
+   cam = (struct camprop*)clientData;   
+   AcqRead((ClientData)cam);
+   */
+   return TCL_OK;
 }
 
 /*
@@ -1229,137 +1214,134 @@ void AudineScanTerminateSequence(ClientData clientData, int camno, char *reason)
  */
 void AudineScanTransfer(ClientData clientData)
 {
-    int naxis1, naxis2, bin1, bin2;
-    char s[200];
-    double ra, dec;
-    float *pp;			/* fpix */
-    int t, tt;
-    struct camprop *cam;
-    Tcl_Interp *interp;
-    double exptime;
-    double dt;
-    double dteff, jdend, jdobs, bloceff;
-    int status;
-    unsigned short tmp;
-    char dateobs_tu[50], dateend_tu[50];
-
-    interp = TheScanStruct->interp;
-
-    cam = (struct camprop *) clientData;
-    cam->clockbegin = 0;
-    naxis1 = TheScanStruct->width / TheScanStruct->bin;
-    naxis2 = TheScanStruct->y;
-    bin1 = TheScanStruct->bin;
-    bin2 = TheScanStruct->bin;
-    dt = TheScanStruct->dt / 1000.;
-    exptime = -1;
-
-    /* peu importe le nom de fonction qui suit buf1 */
-    sprintf(s, "buf%d bitpix", cam->bufno);
-    if (Tcl_Eval(interp, s) == TCL_ERROR) {
-	/* Creation du buffer car il n'existe pas */
-	sprintf(s, "buf::create %d", cam->bufno);
-	Tcl_Eval(interp, s);
-    }
-    //sprintf(s, "buf%d format %d %d", cam->bufno, naxis1, naxis2);
-    //Tcl_Eval(interp, s);
-    //sprintf(s, "buf%d pointer", cam->bufno);
-    //Tcl_Eval(interp, s);
-    //pp = (float *) atoi(interp->result);
-
-    sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
-    Tcl_Eval(interp, s);
-    strcpy(dateobs_tu, interp->result);
-    sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateend, TheScanStruct->tumoinstl);
-    Tcl_Eval(interp, s);
-    strcpy(dateend_tu, interp->result);
-
-    sprintf(s, "mc_date2jd %s", TheScanStruct->dateobs);
-    Tcl_Eval(interp, s);
-    jdobs = atof(interp->result);
-    sprintf(s, "mc_date2jd %s", TheScanStruct->dateend);
-    Tcl_Eval(interp, s);
-    jdend = atof(interp->result);
-    if (jdend <= jdobs) {
-	dteff = dt;
-    } else {
-	dteff = (jdend - jdobs) * 86400. / (naxis2);
-    }
-    bloceff = TheScanStruct->loopmilli1;
-    if (dteff != 0.) {
-	bloceff = dt / dteff * TheScanStruct->loopmilli1;
-    }
-
-    pp = (float *) malloc(naxis1 * naxis2 * sizeof(float));
-    /* Transfert du fichier ou memoire temporaire dans le buffer image */
-    t = naxis1 * naxis2;
-    if (TheScanStruct->fileima == 1) {
-	TheScanStruct->fima = fopen("#scan.bin", "rb");
-	if (TheScanStruct->fima != NULL) {
-	    tt = 0;
-	    while (tt < t) {
-		fread(&tmp, sizeof(unsigned short), 1, TheScanStruct->fima);
-		*(pp + tt++) = (float) tmp;
-	    }
-	    fclose(TheScanStruct->fima);
-	    TheScanStruct->fima = NULL;
-	}
-    } else {
-	while (--t >= 0)
-	    *(pp + t) = (float) *(TheScanStruct->pix + t);
-    }
-
-
-
-    //sprintf(s, "buf%d bitpix ushort", cam->bufno);
-    //Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
-    Tcl_Eval(interp, s);
-
-    free(pp);
-
-    sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure.\" \"\"}", cam->bufno, dateobs_tu);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"\"}", cam->bufno, exptime);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DATE-END %s string \"End of scan exposure.\" \"\"}", cam->bufno, dateend_tu);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {SP %lu int \"Asked speed parameter for fast\" \"\"}", cam->bufno, TheScanStruct->loopmilli1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {SPEFF %d int \"Effective speed parameter for fast\" \"\"}", cam->bufno, (int) bloceff);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DT %f float \"Asked Time Delay Integration\" \"s/line\"}", cam->bufno, dt);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DTEFF %f float \"Effective Time Delay Integration\" \"s/line\"}", cam->bufno, dteff);
-    Tcl_Eval(interp, s);
-
-    libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-    if (status == 0) {
-	/* Add FITS keywords */
-	sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope at the end\" \"\"}", cam->bufno, ra);
-	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope at the end\" \"\"}", cam->bufno, dec);
-	Tcl_Eval(interp, s);
-    }
-    if (TheScanStruct->ra != -1.) {
-	/* Add FITS keywords */
-	sprintf(s, "buf%d setkwd {RA_BEG %f float \"Right ascension telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->ra);
-	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {DEC_BEG %f float \"Declination telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->dec);
-	Tcl_Eval(interp, s);
-    }
-
-    sprintf(s, "status_cam%d", cam->camno);
-    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-
+   int naxis1, naxis2, bin1, bin2;
+   char s[200];
+   double ra, dec;
+   float *pp;			/* fpix */
+   int t, tt;
+   struct camprop *cam;
+   Tcl_Interp *interp;
+   double exptime;
+   double dt;
+   double dteff, jdend, jdobs, bloceff;
+   int status;
+   unsigned short tmp;
+   char dateobs_tu[50], dateend_tu[50];
+   
+   interp = TheScanStruct->interp;
+   
+   cam = (struct camprop *) clientData;
+   cam->clockbegin = 0;
+   naxis1 = TheScanStruct->width / TheScanStruct->bin;
+   naxis2 = TheScanStruct->y;
+   bin1 = TheScanStruct->bin;
+   bin2 = TheScanStruct->bin;
+   dt = TheScanStruct->dt / 1000.;
+   exptime = -1;
+   
+   /* peu importe le nom de fonction qui suit buf1 */
+   sprintf(s, "buf%d bitpix", cam->bufno);
+   if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      /* Creation du buffer car il n'existe pas */
+      sprintf(s, "buf::create %d", cam->bufno);
+      Tcl_Eval(interp, s);
+   }
+   
+   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
+   Tcl_Eval(interp, s);
+   strcpy(dateobs_tu, interp->result);
+   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateend, TheScanStruct->tumoinstl);
+   Tcl_Eval(interp, s);
+   strcpy(dateend_tu, interp->result);
+   
+   sprintf(s, "mc_date2jd %s", TheScanStruct->dateobs);
+   Tcl_Eval(interp, s);
+   jdobs = atof(interp->result);
+   sprintf(s, "mc_date2jd %s", TheScanStruct->dateend);
+   Tcl_Eval(interp, s);
+   jdend = atof(interp->result);
+   if (jdend <= jdobs) {
+      dteff = dt;
+   } else {
+      dteff = (jdend - jdobs) * 86400. / (naxis2);
+   }
+   bloceff = TheScanStruct->loopmilli1;
+   if (dteff != 0.) {
+      bloceff = dt / dteff * TheScanStruct->loopmilli1;
+   }
+   
+   pp = (float *) malloc(naxis1 * naxis2 * sizeof(float));
+   /* Transfert du fichier ou memoire temporaire dans le buffer image */
+   t = naxis1 * naxis2;
+   if (TheScanStruct->fileima == 1) {
+      TheScanStruct->fima = fopen("#scan.bin", "rb");
+      if (TheScanStruct->fima != NULL) {
+         tt = 0;
+         while (tt < t) {
+            fread(&tmp, sizeof(unsigned short), 1, TheScanStruct->fima);
+            *(pp + tt++) = (float) tmp;
+         }
+         fclose(TheScanStruct->fima);
+         TheScanStruct->fima = NULL;
+      }
+   } else {
+      while (--t >= 0)
+         *(pp + t) = (float) *(TheScanStruct->pix + t);
+   }
+   
+   
+   
+   //sprintf(s, "buf%d bitpix ushort", cam->bufno);
+   //Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
+   Tcl_Eval(interp, s);
+   
+   free(pp);
+   
+   sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure.\" \"\"}", cam->bufno, dateobs_tu);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"\"}", cam->bufno, exptime);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DATE-END %s string \"End of scan exposure.\" \"\"}", cam->bufno, dateend_tu);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {SP %lu int \"Asked speed parameter for fast\" \"\"}", cam->bufno, TheScanStruct->loopmilli1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {SPEFF %d int \"Effective speed parameter for fast\" \"\"}", cam->bufno, (int) bloceff);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DT %f float \"Asked Time Delay Integration\" \"s/line\"}", cam->bufno, dt);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DTEFF %f float \"Effective Time Delay Integration\" \"s/line\"}", cam->bufno, dteff);
+   Tcl_Eval(interp, s);
+   
+   libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
+   if (status == 0) {
+      /* Add FITS keywords */
+      sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope at the end\" \"\"}", cam->bufno, ra);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope at the end\" \"\"}", cam->bufno, dec);
+      Tcl_Eval(interp, s);
+   }
+   if (TheScanStruct->ra != -1.) {
+      /* Add FITS keywords */
+      sprintf(s, "buf%d setkwd {RA_BEG %f float \"Right ascension telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->ra);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {DEC_BEG %f float \"Declination telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->dec);
+      Tcl_Eval(interp, s);
+   }
+   
+   sprintf(s, "status_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   
 }
 
 /*
