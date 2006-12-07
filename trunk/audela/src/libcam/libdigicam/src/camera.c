@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.5 2006-10-29 15:06:01 michelpujol Exp $
+// $Id: camera.c,v 1.6 2006-12-07 07:41:45 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -141,6 +141,7 @@ struct _PrivateParams {
 
 char *canonQuality[] =
 {
+/*
       { "Large:Fine"    },
       { "Large:Normal"  },
       { "Middle:Fine"   },
@@ -149,6 +150,15 @@ char *canonQuality[] =
       { "Small:Normal"  },
       { "CRW"  },
       { "" }
+*/
+      "Large:Fine"    ,
+      "Large:Normal" ,
+      "Middle:Fine"  ,
+      "Middle:Normal",
+      "Small:Fine"   ,
+      "Small:Normal" ,
+      "CRW"  ,
+       "" 
 };
 
 
@@ -225,7 +235,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
    }
-   
+
    // je detecte la camera
    result = libgphoto_detectCamera(cam->params->gphotoSession, cameraModel, cameraPath);
    if ( result != LIBGPHOTO_OK ) {
@@ -239,6 +249,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
    }
+
 
    // je configure le mode de declenchement de la pose par defaut
    result = cam_setLonguePose(cam, REMOTE_INTERNAL);
@@ -256,7 +267,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam_setAutoLoadFlag(cam,1);
    cam_setDriveMode(cam, 0);
    cam_setUseCf(cam, 0);
-
+   cam_setQuality(cam, canonQuality[0]);
+   cam->exptime = 1;
    return 0;
 }
 
@@ -356,6 +368,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
                   result = libgphoto_setDriveMode(cam->params->gphotoSession, cam->params->driveMode);         
                }
             }
+         } else {
+            result = LIBGPHOTO_OK;
          }
          if (result == LIBGPHOTO_OK ) {
             // Comme libgphoto_captureImage est bloquant, on pourra lancer cam_read_ccd  
@@ -417,7 +431,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
       // je retourne un message d'erreur
       strcpy(cam->msg, "Camera busy");
    }
-   
+
 }
 
 void cam_stop_exp(struct camprop *cam)
@@ -537,8 +551,8 @@ int cam_loadLastImage(struct camprop *cam)
       }
    } else {
       strcpy(cam->msg, "No last image");
+      result = LIBGPHOTO_ERROR;
    }
-
    return result;
 }
 
@@ -574,11 +588,10 @@ int cam_copyImage(struct camprop *cam, char *imageData, unsigned long imageLengt
    } else {
       // je retourne un message d'erreur
       sprintf(cam->msg, "cam_copyImage: Not enougt memory");
+      result = LIBGPHOTO_ERROR;
    }
- 
    return result;
 }
-         
 
 void cam_shutter_on(struct camprop *cam)
 {
@@ -959,8 +972,6 @@ int  cam_setUseCf(struct camprop *cam, int value) {
  *  
 */
 int  cam_setDebug(struct camprop *cam, int value) {
-   int result = -1;
-
    libgphoto_setDebugLog(cam->params->gphotoSession, value);
    return 0;
 }
