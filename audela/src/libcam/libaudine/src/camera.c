@@ -462,9 +462,6 @@ void audine_fast_vidage_inv(struct camprop *cam)
 {
     int i, j;
     int imax, jmax, decaligne;
-#if defined(OS_LIN)
-    int toto;
-#endif
 
     /* Nombre de lignes decalees a chaque iteration. */
 #if defined(READSLOW)
