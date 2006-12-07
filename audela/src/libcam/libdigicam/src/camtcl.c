@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.5 2006-09-28 19:28:13 michelpujol Exp $
+// $Id: camtcl.c,v 1.6 2006-12-07 07:44:38 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -28,6 +28,8 @@
 #include <windows.h>
 #endif
 #include <string.h>
+#include <stdlib.h> // for atoi()
+
 #include "camera.h"
 #include <libcam/libcam.h>
 #include "camtcl.h"
@@ -49,7 +51,7 @@ extern struct camini CAM_INI[];
 int cmdCamAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -88,7 +90,7 @@ int cmdCamAutoLoadFlag(ClientData clientData, Tcl_Interp * interp, int argc, cha
 int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -129,7 +131,7 @@ int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, c
 int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -175,7 +177,7 @@ int cmdCamDriveMode(ClientData clientData, Tcl_Interp * interp, int argc, char *
 int cmdCamQuality(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -275,7 +277,7 @@ int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, ch
       //--- set pixels to buffer 
       sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d", 
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
-         (void *) cam->pixel_data, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+         (int) cam->pixel_data, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          strcpy(s, interp->result);
       }
@@ -365,7 +367,7 @@ int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, ch
  */
 int cmdCamSystemService(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]) {
     char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -403,7 +405,7 @@ int cmdCamUseCf(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -482,7 +484,7 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
@@ -520,7 +522,7 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
    char ligne[256];
-   int result = TCL_OK, pb = 0;
+   int result = TCL_OK;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
