@@ -109,6 +109,7 @@ int tt_errmessage2(int numerreur,char *message)
       strcat(message,err_fitsio);
    }
    else {sprintf(message,"Internal error (%d)",numerreur);}
+   strcat(message,". See tt.err");
    return(OK_DLL);
 }
 
