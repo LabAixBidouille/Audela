@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.9 2006-12-08 17:11:27 michelpujol Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.10 2006-12-08 19:37:36 robertdelmas Exp $
 #
 
    package provide acqapn 1.0
@@ -119,7 +119,6 @@
 
          foreach var { baud } { set confCam(apn,$var) $conf(apn,$var) }
         ### foreach var { baud video_port } { set confCam(apn,$var) $conf(apn,$var) }
-        ### set confCam(webcam,port) $conf(webcam,port)
          foreach var { video_scale model adjust compression flash focus format lens\
             metering whitebalance exposure mode dzoom } { 
             set confCam(apn,$var) $conf(apn,$var) 
@@ -143,7 +142,6 @@
             #---Les seules variables de configuration sauvegardées
             foreach var { baud } { set conf(apn,$var) $confCam(apn,$var) }
            ### foreach var { baud video_port } { set conf(apn,$var) $confCam(apn,$var) }
-           ### set conf(webcam,port) $confCam(webcam,port)
             foreach var { video_scale model adjust format compression flash focus format lens\
                metering whitebalance exposure mode dzoom} {
                set conf(apn,$var) $confCam(apn,$var)
