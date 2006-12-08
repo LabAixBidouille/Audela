@@ -37,7 +37,6 @@ CVisu::CVisu(Tcl_Interp *Interp, int buf, int img)
    box_set = 0;
    mirrorX = 0;
    mirrorY = 0;
-   mirrorDiag = 0;
    zoom = 1.;
    locutRed = (Lut_Cut)0;
    hicutRed = (Lut_Cut)32767;
@@ -47,6 +46,7 @@ CVisu::CVisu(Tcl_Interp *Interp, int buf, int img)
    hicutBlue = (Lut_Cut)32767;
    palette_dir = NULL;
    thickness_1d = 20;
+   mode = 1;
 
    // Initialisation eventuelle de la Tk_Image
    CreateImage(img);
@@ -69,97 +69,32 @@ CVisu::~CVisu()
 {
 }
 
-
-int CVisu::GetMirrorDiag()
-{
-   return mirrorDiag;
-}
-
-char* CVisu::GetPaletteDir()
-{
-   return palette_dir;
-}
-
-int CVisu::GetMirrorX()
-{
-   return mirrorX;
-}
-
-int CVisu::GetMirrorY()
-{
-   return mirrorY;
-}
-
-int CVisu::GetThickness()
-{
-   return thickness_1d;
-}
-
-void CVisu::GetZoom(double *z)
-{
-   *z = zoom;
-}
-
-
-int CVisu::IsFull()
-{
-   return full;
-}
-
-
-int CVisu::GetWindow(int *xx1, int *yy1, int *xx2, int *yy2)
-{
-   CBuffer *buffer;
-   int naxis1, naxis2;
-
-   if(full==1) {
-      buffer = CBuffer::Chercher(bufnum);
-      if(buffer==NULL) {
-         return ELIBSTD_BUF_EMPTY;
-      }
-      naxis1 = buffer->GetW();
-      naxis2 = buffer->GetH();
-
-      *xx1 = 1;
-      *yy1 = 1;
-      *xx2 = naxis1;
-      *yy2 = naxis2;
-   } else {
-      *xx1 = x1;
-      *yy1 = y1;
-      *xx2 = x2;
-      *yy2 = y2;
-   }
-
-   return 0;
-}
-
 int CVisu::ClearImage()
 {
    Tk_PhotoHandle ph;
    char *ligne;
 
    ligne = new char[40];
-   sprintf(ligne,"image%d",imgnum);
-   ph = Tk_FindPhoto(interp,ligne);
-   if(ph!=NULL) {
-      sprintf(ligne,"image delete image%d",imgnum);
-      Tcl_Eval(interp,ligne);
-      sprintf(ligne,"image create photo image%d",imgnum);
-      Tcl_Eval(interp,ligne);
+   if ( mode == 1 ) {
       sprintf(ligne,"image%d",imgnum);
       ph = Tk_FindPhoto(interp,ligne);
-      if(ph==NULL) {
-         delete ligne;
-         return ELIBSTD_CANT_GETORCREATE_TKIMAGE;
+      if(ph!=NULL) {
+         sprintf(ligne,"image delete image%d",imgnum);
+         Tcl_Eval(interp,ligne);
+         sprintf(ligne,"image create photo image%d",imgnum);
+         Tcl_Eval(interp,ligne);
+         sprintf(ligne,"image%d",imgnum);
+         ph = Tk_FindPhoto(interp,ligne);
+         if(ph==NULL) {
+            delete ligne;
+            return ELIBSTD_CANT_GETORCREATE_TKIMAGE;
+         }
       }
    }
 
    delete ligne;
    return 0;
 }
-
-
 
 int CVisu::CreateBuffer(int num)
 {
@@ -215,7 +150,7 @@ int CVisu::CreatePaletteFromFile(char *filename)
    int nb = 0;
    int index = 0;
    char *path = NULL;
-   int palette_dir_len, audela_start_dir_len;
+   int palette_dir_len;
    
    // Charge le fichier de palette et verifie s'il est correct.
    // Le fichier de palette est un fichier texte de 256 lignes, 
@@ -387,6 +322,98 @@ int CVisu::CreatePalette(Pal_Type t)
    return 0;
 }
 
+
+
+char* CVisu::GetPaletteDir()
+{
+   return palette_dir;
+}
+
+int CVisu::GetMirrorX()
+{
+   return mirrorX;
+}
+
+int CVisu::GetMirrorY()
+{
+   return mirrorY;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * CVisu::GetMode
+ *
+ * retourne le mode d'affichage
+ *
+ * Results:
+ *	 1 = mode photo
+ *	 2 = mode video
+ *
+ *----------------------------------------------------------------------
+ */
+int CVisu::GetMode()
+{
+   return mode;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * CVisu::GetThickness
+ *
+ * retourne l'epaisseur d'affichage d'une image 1D
+ *
+ * Results:
+ *	 epaisseur
+ *
+ *----------------------------------------------------------------------
+ */
+int CVisu::GetThickness()
+{
+   return thickness_1d;
+}
+
+void CVisu::GetZoom(double *z)
+{
+   *z = zoom;
+}
+
+
+int CVisu::IsFull()
+{
+   return full;
+}
+
+
+int CVisu::GetWindow(int *xx1, int *yy1, int *xx2, int *yy2)
+{
+   CBuffer *buffer;
+   int naxis1, naxis2;
+
+   if(full==1) {
+      buffer = CBuffer::Chercher(bufnum);
+      if(buffer==NULL) {
+         return ELIBSTD_BUF_EMPTY;
+      }
+      naxis1 = buffer->GetW();
+      naxis2 = buffer->GetH();
+
+      *xx1 = 1;
+      *yy1 = 1;
+      *xx2 = naxis1;
+      *yy2 = naxis2;
+   } else {
+      *xx1 = x1;
+      *yy1 = y1;
+      *xx2 = x2;
+      *yy2 = y2;
+   }
+
+   return 0;
+}
+
+
 /**
  *  GetGrayHicut()
  *  returns  hight cut for gray image
@@ -435,132 +462,6 @@ void CVisu::SetRgbCuts(Lut_Cut hcRed, Lut_Cut lcRed, Lut_Cut hcGreen, Lut_Cut lc
    locutBlue = lcBlue;
 }
 
-int CVisu::UpdateDisplay()
-{
-   Tk_PhotoHandle ph;
-   Tk_PhotoImageBlock pib;
-   CBuffer *buffer;
-   unsigned char *ptr;
-   char *ligne;
-   //int ww, wh;              // window width, height multiplied by zoom
-   int xx1, yy1, xx2, yy2;  // window coordinates
-   int orgw, orgh;          // picture width, height
-   int orgww, orgwh;        // original window width, height
-   float cuts[6];
-
-   buffer = CBuffer::Chercher(bufnum);
-   if(buffer==NULL) {
-      return ELIBSTD_NO_ASSOCIATED_BUFFER;
-   }
-
-   orgw = buffer->GetW();
-   orgh = buffer->GetH();
-
-   if(full==1) {
-      xx1 = 0;
-      yy1 = 0;
-      xx2 = orgw - 1;
-      yy2 = orgh - 1;
-   } else {
-      //if( x1>orgw || x2>orgw) {
-      //   return ELIBSTD_X1X2_NOT_IN_1NAXIS1;
-      //}
-
-      //if( y1>orgh || y2>orgh ) {
-      //   return ELIBSTD_Y1Y2_NOT_IN_1NAXIS2;
-      //}
-
-      xx1 = x1-1;
-      yy1 = y1-1;
-      xx2 = x2-1;
-      yy2 = y2-1;
-   }
-
-   
-   if( buffer->GetNaxis() == 1 ) {
-      orgww = xx2 - xx1 + 1; // Largeur 
-      orgwh = thickness_1d;
-      yy1 = 0;
-      yy2 = 0;
-   } else {
-      orgww = xx2 - xx1 + 1; // Largeur 
-      orgwh = yy2 - yy1 + 1; // Hauteur 
-   }
-
-   ptr = (unsigned char*)calloc(orgww*orgwh,3);
-   if(ptr==NULL) {
-      return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
-   }
-
-   cuts[0] = hicutRed;
-   cuts[1] = locutRed;
-   cuts[2] = hicutGreen;
-   cuts[3] = locutGreen;
-   cuts[4] = hicutBlue;
-   cuts[5] = locutBlue;
-
-   buffer->GetPixelsVisu(xx1,yy1,xx2,yy2, mirrorX, mirrorY, 
-      //hicutRed, locutRed, hicutGreen, locutGreen, hicutBlue, locutBlue,
-      cuts,
-      pal.pal, ptr);
-
-   if( buffer->GetNaxis() == 1 ) {
-      unsigned char *ptr2;
-      ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
-      if(ptr2==NULL) {
-         free(ptr);
-         return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
-      }
-      for(int y=0 ; y < thickness_1d; y++) {
-         memcpy(ptr2+y*orgww*3, ptr, orgww*3);
-      }
-      free(ptr);
-      ptr = ptr2;
-   }
-      
-   // Preparation de la structure a passer a TCL/TK pour afficher l'image.
-   pib.pixelPtr = ptr;
-   pib.width = orgww;
-   pib.height = orgwh;
-   pib.pitch = orgww*3;
-   pib.pixelSize = 3;
-   pib.offset[0] = 0;
-   pib.offset[1] = 1;
-   pib.offset[2] = 2;
-   pib.offset[3] = 0;
-
-   // Affichage de l'image dans 'image$imgnum'.
-   ligne = new char[32];
-   sprintf(ligne,"image%d",imgnum);
-   ph = Tk_FindPhoto(interp,ligne);
-   delete ligne;
-
-   if(ph==NULL) {
-      free(ptr);
-      return ELIBSTD_NO_TKPHOTO_HANDLE;
-   }
-
-   //Tk_PhotoPutBlock(ph,&pib,0,0, ww,wh);
-   if( zoom == 1 ) {
-      Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
-   } else if( zoom > 1) {
-      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1);
-   } else {
-      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), 1, 1, (int) (1./zoom), (int) (1./zoom));
-   }
-
-
-   if(ptr != NULL) {
-      free(ptr);
-   }
-   return 0;
-}
-
-
-void CVisu::SetMirrorDiag(int val)
-{
-   mirrorDiag = val;
-}
 
 void CVisu::SetMirrorX(int val)
 {
@@ -570,6 +471,56 @@ void CVisu::SetMirrorX(int val)
 void CVisu::SetMirrorY(int val)
 {
    mirrorY = val;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * CVisu::SetMode
+ *
+ * fixe le mode d'affichage
+ *	 1 = mode photo
+ *	 2 = mode video
+ *
+ * Results:
+ *	   none
+ *
+ *----------------------------------------------------------------------
+ */
+void CVisu::SetMode(int mode)
+{
+   char ligne[256];
+   int result;
+
+
+   switch(mode) {
+   case 1 : 
+      // je cree une image "photo"
+      sprintf(ligne,"image delete image%d",imgnum);
+      result = Tcl_Eval(interp,ligne);
+      if ( result == TCL_OK) {
+         sprintf(ligne,"image create photo image%d",imgnum);
+         result = Tcl_Eval(interp,ligne);
+      }
+      break;
+   case 2 : 
+      // je cree une image video
+      sprintf(ligne,"image delete image%d",imgnum);
+      result = Tcl_Eval(interp,ligne);
+      if ( result == TCL_OK) {
+         sprintf(ligne,"image create video image%d",imgnum);
+         result = Tcl_Eval(interp,ligne);
+      }
+      break;
+   default: 
+      result = TCL_ERROR;
+
+   }
+
+   if ( result == TCL_OK) { 
+      // j'enregistre le mode
+      this->mode = mode ;
+   }
 }
 
 void CVisu::SetPaletteDir(char *dir)
@@ -635,6 +586,148 @@ double CVisu::SetZoom(double z)
       z = 1.;
    }
    zoom=z;
+
    return zoom;
+}
+
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * CVisu::UpdateDisplay
+ *
+ * si mode=1 (photo)
+ *   ré-affiche l'image en appliquant les changements de
+ *
+ * si mode=2 (video)
+ *   applique les changements  palette, zoom , miroir et fenetrage
+ *   sans réafficher 
+ *
+ * Results:
+ *	   0 si OK, 
+ *
+ *----------------------------------------------------------------------
+ */
+int CVisu::UpdateDisplay()
+{
+   Tk_PhotoHandle ph;
+   Tk_PhotoImageBlock pib;
+   CBuffer *buffer;
+   unsigned char *ptr;
+   char imageName[32];
+   int xx1, yy1, xx2, yy2;  // window coordinates
+   int orgw, orgh;          // picture width, height
+   int orgww, orgwh;        // original window width, height
+   float cuts[6];
+   
+
+   if ( mode == 2 ) {
+      char ligne[256];      
+      // je change le zoom de la video
+      sprintf(ligne,"image%d configure -zoom %f",imgnum, this->zoom);
+      Tcl_Eval(interp,ligne);
+      return 0;
+   }
+
+   buffer = CBuffer::Chercher(bufnum);
+   if(buffer==NULL) {
+      return ELIBSTD_NO_ASSOCIATED_BUFFER;
+   }
+
+   orgw = buffer->GetW();
+   orgh = buffer->GetH();
+
+   // calcul des bornes en fonction du fentrage
+   if(full==1) {
+      xx1 = 0;
+      yy1 = 0;
+      xx2 = orgw - 1;
+      yy2 = orgh - 1;
+   } else {
+      xx1 = x1-1;
+      yy1 = y1-1;
+      xx2 = x2-1;
+      yy2 = y2-1;
+   }
+
+   // calcul de largeur et de la hauteur d'affichage
+   if( buffer->GetNaxis() == 1 ) {
+      // une image 1D est étalée sur plusieurs lignes
+      orgww = xx2 - xx1 + 1; // Largeur 
+      orgwh = thickness_1d;
+      //yy1 = 0;
+      //yy2 = 0;
+   } else {
+      // image 2D 
+      orgww = xx2 - xx1 + 1; // Largeur 
+      orgwh = yy2 - yy1 + 1; // Hauteur 
+   }
+
+   
+   ptr = (unsigned char*)calloc(orgww*orgwh,3);
+   if(ptr==NULL) {
+      return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
+   }
+
+   // calcul des seuils
+   cuts[0] = hicutRed;
+   cuts[1] = locutRed;
+   cuts[2] = hicutGreen;
+   cuts[3] = locutGreen;
+   cuts[4] = hicutBlue;
+   cuts[5] = locutBlue;
+
+   // je recuperer les pixels 
+   buffer->GetPixelsVisu(xx1,yy1,xx2,yy2, mirrorX, mirrorY, 
+      cuts,
+      pal.pal, ptr);
+
+   if( buffer->GetNaxis() == 1 ) {
+      unsigned char *ptr2;
+      ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
+      if(ptr2==NULL) {
+         free(ptr);
+         return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
+      }
+      for(int y=0 ; y < thickness_1d; y++) {
+         memcpy(ptr2+y*orgww*3, ptr, orgww*3);
+      }
+      free(ptr);
+      ptr = ptr2;
+   }
+      
+   // Preparation de la structure a passer a TCL/TK pour afficher l'image.
+   pib.pixelPtr = ptr;
+   pib.width = orgww;
+   pib.height = orgwh;
+   pib.pitch = orgww*3;
+   pib.pixelSize = 3;
+   pib.offset[0] = 0;
+   pib.offset[1] = 1;
+   pib.offset[2] = 2;
+   pib.offset[3] = 0;
+
+   // Affichage de l'image dans 'image$imgnum'.
+   sprintf(imageName,"image%d",imgnum);
+   ph = Tk_FindPhoto(interp,imageName);
+
+   if(ph==NULL) {
+      free(ptr);
+      return ELIBSTD_NO_TKPHOTO_HANDLE;
+   }
+
+   if( zoom == 1 ) {
+      Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
+   } else if( zoom > 1) {
+      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1);
+   } else {
+      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), 1, 1, (int) (1./zoom), (int) (1./zoom));
+   }
+
+
+   if(ptr != NULL) {
+      free(ptr);
+   }
+   return 0;
 }
 

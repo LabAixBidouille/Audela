@@ -28,6 +28,7 @@
 #include "cbuffer.h"
 #include "cvisu.h"
 
+extern "C" int Tkimgvideo_Init(Tcl_Interp *interp);   
 
 #define VISU_PREFIXE "visu"
 
@@ -64,7 +65,6 @@ extern "C" int Audelatk_Init(Tcl_Interp *interp)
    if(Tk_InitStubs(interp,"8.3",0)==NULL) {
       return TCL_ERROR;
    }
-
    
    Tcl_PkgProvide(interp,"libaudelatk","1.0");
    visu_pool = new CPool(VISU_PREFIXE);
@@ -72,6 +72,10 @@ extern "C" int Audelatk_Init(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::visu::list",  (Tcl_CmdProc *)CmdListVisuItems,(void*)visu_pool,NULL);
    Tcl_CreateCommand(interp,"::visu::delete",(Tcl_CmdProc *)CmdDeleteVisuItem,(void*)visu_pool,NULL);
 
+#if defined(WIN32)
+   // create image type for video (webcam and video recorder)
+   Tkimgvideo_Init(interp);
+#endif
    return TCL_OK;
 }
 
