@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.12 2006-12-08 16:57:11 michelpujol Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.13 2006-12-08 18:21:49 robertdelmas Exp $
 #
 # offset  value
 # offset2  in out const number ?first_index? ?tt_options?
@@ -35,8 +35,6 @@
 # trans  dx dy
 # trans2  in out dx dy number ?first_index? ?tt_options?
 # scale2  in out number scale_x scale_y ?first_index? ?tt_options?
-# raw2cfa  in out number ?first_index? ?tt_options?
-# cfa2rgb  in out number ?first_index? ?tt_options?
 #
 
 proc offset {args} {
@@ -891,5 +889,4 @@ proc scale2 {args} {
       error "Usage: scale2 in out number scale_x scale_y ?first_index? ?tt_options?"
    }
 }
-
 
