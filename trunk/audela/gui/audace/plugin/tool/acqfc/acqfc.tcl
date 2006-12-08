@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.27 2006-11-12 16:06:15 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.28 2006-12-08 17:09:52 michelpujol Exp $
 #
 
 package provide acqfc 2.1
@@ -110,12 +110,12 @@ namespace eval ::AcqFC {
       ::AcqFC::Chargement_Var $visuNo
 
       #--- Chargement du package tkimgvideo (video pour les WebCams sous Windows uniquement)
-      if { $::tcl_platform(os) != "Linux" } {
-         set result [ catch { package require tkimgvideo } msg ]
-         if { $result == "1" } {
-            console::affiche_erreur "$caption(acqfc,no_package)\n"
-         }
-      }
+      ###if { $::tcl_platform(os) != "Linux" } {
+      ###   set result [ catch { package require tkimgvideo } msg ]
+      ###   if { $result == "1" } {
+      ###      console::affiche_erreur "$caption(acqfc,no_package)\n"
+      ###   }
+      ###}
 
       #--- Initialisation de la variable conf()
       if { ! [info exists conf(acqfc,avancement,position)] } { set conf(acqfc,avancement,position) "+120+315" }

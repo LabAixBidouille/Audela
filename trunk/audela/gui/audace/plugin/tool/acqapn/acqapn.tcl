@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.8 2006-11-24 15:46:39 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.9 2006-12-08 17:11:27 michelpujol Exp $
 #
 
    package provide acqapn 1.0
@@ -90,10 +90,10 @@
          ::AcqAPN::ConfigPanneau
 
          #--- Chargement du package tkimgvideo (video pour les webcams sous Windows uniquement)
-         if { $::tcl_platform(os) != "Linux" } {
-            set result [ catch { package require tkimgvideo } msg ]
-            if { $result == "1" } { console::affiche_erreur "$caption(acqapn,no_package)\n" }
-         }
+         ###if { $::tcl_platform(os) != "Linux" } {
+         ###   set result [ catch { package require tkimgvideo } msg ]
+         ###   if { $result == "1" } { console::affiche_erreur "$caption(acqapn,no_package)\n" }
+         ###}
          AcqAPNBuildIF $This
       }
 
