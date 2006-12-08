@@ -47,8 +47,14 @@ int tt_ima_series_saver_end(TT_IMA_SERIES *pseries,char *fullname)
    if (pseries->object_list==TT_YES) {
       tt_imadelnewkey(pseries->p_out,"OBJEFILE");
       if ((strcmp(pseries->objefile,"")==0)||(strcmp(pseries->objefile,".")==0)) {
-	 strcpy(pseries->objefile,".");
-	 del_objname=TT_YES;
+         strcpy(pseries->objefile,".");
+         del_objname=TT_YES;
+      }
+      if (strlen(pseries->objefile) >= FLEN_VALUE ) {
+         sprintf(message,"OBJEFILE %s too long (maxlen=%d)",pseries->objefile, FLEN_VALUE);
+         msg = TT_ERR_FILENAME_TOO_LONG;
+         tt_errlog(msg,message);
+         return(msg);
       }
       tt_imanewkey(pseries->p_out,"OBJEFILE",pseries->objefile,TSTRING,"Filename of objects list","");
    }
