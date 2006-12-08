@@ -42,30 +42,32 @@ struct cmditem {
 
 // Commande internes pour gerer les commandes d'une visu
 //
+int cmdVisuBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuClear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuPalDir(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdVisuBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdVisuImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdVisuThickness(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdVisuThickness(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdVisuZoom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 static struct cmditem cmdlist[] = {
+   {"buf", (Tcl_CmdProc *)cmdVisuBuf},
    {"clear", (Tcl_CmdProc *)cmdVisuClear},
    {"cut", (Tcl_CmdProc *)cmdVisuCut},
    {"disp", (Tcl_CmdProc *)cmdVisuDisp},
+   {"image", (Tcl_CmdProc *)cmdVisuImage},
    {"pal", (Tcl_CmdProc *)cmdVisuPal},
    {"paldir", (Tcl_CmdProc *)cmdVisuPalDir},
-   {"buf", (Tcl_CmdProc *)cmdVisuBuf},
-   {"image", (Tcl_CmdProc *)cmdVisuImage},
    {"mirrorx", (Tcl_CmdProc *)cmdVisuMirrorX},
    {"mirrory", (Tcl_CmdProc *)cmdVisuMirrorY},
+   {"mode", (Tcl_CmdProc *)cmdVisuMode},
    {"thickness", (Tcl_CmdProc *)cmdVisuThickness},
    {"window", (Tcl_CmdProc *)cmdVisuWindow},
    {"zoom", (Tcl_CmdProc *)cmdVisuZoom},
@@ -703,41 +705,6 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 }
 
 
-int cmdVisuZoom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-{
-   int result = TCL_OK;
-   char *ligne;
-   CVisu *visu;
-   double zoom;
-
-   ligne = (char*)calloc(200,sizeof(char));
-   if((argc!=2)&&(argc!=3)) {
-      sprintf(ligne,"Usage: %s %s ?zoom?",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else if(argc==2) {
-      visu = (CVisu*)clientData;
-      visu->GetZoom(&zoom);
-      if (zoom<1.) {
-         sprintf(ligne,"%f",zoom);
-      } else {
-         sprintf(ligne,"%d",int(zoom));
-      }
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-   } else {
-      if(Tcl_GetDouble(interp,argv[2],&zoom)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s ?zoom?\nzoom must be a double in range 0 to 4",argv[0],argv[1]);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
-      } else {
-         visu = (CVisu*)clientData;
-         visu->SetZoom(zoom);
-      }
-   }
-   free(ligne);
-   return result;
-}
-
 int cmdVisuMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    int result = TCL_OK;
@@ -798,6 +765,44 @@ int cmdVisuMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    return result;
 }
 
+int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result = TCL_OK;
+   char *ligne;
+   CVisu *visu;
+
+   ligne = (char*)calloc(200,sizeof(char));
+   if((argc!=2)&&(argc!=3)) {
+      sprintf(ligne,"Usage: %s %s ?photo|video?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if(argc==2) {
+      visu = (CVisu*)clientData;
+      sprintf(ligne,"%d",visu->GetMode());
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   } else {
+      visu = (CVisu*)clientData;
+      if ( strcmp(argv[2],"photo")==0 ) {
+         visu->SetMode(1);
+      } else if (strcmp(argv[2],"video")==0 ) {
+#ifdef OS_WIN
+         visu->SetMode(2);
+#else 
+         sprintf(ligne,"video is not availble under LINUX",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+#endif
+      } else {
+         sprintf(ligne,"Usage: %s %s ?photo|video?",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } 
+   }
+   free(ligne);
+   return result;
+}
+
+
 //---------------------------------------------------------------------
 /**
  * cmdThickness
@@ -844,4 +849,39 @@ int cmdVisuThickness(ClientData clientData, Tcl_Interp *interp, int argc, char *
    return result;
 }
 
+
+int cmdVisuZoom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int result = TCL_OK;
+   char *ligne;
+   CVisu *visu;
+   double zoom;
+
+   ligne = (char*)calloc(200,sizeof(char));
+   if((argc!=2)&&(argc!=3)) {
+      sprintf(ligne,"Usage: %s %s ?zoom?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if(argc==2) {
+      visu = (CVisu*)clientData;
+      visu->GetZoom(&zoom);
+      if (zoom<1.) {
+         sprintf(ligne,"%f",zoom);
+      } else {
+         sprintf(ligne,"%d",int(zoom));
+      }
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   } else {
+      if(Tcl_GetDouble(interp,argv[2],&zoom)!=TCL_OK) {
+         sprintf(ligne,"Usage: %s %s ?zoom?\nzoom must be a double in range 0 to 4",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         visu = (CVisu*)clientData;
+         visu->SetZoom(zoom);
+      }
+   }
+   free(ligne);
+   return result;
+}
 
