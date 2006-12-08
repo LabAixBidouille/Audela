@@ -31,7 +31,7 @@ Package=<4>
 
 ###############################################################################
 #  loader dynamique de DLL/SO  pour libgphoto2
-Project: "libltdl"=".\external\libgphoto2\libltdl\vc6\libltdl.dsp" - Package Owner=<4>
+Project: "libltdl"=".\external\libgphoto2\libltdl\vc60\libltdl.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -43,7 +43,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libgphoto2_port"=".\external\libgphoto2\libgphoto2_port\libgphoto2_port\vc6\libgphoto2_port.dsp" - Package Owner=<4>
+Project: "libgphoto2_port"=".\external\libgphoto2\libgphoto2_port\libgphoto2_port\vc60\libgphoto2_port.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -55,7 +55,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libgphoto2_port_usb"=".\external\libgphoto2\libgphoto2_port\usb\vc6\libgphoto2_port_usb.dsp" - Package Owner=<4>
+Project: "libgphoto2_port_usb"=".\external\libgphoto2\libgphoto2_port\usb\vc60\libgphoto2_port_usb.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -67,7 +67,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libgphoto2"=".\external\libgphoto2\libgphoto2\vc6\libgphoto2.dsp" - Package Owner=<4>
+Project: "libgphoto2"=".\external\libgphoto2\libgphoto2\vc60\libgphoto2.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -79,7 +79,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libgphoto2_canon"=".\external\libgphoto2\camlibs\canon\vc6\libgphoto2_canon.dsp" - Package Owner=<4>
+Project: "libgphoto2_canon"=".\external\libgphoto2\camlibs\canon\vc60\libgphoto2_canon.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
