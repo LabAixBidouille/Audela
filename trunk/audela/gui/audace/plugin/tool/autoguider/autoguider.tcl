@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.8 2006-11-26 15:31:30 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.9 2006-12-08 17:08:29 michelpujol Exp $
 #
 
 package provide autoguider 1.0
@@ -33,12 +33,12 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,pose) ] }        { set conf(autoguider,pose)       "0" }
    if { ! [ info exists conf(autoguider,binning) ] }     { set conf(autoguider,binning)    [lindex $audace(list_binning) 1] }
    if { ! [ info exists conf(autoguider,intervalle)] }   { set conf(autoguider,intervalle) ".5" }
-   if { ! [ info exists conf(autoguider,alphaSpeed)] }   { set conf(autoguider,alphaSpeed) "0.2" }
-   if { ! [ info exists conf(autoguider,deltaSpeed)] }   { set conf(autoguider,deltaSpeed) "0.2" }
+   if { ! [ info exists conf(autoguider,alphaSpeed)] }   { set conf(autoguider,alphaSpeed) "10" }
+   if { ! [ info exists conf(autoguider,deltaSpeed)] }   { set conf(autoguider,deltaSpeed) "10" }
    if { ! [ info exists conf(autoguider,seuilx)] }       { set conf(autoguider,seuilx) "1" }
    if { ! [ info exists conf(autoguider,seuily)] }       { set conf(autoguider,seuily) "1" }
    if { ! [ info exists conf(autoguider,detection)] }    { set conf(autoguider,detection) "PSF" }
-   if { ! [ info exists conf(autoguider,learn,delay)] }  { set conf(autoguider,learn,delay) "2" }
+   if { ! [ info exists conf(autoguider,learn,delay)] }  { set conf(autoguider,learn,delay) "5" }
    if { ! [ info exists conf(autoguider,angle)] }        { set conf(autoguider,angle) "0" }
    if { ! [ info exists conf(autoguider,originCoord)] }  { set conf(autoguider,originCoord) "" }
    if { ! [ info exists conf(autoguider,showTarget)] }   { set conf(autoguider,showTarget) "1" }
@@ -51,7 +51,6 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
 
    set private($visuNo,pose)          $conf(autoguider,pose)
    set private($visuNo,binning)       $conf(autoguider,binning)
-   set private($visuNo,intervalle)    $conf(autoguider,intervalle)
    set private($visuNo,monture_ok)    "0"
    set private($visuNo,suiviState) "0"
    set private($visuNo,status)        ""
@@ -147,7 +146,7 @@ proc ::autoguider::createPanel { visuNo } {
       ComboBox $This.intervalle.combo \
          -width 4 -height [ llength $list_combobox ] \
          -relief sunken -borderwidth 1 -editable 1 \
-         -textvariable ::autoguider::private($visuNo,intervalle) \
+         -textvariable conf(autoguider,intervalle) \
          -values $list_combobox
       pack $This.intervalle.combo -anchor center -side left -fill x -expand 1
    pack $This.intervalle -anchor center -fill x -expand 1
@@ -162,7 +161,7 @@ proc ::autoguider::createPanel { visuNo } {
    #--- Cadre du bouton Go/Stop
    frame $This.go_stop -borderwidth 2 -relief ridge
       button $This.go_stop.but -text $caption(autoguider,GO) -height 2 \
-        -font $audace(font,arial_12_b) -borderwidth 3 -pady 6 -command "::autoguider::startSuivi $visuNo"
+        -font $audace(font,arial_12_b) -borderwidth 3 -pady 6 -command "::autoguider::startAcquisition $visuNo"
       pack $This.go_stop.but -fill both -padx 0 -pady 0 -expand true
    pack $This.go_stop -anchor center -fill x -expand true
 
@@ -179,7 +178,7 @@ proc ::autoguider::createPanel { visuNo } {
           -command "::autoguider::showAlphaDeltaAxis $visuNo"
        checkbutton $This.suivi.moteur_ok -padx 0 -pady 0 \
           -text "$caption(autoguider,ctrl_monture)" \
-          -variable ::autoguider::private($visuNo,monture_ok) -command {  }
+          -variable ::autoguider::private($visuNo,monture_ok) -command "::autoguider::initMount $visuNo"
        label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
        label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx)
        label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy)
@@ -317,7 +316,7 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
    pack forget $private($visuNo,This)
 
    #--- j'arrete le suivi
-   stopSuivi $visuNo
+   stopAcquisition $visuNo
    
    #--- je masque la cible
    set conf(autoguider,showTarget)  $private($visuNo,showTarget)
@@ -341,15 +340,15 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
 }
 
 #------------------------------------------------------------
-# ::autoguider::startSuivi
-#    lance le suivi
+# ::autoguider::startAcquisition
+#    lance les acquisitions en boucle
 #------------------------------------------------------------
-proc ::autoguider::startSuivi { visuNo } {
+proc ::autoguider::startAcquisition { visuNo } {
    variable private
    global caption
    global conf
 
-   #--- Petits raccourcis
+   #--- Petits raccourcis bien pratiques
    set camNo [::confVisu::getCamNo $visuNo ]
    set bufNo [::confVisu::getBufNo $visuNo ]
    set camName [::confVisu::getCamera $visuNo ]
@@ -363,8 +362,7 @@ proc ::autoguider::startSuivi { visuNo } {
    if { $camNo == 0 } {
       ::confCam::run
       return
-   }
-   
+   }   
    
    #--- j'indique que le suivi est en cours
    set private($visuNo,suiviState) 1
@@ -372,9 +370,9 @@ proc ::autoguider::startSuivi { visuNo } {
    #--- J'affiche le bouton "STOP" et l'associe à la commande d'arret
    $private($visuNo,This).go_stop.but configure \
       -text $caption(autoguider,STOP) \
-      -command "::autoguider::stopSuivi $visuNo"
+      -command "::autoguider::stopAcquisition $visuNo"
    #--- J'associe la commande d'arret a la touche ESCAPE
-   bind all <Key-Escape> "::autoguider::stopSuivi  $visuNo"
+   bind all <Key-Escape> "::autoguider::stopAcquisition  $visuNo"
 
    #--- je remets a zero la valeur du decalage precedent   
    set private(previousAlphaDelay)      "0"     
@@ -382,24 +380,31 @@ proc ::autoguider::startSuivi { visuNo } {
    set private(delay_alpha)       "0"     
    set private(delay_delta)       "0"     
 
-   #--- je parametre le temps de pose
-   cam$camNo exptime $private($visuNo,pose)
-
    #--- je parametre le binning
    cam$camNo bin [list [string range $private($visuNo,binning) 0 0] [string range $private($visuNo,binning) 2 2]]
-      
+
    #--- j'arrete la mise à jour des coordonnees dans les images , pour gagner du temps
    cam$camNo radecfromtel 0
       
-   ::telescope::setSpeed 1
-   
+
+   #--- j'active l'envoi des commandes à la monture si c'est demandé
+   if { $private($visuNo,monture_ok) == 1 } {
+      initMount $visuNo
+   }
+      
    while { $private($visuNo,suiviState) == "1" } {
-      #--- je faie une acquisition et j'affiche l'image
+      #--- je parametre le temps de pose
+      cam$camNo exptime $private($visuNo,pose)
+      
+      #--- je fais une acquisition 
       cam$camNo acq
       vwait status_cam$camNo
+      
+      #--- j'affiche l'image si c'est demandé
       if { $private($visuNo,showImage) == "1" } {
          ::confVisu::autovisu $visuNo
       }
+      
       #--- je mets a jour l'axes si necessaire
       if { $private($visuNo,updateAxis) == 1 } {
          updateAlphaDeltaAxis $visuNo $conf(autoguider,originCoord) $conf(autoguider,angle)
@@ -458,7 +463,7 @@ proc ::autoguider::startSuivi { visuNo } {
    #--- j'active le bouton GO et associe la commande demarrage
    $private($visuNo,This).go_stop.but configure \
       -text $caption(autoguider,GO) \
-      -command "::autoguider::startSuivi $visuNo"
+      -command "::autoguider::startAcquisition $visuNo"
    #--- je supprime l'association du bouton escape
    bind all <Key-Escape> ""
 
@@ -466,12 +471,13 @@ proc ::autoguider::startSuivi { visuNo } {
 
 }
 
+
 #------------------------------------------------------------
-# ::autoguider::stopSuivi
-#    lance les acquisitions
+# ::autoguider::stopAcquisition
+#    arrete les acquisitions en boucle
 # 
 #------------------------------------------------------------
-proc ::autoguider::stopSuivi { visuNo } {
+proc ::autoguider::stopAcquisition { visuNo } {
    variable private 
 
    #--- si le suivi est en cours , je demande l'arret
@@ -480,6 +486,17 @@ proc ::autoguider::stopSuivi { visuNo } {
    }
 }
 
+#------------------------------------------------------------
+# ::autoguider::initMount
+#    initialse les paramétres de la monture
+#------------------------------------------------------------
+proc ::autoguider::initMount { visuNo } {
+   variable private
+
+   #--- je configure la monture avec la plus petite vitesse
+   ::telescope::setSpeed 1
+
+}
 
 #------------------------------------------------------------
 # ::autoguider::setOrigin
@@ -815,6 +832,7 @@ proc ::autoguider::webcamConfigure { visuNo } {
 proc ::autoguider::selectBinning { visuNo } {
    variable private
    global caption 
+   global conf
 
    set panelFormat "0"
    #--- je verifie que la camera est disponible
