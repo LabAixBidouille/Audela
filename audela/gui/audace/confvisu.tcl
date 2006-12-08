@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.41 2006-12-02 08:39:19 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.42 2006-12-08 17:00:51 michelpujol Exp $
 
 namespace eval ::confVisu {
 
@@ -505,10 +505,8 @@ namespace eval ::confVisu {
 
       visu$visuNo zoom $private($visuNo,zoom)
       #--- rafraichissement de l'image avec le nouveau zoom
-      if { [ image type image[visu$visuNo image] ] == "photo" } {
-         visu$visuNo clear
-         visu$visuNo disp
-      }
+      visu$visuNo clear
+      visu$visuNo disp
 
       #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
       set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
@@ -778,14 +776,15 @@ namespace eval ::confVisu {
       set imageNo [visu$visuNo image]
 
       if { $state == 1 } {
-         #--- j'active le mode video
          #--- Je supprime l'image precedente
-         image delete image$imageNo
          buf[visu$visuNo buf] clear
-         #--- Je cree une image de type "video"
-         image create video image$imageNo
+         #--- j'active le mode video
+         visu$visuNo mode video
+
          #--- Je connecte la sortie de la camera a l'image
          set result [ catch { cam$private($visuNo,camNo) startvideoview $visuNo } msg ]
+         visu$visuNo disp
+
          #---  je desactive le reglage des seuils
          $private($visuNo,This).fra1.sca1 configure -state disabled 
          $private($visuNo,This).fra1.sca2 configure -state disabled 
@@ -794,9 +793,7 @@ namespace eval ::confVisu {
          #--- Je deconnecte la sortie de la camera
          set result [ catch { cam$private($visuNo,camNo) stopvideoview $visuNo } msg ]
          #--- je desactive le mode video
-         image delete image$imageNo
-         #--- Je cree une image de type "photo"
-         image create photo image$imageNo
+         visu$visuNo mode photo
          #---  j'active le reglage des seuils
          $private($visuNo,This).fra1.sca1 configure -state normal 
          $private($visuNo,This).fra1.sca2 configure -state normal 
