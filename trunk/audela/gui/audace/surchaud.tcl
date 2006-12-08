@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.11 2006-11-17 18:46:34 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.12 2006-12-08 16:57:11 michelpujol Exp $
 #
 # offset  value
 # offset2  in out const number ?first_index? ?tt_options?
@@ -892,49 +892,4 @@ proc scale2 {args} {
    }
 }
 
-proc raw2cfa {args} {
-   # in out number ?first_index? ?tt_options?
-   global audace
-   global caption
-
-   set n [llength $args]
-   if {$n>=3} {
-      set first 1
-      if {$n==4} {
-         set first "[lindex $args 3]"
-      }
-      set options ""
-      if {$n>=5} {
-         set options "[lrange $args 4 end]"
-      }
-      set ni [expr [lindex $args 2]+$first-1]
-      set ext [buf$audace(bufNo) extension]
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" RAW2CFA $options"
-   } else {
-      error "Usage: raw2cfa in out number ?first_index? ?tt_options?"
-   }
-}
-
-proc cfa2rgb {args} {
-   # in out number ?first_index? ?tt_options?
-   global audace
-   global caption
-
-   set n [llength $args]
-   if {$n>=3} {
-      set first 1
-      if {$n==4} {
-         set first "[lindex $args 3]"
-      }
-      set options ""
-      if {$n>=5} {
-         set options "[lrange $args 4 end]"
-      }
-      set ni [expr [lindex $args 2]+$first-1]
-      set ext [buf$audace(bufNo) extension]
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CFA2RGB $options"
-   } else {
-      error "Usage: cfa2rgb in out number ?first_index? ?tt_options?"
-   }
-}
 
