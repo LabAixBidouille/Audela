@@ -24,9 +24,9 @@
 #include <stdlib.h>
 #include <tk.h>
 
+#include "sysexp.h"
 #include "cbuffer.h"
 #include "cvisu.h"
-
 #include "cerror.h"
 #include "cvisu.h"
 
@@ -785,10 +785,10 @@ int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       if ( strcmp(argv[2],"photo")==0 ) {
          visu->SetMode(1);
       } else if (strcmp(argv[2],"video")==0 ) {
-#ifdef OS_WIN
+#if defined(OS_WIN)
          visu->SetMode(2);
 #else 
-         sprintf(ligne,"video is not availble under LINUX",argv[0],argv[1]);
+         sprintf(ligne,"video is not available with LINUX",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
 #endif
