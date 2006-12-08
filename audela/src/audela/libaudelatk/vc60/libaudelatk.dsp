@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 tkstub84.lib tclstub84.lib libaudela.lib /nologo /dll /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudelatk.dll" /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
+# ADD LINK32 user32.lib tk84.lib tkstub84.lib tclstub84.lib libaudela.lib /nologo /dll /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudelatk.dll" /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
 
 !ELSEIF  "$(CFG)" == "libaudelatk - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 tkstub84.lib tclstub84.lib libaudela.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudelatk.dll" /pdbtype:sept /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
+# ADD LINK32 user32.lib tk84.lib tkstub84.lib tclstub84.lib libaudela.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudelatk.dll" /pdbtype:sept /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -105,12 +105,20 @@ SOURCE=.\libaudelatk.def
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\tkimgvideo.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\visu_tcl.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\src\cvisu.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
