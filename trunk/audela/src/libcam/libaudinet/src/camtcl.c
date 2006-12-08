@@ -23,7 +23,7 @@
 /*
  * Fonctions C-Tcl specifiques a cette camera. A programmer.
  *
- * $Id: camtcl.c,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
+ * $Id: camtcl.c,v 1.3 2006-12-08 17:28:05 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -64,23 +64,6 @@ static void ScanTransfer(ClientData clientData);
 
 /* --- Global variable for SCAN acquisition mode ---*/
 static ScanStruct *TheScanStruct = NULL;
-
-
-/*
- *  Definition a structure specific for this driver 
- */
-
-static char *cam_shuttertypes[] = {
-    "audine",
-    NULL
-};
-
-static char *cam_updatelog[] = {
-    "off",
-    "on",
-    NULL
-};
-
 
 int cmdAudinetWipe(ClientData clientData, Tcl_Interp * interp, int argc,
 		   char *argv[])
@@ -182,6 +165,7 @@ int cmdAudinetRead(ClientData clientData, Tcl_Interp * interp, int argc,
     Tcl_Eval(interp, s);
 
     /* Add FITS keywords */
+    sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
     sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno,
 	    naxis1);
     Tcl_Eval(interp, s);
@@ -939,6 +923,7 @@ void ScanTransfer(ClientData clientData)
     sprintf(s, "buf%d bitpix ushort", cam->bufno);
     Tcl_Eval(interp, s);
 
+    sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
     sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno,
 	    naxis1);
     Tcl_Eval(interp, s);
