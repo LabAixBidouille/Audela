@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.46 2006-12-08 17:03:48 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.47 2006-12-08 19:15:28 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -102,7 +102,6 @@ namespace eval ::confCam {
       if { ! [ info exists conf(webcam,channel) ] }              { set conf(webcam,channel)              "0" }
       if { ! [ info exists conf(webcam,ccd_N_B) ] }              { set conf(webcam,ccd_N_B)              "0" }
       if { ! [ info exists conf(webcam,dim_ccd_N_B) ] }          { set conf(webcam,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,port) ] }                 { set conf(webcam,port)                 "" }
 
       #--- initConf 8
       if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
@@ -3311,12 +3310,11 @@ namespace eval ::confCam {
             set confCam($cam_item,visuNo) "0"
          }
 
-         #--- Je ferme la liaison d'acquisition de la camera
-         ::confLink::delete $conf($confCam($cam_item,camName),port) "cam$camNo" "acquisition"
-
          #--- je ferme les ressources specifiques de la camera
          switch -exact -- $confCam($cam_item,camName) {
             audine {
+               #--- Je ferme la liaison d'acquisition de la camera
+               ::confLink::delete $conf(audine,port) "cam$camNo" "acquisition"
                #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
                if { [ winfo exists $audace(base).testAudine ] } {
                   ::testAudine::fermer
@@ -4407,7 +4405,7 @@ namespace eval ::confCam {
                   quickaudine {
                      set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
                   }
                   ethernaude {
                      ### set conf(ethernaude,host) [ ::audace::verifip $conf(ethernaude,host) ]
@@ -4445,14 +4443,14 @@ namespace eval ::confCam {
                         }
                      }
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
                   }
                   audinet {
                      set camNo [cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
                         -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                         -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
                   }
                }
                #--- fin switch conf(audine,port)
