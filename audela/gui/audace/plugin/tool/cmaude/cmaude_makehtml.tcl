@@ -1,12 +1,15 @@
 #
-# Fichier : makehtml.tcl
+# Fichier : cmaude_makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: makehtml.tcl,v 1.3 2006-06-20 20:54:18 robertdelmas Exp $
+# Mise a jour $Id: cmaude_makehtml.tcl,v 1.1 2006-12-09 18:54:13 robertdelmas Exp $
 #
 
 variable cmconf
+global audace
+global caption
 global compteur
+global loopexit
 
 #--- Initialisation de l'heure TU ou TL
 set now now
@@ -16,10 +19,12 @@ catch {
 #--- Acquisition of an image
 set actuel [mc_date2jd $now]
 #---
+set folder [ file join $audace(rep_plugin) tool cmaude ]
 set namehtml [string range [mc_date2iso8601 $actuel] 0 9].html
-::console::affiche_erreur "Creation/Update of the HTML file $namehtml\n"
-set existence [file exists $cmconf(folder)$namehtml]
-if { $existence == "0" } then {
+::console::affiche_erreur "$caption(cmaude,fichier_html) $namehtml\n"
+::console::affiche_erreur "\n"
+set existence [ file exists [ file join $folder $namehtml ] ]
+if { $existence == "0" } {
    #--- Here is made the html page header
    set texte "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">\n"
    append texte "<html>\n"
@@ -51,30 +56,28 @@ if { $existence == "0" } then {
    append texte "\n" 	      append texte "<h2>\n"
    append texte "2. Local Ephemeris</h2>\n"
    append texte "Here are some local ephemeris for the current night at Paranal: <br>\n"
-   append texte "$resultb<br>\n"
-   append texte "$resulte<br>\n"
+   append texte "$cmconf(resultb)<br>\n"
+   append texte "$cmconf(resulte)<br>\n"
    set localite "$cmconf(localite)"
-  # set phaslun [string range [lindex [mc_ephem moon [list [mc_date2tt now]] {phase} -topo $localite] 0] 0 4]
-  # set illufrac [string range [expr 100 * (0.5 + 0.5 * cos ($phaslun / 180. * 3.1415))] 0 4]
-   append texte "Lunar phase at the beginning of the night: $phaslun<br>\n"
-   append texte "Illuminated fraction of the Moon at the beginning of the night: $illufrac<br>\n"
+   append texte "Lunar phase at the beginning of the night: $cmconf(phaslun)<br>\n"
+   append texte "Illuminated fraction of the Moon at the beginning of the night: $cmconf(illufrac)<br>\n"
    append texte "<h2>\n"
    append texte "3. List of images</h2>\n"
 
-   set fileId [open $cmconf(folder)$namehtml w]
+   set fileId [ open [ file join $folder $namehtml ] w ]
    puts $fileId $texte
    close $fileId
 }
 
-if { $endofhtml == "0" } then {
-   set texte "Image <b>$nameima</b> done the [string range [mc_date2iso8601 $actuel] 0 9] "
+if { $loopexit == "0" } {
+   set texte "Image <b>[ file rootname [ file tail $cmconf(nameima) ] ]</b> done the [string range [mc_date2iso8601 $actuel] 0 9] "
    append texte "at <b>[string range [mc_date2iso8601 $actuel] 11 18] UT</b> "
    append texte "(Local Sideral Time $sidertime) - "
-   append texte "<a href=\"$nameima.jpg\">| JPG |</a> - "
-   append texte " <a href=\"$nameima\">| FITS |</a> <br>"
+   append texte "<a href=\"$cmconf(nameima).jpg\">| JPG |</a> - "
+   append texte " <a href=\"$cmconf(nameima)$cmconf(extension)\">| FITS |</a> <br>"
 }
 
-if { $endofhtml == "1" } then {
+if { $loopexit == "1" } {
    append texte "<p>End of observations the [string range [mc_date2iso8601 $actuel] 0 9] at "
    append texte "[string range [mc_date2iso8601 $actuel] 11 20]UT <br>"
    set nbtotimages [expr $compteur-1]
@@ -120,7 +123,7 @@ if { $endofhtml == "1" } then {
    append texte "</html>\n"
 }
 
-set fileId [open $cmconf(folder)$namehtml a]
+set fileId [ open [ file join $folder $namehtml ] a ]
 puts $fileId $texte
 close $fileId
 

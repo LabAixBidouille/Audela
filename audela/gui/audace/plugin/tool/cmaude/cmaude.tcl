@@ -2,10 +2,10 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.4 2006-11-14 21:48:19 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.5 2006-12-09 18:55:03 robertdelmas Exp $
 #
-# REMARKS :
-# The definition of some variables (binning, exp. time, rythm...)
+# Remarks :
+# The definition of some variables (binning, exp. time, rythm, etc.)
 # is available in file cmaude_ini.tcl to be easily modified
 #
 
@@ -50,25 +50,22 @@ namespace eval ::cmaude {
          source $fichier_cmaude
       }
       #--- Recuperation du repertoire dedie aux images et de l'extension des images
-      catch {
-         set cmconf(folder)    "$conf(rep_images)"
-         set cmconf(extension) "$conf(extension,defaut)"
-      }
+      set cmconf(folder)    "$conf(rep_images)"
+      set cmconf(extension) "$conf(extension,defaut)"
       set This $this
       #---
       set panneau(menu_name,cmaude)     "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,titre)         "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,aide)          "$caption(cmaude,help_titre)"
+      set panneau(cmaude,parcourir)     "$caption(cmaude,parcourir)"
       set panneau(cmaude,label_bias)    "$caption(cmaude,bias)"
-      set panneau(cmaude,bias11)        "c:/images/bias/off11synth$cmconf(extension)"
+      set panneau(cmaude,bias)          "C:/images/bias/off_synth$cmconf(extension)"
       set panneau(cmaude,label_dark)    "$caption(cmaude,dark)"
-      set panneau(cmaude,dark11)        "c:/images/dark/dark11$cmconf(extension)"
-      set panneau(cmaude,bias22)        "c:/images/bias/off22synth$cmconf(extension)"
-      set panneau(cmaude,dark22)        "c:/images/dark/dark22$cmconf(extension)"
+      set panneau(cmaude,dark)          "C:/images/dark/dark_synth$cmconf(extension)"
       set panneau(cmaude,label_overlay) "$caption(cmaude,overlay)"
-      set panneau(cmaude,overlay11)     "c:/images/overlay/overlay$cmconf(extension)"
+      set panneau(cmaude,overlay)       "C:/images/overlay/overlay$cmconf(extension)"
       set panneau(cmaude,label_nom)     "$caption(cmaude,nom_image)"
-      set panneau(cmaude,nom)           "$cmconf(folder)[string range [mc_date2jd $now] 0 6]-"
+      set panneau(cmaude,nom)           "$cmconf(folder)/[string range [mc_date2jd $now] 0 6]-"
       set panneau(cmaude,label_binning) "$caption(cmaude,binning)"
       set panneau(cmaude,binning)       "$cmconf(binning)"
       set panneau(cmaude,list_binning)  "1x1 2x2"
@@ -88,18 +85,19 @@ namespace eval ::cmaude {
 
    proc startTool { visuNo } {
       variable This
+      global caption
 
       pack $This -side left -fill y
-      console::affiche_prompt "-------------------------\n"
-      console::affiche_prompt "| Acquisition (MASCOT)\n"
-      console::affiche_prompt "-------------------------\n"
+      console::affiche_prompt "----------------------------\n"
+      console::affiche_prompt "| $caption(cmaude,titre_mascot)\n"
+      console::affiche_prompt "----------------------------\n"
       console::affiche_prompt "| Mini\n"
       console::affiche_prompt "| All\n"
       console::affiche_prompt "| Sky\n"
       console::affiche_prompt "| Cloud\n"
       console::affiche_prompt "| Observation\n"
       console::affiche_prompt "| Tool\n"
-      console::affiche_prompt "-------------------------\n\n"
+      console::affiche_prompt "----------------------------\n\n"
    }
 
    proc stopTool { visuNo } {
@@ -120,6 +118,7 @@ namespace eval ::cmaude {
       variable This
       variable cmconf
       global audace
+      global caption
       global panneau
       global loopexit
       global compteur
@@ -135,36 +134,36 @@ namespace eval ::cmaude {
          }
          set loopexit "0"
          console::affiche_erreur "###############################\n"
-         console::affiche_prompt "Beginning the Automatic Script Loop\n"
+         console::affiche_erreur "$caption(cmaude,debut_script)\n"
          set sndebug "0"
          set compteur "1"
          set namelog [string range [mc_date2jd $now] 0 6]
 
          #--- Recuperation de la position de l'observateur
-         catch {
-            set cmconf(localite) "$audace(posobs,observateur,gps)"
-         }
+         set cmconf(localite) "$audace(posobs,observateur,gps)"
          set localite "$cmconf(localite)"
 
          #--- Altitude of the sun under horizon for which one considers it's night
          set haurore "$cmconf(haurore)"
 
-         #--- Some astronomical parameters...
+         #--- Some astronomical parameters
          set ladate [mc_date2jd $now]
 
          set datheur [mc_date2ymdhms $ladate]
          set hautsol [lindex [mc_ephem sun [list [mc_date2tt $ladate]] {altitude} -topo $localite] 0]
          set azimsol [lindex [mc_ephem sun [list [mc_date2tt $ladate]] {azimuth} -topo $localite] 0]
          console::affiche_erreur "###############################\n"
-         console::affiche_erreur "It is (YMD-HMS) $datheur TU\n"
-         console::affiche_erreur "or (Julian Day) $ladate\n"
-         console::affiche_erreur "Sun Position:\n"
-         console::affiche_erreur	"Altitude: [string range $hautsol 0 5]°\n"
-         console::affiche_erreur "Azimuth: [string range $azimsol 0 5]°\n"
+         console::affiche_erreur "$caption(cmaude,il_est) $datheur $caption(cmaude,TU)\n"
+         console::affiche_erreur "$caption(cmaude,jour_julien) $ladate\n"
+         console::affiche_erreur "$caption(cmaude,position_soleil)\n"
+         console::affiche_erreur "$caption(cmaude,hauteur) [string range $hautsol 0 5]°\n"
+         console::affiche_erreur "$caption(cmaude,azimut) [string range $azimsol 0 5]°\n"
          set phaslun [lindex [mc_ephem moon [list [mc_date2tt $ladate]] {phase} -topo $localite] 0]
-         console::affiche_erreur "Actual Moon Phase: [string range $phaslun 0 5]°\n"
+         set cmconf(phaslun) $phaslun
+         console::affiche_erreur "$caption(cmaude,phase_lune) [string range $phaslun 0 5]°\n"
          set illufrac [expr 100 * (0.5 + 0.5 * cos ($phaslun / 180. * 3.1415))]
-         console::affiche_erreur "Illuminated Fraction: [expr int($illufrac)]%\n"
+         set cmconf(illufrac) $illufrac
+         console::affiche_erreur "$caption(cmaude,illumine_lune) ~[expr int($illufrac)]%\n"
 
          #--- Infinite loop running the automatic acquisition sequence (simulated)
          #--- Begins by calculating the parameters of sunset and sunrise for the current day
@@ -174,7 +173,7 @@ namespace eval ::cmaude {
             if { $loopexit == "1" } {
                break
             }
-            set panneau(cmaude,status) "Auto Script Running..."
+            set panneau(cmaude,status) "$caption(cmaude,execution_auto)"
             $This.fra3.lab2 configure -text "$panneau(cmaude,status)"
 
             #--- Calculate 'jd_deb', le julian day corresponding to the beginning
@@ -196,10 +195,11 @@ namespace eval ::cmaude {
                }
             }
             set jd_deb "$jj"
-            set resultb "Night begins at [mc_date2iso8601 $jd_deb] UT\n"
-            console::affiche_erreur "Night for Sun Altitude < $cmconf(haurore)°\n"
+            set resultb "$caption(cmaude,debut_nuit) [mc_date2iso8601 $jd_deb] $caption(cmaude,TU)\n"
+            set cmconf(resultb) $resultb
+            console::affiche_erreur "$caption(cmaude,hauteur_soleil_debut_nuit) < $cmconf(haurore)°\n"
             console::affiche_erreur "$resultb"
-            console::affiche_erreur "or JD = $jd_deb\n"
+            console::affiche_erreur "$caption(cmaude,jour_julien) = $jd_deb\n"
 
             #--- Calculate 'jd_fin', the julian day corresponding to the end
             #--- of the night (sun altitude equals "haurore")
@@ -220,10 +220,11 @@ namespace eval ::cmaude {
             }
             set jd0 "$jd_fin"
             set jd_fin "$jj"
-            set resulte "Night ends at [mc_date2iso8601 $jd_fin] UT\n"
+            set resulte "$caption(cmaude,fin_nuit) [mc_date2iso8601 $jd_fin] $caption(cmaude,TU)\n"
+            set cmconf(resulte) $resulte
             console::affiche_erreur "$resulte"
-            console::affiche_erreur "or JD = $jd_fin\n"
-            console::affiche_erreur "###############################\n"
+            console::affiche_erreur "$caption(cmaude,jour_julien) = $jd_fin\n"
+            console::affiche_erreur "###############################\n\n"
 
             #--- Waiting for the night
             set actuel [mc_date2jd $now]
@@ -240,11 +241,9 @@ namespace eval ::cmaude {
                }
                update
                set actuel [mc_date2jd $now]
-              # set actuel [expr $actuel+0.125]
-               console::affiche_saut "\n"
-               console::affiche_erreur "It's now [string range [mc_date2iso8601 $actuel] 11 20] UT ...\n"
-               console::affiche_erreur "Waiting for the Night at [string range [mc_date2iso8601 $jd_deb] 11 20] UT\n"
-               console::affiche_erreur "COUNTDOWN: ###[string range [mc_date2iso8601 [format "%f" [expr $jd_deb - $actuel]]] 11 18]###\n"
+               console::affiche_erreur "$caption(cmaude,il_est_maintenant) [string range [mc_date2iso8601 $actuel] 11 20] $caption(cmaude,TU)\n"
+               console::affiche_erreur "$caption(cmaude,attendre_nuit_a) [string range [mc_date2iso8601 $jd_deb] 11 20] $caption(cmaude,TU)\n"
+               console::affiche_erreur "$caption(cmaude,decompte) ### [string range [mc_date2iso8601 [format "%f" [expr $jd_deb - $actuel]]] 11 18] ###\n\n"
                #--- Delay of the waiting loop in seconds
                set delayloop "60"
                set flag [expr [expr $delayloop / 86400.0] + [mc_date2jd $now]]
@@ -260,23 +259,22 @@ namespace eval ::cmaude {
                   }
                   update
                   set actuel [mc_date2jd $now]
-                  set panneau(cmaude,status2) "Waiting for the Night..."
+                  set panneau(cmaude,status2) "$caption(cmaude,attendre_nuit)"
                   $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
-                  set panneau(cmaude,status3) "Countdown: [string range [mc_date2iso8601 [format "%f" [expr $jd_deb - $actuel]]] 11 18]"
+                  set panneau(cmaude,status3) "$caption(cmaude,decompte) [string range [mc_date2iso8601 [format "%f" [expr $jd_deb - $actuel]]] 11 18]"
                   $This.fra3.labURL4 configure -text "$panneau(cmaude,status3)"
                   update
                }
             }
             if { $loopexit == "0" } {
-               console::affiche_saut "\n"
-               console::affiche_prompt "Night has come\n"
-               console::affiche_prompt "Beginning of the Acquisition Loop Imminent...\n\n"
+               console::affiche_prompt "$caption(cmaude,nuit_a_commencee)\n"
+               console::affiche_prompt "$caption(cmaude,debut_acquisition)\n\n"
                #--- Writing the observation Log
                set namelog [string range [mc_date2jd $now] 0 6]
                catch {
                   set fileId [open $cmconf(folder)/$namelog.log a]
-                  set textlog "Observation Log for Julian Day [string range [mc_date2jd $now] 0 6] or [string range [mc_date2iso8601 $actuel] 0 9]\n"
-                  append textlog "Night for altitude of Sun < $haurore°\n"
+                  set textlog "$caption(cmaude,observation_log) [string range [mc_date2jd $now] 0 6] $caption(cmaude,ou) [string range [mc_date2iso8601 $actuel] 0 9]\n\n"
+                  append textlog "$caption(cmaude,hauteur_soleil_debut_nuit) < $haurore°\n\n"
                   append textlog $resultb
                   append textlog $resulte
                   puts $fileId $textlog
@@ -287,12 +285,9 @@ namespace eval ::cmaude {
             #--- Night has come, acquisitions beginning (simulation)
             #--- Waiting for the day to end the acquisitions
 
-            ##!!! Correction horloge PC - A modifier !!!
             set actuel [mc_date2jd $now]
-            # set actuel [expr $actuel+0.125]
-            ##!!! Correction horloge PC - A modifier !!!
 
-            set panneau(cmaude,status2) "---"
+            set panneau(cmaude,status2) "$caption(cmaude,status2)"
             $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
 
             while { [mc_date2jd $now] <= $jd_fin } {
@@ -323,41 +318,42 @@ namespace eval ::cmaude {
                   }
                   update
                   set actuel [mc_date2jd $now]
-                  set panneau(cmaude,status2) "Loop of Acquisitions"
+                  set panneau(cmaude,status2) "$caption(cmaude,boucle_acquisition)"
                   $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
-                  set panneau(cmaude,status3) "Next Image [string range [mc_date2iso8601 [format "%f" [expr $flag - $actuel]]] 11 18]"
+                  set panneau(cmaude,status3) "$caption(cmaude,prochaine_image) [string range [mc_date2iso8601 [format "%f" [expr $flag - $actuel]]] 11 18]"
                   $This.fra3.labURL4 configure -text "$panneau(cmaude,status3)"
                   update
                }
             }
             if { $loopexit == "0" } {
-               console::affiche_prompt "Day has come...\n"
-               console::affiche_prompt "Number of Images during the Night: [expr $compteur-1]\n"
-               set textlog "End of observations the [string range [mc_date2iso8601 $actuel] 0 9] at [string range [mc_date2iso8601 $actuel] 11 20]UT\n"
+               console::affiche_prompt "$caption(cmaude,jour_a_commence)\n"
+               console::affiche_prompt "$caption(cmaude,nbre_image_nuit) [expr $compteur-1]\n"
+               set textlog "$caption(cmaude,fin_observation) [string range [mc_date2iso8601 $actuel] 0 9] at [string range [mc_date2iso8601 $actuel] 11 20] $caption(cmaude,TU)\n"
                catch {
                   set fileId [open $cmconf(folder)/$namelog.log a]
-                  append textlog "Number of images during the night: [expr $compteur-1]\n"
+                  append textlog "$caption(cmaude,nbre_image_nuit) [expr $compteur-1]\n"
                   puts $fileId $textlog
                   close $fileId
                }
                set compteur "1"
                set panneau(cmaude,nom) "$cmconf(folder)"
-               console::affiche_prompt "Calculating the Parameters for the Following Night...\n"
+               console::affiche_prompt "$caption(cmaude,calcul_parametres)\n"
             }
             #--- Day has come, the loop re-run beginning with
             #--- the calculation of the parameters for the following day
          #--- End of infinite loop
          }
-         console::affiche_prompt "! Manual End of the Acquisition Loop !\n"
+         console::affiche_erreur "###############################\n"
+         console::affiche_erreur "$caption(cmaude,fin_boucle_acquisition)\n"
          console::affiche_erreur "###############################\n\n"
-         set panneau(cmaude,status2) "No Activity"
+         set panneau(cmaude,status2) "$caption(cmaude,pas_activite)"
          $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
-         set panneau(cmaude,status3) "---"
+         set panneau(cmaude,status3) "$caption(cmaude,status2)"
          $This.fra3.labURL4 configure -text "$panneau(cmaude,status3)"
          set dateend [mc_date2iso8601 now]
          catch {
             set fileId [open $cmconf(folder)/$namelog.log a]
-            puts $fileId "! Manual end of the acquisition loop at $dateend !\n"
+            puts $fileId "\n$caption(cmaude,fin_boucle_acquisition_a) $dateend !\n"
             close $fileId
          }
          $This.fra2.but1 configure -relief raised -state normal
@@ -376,6 +372,7 @@ namespace eval ::cmaude {
    #--- Fonction called by pushing button STOP
       variable This
       global audace
+      global caption
       global panneau
       global loopexit
 
@@ -383,9 +380,7 @@ namespace eval ::cmaude {
          $This.fra2.but2 configure -relief groove -state disabled
          update
          set loopexit "1"
-         console::affiche_saut "\n"
-         console::affiche_erreur "###############################\n"
-         set panneau(cmaude,status) "Auto Script Stopped"
+         set panneau(cmaude,status) "$caption(cmaude,arret_auto_script)"
          $This.fra3.lab2 configure -text "$panneau(cmaude,status)"
          $This.fra2.but2 configure -relief raised -state normal
          update
@@ -403,6 +398,7 @@ namespace eval ::cmaude {
       variable This
       variable cmconf
       global audace
+      global caption
       global panneau
       global compteur
       global namelog
@@ -417,24 +413,23 @@ namespace eval ::cmaude {
       #--- Test of the astronomical twilight and of the presence of the Moon
       #--- and adapt the right exposure time
       #--- Recuperation de la position de l'observateur
-      catch {
-         set cmconf(localite) "$audace(posobs,observateur,gps)"
-      }
+      set cmconf(localite) "$audace(posobs,observateur,gps)"
       set localite "$cmconf(localite)"
       set highsun [lindex [mc_ephem sun [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
       set highmoon [lindex [mc_ephem moon [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
-      if { $highsun > $cmconf(hastwilight) } then {
-        # console::affiche_erreur "Sun Alt. =$highsun°, so above $cmconf(hastwilight)°\n"
+      if { $highsun > $cmconf(hastwilight) } {
+        ### console::affiche_erreur "$caption(cmaude,hauteur_soleil) =$highsun°, so above $cmconf(hastwilight)°\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
       if { $highmoon > $cmconf(hmooncritic) } {
-        # console::affiche_erreur "Moon Alt. =$highmoon° so above $cmconf($hmooncritic)°\n"
+        ### console::affiche_erreur "$caption(cmaude,hauteur_lune) =$highmoon° so above $cmconf($hmooncritic)°\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
 
+      console::affiche_erreur "$caption(cmaude,acquisition_lance)\n"
       ::cmaude::acq $panneau(cmaude,time) $panneau(cmaude,binning)
-     # console::affiche_erreur "Aquisition Running...\n"
       set nameima "[string range [mc_date2jd $now] 0 6]-$compteur$cmconf(extension)"
+      set cmconf(nameima) [ file join $cmconf(folder) [string range [mc_date2jd $now] 0 6]-$compteur ]
       set sidertime [mc_date2lst now $localite]
       #--- Keywords
       buf$audace(bufNo) setkwd [list "OBSERVER" $cmconf(fits,OBSERVER) string "name of observer/observatory" " "]
@@ -442,36 +437,34 @@ namespace eval ::cmaude {
       buf$audace(bufNo) setkwd [list "INSTRUME" $cmconf(fits,INSTRUME) string "type of instrument" " "]
       buf$audace(bufNo) setkwd [list "SIDERAL" $sidertime string "local sideral time" " "]
 
-     # saveima $nameima
-      set textima "Image $nameima done the [string range [mc_date2iso8601 $actuel] 0 9] at [string range [mc_date2iso8601 $actuel] 11 18] UT"
+      set textima "$caption(cmaude,image) $nameima $caption(cmaude,acquise_le) [string range [mc_date2iso8601 $actuel] 0 9] $caption(cmaude,a) [string range [mc_date2iso8601 $actuel] 11 18] $caption(cmaude,TU)"
       console::affiche_erreur "$textima\n"
-      console::affiche_erreur "Paused $panneau(cmaude,time) sec in binning $panneau(cmaude,binning)\n"
+      console::affiche_erreur "$caption(cmaude,posee) $panneau(cmaude,time) $caption(cmaude,seconde) - $caption(cmaude,binning) $panneau(cmaude,binning)\n"
 
       #--- Pre-processing
-      console::affiche_erreur "Pre-processing (offset, dark, window)...\n"
-     # loadima $nameima
-      if { $panneau(cmaude,binning) == "1x1" } then {
-         catch { opt $panneau(cmaude,dark11) $panneau(cmaude,bias11) }
+      console::affiche_erreur "$caption(cmaude,pretraitement)\n"
+      catch { opt $panneau(cmaude,dark) $panneau(cmaude,bias) }
+      if { $panneau(cmaude,binning) == "1x1" } {
          #--- Cut of the image to gain space and avoid the black part around
-         window $cmconf(win11)
-         #--- Add the image "overlay.extension" with orientation info and logo ;-)
-         catch { add $panneau(cmaude,overlay11) 0 }
+        ### window $cmconf(win11)
+      } elseif { $panneau(cmaude,binning) == "2x2" } {
+         #--- Cut of the image to gain space and avoid the black part around
+        ### window $cmconf(win22)
       }
-      if { $panneau(cmaude,binning) == "2x2" } then {
-         catch { opt $panneau(cmaude,dark22) $panneau(cmaude,bias22) }
-         window $cmconf(win22)
-      }
+      #--- Add the image "overlay.extension" with orientation info and logo ;-)
+      catch { add $panneau(cmaude,overlay) 0 }
+      #---
       saveima $nameima
       ::audace::autovisu $audace(visuNo)
       sauve_jpeg "$nameima.jpg"
-      console::affiche_erreur "Image pre-processed and saved\n"
+      console::affiche_erreur "$caption(cmaude,image_sauvee)\n"
       console::affiche_erreur "\n"
-      console::affiche_erreur "Next Image in $panneau(cmaude,rythm) Seconds\n"
+      console::affiche_erreur "$caption(cmaude,prochaine_image_dans) $panneau(cmaude,rythm) $caption(cmaude,secondes)\n"
       console::affiche_erreur "\n"
       set panneau(cmaude,nom) "$cmconf(folder)[string range [mc_date2jd $now] 0 6]-$compteur"
       $This.fra3.lab2 configure -text "$panneau(cmaude,status)"
       #--- Writing the observation Log and html file
-     # source [ file join $audace(rep_plugin) tool cmaude makehtml.tcl ]
+     ### source [ file join $audace(rep_plugin) tool cmaude cmaude_makehtml.tcl ]
       catch {
          set fileId [open $cmconf(folder)/$namelog.log a]
          puts $fileId $textima
@@ -486,13 +479,13 @@ namespace eval ::cmaude {
       variable This
       variable cmconf
       global audace
-      global conf
       global caption
+      global conf
       global panneau
       global numcam
 
-      set numcam [::cam::create audine lpt1 -ccd kaf400]
-      cam$numcam buf 1
+      #--- Petit raccourci
+      set numcam [ ::confVisu::getCamNo $audace(visuNo) ]
 
       #--- Initialisation du fenetrage
       catch {
@@ -506,9 +499,6 @@ namespace eval ::cmaude {
       #--- La commande bin permet de fixer le binning
       set binalors [ string range $panneau(cmaude,binning) 0 0 ]
       cam$numcam bin [list $binalors $binalors]
-      cam$numcam shuttertype audine
-      cam$numcam shutter synchro
-      cam$numcam ampli synchro
 
       #--- Declenchement de l'acquisition
       cam$numcam acq
@@ -527,7 +517,7 @@ namespace eval ::cmaude {
       #--- Visualisation
       ::audace::autovisu $audace(visuNo)
 
-     # wm title $audace(base) "$caption(cmaude,image_acq) $exptime s"
+      wm title $audace(base) "$caption(cmaude,image_acq) $exptime s"
    }
 
    #===============================
@@ -539,12 +529,11 @@ namespace eval ::cmaude {
       variable This
       variable cmconf
       global audace
+      global caption
       global panneau
 
       #--- Recuperation de la position de l'observateur
-      catch {
-         set cmconf(localite) "$audace(posobs,observateur,gps)"
-      }
+      set cmconf(localite) "$audace(posobs,observateur,gps)"
       set localite "$cmconf(localite)"
       #--- Initialisation de l'heure TU ou TL
       set now now
@@ -564,26 +553,48 @@ namespace eval ::cmaude {
       set illufrac [expr 100 * (0.5 + 0.5 * cos ($phaslun / 180. * 3.1415))]
       set sidetime [mc_date2lst $nownow $localite]
 
-      console::affiche_prompt "######## MASCOT ########\n"
-      console::affiche_prompt "######## Ephemeris ########\n"
-      console::affiche_prompt "###### for current date ######\n"
-      console::affiche_prompt "Date UT: [string range [mc_date2iso8601 $nownow] 0 9]\n"
-      console::affiche_prompt "Hour UT: [string range [mc_date2iso8601 $nownow] 11 20]\n"
-      console::affiche_prompt "Julian Day: $nownow\n"
-      console::affiche_prompt "Sideral Time (hms): $sidetime\n"
-      console::affiche_prompt "######## Sun ########\n"
-      console::affiche_prompt "Sun Position:\n"
-      console::affiche_prompt "Altitude: [string range $hautsol 0 5]°\n"
-      console::affiche_prompt "Azimuth: [string range $azimsol 0 5]°\n"
-      console::affiche_prompt "######## Moon ########\n"
-      console::affiche_prompt "Moon Position:\n"
-      console::affiche_prompt "Altitude: [string range $hautmoo 0 5]°\n"
-      console::affiche_prompt "Azimuth: [string range $azimmoo 0 5]°\n"
-      console::affiche_prompt "Elongation from Sun: [string range $elongmoo 0 4]°\n"
-      console::affiche_prompt "Actual Moon Fhase: [string range $phaslun 0 4]°\n"
-      console::affiche_prompt "Illuminated Fraction: ~[string range $illufrac 0 4]%\n"
-      console::affiche_prompt "######################\n\n"
+      console::affiche_prompt "########## MASCOT #########\n"
+      console::affiche_prompt "######## $caption(cmaude,ephemerides) ########\n"
+      console::affiche_prompt "###### $caption(cmaude,date_courante) #####\n"
+      console::affiche_prompt "$caption(cmaude,date) [string range [mc_date2iso8601 $nownow] 0 9]\n"
+      console::affiche_prompt "$caption(cmaude,heure_tu) [string range [mc_date2iso8601 $nownow] 11 20]\n"
+      console::affiche_prompt "$caption(cmaude,jour_julien:) $nownow\n"
+      console::affiche_prompt "$caption(cmaude,temps_sideral) $sidetime\n"
+      console::affiche_prompt "########### $caption(cmaude,soleil) ##########\n"
+      console::affiche_prompt "$caption(cmaude,position_soleil)\n"
+      console::affiche_prompt "$caption(cmaude,hauteur) [string range $hautsol 0 5]°\n"
+      console::affiche_prompt "$caption(cmaude,azimut) [string range $azimsol 0 5]°\n"
+      console::affiche_prompt "########### $caption(cmaude,lune) ##########\n"
+      console::affiche_prompt "$caption(cmaude,position_lune)\n"
+      console::affiche_prompt "$caption(cmaude,hauteur) [string range $hautmoo 0 5]°\n"
+      console::affiche_prompt "$caption(cmaude,azimut) [string range $azimmoo 0 5]°\n"
+      console::affiche_prompt "$caption(cmaude,elongation_lune) [string range $elongmoo 0 4]°\n"
+      console::affiche_prompt "$caption(cmaude,phase_lune) [string range $phaslun 0 4]°\n"
+      console::affiche_prompt "$caption(cmaude,illumine_lune) [string range $illufrac 0 4]%\n"
+      console::affiche_prompt "#########################\n\n"
    }
+
+   #===============================
+   #=== Command of button ... ===
+
+   proc parcourir { option } {
+      global audace panneau
+
+      #--- Parent window
+      set fenetre "$audace(base)"
+      #--- Open the window to select images
+      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- File name
+      if { $option == "1" } {
+        set panneau(cmaude,bias) $filename
+      } elseif { $option == "2" } {
+        set panneau(cmaude,dark) $filename
+      } elseif { $option == "3" } {
+        # set traiteWindow(in) [ file rootname [ file tail $filename ] ]
+        set panneau(cmaude,overlay) $filename
+      }
+   }
+
 }
 
 proc cmaudeBuildIF {This} {
@@ -613,26 +624,50 @@ global color
       #--- General frame
       frame $This.fra2 -borderwidth 1 -relief groove
 
-         #--- Label for the name of bias
-         label  $This.fra2.lab1 -text "$panneau(cmaude,label_bias)" -relief flat
-         pack   $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 1
-         #--- Entry for the name of bias
-         entry  $This.fra2.ent1 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,bias11) -relief groove
-         pack   $This.fra2.ent1 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
+         frame $This.fra2.fra4 -borderwidth 0 -relief flat
 
-         #--- Label for the name of dark
-         label  $This.fra2.lab2 -text "$panneau(cmaude,label_dark)" -relief flat
-         pack   $This.fra2.lab2 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 1
-         #--- Entry for the name of dark
-         entry  $This.fra2.ent2 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,dark11) -relief groove
-         pack   $This.fra2.ent2 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
+            #--- Bouton parcourir
+            button $This.fra2.fra4.explore1 -borderwidth 2 -text $panneau(cmaude,parcourir) \
+               -command { ::cmaude::parcourir 1 }
+            pack   $This.fra2.fra4.explore1 -in $This.fra2.fra4 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
+            #--- Label for the name of bias
+            label  $This.fra2.fra4.lab1 -text "$panneau(cmaude,label_bias)" -relief flat
+            pack   $This.fra2.fra4.lab1 -in $This.fra2.fra4 -anchor center -expand 1 -fill both -padx 4 -pady 1
+            #--- Entry for the name of bias
+            entry  $This.fra2.fra4.ent1 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,bias) -relief groove
+            pack   $This.fra2.fra4.ent1 -in $This.fra2.fra4 -anchor center -expand 1 -fill both -padx 4 -pady 2
 
-         #--- Label for the name of overlay
-         label  $This.fra2.lab2a -text "$panneau(cmaude,label_overlay)" -relief flat
-         pack   $This.fra2.lab2a -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 1
-         #--- Entry for the name of overlay
-         entry  $This.fra2.ent2a -font $audace(font,arial_7_b) -textvariable panneau(cmaude,overlay11) -relief groove
-         pack   $This.fra2.ent2a -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
+         pack $This.fra2.fra4 -side top -fill x
+
+         frame $This.fra2.fra5 -borderwidth 0 -relief flat
+
+            #--- Bouton parcourir
+            button $This.fra2.fra5.explore2 -borderwidth 2 -text $panneau(cmaude,parcourir) \
+               -command { ::cmaude::parcourir 2 }
+            pack   $This.fra2.fra5.explore2 -in $This.fra2.fra5 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
+            #--- Label for the name of dark
+            label  $This.fra2.fra5.lab2 -text "$panneau(cmaude,label_dark)" -relief flat
+            pack   $This.fra2.fra5.lab2 -in $This.fra2.fra5 -anchor center -expand 1 -fill both -padx 4 -pady 1
+            #--- Entry for the name of dark
+            entry  $This.fra2.fra5.ent2 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,dark) -relief groove
+            pack   $This.fra2.fra5.ent2 -in $This.fra2.fra5 -anchor center -expand 1 -fill both -padx 4 -pady 2
+
+         pack $This.fra2.fra5 -side top -fill x
+
+         frame $This.fra2.fra6 -borderwidth 0 -relief flat
+
+            #--- Bouton parcourir
+            button $This.fra2.fra6.explore3 -borderwidth 2 -text $panneau(cmaude,parcourir) \
+               -command { ::cmaude::parcourir 3 }
+            pack   $This.fra2.fra6.explore3 -in $This.fra2.fra6 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
+            #--- Label for the name of overlay
+            label  $This.fra2.fra6.lab2a -text "$panneau(cmaude,label_overlay)" -relief flat
+            pack   $This.fra2.fra6.lab2a -in $This.fra2.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 1
+            #--- Entry for the name of overlay
+            entry  $This.fra2.fra6.ent2a -font $audace(font,arial_7_b) -textvariable panneau(cmaude,overlay) -relief groove
+            pack   $This.fra2.fra6.ent2a -in $This.fra2.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 2
+
+         pack $This.fra2.fra6 -side top -fill x
 
          #--- Label for the name of image
          label  $This.fra2.lab3 -text "$panneau(cmaude,label_nom)" -relief flat
