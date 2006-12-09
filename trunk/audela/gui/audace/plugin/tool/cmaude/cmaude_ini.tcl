@@ -10,7 +10,7 @@ set cmconf(exptime1) 120
 set cmconf(exptime2) 15
 #--- Rythm of the images (second)
 set cmconf(rythm) 10
-#--- Binning factor (1, 2, 3, 4)
+#--- Binning factor (1x1, 2x2)
 set cmconf(binning) 1x1
 #--- Windowing in binning 1x1 - size of image must remain 580x512
 set cmconf(win11) {106 0 685 512}
