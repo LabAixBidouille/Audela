@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.5 2006-12-09 18:55:03 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.6 2006-12-09 22:27:11 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -418,11 +418,11 @@ namespace eval ::cmaude {
       set highsun [lindex [mc_ephem sun [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
       set highmoon [lindex [mc_ephem moon [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
       if { $highsun > $cmconf(hastwilight) } {
-        ### console::affiche_erreur "$caption(cmaude,hauteur_soleil) =$highsun°, so above $cmconf(hastwilight)°\n"
+         console::affiche_erreur "$caption(cmaude,hauteur_soleil) = [string range $highsun 0 5]°$caption(cmaude,au-dessus) $cmconf(hastwilight)°\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
       if { $highmoon > $cmconf(hmooncritic) } {
-        ### console::affiche_erreur "$caption(cmaude,hauteur_lune) =$highmoon° so above $cmconf($hmooncritic)°\n"
+         console::affiche_erreur "$caption(cmaude,hauteur_lune) = [string range $highmoon 0 5]°$caption(cmaude,au-dessus) $cmconf(hmooncritic)°\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
 
