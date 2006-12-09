@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.8 2006-12-09 18:55:19 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.9 2006-12-09 22:26:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -62,6 +62,7 @@ set caption(cmaude,fin_boucle_acquisition_a)       "!Manual end of the acquisiti
 set caption(cmaude,arret_auto_script)              "Auto Script Stopped"
 set caption(cmaude,hauteur_soleil)                 "Sun Altitude"
 set caption(cmaude,hauteur_lune)                   "Moon Altitude"
+set caption(cmaude,au-dessus)                      ", so above"
 set caption(cmaude,acquisition_lance)              "Aquisition Running..."
 set caption(cmaude,image)                          "Image"
 set caption(cmaude,acquise_le)                     "done the"
@@ -139,6 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,arret_auto_script)           "Arrêt automatique du script"
    set caption(cmaude,hauteur_soleil)              "Hauteur du Soleil"
    set caption(cmaude,hauteur_lune)                "Hauteur de la Lune"
+   set caption(cmaude,au-dessus)                   ", au-dessus de"
    set caption(cmaude,acquisition_lance)           "Acquisition en cours..."
    set caption(cmaude,image)                       "Image"
    set caption(cmaude,acquise_le)                  "faite le"
@@ -216,6 +218,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,arret_auto_script)           "# Arrêt automatique du script"
    set caption(cmaude,hauteur_soleil)              "# Hauteur du Soleil"
    set caption(cmaude,hauteur_lune)                "# Hauteur de la Lune"
+   set caption(cmaude,au-dessus)                   "# , au-dessus de"
    set caption(cmaude,acquisition_lance)           "# Acquisition en cours..."
    set caption(cmaude,image)                       "# Image"
    set caption(cmaude,acquise_le)                  "# faite le"
@@ -293,6 +296,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,arret_auto_script)           "# Arrêt automatique du script"
    set caption(cmaude,hauteur_soleil)              "# Hauteur du Soleil"
    set caption(cmaude,hauteur_lune)                "# Hauteur de la Lune"
+   set caption(cmaude,au-dessus)                   "# , au-dessus de"
    set caption(cmaude,acquisition_lance)           "# Acquisition en cours..."
    set caption(cmaude,image)                       "# Image"
    set caption(cmaude,acquise_le)                  "# faite le"
@@ -370,6 +374,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,arret_auto_script)           "# Arrêt automatique du script"
    set caption(cmaude,hauteur_soleil)              "# Hauteur du Soleil"
    set caption(cmaude,hauteur_lune)                "# Hauteur de la Lune"
+   set caption(cmaude,au-dessus)                   "# , au-dessus de"
    set caption(cmaude,acquisition_lance)           "# Acquisition en cours..."
    set caption(cmaude,image)                       "# Image"
    set caption(cmaude,acquise_le)                  "# faite le"
@@ -447,6 +452,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,arret_auto_script)           "# Arrêt automatique du script"
    set caption(cmaude,hauteur_soleil)              "# Hauteur du Soleil"
    set caption(cmaude,hauteur_lune)                "# Hauteur de la Lune"
+   set caption(cmaude,au-dessus)                   "# , au-dessus de"
    set caption(cmaude,acquisition_lance)           "# Acquisition en cours..."
    set caption(cmaude,image)                       "# Image"
    set caption(cmaude,acquise_le)                  "# faite le"
@@ -524,6 +530,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,arret_auto_script)           "Auto Script Stopped"
    set caption(cmaude,hauteur_soleil)              "Sun Altitude"
    set caption(cmaude,hauteur_lune)                "Moon Altitude"
+   set caption(cmaude,au-dessus)                   ", so above"
    set caption(cmaude,acquisition_lance)           "Aquisition Running..."
    set caption(cmaude,image)                       "Image"
    set caption(cmaude,acquise_le)                  "done the"
