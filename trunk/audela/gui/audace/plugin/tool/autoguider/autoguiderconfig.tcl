@@ -1,7 +1,9 @@
 #
-# Fichier : autoguider_config.tcl
-# Description : fenetre de configuration de l'autoguidage
-
+# Fichier : autoguiderconfig.tcl
+# Description : Fenetre de configuration de l'autoguidage
+# Auteur : Michel PUJOL
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.2 2006-12-10 15:24:13 robertdelmas Exp $
+#
 
 ################################################################
 # namespace ::autoguider::config
@@ -19,25 +21,19 @@ namespace eval ::autoguider::config {
 #------------------------------------------------------------
 proc ::autoguider::config::run { visuNo } {
    variable private
-   global caption 
-   
-   set caption(autoguider,inclinaison) "Inclinaison de la camera"
-   set caption(autoguider,angle) "angle (°)"
-   set caption(autoguider,go)    "GO"
-   set caption(autoguider,stop)  "STOP"   
-   set caption(autoguider,running)  "Apprentissage en cours"   
 
    set private($visuNo,learnPendingStop) "2"
-   set private($visuNo,learn,stepLabel) ""
-   set private($visuNo,fullImage)   0
-   set private($visuNo,selectedPoint) ""
+   set private($visuNo,learn,stepLabel)  ""
+   set private($visuNo,fullImage)        0
+   set private($visuNo,selectedPoint)    ""
 
    #--- j'affiche la fenetre de configuration
    ::confGenerique::run  "[confVisu::getBase $visuNo].autoguider.config" "::autoguider::config" $visuNo nomodal
+   wm geometry [confVisu::getBase $visuNo].autoguider.config $::conf(autoguider,configWindowPosition)
 }
 
 #------------------------------------------------------------
-# ::autoguider::config::fermer
+# ::autoguider::config::close
 #   retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
 proc ::autoguider::config::close { visuNo } {
@@ -45,11 +41,15 @@ proc ::autoguider::config::close { visuNo } {
    global caption
 
    if { $private($visuNo,learnPendingStop) != 2 } {
-      tk_messageBox -title [getLabel]" -type ok -message $caption(autoguider,running) -icon warning
+      tk_messageBox -title [getLabel] -type ok -message "$caption(autoguider,running)" -icon warning
       return 0
    }
+   set geometry [ wm geometry [confVisu::getBase $visuNo].autoguider.config ]
+   set deb [ expr 1 + [ string first + $geometry ] ]
+   set fin [ string length $geometry ]
+   set ::conf(autoguider,configWindowPosition) "+[ string range $geometry $deb $fin ]"
+   
 }
-
 
 #------------------------------------------------------------
 # ::autoguider::config::getLabel
@@ -71,129 +71,155 @@ proc ::autoguider::config::showHelp { } {
 
 #------------------------------------------------------------
 # ::autoguider::config::startLearn { }
-#   demarre l'apprentissage
+#   Execute l'apprentissage.  A tout moment l'apprentissage est arrete
+#   si private($visuNo,learnPendingStop) n'est pas nul
+#
 #   return rien
 #------------------------------------------------------------
 proc ::autoguider::config::startLearn { visuNo } {
    variable private
-   variable widget 
+   variable widget
 
-   ::autoguider::stopSuivi $visuNo
+   #--- Petits raccourcis bien pratiques
+   set camNo [::confVisu::getCamNo $visuNo ]
+
+   #--- je verifie la presence la camera
+   if { $camNo == 0 } {
+      ::confCam::run
+      return
+   }
+
+   #--- je verifie la presence du telescope
+   if { [ ::tel::list ] == "" } {
+      ::confTel::run
+      return
+   }
+
+   #--- j'arrete les acquisitions si elles sont en cours
+   ::autoguider::stopAcquisition $visuNo
+
+   #--- je supprime les axes alpha et delta
+   ::autoguider::deleteAlphaDeltaAxis $visuNo
+
+   #--- je supprime la cible
+   ::autoguider::deleteTarget $visuNo
+
+   #--- je remets a zero l'indicateur de fin d'apprentissage
    set private($visuNo,learnPendingStop) 0
-   
-   #--- j'associe le bouton gauche à la selection de l'etoile
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-1> "::autoguider::config::selectStar $visuNo %x %y"
+
+   #--- j'associe le bouton droit a la selection de l'etoile
+   set private($visuNo,previousRightButtonBind) [ bind [::confVisu::getCanvas $visuNo] <ButtonPress-3> ]
+   bind [::confVisu::getCanvas $visuNo] <ButtonPress-3> "::autoguider::config::selectStar $visuNo %x %y"
 
    #--- je configure le bouton STOP
-   $private($visuNo,This).apprenti.go configure -text $::caption(autoguider,stop) \
+   $private($visuNo,This).apprenti.go configure -text "$::caption(autoguider,stop)" \
       -command "::autoguider::config::stopLearn $visuNo"
    update
-   
+
    #--- je configure la camera
-   set camNo [::confVisu::getCamNo $visuNo ]
-   cam$camNo exptime $::autoguider::private($visuNo,pose)
-   cam$camNo bin [list [string range $::autoguider::private($visuNo,binning) 0 0] [string range $::autoguider::private($visuNo,binning) 2 2]]
+   cam$camNo exptime $::conf(autoguider,pose)
+   cam$camNo bin [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
    cam$camNo radecfromtel 0
- 
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je fais une acquisition
       acq $visuNo
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je marque le point depart
       set step "center"
       set private($visuNo,learn,coords,$step) [markPosition $visuNo $step]
-      set widget($visuNo,originCoord) $private($visuNo,learn,coords,$step) 
+      set widget($visuNo,originCoord) $private($visuNo,learn,coords,$step)
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers l'est
       set step "est"
       moveTelescope $visuNo e $step
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je fais une acquisition
       acq $visuNo
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je marque le point
       set private($visuNo,learn,coords,$step) [markPosition $visuNo $step]
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers l'ouest
       moveTelescope $visuNo w "center"
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers l'ouest
       set step "west"
       moveTelescope $visuNo w $step
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je fais une acquisition
       acq $visuNo
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
-      #--- je marque le point 
+   if { $private($visuNo,learnPendingStop) == 0 } {
+      #--- je marque le point
       set private($visuNo,learn,coords,$step) [markPosition $visuNo $step]
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers le point de depart
       moveTelescope $visuNo e "center"
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers le sud
       set step "south"
       moveTelescope $visuNo s $step
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je fais une acquisition
       acq $visuNo
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
-      #--- je marque le point 
+   if { $private($visuNo,learnPendingStop) == 0 } {
+      #--- je marque le point
       set private($visuNo,learn,coords,$step) [markPosition $visuNo $step]
-   }   
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   }
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers le point de depart
       moveTelescope $visuNo n "center"
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers le nord
       set step "north"
       moveTelescope $visuNo n $step
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je fais une acquisition
       acq $visuNo
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {        
-      #--- je marque le point 
+   if { $private($visuNo,learnPendingStop) == 0 } {
+      #--- je marque le point
       set private($visuNo,learn,coords,$step) [markPosition $visuNo $step]
-   }   
-   if { $private($visuNo,learnPendingStop) == 0 } {     
+   }
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je deplace le telescope vers le point de depart
       moveTelescope $visuNo s "center"
-   }   
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   }
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je fais une acquisition
       acq $visuNo
    }
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       #--- je calcule la vitesse de deplacement sur l'axe alpha
       set dx [expr  [lindex $private($visuNo,learn,coords,west) 0] - [lindex $private($visuNo,learn,coords,est) 0]]
       set dy [expr  [lindex $private($visuNo,learn,coords,west) 1] - [lindex $private($visuNo,learn,coords,est) 1]]
       set dAlpha [expr sqrt($dx*$dx + $dy*$dy) ]
-      set penteAlpha [expr $dy / $dx ] 
-      set widget($visuNo,alphaSpeed) [expr $dAlpha / $widget($visuNo,learn,delay) / 2  ]
+      set penteAlpha [expr $dy / $dx ]
+      set widget($visuNo,alphaSpeed) [expr $dAlpha / $widget($visuNo,learn,delay) / 2 ]
       set widget($visuNo,alphaSpeed) [format "%0.1f" $widget($visuNo,alphaSpeed)]
-   
+
       #--- je calcule la vitesse de deplacement sur l'axe delta
       set dx [expr  [lindex $private($visuNo,learn,coords,north) 0] - [lindex $private($visuNo,learn,coords,south) 0]]
       set dy [expr  [lindex $private($visuNo,learn,coords,north) 1] - [lindex $private($visuNo,learn,coords,south) 1]]
       set dDelta [expr sqrt($dx*$dx + $dy*$dy) ]
-      set penteDelta [expr $dy / $dx ] 
-      set widget($visuNo,deltaSpeed) [expr $dDelta / $widget($visuNo,learn,delay) / 2   ]
+      set penteDelta [expr $dy / $dx ]
+      set widget($visuNo,deltaSpeed) [expr $dDelta / $widget($visuNo,learn,delay) / 2 ]
       set widget($visuNo,deltaSpeed) [format "%0.1f" $widget($visuNo,deltaSpeed)]
-   
+
       #--- je calcule l'angle d'inclinaison de la camera
       set angleAlpha [expr 180*atan($penteAlpha)/3.14159265359 ]
       set angleDelta [expr 180*atan($penteDelta)/3.14159265359 ]
@@ -205,35 +231,36 @@ proc ::autoguider::config::startLearn { visuNo } {
       #--- je calcule la moyenne des 2 angles 
       set widget($visuNo,angle) [expr ($angleAlpha + $angleDelta2)/2]
       set widget($visuNo,angle) [format "%0.1f" $widget($visuNo,angle)]
-      ###console::disp "angleAlpha=$angleAlpha angleDelta=$angleDelta angleDelta2=$angleDelta2 angle=$widget($visuNo,angle)\n"  
-      #--- j'affiche les axes alpha et delta
-      ::autoguider::updateAlphaDeltaAxis $visuNo $widget($visuNo,originCoord) $widget($visuNo,angle)
-   }   
-      
+      ###console::disp "angleAlpha=$angleAlpha angleDelta=$angleDelta angleDelta2=$angleDelta2 angle=$widget($visuNo,angle)\n"
+      #--- j'affiche les axes alpha et delta temporaires
+      ::autoguider::createAlphaDeltaAxis $visuNo $widget($visuNo,originCoord) $widget($visuNo,angle)
+   }
+
    #--- j'efface tous les rectangles d'apprentissage
    [::confVisu::getCanvas $visuNo] delete learnrect
    #--- je supprime les variables contenant les coordonnees
    foreach {key value} [array get private $visuNo,learn,rect,* ] {
       unset private($key)
    }
-   
+
    #--- j'efface le dernier message
-   displayLearnMessage $visuNo "" 
-   #--- je supprime le bind du bouton gauche de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-1> 
+   displayLearnMessage $visuNo ""
+
+   #--- je restaure le bind du bouton droit de la souris
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-3>  $private($visuNo,previousRightButtonBind)
+
    #--- j'affiche le bouton GO
-   $private($visuNo,This).apprenti.go configure -text $::caption(autoguider,go) \
-       -command "::autoguider::config::startLearn $visuNo"
-   
+   $private($visuNo,This).apprenti.go configure -text "$::caption(autoguider,go)" \
+      -command "::autoguider::config::startLearn $visuNo"
+
    #-- fin de l'arret de l'apprentissage
    set private($visuNo,learnPendingStop) 2
-
 }
 
 #------------------------------------------------------------
 # ::autoguider::config::stopLearn { }
 #   demande l'arret de l'apprentissage
-# return 
+# return
 #    
 #------------------------------------------------------------
 proc ::autoguider::config::stopLearn { visuNo } {
@@ -244,18 +271,17 @@ proc ::autoguider::config::stopLearn { visuNo } {
    #--- je debloque l'attente sur selectStar au cas ou on serait en attente
    set private($visuNo,selectedPoint) [list 1 1]
    update
-
 }
 
 #------------------------------------------------------------
 # ::autoguider::config::acq { }
 #   fait une acquisition et affiche l'image
-# return 
+# return
 #------------------------------------------------------------
 proc ::autoguider::config::acq { visuNo } {
    variable private
 
-   if { $private($visuNo,learnPendingStop) == 0 } {  
+   if { $private($visuNo,learnPendingStop) == 0 } {
       set camNo [::confVisu::getCamNo $visuNo ]
       cam$camNo acq
       if { [set ::status_cam$camNo] == "exp" } {
@@ -267,21 +293,21 @@ proc ::autoguider::config::acq { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::config::moveTelescope { }
-# return 
+# return
 #------------------------------------------------------------
 proc ::autoguider::config::moveTelescope { visuNo direction label} {
    variable private
    variable widget
-
-   displayLearnMessage $visuNo "move to $label" 
+   global caption
 
    #--- je demarre le deplacement
-   ::telescope::move $direction 
+   ::telescope::move $direction
 
-   #--- j'attend l'expiration du delai par tranche de 1 seconde 
-   set delay [expr int( $widget($visuNo,learn,delay) * 1000)] 
+   #--- j'attend l'expiration du delai par tranche de 1 seconde
+   set delay [expr int( $widget($visuNo,learn,delay) * 1000)]
    while { $delay  > 0 } {
-      if { $private($visuNo,learnPendingStop) == 0 } {  
+      displayLearnMessage $visuNo "$caption(autoguider,aller_vers) $label ($delay)"
+      if { $private($visuNo,learnPendingStop) == 0 } {
          if { $delay > 1000 } {
             after 999
             set delay [expr $delay - 1000 ]
@@ -289,28 +315,28 @@ proc ::autoguider::config::moveTelescope { visuNo direction label} {
             after $delay
             set delay 0
          }
-      } else { 
+      } else {
          #--- j'interromp l'attente s'il y a une demande d'arret
          set delay 0
       }
-      #--- laisse la main pour traiter une eventuelle demande d'arret 
+      #--- laisse la main pour traiter une eventuelle demande d'arret
       update
    }
-   
+
    #--- j'arrete le deplacement
    ::telescope::stop $direction
 }
 
-
 #------------------------------------------------------------
 # ::autoguider::config::markStarPosition { }
 #   marque la position de l'etoile
-# return 
-#    retourne une liste contenant les coordonnes de l'etoile ( referentiel buffer) 
+# return
+#    retourne une liste contenant les coordonnes de l'etoile ( referentiel buffer)
 #------------------------------------------------------------
 proc ::autoguider::config::markPosition { visuNo step} {
    variable private
-   variable widget 
+   variable widget
+   global caption
 
    set bufNo [::confVisu::getBufNo $visuNo ]
    if  { $private($visuNo,fullImage) == 1 } {
@@ -318,7 +344,7 @@ proc ::autoguider::config::markPosition { visuNo step} {
       set starCoords [lrange [buf$bufNo centro $box ] 0 1]
    } else {
       #--- j'affiche le message invitant a cliquer sur l'etoile
-      displayLearnMessage $visuNo "cliquer sur l'étoile $step"               
+      displayLearnMessage $visuNo "$caption(autoguider,clic_etoile) $step"
       #--- j'attends que l'etoile soit selectionnee avec la souris
       vwait ::autoguider::config::private($visuNo,selectedPoint)
       #--- je convertis les coordonnees du referentiel ecran en coordonnes referentiel canvas
@@ -336,7 +362,7 @@ proc ::autoguider::config::markPosition { visuNo step} {
       #--- je recupere les coordonnees de l'etoile la plus brillante dans zone1
       set starCoords [lrange [buf$bufNo centro $zone1 ] 0 1]
    }
-    
+
    #--- je dessine un rectangle autour de l'etoile
    set size 8
    set x  [lindex $starCoords 0]
@@ -345,23 +371,23 @@ proc ::autoguider::config::markPosition { visuNo step} {
    set x2 [expr $x + $size]
    set y1 [expr $y - $size]
    set y2 [expr $y + $size]
-   #--- je convertis les coordonnées "immage" en coordonnees "canvas"
+   #--- je convertis les coordonnees "immage" en coordonnees "canvas"
    set coord1 [::confVisu::picture2Canvas $visuNo [list $x1 $y1]]
    set coord2 [::confVisu::picture2Canvas $visuNo [list $x2 $y2]]
    #--- je dessine le rectangle
    [::confVisu::getCanvas $visuNo] create rect [lindex $coord1 0] [lindex $coord1 1] [lindex $coord2 0] [lindex $coord2 1] -outline red -offset center -tag learnrect
-      
+
    return $starCoords
 }
 
 #------------------------------------------------------------
 # ::autoguider::config::selectStar
 #   enregistre les coordonnees de l'etoile selectionnee avec la souris
-#   dans private(visuNo,selectedPoint) 
-# parameters : 
+#   dans private(visuNo,selectedPoint)
+# parameters :
 #   visuNo : numero de la visu courante
-#   x y    : coordonnees du pointeur de la souris dans la fenetre
-# return 
+#   x y    : coordonnees du pointeur de la souris (coordonnes ecran)
+# return
 #   rien
 #------------------------------------------------------------
 proc ::autoguider::config::selectStar { visuNo x y  } {
@@ -373,32 +399,53 @@ proc ::autoguider::config::selectStar { visuNo x y  } {
 #------------------------------------------------------------
 # ::autoguider::config::displayLearnMessage { }
 #   affiche un message d'invite pour selectionner une etoile
-# return 
+# return
 #   rien
 #------------------------------------------------------------
 proc ::autoguider::config::displayLearnMessage { visuNo message} {
    variable private
-   set private($visuNo,learn,stepLabel) $message 
+
+   set private($visuNo,learn,stepLabel) $message
    update
 }
 
 #------------------------------------------------------------
-# ::autoguider::config::confToWidget 
+# ::autoguider::config::confToWidget
 #   copie les parametres du tableau conf() dans les variables des widgets
 #------------------------------------------------------------
 proc ::autoguider::config::confToWidget { visuNo } {
-   variable widget  
+   variable widget
    global conf
 
-   #--- j'initialise les variables utilisees par le widgets      
-   set widget($visuNo,seuilx)      $conf(autoguider,seuilx)
-   set widget($visuNo,seuily)      $conf(autoguider,seuily)
-   set widget($visuNo,detection)   $conf(autoguider,detection)
-   set widget($visuNo,alphaSpeed)  $conf(autoguider,alphaSpeed)
-   set widget($visuNo,deltaSpeed)  $conf(autoguider,deltaSpeed)
-   set widget($visuNo,learn,delay) $conf(autoguider,learn,delay) 
-   set widget($visuNo,angle)       $conf(autoguider,angle) 
-   set widget($visuNo,originCoord) $conf(autoguider,originCoord)
+   #--- j'initialise les variables utilisees par le widgets
+   set widget($visuNo,seuilx)            $conf(autoguider,seuilx)
+   set widget($visuNo,seuily)            $conf(autoguider,seuily)
+   set widget($visuNo,detection)         $conf(autoguider,detection)
+   set widget($visuNo,alphaSpeed)        $conf(autoguider,alphaSpeed)
+   set widget($visuNo,deltaSpeed)        $conf(autoguider,deltaSpeed)
+   set widget($visuNo,learn,delay)       $conf(autoguider,learn,delay)
+   set widget($visuNo,angle)             $conf(autoguider,angle)
+   set widget($visuNo,originCoord)       $conf(autoguider,originCoord)
+   set widget($visuNo,enableDeclinaison) $conf(autoguider,enableDeclinaison)
+   set widget($visuNo,targetBoxSize)     $conf(autoguider,targetBoxSize)
+}
+
+#------------------------------------------------------------
+# ::autoguider::config::enableDeclinaison
+#    autorise/interdit la saisie des parametres de la declinaison
+#    en fonction de la valeur de widget($visuNo,enableDeclinaison)
+#------------------------------------------------------------
+proc ::autoguider::config::enableDeclinaison { visuNo } {
+   variable widget
+   variable private
+
+   if { $widget($visuNo,enableDeclinaison) == 1 } {
+      $private($visuNo,This).delta.gainprop configure -state normal
+      $private($visuNo,This).delta.seuil configure -state normal
+   } else {
+      $private($visuNo,This).delta.gainprop configure -state disabled
+      $private($visuNo,This).delta.seuil configure -state disabled
+   }
 }
 
 #------------------------------------------------------------
@@ -406,19 +453,21 @@ proc ::autoguider::config::confToWidget { visuNo } {
 #   copie les variable des widgets dans le tableau conf()
 #------------------------------------------------------------
 proc ::autoguider::config::apply { visuNo } {
-   variable widget 
+   variable widget
    global conf
 
-   set conf(autoguider,seuilx)      $widget($visuNo,seuilx)
-   set conf(autoguider,seuily)      $widget($visuNo,seuily)
-   set conf(autoguider,detection)   $widget($visuNo,detection)
-   set conf(autoguider,alphaSpeed)  $widget($visuNo,alphaSpeed)
-   set conf(autoguider,deltaSpeed)  $widget($visuNo,deltaSpeed)
-   set conf(autoguider,learn,delay) $widget($visuNo,learn,delay)
-   set conf(autoguider,angle)       $widget($visuNo,angle)
-   set conf(autoguider,originCoord) $widget($visuNo,originCoord)
+   set conf(autoguider,seuilx)            $widget($visuNo,seuilx)
+   set conf(autoguider,seuily)            $widget($visuNo,seuily)
+   set conf(autoguider,detection)         $widget($visuNo,detection)
+   set conf(autoguider,alphaSpeed)        $widget($visuNo,alphaSpeed)
+   set conf(autoguider,deltaSpeed)        $widget($visuNo,deltaSpeed)
+   set conf(autoguider,learn,delay)       $widget($visuNo,learn,delay)
+   set conf(autoguider,angle)             $widget($visuNo,angle)
+   set conf(autoguider,originCoord)       $widget($visuNo,originCoord)
+   set conf(autoguider,enableDeclinaison) $widget($visuNo,enableDeclinaison)
+   set conf(autoguider,targetBoxSize)     $widget($visuNo,targetBoxSize)
 
-   autoguider::updateAlphaDeltaAxis $visuNo $conf(autoguider,originCoord) $conf(autoguider,angle)
+   autoguider::createAlphaDeltaAxis $visuNo $conf(autoguider,originCoord) $conf(autoguider,angle)
 }
 
 #------------------------------------------------------------
@@ -427,74 +476,136 @@ proc ::autoguider::config::apply { visuNo } {
 #   return rien
 #------------------------------------------------------------
 proc ::autoguider::config::fillConfigPage { frm visuNo } {
-   variable widget 
+   variable widget
    variable private
    global caption
 
    set private($visuNo,This) $frm
    #--- j'initialise les variables des widgets
    confToWidget $visuNo
-   
-   #--- Frame Detection etoile 
-   TitleFrame $frm.detection -borderwidth 2 -relief ridge -text $caption(autoguider,detection)
+
+   #--- Frame detection etoile
+   TitleFrame $frm.detection -borderwidth 2 -relief ridge -text "$caption(autoguider,detection)"
       radiobutton $frm.detection.psf -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(autoguider,detection_psf)" -value "PSF" \
-                  -variable ::autoguider::config::widget($visuNo,detection)
-      pack $frm.detection.psf -in [$frm.detection getframe] -side left -padx 10 -pady 5
-      radiobutton $frm.detection.fente -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(autoguider,detection_fente)" -value "FENTE" \
-                  -variable ::autoguider::config::widget($visuNo,detection)
-      pack $frm.detection.fente -in [$frm.detection getframe] -side left -padx 10 -pady 5      
-   grid $frm.detection  -row 0 -column 0 -columnspan 1 -sticky ew
+         -text "$caption(autoguider,detection_psf)" -value "PSF" \
+         -variable ::autoguider::config::widget($visuNo,detection)
+      ###pack $frm.detection.psf -in [$frm.detection getframe] -side left -padx 10 -pady 5
+      grid $frm.detection.psf -in [$frm.detection getframe]  -row 0 -column 0 -columnspan 1 -padx 10 -pady 4 -sticky ewns
+      radiobutton $frm.detection.fente -highlightthickness 0 -padx 0 -pady 0 -state disable \
+         -text "$caption(autoguider,detection_fente)" -value "FENTE" \
+         -variable ::autoguider::config::widget($visuNo,detection)
+      ###pack $frm.detection.fente -in [$frm.detection getframe] -side left -padx 10 -pady 5
+      grid $frm.detection.fente -in [$frm.detection getframe]  -row 0 -column 1 -columnspan 1 -padx 10 -pady 4 -sticky ewns
+      LabelEntry $frm.detection.targetBox -label "$caption(autoguider,targetBoxSize) (pixels)" \
+         -labeljustify left -labelwidth 20 -width 3 -justify right \
+         -textvariable ::autoguider::config::widget($visuNo,targetBoxSize)
+      grid $frm.detection.targetBox -in [$frm.detection getframe] -row 1 -column 0 -columnspan 2 -padx 0 -pady 4 -sticky ewns
+   grid $frm.detection -row 0 -column 0 -columnspan 1 -sticky ewns
 
-   #--- Frame Apprentissage 
-   TitleFrame $frm.apprenti -borderwidth 2 -relief ridge -text $caption(autoguider,apprenti)
-      Button $frm.apprenti.go  -text $caption(autoguider,go) -width 10 -command "::autoguider::config::startLearn $visuNo"
-      pack $frm.apprenti.go -in [$frm.apprenti getframe] -anchor w -side top -fill none -expand 0
-      LabelEntry $frm.apprenti.delay  -label "delai" \
-            -labeljustify left -labelwidth 10 -width 5 -justify right \
-            -textvariable ::autoguider::config::widget($visuNo,learn,delay)
+   #--- Frame apprentissage
+   TitleFrame $frm.apprenti -borderwidth 2 -relief ridge -text "$caption(autoguider,apprenti)"
+      Button $frm.apprenti.go -text "$caption(autoguider,go)" -width 10 -command "::autoguider::config::startLearn $visuNo"
+      pack $frm.apprenti.go -in [$frm.apprenti getframe] -side top -pady 2 -fill x -expand 1
+      LabelEntry $frm.apprenti.delay -label "$caption(autoguider,delay) (s)" \
+         -labeljustify left -labelwidth 10 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 0 999} \
+         -textvariable ::autoguider::config::widget($visuNo,learn,delay)
       pack $frm.apprenti.delay -in [$frm.apprenti getframe] -anchor w -side top -fill x -expand 1
-      Label $frm.apprenti.step  -justify right \
-                 -textvariable ::autoguider::config::private($visuNo,learn,stepLabel)
+      Label $frm.apprenti.step -justify right -relief groove \
+         -textvariable ::autoguider::config::private($visuNo,learn,stepLabel)
       pack $frm.apprenti.step -in [$frm.apprenti getframe] -anchor w -side top -fill x -expand 1
-      
-   grid $frm.apprenti -row 0 -column 1 -columnspan 1 -sticky ew
+   grid $frm.apprenti -row 0 -column 1 -columnspan 1 -sticky ewns
 
-   #--- Frame ascension droite 
-   TitleFrame $frm.alpha -borderwidth 2 -relief ridge -text "Ascension droite"
-      LabelEntry $frm.alpha.gainprop  -label "$caption(autoguider,vitesse)" \
-            -labeljustify left -labelwidth 14 -width 5 -justify right \
-            -textvariable ::autoguider::config::widget($visuNo,alphaSpeed)
+   #--- Frame ascension droite
+   TitleFrame $frm.alpha -borderwidth 2 -relief ridge -text "$caption(autoguider,AD)"
+      LabelEntry $frm.alpha.gainprop -label "$caption(autoguider,vitesse)" \
+         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -999 999} \
+         -textvariable ::autoguider::config::widget($visuNo,alphaSpeed)
       pack $frm.alpha.gainprop -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
-      LabelEntry $frm.alpha.seuil  -label "$caption(autoguider,seuil)" \
-            -labeljustify left -labelwidth 14 -width 5 -justify right \
-            -textvariable ::autoguider::config::widget($visuNo,seuilx)
+      LabelEntry $frm.alpha.seuil -label "$caption(autoguider,seuil)" \
+         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 0 99} \
+         -textvariable ::autoguider::config::widget($visuNo,seuilx)
       pack $frm.alpha.seuil -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
-   grid $frm.alpha   -row 1 -column 0 -columnspan 1 -sticky ew
+   grid $frm.alpha -row 1 -column 0 -columnspan 1 -rowspan 2 -sticky ewns
 
-   TitleFrame $frm.delta -borderwidth 2 -text "Declinaison"
-      LabelEntry $frm.delta.gainprop  -label "$caption(autoguider,vitesse)" \
-            -labeljustify left -labelwidth 14 -width 5 -justify right \
-            -textvariable ::autoguider::config::widget($visuNo,deltaSpeed)
+   #--- Frame declinaison
+   TitleFrame $frm.delta -borderwidth 2 -text "$caption(autoguider,declinaison)"
+      LabelEntry $frm.delta.gainprop -label "$caption(autoguider,vitesse)" \
+         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -999 999} \
+         -textvariable ::autoguider::config::widget($visuNo,deltaSpeed)
       pack $frm.delta.gainprop -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
-      LabelEntry $frm.delta.seuil  -label "$caption(autoguider,seuil)" \
-            -labeljustify left -labelwidth 14 -width 5 -justify right \
-            -textvariable ::autoguider::config::widget($visuNo,seuily)
+      LabelEntry $frm.delta.seuil -label "$caption(autoguider,seuil)" \
+         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 0 99} \
+         -textvariable ::autoguider::config::widget($visuNo,seuily)
       pack $frm.delta.seuil -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
-   grid $frm.delta  -row 1 -column 1 -columnspan 1 -sticky ew
+      checkbutton $frm.delta.enabledec -text "$caption(autoguider,declinaison)" \
+         -variable ::autoguider::config::widget($visuNo,enableDeclinaison) \
+         -command "::autoguider::config::enableDeclinaison $visuNo"
+      pack $frm.delta.enabledec -in [$frm.delta getframe] -anchor w -pady 2 -side top -fill x -expand 0
+   grid $frm.delta -row 1 -column 1 -columnspan 1 -rowspan 3 -sticky ewns
 
-   TitleFrame $frm.orientation -borderwidth 2 -text $caption(autoguider,inclinaison)
-      LabelEntry $frm.orientation.angle  -label "$caption(autoguider,angle)" \
-            -labeljustify left -labelwidth 14 -width 5 -justify right \
-            -textvariable ::autoguider::config::widget($visuNo,angle)
+   #--- Frame inclinaison
+   TitleFrame $frm.orientation -borderwidth 2 -text "$caption(autoguider,inclinaison)"
+      LabelEntry $frm.orientation.angle -label "$caption(autoguider,angle)" \
+         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -360 360} \
+         -textvariable ::autoguider::config::widget($visuNo,angle)
       pack $frm.orientation.angle -in [$frm.orientation getframe] -anchor w -side top -fill x -expand 0
-   grid $frm.orientation -row 2 -column 0 -columnspan 2 -sticky ew
+   grid $frm.orientation -row 3 -column 0 -columnspan 1 -sticky ew
 
    grid columnconfigure  $frm 0 -weight 1
    grid columnconfigure  $frm 1 -weight 1
 
    pack $frm -fill x -expand 1
-
-      
 }
+
+proc ::autoguider::config::validateNumber { win event X oldX  min max} {
+   global audace
+   # Make sure min<=max
+   if {$min > $max} {
+      set tmp $min; set min $max; set max $tmp
+   }
+   # Allow valid integers, empty strings, sign without number
+   # Reject Octal numbers, but allow a single "0"
+   # Which signes are allowed ?
+   if {($min <= 0) && ($max >= 0)} {   ;# positive & negative sign
+      set pattern {^[+-]?(()|0|([1-9\.][0-9\.]*))$}
+   } elseif {$max < 0} {               ;# negative sign
+      set pattern {^[-]?(()|0|([1-9\.][0-9\.]*))$}
+   } else {                            ;# positive sign
+      set pattern {^[+]?(()|0|([1-9\.][0-9\.]*))$}
+   }
+   # Weak integer checking: allow empty string, empty sign, reject octals
+   set weakCheck [regexp $pattern $X]
+   # if weak check fails, continue with old value
+   if {! $weakCheck} {set X $oldX}
+   # Strong integer checking with range
+   set strongCheck [expr {[string is double  $X] && ($X >= $min) && ($X <= $max)}]
+   
+   switch $event {
+      key {
+         if { $strongCheck == 0 } {
+            $win configure -bg $audace(color,entryTextColor) -fg $audace(color,entryBackColor)
+         } else {
+            $win configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor)
+         }
+         return $weakCheck
+      }
+      focusout {
+         if { $strongCheck == 0} {
+            $win configure -bg $audace(color,entryTextColor) -fg $audace(color,entryBackColor)
+         } else {
+            $win configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor)
+         }
+         return $strongCheck
+      }
+      default {
+          return 1
+      }
+   }
+}
+
