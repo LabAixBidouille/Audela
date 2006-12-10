@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.6 2006-12-09 22:27:11 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.7 2006-12-10 11:52:43 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -20,8 +20,6 @@ namespace eval ::cmaude {
    #===   Definition of automatic functions to build the panel   ===
    #================================================================
 
-   variable This
-   variable cmconf
    global audace
 
    #--- Chargement des captions
@@ -34,10 +32,7 @@ namespace eval ::cmaude {
    proc createPanel { this } {
       variable This
       variable cmconf
-      global conf
-      global audace
-      global panneau
-      global caption
+      global audace caption conf panneau
 
       #--- Initialisation de l'heure TU ou TL
       set now now
@@ -117,12 +112,7 @@ namespace eval ::cmaude {
    #--- Function called by pushing button GO
       variable This
       variable cmconf
-      global audace
-      global caption
-      global panneau
-      global loopexit
-      global compteur
-      global namelog
+      global audace caption compteur loopexit namelog panneau
 
       if { [ ::cam::list ] != "" } {
          $This.fra2.but1 configure -relief groove -state disabled
@@ -371,10 +361,7 @@ namespace eval ::cmaude {
    proc cmdStop { } {
    #--- Fonction called by pushing button STOP
       variable This
-      global audace
-      global caption
-      global panneau
-      global loopexit
+      global audace caption loopexit panneau
 
       if { [ ::cam::list ] != "" } {
          $This.fra2.but2 configure -relief groove -state disabled
@@ -397,11 +384,7 @@ namespace eval ::cmaude {
    #--- Fonction of acquisition
       variable This
       variable cmconf
-      global audace
-      global caption
-      global panneau
-      global compteur
-      global namelog
+      global audace caption compteur namelog panneau
 
       #--- Initialisation de l'heure TU ou TL
       set now now
@@ -418,11 +401,13 @@ namespace eval ::cmaude {
       set highsun [lindex [mc_ephem sun [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
       set highmoon [lindex [mc_ephem moon [list [mc_date2tt $actuel]] {altitude} -topo $localite] 0]
       if { $highsun > $cmconf(hastwilight) } {
-         console::affiche_erreur "$caption(cmaude,hauteur_soleil) = [string range $highsun 0 5]°$caption(cmaude,au-dessus) $cmconf(hastwilight)°\n"
+         console::affiche_erreur "$caption(cmaude,hauteur_soleil) = [string range $highsun 0 4]° $caption(cmaude,au-dessus) $cmconf(hastwilight)°\n"
+         console::affiche_erreur "$caption(cmaude,hauteur_limite_soleil)\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
       if { $highmoon > $cmconf(hmooncritic) } {
-         console::affiche_erreur "$caption(cmaude,hauteur_lune) = [string range $highmoon 0 5]°$caption(cmaude,au-dessus) $cmconf(hmooncritic)°\n"
+         console::affiche_erreur "$caption(cmaude,hauteur_lune) = [string range $highmoon 0 4]° $caption(cmaude,au-dessus) $cmconf(hmooncritic)°\n"
+         console::affiche_erreur "$caption(cmaude,hauteur_critique_lune)\n"
          set panneau(cmaude,time) "$cmconf(exptime2)"
       }
 
@@ -446,10 +431,10 @@ namespace eval ::cmaude {
       catch { opt $panneau(cmaude,dark) $panneau(cmaude,bias) }
       if { $panneau(cmaude,binning) == "1x1" } {
          #--- Cut of the image to gain space and avoid the black part around
-        ### window $cmconf(win11)
+         buf$audace(bufNo) window $cmconf(win11)
       } elseif { $panneau(cmaude,binning) == "2x2" } {
          #--- Cut of the image to gain space and avoid the black part around
-        ### window $cmconf(win22)
+         buf$audace(bufNo) window $cmconf(win22)
       }
       #--- Add the image "overlay.extension" with orientation info and logo ;-)
       catch { add $panneau(cmaude,overlay) 0 }
@@ -477,12 +462,7 @@ namespace eval ::cmaude {
 
    proc acq { exptime binning } {
       variable This
-      variable cmconf
-      global audace
-      global caption
-      global conf
-      global panneau
-      global numcam
+      global audace caption numcam panneau
 
       #--- Petit raccourci
       set numcam [ ::confVisu::getCamNo $audace(visuNo) ]
@@ -526,11 +506,8 @@ namespace eval ::cmaude {
    proc cmdEphe { } {
    #--- Fonction called by pushing button Ephemeris
    #--- Print on console some ephemeris about Sun and Moon for the current date
-      variable This
       variable cmconf
-      global audace
-      global caption
-      global panneau
+      global audace caption
 
       #--- Recuperation de la position de l'observateur
       set cmconf(localite) "$audace(posobs,observateur,gps)"
@@ -601,9 +578,7 @@ proc cmaudeBuildIF {This} {
 #======================
 #=== Panel graphism ===
 #======================
-global audace
-global panneau
-global color
+global audace color panneau
 
    #--- Frame of panel
    frame $This -borderwidth 2 -relief groove
