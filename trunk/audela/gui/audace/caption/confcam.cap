@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.24 2006-12-04 13:22:50 audelateam Exp $
+# Mise a jour $Id: confcam.cap,v 1.25 2006-12-12 22:24:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -892,7 +892,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
-   set caption(confcam,dslr)                    "Digital Camera"
+   set caption(confcam,dslr)                    "Digital Câmara"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
    set caption(confcam,cemes)                   "CEMES"
@@ -984,18 +984,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,coef_th7852a)            "Coeficiente"
 
-   set caption(confcam,dsc)                     "Câmara Digital"
-   set caption(confcam,dsc_name)                "Câmara Digital"
-   set caption(confcam,dsc_liaison)             "Ligação"
-   set caption(confcam,dsc_photopc)             "PhotoPC"
-   set caption(confcam,dsc_gphoto2)             "GPhoto2"
-   set caption(confcam,dsc_longue_pose)         "Longa Exposição"
-   set caption(confcam,dsc_quickremote)         "QuickRemote"
-   set caption(confcam,dsc_externe)             "Manual"
-   set caption(confcam,dsc_longueposebit)       "Controlo do Número do Bit"
-   set caption(confcam,dsc_longueposestart)     "Controlo do Início da Exposição"
-   set caption(confcam,dsc_detect_service)      "Parar Automaticamente a Detecção de Câmaras Digitais"
-   set caption(confcam,dsc_telecharger)         "Download da Imagem"
+   set caption(confcam,dslr_name)               "Câmara Digital"
+   set caption(confcam,dslr_liaison)            "Ligação"
+   set caption(confcam,dslr_photopc)            "PhotoPC"
+   set caption(confcam,dslr_gphoto2)            "GPhoto2"
+   set caption(confcam,dslr_longuepose)         "Longa Exposição"
+   set caption(confcam,dslr_quickremote)        "QuickRemote"
+   set caption(confcam,dslr_externe)            "Manual"
+   set caption(confcam,dslr_longueposebit)      "Controlo do Número do Bit"
+   set caption(confcam,dslr_longueposestart)    "Controlo do Início da Exposição"
+   set caption(confcam,dslr_detect_service)     "Parar Automaticamente a Detecção de Câmaras Digitais"
+   set caption(confcam,dslr_telecharger)        "Download da Imagem"
    set caption(confcam,apn_port)                "Porta de Controlo da Câmara Digital"
    set caption(confcam,apn_baud)                "Velocidade da Porta Série (bauds)"
 
