@@ -100,7 +100,7 @@ class CVisu : public CDevice {
    void SetPaletteDir(char *dir);
    void SetMirrorX( int val);
    void SetMirrorY( int val);
-   void CVisu::SetMode(int mode);
+   void SetMode(int mode);
    void SetThickness(int val);
    int UpdateDisplay();
 };
