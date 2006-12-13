@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.9 2006-11-25 21:00:33 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.10 2006-12-13 17:39:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -231,7 +231,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,port)                        "Port"
    set caption(bermasaude,configurer)                  "Opsætning"
-   set caption(bermasaude,controle)                    "# Contrôle"
+   set caption(bermasaude,controle)                    "Kontrol"
    set caption(bermasaude,bermasaude_combinaison)      "Valgt combination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMG"
