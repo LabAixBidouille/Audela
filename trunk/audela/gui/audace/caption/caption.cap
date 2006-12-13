@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.44 2006-12-04 13:57:46 audelateam Exp $
+# Mise a jour $Id: caption.cap,v 1.45 2006-12-13 22:43:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -251,7 +251,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Conexion a través del cliente"
    set caption(audace,reseau_reponse_vers)            "Responder a"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Acquisicion de"
+   set caption(audace,image_acquisition)              "Aud'ACE - Adquisicion de"
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HC"
 
