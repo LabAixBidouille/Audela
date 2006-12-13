@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.15 2006-11-25 20:58:04 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.16 2006-12-13 22:43:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -497,7 +497,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,fin_simu)               "Parar la simulación .\n"
    set caption(acqfc,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqfc,buttonShiftConfig)      "Desplazam."
-   set caption(acqfc,acquisition)            "Aud'ACE - Acquisicion de"
+   set caption(acqfc,acquisition)            "Aud'ACE - Adquisición de"
 
    set caption(acqfc,acquisition_fenetree)   "Adquisición con subzona"
    set caption(acqfc,acq_fen_msg)            "Seleccione la zona utilizando el ratón"
