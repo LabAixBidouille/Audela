@@ -358,7 +358,10 @@ gp_widget_set_value (CameraWidget *widget, const void *value)
                 	free (widget->value_string);
         	} else
         		widget->changed = 1;
-        	widget->value_string = strdup ((char*)value);
+        	//widget->value_string = strdup ((char*)value);
+            widget->value_string  = malloc(strlen(value)+1);
+         strcpy(widget->value_string , value);
+
         	return (GP_OK);
         case GP_WIDGET_RANGE:
             	if (widget->value_float != *((float*)value)) {

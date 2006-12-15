@@ -58,7 +58,7 @@ void debugstdout_func (GPLogLevel level, const char *domain, const char *format,
  *		p->context = malloc()
  *		p->abilities_list = malloc()
  */
-int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir)
+int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir, int debug)
 {
 	int count;
    GPhotoSession *p;   
@@ -81,7 +81,9 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir)
       
 #endif
    // activation/desactivation des traces de deboggage de libgphoto2
-   p->debug_func_id = -1;
+   libgphoto_setDebugLog(p, debug);
+
+   // raz des messages d'erreur
    strcpy(p->lastErrorMesssage,"");
 
    // Create a context. Report progress only if users will see it.
@@ -94,14 +96,15 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir)
    // charge la liste dll des APN presentes( PTP, canon, ...)
    gp_abilities_list_new (&p->abilities_list);
    gp_abilities_list_load (p->abilities_list, p->context);
+   gp_log (GP_LOG_DEBUG, "libgphoto_openSession", "Search camera library in '%s' ...", gphotoWinDllDir);
    count = gp_abilities_list_count(p->abilities_list);
-   printf("Nombre de modele de camera supportes = %d \n", count);
+   gp_log (GP_LOG_DEBUG, "libgphoto_openSession", "Nombre de modele de camera supportes = %d \n", count);
    
    // charge les dll des types de port (serial et usb)
    CR (gp_port_info_list_new (&p->portList));
    CR (gp_port_info_list_load (p->portList));
    count = gp_port_info_list_count(p->portList);
-   printf("Nombre de type de port supporte = %d \n", count);
+   gp_log (GP_LOG_DEBUG, "libgphoto_openSession", "Nombre de type de port supportes = %d \n", count);
    
    CR (gp_list_new (&p->previousFileList)); 
 
@@ -126,16 +129,15 @@ int libgphoto_closeSession (GPhotoSession *gphotoSession)
          gp_context_unref (gphotoSession->context);      
       if (gphotoSession->previousFileList != NULL );
          gp_list_free (gphotoSession->previousFileList);
-      
+
+      // je desactive les traces
+      libgphoto_setDebugLog(gphotoSession, 0);
       //memset (gphotoSession, 0, sizeof (GPhotoSession));
       free(gphotoSession);
       gphotoSession = NULL;
+
    }
 
-   if ( logFileHandle != NULL) { 
-      fclose(logFileHandle);
-      logFileHandle = NULL;
-   }
    return LIBGPHOTO_OK;
 }
 
@@ -156,7 +158,7 @@ int libgphoto_detectCamera(GPhotoSession *gphotoSession, char *cameraModel, char
     CR (gp_list_new (&cameraList)); 
     CR (gp_abilities_list_detect(gphotoSession->abilities_list, gphotoSession->portList, cameraList, gphotoSession->context));
     count = gp_list_count (cameraList);
-    printf("Detect : camera count = %d \n", count);
+    gp_log (GP_LOG_DEBUG, "libgphoto_detectCamera", "Detect : camera count = %d \n", count);
 
     if( count > 0 ) {
         for (i=0; i <count ; i++ ) {
@@ -747,11 +749,13 @@ void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level) {
      	logFileHandle=fopen(logFileName, "w");
       gphotoSession->debug_func_id = gp_log_add_func (GP_LOG_ALL, debug_func, NULL);
    } else {
+      gp_log_remove_func(gphotoSession->debug_func_id) ;
+      gphotoSession->debug_func_id = -1;
+
       if ( logFileHandle != NULL) {
      	   fclose(logFileHandle);
          logFileHandle = NULL;
       }
-      gphotoSession->debug_func_id = -1;
    }
 }
 

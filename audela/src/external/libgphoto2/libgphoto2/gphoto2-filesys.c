@@ -402,68 +402,75 @@ delete_all_folders (CameraFilesystem *fs, const char *folder,
 static int
 append_folder (CameraFilesystem *fs, const char *folder, GPContext *context)
 {
-        CameraFilesystemFolder *new;
-        int x;
-        char *buf = NULL;
+   CameraFilesystemFolder *new;
+   int x;
+   char *buf = NULL;
+   
+   gp_log (GP_LOG_DEBUG, "gphoto2-filesystem",
+      "Internally appending folder %s...", folder);
+   
+   CHECK_NULL (fs);
+   CHECK_NULL (folder);	
+   CC (context);
+   CA (folder, context);
+   
+   /* Make sure the directory doesn't exist */
+   for (x = 0; x < fs->count; x++) {
+      if (!strcmp (fs->folder[x].name, folder))
+         break;
+   }
+   if (x < fs->count) {
+      gp_context_error (context, _("Could not append folder '%s' "
+         "as this folder already exists."), folder);
+      return (GP_ERROR_DIRECTORY_EXISTS);
+   }
+   
+   /* Make sure the parent exist. If not, create it. */
+   //buf = strdup (folder);
+   buf = malloc(strlen(folder)+1);
+   strcpy(buf, folder);
 
-	gp_log (GP_LOG_DEBUG, "gphoto2-filesystem",
-		"Internally appending folder %s...", folder);
-
-	CHECK_NULL (fs);
-	CHECK_NULL (folder);	
-	CC (context);
-	CA (folder, context);
-
-        /* Make sure the directory doesn't exist */
-	for (x = 0; x < fs->count; x++)
-		if (!strcmp (fs->folder[x].name, folder))
-			break;
-	if (x < fs->count) {
-		gp_context_error (context, _("Could not append folder '%s' "
-			"as this folder already exists."), folder);
-                return (GP_ERROR_DIRECTORY_EXISTS);
-        }
-
-        /* Make sure the parent exist. If not, create it. */
-	buf = strdup (folder);
-	CHECK_NULL (buf);
-	/* Do not forget to free buf before returning in the normal case.
-	 * In case of error abortions, it probably will not matter much, though.
-	 */
-        for (x = strlen (buf) - 1; x >= 0; x--)
-                if (buf[x] == '/')
-                        break;
-        if (x > 0) {
-                buf[x] = '\0';
-		for (x = 0; x < fs->count; x++)
-			if (!strcmp (fs->folder[x].name, buf))
-				break;
-		if (x == fs->count)
-			CR (append_folder (fs, buf, context))
-        }
-
-        /* Allocate the folder pointer and the actual folder */
-        if (fs->count)
-                CHECK_MEM (new = realloc (fs->folder,
-                        sizeof (CameraFilesystemFolder) * (fs->count + 1)))
-        else
-                CHECK_MEM (new = malloc (sizeof (CameraFilesystemFolder)));
-        fs->folder = new;
-        fs->count++;
-
-	/* Initialize the folder (and remove trailing slashes if necessary). */
-	CBO(sizeof(fs->folder[fs->count - 1].name), strlen(folder),
-	    "append_folder(): folder >= sizeof(CameraFilesystemFolder.name)");
-	strcpy (fs->folder[fs->count - 1].name, folder);
-        if ((strlen (folder) > 1) &&
-            (fs->folder[fs->count - 1].name[strlen (folder) - 1] == '/'))
-                fs->folder[fs->count - 1].name[strlen (folder) - 1] = '\0';
-        fs->folder[fs->count - 1].count = 0;
-        fs->folder[fs->count - 1].files_dirty = 1;
-        fs->folder[fs->count - 1].folders_dirty = 1;
-
-	free(buf);
-        return (GP_OK);
+   CHECK_NULL (buf);
+   /* Do not forget to free buf before returning in the normal case.
+   * In case of error abortions, it probably will not matter much, though.
+   */
+   for (x = strlen (buf) - 1; x >= 0; x--) {
+      if (buf[x] == '/')
+         break;
+   }
+   if (x > 0) {
+      buf[x] = '\0';
+      for (x = 0; x < fs->count; x++)
+         if (!strcmp (fs->folder[x].name, buf))
+            break;
+         if (x == fs->count)
+            CR (append_folder (fs, buf, context))
+   }
+   
+   /* Allocate the folder pointer and the actual folder */
+   if (fs->count)
+      CHECK_MEM (new = realloc (fs->folder,
+      sizeof (CameraFilesystemFolder) * (fs->count + 1)))
+      else
+      CHECK_MEM (new = malloc (sizeof (CameraFilesystemFolder)));
+   fs->folder = new;
+   fs->count++;
+   
+   /* Initialize the folder (and remove trailing slashes if necessary). */
+   CBO(sizeof(fs->folder[fs->count - 1].name), strlen(folder),
+      "append_folder(): folder >= sizeof(CameraFilesystemFolder.name)");
+   strcpy (fs->folder[fs->count - 1].name, folder);
+   if ((strlen (folder) > 1) &&
+      (fs->folder[fs->count - 1].name[strlen (folder) - 1] == '/'))
+      fs->folder[fs->count - 1].name[strlen (folder) - 1] = '\0';
+   fs->folder[fs->count - 1].count = 0;
+   fs->folder[fs->count - 1].files_dirty = 1;
+   fs->folder[fs->count - 1].folders_dirty = 1;
+   
+   if (buf!= NULL) {
+      free(buf);
+   }
+   return (GP_OK);
 }
 
 static int
