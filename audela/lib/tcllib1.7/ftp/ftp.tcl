@@ -2517,10 +2517,14 @@ proc ::ftp::CopyNext {s bytes {error {}}} {
     } elseif { ([eof $ftp(SourceCI)] || ($blocksize <= 0)) } {
 	# Protect the destination channel from destruction if it came
 	# from the caller. Closing it is not our responsibility in that case.
-
+# --- debut modif Alain KLOTZ
+#	if {![info exists ftp(get:channel)]} {
+#	    close $ftp(DestCI)
+#	}
 	if {![info exists ftp(get:channel)]} {
-	    close $ftp(DestCI)
+	    catch {close $ftp(DestCI)}
 	}
+# --- fin modif Alain KLOTZ
         close $ftp(SourceCI)
         unset ftp(state.data)
         if { $VERBOSE } {
