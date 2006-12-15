@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.5 2006-07-28 10:47:43 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.6 2006-12-15 23:26:59 michelpujol Exp $
 #
 
 package provide carteducielv3 1.0
@@ -20,7 +20,7 @@ package provide carteducielv3 1.0
 #     confToWidget      : copie le tableau conf() dans les variables des widgets
 #     widgetToConf      : copie les variables des widgets dans le tableau conf()
 #     configureDriver   : configure le driver
-#     stopDriver	      : arrete le driver
+#     stopDriver              : arrete le driver
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
@@ -101,14 +101,13 @@ namespace eval carteducielv3 {
 
       #--- je fixe le nom du fichier executable en fonction de l'OS
       if { $::tcl_platform(os) == "Linux"  } {
-         if { ! [ info exists conf(carteducielv3,exec) ] }       { set conf(carteducielv3,exec)          "cdc_clx.exe" }
+         if { ! [ info exists conf(carteducielv3,binaryname) ] }       { set conf(carteducielv3,binaryname)       "cdc_vcx" }
       } else {
-         if { ! [ info exists conf(carteducielv3,exec) ] }       { set conf(carteducielv3,exec)          "cdc_vcl.exe" }
+         if { ! [ info exists conf(carteducielv3,binaryname) ] }       { set conf(carteducielv3,binaryname)       "cdc.exe" }
       }
 
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
       if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00ss" }
-      if { ! [ info exists conf(carteducielv3,dirname) ] }       { set conf(carteducielv3,dirname)       "" }
       if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    " " }
       if { ! [ info exists conf(carteducielv3,localserver) ] }   { set conf(carteducielv3,localserver)   "1" }
       if { ! [ info exists conf(carteducielv3,host) ] }          { set conf(carteducielv3,host)          "127.0.0.1" }
@@ -126,25 +125,25 @@ namespace eval carteducielv3 {
    proc Recherche_Fichier { } {
       variable widget
 
-      if { ( $widget(dirname) != "" ) && ( $widget(fichier_recherche) != "" ) } {
+      if { ( $widget(binarypath) != "" ) && ( $widget(binaryname) != "" ) } {
          #--- Fichier a rechercher
-         set fichier_recherche $widget(fichier_recherche)
+         set fichier_recherche $widget(binaryname)
          #--- Sur les dossiers
-         set repertoire $::carteducielv3::widget(dirname)
+         set repertoire $::carteducielv3::widget(binarypath)
 
          #--- Gestion du bouton de recherche
          $widget(frm).recherche configure -relief groove -state disabled
          #--- La variable widget(binarypath) existe deja
          set repertoire_1 [ string trimright $widget(binarypath) "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
-         set repertoire_2 [ string trimleft $repertoire_2 "{" ]
-         set repertoire_2 [ string trimright $repertoire_2 "}" ]
+         set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
+         set repertoire_2 [ string trimright $repertoire_2 "\}" ]
          if { $widget(binarypath) != $repertoire_2 || "$widget(binarypath)" == "" } {
             #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
             set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
             set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
-            set repertoire [ string trimleft $repertoire "{" ]
-            set repertoire [ string trimright $repertoire "}" ]
+            set repertoire [ string trimleft $repertoire "\{" ]
+            set repertoire [ string trimright $repertoire "\}" ]
             if { $repertoire == "" } {
                set repertoire " "
             }
@@ -171,8 +170,7 @@ namespace eval carteducielv3 {
 
       set widget(fixedfovstate)     "$conf(carteducielv3,fixedfovstate)"
       set widget(fixedfovvalue)     "$conf(carteducielv3,fixedfovvalue)"
-      set widget(fichier_recherche) "$conf(carteducielv3,exec)"
-      set widget(dirname)           "$conf(carteducielv3,dirname)"
+      set widget(binaryname)        "$conf(carteducielv3,binaryname)"
       set widget(binarypath)        "$conf(carteducielv3,binarypath)"
       set widget(localserver)       "$conf(carteducielv3,localserver)"
       set widget(cdchost)           "$conf(carteducielv3,host)"
@@ -192,8 +190,7 @@ namespace eval carteducielv3 {
 
       set conf(carteducielv3,fixedfovstate) "$widget(fixedfovstate)"
       set conf(carteducielv3,fixedfovvalue) "$widget(fixedfovvalue)"
-      set conf(carteducielv3,exec)          "$widget(fichier_recherche)"
-      set conf(carteducielv3,dirname)       "$widget(dirname)"
+      set conf(carteducielv3,binaryname)    "$widget(binaryname)"
       set conf(carteducielv3,binarypath)    "$widget(binarypath)"
       set conf(carteducielv3,localserver)   "$widget(localserver)"
       set conf(carteducielv3,host)          "$widget(cdchost)"
@@ -252,7 +249,7 @@ namespace eval carteducielv3 {
       label $frm.frame2.labFichier -text "$caption(carteducielv3,fichier)"
       pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
-      entry $frm.frame2.nomFichier -textvariable ::carteducielv3::widget(fichier_recherche) -width 12 -justify center
+      entry $frm.frame2.nomFichier -textvariable ::carteducielv3::widget(binaryname) -width 12 -justify center
       pack $frm.frame2.nomFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame2.labA_partir_de -text "$caption(carteducielv3,a_partir_de)"
@@ -260,12 +257,12 @@ namespace eval carteducielv3 {
 
       button $frm.frame2.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
          -command {
-            set ::carteducielv3::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv3,dossier)" \
-            -initialdir .. -parent $audace(base).confCat ]
+            set ::carteducielv3::widget(binarypath) [ tk_chooseDirectory -title "$caption(carteducielv3,dossier)" \
+            -initialdir ".." -parent $audace(base).confCat ]
          }
       pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
 
-      entry $frm.frame2.nomDossier -textvariable ::carteducielv3::widget(dirname) -width 15
+      entry $frm.frame2.nomDossier -textvariable $::carteducielv3::widget(binarypath) -width 15
       pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
 
       button $frm.recherche -text "$caption(carteducielv3,rechercher)" -relief raised -state normal \
@@ -627,6 +624,7 @@ namespace eval carteducielv3 {
       } else {
          #j'extrait les coordonnées du detail de la ligne2
          set usualName ""
+         set bsc ""
          set ba ""
          set fl ""
          set const ""
@@ -645,18 +643,15 @@ namespace eval carteducielv3 {
          set messier ""
          set planete ""
 
-         set index [string first ";" $detail]
-         if { $index >= 0 } {
-            set index1 [expr $index +1]
-            #je cherche le point virgule suivant
-            set index2 [string first ";" $detail $index1]
-            if { $index2 >= 0 } {
-               set index2 [expr $index2 - 1 ]
-               set usualName [string trim [string range $detail $index1 $index2 ] ]
-            }
-         }
-
          # je recherche tous les catalogues cites dans la ligne de detail
+         set index [string first "Common Name:" $detail]
+         if { $index >= 0 } {
+            set usualName [string trim [string range $detail [expr $index + 12] [string length $detail] ] ]
+         }
+         set index [string first "BSC" $detail]
+         if { $index >= 0 } {
+            set bsc [string trim [string range $detail [expr $index + 3] [expr [string first "mV:" $detail $index] -1] ] ]
+         }
          set index [string first "Fl:" $detail]
          if { $index >= 0 } {
             set fl [string trim [string range $detail [expr $index + 3] [expr $index + 6] ] ]
@@ -671,7 +666,7 @@ namespace eval carteducielv3 {
          }
          set index [string first "M " $detail]
          if { $index >= 0 } {
-            set messier [string trim [string range $detail [expr $index + 2] [expr $index + 5] ] ]
+            set messier [string trim [string range $detail [expr $index + 2] [expr $index + 4] ] ]
          }
          set index [string first "GSC" $detail]
          if { $index >= 0 } {
@@ -699,15 +694,15 @@ namespace eval carteducielv3 {
          }
          set index [string first "NGC" $detail]
          if { $index >= 0 } {
-            set ngc [string range $detail $index [expr $index + 9 ] ]
+            set ngc [string range $detail $index [expr $index + 8 ] ]
          }
          set index [string first "UGC" $detail]
          if { $index >= 0 } {
-            set ugc [string range $detail $index [expr $index + 9 ] ]
+            set ugc [string range $detail $index [expr [string first " m" $detail $index] -1] ]
          }
          set index [string first "PGC" $detail]
          if { $index >= 0 } {
-            set pgc [string range $detail $index [expr $index + 8 ] ]
+            set pgc [string range $detail $index [expr [string first " " $detail $index] -1] ]
          }
          set index [string first "PNG" $detail]
          if { $index >= 0 } {
@@ -730,6 +725,8 @@ namespace eval carteducielv3 {
          if { $usualName!="" } {
             # je retiens d'abord le nom usuel s'il existe
             set objName $usualName
+         } elseif { $bsc != "" } {
+            set objName "$bsc"
          } elseif { $ba != "" } {
             set objName "$ba $const"
          } elseif { $fl != "" } {
@@ -819,7 +816,7 @@ namespace eval carteducielv3 {
       #--- Place temporairement AudeLA dans le dossier de CDC
       cd "$dirname"
       #--- Prépare l'ouverture du logiciel
-      set a_effectuer "exec \"$conf(carteducielv3,binarypath)\" \"$filename\" &"
+      set a_effectuer "exec \"$filename\" &"
       #--- Ouvre le logiciel
       if [catch $a_effectuer input] {
          #--- Affichage du message d'erreur sur la console
@@ -832,9 +829,8 @@ namespace eval carteducielv3 {
          #--- Place temporairement AudeLA dans le dossier de CDC
          cd "$dirname"
          #--- Prépare l'ouverture du logiciel
-         set a_effectuer "exec \"$conf(carteducielv3,binarypath)\" \"$filename\" &"
+         set a_effectuer "exec \"$filename\" &"
          #--- Affichage sur la console
-         set filename $conf(carteducielv3,binarypath)
          ::console::affiche_saut "\n"
          ::console::disp $filename
          ::console::affiche_saut "\n"
