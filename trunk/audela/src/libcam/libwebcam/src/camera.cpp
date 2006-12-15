@@ -115,7 +115,76 @@ extern "C" struct camini CAM_INI[] = {
     0,               /* default overscan taken in acquisition (0=no) */
     1.               /* default focal lenght of front optic system */
     },
-    CAM_INI_NULL
+   {"WEBCAM",        /* camera name */
+    "webcam",        /* camera product */
+    "ICX098BL-6",        /* ccd name */
+    640, 480,        /* maxx maxy */
+    0, 0,            /* overscans x */
+    0, 0,            /* overscans y*/
+    5.6e-6, 5.6e-6,        /* photosite dim (m) */
+    255.,            /* observed saturation */
+    1.,              /* filling factor */
+    250.,            /* gain (e/adu) */
+    250.,            /* readnoise (e) */
+    1, 1,            /* default bin x,y */
+    1.,              /* default exptime */
+    1,               /* default state of shutter (1=synchro) */
+    1,               /* default num buf for the image */
+    1,               /* default num tel for the coordinates taken */
+    0,               /* default port index (0=lpt1) */
+    1,               /* default cooler index (1=on) */
+    -15.,            /* default value for temperature checked */
+    5,               /* default color mask if exists (1=cfa 2=rgb) */
+    0,               /* default overscan taken in acquisition (0=no) */
+    1.               /* default focal lenght of front optic system */
+    },
+   {"WEBCAM",        /* camera name */
+    "webcam",        /* camera product */
+    "ICX424AL-6",        /* ccd name */
+    640, 480,        /* maxx maxy */
+    0, 0,            /* overscans x */
+    0, 0,            /* overscans y*/
+    7.4e-6, 7.4e-6,        /* photosite dim (m) */
+    255.,            /* observed saturation */
+    1.,              /* filling factor */
+    250.,            /* gain (e/adu) */
+    250.,            /* readnoise (e) */
+    1, 1,            /* default bin x,y */
+    1.,              /* default exptime */
+    1,               /* default state of shutter (1=synchro) */
+    1,               /* default num buf for the image */
+    1,               /* default num tel for the coordinates taken */
+    0,               /* default port index (0=lpt1) */
+    1,               /* default cooler index (1=on) */
+    -15.,            /* default value for temperature checked */
+    5,               /* default color mask if exists (1=cfa 2=rgb) */
+    0,               /* default overscan taken in acquisition (0=no) */
+    1.               /* default focal lenght of front optic system */
+    },
+   {"WEBCAM",        /* camera name */
+    "webcam",        /* camera product */
+    "ICX414AL-6",        /* ccd name */
+    640, 480,        /* maxx maxy */
+    0, 0,            /* overscans x */
+    0, 0,            /* overscans y*/
+    9.9e-6, 9.9e-6,        /* photosite dim (m) */
+    255.,            /* observed saturation */
+    1.,              /* filling factor */
+    250.,            /* gain (e/adu) */
+    250.,            /* readnoise (e) */
+    1, 1,            /* default bin x,y */
+    1.,              /* default exptime */
+    1,               /* default state of shutter (1=synchro) */
+    1,               /* default num buf for the image */
+    1,               /* default num tel for the coordinates taken */
+    0,               /* default port index (0=lpt1) */
+    1,               /* default cooler index (1=on) */
+    -15.,            /* default value for temperature checked */
+    5,               /* default color mask if exists (1=cfa 2=rgb) */
+    0,               /* default overscan taken in acquisition (0=no) */
+    1.               /* default focal lenght of front optic system */
+    },
+     CAM_INI_NULL
 };
 
 static int cam_init(struct camprop *cam, int argc, char **argv);
