@@ -24,7 +24,7 @@
  * fonctions utilitaires pour ecrire des traces
  * a l'ecran ou dans un fichier
  *
- * $Id: log.c,v 1.2 2006-01-22 22:01:28 michelpujol Exp $
+ * $Id: log.c,v 1.3 2006-12-15 23:31:21 michelpujol Exp $
  */
 
 
@@ -53,19 +53,25 @@ static char *getlogdate(char *buf, size_t size);
 
 static char logFileName[] = "audinet.log";
 
+static int audinet_logLevel= 0;
+
 /*
  * void initLog(char *fmt,...)
  *    Writes data to the log files. Works likes printf functions, with
  *    a format string, plus the correspondings arguments.
  */
-void initLog()
+void initLog( int logLevel)
 {
     FILE *f;
 
-    if ((f = fopen(logFileName, "w")) != NULL) {
-	fprintf(f, "Debut de trace\n");
-	fclose(f);
-    }
+   audinet_logLevel = logLevel;
+
+   if (audinet_logLevel == 0 ) { return; };
+
+   if ((f = fopen(logFileName, "w")) != NULL) {
+      fprintf(f, "Debut de trace\n");
+      fclose(f);
+   }
 }
 
 
@@ -80,6 +86,8 @@ void logInfo(char *fmt, ...)
     va_list va;
     FILE *f;
     char logdate[25];
+
+   if (audinet_logLevel == 0 ) { return; };
 
 
     if ((f = fopen(logFileName, "at+")) != NULL) {
@@ -99,6 +107,8 @@ void logError(char *fmt, ...)
     FILE *f;
     char logdate[25];
 
+   if (audinet_logLevel == 0 ) { return; };
+
     if ((f = fopen(logFileName, "at+")) != NULL) {
 	va_start(va, fmt);
 	vsprintf(s, fmt, va);
@@ -117,6 +127,8 @@ void logImage(unsigned short *p0, int imax, int jmax)
     char trace[8192];
     char trace2[10];
     int c, r;
+
+   if (audinet_logLevel == 0 ) { return; };
 
     sprintf(trace, "    ");
     for (c = 0; c < imax; c++) {

@@ -26,7 +26,7 @@
  * La structure "camprop" peut etre adaptee
  * dans le fichier camera.h
  *
- * $Id: camera.c,v 1.5 2006-12-06 08:01:33 michelpujol Exp $
+ * $Id: camera.c,v 1.6 2006-12-15 23:31:21 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -223,86 +223,89 @@ static void restaurePriority(int priority);
 
 int cam_init(struct camprop *cam, int argc, char **argv)
 {
-    int i;
-    char macAddress[18];
-    int ipsetting = 0;		// pour re-inialiser l'adresse IP
+   int i;
+   char macAddress[18];
+   int ipsetting = 0;		// pour re-inialiser l'adresse IP
+   int logLevel = 0;
+   
+   initLog(logLevel);
+   
+   /* on n'utilise pas les fonctions du port  pour ce driver */
+   cam->authorized = 1;
+   
+   /*  valeurs par defaut */
+   cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+   
+   /* --- pour l'amplificateur des Kaf-401 (synchro by default) --- */
+   cam->ampliindex = 0;
+   cam->nbampliclean = 60;
+   cam->shutteraudinereverse = 0;
+   /* --- pour les parametres de l'obturateur de Pierre Thierry --- */
+   cam->shuttertypeindex = 0;	/* obturateur Audine par defaut */
+   /* --- fichier update.log --- */
+   cam->updatelogindex = 0;
+   
+   /* --- audinet --- */
+   cam->httpPort = 80;
+   cam->udpSendPort = 99;
+   cam->udpRecvPort = 4000;
+   
+   
+   /* je remplace les valeurs par defaut par les valeurs choisies  */
+   /* par l'utilisateur dans le panneau de configuration de audace */
+   for (i = 3; i < argc - 1; i++) {
+      if (strcmp(argv[i], "-host") == 0) {
+         strcpy(cam->host, argv[i + 1]);
+      }
+      
+      if (strcmp(argv[i], "-protocole") == 0) {
+         strcpy(cam->protocole, argv[i + 1]);
+      }
+      
+      if (strcmp(argv[i], "-debug_cam") == 0) {
+         logLevel = atoi( argv[i + 1]);
+      }
+      if (strcmp(argv[i], "-ipsetting") == 0) {
+         if ((i + 1) <= (argc - 1)) {
+            if (strcmp(argv[i + 1], "1") == 0) {
+               ipsetting = 1;
+            } else {
+               ipsetting = 0;
+            }
+         }
+         
+      }
+      
+      if (strcmp(argv[i], "-macaddress") == 0) {
+         if ((i + 1) <= (argc - 1)) {
+            STRNCPY(macAddress, argv[i + 1]);
+         }
+      }
+      
+      if (strcmp(argv[i], "-udptempo") == 0) {
+         
+         int isnumber = 1;
+         int ii;
+         for (ii = 0; ii < (int) strlen(argv[i + 1]); ii++) {
+            if (!isdigit((int) argv[i + 1][ii])
+               && argv[i + 1][ii] != ' ') {
+               isnumber = 0;
+               break;
+            }
+         }
+         
+         if (isnumber) {
+            cam->udpTempo = atoi(argv[i + 1]);
+         } else {
+            sprintf(cam->msg, "\n udptempo=%s must be a number !",
+               argv[i + 1]);
+            return 1;
+         }
+      }
+      
+   }
 
-    initLog();
-
-    /* on n'utilise pas les fonctions du port  pour ce driver */
-    cam->authorized = 1;
-
-    /*  valeurs par defaut */
-    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
-
-    /* --- pour l'amplificateur des Kaf-401 (synchro by default) --- */
-    cam->ampliindex = 0;
-    cam->nbampliclean = 60;
-    cam->shutteraudinereverse = 0;
-    /* --- pour les parametres de l'obturateur de Pierre Thierry --- */
-    cam->shuttertypeindex = 0;	/* obturateur Audine par defaut */
-    /* --- fichier update.log --- */
-    cam->updatelogindex = 0;
-
-    /* --- audinet --- */
-    cam->httpPort = 80;
-    cam->udpSendPort = 99;
-    cam->udpRecvPort = 4000;
-
-
-    /* je remplace les valeurs par defaut par les valeurs choisies  */
-    /* par l'utilisateur dans le panneau de configuration de audace */
-    for (i = 3; i < argc - 1; i++) {
-	if (strcmp(argv[i], "-host") == 0) {
-	    strcpy(cam->host, argv[i + 1]);
-	}
-
-	if (strcmp(argv[i], "-protocole") == 0) {
-	    strcpy(cam->protocole, argv[i + 1]);
-	}
-
-	if (strcmp(argv[i], "-ipsetting") == 0) {
-	    if ((i + 1) <= (argc - 1)) {
-		if (strcmp(argv[i + 1], "1") == 0) {
-		    ipsetting = 1;
-		} else {
-		    ipsetting = 0;
-		}
-	    }
-
-	}
-
-	if (strcmp(argv[i], "-macaddress") == 0) {
-	    if ((i + 1) <= (argc - 1)) {
-		STRNCPY(macAddress, argv[i + 1]);
-	    }
-	}
-
-	if (strcmp(argv[i], "-udptempo") == 0) {
-
-	    int isnumber = 1;
-	    int ii;
-	    for (ii = 0; ii < (int) strlen(argv[i + 1]); ii++) {
-		if (!isdigit((int) argv[i + 1][ii])
-		    && argv[i + 1][ii] != ' ') {
-		    isnumber = 0;
-		    break;
-		}
-	    }
-
-	    if (isnumber) {
-		cam->udpTempo = atoi(argv[i + 1]);
-	    } else {
-		logError("cam_init -udptempo=%s", argv[i + 1]);
-		sprintf(cam->msg, "\n udptempo=%s must be a number !",
-			argv[i + 1]);
-		return 1;
-	    }
-	}
-
-    }
-
-
+   initLog( logLevel);
 
 #ifndef SIMUL_AUDINET
     if (ipsetting == 1) {
@@ -913,23 +916,23 @@ int loadImage(struct camprop *cam, int nbcol, int nbrow,
 		//logInfo("loadImage copy image");
 
 		/* je copie les octets dans le tableau des pixels */
-		for (i = 0; i < n; i += 2) {
-		    /* je reconstitue la valeur du pixel  */
-		    /* formule :  pixel value = low byte + 256 * hight byte */
-		    p0[npixel] =
-			(unsigned short) data[i] +
-			((unsigned short) (data[i + 1]) << 8);
-		    /* je modifie la valeur du pixel si elle depasse 32767  */
-		    if (p0[npixel] > 32767)
-			p0[npixel] = 32767;
-
-		    npixel++;
-		}
-	    }
-	}			// end for 
+      for (i = 0; i < n; i += 2) {
+         /* je reconstitue la valeur du pixel  */
+         /* formule :  pixel value = low byte + 256 * hight byte */
+         p0[npixel] =
+            (unsigned short) data[i] +
+            ((unsigned short) (data[i + 1]) << 8);
+         /* je modifie la valeur du pixel si elle depasse 32767  */
+         if (p0[npixel] > 32767)
+            p0[npixel] = 32767;
+         
+         npixel++;
+      }
+       }
+   }			// end for 
     }
-
-
+    
+    
     // je ferme la socket UDP
     sockudp_close();
 #else
