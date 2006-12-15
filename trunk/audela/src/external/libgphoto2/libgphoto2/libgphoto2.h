@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct _GPhotoSession GPhotoSession;
 
-int libgphoto_openSession (GPhotoSession **gphotoSession, char * gphotoWinDllDir);
+int libgphoto_openSession (GPhotoSession **gphotoSession, char * gphotoWinDllDir,int debug);
 int libgphoto_closeSession (GPhotoSession *gphotoSession);
 int libgphoto_detectCamera(GPhotoSession *gphotoSession, char *cameraModel, char *cameraPath);
 int libgphoto_openCamera(GPhotoSession *gphotoSession, char *cameraModel, char *cameraPath);
