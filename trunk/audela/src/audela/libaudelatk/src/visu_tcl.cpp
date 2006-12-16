@@ -788,7 +788,7 @@ int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 #if defined(OS_WIN)
          visu->SetMode(2);
 #else 
-         sprintf(ligne,"video is not available with LINUX",argv[0],argv[1]);
+         sprintf(ligne,"video is not available with LINUX");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
 #endif
