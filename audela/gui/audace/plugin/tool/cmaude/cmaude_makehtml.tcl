@@ -2,7 +2,7 @@
 # Fichier : cmaude_makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude_makehtml.tcl,v 1.1 2006-12-09 18:54:13 robertdelmas Exp $
+# Mise a jour $Id: cmaude_makehtml.tcl,v 1.2 2006-12-16 14:08:21 robertdelmas Exp $
 #
 
 variable cmconf
@@ -21,8 +21,9 @@ set actuel [mc_date2jd $now]
 #---
 set folder [ file join $audace(rep_plugin) tool cmaude ]
 set namehtml [string range [mc_date2iso8601 $actuel] 0 9].html
-::console::affiche_erreur "$caption(cmaude,fichier_html) $namehtml\n"
 ::console::affiche_erreur "\n"
+::console::affiche_erreur "$caption(cmaude,fichier_html) $namehtml\n"
+::console::affiche_erreur "\n\n"
 set existence [ file exists [ file join $folder $namehtml ] ]
 if { $existence == "0" } {
    #--- Here is made the html page header
@@ -73,8 +74,8 @@ if { $loopexit == "0" } {
    set texte "Image <b>[ file rootname [ file tail $cmconf(nameima) ] ]</b> done the [string range [mc_date2iso8601 $actuel] 0 9] "
    append texte "at <b>[string range [mc_date2iso8601 $actuel] 11 18] UT</b> "
    append texte "(Local Sideral Time $sidertime) - "
-   append texte "<a href=\"$cmconf(nameima).jpg\">| JPG |</a> - "
-   append texte " <a href=\"$cmconf(nameima)$cmconf(extension)\">| FITS |</a> <br>"
+   append texte "<a href=\"file:///[ file rootname $cmconf(nameima) ].jpg\">| JPG |</a> - "
+   append texte " <a href=\"file:///[ file rootname $cmconf(nameima) ]$cmconf(extension)\">| FITS |</a> <br>"
 }
 
 if { $loopexit == "1" } {
