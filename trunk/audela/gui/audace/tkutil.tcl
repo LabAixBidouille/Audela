@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.8 2006-12-08 16:58:12 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.9 2006-12-16 16:22:45 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -50,7 +50,7 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_fits)"       {.fits}      ] \
          [ list "$caption(tkutil,image_fits)"       {.fits.gz}   ] \
          [ list "$caption(tkutil,image_jpeg)"       {.jpeg .jpg} ] \
-         [ list "$caption(tkutil,image_raw)"        {.crw .nef}  ] \
+         [ list "$caption(tkutil,image_raw)"        {.crw .nef .cr2 .dng} ] \
          [ list "$caption(tkutil,fichier_tous)"     *            ]
    }
 
@@ -183,21 +183,24 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_fits) 3"     {.fts.gz}    ] \
          [ list "$caption(tkutil,image_fits) 4"     {.fits}      ] \
          [ list "$caption(tkutil,image_fits) 5"     {.fits.gz}   ] \
-         [ list "$caption(tkutil,image_bmp)"        {.bmp}       ] \
-         [ list "$caption(tkutil,image_gif)"        {.gif}       ] \
          [ list "$caption(tkutil,image_jpeg)"       {.jpg}       ] \
-         [ list "$caption(tkutil,image_png)"        {.png}       ] \
-         [ list "$caption(tkutil,image_tiff)"       {.tif}       ] \
-         [ list "$caption(tkutil,image_xbm)"        {.xbm}       ] \
-         [ list "$caption(tkutil,image_xpm)"        {.xpm}       ] \
-         [ list "$caption(tkutil,image_postscript)" {.eps}       ] \
-         [ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
-         [ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
-         [ list "$caption(tkutil,image_png)"        {}      PNGF ] \
-         [ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
-         [ list "$caption(tkutil,image_raw)"        {.crw }      ] \
-         [ list "$caption(tkutil,image_raw) "       {.nef}       ]
+         [ list "$caption(tkutil,image_raw)."       {.crw }      ] \
+         [ list "$caption(tkutil,image_raw) 1"      {.cr2}       ] \
+         [ list "$caption(tkutil,image_raw) 2"      {.nef }      ] \
+         [ list "$caption(tkutil,image_raw) 3"      {.dng}       ]
    }
+
+         ###[ list "$caption(tkutil,image_bmp)"        {.bmp}       ] \
+         ###[ list "$caption(tkutil,image_gif)"        {.gif}       ] \
+         ###[ list "$caption(tkutil,image_png)"        {.png}       ] \
+         ###[ list "$caption(tkutil,image_tiff)"       {.tif}       ] \
+         ###[ list "$caption(tkutil,image_xbm)"        {.xbm}       ] \
+         ###[ list "$caption(tkutil,image_xpm)"        {.xpm}       ] \
+         ###[ list "$caption(tkutil,image_postscript)" {.eps}       ] \
+         ###[ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
+         ###[ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
+         ###[ list "$caption(tkutil,image_png)"        {}      PNGF ] \
+         ###[ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
 
    #
    # tkutil::box_save parent initialdir numero_buffer type
