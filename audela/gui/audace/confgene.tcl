@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.15 2006-11-02 19:16:24 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.16 2006-12-16 22:20:32 robertdelmas Exp $
 #
 
 #
@@ -352,7 +352,7 @@ namespace eval confPosObs {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -837,7 +837,7 @@ namespace eval confTemps {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -849,7 +849,6 @@ namespace eval confTemps {
    #
    proc Temps_TU_TSL { } {
       variable This
-      global audace
       global conf
       global caption
       global confgene
@@ -956,16 +955,17 @@ namespace eval confFichierIma {
    #
    proc appliquer { } {
       variable This
-      global conf
       global audace
       global confgene
 
+      #---
       catch { 
          buf1000 extension "$confgene(extension,new)"
          buf1001 extension "$confgene(extension,new)"
          buf1002 extension "$confgene(extension,new)"
          buf1003 extension "$confgene(extension,new)"
       }
+      #---
       buf$audace(bufNo) extension "$confgene(extension,new)"
       if { $confgene(fichier,compres) == "0" } {
          buf$audace(bufNo) compress "none"
@@ -974,20 +974,20 @@ namespace eval confFichierIma {
       }
       $This.labURL2 configure -text "$confgene(extension,new)"
       $This.labURL5 configure -text "$confgene(jpegquality,new)"
+      #---
+      set listExtensionFile ""
+      if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
+         ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
+         set listExtensionFile "[ buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension ].gz"
+      }
+      set listExtensionFile "$listExtensionFile .fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng"
+      set confgene(fichier,list_extension) $listExtensionFile
+      #---
       widgetToConf
       #--- Mise a jour de l'extension pour toutes les visu disponibles
-      foreach visuNo [::visu::list] {
+      foreach visuNo [ ::visu::list ] {
          ::confFichierIma::MAJ_Extension
       }
-      #--- Mise a jour de la combobox pour la creation d'une extension personnalisee
-      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || \
-         ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
-         set confgene(liste_extension) [ list .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      } else {
-         set confgene(liste_extension) [ list [ buf$audace(bufNo) extension ] .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      }
-      $This.newext configure -height [ llength $confgene(liste_extension) ]
-      $This.newext configure -values $confgene(liste_extension)
    }
 
    #
@@ -1023,6 +1023,7 @@ namespace eval confFichierIma {
       if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)    "0" }
       if { ! [ info exists conf(jpegquality,defaut) ] } { set conf(jpegquality,defaut) "80" }
       if { ! [ info exists conf(save_seuils_visu) ] }   { set conf(save_seuils_visu)   "1" }
+      if { ! [ info exists conf(list_extension)  ] }    { set conf(list_extension)     ".fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng" }
       #---
       set conf(extension,new)   $conf(extension,defaut)
       set conf(jpegquality,new) $conf(jpegquality,defaut)
@@ -1036,19 +1037,12 @@ namespace eval confFichierIma {
       global confgene
       global color
 
-      #--- initConf
-      if { ( [ buf$audace(bufNo) extension ] == ".fit" ) || ( [ buf$audace(bufNo) extension ] == ".fts" ) || \
-         ( [ buf$audace(bufNo) extension ] == ".fits" ) } {
-         set confgene(liste_extension) [ list .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      } else {
-         set confgene(liste_extension) [ list [ buf$audace(bufNo) extension ] .fit .fts .fits .bmp .gif .jpg .png .tif .xbm .xpm .eps .crw .nef ]
-      }
-
       #--- confToWidget
       set confgene(extension,new)            $conf(extension,new)
       set confgene(fichier,compres)          $conf(fichier,compres)
       set confgene(jpegquality,new)          $conf(jpegquality,new)
       set confgene(fichier,save_seuils_visu) $conf(save_seuils_visu)
+      set confgene(fichier,list_extension)   $conf(list_extension)
 
       #---
       if { [winfo exists $This] } {
@@ -1113,15 +1107,7 @@ namespace eval confFichierIma {
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
       pack $This.lab3 -in $This.frame5 -anchor center -side left -padx 10 -pady 5
 
-      ComboBox $This.newext \
-         -width 7          \
-         -height [llength $confgene(liste_extension)] \
-         -relief raised    \
-         -borderwidth 1    \
-         -editable 1       \
-         -justify center   \
-         -textvariable confgene(extension,new) \
-         -values $confgene(liste_extension)
+      entry $This.newext -textvariable confgene(extension,new) -width 5 -justify center
       pack $This.newext -in $This.frame5 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
@@ -1171,7 +1157,7 @@ namespace eval confFichierIma {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1191,6 +1177,7 @@ namespace eval confFichierIma {
       set conf(jpegquality,defaut) $confgene(jpegquality,new)
       set conf(jpegquality,new)    $confgene(jpegquality,new)
       set conf(save_seuils_visu)   $confgene(fichier,save_seuils_visu)
+      set conf(list_extension)     $confgene(fichier,list_extension)
    }
 
    proc MAJ_Extension { } {
@@ -1198,9 +1185,10 @@ namespace eval confFichierIma {
       global conf confgene panneau
 
       if { ( $conf(extension,new) == ".bmp" ) || ( $conf(extension,new) == ".gif" ) || ( $conf(extension,new) == ".jpg" ) \
-         || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) || ( $conf(extension,new) == ".xbm" ) \
-         || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) || ( $conf(extension,new) == ".crw" ) \
-         || ( $conf(extension,new) == ".nef" ) } {
+         || ( $conf(extension,new) == ".jpeg" ) || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) \
+         || ( $conf(extension,new) == ".xbm" ) || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) \
+         || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".cr2" ) || ( $conf(extension,new) == ".nef" ) \
+         || ( $conf(extension,new) == ".dng" ) } {
          set confgene(fichier,compres) "0"
          $This.compress configure -variable confgene(fichier,compres)
          set conf(fichier,compres) $confgene(fichier,compres)
@@ -1293,7 +1281,6 @@ namespace eval confAlarmeFinPose {
 
    proc createDialog { } {
       variable This
-      global audace
       global conf
       global caption
       global confgene
@@ -1375,7 +1362,7 @@ namespace eval confAlarmeFinPose {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1457,7 +1444,6 @@ namespace eval confTempoScan {
 
    proc createDialog { } {
       variable This
-      global audace
       global conf
       global caption
       global confgene
@@ -1550,7 +1536,7 @@ namespace eval confTempoScan {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1647,7 +1633,6 @@ namespace eval confChoixOutil {
 
    proc createDialog { } {
       variable This
-      global audace
       global conf
       global caption
       global panneau
@@ -1809,7 +1794,7 @@ namespace eval confChoixOutil {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -1900,7 +1885,6 @@ namespace eval confMessages_Console {
 
    proc createDialog { } {
       variable This
-      global audace
       global conf
       global caption
       global panneau
@@ -2035,7 +2019,7 @@ namespace eval confMessages_Console {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -2141,7 +2125,6 @@ namespace eval confTypeFenetre {
 
    proc createDialog { } {
       variable This
-      global audace
       global conf
       global caption
       global confgene
@@ -2246,7 +2229,7 @@ namespace eval confTypeFenetre {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -2435,7 +2418,7 @@ namespace eval confGeneral {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -2576,7 +2559,7 @@ namespace eval confVersion {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -2708,7 +2691,6 @@ namespace eval confGenerique {
    proc createDialog { visuNo } {
       variable This
       variable NameSpace
-      global audace
       global conf
       global caption
 
@@ -2766,7 +2748,7 @@ namespace eval confGenerique {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

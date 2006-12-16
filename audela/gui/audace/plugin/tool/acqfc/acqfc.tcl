@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.28 2006-12-08 17:09:52 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.29 2006-12-16 22:20:04 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -87,15 +87,73 @@ namespace eval ::AcqFC {
 
 #***** Procedure Init ******************************************
    proc Init { { in "" } { visuNo 1 } } {
+      global conf
       global panneau
 
       set panneau(AcqFC,$visuNo,base) $in
       createPanel $visuNo "$in.acqFC"
 
+      #--- Surveillance de la connexion d'une camera
       ::confVisu::addCameraListener $visuNo "::AcqFC::Adapt_Panneau_AcqFC $visuNo"
+      #--- Surveillance de l'ajout ou de la suppression d'une extension
+      trace add variable ::conf(list_extension) write ::AcqFC::Init_list_extension
 
    }
 #***** Fin de la procedure Init ********************************
+
+#***** Procedure Init_list_extension ***************************
+   proc Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
+      variable This
+      global conf
+      global panneau
+
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
+      $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Serie d'images"
+      $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu"
+      $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Series d'images en continu avec intervalle entre chaque serie"
+      $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu avec intervalle entre chaque image"
+      $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+   }
+#***** Fin de la procedure Init_list_extension *****************
 
 #***** Procedure createPanel ***********************************
    proc createPanel { visuNo this } {
@@ -134,7 +192,7 @@ namespace eval ::AcqFC {
 
       #--- Entrer ici les valeurs de temps de pose a afficher dans le menu "pose"
       set panneau(AcqFC,$visuNo,temps_pose) {0 0.1 0.3 0.5 1 2 3 5 10 15 20 30 60 90 120 180 300 600}
-      #--- Valeur par defaut du temps de pose : 1s
+      #--- Valeur par defaut du temps de pose
       if { ! [ info exists panneau(AcqFC,$visuNo,pose) ] } {
          set panneau(AcqFC,$visuNo,pose) "$parametres(acqFC,$visuNo,pose)"
       }
@@ -221,8 +279,10 @@ namespace eval ::AcqFC {
       global conf
       global panneau
 
-      #--- je desactive l'adaptation de l'affichage
+      #--- Je desactive la surveillance de la connexion d'une camera
       ::confVisu::removeCameraListener $visuNo "::AcqFC::Adapt_Panneau_AcqFC $visuNo"
+      #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
+      trace remove variable ::conf(list_extension) write ::AcqFC::Init_list_extension
 
       #---
       set conf(acqfc,avancement,position) $panneau(AcqFC,$visuNo,avancement,position)
@@ -1247,7 +1307,7 @@ namespace eval ::AcqFC {
                              }
                           }
                           #--- Sauvegarde de l'image
-                          saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
+                          saveima [append nom $panneau(AcqFC,$visuNo,index)$panneau(AcqFC,$visuNo,extension)] $visuNo
                           set heure $audace(tu,format,hmsint)
                           Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
                        }
@@ -1325,7 +1385,7 @@ namespace eval ::AcqFC {
                                 }
                              }
                              #--- Sauvegarde de l'image
-                             saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
+                             saveima [append nom $panneau(AcqFC,$visuNo,index)$panneau(AcqFC,$visuNo,extension)] $visuNo
                           } else {
                              set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) - 1 ]
                           }
@@ -1392,7 +1452,7 @@ namespace eval ::AcqFC {
                              }
                           }
                           #--- Sauvegarde de l'image
-                          saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
+                          saveima [append nom $panneau(AcqFC,$visuNo,index)$panneau(AcqFC,$visuNo,extension)] $visuNo
                           incr panneau(AcqFC,$visuNo,index)
                           $panneau(AcqFC,$visuNo,This).status.lab configure -text ""
                           set heure $audace(tu,format,hmsint)
@@ -1470,7 +1530,7 @@ namespace eval ::AcqFC {
                                 }
                              }
                              #--- Sauvegarde de l'image
-                             saveima [append nom $panneau(AcqFC,$visuNo,index)] $visuNo
+                             saveima [append nom $panneau(AcqFC,$visuNo,index)$panneau(AcqFC,$visuNo,extension)] $visuNo
                           } else {
                              set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) - 1 ]
                           }
@@ -2268,7 +2328,7 @@ namespace eval ::AcqFC {
       Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $ext
 
       #--- Sauvegarder l'image
-      saveima $nom $visuNo
+      saveima $nom$panneau(AcqFC,$visuNo,extension) $visuNo
 
       #--- Effacer le status
       $panneau(AcqFC,$visuNo,This).status.lab configure -text ""
@@ -3003,9 +3063,17 @@ proc AcqFCBuildIF { visuNo } {
            pack $panneau(AcqFC,$visuNo,This).mode.une.nom.entr -fill x -side top
            label $panneau(AcqFC,$visuNo,This).mode.une.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(AcqFC,$visuNo,This).mode.une.nom.lab_extension -fill x -side left
-           button $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -side right -fill x
+           menubutton $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
+              -menu $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu -relief raised
+           pack $panneau(AcqFC,$visuNo,This).mode.une.nom.extension -side right -fill x -expand true -ipady 1
+           set m [ menu $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu -tearoff 0 ]
+           foreach extension $conf(list_extension) {
+             $m add radiobutton -label "$extension" \
+                -indicatoron "1" \
+                -value "$extension" \
+                -variable panneau(AcqFC,$visuNo,extension) \
+                -command " "
+           }
         pack $panneau(AcqFC,$visuNo,This).mode.une.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.une.index -relief ridge -borderwidth 2
            checkbutton $panneau(AcqFC,$visuNo,This).mode.une.index.case -pady 0 -text $caption(acqfc,index) -variable panneau(AcqFC,$visuNo,indexer)
@@ -3030,9 +3098,17 @@ proc AcqFCBuildIF { visuNo } {
            pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.entr -fill x
            label $panneau(AcqFC,$visuNo,This).mode.serie.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.lab_extension -fill x -side left
-           button $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -side right -fill x
+           menubutton $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
+              -menu $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu -relief raised
+           pack $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension -side right -fill x -expand true -ipady 1
+           set m [ menu $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu -tearoff 0 ]
+           foreach extension $conf(list_extension) {
+             $m add radiobutton -label "$extension" \
+                -indicatoron "1" \
+                -value "$extension" \
+                -variable panneau(AcqFC,$visuNo,extension) \
+                -command " "
+           }
         pack $panneau(AcqFC,$visuNo,This).mode.serie.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.serie.nb -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.serie.nb.but -text $caption(acqfc,nombre) -pady 0
@@ -3067,9 +3143,17 @@ proc AcqFCBuildIF { visuNo } {
            pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.entr -fill x
            label $panneau(AcqFC,$visuNo,This).mode.continu.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.lab_extension -fill x -side left
-           button $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -side right -fill x
+           menubutton $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
+              -menu $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu -relief raised
+           pack $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension -side right -fill x -expand true -ipady 1
+           set m [ menu $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu -tearoff 0 ]
+           foreach extension $conf(list_extension) {
+             $m add radiobutton -label "$extension" \
+                -indicatoron "1" \
+                -value "$extension" \
+                -variable panneau(AcqFC,$visuNo,extension) \
+                -command " "
+           }
         pack $panneau(AcqFC,$visuNo,This).mode.continu.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.continu.index -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.continu.index.lab -text $caption(acqfc,index) -pady 0
@@ -3092,9 +3176,17 @@ proc AcqFCBuildIF { visuNo } {
            pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.entr -fill x
            label $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.lab_extension -fill x -side left
-           button $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -side right -fill x
+           menubutton $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
+              -menu $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu -relief raised
+           pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension -side right -fill x -expand true -ipady 1
+           set m [ menu $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu -tearoff 0 ]
+           foreach extension $conf(list_extension) {
+             $m add radiobutton -label "$extension" \
+                -indicatoron "1" \
+                -value "$extension" \
+                -variable panneau(AcqFC,$visuNo,extension) \
+                -command " "
+           }
         pack $panneau(AcqFC,$visuNo,This).mode.serie_1.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.serie_1.nb -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.serie_1.nb.but -text $caption(acqfc,nombre) -pady 0
@@ -3129,9 +3221,17 @@ proc AcqFCBuildIF { visuNo } {
            pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.entr -fill x
            label $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.lab_extension -fill x -side left
-           button $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -side right -fill x
+           menubutton $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -textvariable panneau(AcqFC,$visuNo,extension) \
+              -menu $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu -relief raised
+           pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension -side right -fill x -expand true -ipady 1
+           set m [ menu $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu -tearoff 0 ]
+           foreach extension $conf(list_extension) {
+             $m add radiobutton -label "$extension" \
+                -indicatoron "1" \
+                -value "$extension" \
+                -variable panneau(AcqFC,$visuNo,extension) \
+                -command " "
+           }
         pack $panneau(AcqFC,$visuNo,This).mode.continu_1.nom -side top -fill x
         frame $panneau(AcqFC,$visuNo,This).mode.continu_1.index -relief ridge -borderwidth 2
            label $panneau(AcqFC,$visuNo,This).mode.continu_1.index.lab -text $caption(acqfc,index) -pady 0
