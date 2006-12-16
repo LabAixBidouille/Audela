@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.6 2006-12-07 07:44:38 michelpujol Exp $
+// $Id: camtcl.c,v 1.7 2006-12-16 23:23:45 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -112,6 +112,37 @@ int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, c
          sprintf(ligne, "Usage: %s %s ?0|1?\n Invalid value. Must be 0 or 1", argv[0], argv[1]);
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
+static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_OK;
+   struct camprop *cam;
+   
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      cam = (struct camprop *) clientData;
+      sprintf(ligne, "%d", cam_getDebug(cam));
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_OK;
+   } else {
+      int debug;
+      cam = (struct camprop *) clientData;
+      if (Tcl_GetInt(interp, argv[2], &debug) != TCL_OK) {
+         sprintf(ligne, "Usage: %s %s ?0|1?\nvalue must be 0 or 1", argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         cam_setDebug(cam,debug);
+         Tcl_SetResult(interp, "", TCL_VOLATILE);
+         result = TCL_OK;
       }
    }
    return result;

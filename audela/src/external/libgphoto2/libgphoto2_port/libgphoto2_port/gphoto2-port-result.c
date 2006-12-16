@@ -96,6 +96,8 @@ gp_port_result_as_string (int result)
 		return _("Could not lock the device");
 	case GP_ERROR_HAL:
 		return _("libhal error");
+	case GP_ERROR_LIBUSB_NOT_AVAILABLE:
+		return _("Libusb not available");
 	default:
 		return _("Unknown error");
 	}

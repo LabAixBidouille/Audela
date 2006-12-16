@@ -81,10 +81,29 @@ gp_port_library_type (void)
 int
 gp_port_library_list (GPPortInfoList *list)
 {
-	GPPortInfo info;
-	struct usb_bus *bus;
-	struct usb_device *dev;
-	int nrofdevices = 0, i, i1, i2, unknownint;
+   GPPortInfo info;
+   struct usb_bus *bus;
+   struct usb_device *dev;
+   int nrofdevices = 0, i, i1, i2, unknownint;
+#ifdef WIN32
+   const struct usb_version *version;
+#endif
+
+   usb_init ();
+//modif michel 
+#ifdef WIN32
+   // verify libusb is installed
+   version = usb_get_version();
+   if(version) {
+      if ( version->driver.major <0 ) {
+         gp_log (GP_LOG_DEBUG, "gp_port_library_list", _("wrong driver version. libusb is not installed."));
+         return GP_ERROR_LIBUSB_NOT_AVAILABLE;
+      }    
+   } else {
+      gp_log (GP_LOG_DEBUG, "gp_port_library_list", _("Can't read libusb version. libusb is not installed ."));
+      return GP_ERROR_LIBUSB_NOT_AVAILABLE;
+   }
+#endif
 
 	/* default port first */
 	info.type = GP_PORT_USB;
@@ -97,7 +116,6 @@ gp_port_library_list (GPPortInfoList *list)
 	strcpy (info.path, "^usb:");
 	CHECK (gp_port_info_list_append (list, info));
 
-	usb_init ();
 	usb_find_busses ();
 	usb_find_devices ();
 

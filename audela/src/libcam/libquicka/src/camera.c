@@ -441,6 +441,7 @@ int quicka_read(struct camprop *cam, unsigned short *p)
     jmax = (short) cam->h;
 // michel pourquoi changer le cast de *p ??
     r = usb_readaudine(imax, jmax, (short*) p);
+    cam->pixels_reverse_x = 1;
     return r;
 }
 
