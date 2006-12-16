@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.9 2006-10-29 14:30:28 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.10 2006-12-16 23:41:55 michelpujol Exp $
 #
 
 namespace eval confColor {
@@ -375,7 +375,9 @@ namespace eval confColor {
 
       switch -exact -- [ winfo class $w ] {
          Canvas {
-            if { "[ winfo class [ winfo parent $w ] ]" != "ArrowButton" } {
+            if { "[ winfo class [ winfo parent $w ] ]" == "Tree" } {
+               $w configure -bg $audace(color,backColor)
+            } elseif { "[ winfo class [ winfo parent $w ] ]" != "ArrowButton" } {
                if { [ string first color_invariant $w ] == -1 } {
                   $w configure -bg $audace(color,canvas)
                } else {
