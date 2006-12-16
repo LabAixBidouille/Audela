@@ -5,6 +5,7 @@ EXPORTS
     gp_logv
     gp_log_data
     gp_log_add_func
+    gp_log_remove_func
     gp_log_variadic
 
     gp_port_check_int

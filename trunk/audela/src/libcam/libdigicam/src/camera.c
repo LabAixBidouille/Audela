@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.6 2006-12-07 07:41:45 michelpujol Exp $
+// $Id: camera.c,v 1.7 2006-12-16 23:23:45 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -89,7 +89,8 @@ enum  {
    REMOTE_MANUEL   = 2
 };
 
-
+// j'utilise le niveau de debug declaré dans libcam.c
+int debug_level;
 
 static int cam_init(struct camprop *cam, int argc, char **argv);
 static int cam_close(struct camprop *cam);
@@ -105,6 +106,7 @@ static void cam_cooler_on(struct camprop *cam);
 static void cam_cooler_off(struct camprop *cam);
 static void cam_cooler_check(struct camprop *cam);
 static void cam_set_binning(int binx, int biny, struct camprop *cam);
+
 static void cam_update_window(struct camprop *cam);
 int cam_setLongExposureDevice(struct camprop *cam, unsigned char value);
 int cam_copyImage(struct camprop *cam, char *imageData, unsigned long imageLength, char *imageMime);
@@ -137,6 +139,7 @@ struct _PrivateParams {
    char imageFile[1024];        // nom du fichier en cours de traitement ( entre startExp et read_ccd) 
    int  driveMode;
    char quality[DIGICAM_QUALITY_LENGTH];
+   int debug;
 };
 
 char *canonQuality[] =
@@ -209,28 +212,43 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->params = malloc(sizeof(PrivateParams));
    
    cam->authorized = 1;
+   cam->params->debug = 0;
    strcpy(cam->params->gphotoWinDllDir, "../bin");            // default DLL directory
    
    // je traite les parametres
    for (i = 3; i < argc - 1; i++) {
       if (strcmp(argv[i], "-gphoto2_win_dll_dir") == 0) {
          strncpy(cam->params->gphotoWinDllDir , argv[i + 1], 1024);
+#ifdef WIN32
+         {
+            unsigned int c;
+            for(c=0; c<strlen(cam->params->gphotoWinDllDir); c++ ) {
+               if( cam->params->gphotoWinDllDir[c] == '/' ) {
+                  cam->params->gphotoWinDllDir[c] = '\\';
+               }
+            }
+         }
+#endif
       }
+      if (strcmp(argv[i], "-debug_cam") == 0) {
+         if ( i +1 <  argc ) {
+	         cam->params->debug = atoi(argv[i + 1]);
+         }
+	   }
+
    }
    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
    
-#ifdef WIN32
    // je verifie le repertoire des DLL de gphoto2 
    // ce parametre n'est pas utilise sous Linux car gphoto2 est installe 
    // dans les repertoires systeme /usr/...
    if( strlen(cam->params->gphotoWinDllDir) == 0 ) {
       sprintf(cam->msg, "gphoto2_win_dll_dir is empty");
       return -1;
-   }   
-#endif
+   }    
 
    // j'initialise la session
-   result = libgphoto_openSession(&cam->params->gphotoSession, cam->params->gphotoWinDllDir);
+   result = libgphoto_openSession(&cam->params->gphotoSession, cam->params->gphotoWinDllDir, cam->params->debug);
    if ( result != LIBGPHOTO_OK ) {
       strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
@@ -240,6 +258,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    result = libgphoto_detectCamera(cam->params->gphotoSession, cameraModel, cameraPath);
    if ( result != LIBGPHOTO_OK ) {
       strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+      libgphoto_closeSession(cam->params->gphotoSession);
       return -1;
    }
 
@@ -247,19 +266,21 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    result = libgphoto_openCamera(cam->params->gphotoSession, cameraModel, cameraPath);
    if ( result != LIBGPHOTO_OK ) {
       strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
+      libgphoto_closeSession(cam->params->gphotoSession);
       return -1;
    }
-
 
    // je configure le mode de declenchement de la pose par defaut
    result = cam_setLonguePose(cam, REMOTE_INTERNAL);
    if ( result != 0 ) {
+      cam_close(cam);
       return -1;
    }
 
    // je verifie si on peut selectionner le temps de pose (depend du modele d'APN)
    result = libgphoto_getTimeValue(cam->params->gphotoSession, &cam->exptime); 
    if ( result != 0 ) {
+      cam_close(cam);
       return -1;
    }
 
@@ -964,15 +985,26 @@ int  cam_setUseCf(struct camprop *cam, int value) {
 }
 
 /**
- * cam_setUseCF 
- *    returns quality list values
+ * cam_getDebug 
+ *    get debug level ( 0 or 1 )
  * 
  * Returns value:
- *  0 
+ *   debug level
  *  
 */
-int  cam_setDebug(struct camprop *cam, int value) {
-   libgphoto_setDebugLog(cam->params->gphotoSession, value);
-   return 0;
+int  cam_getDebug(struct camprop *cam) {
+   return cam->params->debug;
 }
 
+/**
+ * cam_setDebug 
+ *    set debug level ( 0 or 1 )
+ * 
+ * Returns value:
+ *   debug level
+ *  
+*/
+void cam_setDebug(struct camprop *cam, int value) {
+   libgphoto_setDebugLog(cam->params->gphotoSession, value);
+   cam->params->debug = value;
+}

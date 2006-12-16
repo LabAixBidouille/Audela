@@ -307,6 +307,7 @@ gp_port_info_list_load_dir (GPPortInfoList *list, const char * iolibsdir)
         if( strstr(_strlwr((char *) filename), "libgphoto2_") == NULL ) {
             continue;
         }
+
 #endif
         
         lh = gp_system_dlopen (path);
