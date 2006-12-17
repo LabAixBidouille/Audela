@@ -540,7 +540,7 @@ void CPixels::fitgauss1d(int n,double *y,double *p,double *ecart)
    double m0,m1;
    double e1[4];
    int i,j;
-//   double maxi;
+
    p[0]=y[0];
    p[1]=0.;
    p[3]=1e9;
@@ -561,10 +561,10 @@ void CPixels::fitgauss1d(int n,double *y,double *p,double *ecart)
    }
    m=0;
    l1=(double)1e10;
-   b1:
+fitgauss1d_b1:
    for (i=0;i<l;i++) {
       a0=p[i];
-      b2:
+      fitgauss1d_b2:
       l2=0;
       for (j=0;j<n;j++) {
          x=(double)j;
@@ -592,14 +592,14 @@ void CPixels::fitgauss1d(int n,double *y,double *p,double *ecart)
       if (m1>m0) e1[i]=-e1[i]/2;
       if (m1<m0) e1[i]=(float)1.2*e1[i];
       if (m1>m0) p[i]=a0;
-      if (m1>m0) goto b2;
+      if (m1>(m0*(1.+1e-15)) ) goto fitgauss1d_b2;
    }
    m++;
    if (m==nbmax) {p[2]=sqrt(p[2])/.601; return; }
    if (l2==0) {p[2]=sqrt(p[2])/.601; return; }
    if (fabs((l1-l2)/l2)<e) {p[2]=sqrt(p[2])/.601; return; }
    l1=l2;
-   goto b1;
+   goto fitgauss1d_b1;
 }
 
 void CPixels::fitgauss1d_a(int n,double *y,double *p,double *ecart)
@@ -645,11 +645,11 @@ void CPixels::fitgauss1d_a(int n,double *y,double *p,double *ecart)
    e1[2]=(float)0.;
    m=0;
    l1=(double)1e10;
-   b1:
+fitgauss1d_a_b1:
    for (i=0;i<l;i++) {
 	  if (i==2) continue;
       a0=p[i];
-      b2:
+      fitgauss1d_a_b2:
       l2=0;
       for (j=0;j<n;j++) {
          x=(double)j;
@@ -677,14 +677,14 @@ void CPixels::fitgauss1d_a(int n,double *y,double *p,double *ecart)
       if (m1>m0) e1[i]=-e1[i]/2;
       if (m1<m0) e1[i]=(float)1.2*e1[i];
       if (m1>m0) p[i]=a0;
-      if (m1>m0) goto b2;
+      if (m1>m0) goto fitgauss1d_a_b2;
    }
    m++;
    if (m==nbmax) {p[2]=sqrt(p[2])/.601; return; }
    if (l2==0) {p[2]=sqrt(p[2])/.601; return; }
    if (fabs((l1-l2)/l2)<e) {p[2]=sqrt(p[2])/.601; return; }
    l1=l2;
-   goto b1;
+   goto fitgauss1d_a_b1;
 }
 
 /***************************************************/
@@ -740,11 +740,11 @@ void CPixels::fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart
 
    m=0;
    l1=(double)1e10;
-   b1:
+   fitgauss2d_b1:
 
    for (i=0;i<l;i++) {
 	   a0=p[i];
-      b2:
+      fitgauss2d_b2:
 	   l2=0;
 	   for (jx=0;jx<sizex;jx++) {
 	      xx=(double)jx;
@@ -777,14 +777,14 @@ void CPixels::fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart
       if (m1>m0) e1[i]=-e1[i]/2;
       if (m1<m0) e1[i]=(float)1.2*e1[i];
       if (m1>m0) p[i]=a0;
-      if (m1>m0) goto b2;
+      if (m1>m0) goto fitgauss2d_b2;
    }
    m++;
    if (m==nbmax) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
    if (l2==0) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
    if (fabs((l1-l2)/l2)<e) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
    l1=l2;
-   goto b1;
+   goto fitgauss2d_b1;
 }
 
 void CPixels::Fwhm(int x1, int y1, int x2, int y2,
