@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.29 2006-12-16 22:20:04 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.30 2006-12-17 16:40:54 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -22,7 +22,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure DemarrageAcqFC ********************************
    proc DemarrageAcqFC { visuNo } {
-      global panneau audace caption
+      global audace caption panneau
 
       #--- Gestion du fichier de log
       #--- Creation du nom de fichier log
@@ -62,9 +62,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure ArretAcqFC ************************************
    proc ArretAcqFC { visuNo } {
-      global caption
-      global audace
-      global panneau
+      global audace caption panneau
 
       #--- Fermeture du fichier de log
       if { [ info exists ::AcqFC::log_id ] } {
@@ -87,8 +85,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure Init ******************************************
    proc Init { { in "" } { visuNo 1 } } {
-      global conf
-      global panneau
+      global conf panneau
 
       set panneau(AcqFC,$visuNo,base) $in
       createPanel $visuNo "$in.acqFC"
@@ -104,8 +101,7 @@ namespace eval ::AcqFC {
 #***** Procedure Init_list_extension ***************************
    proc Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
       variable This
-      global conf
-      global panneau
+      global conf panneau
 
       #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
       $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu delete 0 20
@@ -158,7 +154,7 @@ namespace eval ::AcqFC {
 #***** Procedure createPanel ***********************************
    proc createPanel { visuNo this } {
       variable parametres
-      global audace conf panneau caption
+      global audace caption conf panneau
 
       #---
       set panneau(AcqFC,$visuNo,This) $this
@@ -166,14 +162,6 @@ namespace eval ::AcqFC {
 
       #--- Recuperation de la derniere configuration de prise de vue
       ::AcqFC::Chargement_Var $visuNo
-
-      #--- Chargement du package tkimgvideo (video pour les WebCams sous Windows uniquement)
-      ###if { $::tcl_platform(os) != "Linux" } {
-      ###   set result [ catch { package require tkimgvideo } msg ]
-      ###   if { $result == "1" } {
-      ###      console::affiche_erreur "$caption(acqfc,no_package)\n"
-      ###   }
-      ###}
 
       #--- Initialisation de la variable conf()
       if { ! [info exists conf(acqfc,avancement,position)] } { set conf(acqfc,avancement,position) "+120+315" }
@@ -276,8 +264,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure deletePanel ***********************************
    proc deletePanel { visuNo } {
-      global conf
-      global panneau
+      global conf panneau
 
       #--- Je desactive la surveillance de la connexion d'une camera
       ::confVisu::removeCameraListener $visuNo "::AcqFC::Adapt_Panneau_AcqFC $visuNo"
@@ -301,9 +288,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure Adapt_Panneau_AcqFC ***************************
    proc Adapt_Panneau_AcqFC { visuNo { a "" } { b "" } { c "" } } {
-      global conf
-      global audace
-      global panneau
+      global audace conf panneau
 
       #---
       set camNo [ ::confVisu::getCamNo $visuNo ] 
@@ -436,8 +421,7 @@ namespace eval ::AcqFC {
 #***** Procedure Enregistrement_Var ****************************
    proc Enregistrement_Var { visuNo } {
       variable parametres
-      global audace
-      global panneau
+      global audace panneau
 
       #---
       set panneau(AcqFC,$visuNo,mode)       [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
@@ -466,8 +450,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure startTool *************************************
    proc startTool { { visuNo 1 } } {
-      global conf
-      global panneau
+      global conf panneau
 
       #--- Creation des fenetres auxiliaires si necessaire
       if { $panneau(AcqFC,$visuNo,mode) == "4" } {
@@ -487,9 +470,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure stopTool **************************************
    proc stopTool { { visuNo 1 } } {
-      global conf
-      global audace
-      global panneau
+      global audace conf panneau
 
       #--- Sauvegarde de la configuration de prise de vue
       ::AcqFC::Enregistrement_Var $visuNo
@@ -546,7 +527,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure de changement de l'obturateur *****************
    proc ChangeObt { visuNo } {
-      global panneau conf confCam audace caption frmm
+      global audace caption conf confCam frmm panneau
 
       #---
       set camNo      [ ::confVisu::getCamNo $visuNo ]
@@ -679,8 +660,8 @@ namespace eval ::AcqFC {
          set panneau(AcqFC,$visuNo,session_ouverture) "0"
       }
 
-      #--- Enregistrement de l'extension des fichiers
-      set ext [ buf[ ::confVisu::getBufNo $visuNo ] extension ]
+      #--- Recopie de l'extension des fichiers image
+      set ext $panneau(AcqFC,$visuNo,extension)
 
       switch $panneau(AcqFC,$visuNo,go_stop) {
         go {
@@ -703,8 +684,7 @@ namespace eval ::AcqFC {
               }
               ::audace::menustate normal
            }
-           
-           
+
            #--- Le temps de pose existe-t-il ?
            if { $panneau(AcqFC,$visuNo,pose) == "" } {
               tk_messageBox -title $caption(acqfc,pb) -type ok \
@@ -1139,7 +1119,7 @@ namespace eval ::AcqFC {
                     set nom $panneau(AcqFC,$visuNo,nom_image)
                     #--- Pour eviter un nom de fichier qui commence par un blanc
                     set nom [lindex $nom 0]
-                    append nom $panneau(AcqFC,$visuNo,index) $ext
+                    append nom $panneau(AcqFC,$visuNo,index) ".avi"
                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
                        #--- Dans ce cas, le fichier existe deja...
                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1210,7 +1190,7 @@ namespace eval ::AcqFC {
                     set nom $panneau(AcqFC,$visuNo,nom_image)
                     #--- Pour eviter un nom de fichier qui commence par un blanc
                     set nom [lindex $nom 0]
-                    append nom $panneau(AcqFC,$visuNo,index) $ext
+                    append nom $panneau(AcqFC,$visuNo,index) ".avi"
                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
                        #--- Dans ce cas, le fichier existe deja...
                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1988,6 +1968,7 @@ namespace eval ::AcqFC {
 #***** Procedure d'apercu en mode video ************************
    proc changerVideoPreview { visuNo } {
       global panneau
+
       if { $panneau(AcqFC,$visuNo,showvideopreview) == 1 } {
          ::AcqFC::startVideoPreview $visuNo
       } else {
@@ -1998,10 +1979,7 @@ namespace eval ::AcqFC {
 #***** Demarre le mode video************************
 # retourne 0 si OK, 1 si erreur
    proc startVideoPreview { visuNo } {
-      global audace
-      global conf
-      global panneau
-      global caption
+      global audace caption conf panneau
 
       if { [ ::confVisu::getCamera $visuNo ] == "" } {
         ::confCam::run 
@@ -2050,10 +2028,8 @@ namespace eval ::AcqFC {
 
 #***** Procedure fin d'apercu en mode video ************************
    proc stopVideoPreview { visuNo } {
-      global audace
-      global conf
-      global panneau
-      
+      global audace conf panneau
+
       #--- J'arrete l'aquisition fenetree si elle est active
       if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
       #   ::AcqFC::stopVideoCrop
@@ -2074,7 +2050,7 @@ namespace eval ::AcqFC {
 #***** Procedure d'affichage d'une barre de progression ********
 #--- Cette routine permet d'afficher une barre de progression qui simule l'avancement de la pose
    proc Avancement_pose { visuNo { t } } {
-      global conf audace caption panneau color
+      global audace caption color conf panneau
 
       if { $panneau(AcqFC,$visuNo,avancement_acq) == "1" } {
          #--- Recuperation de la position de la fenetre
@@ -2237,10 +2213,10 @@ namespace eval ::AcqFC {
 #***** Procedure de sauvegarde de l'image **********************
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le mode "Une image"
    proc SauveUneImage { visuNo } {
-      global panneau caption audace
+      global audace caption panneau
 
-      #--- Enregistrer l'extension des fichiers
-      set ext [ buf[ ::confVisu::getBufNo $visuNo ] extension ]
+      #--- Recopie de l'extension des fichiers image
+      set ext $panneau(AcqFC,$visuNo,extension)
 
       #--- Tests d'integrite de la requete
 
@@ -2339,9 +2315,7 @@ namespace eval ::AcqFC {
 #--- Cette procedure est recopiee de methking.tcl, elle permet l'affichage de differents
 #--- messages (dans la console, le fichier log, etc.)
    proc Message { visuNo niveau args } {
-      global caption
-      global conf
-      global panneau
+      global caption conf panneau
 
       switch -exact -- $niveau {
         console {
@@ -2397,10 +2371,7 @@ namespace eval ::AcqFC {
 
 #***** Fenetre de configuration series d'images a intervalle regulier en continu *****
    proc Intervalle_continu_1 { visuNo } {
-      global conf
-      global audace
-      global caption
-      global panneau
+      global audace caption conf panneau
 
       set panneau(AcqFC,$visuNo,intervalle)            "....."
       set panneau(AcqFC,$visuNo,simulation_deja_faite) "0"
@@ -2458,8 +2429,7 @@ namespace eval ::AcqFC {
 
 #***** Commande associee au bouton simulation de la fenetre Continu (1) ******************
    proc Command_continu_1 { visuNo } {
-      global caption
-      global panneau
+      global caption panneau
 
       set panneau(AcqFC,$visuNo,intervalle) "....."
       set simu1 "$caption(acqfc,int_mini_serie) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)"
@@ -2476,8 +2446,7 @@ namespace eval ::AcqFC {
 
 #***** Si une simulation a deja ete faite pour la fenetre Continu (1) ********************
    proc Simu_deja_faite_1 { visuNo } {
-      global caption
-      global panneau
+      global caption panneau
 
       if { $panneau(AcqFC,$visuNo,simulation_deja_faite) == "1" } {
          set panneau(AcqFC,$visuNo,intervalle) "xxx"
@@ -2495,10 +2464,7 @@ namespace eval ::AcqFC {
 
 #***** Fenetre de configuration images a intervalle regulier en continu ******************
    proc Intervalle_continu_2 { visuNo } {
-      global conf
-      global audace
-      global caption
-      global panneau
+      global audace caption conf panneau
 
       set panneau(AcqFC,$visuNo,intervalle)            "....."
       set panneau(AcqFC,$visuNo,simulation_deja_faite) "0"
@@ -2556,8 +2522,7 @@ namespace eval ::AcqFC {
 
 #***** Commande associee au bouton simulation de la fenetre Continu (2) ******************
    proc Command_continu_2 { visuNo } {
-      global caption
-      global panneau
+      global caption panneau
 
       set panneau(AcqFC,$visuNo,intervalle) "....."
       set simu2 "$caption(acqfc,int_mini_image) $panneau(AcqFC,$visuNo,intervalle) $caption(acqfc,sec)"
@@ -2575,8 +2540,7 @@ namespace eval ::AcqFC {
 
 #***** Si une simulation a deja ete faite pour la fenetre Continu (2) ********************
    proc Simu_deja_faite_2 { visuNo } {
-      global caption
-      global panneau
+      global caption panneau
 
       if { $panneau(AcqFC,$visuNo,simulation_deja_faite) == "1" } {
          set panneau(AcqFC,$visuNo,intervalle) "xxx" ; \
@@ -2594,10 +2558,7 @@ namespace eval ::AcqFC {
 
 #***** Fenetre de configuration video ****************************************************
    proc selectVideoMode { visuNo } {
-      global conf
-      global audace
-      global caption
-      global panneau
+      global audace caption conf panneau
 
       ::AcqFC::recup_position $visuNo
 
@@ -2760,10 +2721,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure de demarrage du fenetrage video *********************************************
    proc startWindowedFenster { visuNo } {
-      global audace
-      global caption
-      global conf
-      global panneau
+      global audace caption conf panneau
 
       #--- Active le mode preview
       if { $panneau(AcqFC,$visuNo,showvideopreview) == "0" } {
@@ -2795,8 +2753,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure d'arret du fenetrage video **************************************************
    proc stopWindowedFenster { visuNo } {
-      global audace
-      global conf
+      global audace conf
 
       if { "[ ::confVisu::getProduct $visuNo ]" == "webcam" } {
 
@@ -2806,9 +2763,7 @@ namespace eval ::AcqFC {
 
 #***** Enregistrement de la position des fenetres Continu (1), Continu (2), Video et Video (1) ********
    proc recup_position { visuNo } {
-      global audace
-      global conf
-      global panneau
+      global audace conf panneau
 
       #--- Cas de la fenetre Continu (1)
       if [ winfo exists $panneau(AcqFC,$visuNo,base).intervalle_continu_1 ] {
@@ -2940,7 +2895,7 @@ namespace eval ::AcqFC {
 #==============================================================
 
 proc AcqFCBuildIF { visuNo } {
-   global audace conf panneau caption
+   global audace caption conf panneau
 
    #--- Lancement des options
    source [ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]

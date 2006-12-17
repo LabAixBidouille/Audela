@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.16 2006-12-13 22:43:00 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.17 2006-12-17 16:40:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -54,7 +54,6 @@ set caption(acqfc,pb_camera1)                "Camera"
 set caption(acqfc,pb_camera2)                "is not a Webcam."
 set caption(acqfc,start_capture_error)       "Error when starting capture:"
 set caption(acqfc,error)                     "Error:"
-set caption(acqfc,no_package)                "Error: No tkimgvideo package."
 set caption(acqfc,no_video_mode)             "Camera has no video mode."
 set caption(acqfc,attention)                 "Warning"
 set caption(acqfc,pb)                        "Problem"
@@ -178,7 +177,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pb_camera2)             "n'est pas une WebCam."
    set caption(acqfc,start_capture_error)    "Erreur au demarrage de la capture :"
    set caption(acqfc,error)                  "Erreur :"
-   set caption(acqfc,no_package)             "Erreur : Package tkimgvideo non trouvé."
    set caption(acqfc,no_video_mode)          "La caméra n'a pas de mode vidéo."
    set caption(acqfc,attention)              "Attention"
    set caption(acqfc,pb)                     "Problème"
@@ -303,7 +301,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pb_camera2)             "non e' una webcam."
    set caption(acqfc,start_capture_error)    "Errore all'avvio ripresa:"
    set caption(acqfc,error)                  "Errore:"
-   set caption(acqfc,no_package)             "Errore: Package tkimgvideo non trovato."
    set caption(acqfc,no_video_mode)          "La camera non ha il modo video."
    set caption(acqfc,attention)              "Attenzione"
    set caption(acqfc,pb)                     "Problema"
@@ -427,7 +424,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pb_camera2)             "no es una WebCam."
    set caption(acqfc,start_capture_error)    "Error al iniciar captura:"
    set caption(acqfc,error)                  "Error:"
-   set caption(acqfc,no_package)             "Error: No tengo el paquete tkimgvideo."
    set caption(acqfc,no_video_mode)          "La cámara no tiene modo de vídeo."
    set caption(acqfc,attention)              "Cuidado"
    set caption(acqfc,pb)                     "Problema"
@@ -551,7 +547,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pb_camera2)             "Kamera ist keine Webcam."
    set caption(acqfc,start_capture_error)    "Irrtum während Eroberung Anfang:"
    set caption(acqfc,error)                  "Irrtum:"
-   set caption(acqfc,no_package)             "Irrtum: Kein tkimgvideo Programmpaket."
    set caption(acqfc,no_video_mode)          "Die Kamera hat keinen Video Modus."
    set caption(acqfc,attention)              "Achtung"
    set caption(acqfc,pb)                     "Problem"
@@ -675,7 +670,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pb_camera2)             "não é uma WebCam."
    set caption(acqfc,start_capture_error)    "Erro no arranque da captura :"
    set caption(acqfc,error)                  "Erro :"
-   set caption(acqfc,no_package)             "Erro : Pacote tkimgvideo não encontrado."
    set caption(acqfc,no_video_mode)          "A câmara não funciona em modo video."
    set caption(acqfc,attention)              "Aviso"
    set caption(acqfc,pb)                     "Problema"
@@ -800,7 +794,6 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pb_camera2)             "is not a Webcam."
    set caption(acqfc,start_capture_error)    "Error when starting capture:"
    set caption(acqfc,error)                  "Error:"
-   set caption(acqfc,no_package)             "Error: No tkimgvideo package."
    set caption(acqfc,no_video_mode)          "Camera has no video mode."
    set caption(acqfc,attention)              "Advarsel"
    set caption(acqfc,pb)                     "Problem"
