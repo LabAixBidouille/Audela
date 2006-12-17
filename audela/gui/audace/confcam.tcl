@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.47 2006-12-08 19:15:28 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.48 2006-12-17 14:47:00 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -193,17 +193,16 @@ namespace eval ::confCam {
             ::confCam::KittyDispTemp
          } elseif { [ string compare $confCam($cam_item,camName) andor ] == "0" } {
             ::confCam::AndorDispTemp
-         } elseif { [ string compare $confCam($cam_item,camName) cemes ] == "0" } {
-            ::confCam::AndorDispTemp
          } elseif { [ string compare $confCam($cam_item,camName) fingerlakes ] == "0" } {
             ::confCam::FLIDispTemp
+         } elseif { [ string compare $confCam($cam_item,camName) cemes ] == "0" } {
+            ::confCam::AndorDispTemp
          }
       } else {
          select audine
       }
       catch { tkwait visibility $This }
    }
-
 
    #
    # confCam::startDriver
@@ -412,8 +411,16 @@ namespace eval ::confCam {
             $frm.longueposestartvalue configure -state disabled
          }
          if { $confCam(webcam,ccd_N_B) == "1" } {
+            if { $confCam(webcam,dim_ccd_N_B) == "1/4''" } {
+               set confCam(webcam,ccd) "ICX098BL-6"
+            } elseif { $confCam(webcam,dim_ccd_N_B) == "1/3''" } {
+               set confCam(webcam,ccd) "ICX424AL-6"
+            } elseif { $confCam(webcam,dim_ccd_N_B) == "1/2''" } {
+               set confCam(webcam,ccd) "ICX414AL-6"
+            }
             pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
          } else {
+            set confCam(webcam,ccd) "ICX098BQ-A"
             pack forget $frm.frame14
          }
       }
@@ -640,7 +647,7 @@ namespace eval ::confCam {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -822,7 +829,7 @@ namespace eval ::confCam {
       pack $frm.lab5 -in $frm.frame16 -anchor center -side left -padx 10
 
       set list_combobox [ list $caption(confcam,obtu_audine) $caption(confcam,obtu_audine-) \
-         $caption(confcam,obtu_thierry) ]
+         $caption(confcam,obtu_i2c) $caption(confcam,obtu_thierry) ]
       ComboBox $frm.typeobtu \
          -width 11         \
          -height [ llength $list_combobox ] \
@@ -2350,6 +2357,7 @@ namespace eval ::confCam {
          -borderwidth 1    \
          -editable 0       \
          -textvariable confCam(webcam,dim_ccd_N_B) \
+         -modifycmd "::confCam::ConfWebCam" \
          -values $list_combobox
       pack $frm.dim_ccd_N_B -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
 
@@ -3391,11 +3399,32 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList { camNo } {
+      global confCam
+
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
       if { $result == 0 } {
          #---
          switch $product {
+            audine {
+               switch [::confLink::getLinkNamespace $confCam(audine,port)] {
+                  "parallelport" {
+                     set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
+                  }
+                  "quickaudine" {
+                     set binningList { 1x1 2x2 3x3 4x4 }
+                  }
+                  "audinet" {
+                     set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
+                  }
+                  "ethernaude" {
+                     set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
+                  }
+               }
+            }
+            webcam {
+               set binningList { 1x1 }
+            }
             dslr {
                set binningList [cam$camNo quality list]
             }
@@ -3569,8 +3598,8 @@ namespace eval ::confCam {
                         }
             sbig        { return 1 }
             andor       { return 1 }
-            cemes       { return 1 }
             fingerlakes { return 1 }
+            cemes       { return 1 }
             default     { return 0 }
          }
       } else {
@@ -3606,7 +3635,7 @@ namespace eval ::confCam {
                      set ShutterOptionList [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                   }
                   "audinet" {
-                     #--- O + F + S - A confirmer avec le materiel
+                     #--- O + F + S
                      set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                   }
                   "ethernaude" {
@@ -3631,11 +3660,11 @@ namespace eval ::confCam {
                #--- O + F + S - A confirmer avec le materiel
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
-            cemes {
+            fingerlakes {
                #--- O + F + S - A confirmer avec le materiel
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
-            fingerlakes {
+            cemes {
                #--- O + F + S - A confirmer avec le materiel
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
@@ -4170,7 +4199,7 @@ namespace eval ::confCam {
             }
             webcam {
                set camNo [ cam::create webcam USB -channel $conf(webcam,channel) \
-                  -lpport $conf(webcam,longueposeport) -name WEBCAM  ]
+                  -lpport $conf(webcam,longueposeport) -name WEBCAM -ccd $confCam(webcam,ccd) ]
                console::affiche_erreur "$caption(confcam,webcam_canal_usb) ($caption(confcam,webcam))\
                   $caption(confcam,2points) Channel = $conf(webcam,channel)\n"
                console::affiche_erreur "$caption(confcam,webcam_longuepose) $caption(confcam,2points)\
@@ -4237,7 +4266,7 @@ namespace eval ::confCam {
             dslr {
                switch [::confLink::getLinkNamespace $conf(dslr,port)] {
                   gphoto2 {
-                     set camNo [ cam::create digicam USB -name DSLR ]
+                     set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir $::audela_start_dir ]
                      set confCam($cam_item,camNo) $camNo
                      console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$camNo name ]\n"
@@ -4414,8 +4443,8 @@ namespace eval ::confCam {
                      if { $eth_canspeed < "0" } { set eth_canspeed "0" }
                      if { $eth_canspeed > "100" } { set eth_canspeed "100" }
                      if { [ string range $conf(audine,typeobtu) 0 5 ] == "audine" } {
-                        # L'EthernAude semble inverser le fonctionnement de l'obturateur par rapport au
-                        # fonctionnement du port parallele, on retablit donc ici le meme fonctionnement
+                        #--- L'EthernAude inverse le fonctionnement de l'obturateur par rapport au
+                        #--- port parallele, on retablit donc ici le meme fonctionnement
                         if { [ string index $conf(audine,typeobtu) 7 ] == "-" } {
                            set shutterinvert "0"
                         } else {
@@ -4448,7 +4477,8 @@ namespace eval ::confCam {
                   audinet {
                      set camNo [cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
                         -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
-                        -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) ]
+                        -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) \
+                        -debug_cam $conf(audinet,debug) ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
                      set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
                   }
@@ -4460,25 +4490,32 @@ namespace eval ::confCam {
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(audine,mirh)
                cam$camNo mirrorv $conf(audine,mirv)
+
                #--- je parametre le mode de fonctionnement de l'obturateur
                switch -exact -- $conf(audine,foncobtu) {
                   0 { cam$camNo shutter "opened" }
                   1 { cam$camNo shutter "closed" }
                   2 { cam$camNo shutter "synchro" }
                }
+
                #--- je parametre le type de l'obturateur
-               switch -exact -- $conf(audine,typeobtu) {
-                  "$caption(confcam,obtu_audine) -" { cam$camNo shuttertype audine reverse }
-                  "$caption(confcam,obtu_audine)"   { cam$camNo shuttertype audine }
-                  "$caption(confcam,obtu_i2c)"      { cam$camNo shuttertype audine }
-                  "$caption(confcam,obtu_thierry)"  {
-                     cam$camNo shuttertype thierry
+               #--- (sauf pour l'EthernAude qui est commande par l'option -shutterinvert)
+               if { [::confLink::getLinkNamespace $conf(audine,port)] != "ethernaude" } {
+                  if { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine-)" } {
+                     cam$camNo shuttertype audine reverse
+                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine)" } {
+                     cam$camNo shuttertype audine
+                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_i2c)" } { 
+                     cam$camNo shuttertype audine
+                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_thierry)" } {
                      set confcolor(obtu_pierre) "1"
                      ::Obtu_Pierre::run
+                     cam$camNo shuttertype thierry
                   }
                }
+
                #--- je parametre le fonctionnement de l'ampli du CCD
-               #--- (sans effet avec EthernAude et AudiNet)
+               #--- (sans effet sur l'EthernAude et l'AudiNet)
                if { [::confLink::getLinkNamespace $conf(audine,port)] == "parallelport" } {
                   switch -exact -- $conf(audine,ampli_ccd) {
                      0 { cam$camNo ampli "synchro" }
@@ -4507,7 +4544,7 @@ namespace eval ::confCam {
       #--- <= fin du catch
 
       if { $cam_item == "A" } {
-         #--- mise a jour de la variable audace pour compatibilite
+         #--- Mise a jour de la variable audace pour compatibilite
          set ::audace(camNo) $confCam($cam_item,camNo)
       }
 
@@ -4538,11 +4575,6 @@ namespace eval ::confCam {
       #--- Desactive le blocage pendant l'acquisition (cli/sti)
       catch {
          cam$camNo interrupt 0
-      }
-
-      #--- Mise a jour des parametres de la camera de la boite de configuration optique
-      if { [ winfo exists $audace(base).confOptic ] } {
-         ::confOptic::MAJ_Conf_Camera
       }
 
    }
