@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.13 2006-12-16 14:08:44 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.14 2006-12-18 17:18:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -269,7 +269,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,dark)                        "Imagen de Dark"
    set caption(cmaude,overlay)                     "Imagen Overlay"
    set caption(cmaude,nom_image)                   "Nombre de la imagen"
-   set caption(cmaude,page_html)                   "# Création de la page HTML"
+   set caption(cmaude,page_html)                   "Creación de la página HTML"
    set caption(cmaude,binning)                     "Binning"
    set caption(cmaude,temps_pose)                  "Exposicion (seg.)"
    set caption(cmaude,entre_2_images)              "Intervalo entre 2 imagenes (seg.)"
@@ -287,7 +287,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,TU)                          "TU"
    set caption(cmaude,jour_julien)                 "o Dia Juliano"
    set caption(cmaude,position_soleil)             "Posición del Sol:"
-   set caption(cmaude,hauteur)                     "Elevación:"
+   set caption(cmaude,hauteur)                     "Altura:"
    set caption(cmaude,azimut)                      "Azimuth:"
    set caption(cmaude,phase_lune)                  "Fase actual de la Luna:"
    set caption(cmaude,illumine_lune)               "Fracción iluminada:"
@@ -313,8 +313,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,pas_activite)                "Sin actividad"
    set caption(cmaude,fin_boucle_acquisition_a)    "!Parada manual del bucle de adquisición a"
    set caption(cmaude,arret_auto_script)           "Parada automatica de script"
-   set caption(cmaude,hauteur_soleil)              "Elevación del Sol"
-   set caption(cmaude,hauteur_lune)                "Elevación de la Luna"
+   set caption(cmaude,hauteur_soleil)              "Altura del Sol"
+   set caption(cmaude,hauteur_lune)                "Altura de la Luna"
    set caption(cmaude,au-dessus)                   "por encima de"
    set caption(cmaude,hauteur_limite_soleil)       "Limite del crepusculo astronomico: -18°"
    set caption(cmaude,hauteur_critique_lune)       "La Luna es considerada como perturbación"
@@ -340,7 +340,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,elongation_lune)             "Elongation desde el Sol:"
 
    set caption(cmaude,initialisation)              "Inicialización"
-   set caption(cmaude,texte_init)                  "# Voulez-vous initialiser à 1 le compteur des images ?"
+   set caption(cmaude,texte_init)                  "Reinicialización del contador a 1?"
 
    set caption(cmaude,fichier_html)                "Creación o actualización del fichero html:"
 
@@ -437,7 +437,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,dark)                        "Imagem dark"
    set caption(cmaude,overlay)                     "Imagem de overlay"
    set caption(cmaude,nom_image)                   "Nome da imagem"
-   set caption(cmaude,page_html)                   "# Création de la page HTML"
+   set caption(cmaude,page_html)                   "Criação da página HTML"
    set caption(cmaude,binning)                     "Binning"
    set caption(cmaude,temps_pose)                  "Exposição (seg.)"
    set caption(cmaude,entre_2_images)              "Tempo entre 2 imagens (seg.)"
@@ -508,7 +508,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,elongation_lune)             "# Elongation à partir du Soleil :"
 
    set caption(cmaude,initialisation)              "Inicialização"
-   set caption(cmaude,texte_init)                  "# Voulez-vous initialiser à 1 le compteur des images ?"
+   set caption(cmaude,texte_init)                  "Deseja reiniciar o contador a 1?"
 
    set caption(cmaude,fichier_html)                "# Création ou mise à jour du fichier html :"
 
