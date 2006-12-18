@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.43 2006-12-02 09:10:28 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.44 2006-12-18 21:32:11 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -775,15 +775,21 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,apparence)..." \
          "::confColor::run $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." ::confCam::run
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,monture)..." ::confTel::run
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,liaison)..." ::confLink::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." \
+         "::confCam::run"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,monture)..." \
+         "::confTel::run"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,liaison)..." \
+         "::confLink::run"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,optique)..." \
-         "::confGenerique::run $audace(base).confOptic ::confOptic $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,equipement)..." ::confEqt::run
+         "::confOptic::run $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,equipement)..." \
+         "::confEqt::run"
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,raquette)..." ::confPad::run
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,carte)..." ::confCat::run
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,raquette)..." \
+         "::confPad::run"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,carte)..." \
+         "::confCat::run"
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,sauve_config)" \
          " ::audace::enregistrerConfiguration $visuNo "
