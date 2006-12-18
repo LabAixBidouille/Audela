@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.12 2006-12-13 22:43:38 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.13 2006-12-18 17:06:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -154,11 +154,11 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,intervalle)            "Intervalo"
 
    set caption(autoguider,seuil)                 "Nivel (pixels)"
-   set caption(autoguider,detection)             "Deteccion estrella"
+   set caption(autoguider,detection)             "Detección de estrella"
    set caption(autoguider,apprenti)              "Aprendizaje"
    set caption(autoguider,vitesse)               "Velocidad (pixel/s)"
    set caption(autoguider,detection_psf)         "Estrella"
-   set caption(autoguider,detection_fente)       "Slit"
+   set caption(autoguider,detection_fente)       "Rendija"
 
    set caption(autoguider,inclinaison)           "Inclinacion camara"
    set caption(autoguider,angle)                 "Angulo (°)"
