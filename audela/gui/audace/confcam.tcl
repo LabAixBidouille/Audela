@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.48 2006-12-17 14:47:00 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.49 2006-12-22 19:08:13 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -3370,6 +3370,8 @@ namespace eval ::confCam {
          set audace(camNo) $confCam($cam_item,camNo)
       }
       set confCam($cam_item,camName) ""
+      #--- Sert a la surveillance du Listener de la configuration optique
+      set confCam($cam_item,super_camNo) $confCam($cam_item,camNo)
    }
 
    #
@@ -3849,7 +3851,7 @@ namespace eval ::confCam {
          switch -exact -- $confCam($cam_item,camName) {
             hisis {
                if { $conf(hisis,modele) == "11" } {
-                  set camNo  [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
+                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
@@ -4548,6 +4550,10 @@ namespace eval ::confCam {
          set ::audace(camNo) $confCam($cam_item,camNo)
       }
 
+      #--- Creation d'une variable qui se met a jour a la fin de la procedure configureCamera
+      #--- Sert au Listener de surveillance de la configuration optique
+      set confCam($cam_item,super_camNo) $confCam($cam_item,camNo)
+
       #--- Traitement des erreurs detectees par le catch
       if { $erreur == "1" } {
          tk_messageBox -message "$errorMessage" -icon error
@@ -4592,7 +4598,7 @@ namespace eval ::confCam {
 
       set nn $This.usr.book
 
-      set index  [expr [Rnotebook:currentIndex $nn ] - 1 ]
+      set index [expr [Rnotebook:currentIndex $nn ] - 1 ]
       set confCam($cam_item,camName) [lindex $confCam(names) $index]
       set conf(camera,$cam_item,camName) [lindex $confCam(names) $index]
 
