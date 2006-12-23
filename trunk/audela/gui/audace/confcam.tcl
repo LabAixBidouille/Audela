@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.49 2006-12-22 19:08:13 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.50 2006-12-23 13:51:40 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -102,6 +102,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(webcam,channel) ] }              { set conf(webcam,channel)              "0" }
       if { ! [ info exists conf(webcam,ccd_N_B) ] }              { set conf(webcam,ccd_N_B)              "0" }
       if { ! [ info exists conf(webcam,dim_ccd_N_B) ] }          { set conf(webcam,dim_ccd_N_B)          "1/4''" }
+      if { ! [ info exists conf(webcam,ccd) ] }                  { set conf(webcam,ccd)                  "" }
 
       #--- initConf 8
       if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
@@ -2183,6 +2184,7 @@ namespace eval ::confCam {
       set confCam(webcam,channel)              $conf(webcam,channel)
       set confCam(webcam,ccd_N_B)              $conf(webcam,ccd_N_B)
       set confCam(webcam,dim_ccd_N_B)          $conf(webcam,dim_ccd_N_B)
+      set confCam(webcam,ccd)                  $conf(webcam,ccd)
 
       #--- Initialisation
       set frmm(Camera7) [ Rnotebook:frame $nn 7 ]
@@ -3793,7 +3795,6 @@ namespace eval ::confCam {
       global conf
       global confcolor
       global confCam
-      global panneau
 
       # Initialisation de la variable erreur
       set erreur "1"
@@ -4201,7 +4202,7 @@ namespace eval ::confCam {
             }
             webcam {
                set camNo [ cam::create webcam USB -channel $conf(webcam,channel) \
-                  -lpport $conf(webcam,longueposeport) -name WEBCAM -ccd $confCam(webcam,ccd) ]
+                  -lpport $conf(webcam,longueposeport) -name WEBCAM -ccd $conf(webcam,ccd) ]
                console::affiche_erreur "$caption(confcam,webcam_canal_usb) ($caption(confcam,webcam))\
                   $caption(confcam,2points) Channel = $conf(webcam,channel)\n"
                console::affiche_erreur "$caption(confcam,webcam_longuepose) $caption(confcam,2points)\
@@ -4665,6 +4666,7 @@ namespace eval ::confCam {
       set conf(webcam,channel)              $confCam(webcam,channel)
       set conf(webcam,ccd_N_B)              $confCam(webcam,ccd_N_B)
       set conf(webcam,dim_ccd_N_B)          $confCam(webcam,dim_ccd_N_B)
+      set conf(webcam,ccd)                  $confCam(webcam,ccd)
       #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
       set frm [ Rnotebook:frame $nn 8 ]
       set conf(th7852a,coef)                $confCam(th7852a,coef)
