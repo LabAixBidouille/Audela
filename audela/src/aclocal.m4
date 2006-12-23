@@ -2510,9 +2510,9 @@ AC_DEFUN(SC_TCL_64BIT_FLAGS, [
 AC_DEFUN(AM_PATH_GSL,
 [
 AC_ARG_WITH(gsl-prefix,[  --with-gsl-prefix=PFX   Prefix where GSL is installed (optional)],
-            gsl_prefix="$withval", gsl_prefix="")
+            gsl_prefix="$withval", gsl_prefix="/usr")
 AC_ARG_WITH(gsl-exec-prefix,[  --with-gsl-exec-prefix=PFX Exec prefix where GSL is installed (optional)],
-            gsl_exec_prefix="$withval", gsl_exec_prefix="")
+            gsl_exec_prefix="$withval", gsl_exec_prefix="/usr")
 AC_ARG_ENABLE(gsltest, [  --disable-gsltest       Do not try to compile and run a test GSL program],
 		    , enable_gsltest=yes)
 
