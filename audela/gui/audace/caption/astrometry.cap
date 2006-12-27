@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.10 2006-12-08 19:09:00 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.11 2006-12-27 17:43:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -151,8 +151,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,delete_files)   "Eliminazione dei file temporanei"
    set caption(astrometry,delete_image)   "Eliminazione delle immagini temporanee"
    set caption(astrometry,error_no_image) "Prima visualizzare un'immagine."
-   set caption(astrometry,error_spectrum) "# Calculs astrométriques impossibles sur une image 1D."
-   set caption(astrometry,empty_keywords) "# Pour réaliser une calibration astrométrique, vous devez renseigner \nles mots-clés ayant un champ vide dans cette fenêtre."
+   set caption(astrometry,error_spectrum) "Calcolo astrometrico impossibile su una immagine 1D."
+   set caption(astrometry,empty_keywords) "Per realizzare una calibrazione astrometrica,\noccorre riempire i campi in questa finestra."
 
    set caption(astrometry,comment)        "La calibrazione astrometrica e' riuscita se tutti i punti rossi si sovrappongono a delle stelle."
    set caption(astrometry,erreur_USNO)    "E' richiesto il catalogo USNO %s (CD n°%s USNO-A2.0)."
