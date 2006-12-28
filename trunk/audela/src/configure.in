@@ -120,12 +120,12 @@ dnl Check the platform and preconfigure CXXFLAGS and LDFLAGS
 TARGET=`uname -s`
 echo "Found target $TARGET"
 if test $TARGET = "Darwin"; then
-	CXXFLAGS+="-fno-common "
-	LDFLAGS+="-dynamiclib "
+	CXXFLAGS += "-fno-common "
+	LDFLAGS += "-dynamiclib "
 fi
 if test $TARGET = "Linux"; then
-	CXXFLAGS+="-fPIC "
-	LDFLAGS+="-shared "
+	CXXFLAGS=$CXXFLAGS" -fPIC "
+	LDFLAGS=$LDFLAGS" -shared "
 fi
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
