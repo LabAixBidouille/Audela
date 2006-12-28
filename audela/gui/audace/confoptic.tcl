@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.11 2006-12-22 19:09:01 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.12 2006-12-28 16:26:42 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -158,56 +158,56 @@ namespace eval ::confOptic {
       if { ! [ info exists conf(confoptic,combinaison_optique_B,9) ] } { set conf(confoptic,combinaison_optique_B,9) "" }
 
       #--- Instrumentation associee a la camera C
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,0) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,0) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_C { }
-         set combinaison_optique_C(instrument)       "C8 $caption(confoptic,sans_accessoire)"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
-         set combinaison_optique_C(barlow_reduc)     "1.0"
+         array set combinaison_optique_D { }
+         set combinaison_optique_D(instrument)       "C8 $caption(confoptic,sans_accessoire)"
+         set combinaison_optique_D(diametre)         "203.0"
+         set combinaison_optique_D(focale)           "2000.0"
+         set combinaison_optique_D(barlow_reduc)     "1.0"
 
-         set conf(confoptic,combinaison_optique_C,0) [ array get combinaison_optique_C ]
+         set conf(confoptic,combinaison_optique_D,0) [ array get combinaison_optique_D ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,1) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,1) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_C { }
-         set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
-         set combinaison_optique_C(barlow_reduc)     "0.66"
+         array set combinaison_optique_D { }
+         set combinaison_optique_D(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
+         set combinaison_optique_D(diametre)         "203.0"
+         set combinaison_optique_D(focale)           "2000.0"
+         set combinaison_optique_D(barlow_reduc)     "0.66"
 
-         set conf(confoptic,combinaison_optique_C,1) [ array get combinaison_optique_C ]
+         set conf(confoptic,combinaison_optique_D,1) [ array get combinaison_optique_D ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,2) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,2) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_C { }
-         set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
-         set combinaison_optique_C(barlow_reduc)     "0.33"
+         array set combinaison_optique_D { }
+         set combinaison_optique_D(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
+         set combinaison_optique_D(diametre)         "203.0"
+         set combinaison_optique_D(focale)           "2000.0"
+         set combinaison_optique_D(barlow_reduc)     "0.33"
 
-         set conf(confoptic,combinaison_optique_C,2) [ array get combinaison_optique_C ]
+         set conf(confoptic,combinaison_optique_D,2) [ array get combinaison_optique_D ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,3) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,3) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_C { }
-         set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
-         set combinaison_optique_C(barlow_reduc)     "2.5"
+         array set combinaison_optique_D { }
+         set combinaison_optique_D(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
+         set combinaison_optique_D(diametre)         "203.0"
+         set combinaison_optique_D(focale)           "2000.0"
+         set combinaison_optique_D(barlow_reduc)     "2.5"
 
-         set conf(confoptic,combinaison_optique_C,3) [ array get combinaison_optique_C ]
+         set conf(confoptic,combinaison_optique_D,3) [ array get combinaison_optique_D ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,4) ] } { set conf(confoptic,combinaison_optique_C,4) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,5) ] } { set conf(confoptic,combinaison_optique_C,5) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,6) ] } { set conf(confoptic,combinaison_optique_C,6) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,7) ] } { set conf(confoptic,combinaison_optique_C,7) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,8) ] } { set conf(confoptic,combinaison_optique_C,8) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_C,9) ] } { set conf(confoptic,combinaison_optique_C,9) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,4) ] } { set conf(confoptic,combinaison_optique_D,4) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,5) ] } { set conf(confoptic,combinaison_optique_D,5) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,6) ] } { set conf(confoptic,combinaison_optique_D,6) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,7) ] } { set conf(confoptic,combinaison_optique_D,7) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,8) ] } { set conf(confoptic,combinaison_optique_D,8) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_D,9) ] } { set conf(confoptic,combinaison_optique_D,9) "" }
 
       #--- J'initialise les combobox du binning
       set widget(A,binning) "1x1"
@@ -442,13 +442,13 @@ namespace eval ::confOptic {
 
       #--- Je prepare les valeurs de la combobox de configuration du systeme optique C
       set widget(C,config_instrument) ""
-      foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
+      foreach {key value} [ array get conf confoptic,combinaison_optique_D,* ] {
          if { "$value" == "" } continue
          #--- Je mets les valeurs dans un array (de-serialisation)
-         array set combinaison_optique_C $value
+         array set combinaison_optique_D $value
          #--- Je prepare la ligne a afficher dans la combobox
-         set line "$combinaison_optique_C(instrument) - $combinaison_optique_C(diametre) - $combinaison_optique_C(focale) -\
-            $combinaison_optique_C(barlow_reduc)"
+         set line "$combinaison_optique_D(instrument) - $combinaison_optique_D(diametre) - $combinaison_optique_D(focale) -\
+            $combinaison_optique_D(barlow_reduc)"
          #--- J'ajoute la ligne
          lappend widget(C,config_instrument) "$line"
       }
@@ -592,23 +592,23 @@ namespace eval ::confOptic {
       set private(C,barlow_reduc) $widget(C,barlow_reduc)
 
       #--- J'ajoute le systeme optique en tete dans le tableau des systemes optiques precedents s'il n'y est pas deja
-      array set combinaison_optique_C { }
-      set combinaison_optique_C(instrument)   "$private(C,instrument)"
-      set combinaison_optique_C(diametre)     "$private(C,diametre)"
-      set combinaison_optique_C(focale)       "$private(C,focale)"
-      set combinaison_optique_C(barlow_reduc) "$private(C,barlow_reduc)"
+      array set combinaison_optique_D { }
+      set combinaison_optique_D(instrument)   "$private(C,instrument)"
+      set combinaison_optique_D(diametre)     "$private(C,diametre)"
+      set combinaison_optique_D(focale)       "$private(C,focale)"
+      set combinaison_optique_D(barlow_reduc) "$private(C,barlow_reduc)"
 
       #--- Je copie conf dans templist en mettant le systeme optique courant en premier
       array set templist_C { }
-      set templist_C(0) [ array get combinaison_optique_C ]
+      set templist_C(0) [ array get combinaison_optique_D ]
       set j "1"
-      foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
+      foreach {key value} [ array get conf confoptic,combinaison_optique_D,* ] {
          if { "$value" == "" } {
             set templist_C($j) ""
             incr j
          } else {
             array set temp1_C $value
-            if { "$temp1_C(instrument)" != "$combinaison_optique_C(instrument)" } {
+            if { "$temp1_C(instrument)" != "$combinaison_optique_D(instrument)" } {
                set templist_C($j) [ array get temp1_C ]
                incr j
             }
@@ -617,7 +617,7 @@ namespace eval ::confOptic {
 
       #-- Je copie templist dans conf
       for {set i 0} {$i < 10 } {incr i } {
-         set conf(confoptic,combinaison_optique_C,$i) $templist_C($i)
+         set conf(confoptic,combinaison_optique_D,$i) $templist_C($i)
       }
 
       #--- Je mets la position actuelle de la fenetre dans conf()
@@ -699,13 +699,13 @@ namespace eval ::confOptic {
       }
 
       #--- Je recupere les attributs de la configuration optique de la camera C de conf()
-      array set combinaison_optique_C $conf(confoptic,combinaison_optique_C,$index)
+      array set combinaison_optique_D $conf(confoptic,combinaison_optique_D,$index)
 
       #--- Je copie les valeurs dans les widgets pour la camera C
-      set widget(C,instrument)   $combinaison_optique_C(instrument)
-      set widget(C,diametre)     $combinaison_optique_C(diametre)
-      set widget(C,focale)       $combinaison_optique_C(focale)
-      set widget(C,barlow_reduc) $combinaison_optique_C(barlow_reduc)
+      set widget(C,instrument)   $combinaison_optique_D(instrument)
+      set widget(C,diametre)     $combinaison_optique_D(diametre)
+      set widget(C,focale)       $combinaison_optique_D(focale)
+      set widget(C,barlow_reduc) $combinaison_optique_D(barlow_reduc)
    }
 
    #------------------------------------------------------------
@@ -917,7 +917,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette A $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(cam_item) A ; tkwait window $audace(base).confCam"
       bind [ Rnotebook:button $nn 1 ] <Button-1> "::confOptic::MAJ_Conf_Camera A $::confOptic::widget(frm)"
    }
 
@@ -1130,7 +1130,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette B $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(cam_item) B ; tkwait window $audace(base).confCam"
       bind [ Rnotebook:button $nn 2 ] <Button-1> "::confOptic::MAJ_Conf_Camera B $::confOptic::widget(frm)"
    }
 
@@ -1343,7 +1343,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette C $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(cam_item) C ; tkwait window $audace(base).confCam"
       bind [ Rnotebook:button $nn 3 ] <Button-1> "::confOptic::MAJ_Conf_Camera C $::confOptic::widget(frm)"
    }
 
@@ -1375,7 +1375,7 @@ namespace eval ::confOptic {
          $frm.labURL_Binning configure -values $::confOptic::widget(list_combobox)
       } else {
          #--- Mise a jour de la combobox du binning
-         set confOptic::widget(binning) "1x1"
+         set confOptic::widget($cam_item,binning) "1x1"
          $frm.labURL_Binning configure -height [ llength $confOptic::widget(list_combobox) ]
          $frm.labURL_Binning configure -values $confOptic::widget(list_combobox)
          $frm.labURL_Binning configure -textvariable confOptic::widget($cam_item,binning)
