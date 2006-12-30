@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.17 2006-12-17 16:40:30 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.18 2006-12-30 18:10:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -295,7 +295,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,lg_film)                "Durata del filmato"
    set caption(acqfc,rate)                   "Frequenza immagini"
    set caption(acqfc,rate_unite)             "immagini/sec."
-   set caption(acqfc,config)                 "Settagio"
+   set caption(acqfc,config)                 "Settaggio"
    set caption(acqfc,format)                 "Formato immagine"
    set caption(acqfc,pb_camera1)             "La camera"
    set caption(acqfc,pb_camera2)             "non e' una webcam."
