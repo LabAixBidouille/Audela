@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.13 2006-12-18 17:06:20 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.14 2006-12-30 18:10:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -100,10 +100,10 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Occorre selezionare preventivamente una\ncamera CCD (menu Configurazione/Camera)."
 
    set caption(autoguider,image)                 "Immagine"
-   set caption(autoguider,cible)                 "# Cible"
-   set caption(autoguider,axe_AD)                "# Axe AD"
+   set caption(autoguider,cible)                 "Target"
+   set caption(autoguider,axe_AD)                "Asse AR"
    set caption(autoguider,ctrl_monture)          "Inseg. on"
-   set caption(autoguider,config_guidage)        "Settagio..."
+   set caption(autoguider,config_guidage)        "Settaggio..."
    set caption(autoguider,ecart_origine_etoile)  "Scarto"
 
    set caption(autoguider,pose)                  "Posa"
@@ -112,24 +112,24 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Intervallo"
 
-   set caption(autoguider,seuil)                 "# Seuil (pixel)"
-   set caption(autoguider,detection)             "# Détection étoile"
-   set caption(autoguider,apprenti)              "# Apprentissage"
-   set caption(autoguider,vitesse)               "# Vitesse (pixel/s)"
+   set caption(autoguider,seuil)                 "Soglia (pixel)"
+   set caption(autoguider,detection)             "Detezione stella"
+   set caption(autoguider,apprenti)              "Apprendimento"
+   set caption(autoguider,vitesse)               "Velocita` (pixel/s)"
    set caption(autoguider,detection_psf)         "Stella"
-   set caption(autoguider,detection_fente)       "# Fente"
+   set caption(autoguider,detection_fente)       "Fenditura"
 
-   set caption(autoguider,inclinaison)           "# Inclinaison de la caméra"
-   set caption(autoguider,angle)                 "# Angle (°)"
+   set caption(autoguider,inclinaison)           "Inclinazione della camera"
+   set caption(autoguider,angle)                 "Angolo (°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
-   set caption(autoguider,running)               "# Apprentissage en cours"
+   set caption(autoguider,running)               "Apprendimento in corso"
    set caption(autoguider,delay)                 "Intervallo"
-   set caption(autoguider,targetBoxSize)         "# Taille de la zone"
+   set caption(autoguider,targetBoxSize)         "Dimensioni della zona"
    set caption(autoguider,AD)                    "Ascensione Retta"
    set caption(autoguider,declinaison)           "Declinazione"
-   set caption(autoguider,aller_vers)            "# Aller vers"
-   set caption(autoguider,clic_etoile)           "# Cliquer sur l'étoile"
+   set caption(autoguider,aller_vers)            "Andare verso"
+   set caption(autoguider,clic_etoile)           "Cliccare sulla stella"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == 0 } {
