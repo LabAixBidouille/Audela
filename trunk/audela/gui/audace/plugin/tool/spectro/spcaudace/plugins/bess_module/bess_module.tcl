@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.2 2007-01-01 14:17:41 robertdelmas Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.1 2007-01-01 16:46:01 robertdelmas Exp $
 #
 #####################################################################
 
