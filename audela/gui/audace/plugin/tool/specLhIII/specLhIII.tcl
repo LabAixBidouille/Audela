@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Réduction complète des spectres Lhires III
 # Auteurs : François COCHARD
-# Date de mise a jour : 19 aout 2006
+# Mise a jour $Id: specLhIII.tcl,v 1.1 2007-01-01 11:55:17 robertdelmas Exp $
 # Odieusement pompé sur le panneau de prétraitement (SpDatafc.tcl)
 #
 
@@ -18,28 +18,26 @@ namespace eval ::spbmfc {
    variable numero_version
    global audace
 
-   # source [ file join $audace(rep_plugin) tool specLhIII specLhIII.cap ]
-   # BM le 19-08-06 :
-   source [ file join $audace(rep_plugin) tool spectro spcaudace plugins specLhIII specLhIII.cap ]
+   source [ file join $audace(rep_plugin) tool specLhIII specLhIII.cap ]
 
    # Numéro de la version du logiciel
    set numero_version "0.10"
 
 #***** Procédure Demarragespbmfc ********************************
-   proc Demarragespbmfc {} {
-	variable fichier_log
+   proc Demarragespbmfc { } {
+      variable fichier_log
       variable log_id
       variable numero_version
-	global audace caption
+      global audace caption
 
       # Lecture du fichier de configuration
       RecuperationParametres
 
 # 19/08/06 Création du fichier de log... cette partie doit être basculée dans l'éxécution du panneau. Maintenant, c'est à chaque réduction qu'un fichier de log doit
 # être créé !   
-      
-# 	# Gestion du fichier de log
-# 	# Creation du nom de fichier log
+
+#  # Gestion du fichier de log
+#  # Creation du nom de fichier log
 #       set nom_generique specLhIII
 #       # Heure à partir de laquelle on passe sur un nouveau fichier de log...
 #       set heure_nouveau_fichier 4
@@ -51,42 +49,42 @@ namespace eval ::spbmfc {
 #          # Sinon, je prends la date du jour
 #          set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
 #          }
-#     	set fichier_log $audace(rep_images)
-#     	append fichier_log "/" $nom_generique $formatdate ".log"
+#        set fichier_log $audace(rep_images)
+#        append fichier_log "/" $nom_generique $formatdate ".log"
 
-# 	# Ouverture
-# 	if {[catch {open $fichier_log a} log_id]} {
-# 	   Message console $caption(specLhIII,pbouvfichcons)
+#  # Ouverture
+#  if {[catch {open $fichier_log a} log_id]} {
+#     Message console $caption(specLhIII,pbouvfichcons)
 #          tk_messageBox -title $caption(specLhIII,pb) -type ok \
-# 		-message $caption(specLhIII,pbouvfich)
+#     -message $caption(specLhIII,pbouvfich)
 # # Note importante: Je détecte si j'ai un pb à l'ouverture du fichier, mais je ne sais
 # # pas traiter ce cas: Il faudrait interdire l'ouverture du panneau, mais le processus
 # # est déjà lancé à ce stade... Tout ce que je fais, c'est inviter l'utilisateur à
 # # changer d'outil !
 #          } else {
 #          # Entête du fichier
-# 	   Message log $caption(specLhIII,ouvsess) $numero_version
-#   	   set date [clock format [clock seconds] -format "%A %d %B %Y"]
+#     Message log $caption(specLhIII,ouvsess) $numero_version
+#        set date [clock format [clock seconds] -format "%A %d %B %Y"]
 #          set heure $audace(tu,format,hmsint)
-# 	   Message log $caption(specLhIII,affheure) $date $heure
+#     Message log $caption(specLhIII,affheure) $date $heure
 #          }
-#    }
+   }
 #***** Fin de la procédure Demarragespbmfc **********************
 
 #***** Procédure Arretspbmfc ************************************
-   proc Arretspbmfc {} {
-	variable log_id
-	global audace caption data_spbmfc panneau
+   proc Arretspbmfc { } {
+      variable log_id
+      global audace caption data_spbmfc panneau
 
-	# Fermeture du fichier de log
+      # Fermeture du fichier de log
       set heure $audace(tu,format,hmsint)
 # Je m'assure que le fichier se termine correctement, en particulier pour le cas où il y
 # a eu un problème à l'ouverture (C'est un peu une rustine...)
       if {[catch {Message log $caption(specLhIII,finsess) $heure} bug]} {
-	   Message console $caption(specLhIII,pbfermfichcons)
-         } else {
+         Message console $caption(specLhIII,pbfermfichcons)
+      } else {
          catch { close $log_id }
-         }
+      }
 
       # Récupération de la position de la fenêtre de réglages
       ::spbmfc::recup_position
@@ -95,17 +93,17 @@ namespace eval ::spbmfc {
       SauvegardeParametres
       # Fermeture de la fenêtre de prétraitement
       destroy $audace(base).fenetreSpData
-      }
+   }
 #***** Fin de la procédure Arretspbmfc **************************
 
 #***** Procédure Init ******************************************
-   proc Init {{in ""}} {
+   proc Init { { in "" } } {
       createPanel $in.spbmfc
-      }
+   }
 #***** Fin de la procédure Init ********************************
 
 #***** Procédure createPanel ***********************************
-   proc createPanel {this} {
+   proc createPanel { this } {
       variable This
       global caption panneau
 
@@ -148,12 +146,12 @@ namespace eval ::spbmfc {
       set panneau(fenetreSpData,geometry) [ wm geometry $audace(base).fenetreSpData ]
       set deb [ expr 1 + [ string first + $panneau(fenetreSpData,geometry) ] ]
       set fin [ string length $panneau(fenetreSpData,geometry) ]
-      set panneau(fenetreSpData,position) "+[string range $panneau(fenetreSpData,geometry) $deb $fin]"     
-   }	
+      set panneau(fenetreSpData,position) "+[string range $panneau(fenetreSpData,geometry) $deb $fin]"
+   }
 #***** Fin de la procedure recup_position ************************
 
 #***** Procédure fenetreSpData ************************************
-   proc fenetreSpData {} {
+   proc fenetreSpData { } {
       global audace caption data_spbmfc panneau
 
       if {[winfo exists $audace(base).fenetreSpData] == 0} {
@@ -171,22 +169,22 @@ namespace eval ::spbmfc {
          }
 
          #---
-   	   toplevel $audace(base).fenetreSpData -class Toplevel -borderwidth 2 -relief groove
+         toplevel $audace(base).fenetreSpData -class Toplevel -borderwidth 2 -relief groove
          wm geometry $audace(base).fenetreSpData $panneau(fenetreSpData,position)
          wm resizable $audace(base).fenetreSpData 1 1
-	   wm title $audace(base).fenetreSpData $caption(specLhIII,titrelong)
+         wm title $audace(base).fenetreSpData $caption(specLhIII,titrelong)
 
          wm protocol $audace(base).fenetreSpData WM_DELETE_WINDOW ::spbmfc::Arretspbmfc
 
          creeFenspbmfc
-         } else {
+      } else {
          focus $audace(base).fenetreSpData
-         }
       }
+   }
 #***** Fin de la procedure fenetreSpData ******************************
 
 #***** Procedure RecuperationParametres ******************************
-   proc RecuperationParametres {} {
+   proc RecuperationParametres { } {
       global audace data_spbmfc
 
       # Initialisation
@@ -194,30 +192,30 @@ namespace eval ::spbmfc {
       # Ouverture du fichier de paramètres
       set fichier [file join $audace(rep_plugin) tool specLhIII spdata.ini]
       if {[file exists $fichier]} {source $fichier}
-      }
+   }
 #***** Fin de la procedure RecuperationParametres ******************************
 
 #***** Procedure SauvegardeParametres ******************************
-    proc SauvegardeParametres {} {
-        global audace data_spbmfc
+   proc SauvegardeParametres { } {
+      global audace data_spbmfc
 
       catch {
-	   set nom_fichier [file join $audace(rep_plugin) tool specLhIII spdata.ini]
-	   if [catch {open $nom_fichier w} fichier] {
-	       Message console "%s\n" $caption(specLhIII,PbSauveConfig)
-	      } else {
-	      foreach {a b} [array get data_spbmfc] {
-	         puts $fichier "set data_spbmfc($a) \"$b\""
-	         }
-	      close $fichier
-	      }
+         set nom_fichier [file join $audace(rep_plugin) tool specLhIII spdata.ini]
+         if [catch {open $nom_fichier w} fichier] {
+            message console "%s\n" $caption(specLhIII,PbSauveConfig)
+         } else {
+            foreach {a b} [array get data_spbmfc] {
+               puts $fichier "set data_spbmfc($a) \"$b\""
+            }
+            close $fichier
          }
-       }
+      }
+   }
 #***** Fin de la procedure SauvegardeParametres ******************************
 
 # 19/08/06 Toute la partie traitement cosmétique doit être reprise, pour travailler à partir d'un fichier .lst
 # #***** Procédure rechargeCosm ************************************
-#    proc rechargeCosm {} {
+#    proc rechargeCosm { } {
 #       # Cette procédure a pour fonction de recharger le script de correction
 #       #    cosmétique (pour permettre à l'utilisateur de faire du debug sans
 #       #    sortir de Audela !
@@ -244,11 +242,11 @@ namespace eval ::spbmfc {
 # #***** Fin de la procedure rechargeCosm ****************************
 
 # #***** Procédure goCosm************************************
-#    proc goCosm {} {
+#    proc goCosm { } {
 #       global caption integre
 
 #       # Dans un premier temps, je teste l'intégrité de l'opération
-# 	testCosm
+#  testCosm
 #       # Si tout est Ok, je lance le traitement
 #       if {$integre(cosm) == "oui"} {
 #          traiteCosm
@@ -257,7 +255,7 @@ namespace eval ::spbmfc {
 # #***** Fin de la procedure goCosm******************************
 
 # #***** Procédure testCosm************************************
-#    proc testCosm {} {
+#    proc testCosm { } {
 #       global audace caption data_spbmfc integre
 
 #       desactiveBoutons
@@ -301,7 +299,7 @@ namespace eval ::spbmfc {
 # #***** Fin de la procedure testCosm******************************
 
 # #***** Procédure traiteCosm************************************
-#    proc traiteCosm {} {
+#    proc traiteCosm { } {
 #       global caption data_spbmfc integre
 
 #       desactiveBoutons
@@ -311,69 +309,67 @@ namespace eval ::spbmfc {
 #       }
 # #***** Fin de la procedure traiteCosm******************************
 
-
-
-
 #***** Procédure goLienBeSS ************************************
-   proc goLienBeSS {} {
-      }
+   proc goLienBeSS { } {
+   }
 #***** Fin de la procedure goLienBeSS ******************************
 
 #***** Procédure goLienNiveaux ************************************
-   proc goLienNiveaux {} {
-      }
+   proc goLienNiveaux { } {
+   }
 #***** Fin de la procedure goLienNiveaux ******************************
 
 #***** Procédure effacerChampsCalcules ************************************
-   proc effacerChampsCalcules {} {
-      }
+   proc effacerChampsCalcules { } {
+   }
 #***** Fin de la procedure effacerChampsCalcules ******************************
 
 #***** Procédure cdeEffacerTout ************************************
-   proc cdeEffacerTout {} {
-      }
+   proc cdeEffacerTout { } {
+   }
 #***** Fin de la procedure cdeEffacerTout ******************************
 
 #***** Procédure cdeAnnuler ************************************
-   proc cdeAnnuler {} {
-      }
+   proc cdeAnnuler { } {
+   }
 #***** Fin de la procedure cdeAnnuler ******************************
 
 #***** Procédure cdeGo ************************************
-   proc cdeGo {} {
-      }
+   proc cdeGo { } {
+   }
 #***** Fin de la procedure cdeGo ******************************
 
 #***** Procédure cdeEnregistrer ************************************
-   proc cdeEnregistrer {} {
-      }
+   proc cdeEnregistrer { } {
+   }
 #***** Fin de la procedure cdeEnregistrer ******************************
 
 #***** Procédure cdeFermer  ************************************
    proc cdeFermer  {} {
-      }
+   }
 #***** Fin de la procedure cdeFermer  ******************************
 
 #***** Procédure cdeAide ************************************
-   proc cdeAide {} {
-      }
+   proc cdeAide { } {
+      ::audace::showHelpPlugin tool specLhIII specLhIII.htm
+   }
 #***** Fin de la procedure cdeAide ******************************
 
 #***** Procédure goPrecharge ************************************
-   proc goPrecharge {} {
+   proc goPrecharge { } {
       global caption integre
 
       # Dans un premier temps, je teste l'intégrité de l'opération
-	testPrecharge
+      testPrecharge
       # Si tout est Ok, je lance le traitement
       if {$integre(precharge) == "oui"} {
          traitePrecharge
-         }
       }
+   }
 #***** Fin de la procedure goPrecharge ******************************
 
 #***** Procédure testPrecharge ************************************
-   proc testPrecharge {} {
+   proc testPrecharge { } {
       global audace caption data_spbmfc integre
 
       # Initialisation du drapeau d'integrite
@@ -389,39 +385,39 @@ namespace eval ::spbmfc {
          if {$integre(cosm) != "oui"} {
             set integre(precharge) non
             return
-            }
          }
+      }
 
-       desactiveBoutons
+      desactiveBoutons
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
       if {[TestNomFichier $data_spbmfc(nmObj)] == 0} {
          set integre(precharge) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPrechSrce)
-         } elseif {[TestNomFichier $data_spbmfc(nmPrechRes)] == 0} {
+      } elseif {[TestNomFichier $data_spbmfc(nmPrechRes)] == 0} {
          # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPrechRes)
-         } elseif {[TestEntier $data_spbmfc(nbPrech)] == 0} {
+      } elseif {[TestEntier $data_spbmfc(nbPrech)] == 0} {
          # Teste si le nombre est Ok
          set integre(precharge) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNbPrech)
-         } else {
+      } else {
          # Teste si les fichiers sources existent
          for {set i 1} {$i <= $data_spbmfc(nbPrech)} {incr i} {
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmObj) $i $ext
             if {[file exists $nomFich] == 0} {
                set integre(precharge) non
-               }
             }
+         }
          if {$integre(precharge) == "non"} {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichPrechAbs)
-            } else {
+         } else {
             # Teste si le fichier résultant existe déja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmPrechRes) $ext
@@ -432,24 +428,24 @@ namespace eval ::spbmfc {
                   set integre(precharge) non
                   activeBoutons
                   return
-                  }
                }
+            }
             # Dans le cas où le filtrage est demandé, je vérifie que le nb est valide
             if {$data_spbmfc(medFiltree) == 1} {
                if {[TestEntier $data_spbmfc(filtrage)] == 0} {
                   tk_messageBox -title $caption(specLhIII,pb) -type ok \
                      -message $caption(specLhIII,pbNbFiltrage)
                   set integre(precharge) non
-                  }
                }
             }
          }
-      activeBoutons
       }
+      activeBoutons
+   }
 #***** Fin de la procedure testPrecharge ******************************
 
 #***** Procédure traitePrecharge ************************************
-   proc traitePrecharge {} {
+   proc traitePrecharge { } {
       global audace caption data_spbmfc integre
 
       focus $audace(base)
@@ -478,8 +474,8 @@ namespace eval ::spbmfc {
             Message consolog $instr
             Message consolog "\n"
             eval $instr
-            }
          }
+      }
       # Affichage de la première image de noir
       set nomFich $data_spbmfc(nmObj)
       append nomFich "1"
@@ -507,7 +503,7 @@ namespace eval ::spbmfc {
          Message consolog $instr
          Message consolog "\n"
          eval $instr
-         }
+      }
 
       # Affichage de l'image de précharge résultante
       set nomFich $data_spbmfc(nmPrechRes)
@@ -522,24 +518,24 @@ namespace eval ::spbmfc {
 
       activeBoutons
       focus $audace(base).fenetreSpData
-      }
+   }
 #***** Fin de la procedure traitePrecharge ******************************
 
 #***** Procédure goNoir ************************************
-   proc goNoir {} {
+   proc goNoir { } {
       global caption integre
 
       # Dans un premier temps, je teste l'intégrité de l'opération
-	testNoir
+      testNoir
       # Si tout est Ok, je lance le traitement
       if {$integre(noir) == "oui"} {
          traiteNoir
-         }
       }
+   }
 #***** Fin de la procedure goNoir ******************************
 
 #***** Procédure testNoir ************************************
-   proc testNoir {} {
+   proc testNoir { } {
       global audace caption data_spbmfc integre
 
       # Initialisation du drapeau d'integrite
@@ -555,39 +551,39 @@ namespace eval ::spbmfc {
          if {$integre(cosm) != "oui"} {
             set integre(noir) non
             return
-            }
          }
+      }
 
       desactiveBoutons
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
       if {[TestNomFichier $data_spbmfc(nmNrSce)] == 0} {
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNoirSrce)
-         } elseif {[TestNomFichier $data_spbmfc(nmNoirRes)] == 0} {
+      } elseif {[TestNomFichier $data_spbmfc(nmNoirRes)] == 0} {
          # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNoirRes)
-         } elseif {[TestEntier $data_spbmfc(nbNoirs)] == 0} {
+      } elseif {[TestEntier $data_spbmfc(nbNoirs)] == 0} {
          # Teste si le nombre est Ok
          set integre(noir) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNbNr)
-         } else {
+      } else {
          # Teste si les fichiers sources existent
          for {set i 1} {$i <= $data_spbmfc(nbNoirs)} {incr i} {
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNrSce) $i $ext
             if {[file exists $nomFich] == 0} {
                set integre(noir) non
-               }
             }
+         }
          if {$integre(noir) == "non"} {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichNoirAbs)
-            } else {
+         } else {
             # Teste si le fichier résultant existe déja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNoirRes) $ext
@@ -596,16 +592,16 @@ namespace eval ::spbmfc {
                   -message $caption(specLhIII,fichNoirResDeja)]
                if {$confirmation == "no" } {
                   set integre(noir) non
-                  }
                }
             }
          }
-      activeBoutons
       }
+      activeBoutons
+   }
 #***** Fin de la procedure testNoir ******************************
 
 #***** Procédure traiteNoir ************************************
-   proc traiteNoir {} {
+   proc traiteNoir { } {
       global audace caption data_spbmfc integre
 
       focus $audace(base)
@@ -631,8 +627,8 @@ namespace eval ::spbmfc {
             Message consolog $instr
             Message consolog "\n"
             eval $instr
-            }
          }
+      }
       # Affichage de la première image de noir
       set nomFich $data_spbmfc(nmNrSce)
       append nomFich "1"
@@ -663,24 +659,24 @@ namespace eval ::spbmfc {
 
       activeBoutons
       focus $audace(base).fenetreSpData
-      }
+   }
 #***** Fin de la procedure traiteNoir ******************************
 
 #***** Procédure goNoirDePLU ************************************
-   proc goNoirDePLU {} {
+   proc goNoirDePLU { } {
       global caption integre
 
       # Dans un premier temps, je teste l'intégrité de l'opération
-	testNoirDePLU
+      testNoirDePLU
       # Si tout est Ok, je lance le traitement
       if {$integre(noir_PLU) == "oui"} {
          traiteNoirDePLU
-         }
       }
+   }
 #***** Fin de la procedure goNoirDePLU ******************************
 
 #***** Procédure testNoirDePLU ************************************
-   proc testNoirDePLU {} {
+   proc testNoirDePLU { } {
       global audace caption data_spbmfc integre
 
       # Initialisation du drapeau d'integrite
@@ -696,39 +692,39 @@ namespace eval ::spbmfc {
          if {$integre(cosm) != "oui"} {
             set integre(noir_PLU) non
             return
-            }
          }
+      }
 
       desactiveBoutons
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
       if {[TestNomFichier $data_spbmfc(nmNrPLUSce)] == 0} {
          set integre(noir_PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNrPLUSrce)
-         } elseif {[TestNomFichier $data_spbmfc(nmNrPLURes)] == 0} {
+      } elseif {[TestNomFichier $data_spbmfc(nmNrPLURes)] == 0} {
          # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
          set integre(noir_PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomNrPLURes)
-         } elseif {[TestEntier $data_spbmfc(nbNrPLU)] == 0} {
+      } elseif {[TestEntier $data_spbmfc(nbNrPLU)] == 0} {
          # Teste si le nombre est Ok
          set integre(noir_PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNbNrPLU)
-         } else {
+      } else {
          # Teste si les fichiers sources existent
          for {set i 1} {$i <= $data_spbmfc(nbNrPLU)} {incr i} {
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNrPLUSce) $i $ext
             if {[file exists $nomFich] == 0} {
                set integre(noir_PLU) non
-               }
             }
+         }
          if {$integre(noir_PLU) == "non"} {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichNrPLUAbs)
-            } else {
+         } else {
             # Teste si le fichier résultant existe déja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNrPLURes) $ext
@@ -737,16 +733,16 @@ namespace eval ::spbmfc {
                   -message $caption(specLhIII,fichNrPLUResDeja)]
                if {$confirmation == "no" } {
                   set integre(noir_PLU) non
-                  }
                }
             }
          }
-      activeBoutons
       }
+      activeBoutons
+   }
 #***** Fin de la procedure testNoirDePLU ******************************
 
 #***** Procédure traiteNoirDePLU ************************************
-   proc traiteNoirDePLU {} {
+   proc traiteNoirDePLU { } {
       global audace caption data_spbmfc integre
 
       focus $audace(base)
@@ -772,8 +768,8 @@ namespace eval ::spbmfc {
             Message consolog $instr
             Message consolog "\n"
             eval $instr
-            }
          }
+      }
 
       # Affichage de la première image de noir de PLU
       set nomFich $data_spbmfc(nmNrPLUSce)
@@ -803,24 +799,24 @@ namespace eval ::spbmfc {
       Message consolog $caption(specLhIII,finNrPLU)
       activeBoutons
       focus $audace(base).fenetreSpData
-      }
+   }
 #***** Fin de la procedure traiteNoirDePLU ******************************
 
 #***** Procédure goPLU ************************************
-   proc goPLU {} {
+   proc goPLU { } {
       global caption integre
 
       # Dans un premier temps, je teste l'intégrité de l'opération
-	testPLU
+      testPLU
       # Si tout est Ok, je lance le traitement
       if {$integre(PLU) == "oui"} {
          traitePLU
-         }
       }
+   }
 #***** Fin de la procedure goPLU ******************************
 
 #***** Procédure testPLU ************************************
-   proc testPLU {} {
+   proc testPLU { } {
       global audace caption data_spbmfc integre
 
       # Initialisation du drapeau d'integrite
@@ -836,42 +832,42 @@ namespace eval ::spbmfc {
          if {$integre(cosm) != "oui"} {
             set integre(PLU) non
             return
-            }
          }
+      }
       desactiveBoutons
       set data_spbmfc(fich_pour_PLU_ok) non
       set data_spbmfc(noir_de_PLU_a_faire_pl) non
       set data_spbmfc(precharge_a_faire_pl) non
       set data_spbmfc(noir_a_faire_pl) non
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
       if {[TestNomFichier $data_spbmfc(nmPLUSce)] == 0} {
          set integre(PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPLUSrce)
-         } elseif {[TestNomFichier $data_spbmfc(nmPLURes)] == 0} {
+      } elseif {[TestNomFichier $data_spbmfc(nmPLURes)] == 0} {
          # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
          set integre(PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomPLURes)
-         } elseif {[TestEntier $data_spbmfc(nbPLU)] == 0} {
+      } elseif {[TestEntier $data_spbmfc(nbPLU)] == 0} {
          # Teste si le nombre est Ok
          set integre(PLU) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNbPLU)
-         } else {
+      } else {
          # Teste si les fichiers sources existent
          for {set i 1} {$i <= $data_spbmfc(nbPLU)} {incr i} {
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmPLUSce) $i $ext
             if {[file exists $nomFich] == 0} {
                set integre(PLU) non
-               }
             }
+         }
          if {$integre(PLU) == "non"} {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichPLUAbs)
-            } else {
+         } else {
             # Teste si le fichier résultant existe déja
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmPLURes) $ext
@@ -882,8 +878,8 @@ namespace eval ::spbmfc {
                   set integre(PLU) non
                   activeBoutons
                   return
-                  }
                }
+            }
             if {$data_spbmfc(modePLU) == "simple"} {
                # A partir de là, c'est selon le mode de traitement de la PLU retenue
                # Teste si le fichier de noir de PLU existe bien
@@ -896,16 +892,16 @@ namespace eval ::spbmfc {
                         -message $caption(specLhIII,fichNrPLUPLUAbs)
                      set integre(PLU) non
                      set data_spbmfc(fich_pour_PLU_ok) non
-                     } else {
+                  } else {
                      # J'ai tout pour faire le noir de PLU
                      set data_spbmfc(fich_pour_PLU_ok) oui
                      # Alors je mémorise que je dois le faire
                      set data_spbmfc(noir_de_PLU_a_faire_pl) oui
-                     }
-                  } else {
-                  set data_spbmfc(fich_pour_PLU_ok) oui
                   }
-               } elseif {$data_spbmfc(modePLU) != ""} {
+               } else {
+                  set data_spbmfc(fich_pour_PLU_ok) oui
+               }
+            } elseif {$data_spbmfc(modePLU) != ""} {
                # Dans ce cas, on a choisit les options rapp tps pose ou optimisation
                # Teste si le fichier de précharge existe bien
                set nomFich $audace(rep_images)
@@ -917,15 +913,15 @@ namespace eval ::spbmfc {
                         -message $caption(specLhIII,fichPrechPLUAbs)
                      set integre(PLU) non
                      set data_spbmfc(fich_pour_PLU_ok) non
-                     } else {
+                  } else {
                      # J'ai tout pour faire la précharge
                      set data_spbmfc(fich_pour_PLU_ok) oui
                      # Alors je mémorise que je dois le faire
                      set data_spbmfc(precharge_a_faire_pl) oui
-                     }
-                  } else {
-                   set data_spbmfc(fich_pour_PLU_ok) oui
                   }
+               } else {
+                   set data_spbmfc(fich_pour_PLU_ok) oui
+               }
                if {$data_spbmfc(fich_pour_PLU_ok) == "oui"} {
                   # Teste si le fichier de noir existe bien
                   set nomFich $audace(rep_images)
@@ -937,41 +933,41 @@ namespace eval ::spbmfc {
                            -message $caption(specLhIII,fichNrtoPLUAbs)
                         set integre(PLU) non
                         set data_spbmfc(fich_pour_PLU_ok) non
-                        } else {
+                     } else {
                         # J'ai tout pour faire le noir
                         set data_spbmfc(fich_pour_PLU_ok) oui
                         # Alors je mémorise que je dois le faire
                         set data_spbmfc(noir_a_faire_pl) oui
-	                  }
-                     } else {
-                     set data_spbmfc(fich_pour_PLU_ok) oui
                      }
+                  } else {
+                     set data_spbmfc(fich_pour_PLU_ok) oui
                   }
-               } else {
+               }
+            } else {
                # Vérifie qu'un mode de traitement est bien sélectionné
                tk_messageBox -title $caption(specLhIII,pb) -type ok \
                   -message $caption(specLhIII,choisir_mode_PLU)
                set integre(PLU) non
-               }
             }
          }
-      activeBoutons
       }
+      activeBoutons
+   }
 #***** Fin de la procedure testPLU ******************************
 
 #***** Procédure traitePLU ************************************
-   proc traitePLU {} {
+   proc traitePLU { } {
       global audace caption data_spbmfc integre
 
       if {$data_spbmfc(noir_de_PLU_a_faire_pl) == "oui"} {
          traiteNoirDePLU
-         }
+      }
       if {$data_spbmfc(precharge_a_faire_pl) == "oui"} {
          traitePrecharge
-         }
+      }
       if {$data_spbmfc(noir_a_faire_pl) == "oui"} {
          traiteNoir
-         }
+      }
 
       focus $audace(base)
       focus $audace(Console)
@@ -987,14 +983,14 @@ namespace eval ::spbmfc {
       switch -exact $data_spbmfc(modePLU) {
          simple {
             Message consolog $caption(specLhIII,ModePLUSimple)
-            }
+         }
          rapTps {
             Message consolog $caption(specLhIII,ModePLURapTps)
-            }
+         }
          opt {
             Message consolog $caption(specLhIII,ModePLUOpt)
-            }
          }
+      }
 
       if {$data_spbmfc(cosmPLU) == 1} {
          # Dans le cas où la correction cosmétique est demandée
@@ -1009,8 +1005,8 @@ namespace eval ::spbmfc {
             set instr "saveima $data_spbmfc(nmPLUSce)$i"
             Message consolog "%s\n" $instr
             eval $instr
-            }
          }
+      }
 
       # Affichage de la première image de PLU
       set nomFich $data_spbmfc(nmPLUSce)
@@ -1029,16 +1025,16 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,SoustrNrPLUPLU)
             Message consolog "%s\n" $instr
             eval $instr
-            }
+         }
          rapTps {
             # Lecture du temps de pose de l'image PLU
             # Je vérifie que le champ exposure est bien présent dans l'entête FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
-               } else {
+            } else {
                set motCle EXPTIME
-               }
-		set instr "set temps_plu [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            }
+            set instr "set temps_plu [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(specLhIII,LitTpsPLU)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1051,15 +1047,15 @@ namespace eval ::spbmfc {
             # Je vérifie que le champ exposure est bien présent dans l'entête FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
-               } else {
+            } else {
                set motCle EXPTIME
-               }
-		set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            }
+            set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(specLhIII,LitTpsNoir)
             Message consolog "%s\n" $instr
             eval $instr
             # Calcul du rapport de temps entre noir et PLU
-		set instr "set rapport [expr double($temps_plu) / double($temps_noir)]"
+            set instr "set rapport [expr double($temps_plu) / double($temps_noir)]"
             Message consolog $caption(specLhIII,calcRapp)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1069,7 +1065,7 @@ namespace eval ::spbmfc {
                Message consolog $caption(specLhIII,soustrPrechDuNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               }
+            }
             # Multiplie le noir par le rapport de tps d'exp.
             set instr "mult $rapport"
             Message consolog $caption(specLhIII,multNoir)
@@ -1092,7 +1088,7 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,SoustrNoirPondPLU)
             Message consolog "%s\n" $instr
             eval $instr
-            }
+         }
          opt {
             if {$data_spbmfc(NrContientPrech) == 0} {
                # Chargement de l'image de noir
@@ -1112,10 +1108,10 @@ namespace eval ::spbmfc {
                eval $instr
                # Astuce pour traiter correctement les fichiers de noir...
                set noir_avec_prech noir_avec_prech
-               } else {
+            } else {
                # Suite et fin de l'astuce pour traiter correctement les fichiers de noir...
                set noir_avec_prech $data_spbmfc(nmNoirRes)
-               }
+            }
             set nom_fich_sortie $data_spbmfc(nmPLUSce)
             append nom_fich_sortie "_moinsnoir_"
             set instr "opt2 $data_spbmfc(nmPLUSce) $noir_avec_prech $data_spbmfc(nmPrechRes) \
@@ -1123,8 +1119,8 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,OptPLU)
             Message consolog "%s\n" $instr
             eval $instr
-            }
          }
+      }
 
       # Affichage de la première image de PLU, corrigée du noir
       set nomFich $data_spbmfc(nmPLUSce)
@@ -1175,36 +1171,36 @@ namespace eval ::spbmfc {
          set nomFich $audace(rep_images)
          append nomFich "/" $data_spbmfc(nmPLUSce) "_auniveau" $i $ext
          file delete $nomFich
-         }
+      }
       set nomFich $audace(rep_images)
       append nomFich "/" "noir_pondere_temp$ext"
       if {[file exists $nomFich]} {
          file delete $nomFich
-         }
+      }
       set nomFich $audace(rep_images)
       append nomFich "/" "noir_avec_prech$ext"
       if {[file exists $nomFich]} {
          file delete $nomFich
-         }
+      }
 
       # Affichage du message de fin du prétraitement des noirs
       Message consolog $caption(specLhIII,finPLU)
       activeBoutons
       focus $audace(base).fenetreSpData
-      }
+   }
 #***** Fin de la procedure traitePLU ******************************
 
 #***** Procédure goBrut ************************************
-   proc goBrut {} {
+   proc goBrut { } {
       global caption integre
 
       # Dans un premier temps, je teste l'intégrité de l'opération
-	testBrut
+      testBrut
       # Si tout est Ok, je lance le traitement
       if {$integre(brut) == "oui"} {
          traiteBrut
-         }
       }
+   }
 #***** Fin de la procedure goBrut ******************************
 
 #***** Procédure testBrut ************************************
@@ -1224,8 +1220,8 @@ namespace eval ::spbmfc {
          if {$integre(cosm) != "oui"} {
             set integre(brut) non
             return
-            }
          }
+      }
       desactiveBoutons
       set data_spbmfc(noir_a_faire_br) non
       set data_spbmfc(PLU_a_faire_br) non
@@ -1234,34 +1230,34 @@ namespace eval ::spbmfc {
       set data_spbmfc(PLU_ok) non
       set data_spbmfc(precharge_ok) non
 
-	# Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
+      # Teste si le nom de fichier source est Ok (un seul champ, pas de caractère interdit...)
       if {[TestNomFichier $data_spbmfc(nmBrutSce)] == 0} {
          set integre(brut) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomBrutSrce)
-         } elseif {[TestNomFichier $data_spbmfc(nmBrutRes)] == 0} {
+      } elseif {[TestNomFichier $data_spbmfc(nmBrutRes)] == 0} {
          # Teste si le nom de fichier résultant est Ok (un seul champ, pas de caractère interdit...)
          set integre(brut) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNomBrutRes)
-         } elseif {[TestEntier $data_spbmfc(nbBrut)] == 0} {
+      } elseif {[TestEntier $data_spbmfc(nbBrut)] == 0} {
          # Teste si le nombre est Ok
          set integre(brut) non
          tk_messageBox -title $caption(specLhIII,pb) -type ok \
             -message $caption(specLhIII,pbNbBrut)
-         } else {
+      } else {
          # Teste si les fichiers sources existent
          for {set i 1} {$i <= $data_spbmfc(nbBrut)} {incr i} {
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmBrutSce) $i $ext
             if {[file exists $nomFich] == 0} {
                set integre(brut) non
-               }
             }
+         }
          if {$integre(brut) == "non"} {
             tk_messageBox -title $caption(specLhIII,pb) -type ok \
                -message $caption(specLhIII,fichBrutAbs)
-            } else {
+         } else {
             # Teste si le fichier de noir existe bien
             set nomFich $audace(rep_images)
             append nomFich "/" $data_spbmfc(nmNoirRes) $ext
@@ -1274,15 +1270,15 @@ namespace eval ::spbmfc {
                      -message $caption(specLhIII,fichNoirBrutAbs)
                   set integre(brut) non
                   set data_spbmfc(noir_ok) non
-                  } else {
+               } else {
                   # Alors je dois prévoir de faire le calcul du noir pendant le traitement
                   set data_spbmfc(noir_a_faire_br) oui
                   # Et je memorise que c'est Ok pour les noirs
                   set data_spbmfc(noir_ok) oui
-                  }
-               } else {
-               set data_spbmfc(noir_ok) oui
                }
+            } else {
+               set data_spbmfc(noir_ok) oui
+            }
             if {$data_spbmfc(noir_ok) == "oui"} {
                # Teste si le fichier de PLU existe bien
                set nomFich $audace(rep_images)
@@ -1296,15 +1292,15 @@ namespace eval ::spbmfc {
                         -message $caption(specLhIII,fichPLUBrutAbs)
                      set integre(brut) non
                      set data_spbmfc(PLU_ok) non
-                     } else {
+                  } else {
                      # Alors je dois prévoir de faire le calcul du PLU pendant le traitement
                      set data_spbmfc(PLU_a_faire_br) oui
                      set data_spbmfc(PLU_ok) oui
-                     }
-                  } else {
-                  set data_spbmfc(PLU_ok) oui
                   }
+               } else {
+                  set data_spbmfc(PLU_ok) oui
                }
+            }
             if {$data_spbmfc(PLU_ok) == "oui" && $data_spbmfc(noir_ok) == "oui"} {
                # Teste si les fichiers résultants existent déja
                for {set i 1} {$i <= $data_spbmfc(nbBrut)} {incr i} {
@@ -1312,16 +1308,16 @@ namespace eval ::spbmfc {
                   append nomFich "/" $data_spbmfc(nmBrutRes) $i $ext
                   if {[file exists $nomFich] == 1} {
                      set integre(brut) non
-                     }
                   }
+               }
                if {$integre(brut) == "non"} {
                   set confirmation [tk_messageBox -title $caption(specLhIII,conf) -type yesno \
                      -message $caption(specLhIII,fichBrutResDeja)]
                   if {$confirmation == "yes" } {
                      set integre(brut) oui
-                     }
                   }
                }
+            }
             if {$data_spbmfc(PLU_ok) == "oui" && $data_spbmfc(noir_ok) == "oui"} {
                if {$data_spbmfc(modeBrut) != "simple" || $data_spbmfc(NrContientPrech) == 0} {
                   # Teste si le fichier de précharge existe bien (dans le cas où l'option
@@ -1333,35 +1329,35 @@ namespace eval ::spbmfc {
                      # Dans ce cas, je regarde si je peux calculer la précharge...
                      testPrecharge
                      if {$integre(precharge) == "non"} {
-                     # Je n'ai pas les éléments pour faire la précharge
+                        # Je n'ai pas les éléments pour faire la précharge
                         tk_messageBox -title $caption(specLhIII,pb) -type ok \
                            -message $caption(specLhIII,fichPrechBrutAbs)
                         set integre(brut) non
                         set data_spbmfc(precharge_ok) non
-                        } else {
+                     } else {
                         # Alors je dois prévoir de faire le calcul du PLU pendant le traitement
                         set data_spbmfc(precharge_a_faire_br) oui
                         set data_spbmfc(precharge_ok) oui
-                        }
-                     } else {
-                     set data_spbmfc(precharge_ok) oui
                      }
+                  } else {
+                     set data_spbmfc(precharge_ok) oui
                   }
                }
+            }
             # Teste qu'un mode est bien sélectionné
             if {$data_spbmfc(modeBrut) == ""} {
                tk_messageBox -title $caption(specLhIII,pb) -type ok \
                   -message $caption(specLhIII,fichModeBrutAbs)
                set integre(brut) non
-               }
             }
          }
-      activeBoutons
       }
+      activeBoutons
+   }
 #***** Fin de la procedure testBrut ******************************
 
 #***** Procédure traiteBrut ************************************
-   proc traiteBrut {} {
+   proc traiteBrut { } {
       global audace caption data_spbmfc integre
 
       # Enregistrement de l'extension des fichiers
@@ -1370,23 +1366,23 @@ namespace eval ::spbmfc {
       # Le cas échéant, je lance les opération préliminéires
       if {$data_spbmfc(PLU_a_faire_br) == "oui"} {
          traitePLU
-         }
+      }
       if {$data_spbmfc(precharge_a_faire_br) == "oui"} {
          # Je vérifie que le fichier n'existe pas déjà (il a pu être crée par le traitement de PLU...)
          set nomFich $audace(rep_images)
          append nomFich "/" $data_spbmfc(nmPrechRes) $ext
          if {[file exists $nomFich] == 0} {
             traitePrecharge
-            }
          }
+      }
       if {$data_spbmfc(noir_a_faire_br) == "oui"} {
          # Je vérifie que le fichier n'existe pas déjà (il a pu être crée par le traitement de PLU...)
          set nomFich $audace(rep_images)
          append nomFich "/" $data_spbmfc(nmNoirRes) $ext
          if {[file exists $nomFich] == 0} {
             traiteNoir
-            }
          }
+      }
 
       focus $audace(base)
       focus $audace(Console)
@@ -1398,14 +1394,14 @@ namespace eval ::spbmfc {
       switch -exact $data_spbmfc(modeBrut) {
          simple {
             Message consolog $caption(specLhIII,ModeBrutSimple)
-            }
+         }
          rapTps {
             Message consolog $caption(specLhIII,ModeBrutRapTps)
-            }
+         }
          opt {
             Message consolog $caption(specLhIII,ModeBrutOpt)
-            }
          }
+      }
 
       if {$data_spbmfc(cosmBrut) == 1} {
          # Dans le cas où la correction cosmétique est demandée
@@ -1423,8 +1419,8 @@ namespace eval ::spbmfc {
             Message consolog $instr
             Message consolog "\n"
             eval $instr
-            }
          }
+      }
 
       # Affichage de la première image stellaire
       set nomFich $data_spbmfc(nmBrutSce)
@@ -1452,17 +1448,17 @@ namespace eval ::spbmfc {
                Message consolog $instr
                Message consolog "\n"
                eval $instr
-               }
             }
+         }
          rapTps {
             # Lecture du temps de pose des images stellaires
             # Je vérifie que le champ exposure est bien présent dans l'entête FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
-               } else {
+            } else {
                set motCle EXPTIME
-               }
-		set instr "set temps_stellaire [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            }
+            set instr "set temps_stellaire [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(specLhIII,LitTpsStellaire)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1475,15 +1471,15 @@ namespace eval ::spbmfc {
             # Je vérifie que le champ exposure est bien présent dans l'entête FITS
             if {[lsearch [buf$audace(bufNo) getkwds] EXPOSURE] != -1} {
                set motCle EXPOSURE
-               } else {
+            } else {
                set motCle EXPTIME
-               }
-		set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
+            }
+            set instr "set temps_noir [lindex [buf$audace(bufNo) getkwd $motCle] 1]"
             Message consolog $caption(specLhIII,LitTpsNoir)
             Message consolog "%s\n" $instr
             eval $instr
             # Calcul du rapport de temps entre noir et PLU
-		set instr "set rapport [expr double($temps_stellaire) / double($temps_noir)]"
+            set instr "set rapport [expr double($temps_stellaire) / double($temps_noir)]"
             Message consolog $caption(specLhIII,calcRapp)
             Message consolog "%s\n" $instr
             eval $instr
@@ -1493,7 +1489,7 @@ namespace eval ::spbmfc {
                Message consolog $caption(specLhIII,soustrPrechDuNoir)
                Message consolog "%s\n" $instr
                eval $instr
-               }
+            }
             # Multiplie le noir par le rapport de tps d'exp.
             set instr "mult $rapport"
             Message consolog $caption(specLhIII,multNoir)
@@ -1516,7 +1512,7 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,SoustrNoirPondStel)
             Message consolog "%s\n" $instr
             eval $instr
-            }
+         }
          opt {
             # Vérifie si le noir contient la précharge... et agit en conséquence
             if {$data_spbmfc(NrContientPrech) == 0} {
@@ -1537,10 +1533,10 @@ namespace eval ::spbmfc {
                eval $instr
                # Astuce pour traiter correctement les fichiers de noir...
                set noir_avec_prech noir_avec_prech
-               } else {
+            } else {
                # Suite et fin de l'astuce pour traiter correctement les fichiers de noir...
                set noir_avec_prech $data_spbmfc(nmNoirRes)
-               }
+            }
             set nom_fich_sortie $data_spbmfc(nmBrutSce)
             append nom_fich_sortie "_moinsnoir_"
             # Lancement de l'optimisation; le noir doit contenir la précharge !
@@ -1549,8 +1545,8 @@ namespace eval ::spbmfc {
             Message consolog $caption(specLhIII,OptBrutes)
             Message consolog "%s\n" $instr
             eval $instr
-            }
          }
+      }
 
       # Affichage de la PLU
       set nomFich $data_spbmfc(nmPLURes)
@@ -1591,27 +1587,27 @@ namespace eval ::spbmfc {
          set nomFich $audace(rep_images)
          append nomFich "/" $data_spbmfc(nmBrutSce) "_moinsnoir_" $i $ext
          file delete $nomFich
-         }
+      }
       set nomFich $audace(rep_images)
       append nomFich "/" "noir_pondere_temp$ext"
       if {[file exists $nomFich]} {
          file delete $nomFich
-         }
+      }
       set nomFich $audace(rep_images)
       append nomFich "/" "noir_avec_prech$ext"
       if {[file exists $nomFich]} {
          file delete $nomFich
-         }
+      }
 
       # Affichage du message de fin du prétraitement des noirs
       Message consolog $caption(specLhIII,finBrut)
       activeBoutons
       focus $audace(base).fenetreSpData
-      }
+   }
 #***** Fin de la procedure traiteBrut ************************************
 
 #***** Procédure de désactivation des boutons de la fenêtre **************
-   proc desactiveBoutons {} {
+   proc desactiveBoutons { } {
       global audace
 
       $audace(base).fenetreSpData.et1.test configure -state disabled
@@ -1652,11 +1648,11 @@ namespace eval ::spbmfc {
       $audace(base).fenetreSpData.et6.ligne3.rad1 configure -state disabled
       $audace(base).fenetreSpData.et6.ligne3.rad2 configure -state disabled
       $audace(base).fenetreSpData.et6.ligne3.rad3 configure -state disabled
-      }
+   }
 #***** Fin de la procédure de désactivation des boutons de la fenêtre ****
 
 #***** Procédure d'activation des boutons de la fenêtre **************
-   proc activeBoutons {} {
+   proc activeBoutons { } {
       global audace
 
       $audace(base).fenetreSpData.et1.test configure -state normal
@@ -1697,82 +1693,82 @@ namespace eval ::spbmfc {
       $audace(base).fenetreSpData.et6.ligne3.rad1 configure -state normal
       $audace(base).fenetreSpData.et6.ligne3.rad2 configure -state normal
       $audace(base).fenetreSpData.et6.ligne3.rad3 configure -state normal
-      }
+   }
 #***** Fin de la procédure d'activation des boutons de la fenêtre ****
 
 #***** Procedure de test de validité d'un nom de fichier *****************
 # Cette procédure (copiée de Methking) vérifie que la chaine passée en argument est un
 # nom de fichier valide.
-   proc TestNomFichier {valeur} {
+   proc TestNomFichier { valeur } {
       set test 1
       # Teste qu'il y a bien un nom de fichier
       if {$valeur == ""} {
          set test 0
-         }
+      }
       # Teste que le nom de fichier n'a pas d'espace
       if {[llength $valeur] > 1} {
          set test 0
-         }
+      }
       # Teste que le nom des images ne contient pas de caractèrs interdits
       if {[TestChaine $valeur] == 0} {
          set test 0
-         }
-      return $test
       }
+      return $test
+   }
 #***** Fin de la procedure de test de validité d'un nom de fichier *******
 
 #***** Procedure de test de validité d'un entier *****************
 # Cette procédure (copiée de Methking) vérifie que la chaine passée en argument décrit
 # bien un entier. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc TestEntier {valeur} {
+   proc TestEntier { valeur } {
       set test 1
       if {$valeur == ""} {
          set test 0
-         }
+      }
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[0-9]} $a]} {
+         if {![string match {[0-9]} $a]} {
             set test 0
-            }
          }
-      return $test
       }
+      return $test
+   }
 #***** Fin de la procedure de test de validité d'un entier *******
 
 #***** Procedure de test de validité d'une chaine de caractères *******
 # Cette procédure vérifie que la chaine passée en argument ne contient que des caractères
 # valides. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
-   proc TestChaine {valeur} {
+   proc TestChaine { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[-a-zA-Z0-9_]} $a]} {
+         if {![string match {[-a-zA-Z0-9_]} $a]} {
             set test 0
-            }
          }
-      return $test
       }
+      return $test
+   }
 #***** Fin de la procedure de test de validité d'une chaine de caractères *******
 
 #***** Procedure de test de validité d'un nombre réel *****************
 # Cette procédure (inspirée de Methking) vérifie que la chaine passée en argument décrit
 # bien un réel. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc TestReel {valeur} {
+   proc TestReel { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
-	   if {![string match {[0-9.]} $a]} {
+         if {![string match {[0-9.]} $a]} {
             set test 0
-            }
          }
-      return $test
       }
+      return $test
+   }
 #***** Fin de la procedure de test de validité d'un nombre réel *******
 
 #***** Procedure d'affichage des messages ************************
 # Cette procédure est recopiée de Methking.tcl. Elle permet l'affichage de differents
 # messages (dans la console, le fichier log, etc...)
-   proc Message {niveau args} {
+   proc Message { niveau args } {
       variable This
       global caption conf
 
@@ -1780,41 +1776,42 @@ namespace eval ::spbmfc {
          console {
             ::console::disp [eval [concat {format} $args]]
             update idletasks
-            }
+         }
          log {
-		set temps [clock format [clock seconds] -format %H:%M:%S]
-		append temps " "
-		catch { puts -nonewline $::spbmfc::log_id [eval [concat {format} $args]] }
-            }
+            set temps [clock format [clock seconds] -format %H:%M:%S]
+            append temps " "
+            catch { puts -nonewline $::spbmfc::log_id [eval [concat {format} $args]] }
+         }
          consolog {
             if { [ info exists conf(messages_console_specLhIII) ] == "0" } {
                set conf(messages_console_specLhIII) "1"
             }
             if { $conf(messages_console_specLhIII) == "1" } {
-		   ::console::disp [eval [concat {format} $args]]
-		   update idletasks
+               ::console::disp [eval [concat {format} $args]]
+               update idletasks
             }
-		set temps [clock format [clock seconds] -format %H:%M:%S]
-		append temps " "
-		catch { puts -nonewline $::spbmfc::log_id [eval [concat {format} $args]] }
-            }
-	   default {
+            set temps [clock format [clock seconds] -format %H:%M:%S]
+            append temps " "
+            catch { puts -nonewline $::spbmfc::log_id [eval [concat {format} $args]] }
+         }
+         default {
             set b [ list "%s\n" $caption(specLhIII,pbmesserr) ]
             ::console::disp [ eval [ concat {format} $b ] ]
-		update idletasks
-            }
+            update idletasks
          }
       }
+   }
 #***** Fin de la procedure d'affichage des messages ***************
 
 }
+
 #==============================================================
 #   Fin de la declaration du Namespace spbmfc
 #==============================================================
 
 #-----------------------------------------------------------------------------------------------
 
-proc spbmfcBuildIF {This} {
+proc spbmfcBuildIF { This } {
    global audace panneau caption
 
    #--- Trame du panneau
@@ -1879,11 +1876,11 @@ proc spbmfcBuildIF {This} {
 
 #-----------------------------------------------------------------------------------------------
 
-proc creeFenspbmfc {} {
+proc creeFenspbmfc { } {
    global audace caption data_spbmfc panneau
 
-set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
-   
+   set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
+
    #--- Trame de l'étape 1
    frame $audace(base).fenetreSpData.et1 -borderwidth 2 -relief groove
       #--- Titre de l'étape 1: Données d'entrée
@@ -1895,19 +1892,19 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
       pack $audace(base).fenetreSpData.et1.titre -side top -fill x
 
     #--- Premiere ligne de l'étape 1
-	frame $audace(base).fenetreSpData.et1.fr1
-		frame $audace(base).fenetreSpData.et1.fr1.ligne1 
-	     # Affichage du label 
-	     label $audace(base).fenetreSpData.et1.fr1.ligne1.lab1 -text $caption(specLhIII,spfich) \
-	        -font $audace(font,arial_12_b) -width 20
-	     pack $audace(base).fenetreSpData.et1.fr1.ligne1.lab1 -side left
-	     # Affichage du champ de saisie
-	     entry $audace(base).fenetreSpData.et1.fr1.ligne1.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
-	        -textvariable data_spbmfc(nomFichSpIn) -justify left -borderwidth 1 -relief groove
-	     pack $audace(base).fenetreSpData.et1.fr1.ligne1.ent1 -side left
-	    pack $audace(base).fenetreSpData.et1.fr1.ligne1 -side left
+   frame $audace(base).fenetreSpData.et1.fr1
+      frame $audace(base).fenetreSpData.et1.fr1.ligne1 
+        # Affichage du label 
+        label $audace(base).fenetreSpData.et1.fr1.ligne1.lab1 -text $caption(specLhIII,spfich) \
+           -font $audace(font,arial_12_b) -width 20
+        pack $audace(base).fenetreSpData.et1.fr1.ligne1.lab1 -side left
+        # Affichage du champ de saisie
+        entry $audace(base).fenetreSpData.et1.fr1.ligne1.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+           -textvariable data_spbmfc(nomFichSpIn) -justify left -borderwidth 1 -relief groove
+        pack $audace(base).fenetreSpData.et1.fr1.ligne1.ent1 -side left
+       pack $audace(base).fenetreSpData.et1.fr1.ligne1 -side left
     pack $audace(base).fenetreSpData.et1.fr1 -side top
-      
+
 #       #--- Seconde ligne de l'étape 1 "Spectres"
 #       frame $audace(base).fenetreSpData.et1.ligne2
 #       pack $audace(base).fenetreSpData.et1.ligne2 -side top -fill x
@@ -1942,16 +1939,16 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
 
       #--- Quatrième ligne de l'étape 1 "Equipement - site"
       frame $audace(base).fenetreSpData.et1.ligne4
-		  # Affichage du label & combobox
-	      label $audace(base).fenetreSpData.et1.ligne4.lab2 -text $caption(specLhIII,spconf) \
-	         -font $audace(font,arial_10_n) -width 29 -justify right
-	      pack $audace(base).fenetreSpData.et1.ligne4.lab2 -side left
-	      ComboBox $audace(base).fenetreSpData.et1.ligne4.comb1 \
-	        -width 25 \
-	        -font $audace(font,arial_10_b) -height 3 -relief raised -borderwidth 1 -editable 0 -takefocus 1 \
-	        -justify left -textvariable data_spbmfc(config) -values $panneau(AcqFC,list_mode)
-	        #-modifycmd "::AcqFC::ChangeMode $visuNo"
-	      pack $audace(base).fenetreSpData.et1.ligne4.comb1 -side left
+        # Affichage du label & combobox
+         label $audace(base).fenetreSpData.et1.ligne4.lab2 -text $caption(specLhIII,spconf) \
+            -font $audace(font,arial_10_n) -width 29 -justify right
+         pack $audace(base).fenetreSpData.et1.ligne4.lab2 -side left
+         ComboBox $audace(base).fenetreSpData.et1.ligne4.comb1 \
+           -width 25 \
+           -font $audace(font,arial_10_b) -height 3 -relief raised -borderwidth 1 -editable 0 -takefocus 1 \
+           -justify left -textvariable data_spbmfc(config) -values $panneau(AcqFC,list_mode)
+           #-modifycmd "::AcqFC::ChangeMode $visuNo"
+         pack $audace(base).fenetreSpData.et1.ligne4.comb1 -side left
          # Affichage du label
          label $audace(base).fenetreSpData.et1.ligne4.lab3 -text $caption(specLhIII,spsiteobs) \
             -font $audace(font,arial_10_n) -width 15 -justify right
@@ -2037,7 +2034,7 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
             -textvariable data_spbmfc(nomFichNeonAvOut) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne8.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne8 -side top -fill x
-      
+
       #--- Neuvième ligne de l'étape 1 "NeonAP"
       frame $audace(base).fenetreSpData.et1.ligne9
          # Affichage du label
@@ -2057,7 +2054,7 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
             -textvariable data_spbmfc(nomFichNeonApOut) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne9.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne9 -side top -fill x
-          
+
       #--- Dixième ligne de l'étape 1 "Noirs néon"
       frame $audace(base).fenetreSpData.et1.ligne10
          # Affichage du label
@@ -2133,7 +2130,7 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
             -textvariable data_spbmfc(nomFichNrPLUOut) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne13.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne13 -side top -fill x
-                  
+
       #--- Quatorzième ligne de l'étape 1 "Type de soustraction des noirs de flats"
       frame $audace(base).fenetreSpData.et1.ligne14
          label $audace(base).fenetreSpData.et1.ligne14.lab1 -text $caption(specLhIII,SoustrNr) \
@@ -2169,73 +2166,73 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
             -textvariable data_spbmfc(nomFichOffsetOut) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne15.ent2 -side left
       pack $audace(base).fenetreSpData.et1.ligne15 -side top -fill x
-      
-	   frame $audace(base).fenetreSpData.et1.f1 -borderwidth 4 -relief groove -padx 15 -pady 3
-	      #--- Seizième ligne de l'étape 1
-	      frame $audace(base).fenetreSpData.et1.f1.ligne16
-			# Affichage du label 
-			label $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -text $caption(specLhIII,spfichcosme) \
-				-font $audace(font,arial_10_n) -width 20
-			pack $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -side left
-			# Affichage du champ de saisie 
-			entry $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat \
-				-textvariable data_spbmfc(nomFichCosm) -justify left -borderwidth 1 -relief groove
-			pack $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -side left
-			# Affichage du bouton de sélection
-			button $audace(base).fenetreSpData.et1.f1.ligne16.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
-				-font $audace(font,arial_10_n) -command ::spbmfc::goBrut
-			pack $audace(base).fenetreSpData.et1.f1.ligne16.but1 -side left
-			# Affichage du label 
-			label $audace(base).fenetreSpData.et1.f1.ligne16.lab2 -text $caption(specLhIII,spcrbreponse) \
-				-font $audace(font,arial_10_n) -width 20 -justify right
-			pack $audace(base).fenetreSpData.et1.f1.ligne16.lab2 -side left
-			# Affichage du champ de saisie 
-			entry $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -width 16 -font $audace(font,arial_10_b) -relief flat\
-				-textvariable data_spbmfc(nomFichRepInst) -justify left -borderwidth 1 -relief groove
-			pack $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -side left
-			# Affichage du bouton de sélection
-			button $audace(base).fenetreSpData.et1.f1.ligne16.but2 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
-				-font $audace(font,arial_10_n) -command ::spbmfc::goBrut
-			pack $audace(base).fenetreSpData.et1.f1.ligne16.but2 -side left
-	      pack $audace(base).fenetreSpData.et1.f1.ligne16 -side top -fill x
-	      
-	      #--- dix-septième ligne de l'étape 1
-	      frame $audace(base).fenetreSpData.et1.f1.ligne17
-	         # Affichage du label
-	         label $audace(base).fenetreSpData.et1.f1.ligne17.lab1 -text $caption(specLhIII,fichcalibneon) \
-	            -font $audace(font,arial_10_n) -width 20 -justify right
-	         pack $audace(base).fenetreSpData.et1.f1.ligne17.lab1 -side left
-	         # Affichage du champ de saisie
-	         entry $audace(base).fenetreSpData.et1.f1.ligne17.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
-	            -textvariable data_spbmfc(nomFichRaiesNeon) -justify left -borderwidth 1 -relief groove
-	         pack $audace(base).fenetreSpData.et1.f1.ligne17.ent1 -side left
-			# Affichage du bouton de sélection
-			button $audace(base).fenetreSpData.et1.f1.ligne17.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
-				-font $audace(font,arial_10_n) -command ::spbmfc::goBrut
-			pack $audace(base).fenetreSpData.et1.f1.ligne17.but1 -side left
-	         label $audace(base).fenetreSpData.et1.f1.ligne17.lab2 -text $caption(specLhIII,fichcalibatm) \
-	            -font $audace(font,arial_10_n) -width 20 -justify right
-	         pack $audace(base).fenetreSpData.et1.f1.ligne17.lab2 -side left
-	         # Affichage du champ de saisie
-	         entry $audace(base).fenetreSpData.et1.f1.ligne17.ent2 -width 16 -font $audace(font,arial_10_b) -relief flat\
-	            -textvariable data_spbmfc(nomFichRaiesAtm) -justify left -borderwidth 1 -relief groove
-	         pack $audace(base).fenetreSpData.et1.f1.ligne17.ent2 -side left
-	         		# Affichage du bouton de sélection
-			button $audace(base).fenetreSpData.et1.f1.ligne17.but2 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
-				-font $audace(font,arial_10_n) -command ::spbmfc::goBrut
-			pack $audace(base).fenetreSpData.et1.f1.ligne17.but2 -side left
-	      pack $audace(base).fenetreSpData.et1.f1.ligne17 -side top -fill x
-	
-	      #--- Dix-huitième ligne de l'étape 1 "Images inversées"
-	      frame $audace(base).fenetreSpData.et1.f1.ligne18
-	         # Affichage dele case à cocher
-	         checkbutton $audace(base).fenetreSpData.et1.f1.ligne18.chk1 -text $caption(specLhIII,spinverse) \
-	            -font $audace(font,arial_10_n) -variable data_spbmfc(inverser)
-	         pack $audace(base).fenetreSpData.et1.f1.ligne18.chk1 -side top
-	      pack $audace(base).fenetreSpData.et1.f1.ligne18 -side top -fill x
-	   pack $audace(base).fenetreSpData.et1.f1 -side top
+
+      frame $audace(base).fenetreSpData.et1.f1 -borderwidth 4 -relief groove -padx 15 -pady 3
+         #--- Seizième ligne de l'étape 1
+         frame $audace(base).fenetreSpData.et1.f1.ligne16
+         # Affichage du label 
+         label $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -text $caption(specLhIII,spfichcosme) \
+            -font $audace(font,arial_10_n) -width 20
+         pack $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -side left
+         # Affichage du champ de saisie 
+         entry $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat \
+            -textvariable data_spbmfc(nomFichCosm) -justify left -borderwidth 1 -relief groove
+         pack $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -side left
+         # Affichage du bouton de sélection
+         button $audace(base).fenetreSpData.et1.f1.ligne16.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
+            -font $audace(font,arial_10_n) -command ::spbmfc::goBrut
+         pack $audace(base).fenetreSpData.et1.f1.ligne16.but1 -side left
+         # Affichage du label 
+         label $audace(base).fenetreSpData.et1.f1.ligne16.lab2 -text $caption(specLhIII,spcrbreponse) \
+            -font $audace(font,arial_10_n) -width 20 -justify right
+         pack $audace(base).fenetreSpData.et1.f1.ligne16.lab2 -side left
+         # Affichage du champ de saisie 
+         entry $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -width 16 -font $audace(font,arial_10_b) -relief flat\
+            -textvariable data_spbmfc(nomFichRepInst) -justify left -borderwidth 1 -relief groove
+         pack $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -side left
+         # Affichage du bouton de sélection
+         button $audace(base).fenetreSpData.et1.f1.ligne16.but2 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
+            -font $audace(font,arial_10_n) -command ::spbmfc::goBrut
+         pack $audace(base).fenetreSpData.et1.f1.ligne16.but2 -side left
+         pack $audace(base).fenetreSpData.et1.f1.ligne16 -side top -fill x
+
+         #--- dix-septième ligne de l'étape 1
+         frame $audace(base).fenetreSpData.et1.f1.ligne17
+            # Affichage du label
+            label $audace(base).fenetreSpData.et1.f1.ligne17.lab1 -text $caption(specLhIII,fichcalibneon) \
+               -font $audace(font,arial_10_n) -width 20 -justify right
+            pack $audace(base).fenetreSpData.et1.f1.ligne17.lab1 -side left
+            # Affichage du champ de saisie
+            entry $audace(base).fenetreSpData.et1.f1.ligne17.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+               -textvariable data_spbmfc(nomFichRaiesNeon) -justify left -borderwidth 1 -relief groove
+            pack $audace(base).fenetreSpData.et1.f1.ligne17.ent1 -side left
+         # Affichage du bouton de sélection
+         button $audace(base).fenetreSpData.et1.f1.ligne17.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
+            -font $audace(font,arial_10_n) -command ::spbmfc::goBrut
+         pack $audace(base).fenetreSpData.et1.f1.ligne17.but1 -side left
+            label $audace(base).fenetreSpData.et1.f1.ligne17.lab2 -text $caption(specLhIII,fichcalibatm) \
+               -font $audace(font,arial_10_n) -width 20 -justify right
+            pack $audace(base).fenetreSpData.et1.f1.ligne17.lab2 -side left
+            # Affichage du champ de saisie
+            entry $audace(base).fenetreSpData.et1.f1.ligne17.ent2 -width 16 -font $audace(font,arial_10_b) -relief flat\
+               -textvariable data_spbmfc(nomFichRaiesAtm) -justify left -borderwidth 1 -relief groove
+            pack $audace(base).fenetreSpData.et1.f1.ligne17.ent2 -side left
+                  # Affichage du bouton de sélection
+         button $audace(base).fenetreSpData.et1.f1.ligne17.but2 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
+            -font $audace(font,arial_10_n) -command ::spbmfc::goBrut
+         pack $audace(base).fenetreSpData.et1.f1.ligne17.but2 -side left
+         pack $audace(base).fenetreSpData.et1.f1.ligne17 -side top -fill x
+
+         #--- Dix-huitième ligne de l'étape 1 "Images inversées"
+         frame $audace(base).fenetreSpData.et1.f1.ligne18
+            # Affichage dele case à cocher
+            checkbutton $audace(base).fenetreSpData.et1.f1.ligne18.chk1 -text $caption(specLhIII,spinverse) \
+               -font $audace(font,arial_10_n) -variable data_spbmfc(inverser)
+            pack $audace(base).fenetreSpData.et1.f1.ligne18.chk1 -side top
+         pack $audace(base).fenetreSpData.et1.f1.ligne18 -side top -fill x
+      pack $audace(base).fenetreSpData.et1.f1 -side top
    pack $audace(base).fenetreSpData.et1 -side top
-   
+
    #--- Trame de l'étape 2
    frame $audace(base).fenetreSpData.et2 -borderwidth 2 -relief groove
       #--- Titre de l'étape 2: Prétraitement des noirs & option cosmétique
@@ -2245,7 +2242,7 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
             -font $audace(font,arial_10_b) -justify left
          pack $audace(base).fenetreSpData.et2.titre.nom -side left -in $audace(base).fenetreSpData.et2.titre
       pack $audace(base).fenetreSpData.et2.titre -side top -fill x
-      
+
       #--- Première ligne de l'étape 2 "fichier de sortie"
       frame $audace(base).fenetreSpData.et2.ligne1
          # Affichage du label
@@ -2271,11 +2268,11 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
          checkbutton $audace(base).fenetreSpData.et2.ligne1.chk4 -text $caption(specLhIII,reslog) \
             -font $audace(font,arial_10_n) -variable data_spbmfc(out-log)
          pack $audace(base).fenetreSpData.et2.ligne1.chk4 -side left -in $audace(base).fenetreSpData.et2.ligne1
-		button $audace(base).fenetreSpData.et2.ligne1.but1 -borderwidth 2 -width 12 -text $caption(specLhIII,lienBeSS) \
-			-font $audace(font,arial_10_n) -command ::spbmfc::goLienBeSS
-		pack $audace(base).fenetreSpData.et2.ligne1.but1 -side right
+      button $audace(base).fenetreSpData.et2.ligne1.but1 -borderwidth 2 -width 12 -text $caption(specLhIII,lienBeSS) \
+         -font $audace(font,arial_10_n) -command ::spbmfc::goLienBeSS
+      pack $audace(base).fenetreSpData.et2.ligne1.but1 -side right
       pack $audace(base).fenetreSpData.et2.ligne1 -side top -fill x
-      
+
       #--- Seconde ligne de l'étape 2 "images intermédiaires"
       frame $audace(base).fenetreSpData.et2.ligne2
          # Affichage du label
@@ -2294,9 +2291,9 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
          checkbutton $audace(base).fenetreSpData.et2.ligne2.chk3 -text $caption(specLhIII,fich_1b) \
             -font $audace(font,arial_10_n) -variable data_spbmfc(out-1b)
          pack $audace(base).fenetreSpData.et2.ligne2.chk3 -side left -in $audace(base).fenetreSpData.et2.ligne2
-		button $audace(base).fenetreSpData.et2.ligne2.but1 -borderwidth 2 -width 12 -text $caption(specLhIII,lienNiveaux) \
-			-font $audace(font,arial_10_n) -command ::spbmfc::goLienNiveaux
-		pack $audace(base).fenetreSpData.et2.ligne2.but1 -side right
+      button $audace(base).fenetreSpData.et2.ligne2.but1 -borderwidth 2 -width 12 -text $caption(specLhIII,lienNiveaux) \
+         -font $audace(font,arial_10_n) -command ::spbmfc::goLienNiveaux
+      pack $audace(base).fenetreSpData.et2.ligne2.but1 -side right
       pack $audace(base).fenetreSpData.et2.ligne2 -side top -fill x
    pack $audace(base).fenetreSpData.et2 -side top -fill x
 
@@ -2314,41 +2311,40 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
       frame $audace(base).fenetreSpData.et3.ligne5
       pack $audace(base).fenetreSpData.et3.ligne5 -side top -fill x
 
-		frame $audace(base).fenetreSpData.et3.deuxlignes
-			frame $audace(base).fenetreSpData.et3.deuxlignes.f1
-				#--- Sixième ligne de l'étape 3
-				frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6
-					# Affichage du label "Nom du fichier destination"
-					label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.lab1 -text $caption(specLhIII,spanglerot) \
-					-font $audace(font,arial_10_n) -width 29 -justify right
-					pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.lab1 -side left
-					# Affichage du champ de saisie "Nom du fichier source"
-					entry $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
-					-textvariable data_spbmfc(angleRot) -justify left -borderwidth 1 -relief groove -state disabled
-					pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.ent1 -side left
-				pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6 -side top -fill x
-				#--- Septième ligne de l'étape 3
-				frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7
-					# Affichage du label 
-					label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -text $caption(specLhIII,spcorrgeom) \
-					-font $audace(font,arial_10_n) -width 29 -justify right
-					pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -side left
-					# Affichage du champ de saisie 
-					entry $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
-					-textvariable data_spbmfc(CorrGeom) -justify left -borderwidth 1 -relief groove -state disabled
-					pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -side left
-					# Affichage de la case à cocher pour indiquer si le noir contient la précharge
-					#--- Bouton "Effacer"
-				pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7 -side top -fill x
-			pack $audace(base).fenetreSpData.et3.deuxlignes.f1 -side left -fill x
-			frame $audace(base).fenetreSpData.et3.deuxlignes.f2
-				button $audace(base).fenetreSpData.et3.deuxlignes.f2.but1 -borderwidth 2 -width 10 -text $caption(specLhIII,speff) \
-				-font $audace(font,arial_10_n) -command ::spbmfc::effacerChampsCalcules
-				pack $audace(base).fenetreSpData.et3.deuxlignes.f2.but1 -side left
-			pack $audace(base).fenetreSpData.et3.deuxlignes.f2 -side left -fill x
-		pack $audace(base).fenetreSpData.et3.deuxlignes -side top -fill x
+      frame $audace(base).fenetreSpData.et3.deuxlignes
+         frame $audace(base).fenetreSpData.et3.deuxlignes.f1
+            #--- Sixième ligne de l'étape 3
+            frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6
+               # Affichage du label "Nom du fichier destination"
+               label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.lab1 -text $caption(specLhIII,spanglerot) \
+               -font $audace(font,arial_10_n) -width 29 -justify right
+               pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.lab1 -side left
+               # Affichage du champ de saisie "Nom du fichier source"
+               entry $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+               -textvariable data_spbmfc(angleRot) -justify left -borderwidth 1 -relief groove -state disabled
+               pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6.ent1 -side left
+            pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6 -side top -fill x
+            #--- Septième ligne de l'étape 3
+            frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7
+               # Affichage du label 
+               label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -text $caption(specLhIII,spcorrgeom) \
+               -font $audace(font,arial_10_n) -width 29 -justify right
+               pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -side left
+               # Affichage du champ de saisie 
+               entry $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+               -textvariable data_spbmfc(CorrGeom) -justify left -borderwidth 1 -relief groove -state disabled
+               pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -side left
+               # Affichage de la case à cocher pour indiquer si le noir contient la précharge
+               #--- Bouton "Effacer"
+            pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7 -side top -fill x
+         pack $audace(base).fenetreSpData.et3.deuxlignes.f1 -side left -fill x
+         frame $audace(base).fenetreSpData.et3.deuxlignes.f2
+            button $audace(base).fenetreSpData.et3.deuxlignes.f2.but1 -borderwidth 2 -width 10 -text $caption(specLhIII,speff) \
+            -font $audace(font,arial_10_n) -command ::spbmfc::effacerChampsCalcules
+            pack $audace(base).fenetreSpData.et3.deuxlignes.f2.but1 -side left
+         pack $audace(base).fenetreSpData.et3.deuxlignes.f2 -side left -fill x
+      pack $audace(base).fenetreSpData.et3.deuxlignes -side top -fill x
    pack $audace(base).fenetreSpData.et3 -side top -fill x
-
 
    #--- Trame finale (boutons)
    frame $audace(base).fenetreSpData.et4 -borderwidth 2 -relief groove
@@ -2382,7 +2378,7 @@ set panneau(AcqFC,list_mode) [ list "toto" "titi" ]
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).fenetreSpData
-   }
+}
 
 #---------------------------------------------------------------------------------------------
 

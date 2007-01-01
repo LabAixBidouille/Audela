@@ -1,6 +1,6 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.8 2006-11-09 13:17:50 audelateam Exp $
+# Mise a jour $Id: spectro.cap,v 1.9 2007-01-01 11:51:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,7 +15,6 @@ set caption(spectro,titre,outil)                        "Spectroscopy"
 set caption(spectro,help,titre)                         "Help For This Tool"
 set caption(spectro,configure)                          "Set up"
 set caption(spectro,editeur_profil)                     "Profile Editor"
-set caption(spectro,lhires)                             "LHIRES III Be"
 set caption(spectro,BeSS)                               "BeSS Access"
 
 set caption(spectro,configure,titre)                    "Spectroscopy: Setup"
@@ -44,7 +43,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,help,titre)                      "Aide pour cet outil"
    set caption(spectro,configure)                       "Configurer"
    set caption(spectro,editeur_profil)                  "Editeur de profil"
-   set caption(spectro,lhires)                          "LHIRES III Be"
    set caption(spectro,BeSS)                            "Accès BeSS"
 
    set caption(spectro,configure,titre)                 "Spectroscopie : Configuration"
@@ -73,7 +71,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,help,titre)                      "Aiuto per questo tool"
    set caption(spectro,configure)                       "Configurare"
    set caption(spectro,editeur_profil)                  "Editor del profilo"
-   set caption(spectro,lhires)                          "LHIRES III Be"
    set caption(spectro,BeSS)                            "Accesso BeSS"
 
    set caption(spectro,configure,titre)                 "Spettroscopia: Configurazione"
@@ -102,7 +99,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,help,titre)                      "Ayuda para esta herramienta"
    set caption(spectro,configure)                       "Configurar"
    set caption(spectro,editeur_profil)                  "Editor de perfil"
-   set caption(spectro,lhires)                          "LHIRES III Be"
    set caption(spectro,BeSS)                            "Acceso BeSS"
 
    set caption(spectro,configure,titre)                 "Espectroscopia: Configuración"
@@ -131,7 +127,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,help,titre)                      "Hilfe für dieses Gerät"
    set caption(spectro,configure)                       "Konfigurieren"
    set caption(spectro,editeur_profil)                  "Profil Herausgeber"
-   set caption(spectro,lhires)                          "LHIRES III Be"
    set caption(spectro,BeSS)                            "BeSS Zugang"
 
    set caption(spectro,configure,titre)                 "Spektroskopie: Konfiguration"
@@ -160,7 +155,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,help,titre)                      "Ajuda para esta ferramenta"
    set caption(spectro,configure)                       "Configurar"
    set caption(spectro,editeur_profil)                  "Editor de perfil"
-   set caption(spectro,lhires)                          "LHIRES III Be"
    set caption(spectro,BeSS)                            "Acesso BeSS"
 
    set caption(spectro,configure,titre)                 "Espectroscopia : Configuração"
@@ -189,7 +183,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spectro,help,titre)                      "Help For This Tool"
    set caption(spectro,configure)                       "Set up"
    set caption(spectro,editeur_profil)                  "Profile Editor"
-   set caption(spectro,lhires)                          "LHIRES III Be"
    set caption(spectro,BeSS)                            "BeSS Access"
 
    set caption(spectro,configure,titre)                 "Spectroscopy: Setup"
