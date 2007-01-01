@@ -633,29 +633,29 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       sprintf(ligne,"\"%s\"",interp->result);
 	   Tcl_DStringAppend(&dsptr,ligne,-1);
       if (datatypes[k]==TBIT) {
-         strcat(ligne," bit ");
+         strcpy(ligne," bit ");
       } else if (datatypes[k]==TBYTE) {
-         strcat(ligne," byte ");
+         strcpy(ligne," byte ");
       } else if (datatypes[k]==TLOGICAL) {
-         strcat(ligne," logical ");
+         strcpy(ligne," logical ");
       } else if (datatypes[k]==TSTRING) {
-         strcat(ligne," string ");
+         strcpy(ligne," string ");
       } else if (datatypes[k]==TUSHORT) {
-         strcat(ligne," ushort ");
+         strcpy(ligne," ushort ");
       } else if (datatypes[k]==TINT) {
-         strcat(ligne," int ");
+         strcpy(ligne," int ");
       } else if (datatypes[k]==TULONG) {
-         strcat(ligne," ulong ");
+         strcpy(ligne," ulong ");
       } else if (datatypes[k]==TLONG) {
-         strcat(ligne," long ");
+         strcpy(ligne," long ");
       } else if (datatypes[k]==TFLOAT) {
-         strcat(ligne," float ");
+         strcpy(ligne," float ");
       } else if (datatypes[k]==TDOUBLE) {
-         strcat(ligne," double ");
+         strcpy(ligne," double ");
       } else if (datatypes[k]==TCOMPLEX) {
-         strcat(ligne," complex ");
+         strcpy(ligne," complex ");
       } else if (datatypes[k]==TDBLCOMPLEX) {
-         strcat(ligne," dlbcomplex ");
+         strcpy(ligne," dlbcomplex ");
       }
 	   Tcl_DStringAppend(&dsptr,ligne,-1);
       sprintf(ligne," \"%s\" ",comments[k]);
