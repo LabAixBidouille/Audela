@@ -119,6 +119,7 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $captionspc(spc_dat2fits_w) -command "spc_dat2fits" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_spc2fits_w) -command "spc_spc2fits" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_bessmodule_w) -command "spc_bessmodule" -underline 0
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
 	     # .spc.menuBar.file add command -label "$captionspc(print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P" -state disabled
@@ -187,8 +188,10 @@ proc spc_winini { } {
       # .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre \"\"" -underline 0 -accelerator "Ctrl-L"
       .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
       .spc.menuBar.calibration add command -label $captionspc(spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
+      .spc.menuBar.calibration add command -label $captionspc(spc_calibre_space)
       .spc.menuBar.calibration add command -label $captionspc(spc_rinstrum_w) -command "spc_rinstrum" -underline 0
       .spc.menuBar.calibration add command -label $captionspc(spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
+      .spc.menuBar.calibration add command -label $captionspc(spc_calibre_space)
       .spc.menuBar.calibration add command -label $captionspc(spc_norma_w) -command "spc_norma" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
@@ -201,15 +204,16 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0
       menu .spc.menuBar.pipelines -tearoff 0
       # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "::param_spc_audace_traite2calibre::run" -underline 0 -accelerator "Ctrl-4"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-4"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-5"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space) -underline 0
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "::param_spc_audace_traite2calibre::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-2"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-3"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $captionspc(spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
@@ -222,7 +226,7 @@ proc spc_winini { } {
       bind .spc <Control-6> ::param_spc_audace_traite2rinstrum::run
       bind .spc <Control-7> ::spcmfc::Demarragespbmfc
 
-      #--- Menu Analyse ---#
+      #--- Menu Astrophysique ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0
       menu .spc.menuBar.analyse -tearoff 0
       .spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-A"

@@ -972,6 +972,9 @@ proc spc_rinstrum { args } {
        set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
        set fichier_ref [ file rootname [ lindex $args 1 ] ]
 
+       #===================================================================#
+       set flag 0
+       if { $flag } {
        #--- Vérifie s'il faut rééchantilonner ou non
        if { [ spc_compare $fichier_mes $fichier_ref ] == 0 } {
 	   #-- Détermine le spectre de dispersion la plus précise
@@ -1026,29 +1029,43 @@ proc spc_rinstrum { args } {
 	   set fref_sortie $fichier_ref
 	   set fmes_sortie $fichier_mes
        }
+   }
+       #======================================================================#
 
-       #--- Linéarisation des deux profils de raies
-       ::console::affiche_resultat "Linéarisation des deux profils de raies...\n"
-       set fref_ready [ spc_bigsmooth2 $fref_sortie ]
-       set fmes_ready [ spc_bigsmooth2 $fmes_sortie ]
+       #set fref_sortie $fichier_ref
+       set fmes_sortie $fichier_mes
+       ::console::affiche_resultat "\nRééchantillonnage du spectre de référence...\n"
+       set fref_sortie [ spc_echant $fichier_ref $fichier_mes ]
+       
+       
+       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
+       ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
+       set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+
+       #--- Lissage de la reponse instrumentale :
+       ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
+       set rinstrum1 [ spc_smooth2 $rinstrum0 ]
+       set rinstrum2 [ spc_passebas $rinstrum1 ]
+       set rinstrum3 [ spc_passebas $rinstrum2 ]
+       set rinstrum [ spc_passebas $rinstrum3 ]
+
+
+       #--- Nettoyage des fichiers temporaires :
        file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
        if { $fmes_sortie != $fichier_mes } {
 	   file delete -force "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
        }
-       #set fref_ready "$fref_sortie"
-       #set fmes_ready "$fmes_sortie"
-
-       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
-       ::console::affiche_resultat "Divison des deux profils de raies pour obtention de la réponse intrumentale...\n"
-       set rinstrum [ spc_div $fmes_ready $fref_ready ]
-
-       #--- Nettoyage des fichiers temporaires :
-       file delete -force "$audace(rep_images)/${fref_ready}$conf(extension,defaut)"
-       file delete -force "$audace(rep_images)/${fmes_ready}$conf(extension,defaut)"
+       if { $fref_sortie != $fichier_ref } {
+	   file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       }
        if { $rinstrum == 0 } {
 	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
 	   return 0
        } else {
+	   file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+	   file delete -force "$audace(rep_images)/$rinstrum1$conf(extension,defaut)"
+	   file delete -force "$audace(rep_images)/$rinstrum2$conf(extension,defaut)"
+	   file delete -force "$audace(rep_images)/$rinstrum3$conf(extension,defaut)"
 	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale$conf(extension,defaut)"
 	   ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale$conf(extension,defaut)\n"
 	   return reponse_instrumentale
@@ -1421,6 +1438,105 @@ proc spc_rinstrum_060826 { args } {
 	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/${fichier_mes}_rinstrum$conf(extension,defaut)"
 	   ::console::affiche_resultat "Réponse instrumentale sauvée sous ${fichier_mes}_rinstrum$conf(extension,defaut)\n"
 	   return ${fichier_mes}_rinstrum
+       }
+   } else {
+       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+proc spc_rinstrum_260806 { args } {
+
+   global audace
+   global conf
+   set precision 0.0001
+
+   if { [llength $args] == 2 } {
+       set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       set fichier_ref [ file rootname [ lindex $args 1 ] ]
+
+       #--- Vérifie s'il faut rééchantilonner ou non
+       if { [ spc_compare $fichier_mes $fichier_ref ] == 0 } {
+	   #-- Détermine le spectre de dispersion la plus précise
+	   set carac1 [ spc_info $fichier_mes ]
+	   set carac2 [ spc_info $fichier_ref ]
+	   set disp1 [ lindex $carac1 5 ]
+	   set ldeb1 [ lindex $carac1 3 ]
+	   set lfin1 [ lindex $carac1 4 ]
+	   set disp2 [ lindex $carac2 5 ]
+	   set ldeb2 [ lindex $carac2 3 ]
+	   set lfin2 [ lindex $carac2 4 ]
+	   if { $disp1!=$disp2 && $ldeb2<=$ldeb1 && $lfin1<=$lfin2 } {
+	       #-- Rééchantillonnage et crop du spectre de référence fichier_ref
+	       ::console::affiche_resultat "\nRééchantillonnage et crop du spectre de référence...\n\n"
+	       #- Dans cet ordre, permet d'obtenir un continuum avec les raies de l'eau et oscillations d'interférence, mais le continuum possède la dispersion du sepctre de référence :
+	       #set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       #set fref_sel_ech [ spc_echant $fref_sel $fichier_mes ]
+	       #set fref_sortie $fref_sel_ech
+	       #set fmes_sortie $fichier_mes
+
+	       #- Dans cet ordre, permet d'obtenir le vertiable continuum :
+	       set fref_ech [ spc_echant $fichier_ref $fichier_mes ]
+	       set fref_ech_sel [ spc_select $fref_ech $ldeb1 $lfin1 ]
+	       set fref_sortie $fref_ech_sel
+	       set fmes_sortie $fichier_mes
+	   } elseif { $disp2<$disp1 && $ldeb2>$ldeb1 && $lfin1>$lfin2 } {
+	       #-- Rééchantillonnage du spectre de référence fichier_ref et crop du spectre de mesure
+	       ::console::affiche_resultat "\nRééchantillonnage du spectre mesuré fichier_mes et crop du spectre de référence...\n\n"
+	       set fmes_sel [ spc_select $fichier_mes $ldeb2 $lfin2 ]
+	       set fref_ech [ spc_echant $fichier_ref $fichier_mes ]
+	       set fref_sortie $fref_ech
+	       set fmes_sortie $fmes_sel
+	   } elseif { [expr abs($disp2-$disp1)]<=$precision && $ldeb2<=$ldeb1 && $lfin1<=$lfin2 } {
+	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence
+	       ::console::affiche_resultat "\nAucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence...\n\n"
+	       set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       set fref_sortie $fref_sel
+	       set fmes_sortie $fichier_mes
+	   } elseif { [expr abs($disp2-$disp1)]<=$precision && $ldeb2>$ldeb1 && $lfin1>$lfin2 } {
+	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de mesures
+	       ::console::affiche_resultat "\nAucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de mesures...\n\n"
+	       set fmes_sel [ spc_select $fichier_mes $ldeb2 $lfin2 ]
+	       set fref_sortie $fichier_ref
+	       set fmes_sortie $fmes_sel
+	   } else {
+	       #-- Le spectre de référence ne recouvre pas les longueurs d'onde du spectre mesuré
+	       ::console::affiche_resultat "\nLe spectre de référence ne recouvre aucune plage de longueurs d'onde du spectre mesuré.\n\n"
+	   }
+       } else {
+	   #-- Aucun rééchantillonnage ni redécoupage nécessaire
+	   ::console::affiche_resultat "\nAucun rééchantillonnage ni redécoupage nécessaire.\n\n"
+	   set fref_sortie $fichier_ref
+	   set fmes_sortie $fichier_mes
+       }
+
+       #--- Linéarisation des deux profils de raies
+       ::console::affiche_resultat "Linéarisation des deux profils de raies...\n"
+       set fref_ready [ spc_bigsmooth2 $fref_sortie ]
+       set fmes_ready [ spc_bigsmooth2 $fmes_sortie ]
+       file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       if { $fmes_sortie != $fichier_mes } {
+	   file delete -force "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
+       }
+       #set fref_ready "$fref_sortie"
+       #set fmes_ready "$fmes_sortie"
+
+       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
+       ::console::affiche_resultat "Divison des deux profils de raies pour obtention de la réponse intrumentale...\n"
+       set rinstrum [ spc_div $fmes_ready $fref_ready ]
+
+       #--- Nettoyage des fichiers temporaires :
+       file delete -force "$audace(rep_images)/${fref_ready}$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/${fmes_ready}$conf(extension,defaut)"
+       if { $rinstrum == 0 } {
+	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
+	   return 0
+       } else {
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale$conf(extension,defaut)"
+	   ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale$conf(extension,defaut)\n"
+	   return reponse_instrumentale
        }
    } else {
        ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence\n\n"

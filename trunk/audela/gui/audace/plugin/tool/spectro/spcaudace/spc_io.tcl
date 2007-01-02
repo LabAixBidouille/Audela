@@ -4,7 +4,9 @@
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 31-01-2005
 # Date de mise a jour : 21-02-2005
-# Chargement en script : source $audace(rep_scripts)/spcaudace/spc_io.tcl
+# Chargement en script : 
+# A130 : source $audace(rep_scripts)/spcaudace/spc_io.tcl
+# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_io.tcl ]
 #
 #####################################################################################
 
@@ -827,7 +829,7 @@ proc spc_fit2pngman { args } {
 	set legendex [ lindex $args 2 ]
 	set legendey [ lindex $args 3 ]
 	set pas [ lindex $args 4 ]
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	set ext ".dat"
 	spc_fits2dat $fichier
 	# Retire l'extension .fit du nom du fichier
@@ -902,7 +904,7 @@ proc spc_fit2png { args } {
 	}
        
 	set legendey "Intensity (ADU)"
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	set ext ".dat"
 	
 	spc_fits2dat $fichier
@@ -988,7 +990,7 @@ proc spc_fit2pngbat { args } {
        }
        set legendey "Intensity (ADU)"
 
-       set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+       set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
        set ext ".dat"
 
        spc_fits2dat $fichier
@@ -1058,7 +1060,7 @@ proc spc_dat2png { args } {
 	}
 	set legendey "Intensity (ADU)"
 
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	set ext ".dat"
 	
 	#spc_fits2dat $fichier
@@ -1107,7 +1109,7 @@ proc spc_dat2pngman { args } {
 	set legendex [ lindex $args 2 ]
 	set legendey [ lindex $args 3 ]
 	set pas [ lindex $args 4 ]
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 
 	set ext ".dat"
 	# Retire l'extension .fit du nom du fichier
@@ -1587,7 +1589,7 @@ proc spc_dat2png_27042006 { args } {
 	}
 	set legendey "Intensity (ADU)"
 
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	set ext ".dat"
 	
 	#spc_fits2dat $fichier

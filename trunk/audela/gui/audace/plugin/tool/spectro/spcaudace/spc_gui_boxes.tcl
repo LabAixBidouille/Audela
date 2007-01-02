@@ -573,7 +573,7 @@ namespace eval ::param_spc_audace_calibre2loifile {
        
        #--- Cree la fenetre .param_spc_audace_calibre2loifile de niveau le plus haut
        toplevel .param_spc_audace_calibre2loifile -class Toplevel -bg $audace(param_spc_audace,calibre2loifile,color,backpad)
-       wm geometry .param_spc_audace_calibre2loifile 300x330+30+30
+       wm geometry .param_spc_audace_calibre2loifile 300x330+10+10
        wm resizable .param_spc_audace_calibre2loifile 0 0
        wm title .param_spc_audace_calibre2loifile $caption(param_spc_audace,calibre2loifile,titre)
        wm protocol .param_spc_audace_calibre2loifile WM_DELETE_WINDOW "::param_spc_audace_calibre2loifile::stop"
@@ -661,6 +661,7 @@ namespace eval ::param_spc_audace_calibre2loifile {
 
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_geom2calibre
+# Intitulé : Corrections géométriques -> calibration
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -674,7 +675,7 @@ namespace eval ::param_spc_audace_geom2calibre {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       set liste_methreg [ list "spc" "reg" ]
@@ -711,7 +712,7 @@ namespace eval ::param_spc_audace_geom2calibre {
       set audace(param_spc_audace,geom2calibre,font,c10b) [ list {Arial} 10 bold ]
       
       # === Captions
-      set caption(param_spc_audace,geom2calibre,titre2) "Géométrie -> calibration"
+      set caption(param_spc_audace,geom2calibre,titre2) "Corrections géométriques -> calibration"
       set caption(param_spc_audace,geom2calibre,titre) "Réduction de spectres"
       set caption(param_spc_audace,geom2calibre,stop_button) "Annuler"
       set caption(param_spc_audace,geom2calibre,return_button) "OK"
@@ -730,7 +731,7 @@ namespace eval ::param_spc_audace_geom2calibre {
       
       #--- Cree la fenetre .param_spc_audace_geom2calibre de niveau le plus haut
       toplevel .param_spc_audace_geom2calibre -class Toplevel -bg $audace(param_spc_audace,geom2calibre,color,backpad)
-      wm geometry .param_spc_audace_geom2calibre 450x285+30+30
+      wm geometry .param_spc_audace_geom2calibre 450x357+10+10
       wm resizable .param_spc_audace_geom2calibre 1 1
       wm title .param_spc_audace_geom2calibre $caption(param_spc_audace,geom2calibre,titre)
       wm protocol .param_spc_audace_geom2calibre WM_DELETE_WINDOW "::param_spc_audace_geom2calibre::annuler"
@@ -785,7 +786,7 @@ namespace eval ::param_spc_audace_geom2calibre {
 	      -fg $audace(param_spc_audace,geom2calibre,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2calibre,font,c12b)
       pack  .param_spc_audace_geom2calibre.lampe.label -in .param_spc_audace_geom2calibre.lampe -side left -fill none
-      button .param_spc_audace_geom2calibre.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2calibre.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2calibre,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2calibre,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2calibre,color,backpad) \
@@ -1003,6 +1004,7 @@ namespace eval ::param_spc_audace_geom2calibre {
 
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_geom2rinstrum
+# Intitulé : Corrections géométriques -> réponse instrumentale
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -1016,7 +1018,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
@@ -1054,7 +1056,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
       set audace(param_spc_audace,geom2rinstrum,font,c10b) [ list {Arial} 10 bold ]
       
       # === Captions
-      set caption(param_spc_audace,geom2rinstrum,titre2) "Géométrie -> réponse instrumentale"
+      set caption(param_spc_audace,geom2rinstrum,titre2) "Corrections géométriques -> réponse instrumentale"
       set caption(param_spc_audace,geom2rinstrum,titre) "Réduction de spectres"
       set caption(param_spc_audace,geom2rinstrum,stop_button) "Annuler"
       set caption(param_spc_audace,geom2rinstrum,return_button) "OK"
@@ -1076,7 +1078,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
       
       #--- Cree la fenetre .param_spc_audace_geom2rinstrum de niveau le plus haut
       toplevel .param_spc_audace_geom2rinstrum -class Toplevel -bg $audace(param_spc_audace,geom2rinstrum,color,backpad)
-      wm geometry .param_spc_audace_geom2rinstrum 450x285+30+30
+      wm geometry .param_spc_audace_geom2rinstrum 450x462+10+10
       wm resizable .param_spc_audace_geom2rinstrum 1 1
       wm title .param_spc_audace_geom2rinstrum $caption(param_spc_audace,geom2rinstrum,titre)
       wm protocol .param_spc_audace_geom2rinstrum WM_DELETE_WINDOW "::param_spc_audace_geom2rinstrum::annuler"
@@ -1131,7 +1133,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b)
       pack  .param_spc_audace_geom2rinstrum.lampe.label -in .param_spc_audace_geom2rinstrum.lampe -side left -fill none
-      button .param_spc_audace_geom2rinstrum.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2rinstrum.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
@@ -1151,7 +1153,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b)
       pack  .param_spc_audace_geom2rinstrum.etoile_ref.label -in .param_spc_audace_geom2rinstrum.etoile_ref -side left -fill none
-      button .param_spc_audace_geom2rinstrum.etoile_ref.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2rinstrum.etoile_ref.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
@@ -1171,7 +1173,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b)
       pack  .param_spc_audace_geom2rinstrum.etoile_cat.label -in .param_spc_audace_geom2rinstrum.etoile_cat -side left -fill none
-      button .param_spc_audace_geom2rinstrum.etoile_cat.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2rinstrum.etoile_cat.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
@@ -1416,6 +1418,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2rinstrum
+# Intitulé : Traitement -> réponse instrumentale
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -1429,7 +1432,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
       set rep_speclib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
 
@@ -1499,7 +1502,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       
       #--- Cree la fenetre .param_spc_audace_traite2rinstrum de niveau le plus haut
       toplevel .param_spc_audace_traite2rinstrum -class Toplevel -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
-      wm geometry .param_spc_audace_traite2rinstrum 450x285+30+30
+      wm geometry .param_spc_audace_traite2rinstrum 450x574+10+10
       wm resizable .param_spc_audace_traite2rinstrum 1 1
       wm title .param_spc_audace_traite2rinstrum $caption(param_spc_audace,traite2rinstrum,titre)
       wm protocol .param_spc_audace_traite2rinstrum WM_DELETE_WINDOW "::param_spc_audace_traite2rinstrum::annuler"
@@ -1613,7 +1616,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b)
       pack  .param_spc_audace_traite2rinstrum.lampe.label -in .param_spc_audace_traite2rinstrum.lampe -side left -fill none
-      button .param_spc_audace_traite2rinstrum.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2rinstrum.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
@@ -1634,7 +1637,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b)
       pack  .param_spc_audace_traite2rinstrum.etoile_ref.label -in .param_spc_audace_traite2rinstrum.etoile_ref -side left -fill none
-      button .param_spc_audace_traite2rinstrum.etoile_ref.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2rinstrum.etoile_ref.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
@@ -1654,7 +1657,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b)
       pack  .param_spc_audace_traite2rinstrum.etoile_cat.label -in .param_spc_audace_traite2rinstrum.etoile_cat -side left -fill none
-      button .param_spc_audace_traite2rinstrum.etoile_cat.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2rinstrum.etoile_cat.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
@@ -1944,6 +1947,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_geom2rinstrum
+# Intitulé : Corrections géométriques -> réponse instrumentale
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -1957,7 +1961,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
@@ -1995,7 +1999,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
       set audace(param_spc_audace,geom2rinstrum,font,c10b) [ list {Arial} 10 bold ]
       
       # === Captions
-      set caption(param_spc_audace,geom2rinstrum,titre2) "Géométrie -> réponse instrumentale"
+      set caption(param_spc_audace,geom2rinstrum,titre2) "Corrections géométriques\n-> réponse instrumentale"
       set caption(param_spc_audace,geom2rinstrum,titre) "Réduction de spectres"
       set caption(param_spc_audace,geom2rinstrum,stop_button) "Annuler"
       set caption(param_spc_audace,geom2rinstrum,return_button) "OK"
@@ -2017,7 +2021,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
       
       #--- Cree la fenetre .param_spc_audace_geom2rinstrum de niveau le plus haut
       toplevel .param_spc_audace_geom2rinstrum -class Toplevel -bg $audace(param_spc_audace,geom2rinstrum,color,backpad)
-      wm geometry .param_spc_audace_geom2rinstrum 450x285+30+30
+      wm geometry .param_spc_audace_geom2rinstrum 450x490+10+10
       wm resizable .param_spc_audace_geom2rinstrum 1 1
       wm title .param_spc_audace_geom2rinstrum $caption(param_spc_audace,geom2rinstrum,titre)
       wm protocol .param_spc_audace_geom2rinstrum WM_DELETE_WINDOW "::param_spc_audace_geom2rinstrum::annuler"
@@ -2072,7 +2076,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b)
       pack  .param_spc_audace_geom2rinstrum.lampe.label -in .param_spc_audace_geom2rinstrum.lampe -side left -fill none
-      button .param_spc_audace_geom2rinstrum.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2rinstrum.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
@@ -2092,7 +2096,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b)
       pack  .param_spc_audace_geom2rinstrum.etoile_ref.label -in .param_spc_audace_geom2rinstrum.etoile_ref -side left -fill none
-      button .param_spc_audace_geom2rinstrum.etoile_ref.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2rinstrum.etoile_ref.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
@@ -2112,7 +2116,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b)
       pack  .param_spc_audace_geom2rinstrum.etoile_cat.label -in .param_spc_audace_geom2rinstrum.etoile_cat -side left -fill none
-      button .param_spc_audace_geom2rinstrum.etoile_cat.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_geom2rinstrum.etoile_cat.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
@@ -2357,6 +2361,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 
 ########################################################################
 # Boîte graphique de saisie des paramètres pour la metafonction spc_traite2calibre
+# Intitulé : Prétraitement -> calibration
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 09-07-2006
@@ -2371,7 +2376,7 @@ namespace eval ::param_spc_audace_traite2calibre {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       set liste_methreg [ list "spc" "reg" "none" ]
@@ -2412,7 +2417,7 @@ namespace eval ::param_spc_audace_traite2calibre {
       set audace(param_spc_audace,traite2calibre,font,c10b) [ list {Arial} 10 bold ]
       
       # === Captions
-      set caption(param_spc_audace,traite2calibre,titre2) "Traitement -> calibration"
+      set caption(param_spc_audace,traite2calibre,titre2) "Prétraitement -> calibration"
       set caption(param_spc_audace,traite2calibre,titre) "Réduction de spectres"
       set caption(param_spc_audace,traite2calibre,stop_button) "Annuler"
       set caption(param_spc_audace,traite2calibre,return_button) "OK"
@@ -2437,7 +2442,7 @@ namespace eval ::param_spc_audace_traite2calibre {
       
       #--- Cree la fenetre .param_spc_audace_traite2calibre de niveau le plus haut
       toplevel .param_spc_audace_traite2calibre -class Toplevel -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      wm geometry .param_spc_audace_traite2calibre 450x285+30+30
+      wm geometry .param_spc_audace_traite2calibre 450x515+10+10
       wm resizable .param_spc_audace_traite2calibre 1 1
       wm title .param_spc_audace_traite2calibre $caption(param_spc_audace,traite2calibre,titre)
       wm protocol .param_spc_audace_traite2calibre WM_DELETE_WINDOW "::param_spc_audace_traite2calibre::annuler"
@@ -2552,7 +2557,7 @@ namespace eval ::param_spc_audace_traite2calibre {
 	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2calibre,font,c12b)
       pack  .param_spc_audace_traite2calibre.lampe.label -in .param_spc_audace_traite2calibre.lampe -side left -fill none
-      button .param_spc_audace_traite2calibre.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2calibre.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
@@ -2818,6 +2823,7 @@ namespace eval ::param_spc_audace_traite2calibre {
 
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2srinstrum
+# Intitulé : Traitement -> correction réponse instrumentale (application à d'autres spectres)
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -2831,7 +2837,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
@@ -2899,7 +2905,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       
       #--- Cree la fenetre .param_spc_audace_traite2srinstrum de niveau le plus haut
       toplevel .param_spc_audace_traite2srinstrum -class Toplevel -bg $audace(param_spc_audace,traite2srinstrum,color,backpad)
-      wm geometry .param_spc_audace_traite2srinstrum 450x285+30+30
+      wm geometry .param_spc_audace_traite2srinstrum 450x625+10+10
       wm resizable .param_spc_audace_traite2srinstrum 1 1
       wm title .param_spc_audace_traite2srinstrum $caption(param_spc_audace,traite2srinstrum,titre)
       wm protocol .param_spc_audace_traite2srinstrum WM_DELETE_WINDOW "::param_spc_audace_traite2srinstrum::annuler"
@@ -3013,7 +3019,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 	      -fg $audace(param_spc_audace,traite2srinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2srinstrum,font,c12b)
       pack  .param_spc_audace_traite2srinstrum.lampe.label -in .param_spc_audace_traite2srinstrum.lampe -side left -fill none
-      button .param_spc_audace_traite2srinstrum.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2srinstrum.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2srinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2srinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2srinstrum,color,backpad) \
@@ -3033,7 +3039,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 	      -fg $audace(param_spc_audace,traite2srinstrum,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2srinstrum,font,c12b)
       pack  .param_spc_audace_traite2srinstrum.rinstrum.label -in .param_spc_audace_traite2srinstrum.rinstrum -side left -fill none
-      button .param_spc_audace_traite2srinstrum.rinstrum.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2srinstrum.rinstrum.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2srinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2srinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2srinstrum,color,backpad) \
@@ -3321,6 +3327,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 
 ########################################################################
 # Boîte graphique de saisie des paramètres pour la metafonction spc_calibrelampe
+# Intitulé : Calibration en longueur d'onde d'un spectre
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -3334,7 +3341,7 @@ namespace eval ::param_spc_audace_calibreprofil {
    proc run { args {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       set audace(param_spc_audace,calibreprofil,config,lampe) [ lindex $args 0 ]
@@ -3408,7 +3415,7 @@ namespace eval ::param_spc_audace_calibreprofil {
       
       #--- Cree la fenetre .param_spc_audace_calibreprofil de niveau le plus haut
       toplevel .param_spc_audace_calibreprofil -class Toplevel -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      wm geometry .param_spc_audace_calibreprofil 460x500+30+30
+      wm geometry .param_spc_audace_calibreprofil 460x500+10+10
       wm resizable .param_spc_audace_calibreprofil 1 1
       wm title .param_spc_audace_calibreprofil $caption(param_spc_audace,calibreprofil,titre)
       wm protocol .param_spc_audace_calibreprofil WM_DELETE_WINDOW "::param_spc_audace_calibreprofil::annuler"
@@ -3449,7 +3456,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,calibreprofil,font,c12b)
       pack  .param_spc_audace_calibreprofil.lampe.label -in .param_spc_audace_calibreprofil.lampe -side left -fill none
-      button .param_spc_audace_calibreprofil.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_calibreprofil.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
 	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
@@ -3483,7 +3490,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.x1.combobox \
          -width 12          \
-         -height [ llength $listeabscisses ]  \
+	 #-height [ llength $listeabscisses ]  \
+         -height 4  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3512,7 +3520,9 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.lambda1.combobox \
          -width 12          \
-         -height [ llength $listelambdaschem ]  \
+         #-height [ llength $listelambdaschem ]  \
+	 #- On limite l'affichage de 30 longueurs d'onde, docn création automatique d'un ascenseur :
+         -height 20  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3533,7 +3543,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.x2.combobox \
          -width 12          \
-         -height [ llength $listeabscisses ]  \
+         #-height [ llength $listeabscisses ]  \
+         -height 4  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3553,7 +3564,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.lambda2.combobox \
          -width 12          \
-         -height [ llength $listelambdaschem ]  \
+         #-height [ llength $listelambdaschem ]  \
+         -height 20  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3574,7 +3586,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.x3.combobox \
          -width 12          \
-         -height [ llength $listeabscisses ]  \
+         #-height [ llength $listeabscisses ]  \
+         -height 4  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3594,7 +3607,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.lambda3.combobox \
          -width 12          \
-         -height [ llength $listelambdaschem ]  \
+         #-height [ llength $listelambdaschem ]  \
+         -height 20  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3615,7 +3629,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.x4.combobox \
          -width 12          \
-         -height [ llength $listeabscisses ]  \
+         #-height [ llength $listeabscisses ]  \
+         -height 4  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3635,7 +3650,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.lambda4.combobox \
          -width 12          \
-         -height [ llength $listelambdaschem ]  \
+         #-height [ llength $listelambdaschem ]  \
+         -height 20  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3656,7 +3672,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.x5.combobox \
          -width 12          \
-         -height [ llength $listeabscisses ]  \
+         #-height [ llength $listeabscisses ]  \
+         -height 4  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3676,7 +3693,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.lambda5.combobox \
          -width 12          \
-         -height [ llength $listelambdaschem ]  \
+         #-height [ llength $listelambdaschem ]  \
+         -height 20  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3697,7 +3715,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.x6.combobox \
          -width 12          \
-         -height [ llength $listeabscisses ]  \
+         #-height [ llength $listeabscisses ]  \
+         -height 4  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3717,7 +3736,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       #-- Partie Combobox
       ComboBox .param_spc_audace_calibreprofil.lambda6.combobox \
          -width 12          \
-         -height [ llength $listelambdaschem ]  \
+         #-height [ llength $listelambdaschem ]  \
+         -height 20  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 1       \
@@ -3837,6 +3857,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2scalibre
+# Intitulé : Traitement -> calibration (application à d'autres spectres)
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 14-07-2006
@@ -3850,7 +3871,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
    proc run { {positionxy 20+20} } {
       global conf
       global audace
-      global caption
+      global captionspc
       global color
 
       # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
@@ -3917,7 +3938,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
       
       #--- Cree la fenetre .param_spc_audace_traite2scalibre de niveau le plus haut
       toplevel .param_spc_audace_traite2scalibre -class Toplevel -bg $audace(param_spc_audace,traite2scalibre,color,backpad)
-      wm geometry .param_spc_audace_traite2scalibre 450x285+30+30
+      wm geometry .param_spc_audace_traite2scalibre 450x563+10+10
       wm resizable .param_spc_audace_traite2scalibre 1 1
       wm title .param_spc_audace_traite2scalibre $caption(param_spc_audace,traite2scalibre,titre)
       wm protocol .param_spc_audace_traite2scalibre WM_DELETE_WINDOW "::param_spc_audace_traite2scalibre::annuler"
@@ -4031,7 +4052,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
 	      -fg $audace(param_spc_audace,traite2scalibre,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,traite2scalibre,font,c12b)
       pack  .param_spc_audace_traite2scalibre.lampe.label -in .param_spc_audace_traite2scalibre.lampe -side left -fill none
-      button .param_spc_audace_traite2scalibre.lampe.explore -text "$caption(script,parcourir)" -width 1 \
+      button .param_spc_audace_traite2scalibre.lampe.explore -text "$captionspc(parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,traite2scalibre,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2scalibre,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2scalibre,color,backpad) \

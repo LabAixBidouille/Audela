@@ -19,7 +19,10 @@ if {[string compare $langage english] ==0 } {
      set captionspc(writeps) "Export to Postscript"
      set captionspc(file) "File"
      set captionspc(print_on) "Print with "
+     set captionspc(parcourir) "...."
 
+
+     set captionspc(spc_bessmodule_w) "File exportation to BeSS format"
      #--- Menu Profil de raies ---#
 
 
@@ -50,6 +53,7 @@ if {[string compare $langage french] ==0 } {
      set captionspc(adu) "ADU"
      set captionspc(spc_profile) "profil SPC"
      set captionspc(wait) "En cours..."
+     set captionspc(parcourir) "...."
      #set captionspc(savespc) "Sauver un profil de raie"
 
      #--- Menu File ---#
@@ -63,6 +67,7 @@ if {[string compare $langage french] ==0 } {
      set captionspc(spc_dat2fits_w) "Conversion de profil dat vers fits"
      set captionspc(spc_spc2fits_w) "Conversion de profil spc vers fits"
      set captionspc(spc_spcs2fits_w) "Conversion d'un répertoire de profils spc vers fits"
+     set captionspc(spc_bessmodule_w) "Export de fichier au format base BeSS"
      set captionspc(print_on) "Imprimer avec "
      set captionspc(quitspc) "Quitter la fenêtre SpcAudace"
 
@@ -91,29 +96,33 @@ if {[string compare $langage french] ==0 } {
      set captionspc(spc_ew_w) "Largeur équivalente d'une raie"
      set captionspc(spc_intensity_w) "Intensité d'une raie"
 
+
      #--- Menu Calibration ---#
      set captionspc(spc_calibration) "Calibration"
      set captionspc(spc_calibre2file_w) "Étalonnage en lambda avec 2 raies"
      set captionspc(spc_calibre2loifile_w) "Étalonnage en lambda avec lampe étalon"
+     set captionspc(spc_calibre_space) "---------------------------------------------------------------------------"
      set captionspc(spc_rinstrum_w) "Calcul de la réponse instrumentale"
      set captionspc(spc_rinstrumcorr_w) "Correction de la réponse instrumentale"
+     set captionspc(spc_calibre_space) "---------------------------------------------------------------------------"
      set captionspc(spc_norma_w) "Normalisation"
+
 
      #--- Menu Pipelines ---#
      set captionspc(spc_pipelines) "Pipelines"
-     set captionspc(spc_traite2calibre_w) "1) Prétraitement -> calibration"
-     set captionspc(spc_traite2scalibre_w) "2) Prétraitement -> calibration (application à d'autres spectres)"
-     set captionspc(spc_traite2rinstrum_w) "1bis) Prétraitement -> réponse instrumentale"
-     set captionspc(spc_traite2srinstrum_w) "2bis) Prétraitement -> correction instrumentale (application à d'autres spectres)"
+     set captionspc(spc_traite2rinstrum_w) "1) Prétraitement -> réponse instrumentale"
+     set captionspc(spc_traite2srinstrum_w) "2) Prétraitement -> correction instrumentale (application à d'autres spectres)"
+     set captionspc(spc_traite2calibre_w) "1bis) Prétraitement -> calibration"
+     set captionspc(spc_traite2scalibre_w) "2bis) Prétraitement -> calibration (application à d'autres spectres)"
      set captionspc(spc_pipelines_space) "---------------------------------------------------------------------------"
      # set captionspc(spc_traitesimple2calibre_w) "Prétraitement simple -> calibration"
      # set captionspc(spc_traitesimple2rinstrum_w) "Prétraitement simple -> réponse instrumentale"
      set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"
      set captionspc(spc_geom2rinstrum_w) "Corrections géométriques -> correction instrumentale"
-     set captionspc(spc_specLhIII_w) "Réduction des spectres Lhires III"
+     set captionspc(spc_specLhIII_w) "Réduction des spectres Lhires III (vide)"
 
-     #--- Menu Analyse ---#
-     set captionspc(spc_analyse) "Analyse"
+     #--- Menu Astrophysique ---#
+     set captionspc(spc_analyse) "Astrophysique"
      set captionspc(spc_chimie) "Repérage des espèces atomiques"
      set captionspc(spc_vradiale_w) "Vitesse radiale"
      set captionspc(spc_vexp_w) "Vitesse d'expension"

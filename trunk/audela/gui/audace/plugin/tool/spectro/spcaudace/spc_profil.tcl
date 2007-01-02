@@ -8,7 +8,9 @@
 # Remarque 1 : necessite le repere de coordonnnees a l'aide de la souris
 # Remarque 2 : utilise la librairie blt pour le trace final du profil de raie
 #
-# Charger en script : source $audace(rep_scripts)/spcaudace/spc_profil.tcl
+# Chargement en ligne :
+# A130 : source $audace(rep_scripts)/spcaudace/spc_profil.tcl
+# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_profil.tcl ]
 #
 #####################################################################################
 
@@ -37,6 +39,7 @@ proc spc_extract_profil_zone { {filenamespc_spacial ""} } {
     ## Chargement : source $audace(rep_scripts)/profil_raie.tcl
     ## Les var nommees audace_* sont globales
     global audace
+    global audela
     ## flag audace
     global conf
     global flag_ok
@@ -146,7 +149,11 @@ proc spc_extract_profil_zone { {filenamespc_spacial ""} } {
 	
 	# ::console::affiche_resultat "$coords_zone ; ${filespacialspc}_zone\n"
 	# ::audace::conserve_seuils
-	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
+        if { [regexp {1.3.0} $audela(version) match resu ] } {
+	    buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
+	} else {
+	    buf$audace(bufNo) save1d "$audace(rep_images)/${filespacialspc}_zone"
+	}
 	#saveima ${filespacialspc}_zone
 	
 	##--------------- Traitement de la zone selectionnee -------------------#
@@ -494,6 +501,7 @@ proc spc_binlopt { args } {
 proc spc_profil { args } {
 
     global audace
+    global audela
     global conf
 
     # Retire l'extension .fit du nom du fichier
@@ -560,7 +568,11 @@ proc spc_profil { args } {
 	    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	    buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
 	    buf$audace(bufNo) bitpix float
-	    buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
+	    if { [regexp {1.3.0} $audela(version) match resu ] } {
+		buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
+	    } else {
+		buf$audace(bufNo) save1d "$audace(rep_images)/${spectre_zone_fc}_spc"
+	    }
 	    set profil_fc ${spectre_zone_fc}_spc
 	} else {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
@@ -761,6 +773,7 @@ proc spc_subsky { args } {
 proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoords ""} } {
 
     global audace
+    global audela
     global conf
     set extsp ".dat"
 
@@ -787,7 +800,11 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
     ## Pondération par la hauteur en pixels
     #buf$audace(bufNo) mult [expr 1.0/$ht_spectre]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_sp"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_sp"
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_sp"
+    }
 
 
     ## ******** Calcul une moyenne du fond du ciel prit dessus et dessous le spectre ****** ##
@@ -808,7 +825,13 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
     ## Pondération par la hauteur en pixels
     buf$audace(bufNo) mult [expr 1.0/$ht_dessus]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spsup"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spsup"
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spsup"
+    }
+
+
 
     ## On binne sur les colonnes dans la région de l'image au dessous du spectre et on sauvegarde le résultat dans ${filenamespc_spatial}_spinf
     ::console::affiche_resultat "Binning des colonnes.\n"
@@ -817,7 +840,12 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
     ## Pondération par la hauteur en pixels
     buf$audace(bufNo) mult [expr 1.0/$ht_dessous]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spinf"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spinf"
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spinf"
+    }
+
 
     ## Calcul une moyenne du fond du ciel prit dessus et dessous le spectre.
     ::console::affiche_resultat "Calcul de la moyenne du fond du ciel pris dessus et dessous l'image...\n"
@@ -835,7 +863,12 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
     ## On sauvegarde le spectre avec correction du fond du ciel
     ::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_spatial}_spc$conf(extension,defaut)\n"
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spc"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spc"
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spc"
+    }
+
 
     #--- Export au format dat :
     # ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_spatial${extsp}\n"
@@ -877,6 +910,7 @@ proc spc_bin { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoord
 proc spc_bins { args } {
 
   global audace
+  global audela
   global conf
   set extsp ".dat"
 
@@ -891,7 +925,12 @@ proc spc_bins { args } {
       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
       buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
       buf$audace(bufNo) bitpix float
-      buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_zone}_spc"
+      if { [regexp {1.3.0} $audela(version) match resu ] } {
+	  buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_zone}_spc"	
+      } else {
+	  buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_zone}_spc"
+      }
+
       ::console::affiche_resultat "\nProfil de raies sauvé sous ${filenamespc_zone}_spc$conf(extension,defaut)\n"
 
       #--- Export au format dat
@@ -930,6 +969,7 @@ proc spc_bins { args } {
 proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listcoords ""} } {
 
     global audace
+    global audela
     global conf
     set extsp ".dat"
 
@@ -956,7 +996,12 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     ## Pondération par la hauteur en pixels
     #buf$audace(bufNo) mult [expr 1.0/$ht_spectre]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_sp"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_sp"	
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_sp"
+    }
+
 
 
     ## ******** Calcul une moyenne du fond du ciel prit dessus et dessous le spectre ****** ##
@@ -977,7 +1022,12 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     ## Pondération par la hauteur en pixels
     buf$audace(bufNo) mult [expr 1.0/$ht_dessus]
     buf$audace(bufNo) bitpix float
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spsup"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spsup"
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spsup"	
+    }
+
 
     ## Calcul une moyenne du fond du ciel prit dessus et dessous le spectre.
     ::console::affiche_resultat "Calcul de la moyenne du fond du ciel pris dessus et dessous l'image...\n"
@@ -997,7 +1047,12 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
 
     ## On sauvegarde le spectre avec correction du fond du ciel
     ::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_spatial}_spc$conf(extension,defaut)\n"
-    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spc"
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spc"
+    } else {
+	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spc"
+    }
+
 
     ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_spatial${extsp}\n"
     #loadima ${filenamespc_spatial}_spc
@@ -1032,6 +1087,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
 
 proc spc_profily { args } {
     global audace
+    global audela
     global conf
 
     if { [llength $args] <= 3 } {
@@ -1070,7 +1126,12 @@ proc spc_profily { args } {
 	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
 	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcy"
+	if { [regexp {1.3.0} $audela(version) match resu ] } {
+	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcy"
+	} else {
+	    buf$audace(bufNo) save1d "$audace(rep_images)/${fichier}_spcy"
+	}
+
 	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcy$conf(extension,defaut)\n"
 	return ${fichier}_spcy
     } else {
@@ -1333,14 +1394,14 @@ proc spc_loadfit { {filenamespc ""} } {
   if { [regexp {1.4.0} $audela(version) match resu ] } {
    if { [ lsearch $listemotsclef "CRVAL1" ] ==-1 || $dispersion == 1. } {
        # Spectre non calibré
-       ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n"
-       for {set k 1} {$k <= $naxis1} {incr k} {
-	   append profilspc(pixels) "$k "
-	   append profilspc(intensite) [ buf$audace(bufNo) getpix [list $k 1] ]
+       ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n $filenamespc\n"
+       for {set k 1} {$k<=$naxis1} {incr k} {
+	   lappend profilspc(pixels) $k
+	   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
        }
    } else {
        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n"
+	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
 	   for {set k 0} {$k<$naxis1} {incr k} {
 	       set pixel [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
 	       lappend profilspc(pixels) $pixel
@@ -1350,7 +1411,7 @@ proc spc_loadfit { {filenamespc ""} } {
 	   #-- Calibration linéaire :
        } else {
 	   # Spectre calibré linéairement
-	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré linéairement...\n"
+	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré linéairement...\n$filenamespc\n"
 	   for {set k 0} {$k<$naxis1} {incr k} {
 	       set pixel [expr $lambda0+$k*$dispersion]
 	       lappend profilspc(pixels) $pixel
@@ -1361,14 +1422,18 @@ proc spc_loadfit { {filenamespc ""} } {
   } elseif { [regexp {1.3.0} $audela(version) match resu ] } {
    if { [ lsearch $listemotsclef "CRVAL1" ] ==-1 || $dispersion == 1. } {
        # Spectre non calibré
-       ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n"
-       for {set k 1} {$k <= $naxis1} {incr k} {
-	   append profilspc(pixels) "$k "
-	   append profilspc(intensite) [ buf$audace(bufNo) getpix [list $k 1] ]
+       ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n$filenamespc\n"
+       #for {set k 1} {$k <= $naxis1} {incr k} {
+	#   append profilspc(pixels) "$k "
+	#   append profilspc(intensite) [ buf$audace(bufNo) getpix [list $k 1] ]
+       #}
+       for {set k 1} {$k<=$naxis1} {incr k} {
+	   lappend profilspc(pixels) $k
+	   lappend profilspc(intensite) [ buf$audace(bufNo) getpix [list $k 1] ]
        }
    } else {
        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n"
+	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
 	   for {set k 0} {$k<$naxis1} {incr k} {
 	       set pixel [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
 	       lappend profilspc(pixels) $pixel
@@ -1378,7 +1443,7 @@ proc spc_loadfit { {filenamespc ""} } {
 	   #-- Calibration linéaire :
        } else {
 	   # Spectre calibré linéairement
-	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré linéairement...\n"
+	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré linéairement...\n$filenamespc\n"
 	   for {set k 0} {$k<$naxis1} {incr k} {
 	       set pixel [expr $lambda0+$k*$dispersion]
 	       lappend profilspc(pixels) $pixel

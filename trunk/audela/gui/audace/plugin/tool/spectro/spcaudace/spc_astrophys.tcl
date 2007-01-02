@@ -1,6 +1,7 @@
 
-# Procédures d'exploitation astrophysique des spectes
-# source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
+# Procédures d'exploitation astrophysique des spectres
+# A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
+# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_astrophys.tcl ]
 
 #************* Liste des focntions **********************#
 #
@@ -128,7 +129,7 @@ proc spc_ewcourbe { args } {
     global conf
 	global tcl_platform
     set ewfile "ewcourbe"
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	set ext ".dat"
 
     if {[llength $args] == 4} {
@@ -171,7 +172,7 @@ proc spc_ewcourbe { args } {
 	set titre "Evolution de la largeur equivalente au cours du temps"
 	set legendey "Largeur equivalente (A)"
 	set legendex "Date (JD-50000)"
-	set repertoire_gp [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 	#exec echo "call \"${repertoire_gp}/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
 	puts $file_id2 "call \"${repertoire_gp}/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "

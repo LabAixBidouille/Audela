@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.1 2007-01-01 16:46:01 robertdelmas Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.2 2007-01-02 19:40:50 robertdelmas Exp $
 #
 #####################################################################
 
@@ -21,6 +21,7 @@ namespace eval ::bess {
    variable data_script
    variable data_image
    variable parametres
+   global audace audela
 
 # L'existence de test crée le ficher debug.log
 #    set test 0
@@ -39,8 +40,16 @@ namespace eval ::bess {
       set police(titre) {helvetica 11 bold}
    }
 
-   source [file join $audace(rep_plugin) tool spectro spcaudace plugins bess_module bess_module.cap]
-   source [file join $audace(rep_plugin) tool spectro spcaudace spc_io.tcl]
+   #--- Chargement en fonction du numero de la version d'Aud'ACE
+   if { [ regexp {1.3.0} $audela(version) match resu ] } {
+      set repspc [ file join $audace(rep_scripts) spcaudace ]
+      source [ file join $repspc plugins bess_module bess_module.cap ]
+      source [ file join $repspc spc_io.tcl ]
+   } else {
+      set repspc [ file join $audace(rep_plugin) tool spectro spcaudace ]
+      source [ file join $repspc plugins bess_module bess_module.cap ]
+      source [ file join $repspc spc_io.tcl ]
+   }
 
    #*************************************************************************#
    #*************  Principal  ***********************************************#
