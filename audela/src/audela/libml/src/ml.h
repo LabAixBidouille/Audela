@@ -80,6 +80,7 @@ typedef struct {
 /***************************************************************************/
 /***************************************************************************/
 
+void ml_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
 void ml_date2jd(double annee, double mois, double jour, double heure, double minute, double seconde, double *jj);
 
 #endif

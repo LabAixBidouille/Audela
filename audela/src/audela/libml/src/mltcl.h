@@ -55,11 +55,27 @@
 #   define min(a,b) (((a)<(b))?(a):(b))
 #endif
 
+typedef struct {
+   char texte[215];
+   int comment;
+   double ha;
+   double dec;
+   double jd;
+   double mag;
+   int kimage;
+   int kimage1;
+   int kimage2;
+   int kobject;
+   int kobject1;
+   int kobject2;
+   int matched;
+} struct_ligsat ;
 
 /***************************************************************************/
 /*      Prototypes des fonctions d'extension C appelables par Tcl          */
 /***************************************************************************/
 /*--- Les prototypes sont tous les memes */
+int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_julianday(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_infoimage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 

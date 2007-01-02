@@ -29,9 +29,49 @@
 /***************************************************************************/
 #include "ml.h"
 
+void ml_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle)
+/***************************************************************************/
+/* Calcul de l'angle de separation et de l'angle de position au pole nord  */
+/* a partir de deux coordonnees spheriques.                                */
+/***************************************************************************/
+/***************************************************************************/
+{
+   double a,b,c,aa,d3,a3;
+   double pi;
+   pi=4.*atan(1);
+   d3=pi/2;
+   a3=0;
+   a=(sin(d2)*sin(d3)+cos(d2)*cos(d3)*cos(a2-a3));
+   if (a<-1.) {a=-1.;}
+   if (a>1.) {a=1.;}
+   a=acos(a);
+   b=(sin(d1)*sin(d3)+cos(d1)*cos(d3)*cos(a1-a3));
+   if (b<-1.) {b=-1.;}
+   if (b>1.) {b=1.;}
+   b=acos(b);
+   c=(sin(d1)*sin(d2)+cos(d1)*cos(d2)*cos(a1-a2));
+   if (c<-1.) {c=-1.;}
+   if (c>1.) {c=1.;}
+   c=acos(c);
+   if (b*c!=0.) {
+      aa=((cos(a)-cos(b)*cos(c))/(sin(b)*sin(c)));
+      aa=(aa>1)?1.:aa;
+      aa=(aa<-1)?-1.:aa;
+      aa=acos(aa);
+      if (sin(a2-a1)<0) {
+         aa=-aa;
+      }
+      aa=fmod(aa+4*pi,2*pi);
+   } else {
+	  aa=0.;
+   }
+   *dist=c;
+   *posangle=aa;
+}
+
 void ml_date2jd(double annee, double mois, double jour, double heure, double minute, double seconde, double *jj)
 /***************************************************************************/
-/* Donne le jour juliene correspondant a la date                           */
+/* Donne le jour julien correspondant a la date                            */
 /***************************************************************************/
 /***************************************************************************/
 {

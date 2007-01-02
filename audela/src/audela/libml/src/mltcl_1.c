@@ -30,6 +30,322 @@
 /***************************************************************************/
 #include "mltcl.h"
 
+int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Reduction des objets susceptibles etre des satellites geostationnaires.  */
+/****************************************************************************/
+/****************************************************************************/
+{
+   int result,retour;
+   char s[1000],ligne[1000];
+   char im0[40],im[40];
+   double sepmin; /* minimum de distance pour deux objets dans la meme image (degrés) */
+   double sepmax; /* maximum de distance pour deux objets dans la des images différentes (degrés) */
+   double jjdifmin=0.014; /* differences de jours pour autoriser la comparaison */
+   FILE *f_in;
+   int k,k1,k2,k3,kimage,nimages,kobject;
+   int n_in;
+   struct_ligsat *lignes;
+   int *kdebs,*kfins;
+   double annee, mois, jour, heure, minute, seconde, jd, pi, dr;
+   double ha1,ha2,ha3,dec1,dec2,dec3,sep,pos,jd1,jd2,jd3,sep12,pos12,sep23,pos23,dec30,ha30,dha,ddec;
+   int ki1,ki2,ki3;
+   int matching_poursuit=1;
+
+   if(argc<3) {
+      sprintf(s,"Usage: %s file_00 file_0 ?sepmin? ?sepmax? ?jjdifmin? ?matching_poursuit?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      /* --- decode les parametres obligatoires ---*/
+
+      /* --- decode les parametres facultatifs ---*/
+      sepmin=3.3*5/3600.; /* default value = 5 pixels pour TAROT */
+      if (argc>=4) {
+         retour = Tcl_GetDouble(interp,argv[3],&sepmin);
+         if(retour!=TCL_OK) return retour;
+      }
+      sepmax=60./3600.; /* default value = 60 arcsec pour TAROT */
+      if (argc>=5) {
+         retour = Tcl_GetDouble(interp,argv[4],&sepmax);
+         if(retour!=TCL_OK) return retour;
+      }
+      if (argc>=6) {
+         retour = Tcl_GetDouble(interp,argv[5],&jjdifmin);
+         if(retour!=TCL_OK) return retour;
+      }
+      if (argc>=7) {
+         retour = Tcl_GetInt(interp,argv[6],&matching_poursuit);
+         if(retour!=TCL_OK) return retour;
+      }
+
+      /* --- lecture du nombre de lignes dans le fichier d'entree ---*/
+      f_in=fopen(argv[1],"rt");
+      if (f_in==NULL) {
+         sprintf(s,"file_00 %s not found",argv[1]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_in=0;
+      while (feof(f_in)==0) {
+         if (fgets(ligne,sizeof(ligne),f_in)!=NULL) {
+            n_in++;
+         }
+      }
+      fclose(f_in);
+
+      /* --- dimensionne la structure des donnees d'entree ---*/
+      lignes=(struct_ligsat*)malloc(n_in*sizeof(struct_ligsat));
+      if (lignes==NULL) {
+         sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+
+      /* --- lecture des donnes ligne par ligne dans le fichier d'entree ---*/
+      f_in=fopen(argv[1],"rt");
+      if (f_in==NULL) {
+         sprintf(s,"file_00 %s not found",argv[1]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_in=0;
+      strcpy(im0,"");
+      kimage=-1;
+      while (feof(f_in)==0) {
+         if (fgets(ligne,sizeof(ligne),f_in)!=NULL) {
+            strcpy(lignes[n_in].texte,ligne);
+            lignes[n_in].comment=1;
+            lignes[n_in].kimage1=-1;
+            lignes[n_in].kobject1=-1;
+            lignes[n_in].kimage2=-1;
+            lignes[n_in].kobject2=-1;
+            lignes[n_in].matched=0;
+            if (strlen(ligne)>=3) {
+               if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
+                  lignes[n_in].comment=0;
+               }
+            }
+            if (lignes[n_in].comment==0) {
+               k1=115 ; k2=123 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               lignes[n_in].ha=atof(s);
+               k1=104 ; k2=113 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               lignes[n_in].dec=atof(s);
+               k1= 83 ; k2= 91 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               lignes[n_in].mag=atof(s);
+               k1= 38 ; k2= 41 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               annee=atof(s);
+               k1= 43 ; k2= 44 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               mois=atof(s);
+               k1= 46 ; k2= 47 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               jour=atof(s);
+               k1= 49 ; k2= 50 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               heure=atof(s);
+               k1= 52 ; k2= 53 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               minute=atof(s);
+               k1= 55 ; k2= 60 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               seconde=atof(s);
+               ml_date2jd(annee,mois,jour,heure,minute,seconde,&jd);
+               lignes[n_in].jd=jd;
+               k1=  0 ; k2= 36 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+               strcpy(im,s);
+               if (strcmp(im,im0)!=0) {
+                  kimage++;
+                  kobject=0;
+               }
+               lignes[n_in].kimage=kimage;
+               lignes[n_in].kobject=kobject;
+               strcpy(im0,im);
+               kobject++;
+            } else {
+               lignes[n_in].ha=0.;
+               lignes[n_in].dec=0.;
+               lignes[n_in].jd=0.;
+               lignes[n_in].mag=99.;
+               lignes[n_in].kimage=-1;
+               lignes[n_in].kobject=-1;
+            }
+            n_in++;
+         }
+      }
+      fclose(f_in);
+      nimages=kimage+2;
+
+      /* --- dimensionne les tableaux des indices de debut et de fin d'entree ---*/
+      kdebs=(int*)calloc(nimages,sizeof(int));
+      if (kdebs==NULL) {
+         sprintf(s,"error : kdebs pointer out of memory (%d elements)",nimages);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         free(lignes);
+         return TCL_ERROR;
+      }
+      for (k=0;k<nimages;k++) {
+         kdebs[k]=-1;
+      }
+      kfins=(int*)calloc(nimages,sizeof(int));
+      if (kdebs==NULL) {
+         sprintf(s,"error : kfins pointer out of memory (%d elements)",nimages);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         free(lignes);
+         free(kdebs);
+         return TCL_ERROR;
+      }
+      for (k=0;k<nimages;k++) {
+         kfins[k]=0;
+      }
+
+      /* --- affecte les tableaux des indices de debut et de fin d'entree ---*/
+      for (k=0;k<n_in;k++) {
+         kimage=lignes[k].kimage;
+         if (kimage>=0) {
+            if (kdebs[kimage]==-1) {
+               kdebs[kimage]=k;
+            }
+            if (kfins[kimage]<=k) {
+               kfins[kimage]=k;
+            }
+         }
+      }
+
+      /* --- premiere passe, on elimine les objets multiples sur chaque pose ---*/
+      pi=4.*atan(1.);
+      dr=pi/180.;
+      for (k=0;k<nimages;k++) {
+         for (k1=kdebs[k];k1<=kfins[k]-1;k1++) {
+            if (lignes[k1].comment!=0) {
+               continue;
+            }
+            ha1=lignes[k1].ha;
+            dec1=lignes[k1].dec;
+            for (k2=k1+1;k2<=kfins[k];k2++) {
+               if (lignes[k2].comment!=0) {
+                  continue;
+               }
+               ha2=lignes[k2].ha;
+               dec2=lignes[k2].dec;
+               ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep,&pos);
+               sep=sep/dr;
+               if (sep<sepmin) {
+                  /* --- on elimine le moins brillant ---*/
+                  if (lignes[k1].mag<lignes[k2].mag) {
+                     lignes[k2].comment=2;
+                  } else {
+                     lignes[k1].comment=2;
+                  }
+               }
+            }
+         }
+      }
+
+      /* --- deuxieme passe, on apparie les objects sur les images differentes ---*/
+      /* --- avec matching poursuit a 3 dates ---*/
+      for (ki1=0;ki1<nimages-2;ki1++) {
+         for (k1=kdebs[ki1];k1<=kfins[ki1];k1++) {
+            if (lignes[k1].comment!=0) {
+               continue;
+            }
+            jd1=lignes[k1].jd;
+            ha1=lignes[k1].ha;
+            dec1=lignes[k1].dec;
+            for (ki2=ki1+1;ki2<nimages-1;ki2++) {
+               for (k2=kdebs[ki2];k2<=kfins[ki2];k2++) {
+                  if (lignes[k2].comment!=0) {
+                     continue;
+                  }
+                  jd2=lignes[k2].jd;
+                  if (fabs(jd2-jd1)>jjdifmin) {
+                     continue;
+                  }
+                  ha2=lignes[k2].ha;
+                  dec2=lignes[k2].dec;
+                  ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep12,&pos12);
+                  sep12=sep12/dr;
+                  if (sep12>sepmax) {
+                     continue;
+                  }
+                  if (matching_poursuit==0) {
+                     lignes[k1].kimage1=ki2;
+                     lignes[k1].kobject1=k2;
+                     lignes[k1].matched++;
+                     lignes[k2].matched++;
+                     continue;
+                  }
+                  for (ki3=ki2+1;ki3<nimages;ki3++) {
+                     for (k3=kdebs[ki3];k3<=kfins[ki3];k3++) {
+                        if (lignes[k3].comment!=0) {
+                           continue;
+                        } 
+                        jd3=lignes[k3].jd;
+                        if (fabs(jd3-jd2)>jjdifmin) {
+                           continue;
+                        }
+                        ha3=lignes[k3].ha;
+                        dec3=lignes[k3].dec;
+                        ml_sepangle(ha2*dr,ha3*dr,dec2*dr,dec3*dr,&sep23,&pos23);
+                        sep23=sep23/dr;
+                        if (sep23>sepmax) {
+                            continue;
+                        }
+                        /* --- matching poursuit --- */
+                        dha=(ha2-ha1);
+                        if (dha>180) { dha=360.-dha; }
+                        if (dha<-180) { dha=360.+dha; }
+                        ha30=ha1+(ha2-ha1)*(jd3-jd1)/(jd2-jd1);
+                        ddec=(dec2-dec1);
+                        dec30=dec1+(dec2-dec1)*(jd3-jd1)/(jd2-jd1);
+                        ml_sepangle(ha30*dr,ha3*dr,dec30*dr,dec3*dr,&sep,&pos);
+                        sep=sep/dr;
+                        if (sep*3600>10.) {
+                           continue;
+                        }
+                        lignes[k1].kimage1=ki2;
+                        lignes[k1].kobject1=k2;
+                        lignes[k1].kimage2=ki3;
+                        lignes[k1].kobject2=k3;
+                        lignes[k1].matched++;
+                        lignes[k2].matched++;
+                        lignes[k3].matched++;
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      /* --- sauve le resultat dans le fichier de sortie ---*/
+      f_in=fopen(argv[2],"wt");
+      if (f_in==NULL) {
+         sprintf(s,"file_0 %s not created",argv[1]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         free(lignes);
+         free(kdebs);
+         free(kfins);
+         return TCL_ERROR;
+      }
+      fprintf(f_in,"%s",lignes[0].texte);
+      fprintf(f_in,"%s",lignes[1].texte);
+      fprintf(f_in,"%s",lignes[2].texte);
+      kimage=-1;
+      for (k=3;k<n_in;k++) {
+         if (lignes[k].matched>0) {
+            if ((lignes[k].kimage!=kimage)&&(kimage!=-1)) {
+               fprintf(f_in,"\n");
+            }
+            fprintf(f_in,"%s",lignes[k].texte);
+            kimage=lignes[k].kimage;
+         }
+      }
+      fclose(f_in);
+
+      /* --- libere les pointeurs --- */
+      free(lignes);
+      free(kdebs);
+      free(kfins);
+      result = TCL_OK;
+   }
+   return result;
+}
+
 int Cmd_mltcl_julianday(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Retourne le jour julien a partir des la date en clair.                   */
