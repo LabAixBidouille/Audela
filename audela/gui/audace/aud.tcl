@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.45 2006-12-19 16:53:16 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.46 2007-01-02 13:42:09 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -188,7 +188,6 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace movie.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confvisu.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace sextractor.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace.tcl ]\""
 
       #---
       set audace(rep_audela) [pwd]
