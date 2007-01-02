@@ -728,7 +728,7 @@ proc spc_select0 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 11-12-2005
-# Date modification : 26-11-2006
+# Date modification : 26-11-2006/060102
 # Arguments : profil.fit à rééchantillonner, profil_modele.fit modèle d'échantilonnage
 # Algo : spline cubique appliqué au contenu d'un fichier fits
 # Bug : a la premiere execution "# x vector "x" must be monotonically increasing"
@@ -769,33 +769,43 @@ proc spc_echant { args } {
 
 	#--- Création des vecteurs abscisses et ordonnées des points à interpoler :
 	#-- Une liste commence à 0 ; Un vecteur fits commence à 1
-	blt::vector x($len) y($len) 
-	for {set i 0} {$i<$len} {incr i} { 
-	    set x($i) [lindex $abscisses $i]
-	    set y($i) [lindex $ordonnees $i]
-	}
-	x sort y
-
-	#for {set i $len} {$i>0} {incr i -1} { 
-	#    set x($i-1) [lindex $abscisses [expr $i-1] ]
-	#    set y($i-1) [lindex $ordonnees [expr $i-1] ]
+	#blt::vector x($len) y($len) 
+	#for {set i 0} {$i<$len} {incr i} { 
+	#    set x($i) [lindex $abscisses $i]
+	#    set y($i) [lindex $ordonnees $i]
 	#}
 	#x sort y
+
+	blt::vector create x
+	blt::vector create y
+	x set $abscisses
+	y set $ordonnees
+
+	##for {set i $len} {$i>0} {incr i -1} { 
+	##    set x($i-1) [lindex $abscisses [expr $i-1] ]
+	##    set y($i-1) [lindex $ordonnees [expr $i-1] ]
+	##}
+	##x sort y
 
 	#--- Création des abscisses des points interpolés :
 	set nabscisses [ lindex [ spc_fits2datadlin $fichier_modele ] 0]
 	set nlen [ llength $nabscisses ]
-	blt::vector sx($nlen)
-	for {set i 0} {$i<$nlen} {incr i} { 
-	    set sx($i) [lindex $nabscisses $i]
-	}
+	#blt::vector sx($nlen)
+	#for {set i 0} {$i<$nlen} {incr i} { 
+	#    set sx($i) [lindex $nabscisses $i]
+	#}
+	blt::vector create sx
+	sx set $nabscisses
+
 
 	#--- Spline ---------------------------------------#
 	#blt::vector sy($len) # Modifié le 25/11/2006
-	blt::vector sy($nlen)
+	blt::vector create sy($nlen)
+	#x sort y
 	blt::spline natural x y sx sy
 	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
 	#blt::spline quadratic x y sx sy
+
 	
 	#--- Exportation des vecteurs coordonnées interpolées en liste puis fichier dat
 	for {set i 1} {$i <= $nlen} {incr i} { 
@@ -895,8 +905,9 @@ proc spc_div { args } {
 	    set ordonnees1 [ lindex $contenu1 1 ]
 	    set ordonnees2 [ lindex $contenu2 1 ]
 
+
 	    #--- Division
-	    set nordos ""
+	    set nordos [ list ]
 	    set i 0
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
 		if { $ordo2 == 0.0 } {
@@ -1101,7 +1112,6 @@ proc spc_divri { args } {
 
 
 
-
 ####################################################################
 # Procédure de calcul de la dérivée d'un profil de raies
 #
@@ -1219,6 +1229,58 @@ proc spc_smooth0 { args } {
 
 
 
+####################################################################
+# Procedure de filtrage passse bas (fonction porte)
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 5-12-2006
+# Date modification : 5-12-2006
+# Arguments : fichier fits, ?largeur du motif à gommer?
+####################################################################
+
+proc spc_passebas { args } {
+    global conf
+    global audace
+
+    if { [llength $args] <= 2 } {
+	if { [llength $args] == 2 } {
+	    set fichier [ lindex $args 0 ]
+	    set largeur [ lindex $args 1 ]
+	} elseif { [llength $args] == 1 } {
+	    set fichier [ lindex $args 0 ]
+	    set largeur 25
+	} else {
+	    ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?largeur motif à gommer(25)?\n\n"
+	}
+
+	set datas [ spc_fits2data $fichier ]
+	set abscisses [ lindex $datas 0 ]
+	set ordonnees [ lindex $datas 1 ]
+	
+	#--- Calcul de la moyenne locale pour chaque points (id. filtre passe bas) :
+	set len [ llength $abscisses ]
+	for {set i 0} {$i<$len} {incr i} {
+	    if { $i<=[expr 2*$largeur] || $i>=[expr $len-2*$largeur ] } {
+		lappend nordonnees [ lindex $ordonnees $i ]
+	    } else {
+		set nordonnee 0
+		for {set j [expr $i-$largeur]} {$j<=[expr $i+$largeur]} {incr j} {
+		    set nordonnee [ expr $nordonnee+[lindex $ordonnees $j] ]
+		}
+		#lappend nordonnees [ expr $nordonnee/(2*$largeur) ]
+		lappend nordonnees [ expr $nordonnee/(2.04*$largeur) ]
+	    }
+	}
+
+	#--- Sauvegarde du fichier :
+	set file_out [ spc_data2fits ${fichier}_pbas [ list $abscisses $nordonnees ] ]
+	::console::affiche_resultat "Profil filtré (passe bas) sauvé sous ${fichier}_pbas\n"
+	return $file_out
+    } else {
+	::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?largeur motif à gommer(25)?\n\n"
+    }
+}
+#****************************************************************#
 
 
 
@@ -1577,6 +1639,104 @@ proc spc_echant0 { args } {
 
 
 
+proc spc_echant-26-11-2006 { args } {
+    global conf
+    global audace
+
+    #set args [ list $fichier1 $fichier2 ]
+    if {[llength $args] == 2} {
+	set fichier_a_echant [ file rootname [ lindex $args 0 ] ]
+	set fichier_modele [ file rootname [ lindex $args 1 ] ]
+	#set fichier_a_echant [ file rootname $fichier1 ]
+	#set fichier_modele [ file rootname $fichier2 ]
+
+	#--- Boucle a vide preventive ??? :
+	set flag 0
+	if { $flag } {
+	blt::vector x(10) y(10) 
+	for {set i 10} {$i>0} {incr i -1} { 
+	    set x($i-1) [expr $i*$i]
+	    set y($i-1) [expr sin($i*$i*$i)]
+	}	
+	x sort y	
+	x populate sx 10
+	blt::spline natural x y sx sy
+	::console::affiche_resultat "Premier spline passé...\n"
+	}
+
+
+	#--- Récupération des coordonnées des points à interpoler :
+	set contenu [ spc_fits2datadlin $fichier_a_echant ]
+	set abscisses [lindex $contenu 0]
+	set ordonnees [lindex $contenu 1]
+	set len [llength $abscisses]
+
+	#--- Création des vecteurs abscisses et ordonnées des points à interpoler :
+	#-- Une liste commence à 0 ; Un vecteur fits commence à 1
+	blt::vector x($len) y($len) 
+	for {set i 0} {$i<$len} {incr i} { 
+	    set x($i) [lindex $abscisses $i]
+	    set y($i) [lindex $ordonnees $i]
+	}
+	x sort y
+
+	##for {set i $len} {$i>0} {incr i -1} { 
+	##    set x($i-1) [lindex $abscisses [expr $i-1] ]
+	##    set y($i-1) [lindex $ordonnees [expr $i-1] ]
+	##}
+	##x sort y
+
+	#--- Création des abscisses des points interpolés :
+	set nabscisses [ lindex [ spc_fits2datadlin $fichier_modele ] 0]
+	set nlen [ llength $nabscisses ]
+	blt::vector sx($nlen)
+	for {set i 0} {$i<$nlen} {incr i} { 
+	    set sx($i) [lindex $nabscisses $i]
+	}
+
+	#--- Spline ---------------------------------------#
+	#blt::vector sy($len) # Modifié le 25/11/2006
+	blt::vector sy($nlen)
+	blt::spline natural x y sx sy
+	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
+	#blt::spline quadratic x y sx sy
+	
+	#--- Exportation des vecteurs coordonnées interpolées en liste puis fichier dat
+	for {set i 1} {$i <= $nlen} {incr i} { 
+	    lappend nordonnees $sy($i-1)
+	}
+	set ncoordonnees [ list $nabscisses $nordonnees ]
+	::console::affiche_resultat "Exportation au format fits des données interpolées sous ${fichier_a_echant}_ech\n"
+	#::console::affiche_resultat "$nabscisses\n"
+	spc_data2fits ${fichier_a_echant}_ech $ncoordonnees float
+
+	#--- Affichage
+	#destroy .testblt
+	#toplevel .testblt
+	#blt::graph .testblt.g 
+	#pack .testblt.g -in .testblt
+	#.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
+	#-- Meth2
+	set flag 0
+	if { $flag==1 } {
+	destroy .testblt
+	toplevel .testblt
+	blt::graph .testblt.g
+	pack .testblt.g -in .testblt
+	set ly [lsort $ordonnees]
+	.testblt.g legend configure -position bottom
+	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
+	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
+	.testblt.g element create original -symbol none -x x -y y -color blue 
+	.testblt.g element create spline -symbol none -x sx -y sy -color red 
+	}
+	#blt::table . .testblt
+	return ${fichier_a_echant}_ech
+    } else {
+	::console::affiche_erreur "Usage: spc_echant profil_a_reechantillonner.fit profil_modele_echantillonnage.fit\n\n"
+    }
+}
+#****************************************************************#
 
 
 

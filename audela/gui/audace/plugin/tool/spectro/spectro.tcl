@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.8 2007-01-02 15:36:08 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.9 2007-01-02 19:37:53 robertdelmas Exp $
 #
 
 package provide spectro 1.0
@@ -80,9 +80,7 @@ proc spectroBuildIF { This } {
 
          #--- Bouton editer un profil
          button $This.fra2.but2 -borderwidth 2 -text $panneau(spectro,editer_profil) \
-            -command {
-               source [ file join $audace(rep_plugin) tool spectro spectro_editer_profil.tcl ]
-            }
+            -command { source [ file join $audace(rep_plugin) tool spectro spcaudace.tcl ] }
          pack $This.fra2.but2 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
          #--- Bouton acces a BeSS

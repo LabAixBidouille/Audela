@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Réduction complète des spectres Lhires III
 # Auteurs : François COCHARD
-# Mise a jour $Id: specLhIII.tcl,v 1.3 2007-01-02 16:11:13 robertdelmas Exp $
+# Mise a jour $Id: specLhIII.tcl,v 1.4 2007-01-02 19:40:17 robertdelmas Exp $
 # Odieusement pompé sur le panneau de prétraitement (SpDatafc.tcl)
 #
 
@@ -16,9 +16,16 @@ namespace eval ::spbmfc {
    variable This
    variable fichier_log
    variable numero_version
-   global audace
+   global audace audela
 
-   source [ file join $audace(rep_plugin) tool spectro spcaudace plugins specLhIII specLhIII.cap ]
+   #--- Chargement en fonction du numero de la version d'Aud'ACE
+   if { [ regexp {1.3.0} $audela(version) match resu ] } {
+      set repspc [ file join $audace(rep_scripts) spcaudace ]
+      source [ file join $repspc plugins specLhIII specLhIII.cap ]
+   } else {
+      set repspc [ file join $audace(rep_plugin) tool spectro spcaudace ]
+      source [ file join $repspc plugins specLhIII specLhIII.cap ]
+   }
 
    # Numéro de la version du logiciel
    set numero_version "0.10"

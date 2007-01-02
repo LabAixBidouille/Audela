@@ -27,6 +27,21 @@ if {[string compare $tcl_platform(os) "Linux"] == 0 } {
 }
 
 
+#----------------------------------------------------------------------------------#
+#**** Fonctions de chargement des des plugins *********
+proc spc_bessmodule {} {
+
+    global audace
+    global conf
+    global audela
+
+    if { [regexp {1.3.0} $audela(version) match resu ] } {
+	source [ file join $audace(rep_scripts) spcaudace plugins bess_module bess_module.tcl ]
+    } else {
+	source [ file join $audace(rep_plugin) tool spectro spcaudace plugins bess_module bess_module.tcl ]
+    }
+}
+
 
 #----------------------------------------------------------------------------------#
 set extsp "dat"

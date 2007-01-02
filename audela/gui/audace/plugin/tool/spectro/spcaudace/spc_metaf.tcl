@@ -1,4 +1,6 @@
-# Chargement en script : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
+# Chargement en script :
+# A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
+# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_metaf.tcl ]
 
 
 ###############################################################################
@@ -11,7 +13,7 @@ proc spc_testihm {} {
     global audace
     global conf
 
-    #source [ file join $audace(rep_plugin) tool spectro spcaudace spc_gui_boxes.tcl ]
+    #source [ file join $audace(rep_scripts) spcaudace spc_gui_boxes.tcl ]
     set err [ catch {
 	::param_spc_audace_calibre2::run
 	tkwait window .param_spc_audace_calibre2
@@ -722,7 +724,7 @@ proc spc_traite2calibre { args } {
 # Procédure de traitement de spectres 2D : prétraitement, correction géométriques, régistration, sadd, spc_profil, calibration en longeur d'onde, correction réponse instrumentale, normalisation.
 # Auteur : Benjamin MAUCLAIRE
 # Date création :  14-07-2006
-# Date de mise à jour : 14-07-2006
+# Date de mise à jour : 14-07-2006/061230
 # Méthode : utilise bm_pretrait pour le prétraitement
 # Arguments : nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe profil_étoile_référence profil_étoile_catalogue méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n)
 ###############################################################################
@@ -803,20 +805,41 @@ proc spc_traite2rinstrum { args } {
        }
 
 
-       #::console::affiche_resultat "Sortie : $fpretrait\n"
-       #--- Correction de la courbure des raies (smile selon l'axe x) :
-       ::console::affiche_resultat "\n\n**** Correction de la courbure des raies (smile selon l'axe x) ****\n\n"
-       set fsmilex [ spc_smileximgs $fpretrait $adeg2 $ycenter ]
-       delete2 $fpretrait $nbimg
+       #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
+       set rmfpretrait "o"
+       ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
+       buf$audace(bufNo) load "$audace(rep_images)/$lampecalibree"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "SPC_SLX1" ] !=-1 } {
+	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
+	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
+	   ::console::affiche_resultat "\n** Correction de la courbure des raies (smile selon l'axe x)... **\n"
+	   set fgeom [ spc_smileximgs $fpretrait $spc_ycenter $spc_cdeg2 ]
+       } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
+	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
+	   ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
+	   set fgeom [ spc_slantimgs $fpretrait $pente ]
+       } else {
+	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
+	   set fgeom "$fpretrait"
+	   set rmfpretrait "n"
+       }
 
-       #--- Correction du l'inclinaison (tilt)
+       #--- Effacement des images prétraitées :
+       #- future option de conservation des fichiers prétraités
+       if { $rmfpretrait=="o" && file exists $audace(rep_images)/${fpretrait}-1$conf(extension,defaut) } {
+	   delete2 $fpretrait $nbimg
+       }
+
+
+       #--- Correction du l'inclinaison (tilt) :
        ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
        if { $methejt == "o" } {
-	   set ftilt [ spc_tiltautoimgs $fsmilex o ]
+	   set ftilt [ spc_tiltautoimgs $fgeom o ]
        } else {
-	   set ftilt [ spc_tiltautoimgs $fsmilex n ]
+	   set ftilt [ spc_tiltautoimgs $fgeom n ]
        }
-       delete2 $fsmilex $nbimg
+       delete2 $fgeom $nbimg
        set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]*$conf(extension,defaut) ] ]
 
 
@@ -950,28 +973,42 @@ proc spc_traite2srinstrum { args } {
        ::console::affiche_resultat "\n\n**** Prétraitement de $nbimg images ****\n\n"
        set fpretrait [ bm_pretrait $img $dark $flat $dflat ]
 
-       #--- Correction de la courbure des raies (smile selon l'axe x) :
-       ::console::affiche_resultat "\n\n**** Correction de la courbure des raies (smile selon l'axe x) ****\n\n"
+
+       #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
+       set rmfpretrait "o"
+       ::console::affiche_resultat "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
        buf$audace(bufNo) load "$audace(rep_images)/$lampe"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "SPC_SLX1" ] !=-1 } {
-	   set ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
-	   set a [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
-	   set fsmilex [ spc_smileximgs $fpretrait $ycenter $a ]
+	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
+	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
+	   ::console::affiche_resultat "\n** Correction de la courbure des raies (smile selon l'axe x)... **\n"
+	   set fgeom [ spc_smileximgs $fpretrait $spc_ycenter $spc_cdeg2 ]
+       } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
+	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
+	   ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
+	   set fgeom [ spc_slantimgs $fpretrait $pente ]
        } else {
-	   ::console::affiche_resultat "\nAucune correction de la courbure (smilex) des raies possible.\n"
-	   set fsmilex "$fpretrait"
+	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
+	   set fgeom "$fpretrait"
+	   set rmfpretrait "n"
        }
-       delete2 $fpretrait $nbimg
 
-       #--- Correction du l'inclinaison (tilt)
+       #--- Effacement des images prétraitées :
+       #- future option de conservation des fichiers prétraités
+       if { $rmfpretrait=="o" && file exists $audace(rep_images)/${fpretrait}-1$conf(extension,defaut) } {
+	   delete2 $fpretrait $nbimg
+       }
+
+
+       #--- Correction du l'inclinaison (tilt) :
        ::console::affiche_resultat "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
        if { $methejtilt == "o" } {
-	   set ftilt [ spc_tiltautoimgs $fsmilex o ]
+	   set ftilt [ spc_tiltautoimgs $fgeom o ]
        } else {
-	   set ftilt [ spc_tiltautoimgs $fsmilex n ]
+	   set ftilt [ spc_tiltautoimgs $fgeom n ]
        }
-       delete2 $fsmilex $nbimg
+       delete2 $fgeom $nbimg
        set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]*$conf(extension,defaut) ] ]
 
        #--- Appariement de $nbimg images :
