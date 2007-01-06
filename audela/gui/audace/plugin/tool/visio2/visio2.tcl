@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.12 2006-12-08 17:06:51 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.13 2007-01-06 16:10:55 robertdelmas Exp $
 #
 
 package provide visio2 1.0
@@ -44,12 +44,12 @@ namespace eval ::Visio2 {
          return
       }
 
-      #--- je verifie que le package Img est present
-      ###set result [ catch { package require Img } msg ]
-      ###if { $result == 1} {
-      ###   console::affiche_erreur "[file join $audace(rep_plugin) tool visio2.tcl] - Error : Package Img not found.\n"
-      ###   return
-      ###}
+     ### #--- je verifie que le package Img est present
+     ### set result [ catch { package require Img } msg ]
+     ### if { $result == 1} {
+     ###    console::affiche_erreur "[file join $audace(rep_plugin) tool visio2.tcl] - Error : Package Img not found.\n"
+     ###    return
+     ### }
 
       #--- je verifie que les variables de cet outil existent dans $conf(...)
       initConf
@@ -722,19 +722,19 @@ namespace eval ::Visio2::config {
          pack $frm.extension.extfit -anchor w -side top -padx 5 -pady 0
       }
 
-      #--- fichiers gif
-      ###if { $conf(extension,defaut) != ".gif" } {
-      ###   checkbutton $frm.extension.gif -text ".gif" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(gif)
-      ###   pack $frm.extension.gif -anchor w -side top -padx 5 -pady 0
-      ###}
+     ### #--- fichiers gif
+     ### if { $conf(extension,defaut) != ".gif" } {
+     ###    checkbutton $frm.extension.gif -text ".gif" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(gif)
+     ###    pack $frm.extension.gif -anchor w -side top -padx 5 -pady 0
+     ### }
 
-      #--- fichiers bmp
-      ###if { $conf(extension,defaut) != ".bmp" } {
-      ###   checkbutton $frm.extension.bmp -text ".bmp" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(bmp)
-      ###   pack $frm.extension.bmp -anchor w -side top -padx 5 -pady 0
-      ###}
+     ### #--- fichiers bmp
+     ### if { $conf(extension,defaut) != ".bmp" } {
+     ###    checkbutton $frm.extension.bmp -text ".bmp" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(bmp)
+     ###    pack $frm.extension.bmp -anchor w -side top -padx 5 -pady 0
+     ### }
 
       #--- fichiers jpg
       if { ( $conf(extension,defaut) != ".jpg" ) && ( $conf(extension,defaut) != ".jpeg" ) } {
@@ -751,57 +751,57 @@ namespace eval ::Visio2::config {
          pack $frm.extension.jpg -anchor w -side top -padx 5 -pady 0
       }
 
-      #--- fichiers png
-      ###if { $conf(extension,defaut) != ".png" } {
-      ###   checkbutton $frm.extension.png -text ".png" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(png)
-      ###   pack $frm.extension.png -anchor w -side top -padx 5 -pady 0
-      ###}
+     ### #--- fichiers png
+     ### if { $conf(extension,defaut) != ".png" } {
+     ###    checkbutton $frm.extension.png -text ".png" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(png)
+     ###    pack $frm.extension.png -anchor w -side top -padx 5 -pady 0
+     ### }
 
-      #--- fichiers ps
-      ###if { ( $conf(extension,defaut) != ".ps" ) && ( $conf(extension,defaut) != ".eps" ) } {
-      ###   checkbutton $frm.extension.ps -text ".ps .eps" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(ps)
-      ###   pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-      ###} elseif { $conf(extension,defaut) == ".ps" } {
-      ###   checkbutton $frm.extension.ps -text ".eps" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(ps)
-      ###   pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-      ###} elseif { $conf(extension,defaut) == ".eps" } {
-      ###   checkbutton $frm.extension.ps -text ".ps" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(ps)
-      ###   pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
-      ###}
+     ### #--- fichiers ps
+     ### if { ( $conf(extension,defaut) != ".ps" ) && ( $conf(extension,defaut) != ".eps" ) } {
+     ###    checkbutton $frm.extension.ps -text ".ps .eps" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(ps)
+     ###    pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
+     ### } elseif { $conf(extension,defaut) == ".ps" } {
+     ###    checkbutton $frm.extension.ps -text ".eps" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(ps)
+     ###    pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
+     ### } elseif { $conf(extension,defaut) == ".eps" } {
+     ###    checkbutton $frm.extension.ps -text ".ps" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(ps)
+     ###    pack $frm.extension.ps -anchor w -side top -padx 5 -pady 0
+     ### }
 
-      #--- fichiers tif
-      ###if { ( $conf(extension,defaut) != ".tif" ) && ( $conf(extension,defaut) != ".tiff" ) } {
-      ###   checkbutton $frm.extension.tif -text ".tif .tiff" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(tif)
-      ###   pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
-      ###} elseif { $conf(extension,defaut) == ".tif" } {
-      ###   checkbutton $frm.extension.tif -text ".tiff" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(tif)
-      ###   pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
-      ###} elseif { $conf(extension,defaut) == ".tiff" } {
-      ###   checkbutton $frm.extension.tif -text ".tif" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(tif)
-      ###   pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
-      ###}
+     ### #--- fichiers tif
+     ### if { ( $conf(extension,defaut) != ".tif" ) && ( $conf(extension,defaut) != ".tiff" ) } {
+     ###    checkbutton $frm.extension.tif -text ".tif .tiff" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(tif)
+     ###    pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
+     ### } elseif { $conf(extension,defaut) == ".tif" } {
+     ###    checkbutton $frm.extension.tif -text ".tiff" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(tif)
+     ###    pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
+     ### } elseif { $conf(extension,defaut) == ".tiff" } {
+     ###    checkbutton $frm.extension.tif -text ".tif" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(tif)
+     ###    pack $frm.extension.tif -anchor w -side top -padx 5 -pady 0
+     ### }
 
-      #--- fichiers xbm
-      ###if { ( $conf(extension,defaut) != ".xbm" ) && ( $conf(extension,defaut) != ".xpm" ) } {
-      ###   checkbutton $frm.extension.xbm -text ".xbm .xpm" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(xbm)
-      ###   pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-      ###} elseif { $conf(extension,defaut) == ".xbm" } {
-      ###   checkbutton $frm.extension.xbm -text ".xpm" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(xbm)
-      ###   pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-      ###} elseif { $conf(extension,defaut) == ".xpm" } {
-      ###   checkbutton $frm.extension.xbm -text ".xbm" \
-      ###       -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(xbm)
-      ###   pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-      ###}
+     ### #--- fichiers xbm
+     ### if { ( $conf(extension,defaut) != ".xbm" ) && ( $conf(extension,defaut) != ".xpm" ) } {
+     ###    checkbutton $frm.extension.xbm -text ".xbm .xpm" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(xbm)
+     ###    pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+     ### } elseif { $conf(extension,defaut) == ".xbm" } {
+     ###    checkbutton $frm.extension.xbm -text ".xpm" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(xbm)
+     ###    pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+     ### } elseif { $conf(extension,defaut) == ".xpm" } {
+     ###    checkbutton $frm.extension.xbm -text ".xbm" \
+     ###        -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(xbm)
+     ###    pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+     ### }
 
       #--- fichiers raw
       if { ( $conf(extension,defaut) != ".crw" ) && ( $conf(extension,defaut) != ".nef" ) && \
@@ -842,34 +842,38 @@ namespace eval ::Visio2::config {
          pack $frm.extension.avi -anchor w -side top -padx 5 -pady 0
       }
 
-      if { [package versions Img ]== "" } { 
-         #--- je decoche les checkbox
+     ### if { [package versions Img ]== "" } { 
+     ###    #--- je decoche les checkbox
      ###    set ::Visio2::config::widgetEnableExtension(bmp) 0
-         set ::Visio2::config::widgetEnableExtension(jpg) 0
+     ###    set ::Visio2::config::widgetEnableExtension(jpg) 0
      ###    set ::Visio2::config::widgetEnableExtension(png) 0
      ###    set ::Visio2::config::widgetEnableExtension(ps)  0
      ###    set ::Visio2::config::widgetEnableExtension(tif) 0
      ###    set ::Visio2::config::widgetEnableExtension(xbm) 0
-
-         #--- je desactive les checkbox pour qu'on ne puisse pas les cocher
-      ###   $frm.extension.bmp configure -state disabled
-         $frm.extension.jpg configure -state disabled 
-      ###   $frm.extension.png configure -state disabled 
-      ###   $frm.extension.ps  configure -state disabled 
-      ###   $frm.extension.tif configure -state disabled 
-      ###   $frm.extension.xbm configure -state disabled
-      }
+     ###    #--- je desactive les checkbox pour qu'on ne puisse pas les cocher
+     ###    $frm.extension.bmp configure -state disabled
+     ###    $frm.extension.jpg configure -state disabled 
+     ###    $frm.extension.png configure -state disabled 
+     ###    $frm.extension.ps  configure -state disabled 
+     ###    $frm.extension.tif configure -state disabled 
+     ###    $frm.extension.xbm configure -state disabled
+     ### }
 
       #--- pas de film si on est sous Linux ou si le package tmci n'est pas present
-      if { $::tcl_platform(os) == "Linux" &&  [package versions tmci ]== "" } { 
+      if { $::tcl_platform(os) == "Linux" && [package versions tmci ]== "" } { 
          #--- je decoche la checkbox
          set ::Visio2::config::widgetEnableExtension(avi) 0
          #--- je desactive la checkbox pour qu'on ne puisse pas la cocher
          $frm.extension.avi configure -state disabled
       }
 
+     ### #--- remarque 
+     ### label $frm.extension.remark -text "$caption(visio2,remark)"  \
+     ###    -justify left
+     ### pack $frm.extension.remark -anchor w -side top -padx 5 -pady 0
+
       #--- remarque 
-      label $frm.extension.remark -text "$caption(visio2,remark)"  \
+      label $frm.extension.remark -text "$caption(visio2,remark1)"  \
          -justify left
       pack $frm.extension.remark -anchor w -side top -padx 5 -pady 0
 
@@ -1360,8 +1364,8 @@ namespace eval ::Visio2::localTable {
       set selection [$private(tbl) curselection ]
       #--- je verifie que le nombre d'images selectionnées est suffisant (>=2)
       if { [llength $selection] < 2 } {
-         #--- erreur , il n'y a moins de 2 images selectionnees
-         ###tk_messageBox -title "$caption(visio2,dialog_title)" -type ok -message "$caption(visio2,slideshow_error)" -icon error
+         #--- erreur, il n'y a moins de 2 images selectionnees
+        ### tk_messageBox -title "$caption(visio2,dialog_title)" -type ok -message "$caption(visio2,slideshow_error)" -icon error
          tk_dialog .tempdialog \
             "$caption(visio2,dialog_title)" \
             "$caption(visio2,slideshow_error)" \
