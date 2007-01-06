@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.3 2006-06-20 21:10:37 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.tcl,v 1.4 2007-01-06 11:36:47 robertdelmas Exp $
 #
 
 package provide obj_lune 1.0
@@ -35,6 +35,8 @@ namespace eval ::Obj_Lune_Go {
       variable This
 
       pack $This -side left -fill y
+      #--- Chargement du package Img pour visualiser les cartes de la Lune au format jpg
+      package require Img 1.3
    }
 
    proc stopTool { visuNo } {
