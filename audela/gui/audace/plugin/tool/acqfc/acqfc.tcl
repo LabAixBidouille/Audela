@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.30 2006-12-17 16:40:54 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.31 2007-01-07 22:48:02 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -679,7 +679,7 @@ namespace eval ::AcqFC {
               set integre non
               if { $choix == "ok" } {
                  #--- Ouverture de la fenetre de selection des cameras
-                 ::confCam::run 
+                 ::confCam::run
                  tkwait window $audace(base).confCam
               }
               ::audace::menustate normal
@@ -1982,32 +1982,32 @@ namespace eval ::AcqFC {
       global audace caption conf panneau
 
       if { [ ::confVisu::getCamera $visuNo ] == "" } {
-        ::confCam::run 
-        tkwait window $audace(base).confCam
-        #--- Je decoche la checkbox
-        set panneau(AcqFC,$visuNo,showvideopreview) "0"
-        #--- Je decoche le fenetrage
-        if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
-           set panneau(AcqFC,$visuNo,fenetre) "0"
-           ::AcqFC::optionWindowedFenster $visuNo 
-        }
-        #---
-        return 1
+         ::confCam::run
+         tkwait window $audace(base).confCam
+         #--- Je decoche la checkbox
+         set panneau(AcqFC,$visuNo,showvideopreview) "0"
+         #--- Je decoche le fenetrage
+         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+            set panneau(AcqFC,$visuNo,fenetre) "0"
+            ::AcqFC::optionWindowedFenster $visuNo
+         }
+         #---
+         return 1
       } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
-        tk_messageBox -title $caption(acqfc,pb) -type ok \
-           -message $caption(acqfc,no_video_mode)
-        #--- Je decoche la checkbox
-        set panneau(AcqFC,$visuNo,showvideopreview) "0"
-        #--- Je decoche le fenetrage
-        if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
-           set panneau(AcqFC,$visuNo,fenetre) "0"
-           ::AcqFC::optionWindowedFenster $visuNo 
-        }
-        #---
-        return 1
+         tk_messageBox -title $caption(acqfc,pb) -type ok \
+            -message $caption(acqfc,no_video_mode)
+         #--- Je decoche la checkbox
+         set panneau(AcqFC,$visuNo,showvideopreview) "0"
+         #--- Je decoche le fenetrage
+         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+            set panneau(AcqFC,$visuNo,fenetre) "0"
+            ::AcqFC::optionWindowedFenster $visuNo
+         }
+         #---
+         return 1
       }
 
-      #--- Je connecte la sortie de la camera a l'image            
+      #--- Je connecte la sortie de la camera a l'image
       set result [::confVisu::setVideo $visuNo 1 ]
       if { $result == "1" } {
         #--- Je decoche la checkbox
@@ -2015,13 +2015,13 @@ namespace eval ::AcqFC {
         #--- Je decoche le fenetrage
         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
            set panneau(AcqFC,$visuNo,fenetre) "0"
-           ::AcqFC::optionWindowedFenster $visuNo 
+           ::AcqFC::optionWindowedFenster $visuNo
         }
         #---
         return 1
       } 
 
-      set panneau(AcqFC,$visuNo,showvideopreview) "1" 
+      set panneau(AcqFC,$visuNo,showvideopreview) "1"
       return 0
    }
 #***** Fin de la procedure d'apercu en mode video ******************
@@ -2034,7 +2034,7 @@ namespace eval ::AcqFC {
       if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
       #   ::AcqFC::stopVideoCrop
         set panneau(AcqFC,$visuNo,fenetre) "0"
-        ::AcqFC::optionWindowedFenster $visuNo 
+        ::AcqFC::optionWindowedFenster $visuNo
       }
       #---
       set camNo [ ::confVisu::getCamNo $visuNo ]
@@ -2731,7 +2731,17 @@ namespace eval ::AcqFC {
       }
       #---
       if { $result == "0" } {
-         if { "[ ::confVisu::getProduct $visuNo ]" == "webcam" } {
+         if { [ ::confVisu::getCamera $visuNo ] == "" } {
+            ::confCam::run
+            tkwait window $audace(base).confCam
+            #--- Je decoche la checkbox
+            set panneau(AcqFC,$visuNo,showvideopreview) "0"
+            #--- Je decoche le fenetrage
+            if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+               set panneau(AcqFC,$visuNo,fenetre) "0"
+               ::AcqFC::optionWindowedFenster $visuNo
+            }
+         } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
             tk_messageBox -title $caption(acqfc,pb) -type ok \
                -message $caption(acqfc,no_video_mode)
             #--- Je decoche la checkbox
@@ -2741,9 +2751,6 @@ namespace eval ::AcqFC {
                set panneau(AcqFC,$visuNo,fenetre) "0"
                ::AcqFC::optionWindowedFenster $visuNo
             }
-         } else {
-            ::confCam::run 
-            tkwait window $audace(base).confCam         
          }
       } else {
         set panneau(AcqFC,$visuNo,fenetre) "0"
@@ -2840,7 +2847,7 @@ namespace eval ::AcqFC {
             set integre non
             if { $choix == "ok" } {
                 #--- Ouverture de la fenetre de selection des cameras
-                ::confCam::run 
+                ::confCam::run
                 tkwait window $audace(base).confCam
             }
             ::audace::menustate normal
@@ -2862,7 +2869,7 @@ namespace eval ::AcqFC {
               set integre non
               if { $choix == "ok" } {
                        #--- Ouverture de la fenetre de selection des cameras
-                       ::confCam::run 
+                       ::confCam::run
                        tkwait window $audace(base).confCam
               }
               ::audace::menustate normal
