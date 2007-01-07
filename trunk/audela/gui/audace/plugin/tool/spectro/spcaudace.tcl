@@ -39,32 +39,31 @@ proc spc_goodrep {} {
 
 #--- Démarrage de SpcAudace :
 if { [regexp {1.3.0} $audela(version) match resu ] } {
-   set rep [ file join $audace(rep_scripts) spcaudace ]
+   set repertoire [ file join $audace(rep_scripts) spcaudace ]
+   #--- Chargement de l'éditeur de profil :
+   source [ file join $repertoire spc_ini.tcl ]
+   source [ file join $repertoire spc_gui.tcl ]
 } else {
-   set rep [ file join $audace(rep_plugin) tool spectro spcaudace ]
+   set repertoire [ file join $audace(rep_plugin) tool spectro spcaudace ]
 }
 
-#--- Chargement de l'éditeur de profil :
-source [ file join $rep spc_ini.tcl ]
-source [ file join $rep spc_gui.tcl ]
-
 #--- Chargement des fonctionnalités :
-source [ file join $rep spc_io.tcl ]
-source [ file join $rep spc_profil.tcl ]
-source [ file join $rep spc_calibrage.tcl ]
-source [ file join $rep spc_analyse.tcl ]
-source [ file join $rep spc_operations.tcl ]
-source [ file join $rep spc_geom.tcl ]
-source [ file join $rep spc_astrophys.tcl ]
-source [ file join $rep spc_numeric.tcl ]
-source [ file join $rep spc_echelle.tcl ]
-source [ file join $rep spc_metaf.tcl ]
-source [ file join $rep spc_gui_boxes.tcl ]
-source [ file join $rep spc_gui_runs.tcl ]
-source [ file join $rep spc_var.tcl ]
+source [ file join $repertoire spc_io.tcl ]
+source [ file join $repertoire spc_profil.tcl ]
+source [ file join $repertoire spc_calibrage.tcl ]
+source [ file join $repertoire spc_analyse.tcl ]
+source [ file join $repertoire spc_operations.tcl ]
+source [ file join $repertoire spc_geom.tcl ]
+source [ file join $repertoire spc_astrophys.tcl ]
+source [ file join $repertoire spc_numeric.tcl ]
+source [ file join $repertoire spc_echelle.tcl ]
+source [ file join $repertoire spc_metaf.tcl ]
+source [ file join $repertoire spc_gui_boxes.tcl ]
+source [ file join $repertoire spc_gui_runs.tcl ]
+source [ file join $repertoire spc_var.tcl ]
 
 #--- Chargement des plugins Spcaudace :
-source [ file join $rep plugins specLhIII specLhIII.tcl ]
+source [ file join $repertoire plugins specLhIII specLhIII.tcl ]
 
 
 #--------- Lancement ---------------#
