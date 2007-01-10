@@ -50,7 +50,7 @@ int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, 
    double annee, mois, jour, heure, minute, seconde, jd, pi, dr;
    double ha1,ha2,ha3,dec1,dec2,dec3,sep,pos,jd1,jd2,jd3,sep12,pos12,sep23,pos23,dec30,ha30,dha,ddec;
    int ki1,ki2,ki3;
-   int matching_poursuit=1;
+   int matching_poursuit=1,nifin1,nifin2;
 
    if(argc<3) {
       sprintf(s,"Usage: %s file_00 file_0 ?sepmin? ?sepmax? ?jjdifmin? ?matching_poursuit?", argv[0]);
@@ -169,7 +169,7 @@ int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, 
          }
       }
       fclose(f_in);
-      nimages=kimage+2;
+      nimages=kimage+1;
 
       /* --- dimensionne les tableaux des indices de debut et de fin d'entree ---*/
       kdebs=(int*)calloc(nimages,sizeof(int));
@@ -239,7 +239,14 @@ int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, 
 
       /* --- deuxieme passe, on apparie les objects sur les images differentes ---*/
       /* --- avec matching poursuit a 3 dates ---*/
-      for (ki1=0;ki1<nimages-2;ki1++) {
+      if (matching_poursuit==1) {
+         nifin1=2;
+         nifin2=1;
+      } else {
+         nifin1=1;
+         nifin2=0;
+      }
+      for (ki1=0;ki1<nimages-nifin1;ki1++) {
          for (k1=kdebs[ki1];k1<=kfins[ki1];k1++) {
             if (lignes[k1].comment!=0) {
                continue;
@@ -247,7 +254,7 @@ int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, 
             jd1=lignes[k1].jd;
             ha1=lignes[k1].ha;
             dec1=lignes[k1].dec;
-            for (ki2=ki1+1;ki2<nimages-1;ki2++) {
+            for (ki2=ki1+1;ki2<nimages-nifin2;ki2++) {
                for (k2=kdebs[ki2];k2<=kfins[ki2];k2++) {
                   if (lignes[k2].comment!=0) {
                      continue;
