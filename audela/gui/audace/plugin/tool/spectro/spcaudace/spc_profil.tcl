@@ -1389,6 +1389,11 @@ proc spc_loadfit { {filenamespc ""} } {
    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
        set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
    }
+   if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+       set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+   } else {
+       set spc_d 0.0
+   }
 
   #--- Gestion de la commande getpix selon la version d'Audela :
   if { [regexp {1.4.0} $audela(version) match resu ] } {
@@ -1402,11 +1407,19 @@ proc spc_loadfit { {filenamespc ""} } {
    } else {
        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
-	   for {set k 0} {$k<$naxis1} {incr k} {
-	       set pixel [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-	       lappend profilspc(pixels) $pixel
-	       lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
-	       
+	   if { $spc_a < 0.01 } {
+	       for {set k 0} {$k<$naxis1} {incr k} {
+		   #- Ancienne formulation < 070104 :
+		   set pixel [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+		   lappend profilspc(pixels) $pixel
+		   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
+	       }
+	   } else {
+	       for {set k 0} {$k<$naxis1} {incr k} {
+		   set pixel [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+		   lappend profilspc(pixels) $pixel
+		   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
+	       }
 	   }
 	   #-- Calibration linéaire :
        } else {
@@ -1434,11 +1447,19 @@ proc spc_loadfit { {filenamespc ""} } {
    } else {
        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
-	   for {set k 0} {$k<$naxis1} {incr k} {
-	       set pixel [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-	       lappend profilspc(pixels) $pixel
-	       lappend profilspc(intensite) [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ]
-	       
+	   if { $spc_a < 0.01 } {
+	       for {set k 0} {$k<$naxis1} {incr k} {
+		   #- Ancienne formulation < 070104 :
+		   set pixel [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+		   lappend profilspc(pixels) $pixel
+		   lappend profilspc(intensite) [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ]
+	       }
+	   } else {
+	       for {set k 0} {$k<$naxis1} {incr k} {
+		   set pixel [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+		   lappend profilspc(pixels) $pixel
+		   lappend profilspc(intensite) [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ]
+	       }
 	   }
 	   #-- Calibration linéaire :
        } else {

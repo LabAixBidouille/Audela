@@ -3,6 +3,8 @@
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
 
+
+
 ####################################################################
 # Procedure de rotation de 180° d'un profil de raies ou d'une image
 #
@@ -661,17 +663,16 @@ proc spc_smilex { args } {
 	set b [ lindex $coefssmilex 1 ]
 
 	#-- Pour l'instant (061220), evite de faire un slant :
-	if { $c == 0.0 } {
-	    set c 0.000001
-	}
+	#if { $c == 0.0 } {
+	#    set c 0.000001
+	#}
 
 	#--- Correction du smile selon l'axe horizontal X ou du slant :
 	if { $c == 0.0 } {
 	    ::console::affiche_resultat "Le spectre n'est pas affecté par un smile selon l'axe X.\n"
 	    if { $b != 0.0 } {
-		::console::affiche_resultat "Le spectre doit être corrigé du slant. Correction du slant...\n"
 		set pente $b
-		::console::affiche_resultat "Pente d'inclinaison de la raie : $pente pixels y/pixels x.\n"
+		::console::affiche_resultat "Correction du slant de pente $pente...\n"
 		buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 		buf$audace(bufNo) imaseries "TILT trans_x=$pente trans_y=0"
 		#-- Sauvegarde du spectre corrigé du slant :
@@ -679,9 +680,9 @@ proc spc_smilex { args } {
 		# buf$audace(bufNo) setkwd [list "SPC_SLX1" 0 float "ycenter smilex" ""]
 		# buf$audace(bufNo) setkwd [list "SPC_SLX2" 0 float "adeg2 smilex" ""]
 		buf$audace(bufNo) setkwd [list "SPC_SLA" $pente float "pente slant" ""]
-		buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slant$conf(extension,defaut)"
-		loadima "$audace(rep_images)/${filespc}_slant$conf(extension,defaut)"
-		::console::affiche_resultat "Image sauvée sous ${filespc}_slx$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+		buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slt$conf(extension,defaut)"
+		loadima "$audace(rep_images)/${filespc}_slt$conf(extension,defaut)"
+		::console::affiche_resultat "Image sauvée sous ${filespc}_slt$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
 		set results [ list ${filespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
 		return $results
 	    } else {
@@ -691,12 +692,13 @@ proc spc_smilex { args } {
 	} else {
 	    set deltay [ expr 0.5*($naxis2i-$naxis2) ]
 	    set ycenter [ expr -$b/(2*$c)+$deltay ]
+	    ::console::affiche_resultat "Correction du smilex (ycenter=$ycenter, deg2=$c)...\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$c"
 	    #--- Sauvegarde
 	    set filespc [ file rootname $filenamespc ]
 	    buf$audace(bufNo) setkwd [list "SPC_SLX1" $ycenter float "ycenter smilex" ""]
-	    buf$audace(bufNo) setkwd [list "SPC_SLX2" $c float "adeg2 smilex" ""]
+	    buf$audace(bufNo) setkwd [list "SPC_SLX2" $c float "coef deg2 smilex" ""]
 	    buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slx$conf(extension,defaut)"
 	    loadima "$audace(rep_images)/${filespc}_slx$conf(extension,defaut)"
 	    ::console::affiche_resultat "Image sauvée sous ${filespc}_slx$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
