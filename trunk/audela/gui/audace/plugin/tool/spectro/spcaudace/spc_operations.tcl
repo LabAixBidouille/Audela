@@ -9,6 +9,212 @@
 
 
 
+###############################################################################
+# Descirption : effectue le prétraitement d'une série d'images brutes
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date création : 27-08-2005
+# Date de mise à jour : 21-12-2005/070103
+# Arguments : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu effacement des masters (O/n)
+# Méthode : par soustraction du noir et sans offset.
+# Bug : Il faut travailler dans le rep parametre d'Audela, donc revoir toutes les operations !!
+###############################################################################
+
+proc spc_pretrait { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] <= 5} {
+       if {[llength $args] == 4} {
+	   #--- On se place dans le répertoire d'images configuré dans Audace
+	   set repdflt [ spc_goodrep ]
+	   set nom_stellaire [ lindex $args 0 ]
+	   set nom_dark [ lindex $args 1 ]
+	   set nom_flat [ lindex $args 2 ]
+	   set nom_darkflat [ lindex $args 3 ]
+	   set flag_rmmaster "o"
+       } elseif {[llength $args] == 5} {
+	   #--- On se place dans le répertoire d'images configuré dans Audace
+	   set repdflt [ spc_goodrep ]
+	   set nom_stellaire [ lindex $args 0 ]
+	   set nom_dark [ lindex $args 1 ]
+	   set nom_flat [ lindex $args 2 ]
+	   set nom_darkflat [ lindex $args 3 ]
+	   set flag_rmmaster [ lindex $args 4 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?effacement des masters (O/n)?\n\n"
+	   return 0
+       }
+
+       ## Renumerote chaque série de fichier
+       renumerote $nom_stellaire
+       renumerote $nom_dark
+       renumerote $nom_flat
+       renumerote $nom_darkflat
+
+       ## Détermine les listes de fichiers de chasue série
+       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]*$conf(extension,defaut) ] ]
+       set nb_stellaire [ llength $stellaire_liste ]
+       #set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
+       #set nb_dark [ llength $dark_liste ]
+       #set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
+       #set nb_flat [ llength $flat_liste ]
+       #set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
+       #set nb_darkflat [ llength $darkflat_liste ]
+       #-- Gesttion du cas des masters au lieu d'une série de fichier :
+       if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) } ] } {
+	   set dark_list [ list $nom_dark ]
+	   set nb_dark 1
+       } else {
+	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
+	   set nb_dark [ llength $dark_liste ]
+       }
+       if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) } ] } {
+	   set flat_list [ list $nom_flat ]
+	   set nb_flat 1
+       } else {
+	   set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
+	   set nb_flat [ llength $flat_liste ]
+       }
+       if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) } ] } {
+	   set darkflat_list [ list $nom_darkflat ]
+	   set nb_darkflat 1
+       } else {
+	   set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
+	   set nb_darkflat [ llength $darkflat_liste ]
+       }
+
+
+       ## Isole le préfixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n°
+       set pref_stellaire ""
+       set pref_dark ""
+       set pref_flat ""
+       set pref_darkflat ""
+       regexp {(.+)\-?[0-9]+} $nom_stellaire match pref_stellaire
+       regexp {(.+)\-?[0-9]+} $nom_dark match pref_dark
+       regexp {(.+)\-?[0-9]+} $nom_flat match pref_flat
+       regexp {(.+)\-?[0-9]+} $nom_darkflat match pref_darkflat
+       #-- En attendant de gerer le cas des fichiers avec des - au milieu du nom de fichier
+       set pref_stellaire $nom_stellaire
+       set pref_dark $nom_dark
+       set pref_flat $nom_flat
+       set pref_darkflat $nom_darkflat
+
+       ::console::affiche_resultat "brut=$pref_stellaire, dark=$pref_dark, flat=$pref_flat, df=$pref_darkflat\n"
+       #-- La regexp ne fonctionne pas bien pavec des noms contenant des "_"
+       if {$pref_stellaire == ""} {
+	   set pref_stellaire $nom_stellaire
+       }
+       if {$pref_dark == ""} {
+	   set pref_dark $nom_dark
+       }
+       if {$pref_flat == ""} {
+	   set pref_flat $nom_flat
+       }
+       if {$pref_darkflat == ""} {
+	   set pref_darkflat $nom_darkflat
+       }
+       # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
+
+       ## Prétraitement des fichiers de darks, de flats, de darkflats
+       if { $nb_dark == 1 } {
+	   ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
+	   set pref_dark $nom_dark
+	   file copy $nom_dark$conf(extension,defaut) ${pref_dark}_smd$nb_dark$conf(extension,defaut)
+       } else {
+	   ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
+	   smedian "$nom_dark" "${pref_dark}_smd$nb_dark" $nb_dark
+       }
+       if { $nb_darkflat == 1 } {
+	   ::console::affiche_resultat "L'image de dark de flat est $nom_darkflat$conf(extension,defaut)\n"
+	   set pref_darkflat "$nom_darkflat"
+	   file copy $nom_darkflat$conf(extension,defaut) ${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)
+       } else {
+	   ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
+	   smedian "$nom_darkflat" "${pref_darkflat}_smd$nb_darkflat" $nb_darkflat
+       }
+       if { $nb_flat == 1 } {
+	   set pref_flat $nom_flat
+	   buf$audace(bufNo) load "$nom_flat"
+	   sub "${pref_darkflat}_smd$nb_darkflat" 0
+	   buf$audace(bufNo) save "${pref_flat}_smd$nb_flat"
+       } else {
+	   sub2 "$nom_flat" "${pref_darkflat}_smd$nb_darkflat" "${pref_flat}_moinsnoir-" 0 $nb_flat
+	   set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+	   #set flat_traite_1 [ lindex [ glob ${pref_flat}_moinsnoir-*$conf(extension,defaut) ] 0 ]
+       }
+
+       if { $nb_flat == 1 } {
+	   # Calcul du niveau moyen de la première image
+	   #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
+	   #set intensite_moyenne [lindex [stat] 4]
+	   ## Mise au même niveau de toutes les images de PLU
+	   #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
+	   #ngain $intensite_moyenne
+	   #buf$audace(bufNo) save "${pref_flat}_smd$nb_flat"
+	   #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}_smd$nb_flat$conf(extension,defaut)
+	   ::console::affiche_resultat "Le flat prétraité est ${pref_flat}_smd$nb_flat\n"
+       } else {
+	   # Calcul du niveau moyen de la première image
+	   buf$audace(bufNo) load "$flat_moinsnoir_1"
+	   set intensite_moyenne [lindex [stat] 4]
+	   # Mise au même niveau de toutes les images de PLU
+	   ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
+	   ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
+	   ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
+	   smedian "${pref_flat}_auniveau-" "${pref_flat}_smd$nb_flat" $nb_flat
+	   #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
+	   delete2 "${pref_flat}_auniveau-" $nb_flat
+	   delete2 "${pref_flat}_moinsnoir-" $nb_flat
+       }
+
+       ## Prétraitement des images stellaires
+       # Soustraction du noir des images stellaires
+       ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
+       sub2 "$nom_stellaire" "${pref_dark}_smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
+       # Calcul du niveau moyen de la PLU traitée
+       buf$audace(bufNo) load "${pref_flat}_smd$nb_flat"
+       set intensite_moyenne [lindex [stat] 4]
+       # Division des images stellaires par la PLU
+       ::console::affiche_resultat "Division des images stellaires par la PLU...\n"
+       div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}_smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
+       set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+
+       #--- Affichage et netoyage
+       loadima "$image_traite_1"
+       ::console::affiche_resultat "Affichage de la première image prétraitée\n"
+       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
+       if { $flag_rmmaster == "o" } {
+	   # Le 06/02/19 :
+	   file delete "${pref_dark}_smd$nb_dark$conf(extension,defaut)"
+	   file delete "${pref_flat}_smd$nb_flat$conf(extension,defaut)"
+	   file delete "${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)"
+       }
+
+       #--- Effacement des fichiers copie des masters dark, flat et dflat dus a la copie automatique de pretrait :
+       if { [ regexp {.+_smd[0-9]+_smd[0-9]+} ${pref_dark}_smd$nb_dark match resul ] } {
+	   file delete "${pref_dark}_smd$nb_dark$conf(extension,defaut)"
+       }
+       if { [ regexp {.+_smd[0-9]+_smd[0-9]+} ${pref_flat}_smd$nb_flat match resul ] } {
+	   file delete "${pref_flat}_smd$nb_flat$conf(extension,defaut)"
+       }
+       if { [ regexp {.+_smd[0-9]+_smd[0-9]+} ${pref_darkflat}_smd$nb_darkflat match resul ] } {
+	   file delete "${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)"
+       }
+
+
+       #--- Retour dans le répertoire de départ avnt le script
+       cd $repdflt
+       return ${pref_stellaire}-t-
+   } else {
+       ::console::affiche_erreur "Usage: spc_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?effacement des masters (O/n)?\n\n"
+   }
+}
+#****************************************************************************#
+
+
+
 ##########################################################
 # Procedure de normalisation de profil de raie
 #
@@ -1251,6 +1457,7 @@ proc spc_passebas { args } {
 	    set largeur 25
 	} else {
 	    ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?largeur motif à gommer(25)?\n\n"
+	    return 0
 	}
 
 	set datas [ spc_fits2data $fichier ]

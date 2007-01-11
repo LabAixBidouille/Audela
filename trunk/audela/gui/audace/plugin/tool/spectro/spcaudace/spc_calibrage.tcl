@@ -294,7 +294,7 @@ proc spc_calibre2loi { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 17-04-2006
-# Date modification : 20-09-2006
+# Date modification : 20-09-2006/04-01-07
 # Arguments : profil_de_reference_fits profil_a_etalonner_fits
 ####################################################################
 
@@ -326,6 +326,11 @@ proc spc_calibreloifile { args } {
       if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
 	  set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
       }
+      if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+	  set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+      } else {
+	  set spc_d 0.0
+      }
       if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
 	  set spc_rms [ lindex [ buf$audace(bufNo) getkwd "SPC_RMS" ] 1 ]
       }
@@ -348,19 +353,24 @@ proc spc_calibreloifile { args } {
       buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 
       #--- Mots clefs de la calibration non-linéaire :
-      #-- A.x.x+B.x+C
+      #-- A+B.x+C.x.x+D.x.x.x
       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	  buf$audace(bufNo) setkwd [list "SPC_DESC" "A.x.x+B.x+C" string "" ""]
-	  buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom*angstrom/pixel*pixel"]
-      }
-      if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-	  buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
-      }
-      if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-	  buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom"]
-      }
-      if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-	  buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]
+	  #-- Ancienne formulation < 04012007 :
+	  # buf$audace(bufNo) setkwd [list "SPC_DESC" "A.x.x+B.x+C" string "" ""]
+	  #-- Nouvelle formulation :
+	  buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
+	  buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom"]
+	  if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+	      buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
+	  }
+	  if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+	      buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom*angstrom/pixel*pilxe"]
+	  }
+	  buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom*angstrom*angstrom/pixel*pilxe*pixel"]
+	  if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
+	      buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]
+	  }
+
       }
       
       #--- Sauvegarde du profil calibré
@@ -373,6 +383,57 @@ proc spc_calibreloifile { args } {
   }
 }
 #****************************************************************#
+
+
+
+####################################################################
+# Procedure de décalage de la longureur d'onde de départ
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 04-01-2007
+# Date modification : 04-01-2007
+# Arguments : profil_a_decaler_fits decalage
+####################################################################
+
+proc spc_calibredecal { args } {
+
+  global conf
+  global audace
+  global profilspc
+  global captionspc
+
+  if {[llength $args] == 2} {
+      set filespc [ lindex $args 0 ]
+      set decalage [ lindex $args 1 ]
+
+      buf$audace(bufNo) load "$audace(rep_images)/$filespc"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	  if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	      set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	      set lambda_modifie [ expr $lambda0+$decalage ]
+	      buf$audace(bufNo) setkwd [list "CRVAL1" $lambda_modifie float "" "angstrom"]
+	  }
+	  set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	  set spc_a_modifie [ expr $spc_a+$decalage ]
+	  buf$audace(bufNo) setkwd [list "SPC_A" $spc_a_modifie float "" "angstrom"]
+      } elseif { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	      set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	      set lambda_modifie [ expr $lambda0+$decalage ]
+	      buf$audace(bufNo) setkwd [list "CRVAL1" $lambda_modifie float "" "angstrom"]
+      }
+      
+      #--- Sauvegarde du profil calibré
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${filespc}_dec"
+      ::console::affiche_resultat "Spectre étalonné sauvé sous ${filespc}_dec\n"
+      return "${filespc}_dec"
+  } else {
+      ::console::affiche_erreur "Usage: spc_calibredecal profil_a_decaler_fits decalage\n\n"
+  }
+}
+#****************************************************************#
+
 
 
 
@@ -501,28 +562,31 @@ proc spc_calibren { args } {
 	    lappend lambdas [ lindex $coords [ expr $i+1 ] ]
 	    lappend errors $erreur
 	}
+	set nbraies [ llength $lambdas ]
 
-	#--- Calcul du polynôme de calibration a+bx+cx^2 :
+	#--- Calcul des coéfficients du polynome de calibration :
+	#-- Calcul du polynôme de calibration a+bx+cx^2 :
 	set sortie [ spc_ajustdeg2 $xvals $lambdas $errors ]
- 	set coeffs [ lindex $sortie 0 ]
+	set coeffs [ lindex $sortie 0 ]
 	set chi2 [ lindex $sortie 1 ]
+	set d 0.0
 	set c [ lindex $coeffs 2 ]
 	set b [ lindex $coeffs 1 ]
 	set a [ lindex $coeffs 0 ]
 	set lambda0deg2 [ expr $a+$b+$c ]
-
-	#--- Calcul du RMS :
-	set nbraies [ llength $xvals ]
+	set lambda0deg3 [ expr $a+$b+$c+$d ]
+	#-- Calcul du RMS :
 	set rms [ expr $lambda0deg2*sqrt($chi2/$nbraies) ]
 	::console::affiche_resultat "RMS=$rms angstrom\n"
-
-	#--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
+	#-- Calcul d'une série de longueurs d'ondes passant par le polynome pour la linéarisation :
 	buf$audace(bufNo) load "$audace(rep_images)/$filename"
 	set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
 	    lappend xpos $x
 	    lappend lambdaspoly [ expr $a+$b*$x+$c*$x*$x ]
 	}
+	    
+	#--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
 	set listevals [ list $xpos $lambdaspoly ]
 	set coeffsdeg1 [ spc_reglin $listevals ]
 	set a1 [ lindex $coeffsdeg1 0 ]
@@ -533,7 +597,11 @@ proc spc_calibren { args } {
 	#- 40 -10 l0deg1 : AB
 	#- 40 -40 l0deg1 : AB+
 	#- 20 -10 l0deg2 : AB++
-	set lambda0 $lambda0deg2
+	if { $nbraies <=2 } {
+	    set lambda0 $lambda0deg2
+	} else {
+	    set lambda0 $lambda0deg3
+	}
 
 	#--- Mise à jour des mots clefs :
 	buf$audace(bufNo) load "$audace(rep_images)/$filename"
@@ -546,10 +614,11 @@ proc spc_calibren { args } {
 	#-- Corrdonnée représentée sur l'axe 1 (ie X) :
 	buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 	#-- Mots clefs du polynôme :
-	buf$audace(bufNo) setkwd [list "SPC_DESC" "A.x.x+B.x+C" string "" ""]
-	buf$audace(bufNo) setkwd [list "SPC_C" $a float "" "angstrom"]
+	buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
+	buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
 	buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
-	buf$audace(bufNo) setkwd [list "SPC_A" $c float "" "angstrom.angstrom/pixel.pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_D" $d float "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
 	buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
 
 	#--- Fin du script :
@@ -559,6 +628,125 @@ proc spc_calibren { args } {
 	return l${filename}
     } else {
 	::console::affiche_erreur "Usage: spc_calibren nom_profil_raies x1 lambda1 x2 lambda2 x3 lambda3 ... x_n lambda_n\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Procédure de calibration par un polynôme de degré 2 ou 3 selon le nombre de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 04-01-2007
+# Date modification : 04-01-2007
+# Arguments : nom_profil_raies x1 lambda1 x2 lamda2 x3 lambda3 ... x_n lambda_n
+####################################################################
+
+proc spc_calibren_deg3 { args } {
+    global conf
+    global audace
+    set erreur 0.01
+
+    set len [expr [ llength $args ]-1 ]
+    if { [ expr $len+1 ] >= 1 } {
+	set filename [ lindex $args 0 ]
+	set coords [ lrange $args 1 $len ]
+	#::console::affiche_resultat "$len Coords : $coords\n"
+
+	#--- Préparation des listes de données :
+	for {set i 0} {$i<[expr $len-1]} { set i [ expr $i+2 ]} {
+	    lappend xvals [ lindex $coords $i ]
+	    lappend lambdas [ lindex $coords [ expr $i+1 ] ]
+	    lappend errors $erreur
+	}
+	set nbraies [ llength $lambdas ]
+
+	#--- Calcul des coéfficients du polynome de calibration :
+	if { $nbraies <=2 } {
+	    #-- Calcul du polynôme de calibration a+bx+cx^2 :
+	    set sortie [ spc_ajustdeg2 $xvals $lambdas $errors ]
+	    set coeffs [ lindex $sortie 0 ]
+	    set chi2 [ lindex $sortie 1 ]
+	    set d 0.0
+	    set c [ lindex $coeffs 2 ]
+	    set b [ lindex $coeffs 1 ]
+	    set a [ lindex $coeffs 0 ]
+	    set lambda0deg2 [ expr $a+$b+$c ]
+	    #-- Calcul du RMS :
+	    set rms [ expr $lambda0deg2*sqrt($chi2/$nbraies) ]
+	    ::console::affiche_resultat "RMS=$rms angstrom\n"
+	    #-- Calcul d'une série de longueurs d'ondes passant par le polynome pour la linéarisation :
+	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	    for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
+		lappend xpos $x
+		lappend lambdaspoly [ expr $a+$b*$x+$c*$x*$x ]
+	    }
+	} else {
+	    #-- Calcul du polynôme de calibration a+bx+cx^2+dx^3 :
+	    set sortie [ spc_ajustdeg3 $xvals $lambdas $errors ]
+	    set coeffs [ lindex $sortie 0 ]
+	    set chi2 [ lindex $sortie 1 ]
+	    set d [ lindex $coeffs 3 ]
+	    set c [ lindex $coeffs 2 ]
+	    set b [ lindex $coeffs 1 ]
+	    set a [ lindex $coeffs 0 ]
+	    set lambda0deg3 [ expr $a+$b+$c+$d ]
+	    #--- Calcul du RMS :
+	    set rms [ expr $lambda0deg3*sqrt($chi2/$nbraies) ]
+	    ::console::affiche_resultat "RMS=$rms angstrom\n"
+	    #-- Calcul d'une série de longueurs d'ondes passant par le polynome pour la linéarisation :
+	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	    for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
+		lappend xpos $x
+		lappend lambdaspoly [ expr $a+$b*$x+$c*$x*$x+$d*$x*$x*$x ]
+	    }
+	}
+	    
+	#--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
+	set listevals [ list $xpos $lambdaspoly ]
+	set coeffsdeg1 [ spc_reglin $listevals ]
+	set a1 [ lindex $coeffsdeg1 0 ]
+	set b1 [ lindex $coeffsdeg1 1 ]
+	set lambda0deg1 [ expr $a1+$b1 ]
+	#set lambda0 [ expr 0.5*abs($lambda0deg1-$lambda0deg2)+$lambda0deg2 ]
+	#-- Reglages :
+	#- 40 -10 l0deg1 : AB
+	#- 40 -40 l0deg1 : AB+
+	#- 20 -10 l0deg2 : AB++
+	if { $nbraies <=2 } {
+	    set lambda0 $lambda0deg2
+	} else {
+	    set lambda0 $lambda0deg3
+	}
+
+	#--- Mise à jour des mots clefs :
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
+	#-- Longueur d'onde de départ :
+	buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+	#-- Dispersion moyenne :
+	buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+	buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
+	#-- Corrdonnée représentée sur l'axe 1 (ie X) :
+	buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
+	#-- Mots clefs du polynôme :
+	buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
+	buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
+	buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_D" $d float "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+
+	#--- Fin du script :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/l${filename}"
+	::console::affiche_resultat "Spectre étalonné sauvé sous l${filename}\n"
+	return l${filename}
+    } else {
+	::console::affiche_erreur "Usage: spc_calibren_deg3 nom_profil_raies x1 lambda1 x2 lambda2 x3 lambda3 ... x_n lambda_n\n"
     }
 }
 #***************************************************************************#
@@ -1293,6 +1481,18 @@ proc spc_rinstrumeaucorr { args } {
 ####################################################################################
 # Ancienne version des fonctions
 ####################################################################################
+
+
+####################################################################
+# Procédure de calibration par un polynôme de degré 2 (au moins 3 raies nécessaires)
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2-09-2006
+# Date modification : 2-09-2006
+# Arguments : nom_profil_raies x1 lambda1 x2 lamda2 x3 lambda3 ... x_n lambda_n
+####################################################################
+
+
 
 proc spc_rinstrum_020905 { args } {
 
