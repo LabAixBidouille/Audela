@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.31 2007-01-07 22:48:02 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.32 2007-01-11 18:23:54 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -2721,7 +2721,7 @@ namespace eval ::AcqFC {
 
 #***** Procedure de demarrage du fenetrage video *********************************************
    proc startWindowedFenster { visuNo } {
-      global audace caption conf panneau
+      global audace caption panneau
 
       #--- Active le mode preview
       if { $panneau(AcqFC,$visuNo,showvideopreview) == "0" } {
@@ -2751,6 +2751,8 @@ namespace eval ::AcqFC {
                set panneau(AcqFC,$visuNo,fenetre) "0"
                ::AcqFC::optionWindowedFenster $visuNo
             }
+         } else {
+            cam[ ::confVisu::getCamNo $visuNo ] startvideocrop
          }
       } else {
         set panneau(AcqFC,$visuNo,fenetre) "0"
@@ -2760,10 +2762,26 @@ namespace eval ::AcqFC {
 
 #***** Procedure d'arret du fenetrage video **************************************************
    proc stopWindowedFenster { visuNo } {
-      global audace conf
+      global panneau
 
-      if { "[ ::confVisu::getProduct $visuNo ]" == "webcam" } {
-
+      if { [ ::confVisu::getCamera $visuNo ] == "" } {
+         #--- Je decoche la checkbox
+         set panneau(AcqFC,$visuNo,showvideopreview) "0"
+         #--- Je decoche le fenetrage
+         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+            set panneau(AcqFC,$visuNo,fenetre) "0"
+            ::AcqFC::optionWindowedFenster $visuNo
+         }
+      } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+         #--- Je decoche la checkbox
+         set panneau(AcqFC,$visuNo,showvideopreview) "0"
+         #--- Je decoche le fenetrage
+         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+            set panneau(AcqFC,$visuNo,fenetre) "0"
+            ::AcqFC::optionWindowedFenster $visuNo
+         }
+      } else {
+         cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop
       }
    }
 #***** Fin de la procedure d'arret du fenetrage video ****************************************
