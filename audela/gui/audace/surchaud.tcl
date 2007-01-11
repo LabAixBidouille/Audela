@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.13 2006-12-08 18:21:49 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.14 2007-01-11 18:23:29 robertdelmas Exp $
 #
 # offset  value
 # offset2  in out const number ?first_index? ?tt_options?
@@ -57,7 +57,7 @@ proc offset2 {args} {
    global caption
 
    set n [llength $args]
-   if {($n>==4)} {
+   if {($n>=4)} {
       set ext [buf$audace(bufNo) extension]
       set first 1
       if {$n==5} {
@@ -81,7 +81,7 @@ proc ngain2 {args} {
    global caption
 
    set n [llength $args]
-   if {($n>==4)} {
+   if {($n>=4)} {
       set ext [buf$audace(bufNo) extension]
       set first 1
       if {$n==5} {
@@ -105,7 +105,7 @@ proc noffset2 {args} {
    global caption
 
    set n [llength $args]
-   if {($n>==4)} {
+   if {($n>=4)} {
       set ext [buf$audace(bufNo) extension]
       set first 1
       if {$n==5} {
