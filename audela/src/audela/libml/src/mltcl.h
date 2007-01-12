@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <C:/audela/audela/src/audela/libmc/src/libmc.h>
 
 /***************************************************************************/
 /***************************************************************************/
@@ -56,12 +57,14 @@
 #endif
 
 typedef struct {
-   char texte[215];
+   char texte[220];
    int comment;
    double ha;
+   double ra;
    double dec;
    double jd;
    double mag;
+   char ident[100];
    int kimage;
    int kimage1;
    int kimage2;
@@ -69,20 +72,24 @@ typedef struct {
    int kobject1;
    int kobject2;
    int matched;
+   int nouvelledate;
 } struct_ligsat ;
 
 /***************************************************************************/
 /*      Prototypes des fonctions d'extension C appelables par Tcl          */
 /***************************************************************************/
 /*--- Les prototypes sont tous les memes */
-int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_julianday(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_infoimage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_mltcl_getTimegps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
 /***************************************************************************/
 int mltcl_getinfoimage(Tcl_Interp *interp,int numbuf, ml_image *image);
+
 
 #endif
 

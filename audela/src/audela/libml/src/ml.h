@@ -40,6 +40,8 @@
 #include <math.h>
 #include <time.h>
 
+
+
 /***************************************************************************/
 /**             include qui permet de connaitre l'OS utilise              **/
 /***************************************************************************/
@@ -82,6 +84,14 @@ typedef struct {
 
 void ml_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
 void ml_date2jd(double annee, double mois, double jour, double heure, double minute, double seconde, double *jj);
+int ml_differencejour (int jour1, int mois1, int annee1, int jour2, int mois2, int annee2);
+int ml_bissextile (int annee);
+int ml_nbjours (int jour, int mois, int annee);
+int ml_file_copy (const char *source, const char *dest);
+int ml_telechargertle(const char *repertgeo, const char *reperthttp, const char *reperturl);
+int ml_tle2ephem(char *date, char *reperttle, char *homegps);
+
+
 
 #endif
 
