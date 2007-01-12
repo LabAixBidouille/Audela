@@ -69,9 +69,10 @@ void ml_sepangle(double a1, double a2, double d1, double d2, double *dist, doubl
    *posangle=aa;
 }
 
+
 void ml_date2jd(double annee, double mois, double jour, double heure, double minute, double seconde, double *jj)
 /***************************************************************************/
-/* Donne le jour julien correspondant a la date                            */
+/* Donne le jour juliene correspondant a la date                           */
 /***************************************************************************/
 /***************************************************************************/
 {
@@ -87,4 +88,141 @@ void ml_date2jd(double annee, double mois, double jour, double heure, double min
    bb=2-aa+floor(aa/4);
    jd=floor(365.25*(a+4716))+floor(30.6001*(m+1))+j+bb-1524.5;
    *jj=jd;
+}
+
+
+int ml_bissextile (int annee)
+/***************************************************************************/
+/* Teste si l'année est bissextile                                         */
+/***************************************************************************/
+/***************************************************************************/
+{
+  return annee % 4 == 0 && (annee % 100 != 0 || annee % 400 == 0);
+}
+
+
+int ml_nbjours (int jour, int mois, int annee)
+/***************************************************************************/
+/* combien de jours se sont ecoules depuis le debut de l'annee donnee      */
+/***************************************************************************/
+/***************************************************************************/
+{
+  int i, D = 0;
+  const int Mois[12]= {31,28,31,30,31,30,31,31,30,31,30,31};
+
+  if (mois == 1)
+  {
+    D = jour;
+  }
+  else
+  {
+    for (i = 0; i < (mois-1); i++)
+    {
+      D += Mois[i];
+    }
+    D+=jour;
+  }
+  if ((mois > 2) && (ml_bissextile(annee)))
+  {
+    D++;
+  }
+  return D;
+}
+
+
+int ml_differencejour (int jour1, int mois1, int annee1, int jour2, int mois2, int annee2)
+/***************************************************************************/
+/* Donne la différence de temps entre deux date                            */
+/***************************************************************************/
+/***************************************************************************/
+{
+  int NJ1, NJ2, i;
+  int NJ = 0;
+
+  NJ1 = ml_nbjours (jour1, mois1, annee1);
+  NJ2 = ml_nbjours (jour2, mois2, annee2);
+  if (annee2 == annee1)
+  {
+    NJ = NJ2 - NJ1;
+  }
+  else
+  {
+    for (i = 0; i < (annee2-annee1); i++)
+    {
+      NJ += 364;
+      if (ml_bissextile (annee1+i))
+      {
+        NJ++;
+      }
+    }
+    NJ -= NJ1;
+    NJ += NJ2+1;
+  }
+  return NJ;
+}
+
+
+int ml_file_copy (const char *source, const char *dest)
+/***************************************************************************/
+/* copie un fichier source vers un fichier dest                            */
+/***************************************************************************/
+/***************************************************************************/
+{
+  int ret = 0;
+  FILE *src = NULL;
+  FILE *dst = NULL;
+  char buffer[BUFSIZ];
+
+  src = fopen (source, "r");
+  if (src)
+  {
+    dst = fopen (dest, "w");
+    if (dst)
+    {
+      while (fgets (buffer, BUFSIZ, src))
+      {
+         fprintf (dst, "%s", buffer);
+      }
+
+      if (ferror (src))
+      {
+        fprintf (stderr, "Erreur lors de la lecture du fichier source : %s\n", source);
+        ret = -3;
+      }
+
+      if (ferror (dst))
+      {
+        fprintf (stderr, "Erreur lors de l'ecriture du fichier dst : %s\n", dest);
+        ret = -4;
+      }
+
+      fclose (src), src = NULL;
+      fclose (dst), dst = NULL;
+    }
+    else
+    {
+      fprintf (stderr, "Impossible d'ouvrir le fichier dest : %s\n", dest);
+      fclose (src);
+      ret = -2;
+    }
+  }
+  else
+  {
+    fprintf (stderr, "Impossible d'ouvrir le fichier source : %s\n", source);
+    ret = -1;
+  }
+  return ret;
+}
+
+
+int ml_telechargertle(const char *repertgeo, const char *reperthttp, const char *reperturl)
+/***************************************************************************/
+/* telecharge le fichier geo.txt                                           */
+/***************************************************************************/
+/***************************************************************************/
+{
+
+	/* il faut telecharger geo.txt à partir de l'url donné et le placé dans le repertoire repert*/
+
+	return 0;
 }
