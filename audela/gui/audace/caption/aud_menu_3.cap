@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.7 2006-12-08 19:09:19 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.8 2007-01-12 19:09:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -444,10 +444,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_flat_field)          "Ein Flat-Field Bild treiben"
    set caption(audace,menu,cfa2rgb)                   "CFA ---> RGB Umstellung"
 
-   set caption(traiteImage,image_gene_entree_r+v+b)   "# Nom générique des images R, V et B d'entrée :"
-   set caption(traiteImage,image_sortie_rvb)          "# Nom de l'image RVB de sortie :"
-   set caption(traiteImage,image_entree_rvb)          "# Nom de l'image RVB d'entrée :"
-   set caption(traiteImage,image_gene_sortie_r+v+b)   "# Nom générique des images R, V et B de sortie :"
+   set caption(traiteImage,image_gene_entree_r+v+b)   "Generischen Nahmen für R, G, und B Input Bilder:"
+   set caption(traiteImage,image_sortie_rvb)          "Output RGB Bild Nahmen:"
+   set caption(traiteImage,image_entree_rvb)          "Input RGB Bild Nahmen:"
+   set caption(traiteImage,image_gene_sortie_r+v+b)   "Generischen Nahmen für R, G, und B Output Bilder:"
    set caption(traiteImage,ajouter_cte)               "Eine Konstante addieren (Cte):"
    set caption(traiteImage,cte_mult)                  "Multiplikation Konstante (Cte):"
    set caption(traiteImage,valeur_fond_ciel)          "Hinterhimmel Wert:"
@@ -478,10 +478,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteImage,formule)                   "Formel:"
    set caption(traiteImage,image_affichee)            "In ezeigtes Bild"
    set caption(traiteImage,image_affichee:)           "In ezeigtes Bild:"
-   set caption(traiteImage,image_sur_DD)              "# Sur une image du disque dur :"
+   set caption(traiteImage,image_sur_DD)              "Auf ein Bild der Festplatte:"
    set caption(traiteImage,operation_serie)           "Auf eine Bild Reihe:"
    set caption(traiteImage,afficher_image_fin)        "Das Bild nach die Behandlung anzeigen"
-   set caption(traiteImage,afficher_der_image_fin)    "# Afficher la dernière image à la fin du traitement"
+   set caption(traiteImage,afficher_der_image_fin)    "Das letzte Bild am Ende des Aufbereitung zeigen"
    set caption(traiteImage,choix_image_entree)        "Wählen sie die Eingabebilder."
    set caption(traiteImage,choix_nbre_images)         "Bestimmen sied das Bild Zahl."
    set caption(traiteImage,nbre_entier)               "Das Bilder Zahl muss einen Ganz sein."
@@ -489,7 +489,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteImage,definir_operande)          "Wählen sie einen Bild C."
    set caption(traiteImage,images_entree-)            "Eingang Bilder"
    set caption(traiteImage,image_nombre-)             "Bilder Zahl"
-   set caption(traiteImage,image_premier_indice)      "# Premier indice :"
+   set caption(traiteImage,image_premier_indice)      "Ersten Index:"
    set caption(traiteImage,images_sortie-)            "Hinaus Bilder"
    set caption(traiteImage,image_ajouter-)            "Namen des Bild zu addieren"
    set caption(traiteImage,image_soustraire-)         "Namen des Bild zu abziehen"
@@ -511,7 +511,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteImage,valeur_normalisation)      "Normalisierung Wert:"
    set caption(traiteImage,image_dark)                "Schwartz Bild:"
    set caption(traiteImage,image_flat-field)          "Flat-Field Bild:"
-   set caption(traiteImage,sans_image_flat-field)     "# Aucun flat-field est disponible"
+   set caption(traiteImage,sans_image_flat-field)     "Es ist keinen Flach-Feld erhältlich"
 
    set caption(aud_menu_3,ok)                         "OK"
    set caption(aud_menu_3,appliquer)                  "Anwenden"
@@ -682,10 +682,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteImage,formule)                   "Formel:"
    set caption(traiteImage,image_affichee)            "På det viste billede"
    set caption(traiteImage,image_affichee:)           "På det viste billede:"
-   set caption(traiteImage,image_sur_DD)              "# Sur une image du disque dur :"
+   set caption(traiteImage,image_sur_DD)              "Til et billede på harddisken:"
    set caption(traiteImage,operation_serie)           "Billedserie:"
    set caption(traiteImage,afficher_image_fin)        "Vis billede når behandling er udført"
-   set caption(traiteImage,afficher_der_image_fin)    "# Afficher la dernière image à la fin du traitement"
+   set caption(traiteImage,afficher_der_image_fin)    "Vis det sidste billede, når billedbehandlingen er færdig"
    set caption(traiteImage,choix_image_entree)        "Vælg input-billeder."
    set caption(traiteImage,choix_nbre_images)         "Definer antallet af billeder."
    set caption(traiteImage,nbre_entier)               "Ntal billeder skal angives med et helt tal."

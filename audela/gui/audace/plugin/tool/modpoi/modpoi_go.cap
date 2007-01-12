@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi_go.cap
-# Mise a jour $Id: modpoi_go.cap,v 1.6 2006-11-18 23:48:54 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.cap,v 1.7 2007-01-12 19:13:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,6 @@ global caption
 # *************** Version anglaise ****************************
 
 set caption(modpoi_go,modpoi)             "Aiming Model"
-set caption(modpoi_go,modpoi_titre)       "Aiming Model"
 set caption(modpoi_go,help_titre)         "Help For This Tool"
 set caption(modpoi_go,titre)              "TPOINT"
 set caption(modpoi_go,nouveau)            "New"
@@ -52,7 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(modpoi_go,modpoi)          "Schwenken Vorlage"
+   set caption(modpoi_go,modpoi)          "Richtung Modell"
    set caption(modpoi_go,help_titre)      "Hilfe für dieses Gerät"
    set caption(modpoi_go,titre)           "TPOINT"
    set caption(modpoi_go,nouveau)         "Neu"

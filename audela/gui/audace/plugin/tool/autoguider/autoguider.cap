@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.14 2006-12-30 18:10:42 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.15 2007-01-12 19:10:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -182,8 +182,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
 
    set caption(autoguider,image)                 "Bild"
-   set caption(autoguider,cible)                 "# Cible"
-   set caption(autoguider,axe_AD)                "# Axe AD"
+   set caption(autoguider,cible)                 "Ziel"
+   set caption(autoguider,axe_AD)                "GR Achse"
    set caption(autoguider,ctrl_monture)          "Folgung an"
    set caption(autoguider,config_guidage)        "Konfiguration..."
    set caption(autoguider,ecart_origine_etoile)  "Abweichung"
@@ -194,24 +194,24 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Zeit"
 
-   set caption(autoguider,seuil)                 "# Seuil (pixel)"
-   set caption(autoguider,detection)             "# Détection étoile"
-   set caption(autoguider,apprenti)              "# Apprentissage"
-   set caption(autoguider,vitesse)               "# Vitesse (pixel/s)"
+   set caption(autoguider,seuil)                 "Schwelle(Pixel)"
+   set caption(autoguider,detection)             "Stern Entdeckung"
+   set caption(autoguider,apprenti)              "Lernen"
+   set caption(autoguider,vitesse)               "Geschwindigkeit (Pixel/s)"
    set caption(autoguider,detection_psf)         "Stern"
-   set caption(autoguider,detection_fente)       "# Fente"
+   set caption(autoguider,detection_fente)       "Schlitz"
 
-   set caption(autoguider,inclinaison)           "# Inclinaison de la caméra"
-   set caption(autoguider,angle)                 "# Angle (°)"
+   set caption(autoguider,inclinaison)           "Kamera Neigung"
+   set caption(autoguider,angle)                 "Winkel (°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
-   set caption(autoguider,running)               "# Apprentissage en cours"
+   set caption(autoguider,running)               "Lernen laufend"
    set caption(autoguider,delay)                 "Zeitraum"
-   set caption(autoguider,targetBoxSize)         "# Taille de la zone"
+   set caption(autoguider,targetBoxSize)         "Größe der Zone"
    set caption(autoguider,AD)                    "Rektaszension"
    set caption(autoguider,declinaison)           "Deklination"
-   set caption(autoguider,aller_vers)            "# Aller vers"
-   set caption(autoguider,clic_etoile)           "# Cliquer sur l'étoile"
+   set caption(autoguider,aller_vers)            "zu gehen"
+   set caption(autoguider,clic_etoile)           "auf das Stern klicken"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -223,8 +223,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,selcam)                "Deve seleccionar primeiro uma câmara\n(menu Configuração/Câmara)."
 
    set caption(autoguider,image)                 "Imagem"
-   set caption(autoguider,cible)                 "# Cible"
-   set caption(autoguider,axe_AD)                "# Axe AD"
+   set caption(autoguider,cible)                 "Alvo"
+   set caption(autoguider,axe_AD)                "Eixo AR"
    set caption(autoguider,ctrl_monture)          "Seguimento activo"
    set caption(autoguider,config_guidage)        "Configuração..."
    set caption(autoguider,ecart_origine_etoile)  "Desvio"
@@ -235,24 +235,24 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Intervalo"
 
-   set caption(autoguider,seuil)                 "# Seuil (pixel)"
-   set caption(autoguider,detection)             "# Détection étoile"
-   set caption(autoguider,apprenti)              "# Apprentissage"
-   set caption(autoguider,vitesse)               "# Vitesse (pixel/s)"
+   set caption(autoguider,seuil)                 "Limiar (pixel)"
+   set caption(autoguider,detection)             "Detecção estrela"
+   set caption(autoguider,apprenti)              "Aprendizagem"
+   set caption(autoguider,vitesse)               "Velocidade (pixel/s)"
    set caption(autoguider,detection_psf)         "Estrela"
-   set caption(autoguider,detection_fente)       "# Fente"
+   set caption(autoguider,detection_fente)       "Fenda"
 
-   set caption(autoguider,inclinaison)           "# Inclinaison de la caméra"
-   set caption(autoguider,angle)                 "# Angle (°)"
+   set caption(autoguider,inclinaison)           "Inclinação da câmara"
+   set caption(autoguider,angle)                 "Ângulo (°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
-   set caption(autoguider,running)               "# Apprentissage en cours"
+   set caption(autoguider,running)               "Aprendizagem em curso"
    set caption(autoguider,delay)                 "Atraso"
-   set caption(autoguider,targetBoxSize)         "# Taille de la zone"
+   set caption(autoguider,targetBoxSize)         "Tamanho da zona"
    set caption(autoguider,AD)                    "Ascenção Recta"
    set caption(autoguider,declinaison)           "Declinação"
-   set caption(autoguider,aller_vers)            "# Aller vers"
-   set caption(autoguider,clic_etoile)           "# Cliquer sur l'étoile"
+   set caption(autoguider,aller_vers)            "Ir para"
+   set caption(autoguider,clic_etoile)           "Clicar sobre a estrela"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {

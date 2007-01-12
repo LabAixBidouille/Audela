@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.11 2006-12-02 09:10:52 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.12 2007-01-12 19:13:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -557,14 +557,14 @@ los mandos del telescopio:"
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
 
-   set caption(modpoi,modele_existe)         "Operativ Schwenken Vorlage."
-   set caption(modpoi,modele_non_charge)     "# Vous n'avez pas chargé de modèle de pointage."
-   set caption(modpoi,modele_precedent)      "# Le modèle de pointage précédent est toujours opérationnel."
+   set caption(modpoi,modele_existe)         "Operativ Richtung Modell."
+   set caption(modpoi,modele_non_charge)     "Kein Richtung Modell geladen."
+   set caption(modpoi,modele_precedent)      "Der vorausgehenden Richtung Modell list immer laufend."
 
-   set caption(modpoi,modele,editer)         "Um den Operativ Schwenken Vorlage zu editieren, muss man es erst öffnen."
+   set caption(modpoi,modele,editer)         "Um den Operativ Richtung Modell zu editieren, muss man es erst öffnen."
 
-   set caption(modpoi,wiz1,title)            "Schwenken Vorlage"
-   set caption(modpoi,wiz1,title2)           "Festlegung der\nSchwenken Vorlage"
+   set caption(modpoi,wiz1,title)            "Richtung Modell"
+   set caption(modpoi,wiz1,title2)           "Festlegung der\nRichtung Modell"
    set caption(modpoi,wiz1,next)             "Nächsten >>"
    set caption(modpoi,wiz1,desc)             "\
 Verfahren von euren Teleskop\n\
@@ -582,7 +582,7 @@ Die Festlegung der Vorlage Parametern\n\
 ist bei schwenken nach Sternen\n\
 an beide Seiten des Meridian."
 
-   set caption(modpoi,wiz1b,title)           "Schwenken Vorlage: Schwenkung Parametern"
+   set caption(modpoi,wiz1b,title)           "Richtung Modell: Schwenkung Parametern"
    set caption(modpoi,wiz1b,title2)          "Schwenkung Parametern"
    set caption(modpoi,wiz1b,prev)            "<< Vorigen"
    set caption(modpoi,wiz1b,next)            "Nächsten >>"
@@ -595,12 +595,12 @@ an beide Seiten des Meridian."
    set caption(modpoi,wiz1b,nstars1)         "Ungültige Sternen Zahl."
    set caption(modpoi,wiz1b,catalog)         "Sternen Katalog"
    set caption(modpoi,wiz1b,acqauto)         "Automatische Zentrierung"
-   set caption(modpoi,wiz1b,refraction_1)    "# Notiz: Dieses Teleskop berechnet die Strahlenbrechung\nVerbesserung für die GoTo Bewegung.\n\
-Aud'ACE ne calcule pas cette correction pour lui."
+   set caption(modpoi,wiz1b,refraction_1)    "Notiz: Dieses Teleskop berechnet die Strahlenbrechung\nVerbesserung für die GoTo Bewegung.\n\
+Aud'ACE rechnet nicht für ihnen diese Korrektur."
    set caption(modpoi,wiz1b,refraction_2)    "Notiz: dieses Teleskop berechnet die Strahlenbrechung\nVerbesserung für die GoTo Bewegung\n\
 nicht aber Aud’ACE tut diese Berechnung."
 
-   set caption(modpoi,wiz1c,title)           "Schwenken Vorlage: Automatische Zentrierung"
+   set caption(modpoi,wiz1c,title)           "Richtung Modell: Automatische Zentrierung"
    set caption(modpoi,wiz1c,title2)          "Automatische Zentrierung"
    set caption(modpoi,wiz1c,prev)            "<< Vorigen"
    set caption(modpoi,wiz1c,next)            "Nächsten >>"
@@ -613,13 +613,13 @@ nicht aber Aud’ACE tut diese Berechnung."
    set caption(modpoi,wiz1c,initial_delay)   "Kalibration Abtrift (mickosek.)"
    set caption(modpoi,wiz1c,compositage)     "Bilder Zahl durch zu schneiden"
 
-   set caption(modpoi,wiz2,title)            "Schwenken Vorlage: Schwenken Abstand Messung"
+   set caption(modpoi,wiz2,title)            "Richtung Modell: Schwenken Abstand Messung"
    set caption(modpoi,wiz2,title2)           "Abstand Messung Folge\nzwischen die Schwenken Stelle\nund die beobachte Stelle"
    set caption(modpoi,wiz2,star)             "Stern"
    set caption(modpoi,wiz2,next)             "Rechnung >>"
    set caption(modpoi,wiz2,prev)             "<< Vorigen"
 
-   set caption(modpoi,wiz3,title)            "Schwenken Vorlage: Schwenken nach Stern Nummer "
+   set caption(modpoi,wiz3,title)            "Richtung Modell: Schwenken nach Stern Nummer "
    set caption(modpoi,wiz3,title2)           "\
 Schwenken nach Stern Nummer "
    set caption(modpoi,wiz3,j2000)            "\
@@ -642,7 +642,7 @@ Aberration, und Nutation Verbesserungen."
    set caption(modpoi,wiz3,prev)             "<< Vorigen"
    set caption(modpoi,wiz3,pas_etoile)       "Es gibt kein Stern mehr. Sie müssen\ndas Gerät 'Richter Modell' schließen."
 
-   set caption(modpoi,wiz4,title)            "Schwenken Vorlage: Stern Nummer ... Zentrieren "
+   set caption(modpoi,wiz4,title)            "Richtung Modell: Stern Nummer ... Zentrieren "
    set caption(modpoi,wiz4,title2)           "Zentrierung des Stern Nummer "
    set caption(modpoi,wiz4,center)           "Zentrieren "
    set caption(modpoi,wiz4,comment)          "\
@@ -654,8 +654,8 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
    set caption(modpoi,wiz4,comment_auto)     "Automatische Zentrierung laufend..."
 
-   set caption(modpoi,wiz5,title)            "Schwenken Vorlage: Rechnungen Erfolg"
-   set caption(modpoi,wiz5,title1)           "# Modèle de pointage : Edition du modèle en cours"
+   set caption(modpoi,wiz5,title)            "Richtung Modell: Rechnungen Erfolg"
+   set caption(modpoi,wiz5,title1)           "Richtung Modell: Der laufenden Modell editieren"
 
    set caption(modpoi,wiz5,IH)               "h Kodierer Verschiebung"
    set caption(modpoi,wiz5,ID)               "d Kodierer Verschiebung"
@@ -684,9 +684,9 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,shift-e)               "Nach Ost schieben:"
    set caption(modpoi,iteration)             "Schlingung"
 
-   set caption(modpoi,define_mame_modpoi)    "# Définir le nom du modèle de pointage"
+   set caption(modpoi,define_mame_modpoi)    "Den Nahmen des Richtung Modell bestimmen"
    set caption(modpoi,parcourir)             "..."
-   set caption(modpoi,name_modpoi)           "# Nom du modèle de pointage"
+   set caption(modpoi,name_modpoi)           "Richtung Modell Nahmen"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version portugaise **************************
