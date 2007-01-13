@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.32 2007-01-11 18:23:54 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.33 2007-01-13 17:19:55 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -228,12 +228,12 @@ namespace eval ::AcqFC {
 
       #--- Initialisation de variables pour l'acquisition video fenetree
       set panneau(AcqFC,$visuNo,fenetre)           "0"
-      set panneau(AcqFC,$visuNo,largeur)           "-"
-      set panneau(AcqFC,$visuNo,hauteur)           "-"
-      set panneau(AcqFC,$visuNo,x1)                "-"
-      set panneau(AcqFC,$visuNo,y1)                "-"
-      set panneau(AcqFC,$visuNo,x2)                "-"
-      set panneau(AcqFC,$visuNo,y2)                "-"
+      set panneau(AcqFC,$visuNo,largeur)           ""
+      set panneau(AcqFC,$visuNo,hauteur)           ""
+      set panneau(AcqFC,$visuNo,x1)                "$parametres(acqFC,$visuNo,x1)"
+      set panneau(AcqFC,$visuNo,y1)                "$parametres(acqFC,$visuNo,y1)"
+      set panneau(AcqFC,$visuNo,x2)                "$parametres(acqFC,$visuNo,x2)"
+      set panneau(AcqFC,$visuNo,y2)                "$parametres(acqFC,$visuNo,y2)"
 
       #--- Initialisation pour le mode video
       set panneau(AcqFC,$visuNo,showvideopreview) "0"
@@ -409,12 +409,16 @@ namespace eval ::AcqFC {
       if { [ file exists $fichier ] } {
          source $fichier
       }
-      if { ! [ info exists parametres(acqFC,$visuNo,pose) ] }            { set parametres(acqFC,$visuNo,pose)            "5" }   ; #--- Temps de pose : 5s
-      if { ! [ info exists parametres(acqFC,$visuNo,bin) ] }             { set parametres(acqFC,$visuNo,bin)             "2x2" } ; #--- Binning : 2x2
-      if { ! [ info exists parametres(acqFC,$visuNo,obt) ] }             { set parametres(acqFC,$visuNo,obt)             "2" }   ; #--- Obturateur : Synchro
-      if { ! [ info exists parametres(acqFC,$visuNo,mode) ] }            { set parametres(acqFC,$visuNo,mode)            "1" }   ; #--- Mode : Une image
-      if { ! [ info exists parametres(acqFC,$visuNo,lg_film) ] }         { set parametres(acqFC,$visuNo,lg_film)         "10" }  ; #--- Duree de la video : 10s
-      if { ! [ info exists parametres(acqFC,$visuNo,rate) ] }            { set parametres(acqFC,$visuNo,rate)            "5" }   ; #--- Images/sec. : 5
+      if { ! [ info exists parametres(acqFC,$visuNo,pose) ] }    { set parametres(acqFC,$visuNo,pose)    "5" }   ; #--- Temps de pose : 5s
+      if { ! [ info exists parametres(acqFC,$visuNo,bin) ] }     { set parametres(acqFC,$visuNo,bin)     "2x2" } ; #--- Binning : 2x2
+      if { ! [ info exists parametres(acqFC,$visuNo,obt) ] }     { set parametres(acqFC,$visuNo,obt)     "2" }   ; #--- Obturateur : Synchro
+      if { ! [ info exists parametres(acqFC,$visuNo,mode) ] }    { set parametres(acqFC,$visuNo,mode)    "1" }   ; #--- Mode : Une image
+      if { ! [ info exists parametres(acqFC,$visuNo,lg_film) ] } { set parametres(acqFC,$visuNo,lg_film) "10" }  ; #--- Duree de la video : 10s
+      if { ! [ info exists parametres(acqFC,$visuNo,rate) ] }    { set parametres(acqFC,$visuNo,rate)    "5" }   ; #--- Images/sec. : 5
+      if { ! [ info exists parametres(acqFC,$visuNo,x1) ] }      { set parametres(acqFC,$visuNo,x1)      "100" } ; #--- Video fenetree : x1
+      if { ! [ info exists parametres(acqFC,$visuNo,y1) ] }      { set parametres(acqFC,$visuNo,y1)      "100" } ; #--- Video fenetree : y1
+      if { ! [ info exists parametres(acqFC,$visuNo,x2) ] }      { set parametres(acqFC,$visuNo,x2)      "350" } ; #--- Video fenetree : x2
+      if { ! [ info exists parametres(acqFC,$visuNo,y2) ] }      { set parametres(acqFC,$visuNo,y2)      "250" } ; #--- Video fenetree : y2
    }
 #***** Fin de la procedure Chargement_Var **********************
 
@@ -432,7 +436,10 @@ namespace eval ::AcqFC {
       set parametres(acqFC,$visuNo,mode)    $panneau(AcqFC,$visuNo,mode)
       set parametres(acqFC,$visuNo,lg_film) $panneau(AcqFC,$visuNo,lg_film)
       set parametres(acqFC,$visuNo,rate)    $panneau(AcqFC,$visuNo,rate)
-
+      set parametres(acqFC,$visuNo,x1)      $panneau(AcqFC,$visuNo,x1)
+      set parametres(acqFC,$visuNo,y1)      $panneau(AcqFC,$visuNo,y1)
+      set parametres(acqFC,$visuNo,x2)      $panneau(AcqFC,$visuNo,x2)
+      set parametres(acqFC,$visuNo,y2)      $panneau(AcqFC,$visuNo,y2)
       #--- Sauvegarde des parametres
       catch {
         set nom_fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
@@ -1589,8 +1596,20 @@ namespace eval ::AcqFC {
                           break
                        }
                     }
+                    #--- Je demarre le mode video fenetree s'il est demande
+                    if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+                       set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocrop } msg ]
+                       if { $result == "1" } {
+                          #--- En cas d'erreur, j'affiche un message d'erreur
+                          #--- Et je passe a la suite sans attendre
+                         ### ::console::affiche_resultat "$caption(acqfc,start_capture_error) $msg \n"
+                       }
+                       #--- Je positionne la fenetre video
+                       cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(AcqFC,$visuNo,x1) \
+                          $panneau(AcqFC,$visuNo,y1) $panneau(AcqFC,$visuNo,x2) $panneau(AcqFC,$visuNo,y2)
+                    }
                     #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                    cam[ ::confVisu::getCamNo $visuNo ] setvideostatusvariable panneau(AcqFC,$visuNo,status)               
+                    cam[ ::confVisu::getCamNo $visuNo ] setvideostatusvariable panneau(AcqFC,$visuNo,status)
                     set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocapture "$nom_rep" "$panneau(AcqFC,$visuNo,lg_film)" "$panneau(AcqFC,$visuNo,rate)" "1" } msg ]
                     if { $result == "1" } {
                        #--- En cas d'erreur, j'affiche un message d'erreur
@@ -1605,6 +1624,10 @@ namespace eval ::AcqFC {
                     }
                     set heure $audace(tu,format,hmsint)
                     Message $visuNo consolog $caption(acqfc,enrim_video) $heure $nom
+                    #--- J'arrete le mode video fenetree s'il existe
+                    if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+                       catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop }
+                    }
                     #--- Deverouille les boutons du mode "video"
                     $panneau(AcqFC,$visuNo,This).mode.video.nom.entr configure -state normal
                     $panneau(AcqFC,$visuNo,This).mode.video.index.case configure -state normal
@@ -1642,8 +1665,20 @@ namespace eval ::AcqFC {
                        }
                        #--- J'autorise le bouton "STOP"
                        $panneau(AcqFC,$visuNo,This).go_stop.but configure -state normal
+                       #--- Je demarre le mode video fenetree s'il est demande
+                       if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+                          set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocrop } msg ]
+                          if { $result == "1" } {
+                             #--- En cas d'erreur, j'affiche un message d'erreur
+                             #--- Et je passe a la suite sans attendre
+                            ### ::console::affiche_resultat "$caption(acqfc,start_capture_error) $msg \n"
+                          }
+                          #--- Je positionne la fenetre video
+                          cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(AcqFC,$visuNo,x1) \
+                             $panneau(AcqFC,$visuNo,y1) $panneau(AcqFC,$visuNo,x2) $panneau(AcqFC,$visuNo,y2)
+                       }
                        #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                       cam[ ::confVisu::getCamNo $visuNo ] setvideostatusvariable panneau(AcqFC,$visuNo,status)               
+                       cam[ ::confVisu::getCamNo $visuNo ] setvideostatusvariable panneau(AcqFC,$visuNo,status)
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocapture "$nom_rep" "$panneau(AcqFC,$visuNo,lg_film)" "$panneau(AcqFC,$visuNo,rate)" "1" } msg ]
                        if { $result == "1" } {
                           ::console::affiche_resultat "$caption(acqfc,start_capture_error) $msg \n"
@@ -1674,6 +1709,10 @@ namespace eval ::AcqFC {
                     console::affiche_saut "\n"
                     Message $visuNo consolog $caption(acqfc,arrcont) $heure
                     Message $visuNo consolog $caption(acqfc,dersauve_video) $nom
+                    #--- J'arrete le mode video fenetree s'il existe
+                    if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+                       catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop }
+                    }
                     #--- Deverouille les boutons du mode "video"
                     $panneau(AcqFC,$visuNo,This).mode.video_1.nom.entr configure -state normal
                     $panneau(AcqFC,$visuNo,This).mode.video_1.index.entr configure -state normal
@@ -1786,8 +1825,6 @@ namespace eval ::AcqFC {
               }
               6  {
                  #--- Mode video
-                    #--- J'arrete la capture video
-                    catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
                     #--- Message suite a l'arret
                     set heure $audace(tu,format,hmsint)
                     if { $panneau(AcqFC,$visuNo,pose_en_cours) == "1" } {
@@ -1803,8 +1840,6 @@ namespace eval ::AcqFC {
               }
               7  {
                  #--- Mode video avec intervalle entre chaque video
-                    #--- J'arrete la capture video
-                    catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
                     #--- Message suite a l'arret
                     set heure $audace(tu,format,hmsint)
                     if { $panneau(AcqFC,$visuNo,pose_en_cours) == "1" } {
@@ -2032,7 +2067,7 @@ namespace eval ::AcqFC {
 
       #--- J'arrete l'aquisition fenetree si elle est active
       if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
-      #   ::AcqFC::stopVideoCrop
+        ::AcqFC::stopWindowedFenster $visuNo
         set panneau(AcqFC,$visuNo,fenetre) "0"
         ::AcqFC::optionWindowedFenster $visuNo
       }
@@ -2188,24 +2223,36 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,demande_arret) "1"
       #--- Force la numerisation pour l'indicateur d'avancement de la pose
       if { ( $panneau(AcqFC,$visuNo,mode) != "2" ) && ( $panneau(AcqFC,$visuNo,mode) != "4" ) && ( $panneau(AcqFC,$visuNo,mode) != "6" ) && \
-        ( $panneau(AcqFC,$visuNo,mode) != "7" ) } {
-        ::AcqFC::Avancement_pose $visuNo "1"
+         ( $panneau(AcqFC,$visuNo,mode) != "7" ) } {
+         ::AcqFC::Avancement_pose $visuNo "1"
       }
 
       #--- On annule la sonnerie
       catch { after cancel $audace(after,bell,id) }
       #--- Annulation de l'alarme de fin de pose
       catch { after cancel bell }
+
       #--- Arret de la pose
       if { ( $panneau(AcqFC,$visuNo,mode) == "1" )
-        || ( $panneau(AcqFC,$visuNo,mode) == "3" )
-        || ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
-        catch { cam[ ::confVisu::getCamNo $visuNo ] stop }
-        after 200
+         || ( $panneau(AcqFC,$visuNo,mode) == "3" )
+         || ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
+         #--- J'arrete la capture de l'image
+         catch { cam[ ::confVisu::getCamNo $visuNo ] stop }
+         after 200
       } elseif { $panneau(AcqFC,$visuNo,mode) == "6" } {
-        catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
+         #--- J'arrete la capture de la video
+         catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
+         #--- J'arrete le mode video fenetree s'il existe
+         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+            catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop }
+         }
       } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
-        catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
+         #--- J'arrete la capture de la video
+         catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
+         #--- J'arrete le mode video fenetree s'il existe
+         if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
+            catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop }
+         }
       }
    }
 #***** Fin de la procedure d'arret de l'acquisition ************
@@ -2653,8 +2700,9 @@ namespace eval ::AcqFC {
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.case -anchor w -expand 0 -side top
         pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check -anchor w -expand 0 -fill x -side top
 
-        label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.msg -text "$caption(acqfc,acq_fen_msg)"
-        # pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.msg -anchor w -expand 0 -side top -ipadx 15 -ipady 0
+        button $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.msg -borderwidth 1 \
+           -text $caption(acqfc,acq_fen_msg) -command "::AcqFC::selectWindowedFenster $visuNo"
+        # pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.msg -anchor w -expand 0 -fill x -side top
         frame $panneau(AcqFC,$visuNo,base).status_video.fenetrer.left1 -borderwidth 0 -relief ridge
            label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.left1.largeur -text "$caption(acqfc,largeur_hauteur)"
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.left1.largeur -anchor w -expand 0 \
@@ -2673,7 +2721,7 @@ namespace eval ::AcqFC {
            label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right.y1 -textvariable panneau(AcqFC,$visuNo,x1)
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right.y1 -anchor center -expand 0 -fill x \
               -side top -ipadx 10 -ipady 0
-           label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right.y2 -textvariable panneau(AcqFC,$visuNo,x1)
+           label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right.y2 -textvariable panneau(AcqFC,$visuNo,x2)
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right.y2 -anchor center -expand 0 -fill x \
               -side top -ipadx 10 -ipady 0
         # pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right -anchor w -expand 0 -fill x -side left
@@ -2681,10 +2729,10 @@ namespace eval ::AcqFC {
            label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.hauteur -textvariable panneau(AcqFC,$visuNo,hauteur)
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.hauteur -anchor center -expand 0 -fill x \
               -side top -ipadx 10 -ipady 0
-           label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.y1 -textvariable panneau(AcqFC,$visuNo,x2)
+           label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.y1 -textvariable panneau(AcqFC,$visuNo,y1)
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.y1 -anchor center -expand 0 -fill x \
               -side top -ipadx 10 -ipady 0
-           label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.y2 -textvariable panneau(AcqFC,$visuNo,x2)
+           label $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.y2 -textvariable panneau(AcqFC,$visuNo,y2)
            pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1.y2 -anchor center -expand 0 -fill x \
               -side top -ipadx 10 -ipady 0
         # pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1 -anchor w -expand 0 -fill x -side left
@@ -2711,7 +2759,7 @@ namespace eval ::AcqFC {
         pack forget $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1
       } else {
         #--- Avec le fenetrage
-        pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.msg -anchor w -expand 0 -side top -ipadx 15 -ipady 0
+        pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.check.msg -anchor w -expand 0 -fill x -side top
         pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.left1 -anchor w -expand 0 -fill x -side left
         pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right -anchor w -expand 0 -fill x -side left
         pack $panneau(AcqFC,$visuNo,base).status_video.fenetrer.right1 -anchor w -expand 0 -fill x -side left
@@ -2752,6 +2800,7 @@ namespace eval ::AcqFC {
                ::AcqFC::optionWindowedFenster $visuNo
             }
          } else {
+            #--- Je demarre le mode video fenetree
             cam[ ::confVisu::getCamNo $visuNo ] startvideocrop
          }
       } else {
@@ -2762,8 +2811,13 @@ namespace eval ::AcqFC {
 
 #***** Procedure d'arret du fenetrage video **************************************************
    proc stopWindowedFenster { visuNo } {
-      global panneau
+      global caption panneau
 
+      #---
+      if { [ winfo exists $panneau(AcqFC,$visuNo,base).selectWindowedFenster ] } {
+         ::AcqFC::closeWindowedFenster $visuNo
+      }
+      #---
       if { [ ::confVisu::getCamera $visuNo ] == "" } {
          #--- Je decoche la checkbox
          set panneau(AcqFC,$visuNo,showvideopreview) "0"
@@ -2781,10 +2835,249 @@ namespace eval ::AcqFC {
             ::AcqFC::optionWindowedFenster $visuNo
          }
       } else {
-         cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop
+         #--- J'arrete le mode video fenetree
+         catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop }
       }
    }
 #***** Fin de la procedure d'arret du fenetrage video ****************************************
+
+#***** Procedure de selection du fenetrage video *********************************************
+   proc selectWindowedFenster { visuNo } {
+      global audace caption conf panneau
+
+      #--- Une camera est connectee
+      if { [ ::confVisu::getCamera $visuNo ] == "" } {
+         return
+      } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+         return
+      }
+
+      #---
+      if { [ winfo exists $panneau(AcqFC,$visuNo,base).selectWindowedFenster ] } {
+         wm withdraw $panneau(AcqFC,$visuNo,base).selectWindowedFenster
+         wm deiconify $panneau(AcqFC,$visuNo,base).selectWindowedFenster
+         focus $panneau(AcqFC,$visuNo,base).selectWindowedFenster
+         return
+      }
+
+      #--- Cree la fenetre $panneau(AcqFC,$visuNo,base).selectWindowedFenster de niveau le plus haut
+      toplevel $panneau(AcqFC,$visuNo,base).selectWindowedFenster -class Toplevel
+      wm geometry $panneau(AcqFC,$visuNo,base).selectWindowedFenster $conf(acqfc,video,position)
+      wm resizable $panneau(AcqFC,$visuNo,base).selectWindowedFenster 0 0
+      wm title $panneau(AcqFC,$visuNo,base).selectWindowedFenster $caption(acqfc,acq_fen_msg)
+
+      #--- Creation des differents frames
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame1 -borderwidth 1 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -borderwidth 1 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -side top -fill x 
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame4 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame4 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame5 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame5 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame4 -side left -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame6 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame6 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame4 -side left -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame7 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame7 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame5 -side top -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame8 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame8 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame5 -side top -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame9 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame9 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame6 -side top -fill both -expand 1
+
+      frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame10 -borderwidth 0 -relief raised
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame10 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame6 -side top -fill both -expand 1
+
+      #--- Creation d'un canvas pour affichage de la fenetre dans la video
+      canvas $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3.image1_color_invariant \
+         -width 340 -height 260 -highlightthickness 0
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3.image1_color_invariant
+      set zone(image1) $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3.image1_color_invariant
+
+      #--- Representation de la video
+      $zone(image1) create line 10 10 10 250 -fill $audace(color,textColor) -tags cadres -width 2.0
+      $zone(image1) create line 10 250 330 250 -fill $audace(color,textColor) -tags cadres -width 2.0
+      $zone(image1) create line 330 250 330 10 -fill $audace(color,textColor) -tags cadres -width 2.0
+      $zone(image1) create line 330 10 10 10 -fill $audace(color,textColor) -tags cadres -width 2.0
+
+      #--- Representation de la fenetre
+      $zone(image1) create line 50 80 50 200 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
+      $zone(image1) create line 50 200 250 200 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
+      $zone(image1) create line 250 200 250 80 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
+      $zone(image1) create line 250 80 50 80 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
+
+      #--- Largeur et hauteur de l'image
+      set largeur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 0 ]
+      set hauteur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 1 ]
+
+      #--- Largeur et hauteur de la video
+      $zone(image1) create text 170 20 -text "$largeur" \
+         -justify center -fill $audace(color,textColor) -tags cadres -font $audace(font,arial_8_b)
+      $zone(image1) create text 25 130 -text "$hauteur" \
+         -justify center -fill $audace(color,textColor) -tags cadres -font $audace(font,arial_8_b)
+
+      #--- Abcisses et ordonnees des 4 coins de la fenetre
+      $zone(image1) create text 30 200 -text "(x1,y1)" \
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+      $zone(image1) create text 30 80 -text "(x1,y2)" \
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+      $zone(image1) create text 270 80 -text "(x2,y2)" \
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+      $zone(image1) create text 270 200 -text "(x2,y1)" \
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+
+      #--- Cree la zone a renseigner pour x1
+      label $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab1 -text "$caption(acqfc,x1)"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab1 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame7 -anchor w -side left -padx 30 -pady 3
+
+      entry $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent1 -textvariable panneau(AcqFC,$visuNo,x1) \
+         -width 6 -justify center
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent1 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame7 -anchor w -side left -padx 0 -pady 3
+
+      #--- Cree la zone a renseigner pour y1
+      label $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab2 -text "$caption(acqfc,y1)"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab2 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame8 -anchor w -side left -padx 30 -pady 3
+
+      entry $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent2 -textvariable panneau(AcqFC,$visuNo,y1) \
+         -width 6 -justify center
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent2 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame8 -anchor w -side left -padx 0 -pady 3
+
+      #--- Cree la zone a renseigner pour x2
+      label $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab3 -text "$caption(acqfc,x2)"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab3 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame9 -anchor w -side left -padx 10 -pady 3
+
+      entry $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent3 -textvariable panneau(AcqFC,$visuNo,x2) \
+         -width 6 -justify center
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent3 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame9 -anchor w -side left -padx 20 -pady 3
+
+      #--- Cree la zone a renseigner pour y2
+      label $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab4 -text "$caption(acqfc,y2)"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.lab4 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame10 -anchor w -side left -padx 10 -pady 3
+
+      entry $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent4 -textvariable panneau(AcqFC,$visuNo,y2) \
+         -width 6 -justify center
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.ent4 \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame10 -anchor w -side left -padx 20 -pady 3
+
+      #--- Cree le bouton 'OK'
+      button $panneau(AcqFC,$visuNo,base).selectWindowedFenster.but_ok -text "$caption(acqfc,ok)" -width 7 \
+         -borderwidth 2 -command "::AcqFC::setvideocroprectWindowedFenster $visuNo ; ::AcqFC::closeWindowedFenster $visuNo"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.but_ok \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Appliquer'
+      button $panneau(AcqFC,$visuNo,base).selectWindowedFenster.but_appliquer -text "$caption(acqfc,appliquer)" -width 7 \
+         -borderwidth 2 -command "::AcqFC::setvideocroprectWindowedFenster $visuNo"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.but_appliquer \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Fermer'
+      button $panneau(AcqFC,$visuNo,base).selectWindowedFenster.but_fermer -text "$caption(acqfc,fermer)" -width 7 \
+         -borderwidth 2 -command "::AcqFC::closeWindowedFenster $visuNo"
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.but_fermer \
+         -in $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- La fenetre est active
+      focus $panneau(AcqFC,$visuNo,base).selectWindowedFenster
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $panneau(AcqFC,$visuNo,base).selectWindowedFenster <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $panneau(AcqFC,$visuNo,base).selectWindowedFenster
+   }
+#***** Fin de la procedure de selection du fenetrage video ***********************************
+
+#***** Procedure d'acquisition du fenetrage video ********************************************
+   proc setvideocroprectWindowedFenster { visuNo } {
+      global panneau
+
+      #--- Largeur et hauteur de l'image
+      set largeur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 0 ]
+      set hauteur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 1 ]
+
+      #--- Controle la coordonnee x1
+      if { [ TestReel $panneau(AcqFC,$visuNo,x1) ] == "0" } {
+         set panneau(AcqFC,$visuNo,x1) "?"
+         return
+      }
+      if { ( $panneau(AcqFC,$visuNo,x1) > $largeur ) || ( $panneau(AcqFC,$visuNo,x1) ) < "1" } {
+         set panneau(AcqFC,$visuNo,x1) "?"
+         return
+      }
+
+      #--- Controle la coordonnee y1
+      if { [ TestReel $panneau(AcqFC,$visuNo,y1) ] == "0" } {
+         set panneau(AcqFC,$visuNo,y1) "?"
+         return
+      }
+      if { ( $panneau(AcqFC,$visuNo,y1) > $hauteur ) || ( $panneau(AcqFC,$visuNo,y1) ) < "1" } {
+         set panneau(AcqFC,$visuNo,y1) "?"
+         return
+      }
+
+      #--- Controle la coordonnee x2
+      if { [ TestReel $panneau(AcqFC,$visuNo,x2) ] == "0" } {
+         set panneau(AcqFC,$visuNo,x2) "?"
+         return
+      }
+      if { ( $panneau(AcqFC,$visuNo,x2) > $largeur ) || ( $panneau(AcqFC,$visuNo,x2) < "1" ) } {
+         set panneau(AcqFC,$visuNo,x2) "?"
+         return
+      }
+
+      #--- Controle la coordonnee y2
+      if { [ TestReel $panneau(AcqFC,$visuNo,y2) ] == "0" } {
+         set panneau(AcqFC,$visuNo,y2) "?"
+         return
+      }
+      if { ( $panneau(AcqFC,$visuNo,y2) > $hauteur ) || ( $panneau(AcqFC,$visuNo,y2) < "1" ) } {
+         set panneau(AcqFC,$visuNo,y2) "?"
+         return
+      }
+
+      #--- Largeur et hauteur de la fenetre vidieo
+      set panneau(AcqFC,$visuNo,largeur) [ expr $panneau(AcqFC,$visuNo,y2) - $panneau(AcqFC,$visuNo,y1) ]
+      set panneau(AcqFC,$visuNo,hauteur) [ expr $panneau(AcqFC,$visuNo,x2) - $panneau(AcqFC,$visuNo,x1) ]
+
+      #--- Je positionne la fenetre video
+      cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(AcqFC,$visuNo,x1) $panneau(AcqFC,$visuNo,y1) \
+         $panneau(AcqFC,$visuNo,x2) $panneau(AcqFC,$visuNo,y2)
+   }
+#***** Fin de la procedure d'acquisition du fenetrage video **********************************
+
+#***** Procedure de fermeture de la fenetre du fenetrage video *******************************
+   proc closeWindowedFenster { visuNo } {
+      global panneau
+
+      #--- Fermeture de la fenetre
+      destroy $panneau(AcqFC,$visuNo,base).selectWindowedFenster
+   }
+#***** Fin de la procedure de fermeture de la fenetre du fenetrage video *********************
 
 #***** Enregistrement de la position des fenetres Continu (1), Continu (2), Video et Video (1) ********
    proc recup_position { visuNo } {
