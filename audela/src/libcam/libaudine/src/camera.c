@@ -1023,7 +1023,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsign
 	audine_read_pel_fast_inv(cam);
     }
 
-    for (j = 0; j < imax; j++) {
+    for (j = 0; j <= imax; j++) {
 	libcam_out(port0, cam->bytes[247]);	/* reset 11110111 */
 
 	libcam_out(port0, cam->bytes[255]);	/* délai critique 11111111 */
@@ -1125,11 +1125,11 @@ int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsign
     /* le transfert qu'une fois par ligne, pour eviter les   */
     /* cochonneries (utile pour linux, inutile pour windows). */
 #if defined(READOPTIC)
-    for (j = 1; j < imax; j++) {
-	*(p0++) = buffer[imax - 1 - j];
+    for (j = 1; j <= imax; j++) {
+	*(p0++) = buffer[imax + 1 - j];
     }
 #else
-    for (j = 1; j < imax; j++) {
+    for (j = 1; j <= imax; j++) {
 	*(p0++) = buffer[j];
     }
 #endif
