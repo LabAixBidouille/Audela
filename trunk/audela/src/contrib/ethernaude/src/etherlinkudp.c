@@ -108,7 +108,7 @@ void Set_IP(int IP1, int IP2, int IP3, int IP4)
     EtherLinkUDP.Socket_Address.sin_addr.s_addr = inet_addr(IP);
 }
 
-int Reset(unsigned char *Buffer)
+int EthernaudeReset(unsigned char *Buffer)
 {				/*send a reset, need a buffer of 2 bytes */
     int ret;
     Received = false;

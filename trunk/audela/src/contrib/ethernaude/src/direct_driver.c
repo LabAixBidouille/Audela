@@ -133,7 +133,7 @@ int direct_ethernaude_0x00(void *args)
 	*(unsigned char *) argu[k] = (unsigned char) 0;
     }
     /* --- Ask Ethernaude to Reset --- */
-    if (Reset(message)) {
+    if (EthernaudeReset(message)) {
 	/* --- Receive Reset informations --- */
 	while (Info_Received() == 0);
     } else {

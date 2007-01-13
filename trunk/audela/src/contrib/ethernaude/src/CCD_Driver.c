@@ -714,10 +714,10 @@ int ethernaude_0x00(ethernaude_var * ethvar, TParamCCD * ParamCCDOut)
     unsigned char message[65536];
     paramCCD_clearall(ParamCCDOut, 0);
     /* --- Ask Ethernaude to Reset --- */
-    if (Reset(message)) {
+    if (EthernaudeReset(message)) {
 	while (Info_Received() == 0);
     }
-    if (Reset(message)) {
+    if (EthernaudeReset(message)) {
 	/* --- Receive Reset informations --- */
 	while (Info_Received() == 0);
     } else {
