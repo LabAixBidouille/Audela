@@ -40,7 +40,8 @@
 #include "os.h"
 #include "UDPSocketComponent.h"
 
-/* #define ETHERLINK_DEBUG */
+//#define ETHERLINK_DEBUG
+//#define UDPSOCKET_DEBUG
 
 /* #include <iostream> */
 
@@ -78,7 +79,7 @@ void SendData_TEtherLinkUDP(int NbByteToSend, int port);
 
 void Set_IP(int IP1, int IP2, int IP3, int IP4);
 
-int Reset(unsigned char *Buffer);	/*send a reset, need a buffer of 2 bytes */
+int EthernaudeReset(unsigned char *Buffer);	/*send a reset, need a buffer of 2 bytes */
 
 int Identity(unsigned char *Buffer);	/*ask for identity of CCD, need a buffer of 28 bytes */
 
