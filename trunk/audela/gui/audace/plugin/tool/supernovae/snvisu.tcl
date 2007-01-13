@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.8 2007-01-13 08:05:24 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.9 2007-01-13 08:39:56 alainklotz Exp $
 #
 
 global audace
@@ -1031,10 +1031,10 @@ proc affimages { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       }
       #---
-      #
-      set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
-      visu$num(visu_2) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
-      #
+      catch {
+         set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
+         visu$num(visu_2) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+      }
       if {$result==""} {
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
