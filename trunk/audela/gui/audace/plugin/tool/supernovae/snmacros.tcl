@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.3 2006-06-20 21:27:11 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.4 2007-01-13 08:05:24 alainklotz Exp $
 #
 
 proc globgalsn { args } {
@@ -677,6 +677,9 @@ proc snconfvisu_verif { } {
    if { [ info exists snconfvisu(priorite_dvd) ] == "0" } {
       set snconfvisu(priorite_dvd) "0"
    }
+   if { [ info exists snconfvisu(zoom_normal) ] == "0" } {
+      set snconfvisu(zoom_normal) "1"
+   }
 }
 # ==========================================================================================
 
@@ -707,6 +710,8 @@ proc snconfvisu_load { } {
    set snconfvisu(rep_dss_dvd)       "$conf(snconfvisu,rep_dss_dvd)"
    #--- Reference images (DSS) - DVD priority
    set snconfvisu(priorite_dvd)      "$conf(snconfvisu,priorite_dvd)"
+   #--- Zoom
+   set snconfvisu(zoom_normal)       "$conf(snconfvisu,zoom_normal)"
 }
 # ==========================================================================================
 
@@ -745,6 +750,8 @@ proc snvisuconfiguration_save { } {
    set conf(snconfvisu,rep_dss_dvd)  "$snconfvisu(rep_dss_dvd)"
    #--- Reference images (DSS) - DVD priority
    set conf(snconfvisu,priorite_dvd) "$snconfvisu(priorite_dvd)"
+   #--- Zoom
+   set conf(snconfvisu,zoom_normal)  "$snconfvisu(zoom_normal)"
 }
 # ==========================================================================================
 
