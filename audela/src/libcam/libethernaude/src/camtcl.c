@@ -379,7 +379,7 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    TheScanStruct->bin = b;
    TheScanStruct->biny = by;
    TheScanStruct->dt = (float)dt;
-   TheScanStruct->idt = (int)(dt*0.9); // Il faut depiler les data plus vite que la camera ne les fournit pour eviter l'engorgement du buffer de CCD_Driver.
+   TheScanStruct->idt = 10; // Il faut depiler les data plus vite que la camera ne les fournit pour eviter l'engorgement du buffer de CCD_Driver.
    TheScanStruct->y = 0;
    TheScanStruct->stop = 0;
 
@@ -393,8 +393,10 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
 
    /* mesure de la difference entre le temps systeme et le temps TU */
    libcam_GetCurrentFITSDate(interp, ligne);
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> ligne=%s",__LINE__,ligne); util_log(ligne,0);
    strcpy(ligne2, ligne);
    libcam_GetCurrentFITSDate_function(interp, ligne2, "::audace::date_sys2ut");
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> ligne2=%s",__LINE__,ligne2); util_log(ligne,0);
    sprintf(text, "expr [[mc_date2jd %s]-[mc_date2jd %s]]", ligne2, ligne);
    if (Tcl_Eval(interp, text) == TCL_OK) {
       TheScanStruct->tumoinstl = atof(interp->result);
@@ -410,7 +412,9 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> Create timer handler with dt=%d, starting at %ld",__LINE__,TheScanStruct->idt,libcam_getms()); util_log(ligne,0);
    TheScanStruct->TimerToken = Tcl_CreateTimerHandler(TheScanStruct->idt, EthernaudeScanCallback, (ClientData) cam);
    libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> dateobs=%s",__LINE__,TheScanStruct->dateobs); util_log(ligne,0);
    libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> dateobs=%s",__LINE__,TheScanStruct->dateobs); util_log(ligne,0);
    
    Tcl_ResetResult(interp);
    return TCL_OK;
@@ -468,8 +472,9 @@ void EthernaudeScanCallback(ClientData clientData)
          // La derniere ligne du scan est atteinte.
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Last line read; transfer image to AudeLA buffer (at %ld)",__LINE__,libcam_getms()); util_log(ligne,0);
          libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
-         sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Date conversion",__LINE__); util_log(ligne,0);
+sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> dateend=%s",__LINE__,TheScanStruct->dateend); util_log(ligne,0);
          libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
+sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> dateend=%s",__LINE__,TheScanStruct->dateend); util_log(ligne,0);
          cam = (struct camprop *)clientData;
          sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanCallback:%d> Call EthernaudeScanTerminateSequence",__LINE__); util_log(ligne,0);
          EthernaudeScanTerminateSequence(clientData, cam->camno, "Normal end: last line reached.");
@@ -530,6 +535,8 @@ void EthernaudeScanTransfer(ClientData clientData)
     int status;
     char dateobs_tu[50], dateend_tu[50];
     int nbpix;
+    int k;
+    char result[256];
 
     sprintf(ligne,"<LIBETHERNAUDE/EthernaudeScanTransfer:%d> Enter EthernaudeScanTransfer",__LINE__); util_log(ligne,0);
 
@@ -560,9 +567,11 @@ void EthernaudeScanTransfer(ClientData clientData)
     sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
     Tcl_Eval(interp, s);
     strcpy(dateobs_tu, interp->result);
+sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> dateobs_tu=%s",__LINE__,dateobs_tu); util_log(ligne,0);
     sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateend, TheScanStruct->tumoinstl);
     Tcl_Eval(interp, s);
     strcpy(dateend_tu, interp->result);
+sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> dateend_tu=%s",__LINE__,dateobs_tu); util_log(ligne,0);
 
     /* Transfert de la memoire temporaire vers le buffer image AudeLA */
     nbpix = naxis1 * naxis2;
@@ -577,6 +586,8 @@ void EthernaudeScanTransfer(ClientData clientData)
     free(pp);
 
     /* Ajout des mots cles pour l'entete FITS */
+    sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+    Tcl_Eval(interp, s);
     sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
     Tcl_Eval(interp, s);
     sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
@@ -615,6 +626,44 @@ void EthernaudeScanTransfer(ClientData clientData)
 	sprintf(s, "buf%d setkwd {DEC_BEG %f float \"Declination telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->dec);
 	Tcl_Eval(interp, s);
     }
+    /* Datation GPS du debut de la pose */
+    paramCCD_clearall(&ParamCCDIn, 1);
+    paramCCD_put(-1, "Get_JulianDate_beginLastExp", &ParamCCDIn, 1);
+    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+    util_log("", 1);
+    for (k = 0; k < ParamCCDIn.NbreParam; k++) {
+        paramCCD_get(k, result, &ParamCCDIn);
+        util_log(result, 0);
+    }
+    AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+    util_log("", 2);
+    for (k = 0; k < ParamCCDOut.NbreParam; k++) {
+        paramCCD_get(k, result, &ParamCCDOut);
+        util_log(result, 0);
+    }
+    util_log("\n", 0);
+    paramCCD_get(1, result, &ParamCCDOut);
+    sprintf(s, "buf%d setkwd {GPS_BEG %f float \"Precise date of exposure's beginning\" \"\"}", cam->bufno, atof(result));
+    Tcl_Eval(interp, s);
+    /* Datation GPS de la fin de la pose */
+    paramCCD_clearall(&ParamCCDIn, 1);
+    paramCCD_put(-1, "Get_JulianDate_endLastExp", &ParamCCDIn, 1);
+    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+    util_log("", 1);
+    for (k = 0; k < ParamCCDIn.NbreParam; k++) {
+        paramCCD_get(k, result, &ParamCCDIn);
+        util_log(result, 0);
+    }
+    AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
+    util_log("", 2);
+    for (k = 0; k < ParamCCDOut.NbreParam; k++) {
+        paramCCD_get(k, result, &ParamCCDOut);
+        util_log(result, 0);
+    }
+    util_log("\n", 0);
+    paramCCD_get(1, result, &ParamCCDOut);
+    sprintf(s, "buf%d setkwd {GPS_END %f float \"Precise date of exposure's completion\" \"\"}", cam->bufno, atof(result));
+    Tcl_Eval(interp, s);
 
     sprintf(s, "status_cam%d", cam->camno);
     Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
