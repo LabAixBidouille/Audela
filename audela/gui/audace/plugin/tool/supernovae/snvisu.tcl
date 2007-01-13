@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.7 2006-09-01 22:41:47 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.8 2007-01-13 08:05:24 alainklotz Exp $
 #
 
 global audace
@@ -59,6 +59,7 @@ set snvisu(exit_blink)     "1"
 set snvisu(ima_rep2_exist) "0"
 set snvisu(ima_rep3_exist) "0"
 set snconfvisu(num_rep2_3) "0"
+#set snconfvisu(zoom_normal) "1"
 set extname "[buf$audace(bufNo) extension]"
 set aa "$rep(1)/*$extname"
 set rep(x1) [globgalsn $aa]
@@ -70,7 +71,7 @@ set rep(x1) [concat $rep(x1) $rep00]
 set rep(xx1) -1
 set aa "$rep(2)/*$extname"
 set rep(x2) [globgalsn $aa]
-set rep(xx2) -1  
+set rep(xx2) -1
 
 set gnaxis1 384
 set gnaxis2 260
@@ -316,14 +317,14 @@ radiobutton $audace(base).snvisu.frame5.but_rad0 -anchor nw -highlightthickness 
    -variable snconfvisu(num_rep2_3) -command { affimages }
 pack $audace(base).snvisu.frame5.but_rad0 \
    -in $audace(base).snvisu.frame5 -side left -anchor center \
-   -padx 3 -pady 3  
+   -padx 3 -pady 3
 #--- Bouton radio 2 "Dossier de reference DSS"
 radiobutton $audace(base).snvisu.frame5.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
    -bg $audace(color,backColor) -activebackground $audace(color,activeBackColor) -text $caption(snvisu,dss) -value 1 \
    -variable snconfvisu(num_rep2_3) -command { affimages }
 pack $audace(base).snvisu.frame5.but_rad1 \
    -in $audace(base).snvisu.frame5 -side right -anchor center \
-   -padx 3 -pady 3  
+   -padx 3 -pady 3
 
 #--- Create the button 'Reference Folder'
 #--- Cree le bouton 'Dossier reference'
@@ -501,7 +502,7 @@ if { [ string tolower "$snconfvisu(cuts_change)" ] == "motion" } {
 #--- Affiche le zoom de la zone pointee dans l'image de gauche
 bind $zone(image1) <ButtonPress-1> {
    if { [ buf$num(buffer1) imageready ] == "1" } {
-      if { [ lindex [ buf$num(buffer1) getkwd NAXIS1 ] 1 ] != "0" } {  
+      if { [ lindex [ buf$num(buffer1) getkwd NAXIS1 ] 1 ] != "0" } {
          #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
          set xy [ sn_screen2Canvas_g [ list %x %y ] ]
          #--- Transforme les coordonnees canvas (x,y) en coordonnees image (xi,yi)
@@ -516,7 +517,7 @@ bind $zone(image1) <ButtonPress-1> {
 #--- Affiche le zoom de la zone pointee dans l'image de droite
 bind $zone(image2) <ButtonPress-1> {
    if { [ buf$num(buffer2) imageready ] == "1" } {
-      if { [ lindex [ buf$num(buffer2) getkwd NAXIS1 ] 1 ] != "0" } {  
+      if { [ lindex [ buf$num(buffer2) getkwd NAXIS1 ] 1 ] != "0" } {
          #--- Transforme les coordonnees de la souris (%x,%y) en coordonnees canvas (x,y)
          set xy [ sn_screen2Canvas_d [ list %x %y ] ]
          #--- Transforme les coordonnees canvas (x,y) en coordonnees image (xi,yi)
@@ -541,6 +542,9 @@ if {[info exists audace]==1} {
 
 set num(visu_1) [visu::create $num(buffer1) 100 ]
 set num(visu_2) [visu::create $num(buffer2) 200 ]
+
+visu$num(visu_1) zoom $snconfvisu(zoom_normal)
+visu$num(visu_2) zoom $snconfvisu(zoom_normal)
 
 #--- Create a widget image in a canvas to display that of the visu space
 $zone(image1) create image 0 0 -image image100 -anchor nw -tag display
@@ -730,7 +734,7 @@ proc subsky { } {
          set result [buf$num(buffer2) load $filename]
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
-      } elseif { ( $snvisu(ima_rep3_exist) == "1" ) && ( $snconfvisu(num_rep2_3) == "1" ) } { 
+      } elseif { ( $snvisu(ima_rep3_exist) == "1" ) && ( $snconfvisu(num_rep2_3) == "1" ) } {
          set filename $rep(nom2)
          set name [file tail $filename]
          set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
@@ -835,6 +839,7 @@ proc affimages { } {
    global num
    global snvisu
    global snconfvisu
+   global conf
 
    #--- Initialisation
    set snvisu(ima_rep2_exist) "0"
@@ -875,6 +880,10 @@ proc affimages { } {
       if {$a==1} {
          return
       }
+      #
+      set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
+      visu$num(visu_1) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+      #
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
@@ -897,7 +906,7 @@ proc affimages { } {
          set posimoins [string last . $name]
       }
       set shortname [string range $name 0 [expr ${posimoins}-1]]
-      #--- j'affiche le premier radio bouton en GROOVE si l'image existe dans rep(2) 
+      #--- j'affiche le premier radio bouton en GROOVE si l'image existe dans rep(2)
       set filename2 $rep(2)
       append filename2 /${shortname}[file extension $name]
       if { [ string last ".gz" "$filename2" ] == -1 } {
@@ -963,7 +972,7 @@ proc affimages { } {
       } elseif { $snconfvisu(num_rep2_3) == "1" } {
          set filename $filename3
       }
-      set rep(gz2) no 
+      set rep(gz2) no
       if { [ string last ".gz" "$filename" ] == -1 } {
          if {[file exists $filename]==0} {
             if {[file exists $filename.gz]==1} {
@@ -973,12 +982,12 @@ proc affimages { } {
          }
       } else {
          if { [ file exists $filename] == 0 } {
-            if { [ file exists [ file rootname $filename ] ] == 1 } { 
+            if { [ file exists [ file rootname $filename ] ] == 1 } {
                set filename [ file rootname $filename ]
                set rep(gz2) no
             }
          } else {
-            set rep(gz2) yes  
+            set rep(gz2) yes
          }
       }
       if { ( ( $snconfvisu(num_rep2_3) == "0" ) && ( $snvisu(ima_rep2_exist) == "1" ) ) || \
@@ -1022,6 +1031,10 @@ proc affimages { } {
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
       }
       #---
+      #
+      set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
+      visu$num(visu_2) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+      #
       if {$result==""} {
          visu$num(visu_2) disp
          $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
@@ -1125,7 +1138,7 @@ proc gotoimage { } {
    #--- La touche Return est equivalente au bouton "but_go"
    bind $audace(base).snvisu_1 <Key-Return>  { $audace(base).snvisu_1.but_go invoke }
 
-   $audace(base).snvisu_1.frame1.command_line selection range 0 end 
+   $audace(base).snvisu_1.frame1.command_line selection range 0 end
 
    #--- La fenetre est active
    focus $audace(base).snvisu_1
@@ -1180,7 +1193,7 @@ proc snvisu_configuration { } {
          }
       pack $audace(base).snvisu_3.frame1.but_rad0 \
          -in $audace(base).snvisu_3.frame1 -side left -anchor center \
-         -padx 5 -pady 5  
+         -padx 5 -pady 5
       #--- Bouton radio 2 - Option "release"
       radiobutton $audace(base).snvisu_3.frame1.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,release) -value "release" -variable snconfvisu(cuts_change) \
@@ -1192,8 +1205,8 @@ proc snvisu_configuration { } {
          }
       pack $audace(base).snvisu_3.frame1.but_rad1 \
          -in $audace(base).snvisu_3.frame1 -side left -anchor center \
-         -padx 5 -pady 5  
-   pack $audace(base).snvisu_3.frame1 -side top -fill both -expand 1  
+         -padx 5 -pady 5
+   pack $audace(base).snvisu_3.frame1 -side top -fill both -expand 1
 
    #--- Create the label and the command lines
    #--- Cree l'etiquette et les lignes de commande
@@ -1226,7 +1239,26 @@ proc snvisu_configuration { } {
       pack $audace(base).snvisu_3.frame2.command_line_1 \
          -fill x -side left \
          -padx 5 -pady 5
-   pack $audace(base).snvisu_3.frame2 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame2 -side top -fill both -expand 1
+
+   #--- Create the label and the command lines
+   #--- Cree l'etiquette et les lignes de commande
+   frame $audace(base).snvisu_3.frame2b -borderwidth 0 -relief raised
+      #--- Label
+      label $audace(base).snvisu_3.frame2b.label \
+         -font $audace(font,arial_8_b) -text $caption(snvisu,zoom_normal) \
+         -borderwidth 0 -relief flat
+      pack $audace(base).snvisu_3.frame2b.label \
+         -fill x -side left \
+         -padx 5 -pady 5
+      #--- Entry
+      entry $audace(base).snvisu_3.frame2b.command_line \
+         -font $audace(font,arial_8_b) -textvariable snconfvisu(zoom_normal) \
+         -borderwidth 1 -relief groove -takefocus 1 -width 8 -justify center
+      pack $audace(base).snvisu_3.frame2b.command_line \
+         -fill x -side left \
+         -padx 5 -pady 5
+   pack $audace(base).snvisu_3.frame2b -side top -fill both -expand 1
 
    #--- Create the label and the radiobutton
    #--- Cree l'etiquette et les radiobuttons
@@ -1244,15 +1276,15 @@ proc snvisu_configuration { } {
          -font $audace(font,arial_8_b) -command { }
       pack $audace(base).snvisu_3.frame3.but_rad0 \
          -in $audace(base).snvisu_3.frame3 -side left -anchor center \
-         -padx 5 -pady 5  
+         -padx 5 -pady 5
       #--- Bouton radio 2 - Option sans scrollbar
       radiobutton $audace(base).snvisu_3.frame3.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,scroollbar_off) -value "off" -variable snconfvisu(scrollbars) \
          -font $audace(font,arial_8_b) -command { }
       pack $audace(base).snvisu_3.frame3.but_rad1 \
          -in $audace(base).snvisu_3.frame3 -side left -anchor center \
-         -padx 5 -pady 5  
-   pack $audace(base).snvisu_3.frame3 -side top -fill both -expand 1  
+         -padx 5 -pady 5
+   pack $audace(base).snvisu_3.frame3 -side top -fill both -expand 1
 
    #--- Create the label and the radiobutton
    #--- Cree l'etiquette et les radiobuttons
@@ -1270,15 +1302,15 @@ proc snvisu_configuration { } {
          -font $audace(font,arial_8_b) -command { set rep(gz) "$snconfvisu(gzip)" }
       pack $audace(base).snvisu_3.frame4.but_rad0 \
          -in $audace(base).snvisu_3.frame4 -side left -anchor center \
-         -padx 5 -pady 5  
+         -padx 5 -pady 5
       #--- Bouton radio 2 - Option enregistrement image compressee
       radiobutton $audace(base).snvisu_3.frame4.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "[ buf$audace(bufNo) extension ].gz" -value "yes" -variable snconfvisu(gzip) \
          -font $audace(font,arial_8_b) -command { set rep(gz) "$snconfvisu(gzip)" }
       pack $audace(base).snvisu_3.frame4.but_rad1 \
          -in $audace(base).snvisu_3.frame4 -side left -anchor center \
-         -padx 5 -pady 5  
-   pack $audace(base).snvisu_3.frame4 -side top -fill both -expand 1  
+         -padx 5 -pady 5
+   pack $audace(base).snvisu_3.frame4 -side top -fill both -expand 1
 
    #--- Create the checkbutton, the button et the command line
    #--- Cree le checkbutton, le bouton et la ligne de commande
@@ -1311,7 +1343,7 @@ proc snvisu_configuration { } {
       pack $audace(base).snvisu_3.frame5.ent \
          -in $audace(base).snvisu_3.frame5 -anchor center -side left \
          -padx 5 -pady 5
-   pack $audace(base).snvisu_3.frame5 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame5 -side top -fill both -expand 1
 
    #--- Create the checkbutton
    #--- Cree le checkbutton
@@ -1323,7 +1355,7 @@ proc snvisu_configuration { } {
       pack $audace(base).snvisu_3.frame6.priorite_dvd \
         -in $audace(base).snvisu_3.frame6 -anchor center -side left \
         -padx 5 -pady 5
-   pack $audace(base).snvisu_3.frame6 -side top -fill both -expand 1  
+   pack $audace(base).snvisu_3.frame6 -side top -fill both -expand 1
 
    #--- Create the button 'Cancel'
    #--- Cree le bouton 'Annuler'
@@ -1359,11 +1391,11 @@ proc snvisu_configuration { } {
       -padx 5 -pady 5 -ipadx 5 -ipady 5
 
    #--- La touche Escape est equivalente au bouton "but_cancel"
-   bind $audace(base).snvisu_3 <Key-Escape>  { $audace(base).snvisu_3.but_cancel invoke }   
+   bind $audace(base).snvisu_3 <Key-Escape>  { $audace(base).snvisu_3.but_cancel invoke }
 
    #--- La touche Return est equivalente au bouton "but_go"
    bind $audace(base).snvisu_3 <Key-Return>  { $audace(base).snvisu_3.but_go invoke }
-    
+
    #--- La fenetre est active
    focus $audace(base).snvisu_3
 
@@ -1465,7 +1497,7 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
    set shortname [file rootname [file tail $filename]]
    set rep(gif_dss) "[string tolower $shortname].gif"
    #---
-   #set rep1 "[lindex $rep(1) 0]" 
+   #set rep1 "[lindex $rep(1) 0]"
    set rep1 "$rep(1)"
    set filename "$rep1"
 
@@ -1514,32 +1546,32 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
       ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" INVERT flip "
    }
    ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" COPY \"jpegfile=$jpgname\""
-   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" DELETE"   
+   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" DELETE"
 
-   #--- buffer DSS  
+   #--- buffer DSS
    #--- conversion FIT en JPG de l'image DSS si elle existe dans rep(3)
-   set repDSS $rep(3)  
-   set filenameDSS $repDSS 
-   append filenameDSS /${shortname}$extname 
-   
+   set repDSS $rep(3)
+   set filenameDSS $repDSS
+   append filenameDSS /${shortname}$extname
+
    set rep(jpg_dss) ""
 
    if { [file exists $filenameDSS] } {
-      set rep(jpg_dss) "$shortname-DSS\.jpg"  
-      set extJPG ".jpg" 
+      set rep(jpg_dss) "$shortname-DSS\.jpg"
+      set extJPG ".jpg"
       #je converti l'image FIT en JPG
       #ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
 
       set num(bufDSS) [buf::create]
-      visu::create $num(bufDSS) 300 
+      visu::create $num(bufDSS) 300
       #if {[info exists audace]==1} {
          #buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
      #}
       set result [buf$num(bufDSS) load $filenameDSS]
       set hight [expr [lindex [buf$num(bufDSS) stat] 0] * 3]
-      set low [lindex [buf$num(bufDSS) stat] 1] 
+      set low [lindex [buf$num(bufDSS) stat] 1]
 
-      #visu$num(bufDSS) cut "$hight $low" 
+      #visu$num(bufDSS) cut "$hight $low"
       #visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
       #visu$num(bufDSS) disp
       if { [ file exist "$rep1/${shortname}\-DSS\.jpg" ] == "1" } {
@@ -1918,7 +1950,7 @@ proc snblinkimage { } {
       buf$b            save "$audace(rep_images)/dummy2"
       buf$num(buffer1) save "$audace(rep_images)/dummy1"
       set objefile "__dummy__"
-      set error [ catch { 
+      set error [ catch {
          ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" STAT objefile"
          ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER translate=never"
          ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
@@ -2008,22 +2040,22 @@ proc snblinkimage { } {
 }
 
 #===============================================
-#  afficheCarte 
+#  afficheCarte
 #  affiche la carte avec l'objet
-#  
+#
 #  Recupere les coordoonnées J2000 de l'objet dans le fichier fit ou sn.log
-#  et envoie la commande a carteduciel "moveTo  rah ram ras decd decm decs " 
+#  et envoie la commande a carteduciel "moveTo  rah ram ras decd decm decs "
 #  Si les coordonnees ne sont pas trouvees, utilise le nom du fichier comme
 #  nom d'objet et envoie la commande " find objectname"
 #
-#  petite erreur negligeable : comme je n'ai pas les coordonnees J2000, 
-#  j'envoi les coordonnes du jour 
+#  petite erreur negligeable : comme je n'ai pas les coordonnees J2000,
+#  j'envoi les coordonnes du jour
 #===============================================
 proc afficheCarte { } {
    global rep
    global num
 
-   set found 0 
+   set found 0
    set shortname ""
    set ra ""
    set dec ""
@@ -2032,67 +2064,67 @@ proc afficheCarte { } {
       #--- Premiere tentatvive : je recupere les coordonnees dans le fichier FIT
       set ra  [lindex [buf$num(buffer1) getkwd RA] 1]
       set dec [lindex [buf$num(buffer1) getkwd DEC] 1]
-      
-      #--- si l'image du premier buffer n'a pas les mots clef, je chercher dans le second buffer   
+
+      #--- si l'image du premier buffer n'a pas les mots clef, je chercher dans le second buffer
       if { "$ra" == "" && "$dec" == "" } {
          set ra  [lindex [buf$num(buffer2) getkwd RA] 1]
          set dec [lindex [buf$num(buffer2) getkwd DEC] 1]
       }
-      
+
       if { "$ra" != "" && "$dec" != "" } {
          #--- je convertis RA au format HMS
          set ra "[mc_angle2hms $ra 360 zero 0 auto string]"
-         #--- je supprime les decimales des secondes 
+         #--- je supprime les decimales des secondes
          set ra [string range $ra 0 [expr [string first "s" "$ra" ]  ] ]
-         
+
          #--- je convertis DEC au format DMS
-         set dec "[mc_angle2dms $dec 90 zero 0 + string ] "    
-         #--- je supprime les decimales des secondes 
+         set dec "[mc_angle2dms $dec 90 zero 0 + string ] "
+         #--- je supprime les decimales des secondes
          set dec [string range $dec 0 [expr [string first "s" "$dec" ]  ] ]
-   
+
          set found 1
-      } 
+      }
    }
 
    if { $found ==  0 }  {
       #--- deuxieme  tentative : je recupere les coordonnees dans le fichier sn.log
-      set snlog "sn.log"    
-      set filename [lindex $rep(x1) $rep(xx1)] 
+      set snlog "sn.log"
+      set filename [lindex $rep(x1) $rep(xx1)]
 
       if { "$filename" != "" } {
          set shortname [file rootname [file tail $filename]]
          #--- Dans le cas des fichiers compresses *.extension.gz, il faut supprimer l'extension qui reste
          if { [string first "." "$shortname" ] != -1 } {
-            set  shortname [ file rootname $shortname  ]   
+            set  shortname [ file rootname $shortname  ]
          }
 
-         if { "$shortname" != "" } {     
-            #--- j'ouvre le fichier sn.log  
+         if { "$shortname" != "" } {
+            #--- j'ouvre le fichier sn.log
             set vector ""
             catch {
-               set fileId [open $rep(1)/${snlog} r] 
+               set fileId [open $rep(1)/${snlog} r]
                set vector [read $fileId];
-               close  $fileId  
+               close  $fileId
             } result
-            
-            if { $vector != "" } {              
-               #--- je cherche l'objet dans le fichier sn.log         
+
+            if { $vector != "" } {
+               #--- je cherche l'objet dans le fichier sn.log
                set indice 0
-               set line  [lindex $vector $indice]                   
+               set line  [lindex $vector $indice]
                while { ($line != "") && ($found == 0)} {
-                  set line  [lindex $vector $indice] 
+                  set line  [lindex $vector $indice]
                   if { $shortname == [lindex $line 0]  } {
                      set ra  "[ lindex $line 1 ]h[ lindex $line 2 ]m[ lindex $line 3 ]s"
                      set dec "[ lindex $line 4 ]d[ lindex $line 5 ]m[ lindex $line 6 ]s"
                      set found 1
-                  } 
+                  }
                   incr indice
                }
-            } 
-         } 
+            }
+         }
       }
    }
-    
+
    if { $found == 0 }  {
       # troisieme tentative : je recupere le nom de l'objet
       # attention : cette solution depends des catalogues presents dans carteduciel
@@ -2102,14 +2134,14 @@ proc afficheCarte { } {
          set shortname [file rootname [file tail $filename]]
          #--- Dans le cas des fichiers compresses *.extension.gz, il faut supprimer l'extension qui reste
          if { [string first "." "$shortname" ] != -1 } {
-            set  shortname [ file rootname $shortname  ]   
+            set  shortname [ file rootname $shortname  ]
          }
          if { "$shortname" != "" } {
             set found 1
          }
       }
    }
-            
+
    #--- j'envoi la commande d'affichage
    if { $found == 1} {
       set zoom_objet "10"
