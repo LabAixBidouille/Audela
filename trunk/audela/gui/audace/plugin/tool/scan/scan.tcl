@@ -3,14 +3,12 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.18 2006-11-28 20:13:42 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.19 2007-01-14 16:03:42 robertdelmas Exp $
 #
 
 package provide scan 1.0
 
 namespace eval ::Dscan {
-   variable This
-   variable parametres
    global audace
 
    #--- Chargement des captions
@@ -22,12 +20,11 @@ namespace eval ::Dscan {
 
    proc createPanel { this } {
       variable This
-      global caption
-      global conf
-      global panneau
+      global caption conf panneau
 
       #--- Initialisation du nom de la fenetre
       set This $this
+
       #--- Initialisation des captions
       set panneau(menu_name,Dscan)       "$caption(scan,drift_scan)"
       set panneau(Dscan,aide)            "$caption(scan,help_titre)"
@@ -62,13 +59,15 @@ namespace eval ::Dscan {
       set panneau(Dscan,indice_entier)   "$caption(scan,indice_entier)"
       set panneau(Dscan,confirmation)    "$caption(scan,confirmation)"
       set panneau(Dscan,fichier_existe)  "$caption(scan,fichier_existe)"
-      #--- Initialisation de variables
+
+      #--- Initialisation des variables
       set panneau(Dscan,nom_image)       ""
       set panneau(Dscan,extension_image) "$conf(extension,defaut)"
       set panneau(Dscan,indexer)         "0"
       set panneau(Dscan,indice)          "1"
       set panneau(Dscan,acquisition)     "0"
       set panneau(Scan,Stop)             "0"
+
       #--- Construction de l'interface
       DscanBuildIF $This
    }
@@ -82,6 +81,8 @@ namespace eval ::Dscan {
       if { [ file exists $fichier ] } {
          source $fichier
       }
+
+      #--- Creation des variables si elles n'existent pas
       if { ! [ info exists parametres(Dscan,col1) ] }    { set parametres(Dscan,col1)    "1" }
       if { ! [ info exists parametres(Dscan,col2) ] }    { set parametres(Dscan,col2)    "768" }
       if { ! [ info exists parametres(Dscan,lig1) ] }    { set parametres(Dscan,lig1)    "1500" }
@@ -93,9 +94,9 @@ namespace eval ::Dscan {
 
    proc Enregistrement_Var { } {
       variable parametres
-      global audace
-      global panneau
+      global audace panneau
 
+      #--- Changement de variables
       set parametres(Dscan,col1)    $panneau(Dscan,col1)
       set parametres(Dscan,col2)    $panneau(Dscan,col2)
       set parametres(Dscan,lig1)    $panneau(Dscan,lig1)
@@ -120,9 +121,7 @@ namespace eval ::Dscan {
 
    proc Adapt_Outil_Scan { { a "" } { b "" } { c "" } } {
       variable This
-      global caption
-      global conf
-      global panneau
+      global caption conf panneau
 
       #--- Mise a jour de la liste des binnings disponibles
       $This.fra3.bin.but_bin.menu delete 0 20
@@ -134,7 +133,8 @@ namespace eval ::Dscan {
             -variable panneau(Dscan,binning) \
             -command "::Dscan::cmdCalcul"
       }
-      #--- Cas particulier
+
+      #--- Binnings associes aux liaisons
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
             if { $panneau(Dscan,binning) == "4x4" } {
@@ -156,20 +156,44 @@ namespace eval ::Dscan {
 
    proc startTool { visuNo } {
       variable This
+      variable parametres
+      global panneau
 
+      #--- Chargement de la configuration
       ::Dscan::Chargement_Var
+
+      #--- Initialisation des variables de l'outil
+      set panneau(Dscan,col1)    "$parametres(Dscan,col1)"
+      set panneau(Dscan,col2)    "$parametres(Dscan,col2)"
+      set panneau(Dscan,lig1)    "$parametres(Dscan,lig1)"
+      set panneau(Dscan,pix)     "$parametres(Dscan,dimpix)"
+      set panneau(Dscan,binning) "$parametres(Dscan,binning)"
+      set panneau(Dscan,foc)     "$parametres(Dscan,foc)"
+      set panneau(Dscan,dec)     "$parametres(Dscan,dec)"
+
+      #--- Calcul de dt en fonction des parametres initialises
+      ::Dscan::cmdCalcul
+
+      #--- Configuration dynamique de l'outil en fonction de la liaison
       ::Dscan::Adapt_Outil_Scan
       ::confVisu::addCameraListener 1 ::Dscan::Adapt_Outil_Scan
       trace add variable ::conf(audine,port) write ::Dscan::Adapt_Outil_Scan
+
+      #---
       pack $This -side left -fill y
    }
 
    proc stopTool { visuNo } {
       variable This
 
+      #--- Sauvegarde de la configuration
       ::Dscan::Enregistrement_Var
+
+      #--- Arret de la surveillance
       ::confVisu::removeCameraListener 1 ::Dscan::Adapt_Outil_Scan
       trace remove variable ::conf(audine,port) write ::Dscan::Adapt_Outil_Scan
+
+      #---
       pack forget $This
    }
 
@@ -185,9 +209,7 @@ namespace eval ::Dscan {
 
    proc cmdGo { { motor motoron } } {
       variable This
-      global audace
-      global conf
-      global panneau
+      global audace conf panneau
 
       if { [ ::cam::list ] != "" } {
          if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
@@ -286,8 +308,7 @@ namespace eval ::Dscan {
    }
 
    proc scan { w h bin dt f } {
-      global audace
-      global panneau
+      global audace panneau
 
       #--- Petit raccourci
       set camera cam$audace(camNo)
@@ -331,26 +352,30 @@ namespace eval ::Dscan {
 
    proc cmdStop { } {
       variable This
-      global audace
-      global panneau
+      global audace panneau
 
       if { [ ::cam::list ] != "" } {
          if { $panneau(Dscan,acquisition) == "1" } {
             catch {
                #--- Changement de la valeur de la variable
                set panneau(Scan,Stop) "1"
+
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
+
                #--- Annulation de la pose
                cam$audace(camNo) breakscan
                after 200
+
                #--- Visualisation de l'image
                ::audace::autovisu $audace(visuNo)
+
                #--- Gestion du moteur d'A.D.
                if { [ ::tel::list ] != "" } {
                   #--- Remise en marche du moteur d'AD
                   tel$audace(telNo) radec motor on
                }
+
                #--- Gestion du graphisme du bouton
                $This.fra4.but1 configure -relief raised -text $panneau(Dscan,go1) -state disabled
                update
@@ -364,13 +389,13 @@ namespace eval ::Dscan {
 
    proc cmdCalcul { } {
       variable This
-      global conf
-      global panneau
+      global conf panneau
 
       #--- La premiere colonne ne peut pas etre inferieure a 1
       if { $panneau(Dscan,col1) < "1" } {
          set panneau(Dscan,col1) "1"
       }
+
       #--- Calcul de dt
       if { $panneau(Dscan,binning) == "4x4" } { set bin 4 }
       if { $panneau(Dscan,binning) == "2x2" } { set bin 2 }
@@ -383,8 +408,7 @@ namespace eval ::Dscan {
    proc InfoCam { } {
       variable This
       variable parametres
-      global audace
-      global panneau
+      global audace panneau
 
       catch {
          set parametres(Dscan,col2)   "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
@@ -397,24 +421,15 @@ namespace eval ::Dscan {
          $This.fra3.bin.lab_bin configure -textvariable panneau(Dscan,binning)
          update
       }
+
+      #--- Calcul de dt en fonction du changement de parametres
       ::Dscan::cmdCalcul
    }
 
-   proc cmdVisib { } {
+   proc cmdDec { } {
       variable This
       variable parametres
-      global audace
-      global conf
-      global confTel
-      global panneau
-
-      #--- Initialisation des variables de l'outil (sauf la position de la declinaison)
-      set panneau(Dscan,col1)    "$parametres(Dscan,col1)"
-      set panneau(Dscan,col2)    "$parametres(Dscan,col2)"
-      set panneau(Dscan,lig1)    "$parametres(Dscan,lig1)"
-      set panneau(Dscan,pix)     "$parametres(Dscan,dimpix)"
-      set panneau(Dscan,binning) "$parametres(Dscan,binning)"
-      set panneau(Dscan,foc)     "$parametres(Dscan,foc)"
+      global audace conf confTel panneau
 
       #--- Initialisation et/ou determination de la position de la declinaison
       if { [ ::tel::list ] != "" } {
@@ -435,6 +450,8 @@ namespace eval ::Dscan {
       }
       $This.fra3.fra3.ent2 configure -textvariable panneau(Dscan,dec)
       update
+
+      #--- Calcul de dt en fonction de la declinaison
       ::Dscan::cmdCalcul
    }
 
@@ -466,8 +483,7 @@ namespace eval ::Dscan {
    }
 
    proc SauveUneImage { } {
-      global audace
-      global panneau
+      global audace panneau
 
       #--- Enregistrer l'extension des fichiers
       set ext [ buf[ ::confVisu::getBufNo 1 ] extension ]
@@ -476,56 +492,60 @@ namespace eval ::Dscan {
 
       #--- Verifier qu'il y a bien un nom de fichier
       if { $panneau(Dscan,nom_image) == "" } {
-        tk_messageBox -title $panneau(Dscan,pb) -type ok \
-           -message $panneau(Dscan,nom_fichier)
-        return
+         tk_messageBox -title $panneau(Dscan,pb) -type ok \
+            -message $panneau(Dscan,nom_fichier)
+         return
       }
+
       #--- Verifier que le nom de fichier n'a pas d'espace
       if { [ llength $panneau(Dscan,nom_image) ] > "1" } {
-        tk_messageBox -title $panneau(Dscan,pb) -type ok \
-           -message $panneau(Dscan,nom_blanc)
-        return
+         tk_messageBox -title $panneau(Dscan,pb) -type ok \
+            -message $panneau(Dscan,nom_blanc)
+         return
       }
+
       #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
       if { [ ::Dscan::TestChaine $panneau(Dscan,nom_image) ] == "0" } {
-        tk_messageBox -title $panneau(Dscan,pb) -type ok \
-           -message $panneau(Dscan,mauvais_car)
-        return
+         tk_messageBox -title $panneau(Dscan,pb) -type ok \
+            -message $panneau(Dscan,mauvais_car)
+         return
       }
+
       #--- Si la case index est cochee, verifier qu'il y a bien un index
       if { $panneau(Dscan,indexer) == "1" } {
-        #--- Verifier que l'index existe
-        if { $panneau(Dscan,indice) == "" } {
-           tk_messageBox -title $panneau(Dscan,pb) -type ok \
-                 -message $panneau(Dscan,saisir_indice)
-           return
-        }
-        #--- Verifier que l'index est bien un nombre entier
-        if { [ ::Dscan::TestEntier $panneau(Dscan,indice) ] == "0" } {
-           tk_messageBox -title $panneau(Dscan,pb) -type ok \
-              -message $panneau(Dscan,indice_entier)
-           return
-        }
+         #--- Verifier que l'index existe
+         if { $panneau(Dscan,indice) == "" } {
+            tk_messageBox -title $panneau(Dscan,pb) -type ok \
+               -message $panneau(Dscan,saisir_indice)
+            return
+         }
+         #--- Verifier que l'index est bien un nombre entier
+         if { [ ::Dscan::TestEntier $panneau(Dscan,indice) ] == "0" } {
+            tk_messageBox -title $panneau(Dscan,pb) -type ok \
+               -message $panneau(Dscan,indice_entier)
+            return
+         }
       }
 
       #--- Generer le nom du fichier
       set nom $panneau(Dscan,nom_image)
+
       #--- Pour eviter un nom de fichier qui commence par un blanc
       set nom [ lindex $nom 0 ]
       if { $panneau(Dscan,indexer) == "1" } {
-        append nom $panneau(Dscan,indice)
+         append nom $panneau(Dscan,indice)
       }
 
       #--- Verifier que le nom du fichier n'existe pas deja
       set nom1 "$nom"
       append nom1 $ext
       if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-        #--- Dans ce cas, le fichier existe deja
-        set confirmation [ tk_messageBox -title $panneau(Dscan,confirmation) -type yesno \
-           -message $panneau(Dscan,fichier_existe) ]
-        if { $confirmation == "no" } {
-           return
-        }
+         #--- Dans ce cas, le fichier existe deja
+         set confirmation [ tk_messageBox -title $panneau(Dscan,confirmation) -type yesno \
+            -message $panneau(Dscan,fichier_existe) ]
+         if { $confirmation == "no" } {
+            return
+         }
       }
 
       #--- Incrementer l'index
@@ -545,8 +565,7 @@ namespace eval ::Dscan {
 }
 
 proc DscanBuildIF { This } {
-   global audace
-   global panneau
+   global audace panneau
 
    #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
@@ -678,7 +697,7 @@ proc DscanBuildIF { This } {
 
             #--- Bouton pour la mise a jour de la dec
             button $This.fra3.fra3.but2 -borderwidth 2 -text $panneau(Dscan,declinaison) \
-               -width 3 -command "::Dscan::cmdVisib"
+               -width 3 -command "::Dscan::cmdDec"
             pack $This.fra3.fra3.but2 -in $This.fra3.fra3 -side left -fill none -pady 1
 
             #--- Entry pour la dec
@@ -780,7 +799,6 @@ proc DscanBuildIF { This } {
      pack $This.fra5 -side top -fill x
 
    bind $This.fra4.but1 <ButtonPress-3> { ::Dscan::cmdGo motoron }
-   bind $This <Visibility> { ::Dscan::cmdVisib }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This

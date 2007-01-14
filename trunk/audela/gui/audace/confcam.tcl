@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.50 2006-12-23 13:51:40 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.51 2007-01-14 16:04:37 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -108,7 +108,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
       if { ! [ info exists conf(th7852a,mirh) ] } { set conf(th7852a,mirh) "0" }
       if { ! [ info exists conf(th7852a,mirv) ] } { set conf(th7852a,mirv) "0" }
-      if { ! [ info exists conf(th7852a,port) ] } { set conf(th7852a,port) "LPT1:" }
+     ### if { ! [ info exists conf(th7852a,port) ] } { set conf(th7852a,port) "LPT1:" }
 
       #--- initConf 9
       if { ! [ info exists conf(scr1300xtc,mirh) ] } { set conf(scr1300xtc,mirh) "0" }
@@ -2421,7 +2421,7 @@ namespace eval ::confCam {
       set confCam(th7852a,coef) $conf(th7852a,coef)
       set confCam(th7852a,mirh) $conf(th7852a,mirh)
       set confCam(th7852a,mirv) $conf(th7852a,mirv)
-      set confCam(th7852a,port) $conf(th7852a,port)
+     ### set confCam(th7852a,port) $conf(th7852a,port)
 
       #--- Initialisation
       set frmm(Camera8) [ Rnotebook:frame $nn 8 ]
@@ -2449,44 +2449,44 @@ namespace eval ::confCam {
       frame $frm.frame7 -borderwidth 0 -relief raised
       pack $frm.frame7 -in $frm.frame3 -anchor n -side left -fill x
 
-      #--- Definition du port
-      label $frm.lab1 -text "$caption(confcam,port)"
-      pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 14
+     ### #--- Definition du port
+     ### label $frm.lab1 -text "$caption(confcam,port)"
+     ### pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 14
 
-      #--- Je constitue la liste des liaisons pour l'acquisition des images
-      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+     ### #--- Je constitue la liste des liaisons pour l'acquisition des images
+     ### set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
 
-      #--- Je verifie le contenu de la liste
-      if { [llength $list_combobox ] > 0 } {
-         #--- si la liste n'est pas vide,
-         #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_combobox $confCam(th7852a,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
-            #--- je la remplace par le premier item de la liste
-            set confCam(th7852a,port) [lindex $list_combobox 0]
-         }
-      } else {
-         #--- si la liste est vide, on continue quand meme
-      }
+     ### #--- Je verifie le contenu de la liste
+     ### if { [llength $list_combobox ] > 0 } {
+     ###    #--- si la liste n'est pas vide,
+     ###    #--- je verifie que la valeur par defaut existe dans la liste
+     ###    if { [lsearch -exact $list_combobox $confCam(th7852a,port)] == -1 } {
+     ###       #--- si la valeur par defaut n'existe pas dans la liste,
+     ###       #--- je la remplace par le premier item de la liste
+     ###       set confCam(th7852a,port) [lindex $list_combobox 0]
+     ###    }
+     ### } else {
+     ###    #--- si la liste est vide, on continue quand meme
+     ### }
 
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::confCam(th7852a,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(confcam,th7852A)"
-         }
-      pack $frm.configure -in $frm.frame6 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+     ### #--- Bouton de configuration des ports et liaisons
+     ### button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
+     ###    -command {
+     ###       ::confLink::run ::confCam(th7852a,port) { parallelport } \
+     ###          "- $caption(confcam,acquisition) - $caption(confcam,th7852A)"
+     ###    }
+     ### pack $frm.configure -in $frm.frame6 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.port \
-         -width 7          \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable confCam(th7852a,port) \
-         -values $list_combobox
-      pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 14
+     ### #--- Choix du port ou de la liaison
+     ### ComboBox $frm.port \
+     ###    -width 7          \
+     ###    -height [ llength $list_combobox ] \
+     ###    -relief sunken    \
+     ###    -borderwidth 1    \
+     ###    -editable 0       \
+     ###    -textvariable confCam(th7852a,port) \
+     ###    -values $list_combobox
+     ### pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 14
 
       #--- Miroir en x et en y
       checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
@@ -2498,7 +2498,7 @@ namespace eval ::confCam {
       pack $frm.miry -in $frm.frame7 -anchor w -side top -padx 10 -pady 10
 
       #--- Definition du coefficient
-      label $frm.lab2 -text "$caption(confcam,coef_th7852a)"
+      label $frm.lab2 -text "$caption(confcam,th7852a_coef)"
       pack $frm.lab2 -in $frm.frame5 -anchor n -side left -padx 10 -pady 12
 
       entry $frm.coef -textvariable confCam(th7852a,coef) -width 5 -justify center
@@ -4244,9 +4244,11 @@ namespace eval ::confCam {
                ::confVisu::visuDynamix $visuNo 255 -255
             }
             th7852a {
-               set camNo [ cam::create camth $conf(th7852a,port) -name TH7852A  ]
+               set camNo [ cam::create camth "unknown" -name TH7852A ]
+              ### console::affiche_erreur "$caption(confcam,port_th7852a) $caption(confcam,2points)\
+              ###    $conf(th7852a,port)\n"
                console::affiche_erreur "$caption(confcam,port_th7852a) $caption(confcam,2points)\
-                  $conf(th7852a,port)\n"
+                  $caption(confcam,th7852a_ISA)\n"
                console::affiche_saut "\n"
                set confCam($cam_item,camNo) $camNo
                cam$camNo buf $bufNo
@@ -4672,7 +4674,7 @@ namespace eval ::confCam {
       set conf(th7852a,coef)                $confCam(th7852a,coef)
       set conf(th7852a,mirh)                $confCam(th7852a,mirh)
       set conf(th7852a,mirv)                $confCam(th7852a,mirv)
-      set conf(th7852a,port)                $confCam(th7852a,port)
+     ### set conf(th7852a,port)                $confCam(th7852a,port)
       #--- Memorise la configuration de la SCR1300XTC dans le tableau conf(scr1300xtc,...)
       set frm [ Rnotebook:frame $nn 9 ]
       set conf(scr1300xtc,mirh)             $confCam(scr1300xtc,mirh)

@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.25 2006-12-12 22:24:44 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.26 2007-01-14 16:05:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -122,7 +122,8 @@ set caption(confcam,conf_webcam)                "Video Source Selection"
 set caption(confcam,format_webcam)              "Video Format Selection"
 set caption(confcam,ccd_N_B)                    "B&W CCD Modified Webcam"
 
-set caption(confcam,coef_th7852a)               "Coefficient"
+set caption(confcam,th7852a_coef)               "Coefficient"
+set caption(confcam,th7852a_ISA)                "Bus ISA"
 
 set caption(confcam,dslr_name)                  "Digital Camera"
 set caption(confcam,dslr_liaison)               "Link"
@@ -294,7 +295,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,format_webcam)           "Sélection du format video"
    set caption(confcam,ccd_N_B)                 "WebCam modifiée avec CCD N&B"
 
-   set caption(confcam,coef_th7852a)            "Coefficient"
+   set caption(confcam,th7852a_coef)            "Coefficient"
+   set caption(confcam,th7852a_ISA)             "Bus ISA"
 
    set caption(confcam,dslr_name)               "Appareil Photo Numérique"
    set caption(confcam,dslr_liaison)            "Liaison"
@@ -466,7 +468,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,format_webcam)           "Selezione del formato video"
    set caption(confcam,ccd_N_B)                 "Webcam modificata con CCD B&N"
 
-   set caption(confcam,coef_th7852a)            "Coefficiente"
+   set caption(confcam,th7852a_coef)            "Coefficiente"
+   set caption(confcam,th7852a_ISA)             "Bus ISA"
 
    set caption(confcam,dslr_name)               "Fotocamera digitale"
    set caption(confcam,dslr_liaison)            "Collegamento"
@@ -638,7 +641,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,format_webcam)           "Selección de formato de vídeo"
    set caption(confcam,ccd_N_B)                 "CCD Webcam Blanco y Negro modificada"
 
-   set caption(confcam,coef_th7852a)            "Coeficiente"
+   set caption(confcam,th7852a_coef)            "Coeficiente"
+   set caption(confcam,th7852a_ISA)             "Bus ISA"
 
    set caption(confcam,dslr_name)               "Cámara digital"
    set caption(confcam,dslr_liaison)            "Enlace"
@@ -810,7 +814,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,format_webcam)           "Wahl des Videoformats"
    set caption(confcam,ccd_N_B)                 "Veränderte Schwartz/Weiss Webcam CCD"
 
-   set caption(confcam,coef_th7852a)            "Faktor"
+   set caption(confcam,th7852a_coef)            "Faktor"
+   set caption(confcam,th7852a_ISA)             "Bus ISA"
 
    set caption(confcam,dslr_name)               "Digital Fotoapparat"
    set caption(confcam,dslr_liaison)            "Link"
@@ -982,7 +987,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,format_webcam)           "Selecção do Formato Video"
    set caption(confcam,ccd_N_B)                 "Webcam Modificada (CCD B&W)"
 
-   set caption(confcam,coef_th7852a)            "Coeficiente"
+   set caption(confcam,th7852a_coef)            "Coeficiente"
+   set caption(confcam,th7852a_ISA)             "Bus ISA"
 
    set caption(confcam,dslr_name)               "Câmara Digital"
    set caption(confcam,dslr_liaison)            "Ligação"
@@ -1154,7 +1160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,format_webcam)           "Video Format Selection"
    set caption(confcam,ccd_N_B)                 "B&W CCD Modified Webcam"
 
-   set caption(confcam,coef_th7852a)            "Coefficient"
+   set caption(confcam,th7852a_coef)            "Coefficient"
+   set caption(confcam,th7852a_ISA)             "Bus ISA"
 
    set caption(confcam,dslr_name)               "Digital Camera"
    set caption(confcam,dslr_liaison)            "Link"

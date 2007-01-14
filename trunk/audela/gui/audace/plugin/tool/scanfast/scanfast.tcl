@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.18 2006-11-28 18:27:43 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.19 2007-01-14 16:04:02 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -14,8 +14,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    #--- dt       : Temps d'integration interligne (en millisecondes)
    #--- firstpix : Indice du premier photosite de la largeur de l'image (commence a 1)
    #--- bin      : Binning du scan
-   global audace
-   global caption
+   global audace caption
 
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment1)\n"
@@ -79,8 +78,6 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
 }
 
 namespace eval ::Scanfast {
-   variable This
-   variable parametres
    global audace
 
    #--- Chargement des captions
@@ -92,12 +89,11 @@ namespace eval ::Scanfast {
 
    proc createPanel { this } {
       variable This
-      global caption
-      global conf
-      global panneau
+      global caption conf panneau
 
       #--- Initialisation du nom de la fenetre
       set This $this
+
       #--- Initialisation des captions
       set panneau(menu_name,Scanfast)       "$caption(scanfast,scanfast)"
       set panneau(Scanfast,aide)            "$caption(scanfast,help_titre)"
@@ -129,13 +125,15 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,indice_entier)   "$caption(scanfast,indice_entier)"
       set panneau(Scanfast,confirmation)    "$caption(scanfast,confirmation)"
       set panneau(Scanfast,fichier_existe)  "$caption(scanfast,fichier_existe)"
-      #--- Initialisation de variable
+
+      #--- Initialisation des variables
       set panneau(Scanfast,nom_image)       ""
       set panneau(Scanfast,extension_image) "$conf(extension,defaut)"
       set panneau(Scanfast,indexer)         "0"
       set panneau(Scanfast,indice)          "1"
       set panneau(Scanfast,acquisition)     "0"
       set panneau(Scan,Stop)                "0"
+
       #--- Construction de l'interface
       ScanfastBuildIF $This
    }
@@ -144,11 +142,13 @@ namespace eval ::Scanfast {
       variable parametres
       global audace
 
-      #--- Ouverture du fichier de paramètres
+      #--- Ouverture du fichier de parametres
       set fichier [ file join $audace(rep_plugin) tool scanfast scanfast.ini ]
       if { [ file exists $fichier ] } {
          source $fichier
       }
+
+      #--- Creation des variables si elles n'existent pas
       if { ! [ info exists parametres(Scanfast,col1) ] }       { set parametres(Scanfast,col1)       "1" }
       if { ! [ info exists parametres(Scanfast,col2) ] }       { set parametres(Scanfast,col2)       "768" }
       if { ! [ info exists parametres(Scanfast,lig1) ] }       { set parametres(Scanfast,lig1)       "1500" }
@@ -160,9 +160,9 @@ namespace eval ::Scanfast {
 
    proc Enregistrement_Var { } {
       variable parametres
-      global audace
-      global panneau
+      global audace panneau
 
+      #--- Changement de variables
       set parametres(Scanfast,col1)       $panneau(Scanfast,col1)
       set parametres(Scanfast,col2)       $panneau(Scanfast,col2)
       set parametres(Scanfast,lig1)       $panneau(Scanfast,lig1)
@@ -187,9 +187,7 @@ namespace eval ::Scanfast {
 
    proc Adapt_Outil_Scanfast { { a "" } { b "" } { c "" } } {
       variable This
-      global caption
-      global conf
-      global panneau
+      global caption conf panneau
 
       #--- Mise a jour de la liste des binnings disponibles
       $This.fra3.bin.but_bin.menu delete 0 20
@@ -201,7 +199,8 @@ namespace eval ::Scanfast {
             -variable panneau(Scanfast,binning) \
             -command " "
       }
-      #--- Cas particulier
+
+      #--- Binnings associes aux liaisons
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
             pack forget $This.fra33
@@ -238,20 +237,41 @@ namespace eval ::Scanfast {
 
    proc startTool { visuNo } {
       variable This
+      variable parametres
+      global panneau
 
+      #--- Chargement de la configuration
       ::Scanfast::Chargement_Var
+
+      #--- Initialisation des variables de l'outil
+      set panneau(Scanfast,col1)        "$parametres(Scanfast,col1)"
+      set panneau(Scanfast,col2)        "$parametres(Scanfast,col2)"
+      set panneau(Scanfast,lig1)        "$parametres(Scanfast,lig1)"
+      set panneau(Scanfast,binning)     "$parametres(Scanfast,binning)"
+      set panneau(Scanfast,interligne)  "$parametres(Scanfast,interligne)"
+      set panneau(Scanfast,dt)          "$parametres(Scanfast,dt)"
+      set panneau(Scanfast,speed)       "$parametres(Scanfast,speed)"
+
+      #--- Configuration dynamique de l'outil en fonction de la liaison
       ::Scanfast::Adapt_Outil_Scanfast
       ::confVisu::addCameraListener 1 ::Scanfast::Adapt_Outil_Scanfast
       trace add variable ::conf(audine,port) write ::Scanfast::Adapt_Outil_Scanfast
+
+      #---
       pack $This -side left -fill y
    }
 
    proc stopTool { visuNo } {
       variable This
 
+      #--- Sauvegarde de la configuration
       ::Scanfast::Enregistrement_Var
+
+      #--- Arret de la surveillance
       ::confVisu::removeCameraListener 1 ::Scanfast::Adapt_Outil_Scanfast
       trace remove variable ::conf(audine,port) write ::Scanfast::Adapt_Outil_Scanfast
+
+      #---
       pack forget $This
    }
 
@@ -267,10 +287,7 @@ namespace eval ::Scanfast {
 
    proc cmdGo { { motor motoron } } {
       variable This
-      global audace
-      global caption
-      global conf
-      global panneau
+      global audace caption conf panneau
 
       if { [ ::cam::list ] != "" } {
          if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
@@ -436,26 +453,30 @@ namespace eval ::Scanfast {
 
    proc cmdStop { } {
       variable This
-      global audace
-      global panneau
+      global audace panneau
 
       if { [ ::cam::list ] != "" } {
          if { $panneau(Scanfast,acquisition) == "1" } {
             catch {
                #--- Changement de la valeur de la variable
                set panneau(Scan,Stop) "1"
+
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
+
                #--- Annulation de la pose
                cam$audace(camNo) breakscan
                after 200
+
                #--- Visualisation de l'image
                ::audace::autovisu $audace(visuNo)
+
                #--- Gestion du moteur d'A.D.
                if { [ ::tel::list ] != "" } {
                   #--- Remise en marche du moteur d'AD
                   tel$audace(telNo) radec motor on
                }
+
                #--- Gestion du graphisme du bouton
                $This.fra4.but1 configure -relief raised -text $panneau(Scanfast,go1) -state disabled
                update
@@ -469,16 +490,17 @@ namespace eval ::Scanfast {
 
    proc cmdCalcul { } {
       variable This
-      global audace
-      global panneau
+      global audace panneau
 
       if { [ ::cam::list ] != "" } {
          $This.fra33.but1 configure -relief groove -state disabled
          update
+
          #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
          if { $panneau(Scanfast,col1) < "1" } {
             set panneau(Scanfast,col1) "1"
          }
+
          #---
          if { $panneau(Scanfast,binning) == "4x4" } { set bin 4 }
          if { $panneau(Scanfast,binning) == "2x2" } { set bin 2 }
@@ -502,10 +524,7 @@ namespace eval ::Scanfast {
    proc InfoCam { } {
       variable This
       variable parametres
-      global audace
-      global caption
-      global conf
-      global panneau
+      global audace caption conf panneau
 
       catch {
          set parametres(Scanfast,col2) "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
@@ -522,22 +541,6 @@ namespace eval ::Scanfast {
       } elseif { $conf(audine,port) == "LPT3:" } {
          ::Scanfast::cmdCalcul
       }
-   }
-
-   proc cmdVisib { } {
-      variable This
-      variable parametres
-      global panneau
-
-      #--- Initialisation des variables de l'outil
-      set panneau(Scanfast,col1)        "$parametres(Scanfast,col1)"
-      set panneau(Scanfast,col2)        "$parametres(Scanfast,col2)"
-      set panneau(Scanfast,lig1)        "$parametres(Scanfast,lig1)"
-      set panneau(Scanfast,binning)     "$parametres(Scanfast,binning)"
-      set panneau(Scanfast,interligne)  "$parametres(Scanfast,interligne)"
-      set panneau(Scanfast,dt)          "$parametres(Scanfast,dt)"
-      set panneau(Scanfast,speed)       "$parametres(Scanfast,speed)"
-      update
    }
 
    #--- Cette procedure verifie que la chaine passee en argument decrit bien un entier
@@ -568,8 +571,7 @@ namespace eval ::Scanfast {
    }
 
    proc SauveUneImage { } {
-      global audace
-      global panneau
+      global audace panneau
 
       #--- Enregistrer l'extension des fichiers
       set ext [ buf[ ::confVisu::getBufNo 1 ] extension ]
@@ -578,56 +580,60 @@ namespace eval ::Scanfast {
 
       #--- Verifier qu'il y a bien un nom de fichier
       if { $panneau(Scanfast,nom_image) == "" } {
-        tk_messageBox -title $panneau(Scanfast,pb) -type ok \
-           -message $panneau(Scanfast,nom_fichier)
-        return
+         tk_messageBox -title $panneau(Scanfast,pb) -type ok \
+            -message $panneau(Scanfast,nom_fichier)
+         return
       }
+
       #--- Verifier que le nom de fichier n'a pas d'espace
       if { [ llength $panneau(Scanfast,nom_image) ] > "1" } {
-        tk_messageBox -title $panneau(Scanfast,pb) -type ok \
-           -message $panneau(Scanfast,nom_blanc)
-        return
+         tk_messageBox -title $panneau(Scanfast,pb) -type ok \
+            -message $panneau(Scanfast,nom_blanc)
+         return
       }
+
       #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
       if { [ ::Scanfast::TestChaine $panneau(Scanfast,nom_image) ] == "0" } {
-        tk_messageBox -title $panneau(Scanfast,pb) -type ok \
-           -message $panneau(Scanfast,mauvais_car)
-        return
+         tk_messageBox -title $panneau(Scanfast,pb) -type ok \
+            -message $panneau(Scanfast,mauvais_car)
+         return
       }
+
       #--- Si la case index est cochee, verifier qu'il y a bien un index
       if { $panneau(Scanfast,indexer) == "1" } {
-        #--- Verifier que l'index existe
-        if { $panneau(Scanfast,indice) == "" } {
-           tk_messageBox -title $panneau(Scanfast,pb) -type ok \
-                 -message $panneau(Scanfast,saisir_indice)
-           return
-        }
-        #--- Verifier que l'index est bien un nombre entier
-        if { [ ::Scanfast::TestEntier $panneau(Scanfast,indice) ] == "0" } {
-           tk_messageBox -title $panneau(Scanfast,pb) -type ok \
-              -message $panneau(Scanfast,indice_entier)
-           return
-        }
+         #--- Verifier que l'index existe
+         if { $panneau(Scanfast,indice) == "" } {
+            tk_messageBox -title $panneau(Scanfast,pb) -type ok \
+               -message $panneau(Scanfast,saisir_indice)
+            return
+         }
+         #--- Verifier que l'index est bien un nombre entier
+         if { [ ::Scanfast::TestEntier $panneau(Scanfast,indice) ] == "0" } {
+            tk_messageBox -title $panneau(Scanfast,pb) -type ok \
+               -message $panneau(Scanfast,indice_entier)
+            return
+         }
       }
 
       #--- Generer le nom du fichier
       set nom $panneau(Scanfast,nom_image)
+
       #--- Pour eviter un nom de fichier qui commence par un blanc
       set nom [ lindex $nom 0 ]
       if { $panneau(Scanfast,indexer) == "1" } {
-        append nom $panneau(Scanfast,indice)
+         append nom $panneau(Scanfast,indice)
       }
 
       #--- Verifier que le nom du fichier n'existe pas deja
       set nom1 "$nom"
       append nom1 $ext
       if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-        #--- Dans ce cas, le fichier existe deja
-        set confirmation [ tk_messageBox -title $panneau(Scanfast,confirmation) -type yesno \
-           -message $panneau(Scanfast,fichier_existe) ]
-        if { $confirmation == "no" } {
-           return
-        }
+         #--- Dans ce cas, le fichier existe deja
+         set confirmation [ tk_messageBox -title $panneau(Scanfast,confirmation) -type yesno \
+            -message $panneau(Scanfast,fichier_existe) ]
+         if { $confirmation == "no" } {
+            return
+         }
       }
 
       #--- Incrementer l'index
@@ -646,8 +652,7 @@ namespace eval ::Scanfast {
 }
 
 proc ScanfastBuildIF { This } {
-   global audace
-   global panneau
+   global audace panneau
 
    #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
@@ -860,7 +865,6 @@ proc ScanfastBuildIF { This } {
      pack $This.fra5 -side top -fill x
 
    bind $This.fra4.but1 <ButtonPress-3> { ::Scanfast::cmdGo motoron }
-   bind $This <Visibility> { ::Scanfast::cmdVisib }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This
