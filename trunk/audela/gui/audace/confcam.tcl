@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.51 2007-01-14 16:04:37 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.52 2007-01-14 20:45:46 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -3403,7 +3403,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList { camNo } {
-      global confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
@@ -3411,7 +3411,7 @@ namespace eval ::confCam {
          #---
          switch $product {
             audine {
-               switch [::confLink::getLinkNamespace $confCam(audine,port)] {
+               switch [::confLink::getLinkNamespace $conf(audine,port)] {
                   "parallelport" {
                      set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   }
@@ -3454,13 +3454,13 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList_Scan { camNo } {
-      global confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
       if { $result == 0 } {
          if { $product == "audine" } {
-            switch [::confLink::getLinkNamespace $confCam(audine,port)] {
+            switch [::confLink::getLinkNamespace $conf(audine,port)] {
                "parallelport" { set binningList_Scan { 1x1 2x2 4x4 } }
                "audinet"      { set binningList_Scan { 1x1 2x2 4x4 } }
                "ethernaude"   { set binningList_Scan { 1x1 2x2 } }
@@ -3523,7 +3523,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasVideo { camNo } {
-      global confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3531,7 +3531,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch -exact -- $camProduct {
             audine  {
-               switch [::confLink::getLinkNamespace $confCam(audine,port)] {
+               switch [::confLink::getLinkNamespace $conf(audine,port)] {
                   "ethernaude"   { return 1 }
                   default        { return 0 }
                }
@@ -3553,7 +3553,6 @@ namespace eval ::confCam {
    #
    proc hasScan { camNo } {
       global conf
-      global confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3561,7 +3560,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch -exact -- $camProduct {
             audine {
-               switch -exact [::confLink::getLinkNamespace $confCam(audine,port)] {
+               switch -exact [::confLink::getLinkNamespace $conf(audine,port)] {
                   "parallelport" { return 1 }
                   "audinet"      { return 1 }
                   "ethernaude"   { return 1 }
@@ -3621,7 +3620,7 @@ namespace eval ::confCam {
    proc getShutterOption { camNo } {
       global conf
       global caption
-      global confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3629,7 +3628,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch $camProduct {
             audine {
-               switch [::confLink::getLinkNamespace $confCam(audine,port)] {
+               switch [::confLink::getLinkNamespace $conf(audine,port)] {
                   "parallelport" {
                      #--- O + F + S
                      set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
