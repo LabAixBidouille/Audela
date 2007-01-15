@@ -101,8 +101,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd_20060927.txt" */
 {
 	int result,retour,diffjour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,pareil,date,temp;
-	int nbreligneblanche,kmin,kmini,anglmin;
-	double distmin,ra0,dec0;
+	int nbreligneblanche,kmin,kmini,problemetelechargement;
+	int code;
+	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
 	char s[1000],ligne[1000],home[35],im[40],lign[1000],toto[1000]; 
 	FILETIME ftCreate, ftAccess, ftWrite; 
 	SYSTEMTIME stUTC, stCreateLocal,stWriteLocal;
@@ -113,7 +114,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	SYSTEMTIME St;
 	HANDLE hFile ;
 	struct_ligsat *lignes,*lignes2;
-
+	char *list, *distang;
+	Tcl_Obj *list2, *list3;
+	int argc2;
+	char **argv2;
+	
 
 	if(argc<2) {
       sprintf(s,"Usage: %s file_0 file_ident ?path_geo? ?path_http? ?url?", argv[0]);
@@ -136,42 +141,40 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if(argc == 4) {
 			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
 		} 
+		problemetelechargement=0;
 		/* récupère la date et heure des modifs du fichier */
 		hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL); 
 		retour = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
 		
-		if (retour == 0) {
-			retour = ml_telechargertle (argv[3],argv[4],argv[5]);			
-		} else {
-			/* Converti le temps de creation en temps local */
-			FileTimeToSystemTime(&ftCreate, &stUTC); 
-			SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);  
+		/* Converti le temps de creation en temps local */
+		FileTimeToSystemTime(&ftCreate, &stUTC); 
+		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);  
   
-			/* Converti le temps dern.modif en temps local. */
-			FileTimeToSystemTime(&ftWrite, &stUTC); 
-			SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal); 
+		/* Converti le temps dern.modif en temps local. */
+		FileTimeToSystemTime(&ftWrite, &stUTC); 
+		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal); 
 			
-			wsprintf(lpszCreate, TEXT("%02d/%02d/%d %02d:%02d"), 
-			stCreateLocal.wMonth, stCreateLocal.wDay, stCreateLocal.wYear, 
-            stCreateLocal.wHour, stCreateLocal.wMinute); 
+		wsprintf(lpszCreate, TEXT("%02d/%02d/%d %02d:%02d"), 
+		stCreateLocal.wMonth, stCreateLocal.wDay, stCreateLocal.wYear, 
+        stCreateLocal.wHour, stCreateLocal.wMinute); 
   
-			wsprintf(lpszWrite, TEXT("%02d/%02d/%d %02d:%02d"), 
-            stWriteLocal.wMonth, stWriteLocal.wDay, stWriteLocal.wYear, 
-            stWriteLocal.wHour, stWriteLocal.wMinute); 
+		wsprintf(lpszWrite, TEXT("%02d/%02d/%d %02d:%02d"), 
+        stWriteLocal.wMonth, stWriteLocal.wDay, stWriteLocal.wYear, 
+        stWriteLocal.wHour, stWriteLocal.wMinute); 
 
-			GetLocalTime(&St);
-			wsprintf(tempspc, TEXT("%02d/%02d/%d %02d:%02d"), 
-			St.wMonth, St.wDay, St.wYear, 
-            St.wHour, St.wMinute); 
+		GetLocalTime(&St);
+		wsprintf(tempspc, TEXT("%02d/%02d/%d %02d:%02d"), 
+		St.wMonth, St.wDay, St.wYear, 
+        St.wHour, St.wMinute); 
 			
-			/* --- vérifie si le fichier est vieux d'un jour, si oui on le re-telecharge --- */
-			diffjour = ml_differencejour(stWriteLocal.wDay,stWriteLocal.wMonth,stWriteLocal.wYear,St.wDay,St.wMonth,St.wYear);
-			if ( diffjour>1 ){
-				retour = ml_telechargertle (argv[3],argv[4],argv[5]);
-			}
+		/* --- vérifie si le fichier est vieux d'un jour, si oui on le re-telecharge --- */
+		diffjour = ml_differencejour(stWriteLocal.wDay,stWriteLocal.wMonth,stWriteLocal.wYear,St.wDay,St.wMonth,St.wYear);
+		if ( diffjour>1 ){
+			problemetelechargement = 1;
 		}
+
 		/* --- on fabrique un fichier_tle2=geo2.txt derriere lequel on ajoute les TLE personels --- */
-		retour = ml_file_copy ("c:/audela/audela/ros/src/grenouille/geo.txt","c:/audela/audela/ros/src/grenouille/tle2.txt");
+		ml_file_copy ("c:/audela/audela/ros/src/grenouille/geo.txt","c:/audela/audela/ros/src/grenouille/tle2.txt");
 
 		f_in1=fopen(argv[4],"r");
 		if (f_in1==NULL) {
@@ -455,7 +458,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						if ((ligne[k]=='G')&&(ligne[k+1]=='P')&&(ligne[k+2]=='S')) {
 							for (k2=k+4;k2<145;k2++){
 								if (ligne[k2]== ')') {
-									for (k3=k;k3<k2;k3++) { s[k3-k]=ligne[k3]; } ; s[k3-k]='\0';
+									for (k3=k;k3<k2;k3++) { s[k3-k]=ligne[k3]; } ; s[k3-k]='\0';							
 									strcpy(home,s);
 									break;
 								}
@@ -471,9 +474,10 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					kimage2++;
 				}
 				if (lignes2[n_in1].comment==0) {
-					k1=146 ; k2=149 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-					strcpy(lignes2[n_in1].ident,s);
-					if (lignes2[n_in1].ident == "    ") {
+					k1=146 ; k2=156 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					strcpy(lignes2[n_in1].ident,s);					
+					retour = strlen(lignes2[n_in1].ident);	
+					if ( retour<=3) {
 						/* le satellite n'est pas identifiée */
 						k1=  38 ; k2= 60 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(im,s);
@@ -481,59 +485,68 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						lignes[n_in].dec=atof(s);
 						k1= 93 ; k2= 101 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						lignes[n_in].ra=atof(s);
-						
-						strcpy(toto,"c:/toto.elm");
-						sprintf(lign,"Cmd_mctcl_tle2ephem %s",toto);
+				
+						strcpy(toto,"c:/audela/audela/ros/src/grenouille/tle2.txt");						
+						sprintf(lign,"mc_tle2ephem {%s} %s {%s}",im,toto,home);
 						result = Tcl_Eval(interp,lign);
-
-						if (result==TCL_OK) {
-								// recupérer le résultat (cf. usage de la fonction
-								// Tcl_SplitList dans libmc/src/libmc_dates.c)
-						}
-
-/* atttention*////////////////////////////////////////////////////////////////////
-						/*ephemsat = Cmd_mctcl_tle2ephem(im,"c:/audela/audela/ros/src/grenouille/tle2.txt",home);*/
-												
-						// Cmd_mctcl_tle2ephem("2003-09-23T20:30:00.00" "C:/audela/audela/ros/src/grenouille/tle2.txt" "gps 6.92389 e 43.75222 1270" "TELECOM 2D");
-
-						/*renvoie une liste de listes des coord de tous les satellites dans le fichier tl2
-						de la forme:{{{ETS 8} {29656U} { 06059A   07004.5}} 140.581000136064720 -5.622260786338347 0.000311221351737812 0.000000000000000}
-						element 0 ; nom...
-						element 1 : ra 
-						element 2 : dec*/
-/* atttention*////////////////////////////////////////////////////////////////////
 						
-						kmin=0;
-						kmini=-1;
-						distmin=1e20;
-						anglmin=0;
+						if (result==TCL_OK) {
+							list=NULL;		
+							list2 = Tcl_GetObjResult  (interp);
+							list = Tcl_GetString (list2);
+							code = Tcl_SplitList(interp,list,&argc,&argv);
+							if (code != TCL_OK) {
+									sprintf(ligne, "Probleme sur le liste des ephemerides");
+									Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+									return TCL_ERROR;
+							}
+						
+							kmin=0;
+							kmini=-1;
+							distmin=1e20;
+							anglmin=0;
+							
+							ra0=lignes[n_in].ra;
+							dec0=lignes[n_in].dec;
 
-						ra0=lignes[n_in].ra;
-						dec0=lignes[n_in].dec;
-						 /*pour chauqe élémnt de ephemsat faire: {
-/* atttention*////////////////////////////////////////////////////////////////////						
-							//distang = mc_anglesep (ra0,dec0,ra,dec);
-							/*distang est une liste de deux éléments: dist et angl
-							/* a initialiser et déclarer: dist et angl (double), valid (int)
-/* atttention*////////////////////////////////////////////////////////////////////
-
-						/*	if (dist <= distmin) {
-								distmin = dist;
-								kmini=kmin;
-								anglmin=angl;
-							}	
-							kmin++;						
-						}*/
-						/*if (distmin<=0.3) {
-							valid=1;
-						} else {
-							valid=0;
+							for (k=0;k<=argc;k++) {
+								k1=63 ; k2=81 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=argv[k][k3]; } ; s[k3-k1]='\0';
+								ra=atof(s);
+								k1= 83 ; k2= 101 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=argv[k][k3]; } ; s[k3-k1]='\0';
+								dec=atof(s);
+								
+								sprintf(lign,"mc_anglesep {%s} {%s} {%s} {%s}",ra0,dec0,ra,dec);
+								result = Tcl_Eval(interp,lign);
+						
+								if (result==TCL_OK) {
+									list3 = Tcl_GetObjResult  (interp);
+									distang = Tcl_GetString (list3);
+									code = Tcl_SplitList(interp,distang,&argc2,&argv2);
+								}
+								/*dist est un double = au premier element de distang*/
+								if (dist <= distmin) {
+									distmin = dist;
+									kmini=kmin;
+									anglmin=angl;
+								}	
+								kmin++;
+						
+								/*if (distmin<=0.3) {
+									valid=1;
+								} else {
+									valid=0;
+								}
+								if (kmini>=0) {
+									/* il faut rajouter à ligne[].texte satelname,noradname et cosparname
+								} else {
+									 on rajoute rien à  ligne[].texte
+								}*/
+							}
+						} else {							
+							sprintf(ligne, "Probleme avec les tle");
+							Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+							result = TCL_ERROR;							
 						}
-						if (kmini>=0) {
-							/* il faut rajouter à ligne[].texte satelname,noradname et cosparname
-						} else {
-						  on rajoute rien à  ligne[].texte
-						}*/
 
 					} else {
 						/* le satellite est deja identifiée */
