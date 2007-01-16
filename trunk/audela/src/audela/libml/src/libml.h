@@ -66,7 +66,7 @@
 /***************************************************************************/
 
 #include "mltcl.h"
-#include "TrueTimeSDK.h"
+#include "../../../external/truetime/include/TrueTimeSDK.h"
 
 #include <io.h> 
 #endif
