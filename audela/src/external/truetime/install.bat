@@ -1,2 +1,3 @@
 copy include\*.h ..\include
-move *.lib   ..\lib
+copy lib\*.lib   ..\lib
+copy lib\*.dll  ..\..\..\bin
