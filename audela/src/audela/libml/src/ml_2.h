@@ -1,4 +1,4 @@
-/* ml.h
+/* ml_2.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -27,8 +27,8 @@
 /* - les prototype des fonctions C pures (sans Tcl) de la librairie.       */
 /***************************************************************************/
 
-#ifndef __MLH__
-#define __MLH__
+#ifndef __ML_2H__
+#define __ML_2H__
 
 /***************************************************************************/
 /**        includes valides pour tous les fichiers de type xx_*.c         **/
@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+
 
 
 
@@ -62,6 +63,8 @@
 #define LIBRARY_SO
 #endif
 
+
+
 /***************************************************************************/
 /***************************************************************************/
 /**                DEFINITON DES STRUCTURES DE DONNEES                    **/
@@ -82,19 +85,15 @@ typedef struct {
 /***************************************************************************/
 /***************************************************************************/
 
-void ml_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
-void ml_date2jd(double annee, double mois, double jour, double heure, double minute, double seconde, double *jj);
-int ml_differencejour (int jour1, int mois1, int annee1, int jour2, int mois2, int annee2);
-int ml_bissextile (int annee);
-int ml_nbjours (int jour, int mois, int annee);
-int ml_file_copy (const char *source, const char *dest);
 
-int ml_tle2ephem(char *date, char *reperttle, char *homegps);
+/***************************************************************************/
+/***************************************************************************/
+/**              DEFINITION DES PROTOTYPES DES FONCTIONS utils GSL        **/
+/***************************************************************************/
+/***************************************************************************/
 
-int gsltcl_mcalloc(double **mat,int nlig,int ncol);
-int gsltcl_mfree(double **mat);
+
 
 
 
 #endif
-

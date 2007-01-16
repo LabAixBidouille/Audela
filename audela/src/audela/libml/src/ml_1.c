@@ -215,14 +215,35 @@ int ml_file_copy (const char *source, const char *dest)
 }
 
 
-int ml_telechargertle(const char *repertgeo, const char *reperthttp, const char *reperturl)
+
+int gsltcl_mcalloc(double **mat,int nlig,int ncol)
 /***************************************************************************/
-/* telecharge le fichier geo.txt                                           */
+/* Allocation memoire pour une matrice                                     */
 /***************************************************************************/
 /***************************************************************************/
 {
+   double *m=NULL;
+   if (*mat==NULL) {
+	  if (nlig*ncol==0) {
+		  return 2;
+	  }
+      m=(double*)calloc(nlig*ncol,sizeof(double));
+	  if (m==NULL) {
+	     return 1;
+	  }
+   }
+   *mat=m;
+   return 0;
+}
 
-	/* il faut telecharger geo.txt à partir de l'url donné et le placé dans le repertoire repert*/
-
-	return 0;
+int gsltcl_mfree(double **mat)
+/***************************************************************************/
+/* Liberation memoire pour une matrice                                     */
+/***************************************************************************/
+/***************************************************************************/
+{
+   if (*mat==NULL) {
+	   free(*mat);
+   }
+   return 0;
 }

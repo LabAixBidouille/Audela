@@ -55,7 +55,7 @@
       return TCL_ERROR;
    }
 
-   Tcl_PkgProvide(interp,"Ml","1.0");
+   Tcl_PkgProvide(interp,"Ml","1.4");
    Tcl_CreateCommand(interp,"ml_geostatident",(Tcl_CmdProc *)Cmd_mltcl_geostatident,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ml_julianday",(Tcl_CmdProc *)Cmd_mltcl_julianday,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ml_infoimage",(Tcl_CmdProc *)Cmd_mltcl_infoimage,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
