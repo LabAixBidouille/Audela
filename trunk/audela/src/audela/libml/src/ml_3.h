@@ -1,9 +1,9 @@
-/* ml.h
+/* ml_3.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
- * Initial author : Myrtille LAAS <laas@obs-hp.fr>
+ * Initial author : Yassine DAMERDJI <damerdji@obs-hp.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,14 @@
 /* - les prototype des fonctions C pures (sans Tcl) de la librairie.       */
 /***************************************************************************/
 
-#ifndef __MLH__
-#define __MLH__
+#ifndef __ML_3H__
+#define __ML_3H__
 
 /***************************************************************************/
 /**        includes valides pour tous les fichiers de type xx_*.c         **/
 /***************************************************************************/
+
+#include "libml.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -40,27 +42,16 @@
 #include <math.h>
 #include <time.h>
 
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_multifit.h>
+#include <gsl/gsl_histogram.h>
+#include <gsl/gsl_sort.h>
+#include <gsl/gsl_sort_vector.h>
 
+#include <gsl/gsl_linalg.h>
 
-/***************************************************************************/
-/**             include qui permet de connaitre l'OS utilise              **/
-/***************************************************************************/
-
-#include "sysexp.h"
-
-/***************************************************************************/
-/**                  defines qui dependent de l'OS utilise                **/
-/***************************************************************************/
-
-#if defined(OS_WIN_VCPP_DLL)
-#define FILE_DOS
-#define LIBRARY_DLL
-#endif
-
-#if defined(OS_LINUX_GCC_SO)
-#define FILE_UNIX
-#define LIBRARY_SO
-#endif
 
 /***************************************************************************/
 /***************************************************************************/
@@ -68,32 +59,27 @@
 /***************************************************************************/
 /***************************************************************************/
 
-typedef struct {
-   float *ptr;           /* adresse du pointeur de l'image en interne */
-   float *ptr_audela;    /* adresse du pointeur de l'image dans AudeLA */
-   int naxis1;           /* nombre de pixels sur l'axe x */
-   int naxis2;           /* nombre de pixels sur l'axe y */
-   char dateobs[30];     /* date du debut de pose au format Fits */
-} ml_image;
-
 /***************************************************************************/
 /***************************************************************************/
 /**              DEFINITION DES PROTOTYPES DES FONCTIONS                  **/
 /***************************************************************************/
 /***************************************************************************/
 
-void ml_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
-void ml_date2jd(double annee, double mois, double jour, double heure, double minute, double seconde, double *jj);
-int ml_differencejour (int jour1, int mois1, int annee1, int jour2, int mois2, int annee2);
-int ml_bissextile (int annee);
-int ml_nbjours (int jour, int mois, int annee);
-int ml_file_copy (const char *source, const char *dest);
 
-int ml_tle2ephem(char *date, char *reperttle, char *homegps);
+/***************************************************************************/
+/***************************************************************************/
+/**              DEFINITION DES PROTOTYPES DES FONCTIONS utils GSL        **/
+/***************************************************************************/
+/***************************************************************************/
 
-int gsltcl_mcalloc(double **mat,int nlig,int ncol);
-int gsltcl_mfree(double **mat);
-
+int gsltcltcl_getvector(Tcl_Interp *interp, char *list, double **vec, int *n);
+int gsltcltcl_setvector(Tcl_Interp *interp, Tcl_DString *dsptr, double *vec, int n);
+int gsltcltcl_getmatrix(Tcl_Interp *interp, char *list, double **mat, int *nl, int *nc);
+int gsltcltcl_setmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, double *mat, int nl, int nc);
+int gsltcltcl_getgslmatrix(Tcl_Interp *interp, char *list, gsl_matrix **gslmat, int *nl, int *nc);
+int gsltcltcl_setgslmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_matrix *gslmat, int nl, int nc);
+int gsltcltcl_getgslvector(Tcl_Interp *interp, char *list, gsl_vector **gslvec, int *n);
+int gsltcltcl_setgslvector(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_vector *vec, int n);
 
 
 #endif

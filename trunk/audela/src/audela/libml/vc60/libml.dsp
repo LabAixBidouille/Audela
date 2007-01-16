@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\TrueTimeSDK.lib /nologo /subsystem:windows /dll /pdb:".\Release/libml.pdb" /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libml.dll" /implib:".\Release/libml.lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\TrueTimeSDK.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /pdb:".\Release/libml.pdb" /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc" /out:"..\..\..\..\bin\libml.dll" /implib:".\Release/libml.lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "libml - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\TrueTimeSDK.lib /nologo /subsystem:windows /dll /pdb:".\Debug/libml.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libml.dll" /implib:".\Debug/libml.lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\TrueTimeSDK.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /pdb:".\Debug/libml.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc" /out:"..\..\..\..\bin\libml.dll" /implib:".\Debug/libml.lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -110,6 +110,10 @@ SOURCE=..\src\ml_2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\ml_3.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\mltcl_1.c
 # End Source File
 # End Group
@@ -126,12 +130,24 @@ SOURCE=..\src\ml.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\ml_2.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\ml_3.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\mltcl.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=..\..\..\external\include\win\gsl\gsl_matrix.h
+# End Source File
 # End Group
 # End Target
 # End Project
