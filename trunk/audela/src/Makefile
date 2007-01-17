@@ -23,7 +23,7 @@ $(LIBTELS):
 $(LIBLINKS):
 	make -C liblink/$@/linux
 
-external contrib audela libcam libtel liblink: 
+external contrib: 
 	make -C $@
 
 clean cleanall:
