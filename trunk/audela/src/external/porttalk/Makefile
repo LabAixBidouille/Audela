@@ -3,8 +3,7 @@
 build:
 
 install:
-	cp -f bin/PortTalk.sys ../../../bin
-	cp -f bin/uninstallporttalk.exe ../../../bin
+	echo "Nothing to do"
 
 clean:
 
