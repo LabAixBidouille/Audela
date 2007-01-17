@@ -1,5 +1,5 @@
 
-OUTPUT   = libaudela.so copy_include
+OUTPUT   = libaudela.so ../../include/cpool.h
 
 SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  \
@@ -17,7 +17,7 @@ include ../../../Makefile1
 
 CXXFLAGS += -I$(EXTINC)
 
-copy_include : 
+../../include/cpool.h: ../src/cpool.h 
 	mkdir -p  ../../include
 	cp -f ../src/cpool.h   ../../include
 	cp -f ../src/cdevice.h  ../../include
