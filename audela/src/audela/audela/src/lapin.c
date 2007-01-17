@@ -458,7 +458,9 @@ int Tk_AppInit(Tcl_Interp *interp)
    load_library(interp,"librgb");     // Extraction of tri-colored planes from a CCD image
    load_library(interp,"libsext");    // Sextractor code from Bertin
    load_library(interp,"libyd");      // Misc. from Yassine Damerdji
+#if !defined(OS_LIN)
    load_library(interp,"libml");      // Misc. from Myrtille Laas
+#endif
 
 #if defined(OS_WIN)
    sprintf(ligne,"set audela(hInstance) %d",&ghInstance);
@@ -499,7 +501,9 @@ int Tcl_AppInit(Tcl_Interp *interp)
    load_library(interp,"libmc");      // Celestial mechanics
    load_library(interp,"libsext");    // Sextractor code from Bertin
    load_library(interp,"libyd");      // Misc. from Yassine Damerdji
+#if !defined(OS_LIN)
    load_library(interp,"libml");      // Misc. from Myrtille Laas
+#endif
 
    return TCL_OK;
 }
