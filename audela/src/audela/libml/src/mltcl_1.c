@@ -37,13 +37,14 @@ int Cmd_mltcl_getTimegps(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /****************************************************************************/
 /****************************************************************************/
 {
-	int result;
+	int result=TCL_OK;
 	HANDLE		hDevice;
 	FILETIME 	FileTime;
 	SYSTEMTIME_EX	SystemTime;
 	Tcl_DString dsptr;
 	char s[100];
 
+#if defined(OS_WIN)
 	// open device 0 for Read/Write access
 	if (TT_OpenDevice(0, GENERIC_READ | GENERIC_WRITE, &hDevice) != TT_SUCCESS)
 	{
@@ -86,6 +87,7 @@ int Cmd_mltcl_getTimegps(ClientData clientData, Tcl_Interp *interp, int argc, ch
 	}	
 	// close the device
 	TT_CloseDevice(hDevice);
+#endif
 	return result;
 }
 
