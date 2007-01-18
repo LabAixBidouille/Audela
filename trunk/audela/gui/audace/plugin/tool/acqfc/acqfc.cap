@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.19 2007-01-13 17:19:27 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.20 2007-01-18 22:07:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -127,6 +127,7 @@ set caption(acqfc,acquisition)               "Aud'ACE - Acquisition of"
 
 set caption(acqfc,acquisition_fenetree)      "Windowed Acquisition"
 set caption(acqfc,acq_fen_msg)               "Select the window"
+set caption(acqfc,refresh)                   "Reload (Pixels Number)"
 set caption(acqfc,x1)                        "x1:"
 set caption(acqfc,y1)                        "y1:"
 set caption(acqfc,x2)                        "x2:"
@@ -258,6 +259,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(acqfc,acquisition_fenetree)   "Acquisition fenêtrée"
    set caption(acqfc,acq_fen_msg)            "Sélectionner la fenêtre"
+   set caption(acqfc,refresh)                "Rafraîchir (nombre de pixels)"
    set caption(acqfc,x1)                     "x1 :"
    set caption(acqfc,y1)                     "y1 :"
    set caption(acqfc,x2)                     "x2 :"
@@ -388,6 +390,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(acqfc,acquisition_fenetree)   "Finestra di acquisizione"
    set caption(acqfc,acq_fen_msg)            "Selezionare la finestra"
+   set caption(acqfc,refresh)                "Rinfresca (numero dei pixels)"
    set caption(acqfc,x1)                     "x1:"
    set caption(acqfc,y1)                     "y1:"
    set caption(acqfc,x2)                     "x2:"
@@ -518,6 +521,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(acqfc,acquisition_fenetree)   "Adquisición con subzona"
    set caption(acqfc,acq_fen_msg)            "Seleccione la zona"
+   set caption(acqfc,refresh)                "Recargar (número de píxeles)"
    set caption(acqfc,x1)                     "x1:"
    set caption(acqfc,y1)                     "y1:"
    set caption(acqfc,x2)                     "x2:"
@@ -648,6 +652,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(acqfc,acquisition_fenetree)   "Fenster Anschaffung"
    set caption(acqfc,acq_fen_msg)            "Das Fenster wählen"
+   set caption(acqfc,refresh)                "Aktualisieren (Rasterpunkten Zahl)"
    set caption(acqfc,x1)                     "x1:"
    set caption(acqfc,y1)                     "y1:"
    set caption(acqfc,x2)                     "x2:"
@@ -779,6 +784,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(acqfc,acquisition_fenetree)   "Aquisição na janela"
    set caption(acqfc,acq_fen_msg)            "Seleccione a janela"
+   set caption(acqfc,refresh)                "Actualizar (número de pixeis)"
    set caption(acqfc,x1)                     "x1:"
    set caption(acqfc,y1)                     "y1:"
    set caption(acqfc,x2)                     "x2:"
@@ -909,6 +915,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(acqfc,acquisition_fenetree)   "Windowed Acquisition"
    set caption(acqfc,acq_fen_msg)            "Select the window"
+   set caption(acqfc,refresh)                "Reload (Pixels Number)"
    set caption(acqfc,x1)                     "x1:"
    set caption(acqfc,y1)                     "y1:"
    set caption(acqfc,x2)                     "x2:"
