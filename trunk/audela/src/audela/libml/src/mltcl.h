@@ -82,7 +82,7 @@ typedef struct {
    int matched;
    int nouvelledate;
 } struct_ligsat ;
-t ;
+
 
 /***************************************************************************/
 /*      Prototypes des fonctions d'extension C appelables par Tcl          */

@@ -102,15 +102,11 @@ SOURCE=.\libml.def
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\ml_1.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\ml_2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\ml_3.c
+SOURCE=..\src\ml_utils.c
 # End Source File
 # Begin Source File
 
@@ -131,10 +127,6 @@ SOURCE=..\src\ml.h
 # Begin Source File
 
 SOURCE=..\src\ml_2.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\ml_3.h
 # End Source File
 # Begin Source File
 
