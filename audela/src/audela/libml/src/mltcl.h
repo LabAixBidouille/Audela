@@ -70,7 +70,9 @@ typedef struct {
    double dec;
    double jd;
    double mag;
-   char ident[100];
+   double distance;
+   double angle;
+   char ident[60];
    int kimage;
    int kimage1;
    int kimage2;
@@ -80,6 +82,7 @@ typedef struct {
    int matched;
    int nouvelledate;
 } struct_ligsat ;
+t ;
 
 /***************************************************************************/
 /*      Prototypes des fonctions d'extension C appelables par Tcl          */
