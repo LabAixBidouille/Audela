@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.12 2007-01-13 08:05:24 alainklotz Exp $
+# Mise a jour $Id: snvisu.cap,v 1.13 2007-01-19 16:53:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Option 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Délai (ms) :"
    set caption(snvisu,blink_nbre)      "Nombre de boucles :"
-   set caption(snvisu,zoom_normal)     "Zoom:"
+   set caption(snvisu,zoom_normal)     "Zoom :"
    set caption(snvisu,scrollbar)       "Affichage des barres de défilement :"
    set caption(snvisu,scroollbar_on)   "Avec"
    set caption(snvisu,scroollbar_off)  "Sans"
@@ -398,7 +398,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,image2)          "Imagem 2"
 
    set caption(snvisu,save1)           "Guardar"
-   set caption(snvisu,confirm)         "Deseja continuar ?"
+   set caption(snvisu,confirm)         "Deseja continuar?"
 
    set caption(snvisu,html_title)      "Visualização Sn - Html"
    set caption(snvisu,cancel)          "Cancelar"
@@ -415,19 +415,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,page_html)       "Página HTML"
 
    set caption(snvisu,secondary_title) "Visualização Sn - Ir para"
-   set caption(snvisu,image_numero)    "Ir para a imagem número :"
+   set caption(snvisu,image_numero)    "Ir para a imagem número:"
 
    set caption(snvisu,config_title)    "Visualização Sn - Configuração"
-   set caption(snvisu,rafraich_images) "Actualização da visualização :"
+   set caption(snvisu,rafraich_images) "Actualização da visualização:"
    set caption(snvisu,motion)          "Opção 'motion'"
    set caption(snvisu,release)         "Opção 'release'"
-   set caption(snvisu,blink_delai)     "Blink   -   Atraso (ms) :"
-   set caption(snvisu,blink_nbre)      "Número de ciclos :"
+   set caption(snvisu,blink_delai)     "Blink   -   Atraso (ms):"
+   set caption(snvisu,blink_nbre)      "Número de ciclos:"
    set caption(snvisu,zoom_normal)     "Zoom:"
-   set caption(snvisu,scrollbar)       "Mostrar barras de arrastamento :"
+   set caption(snvisu,scrollbar)       "Mostrar barras de arrastamento:"
    set caption(snvisu,scroollbar_on)   "Com"
    set caption(snvisu,scroollbar_off)  "Sem"
-   set caption(snvisu,image_gzip)      "Mostrar imagens de referência :"
+   set caption(snvisu,image_gzip)      "Mostrar imagens de referência:"
    set caption(snvisu,dss_dvd)         "Imagens de referência DSS (NGC e PGC) em formato .cpa no DVD"
    set caption(snvisu,parcourir)       "..."
    set caption(snvisu,rep_dss_dvd)     "Imagens DSS no DVD"
