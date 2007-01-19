@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.10 2007-01-19 16:53:54 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.11 2007-01-19 22:01:11 alainklotz Exp $
 #
 
 global audace
@@ -880,8 +880,13 @@ proc affimages { } {
          return
       }
       #---
-      set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
-      visu$num(visu_1) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+      #set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
+      #set sb [expr $moyenne - $conf(seuils,irisautobas) ]
+      #set sh [expr $moyenne + $conf(seuils,irisautobas) ]
+      set sbh [ buf$num(buffer1) stat ]
+      set sh [lindex $sbh 0]
+      set sb [lindex $sbh 1]
+      visu$num(visu_1) cut [ list $sh $sb ]
       #---
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
@@ -1031,8 +1036,13 @@ proc affimages { } {
       }
       #---
       catch {
-         set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
-         visu$num(visu_2) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+         #set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
+         #set sb [expr $moyenne - $conf(seuils,irisautobas) ]
+         #set sh [expr $moyenne + $conf(seuils,irisautobas) ]
+         set sbh [ buf$num(buffer2) stat ]
+         set sh [lindex $sbh 0]
+         set sb [lindex $sbh 1]
+         visu$num(visu_2) cut [ list $sh $sb ]
       }
       if {$result==""} {
          visu$num(visu_2) disp
@@ -1993,6 +2003,7 @@ proc snblinkimage { } {
    catch { image delete image101 }
    ::visu::create $b 101 101
    image create photo image101
+   visu101 zoom $snconfvisu(zoom_normal)
    visu101 disp [ list $snvisu(seuil_2_haut) $snvisu(seuil_2_bas) ]
 
    #--- Animation
