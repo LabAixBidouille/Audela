@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.9 2007-01-13 08:39:56 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.10 2007-01-19 16:53:54 robertdelmas Exp $
 #
 
 global audace
@@ -59,7 +59,6 @@ set snvisu(exit_blink)     "1"
 set snvisu(ima_rep2_exist) "0"
 set snvisu(ima_rep3_exist) "0"
 set snconfvisu(num_rep2_3) "0"
-#set snconfvisu(zoom_normal) "1"
 set extname "[buf$audace(bufNo) extension]"
 set aa "$rep(1)/*$extname"
 set rep(x1) [globgalsn $aa]
@@ -880,10 +879,10 @@ proc affimages { } {
       if {$a==1} {
          return
       }
-      #
+      #---
       set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
       visu$num(visu_1) cut [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
-      #
+      #---
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
@@ -1559,14 +1558,14 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
    if { [file exists $filenameDSS] } {
       set rep(jpg_dss) "$shortname-DSS\.jpg"
       set extJPG ".jpg"
-      #je converti l'image FIT en JPG
+      #--- je converti l'image FIT en JPG
       #ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
 
       set num(bufDSS) [buf::create]
       visu::create $num(bufDSS) 300
       #if {[info exists audace]==1} {
          #buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
-     #}
+      #}
       set result [buf$num(bufDSS) load $filenameDSS]
       set hight [expr [lindex [buf$num(bufDSS) stat] 0] * 3]
       set low [lindex [buf$num(bufDSS) stat] 1]
@@ -2126,9 +2125,9 @@ proc afficheCarte { } {
    }
 
    if { $found == 0 }  {
-      # troisieme tentative : je recupere le nom de l'objet
-      # attention : cette solution depends des catalogues presents dans carteduciel
-      #             (catalogues presents par defaut : NGC, IC )
+      #--- troisieme tentative : je recupere le nom de l'objet
+      #--- attention : cette solution depends des catalogues presents dans carteduciel
+      #---             (catalogues presents par defaut : NGC, IC )
       set filename [lindex $rep(x1) $rep(xx1)]
       if { "$filename" != "" } {
          set shortname [file rootname [file tail $filename]]
