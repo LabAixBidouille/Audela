@@ -476,6 +476,8 @@ LRESULT CALLBACK CCropCapture::previewCropCallbackProc(HWND hwnd, UINT message, 
     LRESULT     result;
     HDC         previewDdc;
     RECT        cropRect;
+    RECT        windowRect;
+    float       zoom;
 
     // get context object
     CCropCapture * thisPtr = (CCropCapture *) GetWindowLong(hwnd, GWL_USERDATA);
@@ -486,7 +488,19 @@ LRESULT CALLBACK CCropCapture::previewCropCallbackProc(HWND hwnd, UINT message, 
         // first displays the frame 
         result = CallWindowProc(thisPtr->oldCropPreviewCallback, hwnd, message, wParam, lParam);
         // gets cropping rect coordinates with the origin in upper/left corner.
+        
+
+        // get Window rect
+        GetClientRect(hwnd, &windowRect);
+        
+        zoom =  (float) windowRect.right / thisPtr->capture->getImageWidth() ;
         thisPtr->getCropRect(&cropRect);
+        
+        cropRect.left   = (long) (zoom * cropRect.left) ;
+        cropRect.right  = (long) (zoom * cropRect.right);
+        cropRect.top    = (long) (zoom * cropRect.top);
+        cropRect.bottom = (long) (zoom * cropRect.bottom);
+
         // draws the cropping rectangle
         previewDdc = GetDC(hwnd);
         FrameRect(previewDdc, &cropRect, thisPtr->hBrushPreview ); 
