@@ -11,13 +11,13 @@
 
 # Il contient les lignes :
 
-# binning		      1			indiquez 1,2,... pour définir le binning d'acquisition des images
-# waitbeforeexposure	10			indiquez le temps d'attente en secondes avant chaque acquisition
-# timeexposure		30			indiquez le temps d'exposition des images en secondes
-# numberexposure	      2			indiquez le nombre d'acquisition à réaliser sur chaque champ pointé
-# iteration		      2			indiquez le nombre de séries de pointage des champs, si vous indiquez 2 par exemple, le télescope pointera les champs A,B,C puis de nouveau A,B,C une seconde fois
-# waitbeforeserie       10			indiquez le temps d'attente en secondes entre chaque série
-# headingname		detect031010	indiquez l'entête des noms des fichiers images, si vous indiquez "detect031010" par exemple, le premier fichier image portera le nom detect031010_1231_N0530_1_1.xxx : detect031010 est l'entête, 1231 est la coordonnées en alpha (12h31m) N0530 est la coordonnées en delta (+05°30') _1 est le numéro de la série, _1 et le numéro de la pose dans la série
+# binning 1                : indiquez 1,2,... pour définir le binning d'acquisition des images
+# waitbeforeexposure 10    : indiquez le temps d'attente en secondes avant chaque acquisition
+# timeexposure 30          : indiquez le temps d'exposition des images en secondes
+# numberexposure 2         : indiquez le nombre d'acquisition à réaliser sur chaque champ pointé
+# iteration 2              : indiquez le nombre de séries de pointage des champs, si vous indiquez 2 par exemple, le télescope pointera les champs A,B,C puis de nouveau A,B,C une seconde fois
+# waitbeforeserie 10       : indiquez le temps d'attente en secondes entre chaque série
+# headingname detect031010 :indiquez l'entête des noms des fichiers images, si vous indiquez "detect031010" par exemple, le premier fichier image portera le nom detect031010_1231_N0530_1_1.xxx : detect031010 est l'entête, 1231 est la coordonnées en alpha (12h31m) N0530 est la coordonnées en delta (+05°30') _1 est le numéro de la série, _1 et le numéro de la pose dans la série
 
 # Les lignes suivantes renseignent les coordonnées des champs à pointer, par exemple : 12 31 +05 30 pour 12h31' 05°30' Nord (indiquez + pour Nord et - pour Sud)
 # Une ligne de coordonnées précédée d'un caractère '*' sera pointée mais aucune acquisition ne sera réalisée sur ce champ (exemple : * 21 41 +05 10)
@@ -63,12 +63,12 @@ set entete_ligne_console "# "
 #   éxécutées                                                              #
 #--------------------------------------------------------------------------#
 proc Message {niveau args} {
-		switch -exact -- $niveau {
-		console {
-			::console::disp [eval [concat {format} $args]]
-			update idletasks
-		}
-	}
+   switch -exact -- $niveau {
+      console {
+         ::console::disp [eval [concat {format} $args]]
+         update idletasks
+      }
+   }
 }
 #---Fin de Message---------------------------------------------------------#
 

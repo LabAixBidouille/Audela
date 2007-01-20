@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise a jour $Id: menu.tcl,v 1.4 2006-06-20 17:32:36 robertdelmas Exp $
+# Mise a jour $Id: menu.tcl,v 1.5 2007-01-20 11:16:10 robertdelmas Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -24,9 +24,9 @@ proc Menu_Setup { visuNo menubar } {
 proc Menubar_Delete { visuNo } {
    global menu
 
-   #--- Je supprime tous les menus contenus dans le menubar 
-   set menuList [array names menu menu$visuNo,* ]       
-   foreach key $menuList  {
+   #--- Je supprime tous les menus contenus dans le menubar
+   set menuList [array names menu menu$visuNo,* ]
+   foreach key $menuList {
       set menuName [lindex [split $key ","] 1]
       Menu_Delete $visuNo $menuName all
    }
@@ -149,7 +149,7 @@ proc Menu_Delete { visuNo menuName index } {
       #---- (les sous menus sont effaces en meme temps que leur menu parent)
       if { [ string first sub $menuId] == -1 } {
          for {set index2 [$menuId index last]} {$index2 > 0} {incr index2 -1} {
-            $menuId delete $index2	      
+            $menuId delete $index2
          }
       }
 

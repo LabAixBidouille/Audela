@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.4 2006-08-23 17:45:01 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.5 2007-01-20 11:03:01 robertdelmas Exp $
 #
 
 #=====================================================================
@@ -27,7 +27,7 @@ namespace eval ::pretraitFC {
       variable fichier_log
       variable log_id
       variable numero_version
-	global audace caption
+      global audace caption
 
       # Lecture du fichier de configuration
       ::pretraitFC::RecuperationParametres
@@ -45,8 +45,8 @@ namespace eval ::pretraitFC {
          # Sinon, je prends la date du jour
          set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
       }
-    	set fichier_log $audace(rep_images)
-    	append fichier_log "/" $nom_generique $formatdate ".log"
+      set fichier_log $audace(rep_images)
+      append fichier_log "/" $nom_generique $formatdate ".log"
 
       # Ouverture
       if {[catch {open $fichier_log a} log_id]} {
