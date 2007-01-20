@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.19 2007-01-14 16:04:02 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.20 2007-01-20 15:46:48 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
@@ -125,6 +125,7 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,indice_entier)   "$caption(scanfast,indice_entier)"
       set panneau(Scanfast,confirmation)    "$caption(scanfast,confirmation)"
       set panneau(Scanfast,fichier_existe)  "$caption(scanfast,fichier_existe)"
+      set panneau(Scanfast,calcul_confirm)  "$caption(scanfast,calcul_confirm)"
 
       #--- Initialisation des variables
       set panneau(Scanfast,nom_image)       ""
@@ -524,22 +525,32 @@ namespace eval ::Scanfast {
    proc InfoCam { } {
       variable This
       variable parametres
-      global audace caption conf panneau
+      global audace conf panneau
 
       catch {
          set parametres(Scanfast,col2) "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
          set panneau(Scanfast,col2)    "$parametres(Scanfast,col2)"
-         set panneau(Scanfast,binning) "$parametres(Scanfast,binning)"
          $This.fra2.fra1.ent2 configure -textvariable panneau(Scanfast,col2)
-         $This.fra3.bin.lab_bin configure -textvariable panneau(Scanfast,binning)
          update
       }
       if { $conf(audine,port) == "LPT1:" } {
-         ::Scanfast::cmdCalcul
+         set choix [ tk_messageBox -type yesno -icon warning -title "$panneau(Scanfast,calcul)" \
+            -message "$panneau(Scanfast,calcul_confirm)" ]
+         if { $choix == "yes" } {
+            ::Scanfast::cmdCalcul
+         }
       } elseif { $conf(audine,port) == "LPT2:" } {
-         ::Scanfast::cmdCalcul
+         set choix [ tk_messageBox -type yesno -icon warning -title "$panneau(Scanfast,calcul)" \
+            -message "$panneau(Scanfast,calcul_confirm)" ]
+         if { $choix == "yes" } {
+            ::Scanfast::cmdCalcul
+         }
       } elseif { $conf(audine,port) == "LPT3:" } {
-         ::Scanfast::cmdCalcul
+         set choix [ tk_messageBox -type yesno -icon warning -title "$panneau(Scanfast,calcul)" \
+            -message "$panneau(Scanfast,calcul_confirm)" ]
+         if { $choix == "yes" } {
+            ::Scanfast::cmdCalcul
+         }
       }
    }
 
