@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.47 2007-01-18 22:07:02 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.48 2007-01-20 02:14:57 alainklotz Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -429,6 +429,7 @@ namespace eval ::audace {
       ::confTypeFenetre::initConf
 
       #--- Initialisation de variables de configuration
+      if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
       if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
       if { ! [ info exists conf(fonction_transfert,param3) ] } { set conf(fonction_transfert,param3) "1" }
       if { ! [ info exists conf(fonction_transfert,param4) ] } { set conf(fonction_transfert,param4) "1" }
@@ -1420,3 +1421,10 @@ wm withdraw .
 focus -force $audace(Console)
 ::console::GiveFocus
 
+#--- On charge eventuellement l'image cliquee
+if {[info exists audela(img_filename)]==1} {
+	if {$audela(img_filename)!=""} {
+		loadima $audela(img_filename)
+		set audace(rep_images) [file dirname $audela(img_filename)]
+	}
+}
