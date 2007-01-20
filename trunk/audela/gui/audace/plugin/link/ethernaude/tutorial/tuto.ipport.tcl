@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.6 2006-06-20 19:35:11 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.7 2007-01-20 10:47:00 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -15,7 +15,7 @@ proc caption_def_plugcam { langage } {
    set ipeth(ip) $ip
    set ipeth(ipon) yes
    if {[lindex $ipeth(ip) 0]==0} {
-   	set ipeth(ipon) no
+      set ipeth(ipon) no
    }
    set ipeth(ipnum) "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2].[lindex $ip 3]"
    set ipeth(ipnumeth) "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2]"

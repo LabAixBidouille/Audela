@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.8 2006-06-20 19:37:47 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.9 2007-01-20 10:46:44 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -300,7 +300,7 @@ focus .main.s
 # It is responsible for invoking the demonstration.
 #
 # Arguments:
-# index -	The index of the character that the user clicked on.
+# index - The index of the character that the user clicked on.
 
 proc invoke {index base} {
    global tk_library
@@ -350,8 +350,8 @@ proc invoke {index base} {
 
 # showStatus --
 #
-#	Show the name of the demo program in the status bar. This procedure
-#	is called when the user moves the cursor over a demo description.
+# Show the name of the demo program in the status bar. This procedure
+# is called when the user moves the cursor over a demo description.
 #
 proc showStatus index {
    global tk_library
@@ -374,7 +374,7 @@ proc showStatus index {
 
 # aboutBox --
 #
-#	Pops up a message box with an "about" message
+# Pops up a message box with an "about" message
 #
 proc aboutBox {} {
    global texte

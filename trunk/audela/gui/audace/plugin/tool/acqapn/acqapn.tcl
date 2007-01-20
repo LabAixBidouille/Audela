@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.10 2006-12-08 19:37:36 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.11 2007-01-20 10:52:17 robertdelmas Exp $
 #
 
    package provide acqapn 1.0
@@ -61,7 +61,7 @@
          ::AcqAPN::SetOptions
 
          #--- Initialisation des variables concernant les poses et les images
-         ::AcqAPN::InitVar	
+         ::AcqAPN::InitVar
 
          #--- Caractéristiques du panneau
          set panneau(menu_name,AcqAPN) "$caption(acqapn,titre,panneau)"

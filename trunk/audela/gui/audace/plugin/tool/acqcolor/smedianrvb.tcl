@@ -2,7 +2,7 @@
 # Fichier : smedianrvb.tcl
 # Description : Outil pour calculer la mediane d'une pile d'images
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: smedianrvb.tcl,v 1.3 2006-06-20 20:37:22 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.tcl,v 1.4 2007-01-20 10:51:57 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -188,7 +188,7 @@ button $audace(base).test2.but_valid \
             loadima "${nom}$k$conf(extension,defaut);3"
             saveima "${nom}b$k$conf(extension,defaut)"
          }
-         #--- Execute la mediane de chaque couleur	
+         #--- Execute la mediane de chaque couleur
          smedian ${nom}r ${nom1}r ${nb}
          smedian ${nom}v ${nom1}v ${nb}
          smedian ${nom}b ${nom1}b ${nb}
