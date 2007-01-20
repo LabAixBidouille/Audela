@@ -44,7 +44,7 @@
 #define LOG_FILENAME     "audela.log"
 #define EXE_NAME         "audela.exe"
 #define DEFAULT_SCRIPT_TK   "audela.tcl"
-#define MAX_STRING       256
+#define MAX_STRING       2048
 
 #if defined(OS_WIN)
 #define PATH_SEP         '\\'
@@ -61,7 +61,8 @@
  */
 static int gVerbose = 0;
 static int gConsole = 0;
-static char log_filename[256];
+static char log_filename[2048];
+static char img_filename[2048];
 void log_write(char *fmt,...);
 
 #if defined(OS_WIN)
@@ -114,6 +115,19 @@ void createMsdosConsole();
 #endif
 #endif
 
+void GetChemin(char *chemin, DWORD taille,int end)
+{
+   char *c;
+   c = chemin+strlen(chemin);
+   while((*c!=PATH_SEP)&&(c>=chemin)) {
+      c--;
+   }
+   if (c<chemin) {
+      *chemin=0;
+   } else {
+      *(c+end)=0;
+   }
+}
 
 /*
  * char* audela_getfitsdate(char *buf, size_t size)
@@ -167,6 +181,19 @@ char* audela_getcwd(char *buf, size_t size)
 #endif
 }
 
+/*
+ * char* audela_setcwd(char *buf, size_t size)
+ *    Set the current working directory in buf.
+ */
+void audela_setcwd(char *buf)
+{
+#if defined(OS_WIN)
+   SetCurrentDirectory(buf);
+#endif
+#if defined(OS_LIN) || defined(OS_MACOS)
+   setcwd(buf);
+#endif
+}
 
 /*
  * char* audela_join_filename(char *root, char *tail)
@@ -212,7 +239,7 @@ void log_write(char *fmt,...)
  *    Break a command line into an array of strings.
  *    Side effect : the array of strings is malloced.
  */
-void audela_parsecmdline(char *cmdline, int *argc, char ***argv)
+void audela_parsecmdline(char *chemin, char *cmdline, int *argc, char ***argv)
 {
    int  i;
    int  indblquotes=0;
@@ -222,6 +249,8 @@ void audela_parsecmdline(char *cmdline, int *argc, char ***argv)
    int  nb_spaces=0;
    #define COPYARGV {char *s; s =(char*)calloc(1,tmparg_index+1); strcpy(s,tmparg); (*argv)[*argc] = s; *argc += 1; tmparg_index=0; for(i=0;i<256;i++) tmparg[i] = 0;}
 
+   strcat(chemin,cmdline);
+   strcpy(cmdline,chemin);
    /* Computes an approximation of the number of arguments (find how !!), and
       allocates the array of pointers (tip from tcl sources) */
    while(cmdline[index]!=0) {
@@ -272,12 +301,17 @@ int main(int argc , char **argv)
    int tcl_argc = 1;
    char *tcl_argv[2];
 
-   if(audela_getcwd(rootpath,MAX_STRING-1)==NULL) {
-      printf("AudeLA: can't get current working directory. Exiting.\n");
-      exit(1);
+   strcpy(rootpath,argv[0]);
+   GetChemin(rootpath,MAX_STRING,0);
+   if (strcmp(rootpath,"")==0) {
+      if(audela_getcwd(rootpath,MAX_STRING-1)==NULL) {
+         printf("AudeLA: can't get current working directory. Exiting.\n");
+         exit(1);
+      }
    }
    strcpy(log_filename,rootpath);
    audela_join_filename(log_filename,LOG_FILENAME);
+   audela_setcwd(rootpath);
 
    LOG("*******************************************************\n");
 
@@ -288,6 +322,7 @@ int main(int argc , char **argv)
    tcl_argc = 1;
    tcl_argv[0] = argv[0];
 
+   strcpy(img_filename,"");
    for(i=1;i<argc;i++) {
       if(strcmp(argv[i],"--file")==0) {
          tcl_argv[1] = argv[++i];
@@ -310,6 +345,10 @@ int main(int argc , char **argv)
          printf("  --console         use console GUI (no TK).\n");
          printf("  --version         Version de AudeLA.\n");
          return 0;
+      } else {
+         if (i==1) {
+            strcpy(img_filename,argv[i]);
+         }
       }
    }
 
@@ -380,9 +419,12 @@ int PASCAL WinMain(HINSTANCE hCurInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
    char exename[1024] = EXE_NAME" ";
    int argc;
    char **argv;
+   char chemin[MAX_PATH];
 
+   GetModuleFileName(NULL,chemin,MAX_PATH);
+   GetChemin(chemin,MAX_PATH,1);
    ghInstance=hCurInstance;
-   audela_parsecmdline(strcat(exename,lpCmdLine),&argc,&argv);
+   audela_parsecmdline(chemin,strcat(exename,lpCmdLine),&argc,&argv);
 
    // Do the real work.
    return main( argc, argv );
@@ -417,8 +459,9 @@ void load_library(Tcl_Interp *interp, char *s)
 int Tk_AppInit(Tcl_Interp *interp)
 {
 #if defined(OS_WIN)
-   char ligne[50];
+   char ligne[MAX_PATH];
 #endif
+   int k;
    LOGDEBUG("interp=%p\n",interp);
 
    /* Initialisation of TCL and TK libraries */
@@ -466,6 +509,15 @@ int Tk_AppInit(Tcl_Interp *interp)
    sprintf(ligne,"set audela(hInstance) %d",&ghInstance);
    Tcl_Eval(interp,ligne);
 #endif
+   if (strcmp(img_filename,"")!=0) {
+      for (k=0;k<(int)strlen(img_filename);k++) {
+         if (img_filename[k]=='\\') {
+            img_filename[k]='/';
+         }
+      }
+   }
+   sprintf(ligne,"set audela(img_filename) \"%s\"",img_filename);
+   Tcl_Eval(interp,ligne);
 
    return TCL_OK;
 }
