@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.34 2007-01-18 22:07:50 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.35 2007-01-20 13:07:46 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -2779,11 +2779,6 @@ namespace eval ::AcqFC {
                ::AcqFC::optionWindowedFenster $visuNo
             }
          } else {
-            #--- Je positionne le zoom a 1 si necessaire
-            if { $::confVisu::private($visuNo,zoom) != "1" } {
-               set ::confVisu::private($visuNo,zoom) "1"
-               ::confVisu::setZoom $visuNo
-            }
             #--- Je demarre le mode video fenetree
             cam[ ::confVisu::getCamNo $visuNo ] startvideocrop
          }
@@ -3030,42 +3025,34 @@ namespace eval ::AcqFC {
 
       #--- Controle la coordonnee x1
       if { [ TestReel $panneau(AcqFC,$visuNo,x1) ] == "0" } {
-         set panneau(AcqFC,$visuNo,x1) "?"
-         return
+         set panneau(AcqFC,$visuNo,x1) "1"
       }
       if { ( $panneau(AcqFC,$visuNo,x1) > $largeur ) || ( $panneau(AcqFC,$visuNo,x1) ) < "1" } {
-         set panneau(AcqFC,$visuNo,x1) "?"
-         return
+         set panneau(AcqFC,$visuNo,x1) "1"
       }
 
       #--- Controle la coordonnee y1
       if { [ TestReel $panneau(AcqFC,$visuNo,y1) ] == "0" } {
-         set panneau(AcqFC,$visuNo,y1) "?"
-         return
+         set panneau(AcqFC,$visuNo,y1) "1"
       }
       if { ( $panneau(AcqFC,$visuNo,y1) > $hauteur ) || ( $panneau(AcqFC,$visuNo,y1) ) < "1" } {
-         set panneau(AcqFC,$visuNo,y1) "?"
-         return
+         set panneau(AcqFC,$visuNo,y1) "1"
       }
 
       #--- Controle la coordonnee x2
       if { [ TestReel $panneau(AcqFC,$visuNo,x2) ] == "0" } {
-         set panneau(AcqFC,$visuNo,x2) "?"
-         return
+         set panneau(AcqFC,$visuNo,x2) [ expr $largeur - 1 ]
       }
       if { ( $panneau(AcqFC,$visuNo,x2) > $largeur ) || ( $panneau(AcqFC,$visuNo,x2) < "1" ) } {
-         set panneau(AcqFC,$visuNo,x2) "?"
-         return
+         set panneau(AcqFC,$visuNo,x2) [ expr $largeur - 1 ]
       }
 
       #--- Controle la coordonnee y2
       if { [ TestReel $panneau(AcqFC,$visuNo,y2) ] == "0" } {
-         set panneau(AcqFC,$visuNo,y2) "?"
-         return
+         set panneau(AcqFC,$visuNo,y2) [ expr $hauteur - 1 ]
       }
       if { ( $panneau(AcqFC,$visuNo,y2) > $hauteur ) || ( $panneau(AcqFC,$visuNo,y2) < "1" ) } {
-         set panneau(AcqFC,$visuNo,y2) "?"
-         return
+         set panneau(AcqFC,$visuNo,y2) [ expr $hauteur - 1 ]
       }
 
       #--- Largeur et hauteur de la fenetre vidieo
