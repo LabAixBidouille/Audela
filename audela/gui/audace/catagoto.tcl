@@ -2,12 +2,11 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.5 2006-11-22 07:59:43 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.6 2007-01-20 10:40:44 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
-   global cataGoto
-  
+
    proc init { } {
       global audace
       global conf
@@ -15,19 +14,19 @@ namespace eval cataGoto {
       global catalogue
 
       #---
-      set cataGoto(carte,validation)  "0"
-      set cataGoto(carte,avant_plan)  "0"
-      set catalogue(validation)       "0"
-      set catalogue(autre_catalogue)  "2"
+      set cataGoto(carte,validation) "0"
+      set cataGoto(carte,avant_plan) "0"
+      set catalogue(validation)      "0"
+      set catalogue(autre_catalogue) "2"
 
       #--- initConf
-      if { ! [ info exists conf(cata,haut_inf) ] }                 { set conf(cata,haut_inf)                  "10" }
-      if { ! [ info exists conf(cata,haut_sup) ] }                 { set conf(cata,haut_sup)                  "90" }
-      if { ! [ info exists conf(gotoPlanete,position) ] }          { set conf(gotoPlanete,position)           "+140+40" }
-      if { ! [ info exists conf(cataAsteroide,position) ] }        { set conf(cataAsteroide,position)         "+140+40" }
-      if { ! [ info exists conf(cataObjet,position) ] }            { set conf(cataObjet,position)             "+140+40" }
-      if { ! [ info exists conf(cataEtoile,position) ] }           { set conf(cataEtoile,position)            "+140+40" }
-      if { ! [ info exists conf(cataObjetUtilisateur,position) ] } { set conf(cataObjetUtilisateur,position)  "+140+40" }
+      if { ! [ info exists conf(cata,haut_inf) ] }                 { set conf(cata,haut_inf)                 "10" }
+      if { ! [ info exists conf(cata,haut_sup) ] }                 { set conf(cata,haut_sup)                 "90" }
+      if { ! [ info exists conf(gotoPlanete,position) ] }          { set conf(gotoPlanete,position)          "+140+40" }
+      if { ! [ info exists conf(cataAsteroide,position) ] }        { set conf(cataAsteroide,position)        "+140+40" }
+      if { ! [ info exists conf(cataObjet,position) ] }            { set conf(cataObjet,position)            "+140+40" }
+      if { ! [ info exists conf(cataEtoile,position) ] }           { set conf(cataEtoile,position)           "+140+40" }
+      if { ! [ info exists conf(cataObjetUtilisateur,position) ] } { set conf(cataObjetUtilisateur,position) "+140+40" }
 
       #--- Charge le fichier caption
       uplevel #0 "source \"[ file join $audace(rep_caption) catagoto.cap ]\""
@@ -97,7 +96,7 @@ namespace eval cataGoto {
          #---
          set conf(cataObjetUtilisateur,position) $cataGoto(cataObjetUtilisateur,position)
       }
-   }	
+   }
 
    #
    # cataGoto::GotoPlanete
@@ -145,12 +144,12 @@ namespace eval cataGoto {
       set confGotoPlanete(planete) "10"
       frame $audace(base).gotoPlanete.frame1 -borderwidth 1 -relief raised
          frame $audace(base).gotoPlanete.frame1.frame1a -borderwidth 0 -relief raised
-     	      #--- Radio-bouton Soleil
+            #--- Radio-bouton Soleil
             radiobutton $audace(base).gotoPlanete.frame1.frame1a.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,soleil)" -value 0 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1a.rad1 -side left -padx 5 -pady 2 }
-     	      #--- Radio-bouton Lune
+            #--- Radio-bouton Lune
             radiobutton $audace(base).gotoPlanete.frame1.frame1a.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,lune)" -value 1 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
@@ -362,7 +361,7 @@ namespace eval cataGoto {
            set planete_choisie [mc_ephem {Pluto} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-	}
+      }
       $audace(base).gotoPlanete.frame2.frame3.lab3a configure -text "$confGotoPlanete(choisi)"
 
       #--- Extraction du nom pour l'affichage de la carte de champ 

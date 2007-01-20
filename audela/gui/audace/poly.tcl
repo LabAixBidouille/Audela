@@ -2,7 +2,7 @@
 # Fichier : poly.tcl
 # Description : Ce script regroupe des fonctions pour gérer des images FITS polychromes
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: poly.tcl,v 1.3 2006-06-20 17:35:18 robertdelmas Exp $
+# Mise a jour $Id: poly.tcl,v 1.4 2007-01-20 10:45:16 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier poly.htm dans le dossier doc_html.
@@ -60,10 +60,10 @@ proc seriesApoly {args} {
       set num_buf_tmp [buf::create]
       set index_serie_max [llength $liste_series]
       foreach index [liste_index [lindex $liste_series 0] -rep $in_rep -ext $ext] {
-	for {set k 1} {$k<$index_serie_max} {incr k} {
+        for {set k 1} {$k<$index_serie_max} {incr k} {
           buf$num_buf_tmp load [file join $in_rep [lindex $liste_series $k]$index$ext]
-	  sauve $nom_poly$index -polyNo $k -rep $ex_rep -ext $ext -buf buf$num_buf_tmp
-	  }
+          sauve $nom_poly$index -polyNo $k -rep $ex_rep -ext $ext -buf buf$num_buf_tmp
+          }
         }
       # Suppression du buffer temporaire
       buf::delete $num_buf_tmp
@@ -134,7 +134,7 @@ proc polyAserie {args} {
       # Création du buffer temporaire
       set num_buf_tmp [buf::create]
       foreach index [liste_index $nom_poly -rep $in_rep -ext $ext] {
-	buf$num_buf_tmp load [file join $in_rep "$nom_poly$index$ext;$plan_couleur"]
+        buf$num_buf_tmp load [file join $in_rep "$nom_poly$index$ext;$plan_couleur"]
         sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep $ex_rep -ext $ext
         }
       # Suppression du buffer temporaire
@@ -196,8 +196,8 @@ proc polyAseries {args} {
 
       set index_serie_max [llength $liste_series]
       for {set k 0} {$k<=$index_serie_max} {incr k} {
-	  polyAserie ${nom_poly} [expr $k+1] [lindex $liste_series $k] -in_rep $in_rep -ex_rep $ex_rep -ext $ext
-	}
+        polyAserie ${nom_poly} [expr $k+1] [lindex $liste_series $k] -in_rep $in_rep -ex_rep $ex_rep -ext $ext
+        }
     } else {
       console::affiche_resultat $caption(poly,erreur_polyAseries)
       }
@@ -227,7 +227,7 @@ proc poly_nbcouleurs {args} {
     set ext_index [lsearch -regexp $options_1param "-ext"]
 
     if {$rep_index>=0} {
-	set rep [lindex [lindex $options_1param $rep_index] 1]
+      set rep [lindex [lindex $options_1param $rep_index] 1]
     } else {
       set rep $audace(rep_images)
       }

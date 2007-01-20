@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.4 2006-11-22 08:02:49 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.5 2007-01-20 10:51:03 robertdelmas Exp $
 #
 
 #
@@ -30,15 +30,13 @@ proc temma_get_motor { } {
 } 
 
 namespace eval confTemmaMobile {
-   variable This
-   global confTemmaMobile
 
    #
    # confTemmaMobile::init (est lance automatiquement au chargement de ce fichier tcl)
    # Initialise les variables caption(...) 
    #
    proc init { } {
-      global audace   
+      global audace
  
       #--- Charge le fichier caption
       uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temma.cap ]\""
@@ -53,7 +51,7 @@ namespace eval confTemmaMobile {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -93,8 +91,8 @@ namespace eval confTemmaMobile {
       variable This
 
       set This $this
-	$This.suivi_ad configure -state disabled
-	$This.suivi_dec configure -state disabled
+      $This.suivi_ad configure -state disabled
+      $This.suivi_dec configure -state disabled
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -108,8 +106,8 @@ namespace eval confTemmaMobile {
       variable This
 
       set This $this
-	$This.suivi_ad configure -state normal
-	$This.suivi_dec configure -state normal
+      $This.suivi_ad configure -state normal
+      $This.suivi_dec configure -state normal
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -177,27 +175,27 @@ namespace eval confTemmaMobile {
          -text "$caption(temma,para_mobile_comete)" \
          -value 1 -variable confTemmaMobile(temma,type) \
          -command { ::confTemmaMobile::activer "$audace(base).confTemmaMobile" }
-	pack $This.rad3 -in $This.frame4 -anchor n -side left -padx 10 -pady 5
+      pack $This.rad3 -in $This.frame4 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en asension droite
       catch {
          entry $This.suivi_ad -textvariable confTemmaMobile(temma,suivi_ad) -width 10 -justify center
-	   pack $This.suivi_ad -in $This.frame6 -anchor n -side left -padx 5 -pady 5
+         pack $This.suivi_ad -in $This.frame6 -anchor n -side left -padx 5 -pady 5
       }
 
       #--- Etiquette vitesse d'ascension droite
       label $This.lab_1 -text "$caption(temma,para_mobile_ad)"
-	pack $This.lab_1 -in $This.frame6 -anchor n -side left -padx 10 -pady 5
+      pack $This.lab_1 -in $This.frame6 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en declinaison
       catch {
          entry $This.suivi_dec -textvariable confTemmaMobile(temma,suivi_dec) -width 10 -justify center
-	   pack $This.suivi_dec -in $This.frame7 -anchor n -side left -padx 5 -pady 5
+         pack $This.suivi_dec -in $This.frame7 -anchor n -side left -padx 5 -pady 5
       }
 
       #--- Etiquette vitesse de declinaison
       label $This.lab_2 -text "$caption(temma,para_mobile_dec)"
-	pack $This.lab_2 -in $This.frame7 -anchor n -side left -padx 10 -pady 5
+      pack $This.lab_2 -in $This.frame7 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree le bouton 'OK' 
       button $This.but_ok -text "$caption(temma,ok)" -width 7 -borderwidth 2 \
@@ -244,7 +242,7 @@ namespace eval confTemmaMobile {
       global confTemmaMobile
 
       #--- Bornage de la correction
-      if { $confTemmaMobile(temma,suivi_ad) > "21541" }  { 
+      if { $confTemmaMobile(temma,suivi_ad) > "21541" } {
          set confTemmaMobile(temma,suivi_ad) "21541"
          $This.suivi_ad configure -textvariable confTemmaMobile(temma,suivi_ad)
       }
@@ -252,7 +250,7 @@ namespace eval confTemmaMobile {
          set confTemmaMobile(temma,suivi_ad) "-21541"
          $This.suivi_ad configure -textvariable confTemmaMobile(temma,suivi_ad)
       }
-      if { $confTemmaMobile(temma,suivi_dec) > "600" }  {
+      if { $confTemmaMobile(temma,suivi_dec) > "600" } {
          set confTemmaMobile(temma,suivi_dec) "600"
          $This.suivi_dec configure -textvariable confTemmaMobile(temma,suivi_dec)
       }
