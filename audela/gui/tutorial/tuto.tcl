@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.3 2006-06-20 18:16:56 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.4 2007-01-20 11:39:29 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -142,7 +142,7 @@ if {[info command .main.menuBar] == "" } {
       .main.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
    } else {
       .main.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
-	  -underline 0 -accelerator "<F1>"
+         -underline 0 -accelerator "<F1>"
       .main.menuBar.file add sep
    }
    .main.menuBar.file add command -label $caption(tuto_quit) -command "exit" -underline 0 \
@@ -188,15 +188,15 @@ pack .main.textFrame -expand yes -fill both
 
 if {[winfo depth .main] == 1} {
     .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-underline 1
+       -underline 1
     .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-underline 1
+       -underline 1
     .main.t tag configure hot -background black -foreground white
 } else {
     .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-foreground blue -underline 1
+       -foreground blue -underline 1
     .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-foreground #303080 -underline 1
+       -foreground #303080 -underline 1
     .main.t tag configure hot -foreground red -underline 1
 }
 .main.t tag bind demo <ButtonRelease-1> {
@@ -217,14 +217,14 @@ set lastLine ""
 .main.t tag bind demo <Motion> {
     set newLine [.main.t index {@%x,%y linestart}]
     if {[string compare $newLine $lastLine] != 0} {
-	.main.t tag remove hot 1.0 end
-	set lastLine $newLine
+       .main.t tag remove hot 1.0 end
+       set lastLine $newLine
 
-	set tags [.main.t tag names {@%x,%y}]
-	set i [lsearch -glob $tags demo-*]
-	if {$i >= 0} {
-	    .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-	}
+       set tags [.main.t tag names {@%x,%y}]
+       set i [lsearch -glob $tags demo-*]
+       if {$i >= 0} {
+          .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+       }
     }
     #showStatus [.main.t index {@%x,%y}]
 }
@@ -280,14 +280,14 @@ focus .main.s
 # It is responsible for invoking the demonstration.
 #
 # Arguments:
-# index -	The index of the character that the user clicked on.
+# index - The index of the character that the user clicked on.
 
 proc invoke {index base} {
     global tk_library
     set tags [$base.t tag names $index]
     set i [lsearch -glob $tags demo-*]
     if {$i < 0} {
-	return
+       return
     }
     set cursor [$base.t cget -cursor]
     $base.t configure -cursor watch
@@ -324,8 +324,8 @@ proc invoke {index base} {
 
 # showStatus --
 #
-#	Show the name of the demo program in the status bar. This procedure
-#	is called when the user moves the cursor over a demo description.
+# Show the name of the demo program in the status bar. This procedure
+# is called when the user moves the cursor over a demo description.
 #
 proc showStatus index {
     global tk_library
@@ -333,22 +333,22 @@ proc showStatus index {
     set i [lsearch -glob $tags demo-*]
     set cursor [.main.t cget -cursor]
     if {$i < 0} {
-	.main.statusBar.lab config -text " "
-	set newcursor xterm
+       .main.statusBar.lab config -text " "
+       set newcursor xterm
     } else {
-	set demo [string range [lindex $tags $i] 5 end]
-	.main.statusBar.lab config -text "Run the \"$demo\" sample program"
-	set newcursor hand2
+       set demo [string range [lindex $tags $i] 5 end]
+       .main.statusBar.lab config -text "Run the \"$demo\" sample program"
+       set newcursor hand2
     }
     if [string compare $cursor $newcursor] {
-	.main.t config -cursor $newcursor
+       .main.t config -cursor $newcursor
     }
 }
 
 
 # aboutBox --
 #
-#	Pops up a message box with an "about" message
+# Pops up a message box with an "about" message
 #
 proc aboutBox {} {
    global texte
