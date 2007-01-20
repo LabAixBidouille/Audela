@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.station.tcl,v 1.3 2006-06-20 18:16:43 robertdelmas Exp $
+# Mise a jour $Id: tuto.station.tcl,v 1.4 2007-01-20 11:39:29 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -130,7 +130,7 @@ if {$::tcl_platform(platform) == "macintosh"} {
     .second.menuBar.apple add command -label $caption(tuto_about)  -command "aboutBox"
 } else {
     .second.menuBar.file add command -label $caption(tuto_about)  -command "aboutBox" \
-	-underline 0 -accelerator "<F1>"
+       -underline 0 -accelerator "<F1>"
     .second.menuBar.file add sep
 }
 
@@ -191,15 +191,15 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 if {[winfo depth .second] == 1} {
     .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-underline 1
+       -underline 1
     .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-underline 1
+       -underline 1
     .second.t tag configure hot -background black -foreground white
 } else {
     .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-	-foreground blue -underline 1
+       -foreground blue -underline 1
     .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-	-foreground #303080 -underline 1
+       -foreground #303080 -underline 1
     .second.t tag configure hot -foreground red -underline 1
 }
 .second.t tag bind demo <ButtonRelease-1> {
@@ -220,14 +220,14 @@ set lastLine ""
 .second.t tag bind demo <Motion> {
     set newLine [.second.t index {@%x,%y linestart}]
     if {[string compare $newLine $lastLine] != 0} {
-	.second.t tag remove hot 1.0 end
-	set lastLine $newLine
+       .second.t tag remove hot 1.0 end
+       set lastLine $newLine
 
-	set tags [.second.t tag names {@%x,%y}]
-	set i [lsearch -glob $tags demo-*]
-	if {$i >= 0} {
-	    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-	}
+       set tags [.second.t tag names {@%x,%y}]
+       set i [lsearch -glob $tags demo-*]
+       if {$i >= 0} {
+          .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+       }
     }
     #showStatus [.second.t index {@%x,%y}]
 }
