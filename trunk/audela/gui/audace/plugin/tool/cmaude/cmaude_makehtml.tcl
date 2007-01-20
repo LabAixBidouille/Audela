@@ -2,7 +2,7 @@
 # Fichier : cmaude_makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude_makehtml.tcl,v 1.2 2006-12-16 14:08:21 robertdelmas Exp $
+# Mise a jour $Id: cmaude_makehtml.tcl,v 1.3 2007-01-20 11:02:40 robertdelmas Exp $
 #
 
 variable cmconf
@@ -54,7 +54,7 @@ if { $existence == "0" } {
    append texte "to both formats, allowing the user to browse easily the images of the night\n"
    append texte "by visualising the JPEG version on a web browser.<br>\n"
    append texte "It requires to have the images in the same directory as this HTML document.\n"
-   append texte "\n" 	      append texte "<h2>\n"
+   append texte "\n"          append texte "<h2>\n"
    append texte "2. Local Ephemeris</h2>\n"
    append texte "Here are some local ephemeris for the current night at Paranal: <br>\n"
    append texte "$cmconf(resultb)<br>\n"
@@ -108,9 +108,9 @@ if { $loopexit == "1" } {
    append texte "\"[string range [mc_date2jd now] 0 6]-[expr $compteur-1]$cmconf(extension).jpg\");\n"
    append texte "document.write('<img name=\"myImages\" border=\"3\" src=\"'+imgz[0]+'\">');\n"
    append texte "function getPosition(val) {\n"
-   append texte "    var goodnum = current+val;\n"
-   append texte "    //Wrap around\n"
-   append texte "	   if (goodnum < 0) goodnum = imgz.length-1;\n"
+   append texte "   var goodnum = current+val;\n"
+   append texte "   //Wrap around\n"
+   append texte "   if (goodnum < 0) goodnum = imgz.length-1;\n"
    append texte "   else if (goodnum > imgz.length-1) goodnum = 0;\n"
    append texte "   document.myImages.src = imgz[goodnum];\n"
    append texte "   current = goodnum; }\n"

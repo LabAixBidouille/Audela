@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.4 2006-07-07 20:55:18 michelpujol Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.5 2007-01-20 11:00:53 robertdelmas Exp $
 #
 
 package provide acqfen 1.2.1
@@ -52,17 +52,17 @@ namespace eval ::acqfen {
 
       # Valeurs par défaut d'acquisition (centrage)
       # Liste de valeurs du temps de pose disponibles par défaut
-      set panneau(acqfen,temps_pose_centrage)	{.1 .2 .5 1 2 5}
+      set panneau(acqfen,temps_pose_centrage) {.1 .2 .5 1 2 5}
       # Valeur par défaut du temps de pose:
 #--- Debut modif Robert
-     # set panneau(acqfen,pose_centrage)		.2
+     # set panneau(acqfen,pose_centrage) .2
       if { ! [ info exists panneau(acqfen,pose_centrage) ] } {
          set panneau(acqfen,pose_centrage) "$parametres(acqfen,pose_centrage)"
       }
 #--- Fin modif Robert
       # Binning par défaut: 4x4
 #--- Debut modif Robert
-     # set panneau(acqfen,bin_centrage) 		4
+     # set panneau(acqfen,bin_centrage) 4
       if { ! [ info exists panneau(acqfen,bin_centrage) ] } {
          set panneau(acqfen,bin_centrage) "$parametres(acqfen,bin_centrage)"
       }
@@ -70,17 +70,17 @@ namespace eval ::acqfen {
       
       # Valeurs par défaut d'acquisition (mode "planétaire", fenêtré)
       # Liste de valeurs du temps de pose disponibles par défaut
-      set panneau(acqfen,temps_pose)	{.01 .02 .03 .05 .08 .1 .15 .2 .3 .5 1}
+      set panneau(acqfen,temps_pose) {.01 .02 .03 .05 .08 .1 .15 .2 .3 .5 1}
       # Valeur par défaut du temps de pose:
 #--- Debut modif Robert
-     # set panneau(acqfen,pose)			.05
+     # set panneau(acqfen,pose) .05
       if { ! [ info exists panneau(acqfen,pose) ] } {
          set panneau(acqfen,pose) "$parametres(acqfen,pose)"
       }
 #--- Fin modif Robert
       # Binning par défaut: 1x1
 #--- Debut modif Robert
-     # set panneau(acqfen,bin) 			1
+     # set panneau(acqfen,bin) 1
       if { ! [ info exists panneau(acqfen,bin) ] } {
          set panneau(acqfen,bin) "$parametres(acqfen,bin)"
       }
@@ -117,7 +117,7 @@ namespace eval ::acqfen {
 #--- Fin modif Robert
 
       set panneau(acqfen,index)           1
-      set panneau(acqfen,nb_images)	      1
+      set panneau(acqfen,nb_images)       1
 
       set panneau(acqfen,enregistrer)     0
 
@@ -431,10 +431,10 @@ namespace eval ::acqfen {
          $This.acqred.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
          
          # RAZ du fenêtrage
-         set panneau(acqfen,X1)	"-"
-         set panneau(acqfen,Y1)	"-"
-         set panneau(acqfen,X2)	"-"
-         set panneau(acqfen,Y2)	"-"     
+         set panneau(acqfen,X1) "-"
+         set panneau(acqfen,Y1) "-"
+         set panneau(acqfen,X2) "-"
+         set panneau(acqfen,Y2) "-"     
          place forget $This.acq.matrice_color_invariant.fen
          place forget $This.acqred.matrice_color_invariant.fen
          $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
@@ -655,7 +655,7 @@ namespace eval ::acqfen {
                   saveima [append nom $panneau(acqfen,index)]
                   incr panneau(acqfen,index)
                   # Corrections éventuelles de suivi
-                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                   }
                }
             "21" {
@@ -663,7 +663,7 @@ namespace eval ::acqfen {
               for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                 if {$panneau(acqfen,demande_arret)==1} {break}
                   # Acquisition
-                  acqfen::acq_acqfen                                    
+                  acqfen::acq_acqfen
                   # Affichage éventuel
                   if {$nbint==$panneau(acqfen,fenreglfen22)} {
 #--- Debut modif Robert
@@ -694,14 +694,14 @@ namespace eval ::acqfen {
                   saveima [append nom $panneau(acqfen,index)]
                   incr panneau(acqfen,index)
                   # Corrections éventuelles de suivi
-                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                   }
                }
             "31" {
               for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                  if {$panneau(acqfen,demande_arret)==1} {break}
                   # Acquisition
-                  acqfen::acq_acqfen                                    
+                  acqfen::acq_acqfen
                   # Sauvegarde de l'image
                   set nom $panneau(acqfen,nom_image)
                   # Pour éviter un nom de fichier qui commence par un blanc :
@@ -723,13 +723,13 @@ namespace eval ::acqfen {
                   saveima [append nom $panneau(acqfen,index)]
                   incr panneau(acqfen,index)
                   # Corrections éventuelles de suivi
-                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                   }
                # Affichage avec visu auto
 #--- Debut modif Robert
                audace::autovisu $audace(visuNo)
 #--- Fin modif Robert
-               }	            
+               }
             "12" {
               set liste_buffers ""
               for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
@@ -746,10 +746,10 @@ namespace eval ::acqfen {
                   lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                   incr panneau(acqfen,index)
                   # Corrections éventuelles de suivi
-                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                   }
-               # Sauvegarde des images sur le disque   
-               foreach ima $liste_buffers {                                   
+               # Sauvegarde des images sur le disque
+               foreach ima $liste_buffers {
                   set nom $panneau(acqfen,nom_image)
                   # Pour éviter un nom de fichier qui commence par un blanc :
                   set nom [lindex $nom 0]
@@ -795,10 +795,10 @@ namespace eval ::acqfen {
                   lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                   incr panneau(acqfen,index)
                   # Corrections éventuelles de suivi
-                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                   }
-               # Sauvegarde des images sur le disque   
-               foreach ima $liste_buffers {                                   
+               # Sauvegarde des images sur le disque
+               foreach ima $liste_buffers {
                   set nom $panneau(acqfen,nom_image)
                   # Pour éviter un nom de fichier qui commence par un blanc :
                   set nom [lindex $nom 0]
@@ -827,17 +827,17 @@ namespace eval ::acqfen {
               for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
                 if {$panneau(acqfen,demande_arret)==1} {break}
                   # Acquisition
-                  acqfen::acq_acqfen                                    
+                  acqfen::acq_acqfen
                   # Sauvegarde temporaire de l'image
                   set buftmp [buf::create]
                   buf$audace(bufNo) copyto $buftmp
                   lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                   incr panneau(acqfen,index)
                   # Corrections éventuelles de suivi
-                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                  if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                   }
-               # Sauvegarde des images sur le disque   
-               foreach ima $liste_buffers {                                   
+               # Sauvegarde des images sur le disque
+               foreach ima $liste_buffers {
                   set nom $panneau(acqfen,nom_image)
                   # Pour éviter un nom de fichier qui commence par un blanc :
                   set nom [lindex $nom 0]
@@ -994,14 +994,14 @@ namespace eval ::acqfen {
                        incr panneau(acqfen,index)
                        }
                     # Corrections éventuelles de suivi
-                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                  }
               }
               "21" {
                  set nbint 1
                  while {$panneau(acqfen,demande_arret)==0} {
                    # Acquisition
-                    acqfen::acq_acqfen                                    
+                    acqfen::acq_acqfen
                     # Affichage éventuel
                     if {$nbint==$panneau(acqfen,fenreglfen22)} {
 #--- Debut modif Robert
@@ -1034,13 +1034,13 @@ namespace eval ::acqfen {
                        incr panneau(acqfen,index)
                        }
                     # Corrections éventuelles de suivi
-                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                  }
               }
               "31" {
                   while {$panneau(acqfen,demande_arret)==0} {
                     # Acquisition
-                    acqfen::acq_acqfen     
+                    acqfen::acq_acqfen
                     # Si demandé, sauvegarde de l'image
                     if {$panneau(acqfen,enregistrer)==1} {
                        set nom $panneau(acqfen,nom_image)
@@ -1064,7 +1064,7 @@ namespace eval ::acqfen {
                        incr panneau(acqfen,index)
                        }
                     # Corrections éventuelles de suivi
-                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                  }
                  # Affichage avec visu auto
 #--- Debut modif Robert
@@ -1081,23 +1081,23 @@ namespace eval ::acqfen {
                     audace::autovisu $audace(visuNo)
 #--- Fin modif Robert
                     # Si demandé, sauvegarde temporaire de l'image
-                    if {$panneau(acqfen,enregistrer)==1} {                  
+                    if {$panneau(acqfen,enregistrer)==1} {
                        set buftmp [buf::create]
                        buf$audace(bufNo) copyto $buftmp
                        lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
                        incr panneau(acqfen,index)
                        }
                     # Corrections éventuelles de suivi
-                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                  }
-                 # Sauvegarde des images sur le disque   
-                 foreach ima $liste_buffers {                                   
+                 # Sauvegarde des images sur le disque
+                 foreach ima $liste_buffers {
                     set nom $panneau(acqfen,nom_image)
                     # Pour éviter un nom de fichier qui commence par un blanc :
                     set nom [lindex $nom 0]
                     buf[lindex $ima 0] copyto $audace(bufNo)
 #--- Debut modif Robert
-                    #--- Verifie que le nom du fichier n'existe pas deja...
+                    #--- Verifie que le nom du fichier n'existe pas deja
                     set nom1 "$nom"
                     append nom1 [lindex $ima 1] $ext
                     if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
@@ -1128,17 +1128,17 @@ namespace eval ::acqfen {
                        incr nbint
                        }
                     # Si demandé, sauvegarde temporaire de l'image
-                    if {$panneau(acqfen,enregistrer)==1} {                     
+                    if {$panneau(acqfen,enregistrer)==1} {
                        set buftmp [buf::create]
                        buf$audace(bufNo) copyto $buftmp
                        lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
                        incr panneau(acqfen,index)
                        }
                     # Corrections éventuelles de suivi
-                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                  }
                  # Sauvegarde des images sur le disque   
-                 foreach ima $liste_buffers {                                   
+                 foreach ima $liste_buffers {
                     set nom $panneau(acqfen,nom_image)
                     # Pour éviter un nom de fichier qui commence par un blanc :
                     set nom [lindex $nom 0]
@@ -1165,17 +1165,17 @@ namespace eval ::acqfen {
                     # Acquisition
                     acqfen::acq_acqfen
                     # Si demandé, sauvegarde temporaire de l'image
-                    if {$panneau(acqfen,enregistrer)==1} {                                
+                    if {$panneau(acqfen,enregistrer)==1} {
                        set buftmp [buf::create]
                        buf$audace(bufNo) copyto $buftmp
                        lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
                        incr panneau(acqfen,index)
                        }
                     # Corrections éventuelles de suivi
-                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}	                                    
+                    if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                     }
-                    # Sauvegarde des images sur le disque   
-                    foreach ima $liste_buffers {                                   
+                    # Sauvegarde des images sur le disque
+                    foreach ima $liste_buffers {
                        set nom $panneau(acqfen,nom_image)
                        # Pour éviter un nom de fichier qui commence par un blanc :
                        set nom [lindex $nom 0]
@@ -1507,7 +1507,7 @@ namespace eval ::acqfen {
 #***** Fin de la procedure de test de validité d'une chaine de caractères *******
 
    proc fenreglfenquit {} {
-	global panneau conf audace
+   global panneau conf audace
 
       set panneau(acqfen,fenreglfen1)  $panneau(acqfen,oldfenreglfen1)
       set panneau(acqfen,fenreglfen12) $panneau(acqfen,oldfenreglfen12)

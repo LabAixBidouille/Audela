@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.4 2006-08-13 21:47:19 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.5 2007-01-20 11:07:19 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -1073,7 +1073,7 @@ proc recup_position { } {
    set deb [ expr 1 + [ string first + $snconf(geometry) ] ]
    set fin [ string length $snconf(geometry) ]
    set snconf(position) "+[ string range $snconf(geometry) $deb $fin ]"
-}	
+}
 
 # ===========================================================================================
 # OutSnAcq

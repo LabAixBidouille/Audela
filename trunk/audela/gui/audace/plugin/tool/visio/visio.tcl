@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des séries d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.5 2006-11-14 21:47:44 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.6 2007-01-20 11:07:56 robertdelmas Exp $
 #
 
 package provide visio 2.6.2
@@ -37,7 +37,7 @@ namespace eval ::visio {
 
     # Modifier ici l'adresse du lecteur amovible par défaut
     # (pour un lecteur disquette, la variable vaut A:)
-    set panneau(visio,lecteur_amovible)	"A:"
+    set panneau(visio,lecteur_amovible) "A:"
 
     # Modifier ici la capacité (en octets) du lecteur amovible par défaut
     # (pour une disquette, 1457664 octets)
@@ -190,7 +190,7 @@ namespace eval ::visio {
       $panneau(visio,menu_nom_generique) add radiobutton -label "[lindex $serie 0]*[lindex $serie 1]" \
         -command "visio::MAJ_nom_generique \"[lindex $serie 0]\" [lindex $serie 1]"
       }
-    if {[llength $series] > 0} {	
+    if {[llength $series] > 0} {
       return [list [lindex [lindex $series 0] 0] [lindex [lindex $series 0] 1]]
     } else {
       return [list "" ""]
@@ -561,13 +561,13 @@ namespace eval ::visio {
     # On ne continue que s'il y a une disquette dans le lecteur
     if {[file exist $panneau(visio,lecteur_amovible)]==1} {
     # On ferme la fenêtre de lancement
-    destroy $audace(base).feninidisket	  
+    destroy $audace(base).feninidisket
     # Désactive les boutons
     visio::desactive_boutons
     # Supprime les fichiers existants sur la disquette
     visio::clear_disket
     # Création du buffer temporaire
-    set num_buf_tmp [buf::create]	  
+    set num_buf_tmp [buf::create]
     set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
     # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
     if [catch [set index_serie [lsort -ascii $index_serie]]] {}
@@ -630,7 +630,7 @@ namespace eval ::visio {
       # Supprime les fichiers existants sur la disquette
       ::visio::clear_disket
       # Création du buffer temporaire
-      set num_buf_tmp [buf::create]	  
+      set num_buf_tmp [buf::create]
       set rep_courant_nogz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut)]]]
       set rep_courant_gz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut).gz]]]
       set rep_courant [lsort -increasing [concat $rep_courant_nogz $rep_courant_gz]]
