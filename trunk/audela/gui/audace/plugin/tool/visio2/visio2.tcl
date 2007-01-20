@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.14 2007-01-18 22:30:32 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.15 2007-01-20 10:12:53 robertdelmas Exp $
 #
 
 package provide visio2 1.0
@@ -134,6 +134,7 @@ namespace eval ::Visio2 {
 
       #--- je refraichis la liste des fichiers
       localTable::init $private(This) $audace(rep_images)
+      ::Visio2::localTable::refresh
    }
 
    proc stopTool { visuNo } {
@@ -362,6 +363,8 @@ namespace eval ::Visio2 {
 
       #--- je trie par ordre alphabetique de la premiere colonne
       tablelist::sortByColumn $tbl 0
+      #--- je rafraichis les scrollbars
+      update
    }
 
    #------------------------------------------------------------------------------
@@ -1841,7 +1844,8 @@ namespace eval ::Visio2::ftpTable {
          set filename [file join "$private(directory)" "$name"]
          ::ftpclient::get "$filename" "$targetDir" "$size"
 
-         #--- je refraichis l'affichage de la table locale et affiche l'image
+         #--- je refraichis l'affichage de la table locale pour faire apparaitre
+         #--- les fichiers copies sur le disque local et affiche l'image
          ::Visio2::localTable::refresh "$name"
       }
    }
