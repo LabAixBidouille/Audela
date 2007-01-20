@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.20 2006-12-02 15:01:47 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.21 2007-01-20 10:17:53 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -14,10 +14,6 @@ set confTel(celestron,connect)      "0"
 set confTel(fenetre,mobile,valider) "0"
 
 namespace eval ::confTel {
-   namespace export run
-   namespace export ok
-   namespace export appliquer
-   namespace export fermer
 
    #
    # confTel::init (est lance automatiquement au chargement de ce fichier tcl)

@@ -2,15 +2,13 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_1.tcl,v 1.2 2006-06-20 21:09:31 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.tcl,v 1.3 2007-01-20 10:09:45 robertdelmas Exp $
 #
 
-namespace eval obj_Lune_1 {
-   global obj_lune
-   global audace
+namespace eval obj_Lune {
 
    #
-   # obj_Lune_1::Lune_Ephemerides
+   # obj_Lune::Lune_Ephemerides
    # Calcule les ephemerides de la Lune toutes les secondes
    #
    proc Lune_Ephemerides { } {
@@ -111,7 +109,7 @@ namespace eval obj_Lune_1 {
             set obj_lune(Long_terminateur) "$obj_lune(Long_terminateur)$caption(obj_lune1,degre) ($caption(obj_lune1,est))"
          }
          #--- Recuperation de l'age de la Lune actuel
-         ::obj_Lune_1::Age_Lune [::audace::date_sys2ut now]
+         ::obj_Lune::Age_Lune [::audace::date_sys2ut now]
          #--- Affichage de l'age de la Lune
          if { $obj_lune(age_lune) > "1" } {
             set obj_lune(age_lune) "[format "%4.1f" $obj_lune(age_lune)] $caption(obj_lune1,jours)"
@@ -123,14 +121,14 @@ namespace eval obj_Lune_1 {
          set dist_Terre_Lune [expr (149597870.*$dist_Terre_Lune)]
          set obj_lune(dist_Terre_Lune) "[format "%06.0f$caption(obj_lune1,km)" $dist_Terre_Lune]"
          #--- Dessine la phase de la Lune sur la photo de l'onglet Ephemerides
-         ::obj_Lune_2::Lune_Dessine_Phase
+         ::obj_Lune::Lune_Dessine_Phase
          #--- Permet un affichage des ephemerides toutes les secondes
-         after 1000 ::obj_Lune_1::Lune_Ephemerides
+         after 1000 ::obj_Lune::Lune_Ephemerides
       }
    }
 
    #
-   # obj_Lune_1::Lune_Phases
+   # obj_Lune::Lune_Phases
    # Calcule les dates des phases de la Lune
    #
    proc Lune_Phases { } {
@@ -202,7 +200,7 @@ namespace eval obj_Lune_1 {
    }
 
    #
-   # obj_Lune_1::precedant_suivant
+   # obj_Lune::precedant_suivant
    # Permet de passer au mois precedant ou suivant pour le calcul des dates des phases de la Lune
    #
    proc precedant_suivant { } {
@@ -213,11 +211,11 @@ namespace eval obj_Lune_1 {
       } elseif { $obj_lune(change_mois) == "-" } {
          set obj_lune(indice_mois) [expr $obj_lune(indice_mois) - 1]
       }
-      ::obj_Lune_1::Lune_Phases
+      ::obj_Lune::Lune_Phases
    }
 
    #
-   # obj_Lune_1::Meilleures_Dates
+   # obj_Lune::Meilleures_Dates
    # Calcule la date du meilleur moment d'une lunaison pour observer un site
    #
    proc Meilleures_Dates { } {
@@ -285,7 +283,7 @@ namespace eval obj_Lune_1 {
       set obj_lune(fraction_illu_0) [expr (1+cos($angle_phase1_0))/2]
       set fraction_illu_0 "$obj_lune(fraction_illu_0)"
       #--- Calcul de l'age de la Lune pour la premiere date
-      ::obj_Lune_1::Age_Lune $now_0
+      ::obj_Lune::Age_Lune $now_0
       set age_lune_now_0 "$obj_lune(age_lune)"
       #--- Calcul des librations pour la premiere date
       set libration_lune_0 [mc_libration $now_0 -topo $audace(posobs,observateur,gps)]
@@ -294,7 +292,7 @@ namespace eval obj_Lune_1 {
       set obj_lune(Lib_long_0) [lindex $libration_lune_0 0]
       set obj_lune(Lib_long_0) "[format "%4.2f" $obj_lune(Lib_long_0) ]"
       #--- Dessine le terminateur pour la premiere date
-      ::obj_Lune_2::Lune_Dessine_Phase_Meilleure_Date $fraction_illu_0 $age_lune_now_0 $color(red)
+      ::obj_Lune::Lune_Dessine_Phase_Meilleure_Date $fraction_illu_0 $age_lune_now_0 $color(red)
       #--- Recherche de la deuxieme meilleure date
       #--- Preparation de l'heure TU pour le calcul des ephemerides
       set now now
@@ -351,10 +349,10 @@ namespace eval obj_Lune_1 {
       set obj_lune(Lib_long_180) [lindex $libration_lune_180 0]
       set obj_lune(Lib_long_180) "[format "%4.2f" $obj_lune(Lib_long_180) ]"
       #--- Calcul de l'age de la Lune pour la deuxieme date
-      ::obj_Lune_1::Age_Lune $now_180
+      ::obj_Lune::Age_Lune $now_180
       set age_lune_now_180 "$obj_lune(age_lune)"
       #--- Dessine le terminateur pour la deuxieme date
-      ::obj_Lune_2::Lune_Dessine_Phase_Meilleure_Date $fraction_illu_180 $age_lune_now_180 $color(blue)
+      ::obj_Lune::Lune_Dessine_Phase_Meilleure_Date $fraction_illu_180 $age_lune_now_180 $color(blue)
       #--- Affichage des dates d'observation, des longitudes des terminateurs, des librations et des fractions illuminees de la Lune
       if { $now_0 < $now_180 } {
          $frmm(Obj_Lune5).frame8.labURL4a configure -text "$now_0_1" -fg $color(red)
@@ -434,7 +432,7 @@ namespace eval obj_Lune_1 {
    }
 
    #
-   # obj_Lune_1::Age_Lune
+   # obj_Lune::Age_Lune
    # Calcule l'age de la Lune
    #
    proc Age_Lune { { date "" } } {
