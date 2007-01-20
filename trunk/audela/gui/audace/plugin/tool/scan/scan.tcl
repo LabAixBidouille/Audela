@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.19 2007-01-14 16:03:42 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.20 2007-01-20 15:46:13 robertdelmas Exp $
 #
 
 package provide scan 1.0
@@ -111,8 +111,8 @@ namespace eval ::Dscan {
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
-            foreach { a b } [ array get parametres ] { 
-               puts $fichier "set parametres($a) \"$b\"" 
+            foreach { a b } [ array get parametres ] {
+               puts $fichier "set parametres($a) \"$b\""
             }
             close $fichier
          }
@@ -121,7 +121,7 @@ namespace eval ::Dscan {
 
    proc Adapt_Outil_Scan { { a "" } { b "" } { c "" } } {
       variable This
-      global caption conf panneau
+      global conf panneau
 
       #--- Mise a jour de la liste des binnings disponibles
       $This.fra3.bin.but_bin.menu delete 0 20
@@ -154,6 +154,18 @@ namespace eval ::Dscan {
       }
    }
 
+   proc Update_CellDim { { a "" } { b "" } { c "" } } {
+      variable parametres
+      global audace panneau
+
+      #--- Mise à jour de la dimension du photosite
+      if { [ ::cam::list ] != "" } {
+         set panneau(Dscan,pix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
+      } else {
+         set panneau(Dscan,pix) "$parametres(Dscan,dimpix)"
+      }
+   }
+
    proc startTool { visuNo } {
       variable This
       variable parametres
@@ -179,6 +191,12 @@ namespace eval ::Dscan {
       ::confVisu::addCameraListener 1 ::Dscan::Adapt_Outil_Scan
       trace add variable ::conf(audine,port) write ::Dscan::Adapt_Outil_Scan
 
+      #--- Mise a jour de la dimension du pixel a la connexion d'une camera
+      ::Dscan::Update_CellDim
+      trace add variable ::confCam(A,super_camNo) write ::Dscan::Update_CellDim
+      trace add variable ::confCam(B,super_camNo) write ::Dscan::Update_CellDim
+      trace add variable ::confCam(C,super_camNo) write ::Dscan::Update_CellDim
+
       #---
       pack $This -side left -fill y
    }
@@ -192,6 +210,11 @@ namespace eval ::Dscan {
       #--- Arret de la surveillance
       ::confVisu::removeCameraListener 1 ::Dscan::Adapt_Outil_Scan
       trace remove variable ::conf(audine,port) write ::Dscan::Adapt_Outil_Scan
+
+      #--- Supprime la procedure de surveillance de la connexion d'une camera
+      trace remove variable ::confCam(A,super_camNo) write ::Dscan::Update_CellDim
+      trace remove variable ::confCam(B,super_camNo) write ::Dscan::Update_CellDim
+      trace remove variable ::confCam(C,super_camNo) write ::Dscan::Update_CellDim
 
       #---
       pack forget $This
@@ -262,7 +285,7 @@ namespace eval ::Dscan {
                   while { $conf(tempo_scan,delai) > "0" } {
                      ::camera::Avancement_scan "-10" $panneau(Dscan,lig1)
                      update
-                     after 1000	
+                     after 1000
                      incr conf(tempo_scan,delai) "-1"
                   }
                }
@@ -415,10 +438,8 @@ namespace eval ::Dscan {
          set parametres(Dscan,dimpix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
          set panneau(Dscan,col2)      "$parametres(Dscan,col2)"
          set panneau(Dscan,pix)       "$parametres(Dscan,dimpix)"
-         set panneau(Dscan,binning)   "$parametres(Dscan,binning)"
          $This.fra2.fra1.ent2 configure -textvariable panneau(Dscan,col2)
          $This.fra2.fra3.ent1 configure -textvariable panneau(Dscan,pix)
-         $This.fra3.bin.lab_bin configure -textvariable panneau(Dscan,binning)
          update
       }
 
