@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.48 2007-01-20 02:14:57 alainklotz Exp $
+# Mise a jour $Id: aud.tcl,v 1.49 2007-01-20 11:46:04 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -429,7 +429,6 @@ namespace eval ::audace {
       ::confTypeFenetre::initConf
 
       #--- Initialisation de variables de configuration
-      if { ! [ info exists conf(visu_zoom) ] }                 { set conf(visu_zoom)                 "1" }
       if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
       if { ! [ info exists conf(fonction_transfert,param3) ] } { set conf(fonction_transfert,param3) "1" }
       if { ! [ info exists conf(fonction_transfert,param4) ] } { set conf(fonction_transfert,param4) "1" }
@@ -497,7 +496,7 @@ namespace eval ::audace {
       set audace(hCanvas) $::confVisu::private($visuNo,hCanvas)
 
       #--- Chargement des differents outils
-      foreach fichier [ glob [ file join audace plugin tool * pkgIndex.tcl ] ] {
+      foreach fichier [ glob -nocomplain [ file join audace plugin tool * pkgIndex.tcl ] ] {
          uplevel #0 "source $fichier"
          set nom [ file tail [ file dirname "$fichier" ] ]
          package require $nom
