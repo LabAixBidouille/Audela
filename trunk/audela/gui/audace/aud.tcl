@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.49 2007-01-20 11:46:04 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.50 2007-01-20 11:48:11 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -1422,8 +1422,8 @@ focus -force $audace(Console)
 
 #--- On charge eventuellement l'image cliquee
 if {[info exists audela(img_filename)]==1} {
-	if {$audela(img_filename)!=""} {
-		loadima $audela(img_filename)
-		set audace(rep_images) [file dirname $audela(img_filename)]
-	}
+   if {$audela(img_filename)!=""} {
+      loadima $audela(img_filename)
+      set audace(rep_images) [file dirname $audela(img_filename)]
+   }
 }
