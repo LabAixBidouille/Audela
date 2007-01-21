@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.11 2007-01-20 15:46:30 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.12 2007-01-21 12:00:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -62,7 +62,7 @@ set caption(scanfast,fichier_existe)      "This file already exists.\nAre you su
 
 set caption(scanfast,attention)           "Warning"
 set caption(scanfast,message)             "This tool can only be used with an Audine camera driven through\na parallel port, an AudiNet interface or an EthernAude interface."
-set caption(scanfast,calcul_confirm)      "# Voulez-vous lancer un calcul des paramètres "
+set caption(scanfast,calcul_confirm)      "Run parameters calculation?"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -174,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Attenzione"
    set caption(scanfast,message)          "Questa funzione va usata solamente con una camera Audine pilotata\ntramite porta parallela, AudiNet o per una EthernAude."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres "
+   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -230,7 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Aviso"
    set caption(scanfast,message)          "Esta herramienta soli puede utilizarse con una Audine atacada\na traves de puerto paralelo, una interfaz AudiNet o EthernAude."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres "
+   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -286,7 +286,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Achtung"
    set caption(scanfast,message)          "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres "
+   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -342,7 +342,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Atenção"
    set caption(scanfast,message)          "Esta ferramenta funciona apenas com uma camara Audine pilotada por\numa porta paralela, por uma AudiNet ou por uma EthernAude."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres "
+   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -398,7 +398,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Warning"
    set caption(scanfast,message)          "This tool can only be used with an Audine camera driven through\na parallel port, an AudiNet interface or an EthernAude interface."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres "
+   set caption(scanfast,calcul_confirm)   "Run parameters calculation?"
 
 }
 

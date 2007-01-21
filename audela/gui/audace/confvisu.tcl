@@ -2,7 +2,8 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.42 2006-12-08 17:00:51 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.43 2007-01-21 11:59:40 robertdelmas Exp $
+#
 
 namespace eval ::confVisu {
 
@@ -51,7 +52,7 @@ namespace eval ::confVisu {
          set conf(audace,visu$visuNo,wmgeometry) "600x400+0+0"
       }
       if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } {
-         set conf(seuils,visu$visuNo,mode) "histoauto"
+         set conf(seuils,visu$visuNo,mode) "loadima"
       }
       if { ! [ info exists conf(visu,crosshairstate) ] } {
          set conf(visu,crosshairstate) "0"
@@ -116,7 +117,7 @@ namespace eval ::confVisu {
       set result [catch {::buf::create} bufNo]
       if { $result } {
          #--- je cree une exception
-         error  "erreur creation buffer pour nouvelle visu\n"
+         error "erreur creation buffer pour nouvelle visu\n"
       } else {
          #--- configuration buffer
          buf$bufNo extension $conf(extension,defaut)
@@ -125,6 +126,12 @@ namespace eval ::confVisu {
             buf$bufNo compress "none"
          } else {
             buf$bufNo compress "gzip"
+         }
+         #--- Format des fichiers image (entier ou flottant)
+         if { $conf(format_fichier_image) == "0" } {
+            buf$bufNo bitpix ushort
+         } else {
+            buf$bufNo bitpix float
          }
       }
 
@@ -138,7 +145,7 @@ namespace eval ::confVisu {
 
       #--- je cree les instances d'outil pour cette visu
       if { $base == "" } {
-         #--- je charge seulement les outils qui gérent les visu multiples
+         #--- je charge seulement les outils qui gerent les visu multiples
          ::AcqFC::Init $private($visuNo,This) $visuNo
          ::autoguider::Init $private($visuNo,This) $visuNo
       }
@@ -197,7 +204,7 @@ namespace eval ::confVisu {
          }
       }
 
-      #--- je supprime l'image associee à la visu
+      #--- je supprime l'image associee a la visu
       image delete image[visu$visuNo image]
 
       #--- je supprime la visu
@@ -259,7 +266,7 @@ namespace eval ::confVisu {
             set private($visuNo,picture_w) 0
          }
          if { [buf$bufNo getnaxis] == 1 } {
-            #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visue
+            #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visu
             set private($visuNo,picture_h) [visu$visuNo thickness]
          } else {
             #--- dans le cas d'une image 2D ou plus, la hauteur est la valeur retournee par le buffer
@@ -273,9 +280,9 @@ namespace eval ::confVisu {
          Movie::deleteMovieWindow $private($visuNo,hCanvas)
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
-         #--- je supprime le fenetrage si la fenetre déborde de l'image
+         #--- je supprime le fenetrage si la fenetre deborde de l'image
          set windowBox [visu$visuNo window]
-         if { [lindex $windowBox 2] > $width 
+         if { [lindex $windowBox 2] > $width
             || [lindex $windowBox 3] > $height } {
             set private($visuNo,window) "0"
             setWindow $visuNo
@@ -344,11 +351,11 @@ namespace eval ::confVisu {
          if { $cuts == "autocuts"} {
             set cuts [ lrange [ buf$bufNo autocuts ] 0 1 ]
          } elseif { $cuts == "current" } {
-            # autre choix = on garde les seuils actuels
+            #--- autre choix = on garde les seuils actuels
             #set cuts [visu$visuNo cut ]
             #set sh [ expr [ lindex $cuts 0 ] ]
             #set sb [ expr [ lindex $cuts 1 ] ]
-            
+
             set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
             visu$visuNo cut $cuts
          } else {
@@ -363,10 +370,10 @@ namespace eval ::confVisu {
       ::confVisu::ChangeHiCutDisplay $visuNo [lindex $cuts 0]
       ::confVisu::ChangeLoCutDisplay $visuNo [lindex $cuts 1]
 
-      # prise en compte de la palette prealablement choisie
+      #--- prise en compte de la palette prealablement choisie
       ::audace::MAJ_palette $visuNo
 
-      # rafraichissement de l'affichage
+      #--- rafraichissement de l'affichage
       visu$visuNo disp
    }
 
@@ -462,7 +469,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getHiCutDisplay
-   #     retourne le valeur du seuil haut 
+   #     retourne le valeur du seuil haut
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -474,7 +481,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getLoCutDisplay
-   #     retourne le valeur du seuil bas 
+   #     retourne le valeur du seuil bas
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -494,12 +501,12 @@ namespace eval ::confVisu {
    proc setZoom { visuNo } {
       variable private
 
-      #--- je recupere les coordonnées du centre du canvas 
+      #--- je recupere les coordonnees du centre du canvas
       set box [grid bbox .audace.can1 0 0]
       set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]
       set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
 
-      #--- je convertis les dimensions du canvas en coordonnées image
+      #--- je convertis les dimensions du canvas en coordonnees image
       set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
       set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
 
@@ -522,11 +529,11 @@ namespace eval ::confVisu {
       set deltax [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ]
       set deltay [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ]
 
-      #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible 
+      #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
       if { $deltax < 0 } { set deltax 0 }
       if { $deltay < 0 } { set deltay 0 }
 
-      #--- je centre le canvas  
+      #--- je centre le canvas
       if { [lindex $scrollRegion 2] != "0" } {
          .audace.can1.canvas xview moveto [expr 1.0*$deltax / [lindex $scrollRegion 2] ]
       }
@@ -534,7 +541,7 @@ namespace eval ::confVisu {
          .audace.can1.canvas yview moveto [expr 1.0*$deltay / [lindex $scrollRegion 3] ]
       }
 
-      #--- mise à jour des scrollbar
+      #--- mise a jour des scrollbars
       setScrollbarSize $visuNo
 
       #--- Je mets a jour la taille du reticule
@@ -544,7 +551,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setMirrorX
-   #     applique un miroir par rapport à l'axe des X
+   #     applique un miroir par rapport a l'axe des X
    #
    #  parametres :
    #    visuNo: numero de la visu
@@ -563,7 +570,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setMirrorY
-   #     applique un miroir par rapport à l'axe des Y
+   #     applique un miroir par rapport a l'axe des Y
    #
    #  parametres :
    #    visuNo: numero de la visu
@@ -582,7 +589,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setCamera
-   #     associe une camera à la visu
+   #     associe une camera a la visu
    #  parametres :
    #    visuNo: numero de la visu
    #    camNo : numero de la camera
@@ -610,7 +617,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getCamNo
-   #     retourne le numero de camera associee à la visu
+   #     retourne le numero de camera associee a la visu
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -622,7 +629,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getCamera
-   #     retourne le nom de camera associee à la visu
+   #     retourne le nom de camera associee a la visu
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -634,7 +641,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getProduct
-   #     retourne le nom de famille de la camera associee à la visu
+   #     retourne le nom de famille de la camera associee a la visu
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -720,9 +727,9 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setScrollbarSize
-   #     met a jour la taille des scrollbar
-   #     si le parametre box n'est pas founi , la taille des scrollbar est determine
-   #     a partir de l'image deja affichée
+   #     met a jour la taille des scrollbars
+   #     si le parametre box n'est pas founi, la taille des scrollbars est determine
+   #     a partir de l'image deja affichee
    #  parametres :
    #    visuNo: numero de la visu
    #    box   : coordonnee mini et maxi dans le repere image (facultatif)
@@ -731,7 +738,7 @@ namespace eval ::confVisu {
       variable private
 
       if { "$box" == "" } {
-         set windowBox [visu$visuNo window] 
+         set windowBox [visu$visuNo window]
          if {$windowBox=="full"} {
             set x0 1
             set y0 1
@@ -744,12 +751,12 @@ namespace eval ::confVisu {
             set y1 [lindex $windowBox 3]
          }
       } else {
-            set x0 [lindex $box 0]
-            set y0 [lindex $box 1]
-            set x1 [lindex $box 2]
-            set y1 [lindex $box 3]
+         set x0 [lindex $box 0]
+         set y0 [lindex $box 1]
+         set x1 [lindex $box 2]
+         set y1 [lindex $box 3]
       }
-      #--- j'ajoute une unite en largeur et en hauteur pour que les scollbars 
+      #--- j'ajoute une unite en largeur et en hauteur pour que les scollbars
       #--- permettent de voir l'ensemble de l'image
       set x1 [expr $x1 + 1 ]
       set y0 [expr $y0 - 1 ]
@@ -768,7 +775,7 @@ namespace eval ::confVisu {
    #
    #  parametres :
    #    visuNo: numero de la visu
-   #    state : 1= active le mode video , 0=desactive le mode video
+   #    state : 1= active le mode video, 0=desactive le mode video
    #------------------------------------------------------------
    proc setVideo { visuNo state } {
       variable private
@@ -786,17 +793,17 @@ namespace eval ::confVisu {
          visu$visuNo disp
 
          #---  je desactive le reglage des seuils
-         $private($visuNo,This).fra1.sca1 configure -state disabled 
-         $private($visuNo,This).fra1.sca2 configure -state disabled 
-         
+         $private($visuNo,This).fra1.sca1 configure -state disabled
+         $private($visuNo,This).fra1.sca2 configure -state disabled
+
       } else {
          #--- Je deconnecte la sortie de la camera
          set result [ catch { cam$private($visuNo,camNo) stopvideoview $visuNo } msg ]
          #--- je desactive le mode video
          visu$visuNo mode photo
          #---  j'active le reglage des seuils
-         $private($visuNo,This).fra1.sca1 configure -state normal 
-         $private($visuNo,This).fra1.sca2 configure -state normal 
+         $private($visuNo,This).fra1.sca1 configure -state normal
+         $private($visuNo,This).fra1.sca2 configure -state normal
       }
 
       if { $result != 1 } {
@@ -811,7 +818,7 @@ namespace eval ::confVisu {
    #    ajoute une procedure a appeler si on change de camera
    #  parametres :
    #    visuNo: numero de la visu
-   #    cmd : commande TCL a lancer quand la camera associee à la visu change
+   #    cmd : commande TCL a lancer quand la camera associee a la visu change
    #------------------------------------------------------------
    proc addCameraListener { visuNo cmd } {
       variable private
@@ -824,7 +831,7 @@ namespace eval ::confVisu {
    #    supprime une procedure a appeler si on change de camera
    #  parametres :
    #    visuNo: numero de la visu
-   #    cmd : commande TCL a lancer quand la camera associee à la visu change
+   #    cmd : commande TCL a lancer quand la camera associee a la visu change
    #------------------------------------------------------------
    proc removeCameraListener { visuNo cmd } {
       variable private
@@ -939,7 +946,7 @@ namespace eval ::confVisu {
    #  getVisuNo
    #     retourne le numero de visu contenant le canvas
    #  parametres
-   #     hCanvas : nom du canvas , exemple: .audace.can1.canvas
+   #     hCanvas : nom du canvas, exemple : .audace.can1.canvas
    #  return :
    #    numero de la visu contenant le canvas
    #------------------------------------------------------------
@@ -994,7 +1001,7 @@ namespace eval ::confVisu {
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(audace,titre) (visu$visuNo)"
-      wm protocol $This WM_DELETE_WINDOW " ::confVisu::close $visuNo "
+      wm protocol $This WM_DELETE_WINDOW "::confVisu::close $visuNo"
       update
    }
 
@@ -1124,7 +1131,7 @@ namespace eval ::confVisu {
       bind $This.fra1.sca1 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
       bind $This.fra1.sca2 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
 
-      #--- bind du canvas avec la souris , j'ative les valeurs par defaut
+      #--- bind du canvas avec la souris, j'ative les valeurs par defaut
       createBindCanvas $visuNo <ButtonPress-1>   "default"
       createBindCanvas $visuNo <ButtonRelease-1> "default"
       createBindCanvas $visuNo <B1-Motion>       "default"
@@ -1206,14 +1213,14 @@ namespace eval ::confVisu {
    #  parametres :
    #     visuNo : numero de la visu
    #     sequence : evenement associe
-   #     command  : command a executer. si command="default"
+   #     command  : command a executer si command="default"
    #                alors c'est la commande par defaut qui est associe
    #------------------------------------------------------------
    proc createBindCanvas { visuNo sequence { command "default" } } {
       variable private
 
       if { "$command" == "default" } {
-         switch -exact $sequence     {
+         switch -exact $sequence {
             <ButtonPress-1> {
                bind $private($visuNo,hCanvas) <ButtonPress-1>   "::confVisu::onPressButton1 $visuNo %x %y"
             }
@@ -1381,8 +1388,8 @@ namespace eval ::confVisu {
 
    #
    # ::confVisu::screen2Canvas
-   # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne également une liste de deux entiers
+   # Transforme des coordonnees ecran en coordonnees canvas
+   # L'argument est une liste de deux entiers, et retourne egalement une liste de deux entiers
    #
    proc screen2Canvas { visuNo coord } {
       variable private
@@ -1394,11 +1401,11 @@ namespace eval ::confVisu {
 
    #
    # ::confVisu::canvas2Picture coord {stick left}
-   # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de deux entiers,
-   # et retourne également une liste de deux entiers.
-   # Les coordonnees canvas commencent a 0,0 dans le coin superieur gauche de l'image.
-   # Les coordonnees image  commencent a 1,1 dans le coin inferieur gauche de l'image.
-   # En passant un argument <> de left pour stick, calcule les coordonnees par arrondi superieur.
+   # Transforme des coordonnees canvas en coordonnees image
+   # L'argument est une liste de deux entiers, et retourne egalement une liste de deux entiers
+   # Les coordonnees canvas commencent a 0,0 dans le coin superieur gauche de l'image
+   # Les coordonnees image  commencent a 1,1 dans le coin inferieur gauche de l'image
+   # En passant un argument <> de left pour stick, calcule les coordonnees par arrondi superieur
    #
    proc canvas2Picture { visuNo coord { stick left } } {
       variable private
@@ -1446,8 +1453,8 @@ namespace eval ::confVisu {
 
    #
    # ::confVisu::picture2Canvas coord
-   # Transforme des coordonnees image en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne également une liste de deux entiers
+   # Transforme des coordonnees image en coordonnees canvas
+   # L'argument est une liste de deux entiers, et retourne egalement une liste de deux entiers
    #
    proc picture2Canvas { visuNo coord } {
       variable private
@@ -1631,7 +1638,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getBox
-   #     retourne les coordonnées de la boite (coordonnees image)
+   #     retourne les coordonnees de la boite (coordonnees image)
    #  parametres :
    #     visuNo : numero de la visu
    #------------------------------------------------------------
@@ -1682,7 +1689,7 @@ namespace eval ::confVisu {
             set x2 [lindex $private($visuNo,box_2) 0]
          }
          if {[lindex $private($visuNo,box_1) 1] < [lindex $private($visuNo,box_2) 1]} {
-            # !! Le test est inverse car l'origine en canvas est en haut !!
+            #--- !! Le test est inverse car l'origine en canvas est en haut !!
             set y1 [lindex $private($visuNo,box_2) 1]
             set y2 [lindex $private($visuNo,box_1) 1]
          } else {
@@ -1877,7 +1884,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  getCrosshair
    #  returns crosshair state 1=shown 0=hidden
-   #  
+   #
    #------------------------------------------------------------
    proc getCrosshair { visuNo } {
       variable private
@@ -1920,7 +1927,7 @@ namespace eval ::confVisu {
 
    #--------------------------------------------------------------
    #  displayCrosshair
-   #  draw Crosshair lines ( 1 horizontal line , 1 vertical line )
+   #  draw Crosshair lines ( 1 horizontal line, 1 vertical line )
    #
    #--------------------------------------------------------------
    proc displayCrosshair { visuNo } {
@@ -1944,7 +1951,7 @@ namespace eval ::confVisu {
       }
 
       #--- coordonnees du centre du reticule dans le repere canvas
-      #--- attention : le reticule est centré sur l'image (pas sur le canvas)
+      #--- attention : le reticule est centre sur l'image (pas sur le canvas)
       set xc [expr int($private($visuNo,picture_w) / 2) ]
       set yc [expr int($private($visuNo,picture_h) / 2) ]
       set centerCoord [ picture2Canvas $visuNo [list $xc $yc ] ]
@@ -1953,7 +1960,7 @@ namespace eval ::confVisu {
 
       #--- longueur des traits du reticule dans le repere canvas
       #--- en fonction de la fenetre et du zoom
-      set windowBox [visu$visuNo window] 
+      set windowBox [visu$visuNo window]
       if {$windowBox=="full"} {
          set x0 1
          set y0 1
@@ -2000,13 +2007,13 @@ namespace eval ::confVisu {
 
       $private($visuNo,hCanvas) delete lineh
       $private($visuNo,hCanvas) delete linev
-      
+
       if { ![winfo exists $private($visuNo,hCrosshairH)] } {
          destroy $private($visuNo,hCrosshairH)
       }
       if { ![winfo exists $private($visuNo,hCrosshairV)] } {
          destroy $private($visuNo,hCrosshairV)
-      }   
+      }
    }
 
 }

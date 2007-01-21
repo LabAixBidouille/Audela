@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.10 2006-11-10 13:08:44 audelateam Exp $
+# Mise a jour $Id: confgene.cap,v 1.11 2007-01-21 11:59:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,11 +19,16 @@ set caption(confgene,aide)                                  "Help"
 set caption(confgene,type_fenetre)                          "Window Type"
 
 set caption(confgene,fichier_image)                         "Image Files"
+set caption(confgene,fichier_image_fits)                    "FITS Files"
 set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds"
+set caption(confgene,fichier_images_choix_format)           "# Enregistrer les images au format :"
+set caption(confgene,fichier_images_entier)                 "Integer"
+set caption(confgene,fichier_images_flottant)               "Floating"
 set caption(confgene,fichier_image_ext_defaut)              "Default Filename Extension:"
 set caption(confgene,fichier_image_new_ext)                 "You can choose the filename extension:"
 set caption(confgene,fichier_image_compres)                 "Compressed Image Files (.gz)"
-set caption(confgene,fichier_image_jpeg_quality)            "Default Jpeg Quality:"
+set caption(confgene,fichier_image_jpg)                     "JPEG Files"
+set caption(confgene,fichier_image_jpeg_quality)            "Default JPEG Quality:"
 set caption(confgene,fichier_image_jpeg_newquality)         "You can choose a new quality (5 to 100):"
 
 set caption(confgene,alarme)                                "Aural warning when exposure ends"
@@ -117,11 +122,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Type de fenêtre"
 
    set caption(confgene,fichier_image)                      "Fichiers image"
+   set caption(confgene,fichier_image_fits)                 "Fichiers FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu"
+   set caption(confgene,fichier_images_choix_format)        "Enregistrer les images au format :"
+   set caption(confgene,fichier_images_entier)              "Entier"
+   set caption(confgene,fichier_images_flottant)            "Flottant"
    set caption(confgene,fichier_image_ext_defaut)           "Extension par défaut :"
    set caption(confgene,fichier_image_new_ext)              "Vous pouvez choisir votre extension :"
    set caption(confgene,fichier_image_compres)              "Fichiers image compressés (.gz)"
-   set caption(confgene,fichier_image_jpeg_quality)         "Qualité Jpeg par défaut :"
+   set caption(confgene,fichier_image_jpg)                  "Fichiers JPEG"
+   set caption(confgene,fichier_image_jpeg_quality)         "Qualité JPEG par défaut :"
    set caption(confgene,fichier_image_jpeg_newquality)      "Vous pouvez choisir une qualité (5 à 100) :"
 
    set caption(confgene,alarme)                             "Alarme sonore de fin de pose"
@@ -215,11 +225,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Tipo di finestra"
 
    set caption(confgene,fichier_image)                      "Files immagine"
+   set caption(confgene,fichier_image_fits)                 "Files FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Salvare le immagini con la soglia di visualizzazione"
+   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
+   set caption(confgene,fichier_images_entier)              "# Entier"
+   set caption(confgene,fichier_images_flottant)            "# Flottant"
    set caption(confgene,fichier_image_ext_defaut)           "Estensione di default:"
    set caption(confgene,fichier_image_new_ext)              "Potete cambiare l'estensione:"
    set caption(confgene,fichier_image_compres)              "Files immagini compresse (.gz)"
-   set caption(confgene,fichier_image_jpeg_quality)         "Qualita` Jpeg di default:"
+   set caption(confgene,fichier_image_jpg)                  "Files JPEG"
+   set caption(confgene,fichier_image_jpeg_quality)         "Qualita` JPEG di default:"
    set caption(confgene,fichier_image_jpeg_newquality)      "E' possibile scegliere il fattore qualitativo (5 ... 100):"
 
    set caption(confgene,alarme)                             "Segnale acustico di fine posa"
@@ -313,10 +328,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Tipo de ventana"
 
    set caption(confgene,fichier_image)                      "Ficheros de imágenes"
+   set caption(confgene,fichier_image_fits)                 "Ficheros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización"
+   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
+   set caption(confgene,fichier_images_entier)              "# Entier"
+   set caption(confgene,fichier_images_flottant)            "# Flottant"
    set caption(confgene,fichier_image_ext_defaut)           "Extension por defecto del fichero:"
    set caption(confgene,fichier_image_new_ext)              "Se puede elegir la extensión de fichero:"
    set caption(confgene,fichier_image_compres)              "Ficheros de imágenes comprimidos (.gz)"
+   set caption(confgene,fichier_image_jpg)                  "Ficheros JPEG"
    set caption(confgene,fichier_image_jpeg_quality)         "Calidad JPEG por defecto:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Puede elegir una calidad (5 to 100):"
 
@@ -411,10 +431,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Fenster Typ"
 
    set caption(confgene,fichier_image)                      "Bild Datei"
+   set caption(confgene,fichier_image_fits)                 "FITS Datei"
    set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern"
+   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
+   set caption(confgene,fichier_images_entier)              "# Entier"
+   set caption(confgene,fichier_images_flottant)            "# Flottant"
    set caption(confgene,fichier_image_ext_defaut)           "Mangel Streckung:"
    set caption(confgene,fichier_image_new_ext)              "Sie können eure Streckung wählen:"
    set caption(confgene,fichier_image_compres)              "Verminderte Bild Datei (.gz)"
+   set caption(confgene,fichier_image_jpg)                  "JPEG Datei"
    set caption(confgene,fichier_image_jpeg_quality)         "Mangel JPEG Qualität:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Sie können eine Qualität wählen (5 bis 100):"
 
@@ -509,10 +534,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Tipo de janela"
 
    set caption(confgene,fichier_image)                      "Ficheiros de imagens"
+   set caption(confgene,fichier_image_fits)                 "Ficheiros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização"
+   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
+   set caption(confgene,fichier_images_entier)              "# Entier"
+   set caption(confgene,fichier_images_flottant)            "# Flottant"
    set caption(confgene,fichier_image_ext_defaut)           "Extensão por defeito do ficheiro:"
    set caption(confgene,fichier_image_new_ext)              "Pode escolher a extensão do fichero:"
    set caption(confgene,fichier_image_compres)              "Ficheiros de imagem comprimidos (.gz)"
+   set caption(confgene,fichier_image_jpg)                  "Ficheiros JPEG"
    set caption(confgene,fichier_image_jpeg_quality)         "Qualidade JPEG por defeito:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Pode escolher uma qualidade (5 a 100):"
 
@@ -607,10 +637,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Vindue-type"
 
    set caption(confgene,fichier_image)                      "Billedfil"
+   set caption(confgene,fichier_image_fits)                 "FITS Filer"
    set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi"
+   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
+   set caption(confgene,fichier_images_entier)              "# Entier"
+   set caption(confgene,fichier_images_flottant)            "# Flottant"
    set caption(confgene,fichier_image_ext_defaut)           "Standand filtype (extension):"
    set caption(confgene,fichier_image_new_ext)              "Valg af filtype (extension):"
    set caption(confgene,fichier_image_compres)              "Komprimeret billedfil(.gz)"
+   set caption(confgene,fichier_image_jpg)                  "JPEG Filer"
    set caption(confgene,fichier_image_jpeg_quality)         "Standard JPEG kvalitet:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Valg af kvalitet(5 til 100):"
 

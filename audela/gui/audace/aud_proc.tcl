@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.2 2006-11-15 20:42:30 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.3 2007-01-21 11:59:16 robertdelmas Exp $
 #
 
 #
@@ -129,6 +129,13 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       return
    }
 
+   #--- On sort immediatement s'il n'y a pas de nom pour l'image
+   #--- Le menu 'Enregistrer' ne fonctionne que si on a charge
+   #--- prealablement une premiere image avec le menu 'Charger'
+   if { $filename == "" } {
+      return
+   }
+
    #--- Recuperation de l'extension par defaut
    buf$bufNo extension "$conf(extension,defaut)"
 
@@ -139,11 +146,11 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       buf$bufNo compress none
    }
 
-   #--- J'affecte au buffer les seuils de la visu
-   if { $conf(save_seuils_visu) == "1" } {
-      set cuts [visu$visuNo cut]
-      buf$bufNo setkwd [list "MIPS-HI" [lindex $cuts 0] float "" ""]
-      buf$bufNo setkwd [list "MIPS-LO" [lindex $cuts 1] float "" ""]
+   #--- J'affecte au buffer les seuils initiaux
+   if { $conf(save_seuils_visu) == "0" } {
+      set tmp_sh [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
+      set tmp_sb [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
+      buf$bufNo initialcut
    }
 
    #--- Fenetre parent
@@ -165,6 +172,13 @@ proc saveima { { filename "?" } { visuNo 1 } } {
          }
       }
    }
+
+   #--- J'affecte au buffer les seuils de la visu
+   if { $conf(save_seuils_visu) == "0" } {
+      buf$bufNo setkwd [ list "MIPS-HI" $tmp_sh float "" "" ]
+      buf$bufNo setkwd [ list "MIPS-LO" $tmp_sb float "" "" ]
+   }
+
    return
 }
 
