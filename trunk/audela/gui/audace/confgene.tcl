@@ -1,11 +1,11 @@
 #
 # Fichier : confgene.tcl
 # Description : Configuration generale d'AudeLA et d'Aud'ACE (general, editeurs, repertoires, position
-#               de l'observateur, temps (heure systeme ou TU), fichiers image, alarme sonore de fin de 
+#               de l'observateur, temps (heure systeme ou TU), fichiers image, alarme sonore de fin de
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.16 2006-12-16 22:20:32 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.17 2007-01-21 12:00:26 robertdelmas Exp $
 #
 
 #
@@ -135,9 +135,9 @@ namespace eval confPosObs {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,position)
       wm protocol $This WM_DELETE_WINDOW ::confPosObs::fermer
@@ -147,7 +147,7 @@ namespace eval confPosObs {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -326,11 +326,11 @@ namespace eval confPosObs {
       $This.labURLRed11 configure -text "$confgene(posobs,observateur,mpc)" -fg $fg
       $This.labURLRed13 configure -text "$confgene(posobs,observateur,mpcstation)" -fg $fg
 
-      #--- Cree le bouton 'OK' 
+      #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
          -command { ::confPosObs::ok }
       if { $conf(ok+appliquer) == "1" } {
-         pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5 
+         pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
       }
 
       #--- Cree le bouton 'Appliquer'
@@ -345,7 +345,7 @@ namespace eval confPosObs {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confPosObs::afficheAide } 
+         -command { ::confPosObs::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -401,10 +401,10 @@ namespace eval confPosObs {
       }
       bind $audace(base).maj.labURL4 <Enter> {
          $audace(base).maj.labURL4 configure -fg $color(purple)
-      } 
+      }
       bind $audace(base).maj.labURL4 <Leave> {
          $audace(base).maj.labURL4 configure -fg $color(blue)
-      } 
+      }
    }
 
    proc Erreur { } {
@@ -712,9 +712,9 @@ namespace eval confTemps {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,temps)
       wm protocol $This WM_DELETE_WINDOW ::confTemps::fermer
@@ -724,7 +724,7 @@ namespace eval confTemps {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -813,8 +813,8 @@ namespace eval confTemps {
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
-         -command { ::confTemps::ok } 
-      if { $conf(ok+appliquer) == "1" } { 
+         -command { ::confTemps::ok }
+      if { $conf(ok+appliquer) == "1" } {
          pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
       }
 
@@ -830,7 +830,7 @@ namespace eval confTemps {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confTemps::afficheAide } 
+         -command { ::confTemps::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -956,10 +956,11 @@ namespace eval confFichierIma {
    proc appliquer { } {
       variable This
       global audace
+      global conf
       global confgene
 
       #---
-      catch { 
+      catch {
          buf1000 extension "$confgene(extension,new)"
          buf1001 extension "$confgene(extension,new)"
          buf1002 extension "$confgene(extension,new)"
@@ -984,9 +985,19 @@ namespace eval confFichierIma {
       set confgene(fichier,list_extension) $listExtensionFile
       #---
       widgetToConf
-      #--- Mise a jour de l'extension pour toutes les visu disponibles
+      #--- Mise a jour de l'extension des fichiers image pour toutes les visu disponibles
       foreach visuNo [ ::visu::list ] {
          ::confFichierIma::MAJ_Extension
+      }
+      #--- Mise a jour du format des fichiers image pour tous les buffers disponibles
+      foreach visuNo [ ::visu::list ] {
+         set bufNo [ visu$visuNo buf ]
+         #--- Format entier ou flottant
+         if { $conf(format_fichier_image) == "0" } {
+            buf$bufNo bitpix ushort
+         } else {
+            buf$bufNo bitpix float
+         }
       }
    }
 
@@ -1019,11 +1030,12 @@ namespace eval confFichierIma {
       global conf
 
       #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::Recup_Config)
-      if { ! [ info exists conf(extension,defaut) ] }   { set conf(extension,defaut)   ".fit" }
-      if { ! [ info exists conf(fichier,compres) ] }    { set conf(fichier,compres)    "0" }
-      if { ! [ info exists conf(jpegquality,defaut) ] } { set conf(jpegquality,defaut) "80" }
-      if { ! [ info exists conf(save_seuils_visu) ] }   { set conf(save_seuils_visu)   "1" }
-      if { ! [ info exists conf(list_extension)  ] }    { set conf(list_extension)     ".fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng" }
+      if { ! [ info exists conf(save_seuils_visu) ] }     { set conf(save_seuils_visu)     "1" }
+      if { ! [ info exists conf(format_fichier_image) ] } { set conf(format_fichier_image) "0" }
+      if { ! [ info exists conf(extension,defaut) ] }     { set conf(extension,defaut)     ".fit" }
+      if { ! [ info exists conf(fichier,compres) ] }      { set conf(fichier,compres)      "0" }
+      if { ! [ info exists conf(jpegquality,defaut) ] }   { set conf(jpegquality,defaut)   "80" }
+      if { ! [ info exists conf(list_extension) ] }       { set conf(list_extension)       ".fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng" }
       #---
       set conf(extension,new)   $conf(extension,defaut)
       set conf(jpegquality,new) $conf(jpegquality,defaut)
@@ -1038,10 +1050,11 @@ namespace eval confFichierIma {
       global color
 
       #--- confToWidget
+      set confgene(fichier,save_seuils_visu) $conf(save_seuils_visu)
+      set confgene(fichier,format)           $conf(format_fichier_image)
       set confgene(extension,new)            $conf(extension,new)
       set confgene(fichier,compres)          $conf(fichier,compres)
       set confgene(jpegquality,new)          $conf(jpegquality,new)
-      set confgene(fichier,save_seuils_visu) $conf(save_seuils_visu)
       set confgene(fichier,list_extension)   $conf(list_extension)
 
       #---
@@ -1057,9 +1070,9 @@ namespace eval confFichierIma {
          destroy $audace(base).select
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,fichier_image)
 
@@ -1068,68 +1081,97 @@ namespace eval confFichierIma {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
-      frame $This.frame3 -borderwidth 0 -relief raised
-      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
+      TitleFrame $This.frame3 -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_fits)"
+      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1 -padx 2
 
-      frame $This.frame4 -borderwidth 0 -relief raised
-      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
+      TitleFrame $This.frame4 -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_jpg)"
+      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1 -padx 2
 
       frame $This.frame5 -borderwidth 0 -relief raised
-      pack $This.frame5 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame5 -in [ $This.frame3 getframe ] -side top -fill both -expand 1
 
       frame $This.frame6 -borderwidth 0 -relief raised
-      pack $This.frame6 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame6 -in [ $This.frame3 getframe ] -side top -fill both -expand 1
 
       frame $This.frame7 -borderwidth 0 -relief raised
-      pack $This.frame7 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame7 -in $This.frame6 -side left -fill both -expand 1
 
       frame $This.frame8 -borderwidth 0 -relief raised
-      pack $This.frame8 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame8 -in $This.frame6 -side left -fill both -expand 1
 
       frame $This.frame9 -borderwidth 0 -relief raised
-      pack $This.frame9 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame9 -in [ $This.frame3 getframe ] -side top -fill both -expand 1
+
+      frame $This.frame10 -borderwidth 0 -relief raised
+      pack $This.frame10 -in [ $This.frame3 getframe ] -side top -fill both -expand 1
+
+      frame $This.frame11 -borderwidth 0 -relief raised
+      pack $This.frame11 -in [ $This.frame3 getframe ] -side top -fill both -expand 1
+
+      frame $This.frame12 -borderwidth 0 -relief raised
+      pack $This.frame12 -in [ $This.frame4 getframe ] -side top -fill both -expand 1
+
+      frame $This.frame13 -borderwidth 0 -relief raised
+      pack $This.frame13 -in [ $This.frame4 getframe ] -side top -fill both -expand 1
+
+      frame $This.frame14 -borderwidth 0 -relief raised
+      pack $This.frame14 -in [ $This.frame4 getframe ] -side top -fill both -expand 1
 
       #--- Enregistrer une image en conservant ou non les seuils de la visu
       checkbutton $This.save_seuils_visu -text "$caption(confgene,fichier_images_seuils_visu)" -highlightthickness 0 \
          -variable confgene(fichier,save_seuils_visu)
-      pack $This.save_seuils_visu -in $This.frame3 -anchor center -side left -padx 10 -pady 5
+      pack $This.save_seuils_visu -in $This.frame5 -anchor center -side left -padx 10 -pady 5
+
+      #--- Enregistrer une image en choisissant le format
+      label $This.lab2 -text "$caption(confgene,fichier_images_choix_format)"
+      pack $This.lab2 -in $This.frame7 -anchor ne -side left -padx 10 -pady 5
+
+      #--- Radio-bouton pour le format entier
+      radiobutton $This.rad1 -anchor nw -highlightthickness 0 \
+         -text "$caption(confgene,fichier_images_entier)" -value 0 -variable confgene(fichier,format)
+      pack $This.rad1 -in $This.frame8 -anchor w -side top -padx 5 -pady 5
+
+      #--- Radio-bouton pour le format flottant
+      radiobutton $This.rad2 -anchor nw -highlightthickness 0 \
+         -text "$caption(confgene,fichier_images_flottant)" -value 1 -variable confgene(fichier,format)
+      pack $This.rad2 -in $This.frame8 -anchor w -side top -padx 5 -pady 5
 
       #--- Rappelle l'extension par defaut des fichiers image
       label $This.lab1 -text "$caption(confgene,fichier_image_ext_defaut)"
-      pack $This.lab1 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab1 -in $This.frame9 -anchor center -side left -padx 10 -pady 5
 
       label $This.labURL2 -text "$conf(extension,defaut)" -fg $color(blue)
-      pack $This.labURL2 -in $This.frame4 -anchor center -side right -padx 10 -pady 5
+      pack $This.labURL2 -in $This.frame9 -anchor center -side right -padx 20 -pady 5
 
       #--- Cree la zone a renseigner de la nouvelle extension par defaut
       label $This.lab3 -text "$caption(confgene,fichier_image_new_ext)"
-      pack $This.lab3 -in $This.frame5 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab3 -in $This.frame10 -anchor center -side left -padx 10 -pady 5
 
       entry $This.newext -textvariable confgene(extension,new) -width 5 -justify center
-      pack $This.newext -in $This.frame5 -anchor center -side right -padx 10 -pady 5
+      pack $This.newext -in $This.frame10 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
       checkbutton $This.compress -text "$caption(confgene,fichier_image_compres)" -highlightthickness 0 \
          -variable confgene(fichier,compres)
-      pack $This.compress -in $This.frame6 -anchor center -side left -padx 10 -pady 5
+      pack $This.compress -in $This.frame11 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle le taux de qualite d'enregistrement par defaut des fichiers Jpeg
       label $This.lab4 -text "$caption(confgene,fichier_image_jpeg_quality)"
-      pack $This.lab4 -in $This.frame7 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab4 -in $This.frame12 -anchor center -side left -padx 10 -pady 5
 
       label $This.labURL5 -text "$conf(jpegquality,defaut)" -fg $color(blue)
-      pack $This.labURL5 -in $This.frame7 -anchor center -side right -padx 10 -pady 5
+      pack $This.labURL5 -in $This.frame12 -anchor center -side right -padx 20 -pady 5
 
       #--- Cree la glissiere de reglage pour la nouvelle valeur de qualite par defaut
       label $This.lab6 -text "$caption(confgene,fichier_image_jpeg_newquality)"
-      pack $This.lab6 -in $This.frame8 -anchor center -side left -padx 10 -pady 5
+      pack $This.lab6 -in $This.frame13 -anchor center -side left -padx 10 -pady 5
 
       scale $This.efficacite_variant -from 5 -to 100 -length 300 -orient horizontal \
          -showvalue true -tickinterval 10 -resolution 1 -borderwidth 2 -relief groove \
          -variable confgene(jpegquality,new) -width 10
-      pack $This.efficacite_variant -in $This.frame9 -side top -padx 10 -pady 5
+      pack $This.efficacite_variant -in $This.frame14 -side top -padx 10 -pady 5
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
@@ -1150,7 +1192,7 @@ namespace eval confFichierIma {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confFichierIma::afficheAide } 
+         -command { ::confFichierIma::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -1171,31 +1213,41 @@ namespace eval confFichierIma {
       global conf
       global confgene
 
-      set conf(extension,defaut)   $confgene(extension,new)
-      set conf(extension,new)      $confgene(extension,new)
-      set conf(fichier,compres)    $confgene(fichier,compres)
-      set conf(jpegquality,defaut) $confgene(jpegquality,new)
-      set conf(jpegquality,new)    $confgene(jpegquality,new)
-      set conf(save_seuils_visu)   $confgene(fichier,save_seuils_visu)
-      set conf(list_extension)     $confgene(fichier,list_extension)
+      set conf(save_seuils_visu)     $confgene(fichier,save_seuils_visu)
+      set conf(format_fichier_image) $confgene(fichier,format)
+      set conf(extension,defaut)     $confgene(extension,new)
+      set conf(extension,new)        $confgene(extension,new)
+      set conf(fichier,compres)      $confgene(fichier,compres)
+      set conf(jpegquality,defaut)   $confgene(jpegquality,new)
+      set conf(jpegquality,new)      $confgene(jpegquality,new)
+      set conf(list_extension)       $confgene(fichier,list_extension)
    }
 
    proc MAJ_Extension { } {
       variable This
       global conf confgene panneau
 
-      if { ( $conf(extension,new) == ".bmp" ) || ( $conf(extension,new) == ".gif" ) || ( $conf(extension,new) == ".jpg" ) \
-         || ( $conf(extension,new) == ".jpeg" ) || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) \
-         || ( $conf(extension,new) == ".xbm" ) || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) \
-         || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".cr2" ) || ( $conf(extension,new) == ".nef" ) \
-         || ( $conf(extension,new) == ".dng" ) } {
+      #---
+      if { ( $conf(extension,new) == ".jpg" )  || ( $conf(extension,new) == ".jpeg" ) \
+         || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".cr2" ) \
+         || ( $conf(extension,new) == ".nef" ) || ( $conf(extension,new) == ".dng" ) } {
          set confgene(fichier,compres) "0"
          $This.compress configure -variable confgene(fichier,compres)
          set conf(fichier,compres) $confgene(fichier,compres)
       }
 
-      #--- Mise a jour de l'extension pour toutes les visu disponibles
-      foreach visuNo [::visu::list] {
+     ### if { ( $conf(extension,new) == ".bmp" ) || ( $conf(extension,new) == ".gif" ) || ( $conf(extension,new) == ".jpg" ) \
+     ###    || ( $conf(extension,new) == ".jpeg" ) || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) \
+     ###    || ( $conf(extension,new) == ".xbm" ) || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) \
+     ###    || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".cr2" ) || ( $conf(extension,new) == ".nef" ) \
+     ###    || ( $conf(extension,new) == ".dng" ) } {
+     ###    set confgene(fichier,compres) "0"
+     ###    $This.compress configure -variable confgene(fichier,compres)
+     ###    set conf(fichier,compres) $confgene(fichier,compres)
+     ### }
+
+      #--- Mise a jour de l'extension des fichiers image pour toutes les visu disponibles
+      foreach visuNo [ ::visu::list ] {
          if { $conf(fichier,compres) == "1" } {
             set panneau(AcqFC,$visuNo,extension)  $conf(extension,new).gz
             set panneau(Dscan,extension_image)    $conf(extension,new).gz
@@ -1301,7 +1353,7 @@ namespace eval confAlarmeFinPose {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm geometry $This +180+50
       wm resizable $This 0 0
@@ -1312,7 +1364,7 @@ namespace eval confAlarmeFinPose {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -1355,7 +1407,7 @@ namespace eval confAlarmeFinPose {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confAlarmeFinPose::afficheAide } 
+         -command { ::confAlarmeFinPose::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -1464,7 +1516,7 @@ namespace eval confTempoScan {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm geometry $This +180+50
       wm resizable $This 0 0
@@ -1475,7 +1527,7 @@ namespace eval confTempoScan {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -1491,12 +1543,12 @@ namespace eval confTempoScan {
       pack $This.lab1 -in $This.frame3 -anchor w -side top -padx 10 -pady 3
 
       #--- Radio-bouton 'sans temporisation'
-      radiobutton $This.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $This.rad1 -anchor nw -highlightthickness 0 \
          -text "$caption(confgene,tempo_scan_sans)" -value 0 -variable confgene(tempo_scan,active)
       pack $This.rad1 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Radio-bouton 'avec temporisation'
-      radiobutton $This.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+      radiobutton $This.rad2 -anchor nw -highlightthickness 0 \
          -text "$caption(confgene,tempo_scan_avec)" -value 1 -variable confgene(tempo_scan,active)
       pack $This.rad2 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
@@ -1529,7 +1581,7 @@ namespace eval confTempoScan {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confTempoScan::afficheAide } 
+         -command { ::confTempoScan::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -1601,7 +1653,7 @@ namespace eval confChoixOutil {
       #--- Rafraichissement du menu Outil
       Menu_Command $audace(visuNo)  "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $audace(visuNo)"
       Menu_Separator $audace(visuNo) "$caption(audace,menu,outils)"
-      ::audace::affiche_Outil $audace(visuNo) 
+      ::audace::affiche_Outil $audace(visuNo)
       Menu_Separator $audace(visuNo) "$caption(audace,menu,outils)"
       Menu_Command $audace(visuNo) "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)" \
          { ::confChoixOutil::run "$audace(base).confChoixOutil" }
@@ -1658,9 +1710,9 @@ namespace eval confChoixOutil {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,choix_outils)
 
@@ -1678,7 +1730,7 @@ namespace eval confChoixOutil {
       pack $This.frame3 -side top -fill both -expand 1
 
       frame $This.frame4 -borderwidth 1 -relief raised
-      pack $This.frame4 -side top -fill x 
+      pack $This.frame4 -side top -fill x
 
       #--- Cree le frame (colonne) de gauche
       frame $This.frame5 -borderwidth 0
@@ -1787,7 +1839,7 @@ namespace eval confChoixOutil {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confChoixOutil::afficheAide } 
+         -command { ::confChoixOutil::afficheAide }
       pack $This.but_aide -in $This.frame4 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -1906,9 +1958,9 @@ namespace eval confMessages_Console {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,messages_console)
 
@@ -1917,7 +1969,7 @@ namespace eval confMessages_Console {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -2012,7 +2064,7 @@ namespace eval confMessages_Console {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confMessages_Console::afficheAide } 
+         -command { ::confMessages_Console::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -2143,9 +2195,9 @@ namespace eval confTypeFenetre {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,type_fenetre)
 
@@ -2154,7 +2206,7 @@ namespace eval confTypeFenetre {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side bottom -fill x 
+      pack $This.frame2 -side bottom -fill x
 
       frame $This.frame3 -borderwidth 1 -relief raised
       pack $This.frame3 -in $This.frame1 -side left -fill y
@@ -2184,16 +2236,16 @@ namespace eval confTypeFenetre {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confTypeFenetre::afficheAide } 
+         -command { ::confTypeFenetre::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree un frame pour y mettre les radio-boutons de choix
       #--- Type OK + Appliquer + Annuler
-      radiobutton $This.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -value 0 \
+      radiobutton $This.rad1 -anchor nw -highlightthickness 0 -value 0 \
          -variable confgene(TypeFenetre,ok+appliquer)
       pack $This.rad1 -in $This.frame3 -anchor center -side top -fill x -padx 5 -pady 5
       #--- Type Appliquer + Annuler
-      radiobutton $This.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -value 1 \
+      radiobutton $This.rad2 -anchor nw -highlightthickness 0 -value 1 \
          -variable confgene(TypeFenetre,ok+appliquer)
       pack $This.rad2 -in $This.frame3 -anchor center -side bottom -fill x -padx 5 -pady 5
 
@@ -2303,9 +2355,9 @@ namespace eval confGeneral {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This $caption(confgene,general_titre)
 
@@ -2314,7 +2366,7 @@ namespace eval confGeneral {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -2411,7 +2463,7 @@ namespace eval confGeneral {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confGeneral::afficheAide } 
+         -command { ::confGeneral::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -2471,7 +2523,7 @@ namespace eval confVersion {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm geometry $This +180+0
       wm resizable $This 0 0
@@ -2482,7 +2534,7 @@ namespace eval confVersion {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       #--- Nom du logiciel et sa version
       label $This.lab1 -text "$caption(en-tete,a_propos_de_version) $audela(version)" -font $audace(font,arial_15_b)
@@ -2582,7 +2634,7 @@ namespace eval confVersion {
 # confGenerique
 # Description : Configuration generique
 #  Cree une fenetre de configuration generique
-#  Cette fenetre appelle les fonction specifiques du namespace passe en parametre 
+#  Cette fenetre appelle les fonction specifiques du namespace passe en parametre
 #     namespace::fillConfigPage   pour la creation des widgets dans la fenetre
 #     namespace::showHelp         pour le bouton d'aide
 #     namespace::apply            pour le bouton appliquer ou ok
@@ -2601,7 +2653,7 @@ namespace eval confGenerique {
    #  namespace : namespace des fonctions specifiques
    #  visuNo    : numero de la visu courante
    #  mode      : modal (attend la fermeture la fenetre) ou nomodal (retourne immediatement)
-   #   
+   #
    # return
    #  si mode=modal
    #     retourne 1 si la fenetre est fermee avec le bouton OK
@@ -2656,7 +2708,7 @@ namespace eval confGenerique {
 
    #
    # confGenerique::afficherAide
-   # Fonction 'afficherAide' pour afficher l'aide 
+   # Fonction 'afficherAide' pour afficher l'aide
    #
    proc showHelp { } {
       variable NameSpace
@@ -2683,7 +2735,7 @@ namespace eval confGenerique {
          if { $result == "0" } {
             return
          }
-      } 
+      }
       #--- supprime la fenetre
       destroy $This
    }
@@ -2701,7 +2753,7 @@ namespace eval confGenerique {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm geometry $This +180+50
       wm resizable $This 0 0
@@ -2716,7 +2768,7 @@ namespace eval confGenerique {
 
       #--- Frame des boutons OK, Appliquer et Fermer
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \

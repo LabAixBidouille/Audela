@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.3 2006-11-12 23:04:57 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.4 2007-01-21 11:58:57 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -431,7 +431,7 @@ namespace eval ::seuilWindow {
 
       ::seuilWindow::initConf $visuNo
       set seuilWindow($visuNo,This) $base.seuilwindow
-            
+
       if { [winfo exists $seuilWindow($visuNo,This)] } {
          wm withdraw $seuilWindow($visuNo,This)
          wm deiconify $seuilWindow($visuNo,This)
@@ -441,7 +441,6 @@ namespace eval ::seuilWindow {
          set seuilWindow($visuNo,min) $::confVisu::private($visuNo,mindyn)
          createDialog $visuNo
       }
-      
    }
 
    #
@@ -453,7 +452,7 @@ namespace eval ::seuilWindow {
 
       if { ! [ info exists conf(seuils,auto_manuel) ] }      { set conf(seuils,auto_manuel)      "1" }
       if { ! [ info exists conf(seuils,%_dynamique) ] }      { set conf(seuils,%_dynamique)      "50" }
-      if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } { set conf(seuils,visu$visuNo,mode) "histoauto" }
+      if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } { set conf(seuils,visu$visuNo,mode) "loadima" }
       if { ! [ info exists conf(seuils,irisautohaut) ] }     { set conf(seuils,irisautohaut)     "1000" }
       if { ! [ info exists conf(seuils,irisautobas) ] }      { set conf(seuils,irisautobas)      "200" }
       if { ! [ info exists conf(seuils,histoautohaut) ] }    { set conf(seuils,histoautohaut)    "99" }
@@ -483,7 +482,7 @@ namespace eval ::seuilWindow {
       wm deiconify $seuilWindow($visuNo,This)
       wm title $seuilWindow($visuNo,This) "$caption(seuilWindow,titre) (visu$visuNo)"
       wm geometry $seuilWindow($visuNo,This) $conf(seuils,visu$visuNo,position)
-      wm transient $seuilWindow($visuNo,This) [ winfo parent $seuilWindow($visuNo,This) ] 
+      wm transient $seuilWindow($visuNo,This) [ winfo parent $seuilWindow($visuNo,This) ]
       wm protocol $seuilWindow($visuNo,This) WM_DELETE_WINDOW " ::seuilWindow::cmdClose $visuNo "
 
       #--- Sauvegarde des anciens reglages

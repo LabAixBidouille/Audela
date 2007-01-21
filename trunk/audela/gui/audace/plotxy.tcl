@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: plotxy.tcl,v 1.3 2006-12-29 23:32:34 robertdelmas Exp $
+# Mise a jour $Id: plotxy.tcl,v 1.4 2007-01-21 11:58:14 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -455,7 +455,7 @@ namespace eval ::plotxy {
       global audace
       global plotxy
 
-            set num $plotxy(currentfigure)
+      set num $plotxy(currentfigure)
       set baseplotxy $plotxy(fig$num,parent)
       #--- Determination de la dimension
       set geometry [ wm geometry $baseplotxy ]
