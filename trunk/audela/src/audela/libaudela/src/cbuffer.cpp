@@ -1737,6 +1737,154 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
    pix->AstroPhotometry(x1, y1, x2, y2, method, r1, r2, r3, flux, f23, fmoy, sigma, n1);
 }
 
+/*
+ * AstroSlitCentro
+ *  calcule le baricentre du signal sur une fente de spectrometre
+ *  
+ *  Si une erreur survient pendant le traitement, buffer->pix conserve l'ancien tableau de pixels
+ *  Parameters IN: 
+ *    x1,y1,x2,y2 : fenetre de recherche
+ *    y0     :  position de la fente
+ *    w      :  largeur de la fentre (distance entre les deux levres
+ *    w2     :  largeur d'une levre
+ *  Parameters OUT: 
+ *    *xc, *yc :  baricentre du signal sur les levres
+ *    *maxi    :  intensite maximale
+ *  Return : 
+ *    void
+ *
+ */
+void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int w, double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2) {
+   int i, j;                          // Index de parcours de l'image
+   TYPE_PIXELS *pixTemp, *p;
+   double *table=NULL;
+   double s1, s2, v, tableOffset, pixelOffset;
+   int width, height, naxis1, naxis2, y0;
+   double gauss[4], ecart;
+   
+   naxis1 = this->pix->GetWidth();
+   naxis2 = this->pix->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
+   width  = x2-x1+1;
+   height = y2-y1+1;
+   y0     = height/2;
+
+   pixTemp = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
+   pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   p = pixTemp;
+   *maxi=0;
+
+   
+   /////////////////////////////////////////////////////////////////
+   //je calcule le centre de gravite sur l'axe X et la valeur du pixel maxi
+   /////////////////////////////////////////////////////////////////
+   s1=0;
+   s2=0;
+
+   table=(double *) calloc(width,sizeof(double));
+   for (i=0;i<width;i++) {
+      v=0;
+      // projection marginale suivant X (somme de la colonne)
+      for (j=0;j<height;j++) {
+         v+=(double)p[i+j*width];
+         if (p[i+j*width]> *maxi) *maxi=p[i+j*width];
+      }
+      table[i]=v;
+   }
+
+   tableOffset=(table[0]+table[1]+table[2]+table[width-1]+table[width-2]+table[width-3])/6;
+   pixelOffset = tableOffset/width;
+   //tableOffset = 0;
+
+   for (i=0;i<width;i++) {
+      table[i] -= tableOffset;
+   //   s1+=(double)i* table[i];
+   //   s2+=table[i];
+   }
+
+   // calcul du centre de gravité sur l'axe X
+   //if (s2==0) {
+   //   *xc=width/2 ;
+   //} else {
+   //   *xc=s1/s2+1;
+   //}
+
+   /*     p[0]=intensite maximum de la gaussienne     */
+   /*     p[1]=indice du maximum de la gaussienne     */
+   /*     p[2]=fwhm                                   */
+   /*     p[3]=fond                                   */
+   pix->fitgauss1d(width,table,gauss, &ecart);      
+   
+   
+   if (gauss[1] < width ) {
+      *xc = gauss[1];
+   } else {
+      *xc=width/2 ;
+   }
+
+   // je change de repere de coordonnees
+   *xc += x1;
+
+
+   /////////////////////////////////////////////
+   //je calcule le centre de gravite sur l'axe Y
+   /////////////////////////////////////////////
+   s1=0;
+   s2=0;
+   // je calcule le signal sur la levre haute
+   for (i=0;i<width;i++) {
+      for (j=y0+w/2;j<height;j++) {
+         s1+=(double)p[i+j*width];
+      }
+   }
+
+   // je calcule le signal sur la levre basse
+   for (i=0;i<width;i++) {
+      for (j=0;j<y0-w/2;j++) {
+         s2+=(double)p[i+j*width];
+            //-pixelOffset/2.0
+      }
+   }
+
+   if (s1==0.0 && s2 == 0.0) 
+      *yc=(double)y0;
+   else if (s2/s1>=1. && s2/s1<2.)
+      *yc=(double)y0;
+   else if (s2/s1>=2. && s2/s1<15.)
+      *yc=(double)y0-2.0;
+   else if (s2/s1>=15. && s2/s1<25.)
+      *yc=(double)y0-4.0;
+   else if (s2/s1>=25. && s2/s1<50.)
+      *yc=(double)y0-6.0;
+   else if (s2/s1>=100.)
+      *yc=(double)y0-8.0;
+   else if (s1/s2>=1. && s1/s2<2.)
+      *yc=(double)y0;
+   else if (s1/s2>=2. && s1/s2<15.)
+      *yc=(double)y0+2.0;
+   else if (s1/s2>=15. && s1/s2<25.)
+      *yc=(double)y0+4.0;
+   else if (s1/s2>=25. && s1/s2<50.)
+      *yc=(double)y0+6.0;
+   else if (s1/s2>=100.)
+      *yc=(double)y0+8.0;
+
+   // je change de repere de coordonnees
+   *yc += y1;
+   *signal1 = s1;
+   *signal2 = s2;
+   if (table!=NULL) free(table);
+
+}
+
+
 void CBuffer::Autocut(double *phicut,double *plocut,double *pmode)
 {
    pix->Autocut( phicut, plocut, pmode);
