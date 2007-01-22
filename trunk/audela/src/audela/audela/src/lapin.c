@@ -458,8 +458,13 @@ void load_library(Tcl_Interp *interp, char *s)
 //
 int Tk_AppInit(Tcl_Interp *interp)
 {
+<<<<<<< lapin.c
+   char ligne[1000];
+=======
    char ligne[4096];
+>>>>>>> 1.7
    int k;
+
    LOGDEBUG("interp=%p\n",interp);
 
    /* Initialisation of TCL and TK libraries */
