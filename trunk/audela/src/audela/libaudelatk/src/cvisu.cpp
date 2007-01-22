@@ -651,7 +651,8 @@ int CVisu::UpdateDisplay()
    }
 
    // calcul de largeur et de la hauteur d'affichage
-   if( buffer->GetNaxis() == 1 ) {
+   if( buffer->GetNaxis() == 1 || 
+       (buffer->GetNaxis() == 2 && buffer->GetH()==1) ) {
       // une image 1D est étalée sur plusieurs lignes
       orgww = xx2 - xx1 + 1; // Largeur 
       orgwh = thickness_1d;
@@ -682,7 +683,8 @@ int CVisu::UpdateDisplay()
       cuts,
       pal.pal, ptr);
 
-   if( buffer->GetNaxis() == 1 ) {
+   if( buffer->GetNaxis() == 1 || 
+       (buffer->GetNaxis() == 2 && buffer->GetH()==1) ) {
       unsigned char *ptr2;
       ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
       if(ptr2==NULL) {
