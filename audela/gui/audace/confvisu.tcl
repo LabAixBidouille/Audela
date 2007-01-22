@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.43 2007-01-21 11:59:40 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.44 2007-01-22 18:53:50 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -1141,21 +1141,21 @@ namespace eval ::confVisu {
       #--- bind pour l'ouverture de la boite de configuration des cameras
       bind $This.fra1.labCam_labURL <ButtonPress-1> {
          ::confCam::run
-         tkwait window $audace(base).confCam
+         ###tkwait window $audace(base).confCam
       }
       bind $This.fra1.labCam_name_labURL <ButtonPress-1> {
          ::confCam::run
-         tkwait window $audace(base).confCam
+         ###tkwait window $audace(base).confCam
       }
 
       #--- bind pour l'ouverture de la boite de configuration des montures
       bind $This.fra1.labTel_labURL <ButtonPress-1> {
          ::confTel::run
-         tkwait window $audace(base).confTel
+         ###tkwait window $audace(base).confTel
       }
       bind $This.fra1.labTel_name_labURL <ButtonPress-1> {
          ::confTel::run
-         tkwait window $audace(base).confTel
+         ###tkwait window $audace(base).confTel
       }
 
    }
