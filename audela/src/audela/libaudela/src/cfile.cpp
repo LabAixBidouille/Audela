@@ -183,7 +183,6 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
    int msg;                         // Code erreur de libtt
    TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
    void *ppix;
-   int bitpix;
    int nb_keys;
    int naxis1, naxis2;
    char **keynames=NULL;
@@ -193,7 +192,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
    int *datatypes=NULL;
    int datatype;
 
-   // 
+   // petir raccoruci sur les dimensions 
    naxis1 = pixels->GetWidth();
    naxis2 = pixels->GetHeight();
 
@@ -204,32 +203,24 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
          pixelsG = pixelsR + naxis1*naxis2; 
          pixelsB = pixelsR + naxis1*naxis2*2; 
 
-         // je recupere l'image a traiter en séparant les 3 plans
+         // je recupere l'image RGB a traiter en séparant les 3 plans
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (int) pixelsR);
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (int) pixelsG);
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (int) pixelsB);
    
-         // format des pixels dans le fichier de sortie de libtt
+         // format des pixels en entree de libtt
          datatype = TSHORT;
-         bitpix = USHORT_IMG;
-
          break;
       default : 
-         // je recupere l'image a traiter 
+         // je recupere l'image GREY a traiter 
          ppix = malloc(naxis1* naxis2 * sizeof(float));
          pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
          
-         // 
-         datatype = TFLOAT;
-         // format des pixels dans le fichier de sortie de libtt
-         bitpix = FLOAT_IMG;
-         
+         // format des pixels en entree de libtt
+         datatype = TFLOAT;         
          break;
    }
 
-
-   // j'ajoute les mots cle obligatoire
-   keywords->Add("BITPIX", &bitpix, TINT,"","");
 
    // Collecte de renseignements pour la suite
    nb_keys = keywords->GetKeywordNb();
@@ -281,7 +272,7 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    result  = libdcjpeg_loadFile(filename, &decodedData, &decodedSize, &naxis3, &width, &height);            
    if (result == 0 )  {
 
-      // je copie les pixels dans la variable de sortie
+      // je copie les pixels dans la variable de sortie *pixels
       if ( naxis3 == 1 ) {
          *pixels = new CPixelsGray(width, height, FORMAT_BYTE, decodedData, 0, 0);
          naxis = 1;
@@ -292,7 +283,7 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          throw new CError("loadJpeg : unsupported value naxis3=%d ", naxis3);
       }
 
-      // je copie les mots cles dans la variable de sortie      
+      // je copie les mots cles dans la variable de sortie *keywords 
       *keywords = new CFitsKeywords();
       initialMipsLo = 0.0 ;
       initialMipsHi = 255.0;
@@ -391,7 +382,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    struct libdcraw_DataInfo dataInfo;
    CFitsKeyword *kwd;
 
-   // je verifie que la methode est connue
+   // je verifie que la methode d'interpolation est connue
    switch ( interpolationMethod ) {
    case 1 : 
       method = LINEAR;
@@ -407,7 +398,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
       throw CError("convertCfa2Rgb interpolationMethod=%d unknown", interpolationMethod);
    }
 
-   // je recupere les parametres indispensable a la conversion
+   // je recupere les parametres indispensable a l'interpolation
    dataInfo.width =  cfaPixels->GetWidth();
    dataInfo.height = cfaPixels->GetHeight();
    if ( (kwd = cfaKeywords->FindKeyword("RAW_COLORS")) != NULL ) {      
