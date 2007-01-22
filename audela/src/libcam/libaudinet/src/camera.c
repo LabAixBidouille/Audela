@@ -26,7 +26,7 @@
  * La structure "camprop" peut etre adaptee
  * dans le fichier camera.h
  *
- * $Id: camera.c,v 1.6 2006-12-15 23:31:21 michelpujol Exp $
+ * $Id: camera.c,v 1.7 2007-01-22 20:53:59 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -328,21 +328,20 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
-    if (cam->authorized == 1) {
-	//logInfo("start_exp debut");
-	/* case : shutter always off (Darks) */
-	if (cam->shutterindex == 0) {
-	    cam_shutter_off(cam);
-	}
-
-	/* vidage de la matrice */
-	audinet_fast_vidage_inv(cam);
-
-	/* shutter always on for synchro mode */
-	if ((cam->shutterindex == 1)) {
-	    cam_shutter_on(cam);
-	}
-    }
+   if (cam->authorized == 1) {
+      /* case : shutter always off (Darks) */
+      if (cam->shutterindex == 0) {
+         cam_shutter_off(cam);
+      }
+      
+      /* vidage de la matrice */
+      audinet_fast_vidage_inv(cam);
+      
+      /* shutter always on for synchro mode */
+      if ((cam->shutterindex == 1)) {
+         cam_shutter_on(cam);
+      }
+   }
 }
 
 void cam_stop_exp(struct camprop *cam)
@@ -351,60 +350,58 @@ void cam_stop_exp(struct camprop *cam)
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
-    if (p == NULL)
-	return;
-    if (cam->authorized == 1) {
-	/* shutter always off for synchro mode */
-	if (cam->shutterindex == 1) {
-	    cam_shutter_off(cam);
-	}
-	/* ampli */
-	if (cam->ampliindex == 0) {
-	    ampli_on(cam);
-	}
-	/* Lecture de l'image */
-	read_udp_win_inv(cam, p);
-
-
-    }
+   if (p == NULL)
+      return;
+   if (cam->authorized == 1) {
+      /* shutter always off for synchro mode */
+      if (cam->shutterindex == 1) {
+         cam_shutter_off(cam);
+      }
+      /* ampli */
+      if (cam->ampliindex == 0) {
+         ampli_on(cam);
+      }
+      /* Lecture de l'image */
+      read_udp_win_inv(cam, p);
+   }
 }
 
 void cam_shutter_on(struct camprop *cam)
 {
-    if (cam->authorized == 1) {
-	if (cam->shutteraudinereverse == 0) {
-	    setShutter(cam, 1);
-	} else {
-	    setShutter(cam, 0);
-	}
-    }
+   if (cam->authorized == 1) {
+      if (cam->shutteraudinereverse == 0) {
+         setShutter(cam, 0);
+      } else {
+         setShutter(cam, 1);
+      }
+   }
 }
 
 void cam_shutter_off(struct camprop *cam)
 {
-    if (cam->authorized == 1) {
-	if (cam->shutteraudinereverse == 0) {
-	    setShutter(cam, 0);
-	} else {
-	    setShutter(cam, 1);
-	}
-    }
+   if (cam->authorized == 1) {
+      if (cam->shutteraudinereverse == 0) {
+         setShutter(cam, 1);
+      } else {
+         setShutter(cam, 0);
+      }
+   }
 }
 
 void cam_ampli_on(struct camprop *cam)
 {
-    if (cam->authorized == 1) {
-	/* ampli off */
-	ampli_on(cam);
-    }
+   if (cam->authorized == 1) {
+      /* ampli off */
+      ampli_on(cam);
+   }
 }
 
 void cam_ampli_off(struct camprop *cam)
 {
-    if (cam->authorized == 1) {
-	/* ampli off */
-	ampli_off(cam);
-    }
+   if (cam->authorized == 1) {
+      /* ampli off */
+      ampli_off(cam);
+   }
 }
 
 void cam_measure_temperature(struct camprop *cam)
@@ -486,32 +483,28 @@ void cam_update_window(struct camprop *cam)
 
 int audinet_fast_vidage_inv(struct camprop *cam)
 {
-    int result;
-    char url[512];
-
-    int imax, jmax, decaligne;
-
-    /* Nombre de lignes decalees a chaque iteration. */
-    decaligne = 4;
-
-    /* Calcul des constantes de vidage de la matrice. */
-    imax =
-	cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox;
-    jmax =
-	(cam->nb_photoy + cam->nb_deadbeginphotoy +
-	 cam->nb_deadendphotoy) / decaligne + 1;
-
-    /* je prepare l'URL */
-    sprintf(url, "/cgi-bin/razccd.cgi?col=%d&grp=%d&gsiz=%d",
-	    imax, jmax, decaligne);
-
-    logInfo("audinet_fast_vidage_inv url=http://%s:%d%s", cam->host,
-	    cam->httpPort, url);
-
-    result = sendHttpRequest(cam->host, cam->httpPort, url);
-
-
-    return result;
+   int result;
+   char url[512];
+   
+   int imax, jmax, decaligne;
+   
+   /* Nombre de lignes decalees a chaque iteration. */
+   decaligne = 4;
+   
+   /* Calcul des constantes de vidage de la matrice. */
+   imax = cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox;
+   jmax = (cam->nb_photoy + cam->nb_deadbeginphotoy +
+      cam->nb_deadendphotoy) / decaligne + 1;
+   
+   /* je prepare l'URL */
+   sprintf(url, "/cgi-bin/razccd.cgi?col=%d&grp=%d&gsiz=%d",
+      imax, jmax, decaligne);
+   
+   logInfo("audinet_fast_vidage_inv url=http://%s:%d%s", cam->host,
+      cam->httpPort, url);
+   
+   result = sendHttpRequest(cam->host, cam->httpPort, url);
+   return result;
 
 }
 
@@ -540,38 +533,33 @@ int read_udp_win_inv(struct camprop *cam, unsigned short *buf)
     char url[256];
     int nbcol, nbrow, colmax;
     int cx1, cx2, cy1;
-
-
+    
+    
     colmax =
-	cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox;
+       cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox;
     // Calcul des coordonnees de la  fenetre, et du nombre de pixels 
     nbcol = (cam->x2 - cam->x1 + 1) / cam->binx;
     nbrow = (cam->y2 - cam->y1 + 1) / cam->biny;
-
-
+    
+    
     cx1 = cam->nb_deadbeginphotox + (cam->x1);
     cx2 = cam->nb_photox - 1 - cam->x2 + cam->nb_deadendphotox;
     cy1 = cam->nb_deadbeginphotoy + (cam->y1);
-
+    
     /* je prepare l'url */
     sprintf(url,
-	    "/cgi-bin/getImage.cgi?bx=%d&by=%d&cx1=%d&cx2=%d&cy1=%d&col=%d&row=%d&colm=%d&ut=%d&mode=%d",
-	    cam->binx, cam->biny, cx1, cx2, cy1, nbcol, nbrow, colmax,
-	    cam->udpTempo, MODE_MONO);
+       "/cgi-bin/getImage.cgi?bx=%d&by=%d&cx1=%d&cx2=%d&cy1=%d&col=%d&row=%d&colm=%d&ut=%d&mode=%d",
+       cam->binx, cam->biny, cx1, cx2, cy1, nbcol, nbrow, colmax,
+       cam->udpTempo, MODE_MONO);
     logInfo("read_udp_win_inv url=http://%s:%d%s", cam->host,
-	    cam->httpPort, url);
+       cam->httpPort, url);
     result = sendHttpRequest(cam->host, cam->httpPort, url);
-
+    
     if (result == TRUE) {
-
-	int threadPriority;
-	threadPriority = setHighestPriority();
-
-	result = loadImage(cam, nbcol, nbrow, buf);
-	restaurePriority(threadPriority);
-
-
-
+       int threadPriority;
+       threadPriority = setHighestPriority();
+       result = loadImage(cam, nbcol, nbrow, buf);
+       restaurePriority(threadPriority);
     }
     return result;
 }
@@ -593,47 +581,47 @@ int read_udp_win_inv(struct camprop *cam, unsigned short *buf)
  */
 int audinet_startScan(struct camprop *cam, ScanStruct * scan)
 {
-    int result = TRUE;
-    char url[256];
-    int nbcol, nbcolmax;
-    int cx1, cx2, cy1;
-    int audinetCounter;
-
-
-    nbcolmax =
-	cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox;
-    /* Calcul des coordonnees de la fenetre, et du nombre de pixels */
-    nbcol = scan->width / scan->bin;
-
-    cx1 = cam->nb_deadbeginphotox + (scan->offset - 1);
-    cx2 =
-	cam->nb_photox - scan->width - (scan->offset - 1) +
-	cam->nb_deadendphotox;
-    cy1 = cam->nb_deadbeginphotoy + cam->y1;
-
-    audinetCounter = (int) (7372. * (float) scan->dt / 1024.);
-    /* je calcule la valeur du compteur de l'interface audinet */
-
-    /* je prepare l'url */
-    sprintf(url,
-	    "/cgi-bin/getImage.cgi?bx=%d&by=%d&cx1=%d&cx2=%d&cy1=%d&col=%d&row=1&colm=%d&ut=%d&mode=%d",
-	    cam->binx, cam->biny, cx1, cx2, cy1, nbcol, nbcolmax,
-	    audinetCounter, MODE_SCAN);
-    logInfo("audinet_startScan url=http://%s:%d%s", cam->host,
-	    cam->httpPort, url);
-    result = sendHttpRequest(cam->host, cam->httpPort, url);
-
-    if (result == TRUE) {
-	/* j'ouvre la socket UDP */
-	if (!sockudp_open(cam->host, cam->udpSendPort, cam->udpRecvPort)) {
-	    logError
-		("audinet_startScan udpSocket->openSocket host=%s udpSendPort=%d udpRecvPort=%d",
-		 cam->host, cam->udpSendPort, cam->udpRecvPort);
-	    result = FALSE;
-	}
-    }
-
-    return result;
+   int result = TRUE;
+   char url[256];
+   int nbcol, nbcolmax;
+   int cx1, cx2, cy1;
+   int audinetCounter;
+   
+   
+   nbcolmax =
+      cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox;
+   /* Calcul des coordonnees de la fenetre, et du nombre de pixels */
+   nbcol = scan->width / scan->bin;
+   
+   cx1 = cam->nb_deadbeginphotox + (scan->offset - 1);
+   cx2 =
+      cam->nb_photox - scan->width - (scan->offset - 1) +
+      cam->nb_deadendphotox;
+   cy1 = cam->nb_deadbeginphotoy + cam->y1;
+   
+   audinetCounter = (int) (7372. * (float) scan->dt / 1024.);
+   /* je calcule la valeur du compteur de l'interface audinet */
+   
+   /* je prepare l'url */
+   sprintf(url,
+      "/cgi-bin/getImage.cgi?bx=%d&by=%d&cx1=%d&cx2=%d&cy1=%d&col=%d&row=1&colm=%d&ut=%d&mode=%d",
+      cam->binx, cam->biny, cx1, cx2, cy1, nbcol, nbcolmax,
+      audinetCounter, MODE_SCAN);
+   logInfo("audinet_startScan url=http://%s:%d%s", cam->host,
+      cam->httpPort, url);
+   result = sendHttpRequest(cam->host, cam->httpPort, url);
+   
+   if (result == TRUE) {
+      /* j'ouvre la socket UDP */
+      if (!sockudp_open(cam->host, cam->udpSendPort, cam->udpRecvPort)) {
+         logError
+            ("audinet_startScan udpSocket->openSocket host=%s udpSendPort=%d udpRecvPort=%d",
+            cam->host, cam->udpSendPort, cam->udpRecvPort);
+         result = FALSE;
+      }
+   }
+   
+   return result;
 }
 
 /**
@@ -642,60 +630,60 @@ int audinet_startScan(struct camprop *cam, ScanStruct * scan)
 int audinet_scanReadLine(struct camprop *cam, ScanStruct * scan,
 			 unsigned short *scanbuf)
 {
-    unsigned char data[3840];
-    int i;
-    int n, nTotalRecv;
-    int nbcol = scan->width / scan->bin;
-
-    unsigned short *p0 = scanbuf;
-
-    for (nTotalRecv = 0; nTotalRecv < nbcol * 2;) {
-	/* je lis un packet UDP */
-	n = sockudp_recv((char *) data, sizeof data);
-	if (n <= 0) {
-	    logError
-		("audinet_startScan packet null sockudp_recv=%d nTotalRecv=%ld host=%s udpSendPort=%d udpRecvPort=%d",
-		 n, scan->y, cam->host, cam->udpSendPort,
-		 cam->udpRecvPort);
-	    /* si erreur ou paquet vide, j'arrete la lecture */
-	    break;
-	} else {
-	    if (n > nbcol * 2)
-		n = nbcol * 2;
-	    /* je copie les octets dans le tableau des pixels */
-	    for (i = 0; i < n; i += 2) {
-		/* je reconstitue la valeur du pixel  */
-		/* formule :  pixel value = low byte + 256 * hight byte */
-		*p0 =
-		    (unsigned short) data[i] +
-		    ((unsigned short) (data[i + 1]) << 8);
-		/* je modifie la valeur du pixel si elle depasse 32767  */
-		if (*p0 > 32767)
-		    *p0 = 32767;
-		p0++;
-
-	    }
-	    //logImage(scanbuf,nbcol,1); 
-	    //logInfo("audinet_scanReadLine scan->y=%d, nbcol=%d, n=%d",scan->y,nbcol,n);
-	}
-	nTotalRecv += n;
-    }
-    return TRUE;
+   unsigned char data[3840];
+   int i;
+   int n, nTotalRecv;
+   int nbcol = scan->width / scan->bin;
+   
+   unsigned short *p0 = scanbuf;
+   
+   for (nTotalRecv = 0; nTotalRecv < nbcol * 2;) {
+      /* je lis un packet UDP */
+      n = sockudp_recv((char *) data, sizeof data);
+      if (n <= 0) {
+         logError
+            ("audinet_startScan packet null sockudp_recv=%d nTotalRecv=%ld host=%s udpSendPort=%d udpRecvPort=%d",
+            n, scan->y, cam->host, cam->udpSendPort,
+            cam->udpRecvPort);
+         /* si erreur ou paquet vide, j'arrete la lecture */
+         break;
+      } else {
+         if (n > nbcol * 2)
+            n = nbcol * 2;
+         /* je copie les octets dans le tableau des pixels */
+         for (i = 0; i < n; i += 2) {
+            /* je reconstitue la valeur du pixel  */
+            /* formule :  pixel value = low byte + 256 * hight byte */
+            *p0 =
+               (unsigned short) data[i] +
+               ((unsigned short) (data[i + 1]) << 8);
+            /* je modifie la valeur du pixel si elle depasse 32767  */
+            if (*p0 > 32767)
+               *p0 = 32767;
+            p0++;
+            
+         }
+         //logImage(scanbuf,nbcol,1); 
+         //logInfo("audinet_scanReadLine scan->y=%d, nbcol=%d, n=%d",scan->y,nbcol,n);
+      }
+      nTotalRecv += n;
+   }
+   return TRUE;
 }
 
 
 int audinet_stopScan(struct camprop *cam, ScanStruct * scan)
 {
-    int result = TRUE;
-    char url[256];
-
-    /* je prepare l'url */
-    sprintf(url, "/cgi-bin/stopScan.cgi");
-    logInfo("audinet_stopScan url=http://%s:%d%s", cam->host,
-	    cam->httpPort, url);
-    result = sendHttpRequest(cam->host, cam->httpPort, url);
-    logInfo("audinet_startScan received rows=%d ", scan->y);
-    return result;
+   int result = TRUE;
+   char url[256];
+   
+   /* je prepare l'url */
+   sprintf(url, "/cgi-bin/stopScan.cgi");
+   logInfo("audinet_stopScan url=http://%s:%d%s", cam->host,
+      cam->httpPort, url);
+   result = sendHttpRequest(cam->host, cam->httpPort, url);
+   logInfo("audinet_startScan received rows=%d ", scan->y);
+   return result;
 }
 
 
@@ -729,17 +717,17 @@ void ampli_on(struct camprop *cam)
  */
 void setShutter(struct camprop *cam, int value)
 {
-    char url[256];
-    int result = TRUE;
-
-
-    /* je prepare l'url */
-    sprintf(url, "/cgi-bin/setShutter.cgi?val=%d", value);
-    logInfo("setShutter url=http://%s:%d%s", cam->host, cam->httpPort,
-	    url);
-    // j'envoie la commande
-    result = sendHttpRequest(cam->host, cam->httpPort, url);
-
+   char url[256];
+   int result = TRUE;
+   
+   
+   /* je prepare l'url */
+   sprintf(url, "/cgi-bin/setShutter.cgi?val=%d", value);
+   logInfo("setShutter url=http://%s:%d%s", cam->host, cam->httpPort,
+      url);
+   // j'envoie la commande
+   result = sendHttpRequest(cam->host, cam->httpPort, url);
+   
 }
 
 
@@ -754,52 +742,50 @@ void setShutter(struct camprop *cam, int value)
  */
 int sendHttpRequest(char *httpHost, int httpPort, char *url)
 {
-
-    int result = TRUE;
-    char data[3072];
-    int n;
-
-
+   
+   int result = TRUE;
+   char data[3072];
+   int n;
+   
+   
 #ifdef SIMUL_AUDINET
-    logInfo("sendHttpRequest url=http://%s:%d%s", httpHost, httpPort, url);
-    return TRUE;
+   logInfo("sendHttpRequest url=http://%s:%d%s", httpHost, httpPort, url);
+   return TRUE;
 #endif
-
-
-    /* j'ouvre la socket tcp */
-    if (!socktcp_open(httpHost, httpPort)) {
-	result = FALSE;
-    } else {
-	/* j'envoi la requete HTTP sur la socket TCP */
-	if (!socktcp_send(httpHost, httpPort, url)) {
-	    logError("sendHttpRequest socktcp_send");
-	    result = FALSE;
-	} else {
-	    /* je lis le debut de la  reponse */
-	    n = socktcp_recv(data, sizeof data);
-
-	    /* je verifie que l'envoi de la requete est OK  */
-	    if (n >= 12) {
-		if (strcmp(data, "HTTP/1.1 200") != 0) {
-		    //logInfo("sendHttpRequest OK");
-		    result = TRUE;
-		} else {
-		    /* make null terminated string */
-		    data[n] = 0;
-		    logError("sendHttpRequest : %s", data);
-		    result = FALSE;
-		}
-	    } else {
-		logError("sendHttpRequest data n=%d ", n);
-		result = FALSE;
-	    }
-	}
-	/* je referme la socket tcp */
-	socktcp_close();
-    }
-
-
-    return result;
+   
+   
+   /* j'ouvre la socket tcp */
+   if (!socktcp_open(httpHost, httpPort)) {
+      result = FALSE;
+   } else {
+      /* j'envoi la requete HTTP sur la socket TCP */
+      if (!socktcp_send(httpHost, httpPort, url)) {
+         logError("sendHttpRequest socktcp_send");
+         result = FALSE;
+      } else {
+         /* je lis le debut de la  reponse */
+         n = socktcp_recv(data, sizeof data);
+         
+         /* je verifie que l'envoi de la requete est OK  */
+         if (n >= 12) {
+            if (strcmp(data, "HTTP/1.1 200") != 0) {
+               //logInfo("sendHttpRequest OK");
+               result = TRUE;
+            } else {
+               /* make null terminated string */
+               data[n] = 0;
+               logError("sendHttpRequest : %s", data);
+               result = FALSE;
+            }
+         } else {
+            logError("sendHttpRequest data n=%d ", n);
+            result = FALSE;
+         }
+      }
+      /* je referme la socket tcp */
+      socktcp_close();
+   }
+   return result;
 }
 
 static double _startTime;
@@ -855,67 +841,106 @@ double stopTimer()
  *
  * lit les pixeles d'une image qui arrivent dans des paquets UDP 
  */
-int loadImage(struct camprop *cam, int nbcol, int nbrow,
-	      unsigned short *buf)
+int loadImage(struct camprop *cam, int nbcol, int nbrow,unsigned short *buf)
 {
-
-    int result = TRUE;
-    long nTotalExpected;
-    long nTotalRecv;
-    unsigned short *p0 = buf;
-    int npacket = 0;
-    long npixel = 0;
-    int i;
-    double elapse_time;
-    unsigned char data[3072];
-
-    nTotalExpected = nbrow * nbcol * 2;
-
-
-    startTimer();
-
+   
+   int result = TRUE;
+   long nTotalExpected;
+   long nTotalRecv;
+   unsigned short *p0 = buf;
+   int npacket = 0;
+   long npixel = 0;
+   int i;
+   double elapse_time;
+   unsigned char data[3072];
+   
+   nTotalExpected = nbrow * nbcol * 2;
+   
+   
+   startTimer();
+   
 #ifndef SIMUL_AUDINET
-    // j'ouvre la socket UDP 
-    if (!sockudp_open(cam->host, cam->udpSendPort, cam->udpRecvPort)) {
-	logError
-	    ("audinet_startScan udpSocket->openSocket host=%s udpSendPort=%d udpRecvPort=%d",
-	     cam->host, cam->udpSendPort, cam->udpRecvPort);
-	result = FALSE;
-    } else {
-	//logInfo("loadImage begin avant for");
-	/* je lis les pixels sur la socket UDP  */
-	for (nTotalRecv = 0; nTotalRecv < nTotalExpected + 1;) {
-	    int n = 0;
-	    /* je lis un packet UDP */
-	    n = sockudp_recv((char *) data, sizeof data);
-	    //logInfo("loadImage npacket=%d n=%d ", npacket, n);
-	    if (n <= 1) {
-		if (n == 1 && data[0] == 'K') {
-		    // fin de trame  
-		    //logInfo("loadImage fin de trame ");
-		    result = TRUE;
-		    break;
-		} else {
-		    logError
-			("loadImage sockudp_recv=%d nTotalRecv=%d nTotalExpected=%d host=%s udpSendPort=%d udpRecvPort=%d",
-			 n, nTotalRecv, nTotalExpected, cam->host,
-			 cam->udpSendPort, cam->udpRecvPort);
-		    // si erreur ou paquet vide, j'arrete la lecture 
-		    result = FALSE;
-		    break;
-		}
-	    } else {
-		if (nTotalRecv + n > nTotalExpected) {
-		    /* si le dernier packet est trop gros,alors je ne lis que les n premiers octets */
-		    n = nTotalExpected - nTotalRecv;
-		    result = TRUE;
-		} else {
-		    nTotalRecv += n;
-		}
-		npacket++;
-		//logInfo("loadImage copy image");
-
-		/* je copie les octets dans le tableau des pixels */
+   // j'ouvre la socket UDP 
+   if (!sockudp_open(cam->host, cam->udpSendPort, cam->udpRecvPort)) {
+      logError
+         ("audinet_startScan udpSocket->openSocket host=%s udpSendPort=%d udpRecvPort=%d",
+         cam->host, cam->udpSendPort, cam->udpRecvPort);
+      result = FALSE;
+   } else {
+      //logInfo("loadImage begin avant for");
+      /* je lis les pixels sur la socket UDP  */
+      for (nTotalRecv = 0; nTotalRecv < nTotalExpected + 1;) {
+         int n = 0;
+         /* je lis un packet UDP */
+         n = sockudp_recv((char *) data, sizeof data);
+         //logInfo("loadImage npacket=%d n=%d ", npacket, n);
+         if (n <= 1) {
+            if (n == 1 && data[0] == 'K') {
+               // fin de trame  
+               //logInfo("loadImage fin de trame ");
+               result = TRUE;
+               break;
+            } else {
+               logError
+                  ("loadImage sockudp_recv=%d nTotalRecv=%d nTotalExpected=%d host=%s udpSendPort=%d udpRecvPort=%d",
+                  n, nTotalRecv, nTotalExpected, cam->host,
+                  cam->udpSendPort, cam->udpRecvPort);
+               // si erreur ou paquet vide, j'arrete la lecture 
+               result = FALSE;
+               break;
+            }
+         } else {
+            if (nTotalRecv + n > nTotalExpected) {
+               /* si le dernier packet est trop gros,alors je ne lis que les n premiers octets */
+               n = nTotalExpected - nTotalRecv;
+               result = TRUE;
+            } else {
+               nTotalRecv += n;
+            }
+            npacket++;
+            //logInfo("loadImage copy image");
+            
+            /* je copie les octets dans le tableau des pixels */
+            for (i = 0; i < n; i += 2) {
+               /* je reconstitue la valeur du pixel  */
+               /* formule :  pixel value = low byte + 256 * hight byte */
+               p0[npixel] =
+                  (unsigned short) data[i] +
+                  ((unsigned short) (data[i + 1]) << 8);
+               /* je modifie la valeur du pixel si elle depasse 32767  */
+               if (p0[npixel] > 32767)
+                  p0[npixel] = 32767;
+               
+               npixel++;
+            }
+         }
+      }			// end for 
+   }
+      
+   // je ferme la socket UDP
+   sockudp_close();
+#else
+   //  SIMULATION
+   for (nTotalRecv = 0; nTotalRecv < nTotalExpected;) {
+      int n;
+      int pixval2;
+      
+      // je genere des paquets de données , comme envoyés par audinet
+      n = nbcol * 2;
+      for (i = 0; i < n; i += 2) {
+         pixval2 = pixval + i / 2;
+         data[i] = (unsigned char) (pixval2 & 255);
+         data[i + 1] = (unsigned char) (pixval2 >> 8);
+         
+      }
+      nTotalRecv += n;
+      npacket++;
+#if defined(OS_WIN)
+      // je simule le temps de lecture du kaf
+      Sleep((nbcol / 50));
+#endif
+      
+      /* je copie les octets dans le tableau des pixels */
       for (i = 0; i < n; i += 2) {
          /* je reconstitue la valeur du pixel  */
          /* formule :  pixel value = low byte + 256 * hight byte */
@@ -928,63 +953,21 @@ int loadImage(struct camprop *cam, int nbcol, int nbrow,
          
          npixel++;
       }
-       }
-   }			// end for 
-    }
-    
-    
-    // je ferme la socket UDP
-    sockudp_close();
-#else
-    //  SIMULATION
-    for (nTotalRecv = 0; nTotalRecv < nTotalExpected;) {
-	int n;
-	int pixval2;
-
-	// je genere des paquets de données , comme envoyés par audinet
-	n = nbcol * 2;
-	for (i = 0; i < n; i += 2) {
-	    pixval2 = pixval + i / 2;
-	    data[i] = (unsigned char) (pixval2 & 255);
-	    data[i + 1] = (unsigned char) (pixval2 >> 8);
-
-	}
-	nTotalRecv += n;
-	npacket++;
-#if defined(OS_WIN)
-	// je simule le temps de lecture du kaf
-	Sleep((nbcol / 50));
+      //logInfo("loadImage npacket=%d n=%d ", npacket, n);
+   }
+   logInfo("loadImage pixval=%d", pixval);
+   // je change le niveau de gris pour l'image suivante
+   pixval += 1000;
+   if (pixval > 32000)
+      pixval = 0;
 #endif
-
-	/* je copie les octets dans le tableau des pixels */
-	for (i = 0; i < n; i += 2) {
-	    /* je reconstitue la valeur du pixel  */
-	    /* formule :  pixel value = low byte + 256 * hight byte */
-	    p0[npixel] =
-		(unsigned short) data[i] +
-		((unsigned short) (data[i + 1]) << 8);
-	    /* je modifie la valeur du pixel si elle depasse 32767  */
-	    if (p0[npixel] > 32767)
-		p0[npixel] = 32767;
-
-	    npixel++;
-	}
-	//logInfo("loadImage npacket=%d n=%d ", npacket, n);
-    }
-    logInfo("loadImage pixval=%d", pixval);
-    // je change le niveau de gris pour l'image suivante
-    pixval += 1000;
-    if (pixval > 32000)
-	pixval = 0;
-#endif
-
-    elapse_time = stopTimer();
-    //logInfo("loadImage nbrow=%d nbcol=%d nTotalExpected=%ld nTotalRecv=%ld npacket=%d",
-    //cont->nbrow, cont->nbcol, nTotalExpected, nTotalRecv, npacket );
-    logInfo("loadImage elapse time=%6.2f ", elapse_time);
-
-    return result;
-
+   
+   elapse_time = stopTimer();
+   //logInfo("loadImage nbrow=%d nbcol=%d nTotalExpected=%ld nTotalRecv=%ld npacket=%d",
+   //cont->nbrow, cont->nbcol, nTotalExpected, nTotalRecv, npacket );
+   logInfo("loadImage elapse time=%6.2f ", elapse_time);
+   
+   return result;
 }
 
 /*
@@ -996,26 +979,23 @@ int loadImage(struct camprop *cam, int nbcol, int nbrow,
  */
 int setHighestPriority()
 {
-
+   
 #if defined(OS_WIN)
-    int priority;
-    // je memorise l'anciene priorite
-    priority = GetThreadPriority(GetCurrentThread());
-    // j'attribue la priorite maximale
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-    return priority;
+   int priority;
+   // je memorise l'anciene priorite
+   priority = GetThreadPriority(GetCurrentThread());
+   // j'attribue la priorite maximale
+   SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+   return priority;
 #endif
-
+   
 #if defined(OS_LIN) || defined(OS_MACOS)
-    // a etudier ( utiliser nice ?)
-    // j'augmente la priority de 20 points
-    // si c'est deja au maxi, ce n'est pas grave Linux gere...
-    //nice(-20);  // le test va etre fait par B Minster
-    return 1;
+   // a etudier ( utiliser nice ?)
+   // j'augmente la priority de 20 points
+   // si c'est deja au maxi, ce n'est pas grave Linux gere...
+   //nice(-20);  // le test va etre fait par B Minster
+   return 1;
 #endif
-
-
-
 }
 
 /*
