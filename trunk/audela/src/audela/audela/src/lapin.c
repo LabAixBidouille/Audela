@@ -79,7 +79,7 @@ int Tk_AppInit(Tcl_Interp *interp);
 int Tcl_AppInit(Tcl_Interp *interp);
 
 #if defined(OS_WIN)
-static BOOL __stdcall   sigHandler (DWORD fdwCtrlType);
+//static BOOL __stdcall   sigHandler (DWORD fdwCtrlType);
 static void AppInitExitHandler(ClientData clientData);
 void createMsdosConsole();
 #endif
@@ -115,7 +115,7 @@ void createMsdosConsole();
 #endif
 #endif
 
-void GetChemin(char *chemin, DWORD taille,int end)
+void GetChemin(char *chemin, unsigned long taille,int end)
 {
    char *c;
    c = chemin+strlen(chemin);
@@ -191,7 +191,7 @@ void audela_setcwd(char *buf)
    SetCurrentDirectory(buf);
 #endif
 #if defined(OS_LIN) || defined(OS_MACOS)
-   setcwd(buf);
+   chdir(buf);
 #endif
 }
 
@@ -419,7 +419,7 @@ int PASCAL WinMain(HINSTANCE hCurInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
    char exename[1024] = EXE_NAME" ";
    int argc;
    char **argv;
-   char chemin[MAX_PATH];
+   char chemin[MAX_STRING];
 
    GetModuleFileName(NULL,chemin,MAX_PATH);
    GetChemin(chemin,MAX_PATH,1);
@@ -458,9 +458,7 @@ void load_library(Tcl_Interp *interp, char *s)
 //
 int Tk_AppInit(Tcl_Interp *interp)
 {
-#if defined(OS_WIN)
-   char ligne[MAX_PATH];
-#endif
+   char ligne[4096];
    int k;
    LOGDEBUG("interp=%p\n",interp);
 
