@@ -110,13 +110,15 @@ public:
    static TPixelCompression getPixelCompression(char *);
    static char * getPixelCompressionName(TPixelCompression value);
    static TColorPlane getColorPlane(char *);
-   
+
+   void fitgauss1d(int n,double *y,double *p,double *ecart);
+
 protected:
 
 
    int util_qsort_double(double *x,int kdeb,int n,int *index);
 
-   void fitgauss1d(int n,double *y,double *p,double *ecart);
+   //void fitgauss1d(int n,double *y,double *p,double *ecart);
    void fitgauss1d_a(int n,double *y,double *p,double *ecart);
    void fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart);
 
