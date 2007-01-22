@@ -97,6 +97,7 @@ int cmdClipmax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdScale(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdScar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSaveJpg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdUnifyBg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
@@ -169,6 +170,7 @@ static struct cmditem cmdlist[] = {
    {"setkwd", (Tcl_CmdProc *)cmdSetKwd},
    {"setpix", (Tcl_CmdProc *)cmdSetPix},
    {"setpixels", (Tcl_CmdProc *)cmdSetPixels},
+   {"slitcentro", (Tcl_CmdProc *)cmdSlitCentro},
    {"sub", (Tcl_CmdProc *)cmdTtSub},
    {"stat", (Tcl_CmdProc *)cmdTtStat},
    {"synthegauss", (Tcl_CmdProc *)cmdGauss},
@@ -4494,3 +4496,93 @@ int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
 }
 
+
+//==============================================================================
+// buf$i slitcentro {x1 y1 x2 y2} slitwidth   --
+//   Fonction de calcul du centroide sur une fente.
+//
+//
+int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   enum {CMD_CENTRO=1,CMD_FLUX,CMD_PHOT};
+   int x1, y1, x2, y2, slitWidth, temp;                // Position de la fenetre
+   int retour;
+   char ligne[1000];
+   CBuffer *buffer;
+   char **listArgv;                   // Liste des argulents passes a getpix.
+   int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
+   char parameters[]= "{x1 y1 x2 y2} slitwidth";
+   
+   // On recupere les parametres (et eventuellement on en met par defaut).
+   if(argc!=4) {
+      sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
+         sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else if(listArgc!=4) {
+         sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else {
+         if(Tcl_GetInt(interp,listArgv[0],&x1)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s %s\nx1 must be an integer",argv[0],argv[1],parameters);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,listArgv[1],&y1)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s %s\ny1 must be an integer",argv[0],argv[1],parameters);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,listArgv[2],&x2)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s %s\nx2 must be an integer",argv[0],argv[1],parameters);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,listArgv[3],&y2)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s %s\ny2 must be an integer",argv[0],argv[1],parameters);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,argv[3],&slitWidth)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s %s\nslitwidth must be an integer",argv[0],argv[1],parameters);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else {
+            double xc, yc;                     // centroide sur la fente
+            double signal1, signal2;           // signal sur les levres basse et haute
+            TYPE_PIXELS maxi;
+   
+            buffer = (CBuffer*)clientData;
+            try {
+               if (x1 > x2) {
+                  temp = x1;
+                  x1 = x2;
+                  x2 = temp;
+               }
+               if (y1 > y2) {
+                  temp = y1;
+                  y1 = y2;
+                  y2 = temp;
+               }
+               if( slitWidth >= (y2-y1) ) {
+                  sprintf(ligne,"Usage: %s %s %s\nslitwidth is too large",argv[0],argv[1],parameters);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+               }
+
+               buffer->AstroSlitCentro(x1, y1, x2, y2, slitWidth, &xc, &yc, &maxi, &signal1, &signal2);
+               sprintf(ligne,"%f %f %f %f %f",xc, yc, maxi, signal1, signal2);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_OK;
+            } catch(const CError& e) {
+               sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            }
+         }
+      }
+      Tcl_Free((char*)listArgv);
+   }
+   return retour;
+}
