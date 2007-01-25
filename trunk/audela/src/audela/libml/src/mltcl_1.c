@@ -30,69 +30,6 @@
 /***************************************************************************/
 #include "mltcl.h"
 
-
-int Cmd_mltcl_getTimegps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/****************************************************************************/
-/* Recupération de données du gps                                           */
-/****************************************************************************/
-/****************************************************************************/
-{
-	int result=TCL_OK;
-	HANDLE		hDevice;
-	FILETIME 	FileTime;
-	SYSTEMTIME_EX	SystemTime;
-	Tcl_DString dsptr;
-	char s[100];
-
-#if defined(OS_WIN)
-	// open device 0 for Read/Write access
-	if (TT_OpenDevice(0, GENERIC_READ | GENERIC_WRITE, &hDevice) != TT_SUCCESS)
-	{
-		sprintf(s,"%s :Error Opening Device Driver!\n", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-
-
-	if (TT_GPS_SIGNAL_INFO_NOT_AVAILABLE !=0)
-	{
-		sprintf(s,"%s :Error GPS Signal!\n", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		result = TCL_ERROR;
-	} else {
-			// Read the current Freeze Time for the desired device
-			if (TT_ReadTime(hDevice, &FileTime, TT_CONVERT_UTC2LOCAL) == TT_SUCCESS)
-		{
-			/// Convert the FileTime to SystemTimeEx format
-		if (TT_FileTimeToSystemTimeEx(&FileTime, &SystemTime) != TT_SUCCESS)
-		{
-				printf("Error converting time from file time to system time!\n");
-				result =  TT_SUCCESS;	  
-		 } else {
-			/*--- initialise la dynamic string ---*/
-			Tcl_DStringInit(&dsptr);
-			/* --- met en forme le resultat dans une chaine de caracteres ---*/
-			sprintf(s,"%d/%02d/%02d %02d:%02d:%02d.%03d%03d",SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay,SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds, SystemTime.wMicroseconds);
-			/* --- on ajoute cette chaine a la dynamic string ---*/
-			Tcl_DStringAppend(&dsptr,s,-1);
-			/* --- a la fin, on envoie le contenu de la dynamic string dans */
-			/* --- le Result qui sera retourne a l'utilisateur. */
-			Tcl_DStringResult(interp,&dsptr);
-			/* --- desaloue la dynamic string. */
-			Tcl_DStringFree(&dsptr);
-			result = TT_SUCCESS;
-
-			}
-		}
-	}	
-	// close the device
-	TT_CloseDevice(hDevice);
-#endif
-	return result;
-}
-
-
-
 int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Identification des satellites en comparant les coordonnees               */
@@ -1138,5 +1075,205 @@ int mltcl_getinfoimage(Tcl_Interp *interp,int numbuf, ml_image *image)
       strcpy(image->dateobs,value_char);
    }
    return(TCL_OK);
+}
+
+
+
+//***************************************************************************
+//
+// InterruptsCallback
+//
+//***************************************************************************
+
+TT_STATUS InterruptsCallback (TT_EVENT eEventType,FILETIME* pFileTime,DWORD mot,PVOID pContext)
+ 
+{
+	SYSTEMTIME_EX	SystemTime;
+	char s[100];
+
+	/// Convert the FileTime to SystemTimeEx format
+	if (TT_FileTimeToSystemTimeEx(pFileTime, &SystemTime) != TT_SUCCESS)
+	{
+		sprintf(s,"Error converting time from file time to system time!\n");
+		return TT_SUCCESS;	  
+	}
+
+	switch(eEventType)
+	{
+		case TT_EVENT_EXTERNAL:
+			printf("\nINTERRUPT: External Event. ");
+			break;
+
+		case TT_EVENT_PERIODIC:
+			printf("\nINTERRUPT: One Pulse Per Second Periodic. ");
+			break;
+
+		case TT_EVENT_TIME_COMPARE:
+			printf("\nINTERRUPT: Time Compare. ");
+			break;
+
+		case TT_EVENT_SYNTHESIZER:
+			printf("\nINTERRUPT: Synthesizer. ");
+			break;
+    default:
+		sprintf(s,"\nUNKNOWN Interrupt!!! ");
+		return TT_SUCCESS;
+	}
+		
+	
+	printf("\nTime: %d/%02d/%02d %02d:%02d:%02d.%03d%03d", 
+            SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, 
+            SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, 
+            SystemTime.wMilliseconds, SystemTime.wMicroseconds);
+			
+
+	return TT_SUCCESS;
+}
+
+//***************************************************************************
+//
+// fonction qui attend l'evenement exterieur
+//
+//***************************************************************************
+double Cmd_mltcl_savedategps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+	char s[100];
+	int Model,result,dateok;
+	unsigned long dwBus,dwSlot;
+	double sec,min,heu;
+	double secm6,secm4, secm2;
+	double secm6h,secm4h, secm2h;
+	double sech,minh,heuh,date=0;
+#if defined(OS_WIN)
+	HANDLE hDevice;
+	ULONG ulRegisterAddress;
+	UCHAR ucRegisterValue;
+	TT_POSITION		Position;
+	TT_GPS_SIGNALS	GpsSignals;
+	TT_ANTENNA		Antenna;
+
+	/// open device 0 for Read/Write access
+	if (TT_OpenDevice(0, GENERIC_READ | GENERIC_WRITE, &hDevice) != TT_SUCCESS)
+	{
+		sprintf(s,"Error Opening Device Driver!\n");
+		Tcl_SetResult(interp, s, TCL_VOLATILE);
+		return -1;
+	}
+	if (TT_GetDeviceInfo(hDevice, &Model, &dwBus, &dwSlot) != TT_SUCCESS)	
+	{
+		sprintf(s,"Error getting card info!\n");
+		Tcl_SetResult(interp, s, TCL_VOLATILE);
+		TT_CloseDevice(hDevice);
+		return -1;
+
+	} else {
+		sprintf(s,"PCI %x Stress Test @ Bus: %d @ Slot: %d \n ", Model, dwBus, dwSlot);
+		Tcl_SetResult(interp, s, TCL_VOLATILE);
+	}
+	
+	/// Register Callback for interrupts
+	if (TT_RegisterCallback(hDevice, InterruptsCallback, NULL) != TT_SUCCESS)
+	{
+		sprintf(s,"Error: failed registering callbacks!\n");
+		Tcl_SetResult(interp, s, TCL_VOLATILE);
+		TT_CloseDevice(hDevice);
+		return -1;
+	}
+	
+	if (TT_ReadGpsInfo(hDevice, &Position, &GpsSignals, &Antenna) == TT_SUCCESS)
+		/* si on a de l'info des satellites */
+	{
+		if (TT_SetExternalEvent(hDevice, TRUE) != TT_SUCCESS)
+		{	
+			sprintf(s,"Error: ne peut pas recevoir d'evenement exterieur!\n");
+			Tcl_SetResult(interp, s, TCL_VOLATILE);
+			TT_CloseDevice(hDevice);
+			return -1;
+		} else {
+	
+			Sleep (2000); /*attend pdt 2 sec un evenement exterieur*/
+
+			TT_SetExternalEvent(hDevice, FALSE);
+			ulRegisterAddress = strtol("0x174",0,16);	
+			dateok=0;
+			result = TT_GetRegister(hDevice,ulRegisterAddress,&ucRegisterValue);
+			if (result == TT_SUCCESS) {	
+				printf(" %x 10-6 sec \n",ucRegisterValue);
+				secm6=ucRegisterValue;					
+			} else {
+				dateok=1;
+			}
+			result = TT_GetRegister(hDevice,ulRegisterAddress + 1,&ucRegisterValue);
+			if (result == TT_SUCCESS) {	
+				printf(" %x 10-4 sec \n",ucRegisterValue);
+				secm4=ucRegisterValue;	//secm devient en decimal alors qu'on veut les deux chiffres de l'hexa			
+			} else {
+				dateok=1;
+			}	
+			result = TT_GetRegister(hDevice,ulRegisterAddress + 2,&ucRegisterValue);
+			if (result == TT_SUCCESS) {	
+				printf(" %x 10-2 sec \n",ucRegisterValue);
+				secm2=ucRegisterValue;				
+			} else {
+				dateok=1;;
+			}
+			result = TT_GetRegister(hDevice,ulRegisterAddress + 3,&ucRegisterValue);
+			if (result == TT_SUCCESS) {	
+				printf(" %x sec \n",ucRegisterValue);
+				sec=ucRegisterValue;				
+			} else {
+				dateok=1;
+			}
+			result = TT_GetRegister(hDevice,ulRegisterAddress + 4,&ucRegisterValue);
+			if (result == TT_SUCCESS) {	
+				printf(" %x min \n",ucRegisterValue);
+				min=ucRegisterValue;				
+			} else {
+				dateok=1;
+			}
+			result = TT_GetRegister(hDevice,ulRegisterAddress + 5,&ucRegisterValue);
+			if (result == TT_SUCCESS) {	
+				printf(" %x heure \n",ucRegisterValue);
+				heu=ucRegisterValue;				
+			} else {
+				dateok=1;
+			}
+
+			if (dateok==1){
+				return -1;
+			}
+		
+			//la il faut trouver une fonction qui convertise secm6,secm4.... de double decimal à double hexa
+			secm6h=ml_conversiondecTohexa(secm6);
+			secm4h=ml_conversiondecTohexa(secm4);
+			secm2h=ml_conversiondecTohexa(secm2);
+			sech=ml_conversiondecTohexa(sec);
+			minh=ml_conversiondecTohexa(min);
+			heuh=ml_conversiondecTohexa(heu);
+			secm6h=secm6h*0.000001;
+			secm4h=secm4h*0.0001;
+			secm2h=secm2h*0.01;
+			minh=minh*60;
+			heuh=heuh*60*60;
+		
+			date=heuh+minh+sech+secm6h+secm4h+secm2h; /*l'heure en seconde à comparer avec celle de date_obs,
+													  si trop différentes  (>3 secondes) ne pas en tenir compte!!
+														si la fonction ml_savevent retourne -1, c'est qu'il y a un pb avec la carte*/
+		}
+
+		/// De-Register the interrupts callbak
+		TT_RegisterCallback(hDevice, NULL, NULL);
+
+		/// close device
+		TT_CloseDevice(hDevice);
+
+
+	} else {
+		/* pas d'info GPS */
+		TT_CloseDevice(hDevice);
+		return -1;
+	}
+#endif
+return date;
 }
 
