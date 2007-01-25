@@ -42,7 +42,6 @@
  * Defines
  */
 #define LOG_FILENAME     "audela.log"
-#define EXE_NAME         "audela.exe"
 #define DEFAULT_SCRIPT_TK   "audela.tcl"
 #define MAX_STRING       2048
 
@@ -239,7 +238,7 @@ void log_write(char *fmt,...)
  *    Break a command line into an array of strings.
  *    Side effect : the array of strings is malloced.
  */
-void audela_parsecmdline(char *chemin, char *cmdline, int *argc, char ***argv)
+void audela_parsecmdline(char *executableFullPath, char *cmdline, int *argc, char ***argv)
 {
    int  i;
    int  indblquotes=0;
@@ -249,22 +248,26 @@ void audela_parsecmdline(char *chemin, char *cmdline, int *argc, char ***argv)
    int  nb_spaces=0;
    #define COPYARGV {char *s; s =(char*)calloc(1,tmparg_index+1); strcpy(s,tmparg); (*argv)[*argc] = s; *argc += 1; tmparg_index=0; for(i=0;i<256;i++) tmparg[i] = 0;}
 
-   strcat(chemin,cmdline);
-   strcpy(cmdline,chemin);
    /* Computes an approximation of the number of arguments (find how !!), and
       allocates the array of pointers (tip from tcl sources) */
    while(cmdline[index]!=0) {
       nb_spaces = (cmdline[index]==' ') ? nb_spaces+1 : nb_spaces;
       index++;
    }
-   *argv = (char**)calloc(sizeof(char**),nb_spaces+1);
 
-   /* Parse the command line */
-   *argc = 0;
+   // copy executable full path into argv[0] (it main contain spaces)
+   //  
+   *argv = (char**)calloc(sizeof(char**),nb_spaces+1);
+   (*argv)[0]=(char*)calloc(1,strlen(executableFullPath)+1);
+   strcpy((*argv)[0],executableFullPath);
+
+   // Parse the command line 
+   // ATTENTION :The executable full name must NOT be parsed here because it may contain spaces
+   *argc = 1;
    for(i=0;i<256;i++) tmparg[i] = 0;
    index=0;
    while(cmdline[index]!=0) {
-      if((index>0) && (cmdline[index]=='\"') && (cmdline[index-1]!='\\')) {
+      if( (cmdline[index]=='\"') && ((index>0 && cmdline[index-1]!='\\') || (index==0)) ) {
          indblquotes = !indblquotes;
          if (cmdline[index+1]==0) {
             COPYARGV;
@@ -416,15 +419,13 @@ int main(int argc , char **argv)
 #if defined(OS_WIN)
 int PASCAL WinMain(HINSTANCE hCurInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-   char exename[1024] = EXE_NAME" ";
    int argc;
    char **argv;
-   char chemin[MAX_STRING];
+   char executableFullPath[MAX_STRING];
 
-   GetModuleFileName(NULL,chemin,MAX_PATH);
-   GetChemin(chemin,MAX_PATH,1);
+   GetModuleFileName(NULL,executableFullPath,MAX_PATH);
    ghInstance=hCurInstance;
-   audela_parsecmdline(chemin,strcat(exename,lpCmdLine),&argc,&argv);
+   audela_parsecmdline(executableFullPath,lpCmdLine,&argc,&argv);
 
    // Do the real work.
    return main( argc, argv );
