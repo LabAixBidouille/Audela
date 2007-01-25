@@ -59,8 +59,8 @@
    Tcl_CreateCommand(interp,"ml_geostatident",(Tcl_CmdProc *)Cmd_mltcl_geostatident,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ml_julianday",(Tcl_CmdProc *)Cmd_mltcl_julianday,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ml_infoimage",(Tcl_CmdProc *)Cmd_mltcl_infoimage,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   Tcl_CreateCommand(interp,"ml_getTimegps",(Tcl_CmdProc *)Cmd_mltcl_getTimegps,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ml_geostatreduc",(Tcl_CmdProc *)Cmd_mltcl_geostatreduc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"ml_savedategps",(Tcl_CmdProc *)Cmd_mltcl_savedategps,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 /* ajouter ici les autres fonctions d'extension que vous allez creer */
 
    return TCL_OK;

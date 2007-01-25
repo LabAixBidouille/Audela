@@ -88,12 +88,7 @@ int ml_differencejour (int jour1, int mois1, int annee1, int jour2, int mois2, i
 int ml_bissextile (int annee);
 int ml_nbjours (int jour, int mois, int annee);
 int ml_file_copy (const char *source, const char *dest);
-
-int ml_tle2ephem(char *date, char *reperttle, char *homegps);
-
-int gsltcl_mcalloc(double **mat,int nlig,int ncol);
-int gsltcl_mfree(double **mat);
-
+double ml_conversiondecTohexa (double Decimal);
 
 
 #endif
