@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.7 2006-12-04 13:49:35 audelateam Exp $
+# Mise a jour $Id: calaphot.cap,v 1.8 2007-01-26 05:17:35 alainklotz Exp $
 #
 
 #=========================================================================
@@ -519,9 +519,8 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(filtre_optique)      "Optischen Filter"
 
 # *************** Version portugaise **************************
-if { [string compare $langage "portuguese"] == 0 } {
+} elseif { [string compare $langage "portuguese"] == 0 } {
 
-<<<<<<< calaphot.cap
    set texte_photo(titre_saisie)        "Parâmetros do script de fotometria"
    set texte_photo(operateur)           "Nome do operador"
    set texte_photo(objet)               "Nome do objecto"
@@ -559,54 +558,10 @@ if { [string compare $langage "portuguese"] == 0 } {
    set texte_photo(type_images_0)       "Não reajustados"
    set texte_photo(type_images_1)       "Reajustados"
    set texte_photo(format_sortie)       "Formato dos dados"
-=======
-   set texte_photo(titre_saisie)        "Parâmetros do script de fotometria"
-   set texte_photo(operateur)           "Nome do operador"
-   set texte_photo(objet)               "Nome do objecto"
-   set texte_photo(code_UAI)            "Código UAI do observatório"
-   set texte_photo(source)              "Nome genérico das imagens"
-   set texte_photo(indice_premier)      "Índice da primeira imagem"
-   set texte_photo(indice_dernier)      "Índice da última imagem"
-   set texte_photo(tailleboite)         "Meia-largura das janelas"
-   set texte_photo(o_rayon1)            "Raio do círculo interior (em sigma)"
-   set texte_photo(o_rayon2)            "Raio do círculo central (em sigma)"
-   set texte_photo(o_rayon3)            "Raio do círculo exterior (em sigma)"
-   set texte_photo(m_rayon1)            "Raio do círculo interior (em pixeis)"
-   set texte_photo(m_rayon2)            "Raio do círculo central (em pixeis)"
-   set texte_photo(m_rayon3)            "Raio do círculo exterior (em pixeis)"
-   set texte_photo(sortie)              "Nome do ficheiro texto resultante"
-   set texte_photo(signal_bruit)        "Relação S/B limite"
-   set texte_photo(mode)                "Modo de cálculo"
-   set texte_photo(mode_1)              "Fot. de abertura"
-   set texte_photo(mode_0)              "Modelização de estrelas"
-   set texte_photo(continuer)           "Continuar"
-   set texte_photo(annuler)             "Anular"
-   set texte_photo(o_surechantillonage) "Factor de divisão de pixeis"
-   set texte_photo(err_indice)          "Erro : último índice inferior ou igual ao primeiro"
-   set texte_photo(verification)        "Verificação dos ficheiros %s\[%d...%d\]%s"
-   set texte_photo(err_existence_1)     "O ficheiro"
-   set texte_photo(err_existence_2)     "não existe"
-   set texte_photo(mag_superetoile)     "Magnitude da super-estrela"
-   set texte_photo(vitesse_asteroide)   "Velocidade do asteróide (pixel/dia)"
-   set texte_photo(image_rejetee)       "Imagem rejeitada"
-   set texte_photo(etoile)              "Estrela"
-   set texte_photo(asteroide)           "Asteróide"
-   set texte_photo(moyenne)             "Média"
-   set texte_photo(ecart_type)          "Tipo de desvio"
-   set texte_photo(type_images)         "Tipo de imagens"
-   set texte_photo(type_images_0)       "Não reajustados"
-   set texte_photo(type_images_1)       "Reajustados"
-   set texte_photo(format_sortie)       "Formato dos dados"
->>>>>>> 1.5
    set texte_photo(format_sortie_0)     "CDR"
    set texte_photo(format_sortie_1)     "Canopus"
-<<<<<<< calaphot.cap
    set texte_photo(affichage)           "Afixagem dos cálculos"
    set texte_photo(affichage_0)         "Mínima"
-=======
-   set texte_photo(affichage)           "Afixagem dos cálculos"
-   set texte_photo(affichage_0)         "Mínima"
->>>>>>> 1.5
    set texte_photo(affichage_1)         "Normal"
    set texte_photo(affichage_2)         "Máxima"
    set texte_photo(date_images)         "Data das imagens"
@@ -654,13 +609,7 @@ if { [string compare $langage "portuguese"] == 0 } {
    set texte_photo(rien_a_voir)         "Não existe curva de brilho para expôr"
    set texte_photo(tri_images)          "Triagem de imagens por data crescente"
    # Texte sans accent (pour les fichiers Postscripts)
-<<<<<<< calaphot.cap
    set texte_photo(reference_sacc)      "Referência"
-=======
-   set texte_photo(reference_sacc)      "Referência"
->>>>>>> 1.5
-   # Fin du texte sans accent
-<<<<<<< calaphot.cap
    set texte_photo(type_capteur)        "Tipo de captor"
    set texte_photo(type_telescope)      "Tipo de telescópio"
    set texte_photo(diametre_telescope)  "Diâmetro do telescópio (m)"
@@ -669,16 +618,6 @@ if { [string compare $langage "portuguese"] == 0 } {
    set texte_photo(champ1)              "O campo "
    set texte_photo(champ2)              " deve ser seleccionado"
    set texte_photo(filtre_optique)      "Filtro óptico"
-=======
-   set texte_photo(type_capteur)        "Tipo de captor"
-   set texte_photo(type_telescope)      "Tipo de telescópio"
-   set texte_photo(diametre_telescope)  "Diametro do telescópio (m)"
-   set texte_photo(focale_telescope)    "Focal do telescópio (m)"
-   set texte_photo(catalogue_reference) "Catálogo de referência"
-   set texte_photo(champ1)              "O campo "
-   set texte_photo(champ2)              " deve ser seleccionado"
-   set texte_photo(filtre_optique)      "Filtro óptico"
->>>>>>> 1.5
 
 # *************** Version danoise *****************************
 } elseif { [string compare $langage "danish"] == 0 } {
