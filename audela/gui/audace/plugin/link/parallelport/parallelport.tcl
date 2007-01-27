@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.8 2006-12-02 15:02:12 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.9 2007-01-27 15:24:46 robertdelmas Exp $
 #
 
 package provide parallelport 1.0
@@ -23,7 +23,7 @@ package provide parallelport 1.0
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     
+#
 
 namespace eval parallelport {
 }
@@ -35,7 +35,7 @@ namespace eval parallelport {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::configureDriver { } {
@@ -50,7 +50,7 @@ proc ::parallelport::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::confToWidget { } {
@@ -62,7 +62,7 @@ proc ::parallelport::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     cree une liaison
-#  
+#
 #     retourne le numero du link
 #       le numero du link est attribue automatiquement
 #       si ce link est deja cree, on retourne le numero du link existant
@@ -100,7 +100,7 @@ proc ::parallelport::create { linkLabel deviceId usage comment } {
 #     Supprime une utilisation d'une liaison
 #     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
 #     Ne fait rien si la liaison n'est pas ouverte
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::delete { linkLabel deviceId usage } {
@@ -123,7 +123,7 @@ proc ::parallelport::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::fillConfigPage { frm } {
@@ -152,7 +152,7 @@ proc ::parallelport::fillConfigPage { frm } {
 #------------------------------------------------------------
 #  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::parallelport::getDriverType { } {
@@ -162,7 +162,7 @@ proc ::parallelport::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::parallelport::getHelp { } {
@@ -172,7 +172,7 @@ proc ::parallelport::getHelp { } {
 #------------------------------------------------------------
 #  getLinkIndex
 #     retourne l'index du link
-#  
+#
 #     retourne une chaine vide si le type du link n'existe pas
 #
 #   exemple :
@@ -191,7 +191,7 @@ proc ::parallelport::getLinkIndex { linkLabel } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::parallelport::getLabel { } {
@@ -227,7 +227,7 @@ proc ::parallelport::getLinkLabels { } {
 #     "LPT1:"
 #------------------------------------------------------------
 proc ::parallelport::getSelectedLinkLabel { } {
-   variable private 
+   variable private
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
@@ -248,7 +248,7 @@ proc ::parallelport::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0 "source \"[ file join $::audace(rep_plugin) link parallelport parallelport.cap ]\""
+   source [ file join $::audace(rep_plugin) link parallelport parallelport.cap ]
 
    #--- je recupere le nom generique de la liaison
    set private(genericName) [link::genericname parallelport]
@@ -265,7 +265,7 @@ proc ::parallelport::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::initConf { } {
@@ -277,7 +277,7 @@ proc ::parallelport::initConf { } {
 #------------------------------------------------------------
 #  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::parallelport::isReady { } {
@@ -288,7 +288,7 @@ proc ::parallelport::isReady { } {
 #------------------------------------------------------------
 #  refreshAvailableList
 #     rafraichit la liste des link disponibles
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::refreshAvailableList { } {
@@ -333,7 +333,7 @@ proc ::parallelport::refreshAvailableList { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::selectConfigLink { linkLabel } {
@@ -357,7 +357,7 @@ proc ::parallelport::selectConfigLink { linkLabel } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::parallelport::widgetToConf { } {

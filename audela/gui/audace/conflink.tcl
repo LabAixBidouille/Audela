@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.11 2006-11-25 21:03:41 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.12 2007-01-27 15:11:21 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -30,7 +30,7 @@ proc ::confLink::init { } {
    if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
 
    #--- charge le fichier caption
-   uplevel #0 "source \"[ file join $audace(rep_caption) conflink.cap ]\""
+   source [ file join $audace(rep_caption) conflink.cap ]
    findDriver
 
    #--- configure le driver selectionne par defaut
@@ -55,7 +55,7 @@ proc ::confLink::afficheAide { } {
 
    #--- je recupere le label de l'onglet selectionne
    set private(conf_confLink) [Rnotebook:currentName $private(frm).usr.book ]
-   #--- je recupere le namespace correspondant au label  
+   #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
    set index [lsearch -exact $private(driverlist) $label ]
    if { $index != -1 } {
@@ -187,7 +187,7 @@ proc ::confLink::recup_position { } {
 #------------------------------------------------------------
 # ::confLink::createDialog
 #    Affiche la fenetre a onglet
-# 
+#
 # Parametres :
 #    authorizedNamespaces : Liste des onglets a afficher
 #      Si la chaine est vide tous les onglets sont affiches
@@ -283,7 +283,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    button $private(frm).cmd.aide -text "$caption(conflink,aide)" -relief raised -state normal -width 8 \
       -command " ::confLink::afficheAide "
    pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-   pack $private(frm).cmd -side top -fill x    
+   pack $private(frm).cmd -side top -fill x
 
    #---
    focus $private(frm)
@@ -325,7 +325,7 @@ proc ::confLink::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-# ::confLink::delete 
+# ::confLink::delete
 #    Supprime une utilisation d'une liaisonet supprime la
 #    liaison si elle n'est plus utilisee par aucun autre peripherique
 #
@@ -435,7 +435,7 @@ proc ::confLink::findDriver { } {
 
    #--- je recherche les drivers repondant au filtre driverPattern
    foreach fichierPkgIndex [glob $private(driverPattern)] {
-      #--- je charge le fichier pkgIndex.tcl 
+      #--- je charge le fichier pkgIndex.tcl
       uplevel #0 "source $fichierPkgIndex"
 
       set linkname [ file tail [ file dirname "$fichierPkgIndex" ] ]
@@ -447,7 +447,7 @@ proc ::confLink::findDriver { } {
          set driverType [$linkname\:\:getDriverType]
          if { $driverType == $private(driverType) } {
             #--- je recupere le label du driver
-            set driverlabel "[$linkname\:\:getLabel]" 
+            set driverlabel "[$linkname\:\:getLabel]"
             #--- c'est un driver valide, je l'ajoute dans la liste
             lappend private(namespacelist) $linkname
             lappend private(driverlist) $driverlabel
@@ -537,7 +537,7 @@ proc ::confLink::getLinkLabels { namespaces } {
 }
 
 #------------------------------------------------------------
-# ::confLink::getNamespaceLabel 
+# ::confLink::getNamespaceLabel
 #    Retourne le libelle du namespace
 #
 #    Retourne une chaine vide si namespace n'existe pas
@@ -572,7 +572,7 @@ proc ::confLink::getLinkNamespace { linkLabel } {
    variable private
 
    foreach namespace $private(namespacelist) {
-      #--- je verifie si on peut recuperer l'index 
+      #--- je verifie si on peut recuperer l'index
       if { [$namespace\:\:getLinkIndex $linkLabel] != "" } {
          return $namespace
       }
@@ -602,7 +602,7 @@ proc ::confLink::getLinkNo { linkLabel } {
       set linkIndex [$linkNamespace\:\:getLinkIndex $linkLabel]
       #--- je recherche la liaison deja ouverte qui a le meme namespace et le meme index
       foreach linkNo [link::list] {
-         if {    "[link$linkNo drivername]" ==  $linkNamespace
+         if {    "[link$linkNo drivername]" == $linkNamespace 
               && "[link$linkNo index]" == $linkIndex } {
             return $linkNo
          }
@@ -615,7 +615,7 @@ proc ::confLink::getLinkNo { linkLabel } {
 #------------------------------------------------------------
 # ::confLink::run
 #    Affiche la fenetre de choix et de configuration
-# 
+#
 #    Parametres :
 #      linkLabel : link pre-selectionne
 #      authorizedNamespaces : namespaces autorises (optionel)
@@ -640,7 +640,7 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
          select $linkNamespace
          #--- je selectionne le link dans l'onglet
          $linkNamespace\:\:selectConfigLink $private(linkLabel)
-      } 
+      }
       #--- j'attends la fermeture de la fenetre
       tkwait window $private(frm)
       #--- je retourne le link choisi

@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.5 2006-10-30 17:31:48 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.6 2007-01-27 15:20:47 robertdelmas Exp $
 #
 
 package provide telpad 1.0
@@ -39,14 +39,14 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  init (est lance automatiquement au chargement de ce fichier tcl)
    #     initialise le driver
-   #  
+   #
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
       global audace
 
       #--- Charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_plugin) pad telpad telpad.cap ]\""
+      source [ file join $audace(rep_plugin) pad telpad telpad.cap ]
 
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
@@ -60,7 +60,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  getDriverType
    #     retourne le type de driver
-   #  
+   #
    #  return "pad"
    #------------------------------------------------------------
    proc getDriverType { } {
@@ -70,7 +70,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le label du driver
-   #  
+   #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
@@ -82,7 +82,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  getHelp
    #     retourne la documentation du driver
-   #  
+   #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
@@ -93,7 +93,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  initConf
    #     initialise les parametres dans le tableau conf()
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc initConf { } {
@@ -108,7 +108,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc confToWidget { } {
@@ -121,7 +121,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  widgetToConf
    #     copie les variables des widgets dans le tableau conf()
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc widgetToConf { } {
@@ -134,7 +134,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  fillConfigPage
    #     fenetre de configuration du driver
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
@@ -144,7 +144,7 @@ namespace eval telpad {
 
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
-      
+
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
       pack $frm.frame1 -side top -fill both -expand 0
@@ -158,7 +158,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  configureDriver
    #     configure le driver
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc configureDriver { } {
@@ -172,7 +172,7 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  stopDriver
    #     arrete le driver et libere les ressources occupees
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc stopDriver { } {
@@ -183,9 +183,9 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  isReady 
+   #  isReady
    #     informe de l'etat de fonctionnement du driver
-   #  
+   #
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {

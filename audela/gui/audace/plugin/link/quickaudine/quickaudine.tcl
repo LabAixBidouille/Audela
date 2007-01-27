@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.9 2006-12-02 19:23:13 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.10 2007-01-27 15:25:06 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0
@@ -23,7 +23,7 @@ package provide quickaudine 1.0
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     
+#
 
 namespace eval quickaudine {
 }
@@ -35,7 +35,7 @@ namespace eval quickaudine {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::configureDriver { } {
@@ -50,7 +50,7 @@ proc ::quickaudine::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::confToWidget { } {
@@ -62,7 +62,7 @@ proc ::quickaudine::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     demarre la liaison
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::create { linkLabel deviceId usage comment } {
@@ -83,7 +83,7 @@ proc ::quickaudine::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 #  delete
 #     arrete la liaison et libere les ressources occupees
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::delete { linkLabel deviceId usage } {
@@ -100,7 +100,7 @@ proc ::quickaudine::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::fillConfigPage { frm } {
@@ -112,7 +112,7 @@ proc ::quickaudine::fillConfigPage { frm } {
 
    #--- j'afffiche la liste des link
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickaudine,available)
-      listbox $frm.available.list  
+      listbox $frm.available.list
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
@@ -136,7 +136,7 @@ proc ::quickaudine::fillConfigPage { frm } {
 #------------------------------------------------------------
 #  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::quickaudine::getDriverType { } {
@@ -146,7 +146,7 @@ proc ::quickaudine::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::quickaudine::getHelp { } {
@@ -156,7 +156,7 @@ proc ::quickaudine::getHelp { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::quickaudine::getLabel { } {
@@ -168,7 +168,7 @@ proc ::quickaudine::getLabel { } {
 #------------------------------------------------------------
 #  getLinkIndex
 #     retourne l'index du link
-#  
+#
 #  retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
@@ -176,7 +176,7 @@ proc ::quickaudine::getLabel { } {
 #     1
 #------------------------------------------------------------
 proc ::quickaudine::getLinkIndex { linkLabel } {
-   variable private 
+   variable private
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
@@ -197,11 +197,11 @@ proc ::quickaudine::getLinkLabels { } {
 
    #--- j'intialise une liste vide
    set labels [list]
-   catch {   
+   catch {
       foreach instance [link::available quickremote ] {
          lappend labels "$private(genericName)[lindex $instance 0]"
       }
-   } catchError 
+   } catchError
    set private(statusMessage) $catchError
 
    return $labels
@@ -230,19 +230,19 @@ proc ::quickaudine::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace
 #------------------------------------------------------------
 proc ::quickaudine::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0 "source \"[ file join $::audace(rep_plugin) link quickaudine quickaudine.cap ]\""
+   source [ file join $::audace(rep_plugin) link quickaudine quickaudine.cap ]
 
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickaudine"
    set private(statusMessage) ""
-   
+
    #--- Cree les variables dans conf(...) si elles n'existent pas
    initConf
 
@@ -255,7 +255,7 @@ proc ::quickaudine::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::initConf { } {
@@ -267,7 +267,7 @@ proc ::quickaudine::initConf { } {
 #------------------------------------------------------------
 #  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::quickaudine::isReady { } {
@@ -277,7 +277,7 @@ proc ::quickaudine::isReady { } {
 #------------------------------------------------------------
 #  refreshAvailableList
 #     rafraichit la liste des link disponibles
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::refreshAvailableList { } {
@@ -310,7 +310,7 @@ proc ::quickaudine::refreshAvailableList { } {
       if { $linkText == "" } {
          set linkText "$linkLabel"
       }
-      $private(frm).available.list insert end $linkText 
+      $private(frm).available.list insert end $linkText
    }
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
@@ -320,7 +320,7 @@ proc ::quickaudine::refreshAvailableList { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::selectConfigLink { linkLabel } {
@@ -344,7 +344,7 @@ proc ::quickaudine::selectConfigLink { linkLabel } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickaudine::widgetToConf { } {

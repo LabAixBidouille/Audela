@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.10 2006-12-02 15:02:27 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.11 2007-01-27 15:25:34 robertdelmas Exp $
 #
 
 package provide serialport 1.0
@@ -23,7 +23,7 @@ package provide serialport 1.0
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     
+#
 
 namespace eval serialport {
 }
@@ -35,7 +35,7 @@ namespace eval serialport {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::configureDriver { } {
@@ -50,7 +50,7 @@ proc ::serialport::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::confToWidget { } {
@@ -63,7 +63,7 @@ proc ::serialport::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     demarre la liaison
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::create { linkLabel deviceId usage comment } {
@@ -89,7 +89,7 @@ proc ::serialport::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 #  delete
 #     arrete la liaison et libere les ressources occupees
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::delete { linkLabel deviceId usage } {
@@ -112,7 +112,7 @@ proc ::serialport::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::fillConfigPage { frm } {
@@ -148,7 +148,7 @@ proc ::serialport::fillConfigPage { frm } {
 #------------------------------------------------------------
 #  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::serialport::getDriverType { } {
@@ -158,7 +158,7 @@ proc ::serialport::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::serialport::getHelp { } {
@@ -166,9 +166,9 @@ proc ::serialport::getHelp { } {
 }
 
 #------------------------------------------------------------
-#  initConf 
+#  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::initConf { } {
@@ -182,7 +182,7 @@ proc ::serialport::initConf { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::serialport::getLabel { } {
@@ -194,7 +194,7 @@ proc ::serialport::getLabel { } {
 #------------------------------------------------------------
 #  getLinkIndex
 #     retourne l'index du link
-#  
+#
 #  retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
@@ -262,14 +262,14 @@ proc ::serialport::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace
 #------------------------------------------------------------
 proc ::serialport::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0 "source \"[ file join $::audace(rep_plugin) link serialport serialport.cap ]\""
+   source [ file join $::audace(rep_plugin) link serialport serialport.cap ]
 
    #--- Je charge les variables d'environnement
    initConf
@@ -293,7 +293,7 @@ proc ::serialport::init { } {
 #------------------------------------------------------------
 #  refreshAvailableList
 #     rafraichit la liste des link disponibles
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::refreshAvailableList { } {
@@ -327,13 +327,13 @@ proc ::serialport::refreshAvailableList { } {
       }
       #--- je recherche si ce link est ouvert
       foreach { key value } [array get ::serialport::private $linkLabel,*] {
-          set deviceId [lindex [split $key ","] 1] 
-          set usage    [lindex [split $key ","] 2] 
+          set deviceId [lindex [split $key ","] 1]
+          set usage    [lindex [split $key ","] 2]
           set comment  $value
           append linkText " { $deviceId $usage $comment } "
       }
 
-      $private(frm).available.list insert end $linkText 
+      $private(frm).available.list insert end $linkText
    }
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
@@ -345,7 +345,7 @@ proc ::serialport::refreshAvailableList { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::selectConfigLink { linkLabel } {
@@ -369,7 +369,7 @@ proc ::serialport::selectConfigLink { linkLabel } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::widgetToConf { } {
@@ -382,7 +382,7 @@ proc ::serialport::widgetToConf { } {
 #------------------------------------------------------------
 #  Recherche_Ports
 #     recherche les ports com disponible sur le PC
-#  
+#
 #  return rien
 #------------------------------------------------------------
    proc ::serialport::Recherche_Ports { } {

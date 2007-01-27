@@ -2,7 +2,7 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.3 2006-11-22 08:02:19 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.4 2007-01-27 15:24:30 robertdelmas Exp $
 #
 
 global confTel
@@ -16,7 +16,7 @@ array set ouranoscom {
    trace_in  "0"
    trace_out "0"
    lecture   "0"
-} 
+}
 
 set confTel(ouranos,connect) "0"
 
@@ -31,7 +31,7 @@ namespace eval OuranosCom {
       global audace
 
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_plugin) mount ouranos ouranoscom.cap ]\""
+      source [ file join $audace(rep_plugin) mount ouranos ouranoscom.cap ]
    }
 
    #
@@ -158,7 +158,7 @@ namespace eval OuranosCom {
           set confTel(ouranos,init_dec) [ expr $confTel(ouranos,cod_dec)/4 ]
       } else {
           set confTel(ouranos,init_dec) [ expr $confTel(ouranos,cod_dec)/2 ]
-      }  
+      }
       #--- Preposition de RA
       set confTel(ouranos,init_ra) [ expr $confTel(ouranos,cod_ra)/2 ]
       return
@@ -214,7 +214,7 @@ namespace eval OuranosCom {
          after [ expr $ouranoscom(delay) ]
          gets $ouranoscom(tty) answer
          if { [ string compare $answer "" ] != "0" } {
-            ::OuranosCom::analyze_answer $answer 
+            ::OuranosCom::analyze_answer $answer
             if { [ string compare $ouranoscom(trace_in) "0"] != "0" } {
                console::affiche_erreur "$caption(ouranoscom,dec1) $caption(ouranoscom,2points)\
                   $confTel(ouranos,dec_enc) $caption(ouranoscom,ad1) $caption(ouranoscom,2points)\
@@ -342,10 +342,10 @@ namespace eval OuranosCom {
    # OuranosCom::read_com
    # Lit le port serie
    #
-   proc read_com { } { 
+   proc read_com { } {
       global caption
       global ouranoscom
-     
+
       after [ expr $ouranoscom(delay) ]
       gets $ouranoscom(tty) answer
       if { ( [ string compare $ouranoscom(trace_in) "0" ] != "0" ) && ( [ string compare $answer "" ] != "0" ) } {
@@ -443,7 +443,7 @@ namespace eval OuranosCom {
    #
    # OuranosCom::no_answer
    # If no answer
-   # 
+   #
    proc no_answer {} {
       global caption
 
@@ -507,7 +507,7 @@ namespace eval OuranosCom {
             wm transient $audace(base).tjrsvisible $audace(base)
             wm resizable $audace(base).tjrsvisible 0 0
             wm title $audace(base).tjrsvisible "$caption(ouranoscom,pos_tel)"
-            wm protocol $audace(base).tjrsvisible WM_DELETE_WINDOW { 
+            wm protocol $audace(base).tjrsvisible WM_DELETE_WINDOW {
                set confTel(ouranos,tjrsvisible) "0"
                destroy $audace(base).tjrsvisible
             }
@@ -566,7 +566,7 @@ namespace eval OuranosCom {
             wm transient $audace(base).tjrsvisible_x10 $audace(base)
             wm resizable $audace(base).tjrsvisible_x10 0 0
             wm title $audace(base).tjrsvisible_x10 "$caption(ouranoscom,pos_tel)"
-            wm protocol $audace(base).tjrsvisible_x10 WM_DELETE_WINDOW { 
+            wm protocol $audace(base).tjrsvisible_x10 WM_DELETE_WINDOW {
                set confTel(ouranos,tjrsvisible) "0"
                destroy $audace(base).tjrsvisible_x10
             }
@@ -578,9 +578,9 @@ namespace eval OuranosCom {
 
             #--- Cree l'affichage d'AD et Dec
             label $audace(base).tjrsvisible_x10.lab1 -borderwidth 1 -anchor w -font {verdana 60 bold}
-            uplevel #0 { pack $audace(base).tjrsvisible_x10.lab1 -padx 10 -pady 2 } 
+            uplevel #0 { pack $audace(base).tjrsvisible_x10.lab1 -padx 10 -pady 2 }
             label $audace(base).tjrsvisible_x10.lab2 -borderwidth 1 -anchor w -font {verdana 60 bold}
-            uplevel #0 { pack $audace(base).tjrsvisible_x10.lab2 -padx 10 -pady 2 } 
+            uplevel #0 { pack $audace(base).tjrsvisible_x10.lab2 -padx 10 -pady 2 }
 
             #--- Bouton radio x1
             radiobutton $audace(base).tjrsvisible_x10.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \

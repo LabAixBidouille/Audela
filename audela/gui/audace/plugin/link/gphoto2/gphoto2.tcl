@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.4 2006-12-15 23:28:53 michelpujol Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.5 2007-01-27 15:16:14 robertdelmas Exp $
 #
 
 package provide gphoto2 1.0
@@ -23,7 +23,7 @@ package provide gphoto2 1.0
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     
+#
 
 namespace eval gphoto2 {
 }
@@ -31,7 +31,7 @@ namespace eval gphoto2 {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::gphoto2::configureDriver { } {
@@ -46,7 +46,7 @@ proc ::gphoto2::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::gphoto2::confToWidget { } {
@@ -58,8 +58,8 @@ proc ::gphoto2::confToWidget { } {
 
 #------------------------------------------------------------
 #  create
-#     demarre la liaison 
-#  
+#     demarre la liaison
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::gphoto2::create { linkLabel deviceId usage comment } {
@@ -70,7 +70,7 @@ proc ::gphoto2::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 #  delete
 #     arrete la liaison et libere les ressources occupees
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::gphoto2::delete { linkLabel deviceId usage } {
@@ -79,9 +79,9 @@ proc ::gphoto2::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-#  fillConfigPage 
+#  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::gphoto2::fillConfigPage { frm } {
@@ -90,8 +90,8 @@ proc ::gphoto2::fillConfigPage { frm } {
 
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
-   
-   #--- mode debug 
+
+   #--- mode debug
    checkbutton $frm.debug -text "$caption(dslr,debug)" -highlightthickness 0 \
       -variable ::gphoto2::widget(debug)
    pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
@@ -99,9 +99,9 @@ proc ::gphoto2::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType 
+#  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::gphoto2::getDriverType { } {
@@ -111,7 +111,7 @@ proc ::gphoto2::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::gphoto2::getHelp { } {
@@ -121,7 +121,7 @@ proc ::gphoto2::getHelp { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::gphoto2::getLabel { } {
@@ -131,10 +131,10 @@ proc ::gphoto2::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex 
-#   retourne l'index du link
-#   
-#   retourne une chaine vide si le link n'existe pas
+# getLinkIndex
+#    retourne l'index du link
+#
+#  retourne une chaine vide si le link n'existe pas
 #
 #------------------------------------------------------------
 proc ::gphoto2::getLinkIndex { linkLabel } {
@@ -149,7 +149,7 @@ proc ::gphoto2::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels 
+# getLinkLabels
 #    retourne le label du seul link
 #
 #------------------------------------------------------------
@@ -174,14 +174,14 @@ proc ::gphoto2::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace name
 #------------------------------------------------------------
 proc ::gphoto2::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link gphoto2 gphoto2.cap ]\""
+   source [ file join $::audace(rep_plugin) link gphoto2 gphoto2.cap ]
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "gphoto2"
@@ -198,21 +198,21 @@ proc ::gphoto2::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::gphoto2::initConf { } {
    global conf
 
    if { ! [ info exists conf(dslr,debug) ] }     { set conf(dslr,debug)      "0" }
-   
+
    return
 }
 
 #------------------------------------------------------------
-#  isReady 
+#  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------
 proc ::gphoto2::isReady { } {
@@ -222,7 +222,7 @@ proc ::gphoto2::isReady { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::gphoto2::selectConfigLink { linkLabel } {
@@ -234,7 +234,7 @@ proc ::gphoto2::selectConfigLink { linkLabel } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::gphoto2::widgetToConf { } {

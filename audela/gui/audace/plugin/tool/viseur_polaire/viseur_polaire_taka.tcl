@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.4 2007-01-20 11:07:36 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.5 2007-01-27 15:17:16 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireTaka {
@@ -27,13 +27,13 @@ namespace eval viseurPolaireTaka {
       if { [ info exists This ] } {
          wm withdraw $This
          wm deiconify $This
-         focus $This.but_fermer 
+         focus $This.but_fermer
       } else {
          set This $this
          if { [ info exists viseurPolaireTaka(geometry) ] } {
             set deb [ expr 1 + [ string first + $viseurPolaireTaka(geometry) ] ]
             set fin [ string length $viseurPolaireTaka(geometry) ]
-            set widget(viseur_polaire_taka,position) "+[ string range $viseurPolaireTaka(geometry) $deb $fin ]"     
+            set widget(viseur_polaire_taka,position) "+[ string range $viseurPolaireTaka(geometry) $deb $fin ]"
          }
          ::viseurPolaireTaka::createDialog
          tkwait visibility $This
@@ -74,9 +74,9 @@ namespace eval viseurPolaireTaka {
    }
 
    #
-   #  viseurPolaireTaka::initConf 
+   #  viseurPolaireTaka::initConf
    #  Initialise les parametres dans le tableau conf()
-   #  
+   #
    proc initConf { } {
       global conf
 
@@ -90,29 +90,29 @@ namespace eval viseurPolaireTaka {
    }
 
    #
-   #  viseurPolaireTaka::confToWidget 
+   #  viseurPolaireTaka::confToWidget
    #  Copie les parametres du tableau conf() dans les variables des widgets
-   #  
-   proc confToWidget {  } {   
-      variable widget  
+   #
+   proc confToWidget { } {
+      variable widget
       global conf
 
       set widget(viseur_polaire_taka,position)         $conf(viseur_taka,position)
-      set widget(viseur_polaire_taka,taille)           $conf(viseur_taka,taille) 
-      set widget(viseur_polaire_taka,couleur_fond)     $conf(viseur_taka,couleur_fond) 
-      set widget(viseur_polaire_taka,couleur_reticule) $conf(viseur_taka,couleur_reticule) 
-      set widget(viseur_polaire_taka,couleur_etoile)   $conf(viseur_taka,couleur_etoile) 
+      set widget(viseur_polaire_taka,taille)           $conf(viseur_taka,taille)
+      set widget(viseur_polaire_taka,couleur_fond)     $conf(viseur_taka,couleur_fond)
+      set widget(viseur_polaire_taka,couleur_reticule) $conf(viseur_taka,couleur_reticule)
+      set widget(viseur_polaire_taka,couleur_etoile)   $conf(viseur_taka,couleur_etoile)
    }
 
    #
    #  viseurPolaireTaka::widgetToConf
    #  Copie les variables des widgets dans le tableau conf()
-   #  
-   proc widgetToConf {  } {   
+   #
+   proc widgetToConf { } {
       variable This
       variable widget
       global conf
-      
+
       set conf(viseur_taka,position)         $widget(viseur_polaire_taka,position)
       set conf(viseur_taka,taille)           $widget(viseur_polaire_taka,taille)
       set conf(viseur_taka,couleur_fond)     $widget(viseur_polaire_taka,couleur_fond)
@@ -123,7 +123,7 @@ namespace eval viseurPolaireTaka {
    #
    #  viseurPolaireTaka::recup_position
    #  Recupere la position de la fenetre
-   #  
+   #
    proc recup_position { } {
       variable This
       variable widget
@@ -151,16 +151,16 @@ namespace eval viseurPolaireTaka {
       global viseurPolaireTaka
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) tool viseur_polaire viseur_polaire_taka.cap ]\""
+      source [ file join $audace(rep_plugin) tool viseur_polaire viseur_polaire_taka.cap ]
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(viseur_taka,titre)
       wm geometry $This $widget(viseur_polaire_taka,position)
       wm resizable $This 0 0
       wm protocol $This WM_DELETE_WINDOW ::viseurPolaireTaka::fermer
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(This) $This
 
       #--- Creation des differents frames
@@ -168,10 +168,10 @@ namespace eval viseurPolaireTaka {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 1 -relief raised
-      pack $This.frame3 -side top -fill x 
+      pack $This.frame3 -side top -fill x
 
       frame $This.frame4 -borderwidth 0 -relief raised
       pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
@@ -217,8 +217,8 @@ namespace eval viseurPolaireTaka {
       #--- Taille du viseur polaire
       label $This.lab10 -text "$caption(viseur_taka,taille)"
       pack $This.lab10 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
-      
-      #--- Definition de la taille de la raquette 
+
+      #--- Definition de la taille de la raquette
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $This.taille \
          -width 7           \
@@ -235,11 +235,11 @@ namespace eval viseurPolaireTaka {
          -bg $widget(viseur_polaire_taka,couleur_fond) -activebackground $widget(viseur_polaire_taka,couleur_fond) \
          -command {
             set temp [tk_chooseColor -initialcolor ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_fond)} \
-               -parent ${viseurPolaireTaka::widget(This)} -title ${caption(viseur_taka,couleur_fond)} ] 
-            if  { "$temp" != "" } {  
-               set viseurPolaireTaka::widget(viseur_polaire_taka,couleur_fond) "$temp" 
+               -parent ${viseurPolaireTaka::widget(This)} -title ${caption(viseur_taka,couleur_fond)} ]
+            if  { "$temp" != "" } {
+               set viseurPolaireTaka::widget(viseur_polaire_taka,couleur_fond) "$temp"
                ${viseurPolaireTaka::widget(This)}.but_couleur_fond_color_invariant configure \
-                  -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_fond)}  
+                  -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_fond)}
             }
          }
       pack $This.but_couleur_fond_color_invariant -in $This.frame7 -anchor center -side right -padx 5 -pady 5
@@ -256,13 +256,13 @@ namespace eval viseurPolaireTaka {
       button $This.but_couleur_reticule_color_invariant -relief raised -width 6 \
          -bg $widget(viseur_polaire_taka,couleur_reticule) \
          -activebackground $widget(viseur_polaire_taka,couleur_reticule) \
-         -command { 
+         -command {
             set temp [tk_chooseColor -initialcolor ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_reticule)} \
-               -parent ${viseurPolaireTaka::widget(This)} -title ${caption(viseur_taka,couleur_reticule)} ] 
-            if  { $temp != "" } {  
-               set viseurPolaireTaka::widget(viseur_polaire_taka,couleur_reticule) "$temp" 
+               -parent ${viseurPolaireTaka::widget(This)} -title ${caption(viseur_taka,couleur_reticule)} ]
+            if  { $temp != "" } {
+               set viseurPolaireTaka::widget(viseur_polaire_taka,couleur_reticule) "$temp"
                ${viseurPolaireTaka::widget(This)}.but_couleur_reticule_color_invariant configure \
-                  -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_reticule)}  
+                  -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_reticule)}
             }
          }
       pack $This.but_couleur_reticule_color_invariant -in $This.frame8 -anchor center -side left -padx 5 -pady 5
@@ -270,11 +270,11 @@ namespace eval viseurPolaireTaka {
       #--- Choix de la couleur de la Polaire
       button $This.but_couleur_etoile_color_invariant -relief raised -width 6 \
          -bg $widget(viseur_polaire_taka,couleur_etoile) -activebackground $widget(viseur_polaire_taka,couleur_etoile) \
-         -command { 
+         -command {
             set temp [tk_chooseColor -initialcolor ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_etoile)} \
-               -parent ${viseurPolaireTaka::widget(This)} -title ${caption(viseur_taka,couleur_etoile)} ] 
-            if  { $temp != "" } {  
-               set viseurPolaireTaka::widget(viseur_polaire_taka,couleur_etoile) "$temp" 
+               -parent ${viseurPolaireTaka::widget(This)} -title ${caption(viseur_taka,couleur_etoile)} ]
+            if  { $temp != "" } {
+               set viseurPolaireTaka::widget(viseur_polaire_taka,couleur_etoile) "$temp"
                ${viseurPolaireTaka::widget(This)}.but_couleur_etoile_color_invariant configure \
                   -bg ${viseurPolaireTaka::widget(viseur_polaire_taka,couleur_etoile)}
             }
@@ -297,12 +297,12 @@ namespace eval viseurPolaireTaka {
          -command { ::viseurPolaireTaka::appliquer }
       pack $This.but_appliquer -in $This.frame3 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Fermer' 
+      #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(viseur_taka,fermer)" -width 7 -borderwidth 2 \
-         -command { ::viseurPolaireTaka::fermer } 
+         -command { ::viseurPolaireTaka::fermer }
       pack $This.but_fermer -in $This.frame3 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Aide' 
+      #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(viseur_taka,aide)" -width 7 -borderwidth 2 \
          -command {
             ::audace::showHelpPlugin tool viseur_polaire viseur_polaire.htm

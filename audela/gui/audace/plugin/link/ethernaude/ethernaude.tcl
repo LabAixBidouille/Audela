@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.11 2006-11-23 23:14:30 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.12 2007-01-27 15:15:42 robertdelmas Exp $
 #
 
 package provide ethernaude 1.0
@@ -45,7 +45,7 @@ proc ::ethernaude::ConfEthernAude { } {
 
    if { [info exists widget(frm) ] } {
       set frm $widget(frm)
-      
+
       if { [winfo exist $frm.coord_gps] } {
          if { $private(started) == "1" } {
             #--- Boutons actifs
@@ -63,7 +63,7 @@ proc ::ethernaude::ConfEthernAude { } {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::configureDriver { } {
@@ -75,7 +75,7 @@ proc ::ethernaude::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::ethernaude::confToWidget { } {
@@ -91,7 +91,7 @@ proc ::ethernaude::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     demarre la liaison
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::create { linkLabel deviceId usage comment } {
@@ -106,7 +106,7 @@ proc ::ethernaude::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 #  delete
 #     arrete la liaison et libere les ressources occupees
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::delete { linkLabel deviceId usage } {
@@ -121,7 +121,7 @@ proc ::ethernaude::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::fillConfigPage { frm } {
@@ -227,7 +227,7 @@ proc ::ethernaude::fillConfigPage { frm } {
 #------------------------------------------------------------
 #  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::ethernaude::getDriverType { } {
@@ -237,7 +237,7 @@ proc ::ethernaude::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::ethernaude::getHelp { } {
@@ -247,7 +247,7 @@ proc ::ethernaude::getHelp { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::ethernaude::getLabel { } {
@@ -259,7 +259,7 @@ proc ::ethernaude::getLabel { } {
 #------------------------------------------------------------
 #  getLinkIndex
 #     retourne l'index du link
-#  
+#
 #  retourne une chaine vide si le link n'existe pas
 #------------------------------------------------------------
 proc ::ethernaude::getLinkIndex { linkLabel } {
@@ -299,7 +299,7 @@ proc ::ethernaude::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace name
 #------------------------------------------------------------
 proc ::ethernaude::init { } {
@@ -307,7 +307,7 @@ proc ::ethernaude::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $audace(rep_plugin) link ethernaude ethernaude.cap ]\""
+   source [ file join $audace(rep_plugin) link ethernaude ethernaude.cap ]
 
    #--- Je fixe le nom generique de la liaison identique au namespace
    set private(genericName) "ethernaude"
@@ -329,7 +329,7 @@ proc ::ethernaude::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::ethernaude::initConf { } {
@@ -346,7 +346,7 @@ proc ::ethernaude::initConf { } {
 #------------------------------------------------------------
 #  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::ethernaude::isReady { } {
@@ -356,7 +356,7 @@ proc ::ethernaude::isReady { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::selectConfigLink { linkLabel } {
@@ -387,7 +387,7 @@ proc ::ethernaude::testping { ip } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::ethernaude::widgetToConf { } {

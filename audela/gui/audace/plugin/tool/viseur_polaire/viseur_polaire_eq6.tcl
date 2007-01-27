@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.3 2006-06-20 22:02:52 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.4 2007-01-27 15:17:01 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireEQ6 {
@@ -27,13 +27,13 @@ namespace eval viseurPolaireEQ6 {
       if { [ info exists This ] } {
          wm withdraw $This
          wm deiconify $This
-         focus $This.but_fermer 
+         focus $This.but_fermer
       } else {
          set This $this
          if { [ info exists viseurPolaireEQ6(geometry) ] } {
             set deb [ expr 1 + [ string first + $viseurPolaireEQ6(geometry) ] ]
             set fin [ string length $viseurPolaireEQ6(geometry) ]
-            set widget(viseur_polaire_eq6,position) "+[ string range $viseurPolaireEQ6(geometry) $deb $fin ]"     
+            set widget(viseur_polaire_eq6,position) "+[ string range $viseurPolaireEQ6(geometry) $deb $fin ]"
          }
          ::viseurPolaireEQ6::createDialog
          tkwait visibility $This
@@ -74,9 +74,9 @@ namespace eval viseurPolaireEQ6 {
    }
 
    #
-   #  viseurPolaireEQ6::initConf 
+   #  viseurPolaireEQ6::initConf
    #  Initialise les parametres dans le tableau conf()
-   #  
+   #
    proc initConf { } {
       global conf
 
@@ -90,29 +90,29 @@ namespace eval viseurPolaireEQ6 {
    }
 
    #
-   #  viseurPolaireEQ6::confToWidget 
+   #  viseurPolaireEQ6::confToWidget
    #  Copie les parametres du tableau conf() dans les variables des widgets
-   #  
-   proc confToWidget {  } {   
-      variable widget  
+   #
+   proc confToWidget { } {
+      variable widget
       global conf
 
       set widget(viseur_polaire_eq6,position)         $conf(viseur_eq6,position)
-      set widget(viseur_polaire_eq6,taille)           $conf(viseur_eq6,taille) 
-      set widget(viseur_polaire_eq6,couleur_fond)     $conf(viseur_eq6,couleur_fond) 
-      set widget(viseur_polaire_eq6,couleur_reticule) $conf(viseur_eq6,couleur_reticule) 
-      set widget(viseur_polaire_eq6,couleur_etoile)   $conf(viseur_eq6,couleur_etoile) 
+      set widget(viseur_polaire_eq6,taille)           $conf(viseur_eq6,taille)
+      set widget(viseur_polaire_eq6,couleur_fond)     $conf(viseur_eq6,couleur_fond)
+      set widget(viseur_polaire_eq6,couleur_reticule) $conf(viseur_eq6,couleur_reticule)
+      set widget(viseur_polaire_eq6,couleur_etoile)   $conf(viseur_eq6,couleur_etoile)
    }
 
    #
    #  viseurPolaireEQ6::widgetToConf
    #  Copie les variables des widgets dans le tableau conf()
-   #  
-   proc widgetToConf {  } {   
+   #
+   proc widgetToConf { } {
       variable This
       variable widget
       global conf
-      
+
       set conf(viseur_eq6,position)         $widget(viseur_polaire_eq6,position)
       set conf(viseur_eq6,taille)           $widget(viseur_polaire_eq6,taille)
       set conf(viseur_eq6,couleur_fond)     $widget(viseur_polaire_eq6,couleur_fond)
@@ -123,7 +123,7 @@ namespace eval viseurPolaireEQ6 {
    #
    #  viseurPolaireEQ6::recup_position
    #  Recupere la position de la fenetre
-   #  
+   #
    proc recup_position { } {
       variable This
       variable widget
@@ -151,16 +151,16 @@ namespace eval viseurPolaireEQ6 {
       global viseurPolaireEQ6
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) tool viseur_polaire viseur_polaire_eq6.cap ]\""
+      source [ file join $audace(rep_plugin) tool viseur_polaire viseur_polaire_eq6.cap ]
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(viseur_eq6,titre)
       wm geometry $This $widget(viseur_polaire_eq6,position)
       wm resizable $This 0 0
       wm protocol $This WM_DELETE_WINDOW ::viseurPolaireEQ6::fermer
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(This) $This
 
       #--- Creation des differents frames
@@ -168,10 +168,10 @@ namespace eval viseurPolaireEQ6 {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 1 -relief raised
-      pack $This.frame3 -side top -fill x 
+      pack $This.frame3 -side top -fill x
 
       frame $This.frame4 -borderwidth 0 -relief raised
       pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
@@ -218,7 +218,7 @@ namespace eval viseurPolaireEQ6 {
       label $This.lab10 -text "$caption(viseur_eq6,taille)"
       pack $This.lab10 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
 
-      #--- Definition de la taille de la raquette 
+      #--- Definition de la taille de la raquette
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $This.taille \
          -width 7           \
@@ -235,9 +235,9 @@ namespace eval viseurPolaireEQ6 {
          -bg $widget(viseur_polaire_eq6,couleur_fond) -activebackground $widget(viseur_polaire_eq6,couleur_fond) \
          -command {
             set temp [tk_chooseColor -initialcolor ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_fond)} \
-               -parent ${viseurPolaireEQ6::widget(This)} -title ${caption(viseur_eq6,couleur_fond)} ] 
-            if  { $temp != "" } {  
-               set viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_fond) "$temp" 
+               -parent ${viseurPolaireEQ6::widget(This)} -title ${caption(viseur_eq6,couleur_fond)} ]
+            if  { $temp != "" } {
+               set viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_fond) "$temp"
                ${viseurPolaireEQ6::widget(This)}.but_couleur_fond_color_invariant configure \
                   -bg ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_fond)}
             }
@@ -255,13 +255,13 @@ namespace eval viseurPolaireEQ6 {
       #--- Choix de la couleur du reticule
       button $This.but_couleur_reticule_color_invariant -relief raised -width 6 \
          -bg $widget(viseur_polaire_eq6,couleur_reticule) -activebackground $widget(viseur_polaire_eq6,couleur_reticule) \
-         -command { 
+         -command {
             set temp [tk_chooseColor -initialcolor ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_reticule)} \
-               -parent ${viseurPolaireEQ6::widget(This)} -title ${caption(viseur_eq6,couleur_reticule)} ] 
-            if  { $temp != "" } {  
-               set viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_reticule) "$temp" 
+               -parent ${viseurPolaireEQ6::widget(This)} -title ${caption(viseur_eq6,couleur_reticule)} ]
+            if  { $temp != "" } {
+               set viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_reticule) "$temp"
                ${viseurPolaireEQ6::widget(This)}.but_couleur_reticule_color_invariant configure \
-                  -bg ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_reticule)}  
+                  -bg ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_reticule)}
             }
          }
       pack $This.but_couleur_reticule_color_invariant -in $This.frame8 -anchor center -side left -padx 5 -pady 5
@@ -269,11 +269,11 @@ namespace eval viseurPolaireEQ6 {
       #--- Choix de la couleur des etoiles et des constellations
       button $This.but_couleur_etoile_color_invariant -relief raised -width 6 \
          -bg $widget(viseur_polaire_eq6,couleur_etoile) -activebackground $widget(viseur_polaire_eq6,couleur_etoile) \
-         -command { 
+         -command {
             set temp [tk_chooseColor -initialcolor ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_etoile)} \
-               -parent ${viseurPolaireEQ6::widget(This)} -title ${caption(viseur_eq6,couleur_etoile)} ] 
-            if  { "$temp" != "" } {  
-               set viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_etoile) "$temp" 
+               -parent ${viseurPolaireEQ6::widget(This)} -title ${caption(viseur_eq6,couleur_etoile)} ]
+            if  { "$temp" != "" } {
+               set viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_etoile) "$temp"
                ${viseurPolaireEQ6::widget(This)}.but_couleur_etoile_color_invariant configure \
                   -bg ${viseurPolaireEQ6::widget(viseur_polaire_eq6,couleur_etoile)}
             }
@@ -296,12 +296,12 @@ namespace eval viseurPolaireEQ6 {
          -command { ::viseurPolaireEQ6::appliquer }
       pack $This.but_appliquer -in $This.frame3 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Fermer' 
+      #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(viseur_eq6,fermer)" -width 7 -borderwidth 2 \
-         -command { ::viseurPolaireEQ6::fermer } 
+         -command { ::viseurPolaireEQ6::fermer }
       pack $This.but_fermer -in $This.frame3 -side right -anchor w -padx 3 -pady 3 -ipady 5
- 
-      #--- Cree le bouton 'Aide' 
+
+      #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(viseur_eq6,aide)" -width 7 -borderwidth 2 \
          -command {
             ::audace::showHelpPlugin tool viseur_polaire viseur_polaire.htm

@@ -2,11 +2,11 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'catalog'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.4 2006-06-20 17:24:39 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.5 2007-01-27 15:09:21 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
-   
+
    #--- variables locales de ce namespace
    array set private {
       namespace      "confCat"
@@ -26,7 +26,7 @@ namespace eval ::confCat {
       variable private
       global audace
       global conf
- 
+
       #---
       set private(driverPattern) [ file join audace plugin chart * pkgIndex.tcl ]
       set private(frm)           "$audace(base).confCat"
@@ -37,7 +37,7 @@ namespace eval ::confCat {
       if { ! [ info exists conf(confCat,position) ] } { set conf(confCat,position) "+130+60" }
 
       #--- charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_caption) confcat.cap ]\""
+      source [ file join $audace(rep_caption) confcat.cap ]
 
       findDriver
 
@@ -47,11 +47,11 @@ namespace eval ::confCat {
       #}
 
    }
- 
+
    #------------------------------------------------------------
    #  getLabel
    #     retourne le titre de la fenetre
-   #  
+   #
    #  return "Titre de la fenetre (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
@@ -63,7 +63,7 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    # run
    # Affiche la fenetre de choix et de configuration
-   # 
+   #
    #------------------------------------------------------------
    proc run { } {
       variable private
@@ -253,7 +253,7 @@ namespace eval ::confCat {
       #--- j'affiche les onglets dans la fenetre
       Rnotebook:create $mainFrame -tabs "$private(driverlist)" -borderwidth 1
 
-      #--- je demande a chaque driver d'afficher sa page de config 
+      #--- je demande a chaque driver d'afficher sa page de config
       set indexOnglet 1
       foreach name $private(namespacelist) {
          set drivername [ $name\:\:fillConfigPage [Rnotebook:frame $mainFrame $indexOnglet] ]
@@ -334,7 +334,7 @@ namespace eval ::confCat {
          findDriver
       }
 
-      #--- je configure le driver 
+      #--- je configure le driver
       catch {
          $conf(confCat)\:\:configureDriver
          $audace(console)::affiche_prompt "# $fichier\n"
@@ -345,7 +345,7 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    #  stopDriver
    #     arrete le driver selectionne
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc stopDriver { } {
@@ -364,7 +364,7 @@ namespace eval ::confCat {
    #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
    #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
    #  - le driver doit avoir une procedure getlabel
-   # 
+   #
    # si le driver remplit les conditions
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
    # sinon le fichier tcl est ignore car ce n'est pas un driver
@@ -382,7 +382,7 @@ namespace eval ::confCat {
 
       #--- chargement des differentes fenetres de configuration des drivers
       set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-      
+
       if { "$filelist" == "" } {
          #--- aucun fichier correct
          return 1

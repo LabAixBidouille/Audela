@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.9 2006-12-02 19:22:57 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.10 2007-01-27 15:25:22 robertdelmas Exp $
 #
 
 package provide quickremote 1.1
@@ -23,7 +23,7 @@ package provide quickremote 1.1
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     
+#
 
 namespace eval quickremote {
 }
@@ -35,7 +35,7 @@ namespace eval quickremote {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::configureDriver { } {
@@ -50,7 +50,7 @@ proc ::quickremote::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::confToWidget { } {
@@ -62,7 +62,7 @@ proc ::quickremote::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     demarre la liaison
-#  
+#
 #     retourne le numero du link
 #       le numero du link est attribue automatiquement
 #       si ce link est deja cree, on retourne le numero du link existant
@@ -100,7 +100,7 @@ proc ::quickremote::create { linkLabel deviceId usage comment } {
 #     Supprime une utilisation d'une liaison
 #     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
 #     Ne fait rien si la liaison n'est pas ouverte
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::delete { linkLabel deviceId usage } {
@@ -123,7 +123,7 @@ proc ::quickremote::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::fillConfigPage { frm } {
@@ -159,7 +159,7 @@ proc ::quickremote::fillConfigPage { frm } {
 #------------------------------------------------------------
 #  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::quickremote::getDriverType { } {
@@ -169,7 +169,7 @@ proc ::quickremote::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::quickremote::getHelp { } {
@@ -179,7 +179,7 @@ proc ::quickremote::getHelp { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::quickremote::getLabel { } {
@@ -191,7 +191,7 @@ proc ::quickremote::getLabel { } {
 #------------------------------------------------------------
 #  getLinkIndex
 #     retourne l'index du link
-#  
+#
 #     retourne une chaine vide si le link n'existe pas
 #
 #   exemple :
@@ -220,11 +220,11 @@ proc ::quickremote::getLinkLabels { } {
 
    #--- j'intialise une liste vide
    set labels [list]
-   catch {   
+   catch {
       foreach instance [link::available quickremote ] {
          lappend labels "$private(genericName)[lindex $instance 0]"
       }
-   } catchError 
+   } catchError
    set private(statusMessage) $catchError
 
    return $labels
@@ -253,14 +253,14 @@ proc ::quickremote::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace
 #------------------------------------------------------------
 proc ::quickremote::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0 "source \"[ file join $::audace(rep_plugin) link quickremote quickremote.cap ]\""
+   source [ file join $::audace(rep_plugin) link quickremote quickremote.cap ]
 
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickremote"
@@ -278,7 +278,7 @@ proc ::quickremote::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::initConf { } {
@@ -290,7 +290,7 @@ proc ::quickremote::initConf { } {
 #------------------------------------------------------------
 #  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::quickremote::isReady { } {
@@ -300,7 +300,7 @@ proc ::quickremote::isReady { } {
 #------------------------------------------------------------
 #  refreshAvailableList
 #     rafraichit la liste des link disponibles
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::refreshAvailableList { } {
@@ -343,7 +343,7 @@ proc ::quickremote::refreshAvailableList { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::selectConfigLink { linkLabel } {
@@ -367,7 +367,7 @@ proc ::quickremote::selectConfigLink { linkLabel } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::quickremote::widgetToConf { } {

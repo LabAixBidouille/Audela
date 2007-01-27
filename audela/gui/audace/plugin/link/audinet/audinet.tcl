@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.7 2006-11-08 22:28:07 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.8 2007-01-27 15:07:29 robertdelmas Exp $
 #
 
 package provide audinet 1.0
@@ -24,7 +24,7 @@ package provide audinet 1.0
 #
 # Procedures specifiques a ce driver :
 #     testping          : teste la connexion d'un appareil
-#     
+#
 
 namespace eval audinet {
 }
@@ -32,7 +32,7 @@ namespace eval audinet {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::audinet::configureDriver { } {
@@ -47,7 +47,7 @@ proc ::audinet::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::audinet::confToWidget { } {
@@ -69,7 +69,7 @@ proc ::audinet::confToWidget { } {
 #------------------------------------------------------------
 #  create
 #     demarre la liaison
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::audinet::create { linkLabel deviceId usage comment } {
@@ -80,7 +80,7 @@ proc ::audinet::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 #  delete
 #     arrete la liaison et libere les ressources occupees
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::audinet::delete { linkLabel deviceId usage } {
@@ -91,7 +91,7 @@ proc ::audinet::delete { linkLabel deviceId usage } {
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::audinet::fillConfigPage { frm } {
@@ -136,7 +136,7 @@ proc ::audinet::fillConfigPage { frm } {
          if { $::audinet::widget(audinet,ipsetting) == "1" } {
             #--- Remarque : Comme setip est une commande specifique a une camera audinet,
             #--- il faut creer temporairement une camera de type audinet pour pouvoir executer la commande
-            set camtemp [ cam::create audinet ] 
+            set camtemp [ cam::create audinet ]
             set erreur [ catch { cam$camtemp setip $::audinet::widget(audinet,mac_address) $::audinet::widget(audinet,host) } msg ]
             if { $erreur == "1" } {
                tk_messageBox -message "$caption(audinet,erreur_setip)" -icon error
@@ -196,7 +196,7 @@ proc ::audinet::fillConfigPage { frm } {
    label $frm.lab_focuser_type -text "$caption(audinet,focuser_type)"
    pack $frm.lab_focuser_type -in $frm.frame5 -anchor center -side left -padx 10
 
-   set list_combobox [ list lx200 i2c ] 
+   set list_combobox [ list lx200 i2c ]
    ComboBox $frm.combo_focuser_type \
       -width 6          \
       -height [ llength $list_combobox ] \
@@ -215,11 +215,11 @@ proc ::audinet::fillConfigPage { frm } {
       }
    pack $frm.combo_focuser_type -in $frm.frame5 -anchor center -side left -padx 10
 
-   #--- Label adresse I2C du focuser 
+   #--- Label adresse I2C du focuser
    label $frm.lab_focuser_adr -text "$caption(audinet,focuser_i2c_address)"
    pack $frm.lab_focuser_adr -in $frm.frame5 -anchor center -side left -padx 10
 
-   #--- Saisie adresse I2C du focuser 
+   #--- Saisie adresse I2C du focuser
    entry $frm.ent_focuser_adr -width 17 -textvariable ::audinet::widget(audinet,focuser_addr)
    pack $frm.ent_focuser_adr -in $frm.frame5 -anchor center -side left -padx 10
 
@@ -253,7 +253,7 @@ proc ::audinet::fillConfigPage { frm } {
 #------------------------------------------------------------
 #  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::audinet::getDriverType { } {
@@ -263,7 +263,7 @@ proc ::audinet::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::audinet::getHelp { } {
@@ -273,7 +273,7 @@ proc ::audinet::getHelp { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::audinet::getLabel { } {
@@ -285,11 +285,11 @@ proc ::audinet::getLabel { } {
 #------------------------------------------------------------
 #  getLinkIndex
 #     retourne l'index du link
-#  
+#
 #  retourne une chaine vide si le link n'existe pas
 #------------------------------------------------------------
 proc ::audinet::getLinkIndex { linkLabel } {
-   variable private 
+   variable private
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
@@ -325,14 +325,14 @@ proc ::audinet::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace name
 #------------------------------------------------------------
 proc ::audinet::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link audinet audinet.cap ]\""
+   source [ file join $::audace(rep_plugin) link audinet audinet.cap ]
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "audinet"
@@ -349,7 +349,7 @@ proc ::audinet::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::audinet::initConf { } {
@@ -373,7 +373,7 @@ proc ::audinet::initConf { } {
 #------------------------------------------------------------
 #  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::audinet::isReady { } {
@@ -383,7 +383,7 @@ proc ::audinet::isReady { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::audinet::selectConfigLink { linkLabel } {
@@ -414,7 +414,7 @@ proc ::audinet::testping { ip } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::audinet::widgetToConf { } {

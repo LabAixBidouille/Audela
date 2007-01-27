@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.6 2006-09-28 19:50:09 michelpujol Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.7 2007-01-27 15:18:51 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -114,9 +114,9 @@ namespace eval eventAude_GPS {
       }
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) link ethernaude eventaude_gps.cap ]\""
+      source [ file join $audace(rep_plugin) link ethernaude eventaude_gps.cap ]
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(eventaude_gps,titre)
       wm geometry $This $confCam(eventaude_gps,position)
@@ -128,7 +128,7 @@ namespace eval eventAude_GPS {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1

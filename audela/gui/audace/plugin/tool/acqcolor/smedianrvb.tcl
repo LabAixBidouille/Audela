@@ -2,20 +2,20 @@
 # Fichier : smedianrvb.tcl
 # Description : Outil pour calculer la mediane d'une pile d'images
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: smedianrvb.tcl,v 1.4 2007-01-20 10:51:57 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.tcl,v 1.5 2007-01-27 15:23:07 robertdelmas Exp $
 #
 
 global audace caption conf infos
 
 #--- Chargement des captions
-uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqcolor smedianrvb.cap ]\""
+source [ file join $audace(rep_plugin) tool acqcolor smedianrvb.cap ]
 
 #--- Initialisation des variables
-set infos(nom_image)   "$caption(smedianrvb,interro)" 
-set infos(nbre_images) "$caption(smedianrvb,interro)" 
-set infos(nom_mediane) "$caption(smedianrvb,interro)" 
+set infos(nom_image)   "$caption(smedianrvb,interro)"
+set infos(nbre_images) "$caption(smedianrvb,interro)"
+set infos(nom_mediane) "$caption(smedianrvb,interro)"
 
-#--- Cree la fenetre .test2 de niveau le plus haut 
+#--- Cree la fenetre .test2 de niveau le plus haut
 if [ winfo exists $audace(base).test2 ] {
    wm withdraw $audace(base).test2
    wm deiconify $audace(base).test2
@@ -23,7 +23,7 @@ if [ winfo exists $audace(base).test2 ] {
    return
 }
 toplevel $audace(base).test2 -class Toplevel
-wm geometry $audace(base).test2 +420+170 
+wm geometry $audace(base).test2 +420+170
 wm title $audace(base).test2 $caption(smedianrvb,titre)
 
 #--- La nouvelle fenetre est active
@@ -35,21 +35,21 @@ frame $audace(base).test2.frame0 \
 pack $audace(base).test2.frame0 \
    -in $audace(base).test2 -anchor nw -side top -expand 0 -fill x
 
-   #--- Cree le label 'commentaire' 
+   #--- Cree le label 'commentaire'
    label $audace(base).test2.frame0.lab1 \
       -text "$caption(smedianrvb,comment1)"
    pack $audace(base).test2.frame0.lab1 \
       -in $audace(base).test2.frame0 -side top -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
-   #--- Cree le label 'commentaire' 
+   #--- Cree le label 'commentaire'
    label $audace(base).test2.frame0.lab2 \
       -text "$caption(smedianrvb,comment2)"
    pack $audace(base).test2.frame0.lab2 \
       -in $audace(base).test2.frame0 -side top -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test2.frame1 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test2.frame1 \
@@ -84,9 +84,9 @@ pack $audace(base).test2.frame1 \
       -in $audace(base).test2.frame1 -side left -anchor center -expand 1 \
       -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test2.frame2 \
-   -borderwidth 0 -cursor arrow 
+   -borderwidth 0 -cursor arrow
 pack $audace(base).test2.frame2 \
    -in $audace(base).test2 -anchor center -side top -expand 0 -fill x
 
@@ -117,9 +117,9 @@ pack $audace(base).test2.frame2 \
       -in $audace(base).test2.frame2 -side left -anchor center -expand 1 -fill x \
       -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test2.frame3 \
-   -borderwidth 0 -cursor arrow 
+   -borderwidth 0 -cursor arrow
 pack $audace(base).test2.frame3 \
    -in $audace(base).test2 -anchor center -side top -expand 0 -fill x
 
@@ -128,16 +128,16 @@ pack $audace(base).test2.frame3 \
       -text "$caption(smedianrvb,nbre_images)"
    pack $audace(base).test2.frame3.lab \
       -in $audace(base).test2.frame3 -side left -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
    #--- Cree l'entry
    entry $audace(base).test2.frame3.ent \
       -textvariable infos(nbre_images) -width 6
    pack $audace(base).test2.frame3.ent \
       -in $audace(base).test2.frame3 -side left -anchor center \
-      -padx 10 -pady 3  
+      -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test2.frame4 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test2.frame4 \
@@ -148,16 +148,16 @@ pack $audace(base).test2.frame4 \
       -text "$caption(smedianrvb,nom_med)"
    pack $audace(base).test2.frame4.lab \
       -in $audace(base).test2.frame4 -side left -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
    #--- Cree l'entry
    entry $audace(base).test2.frame4.ent \
       -textvariable infos(nom_mediane)
    pack $audace(base).test2.frame4.ent \
       -in $audace(base).test2.frame4 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3 
- 
-#--- Cree un frame 
+      -padx 10 -pady 3
+
+#--- Cree un frame
 frame $audace(base).test2.frame5 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test2.frame5 \
@@ -168,16 +168,16 @@ pack $audace(base).test2.frame5 \
       -text "$caption(smedianrvb,comment3)"
    pack $audace(base).test2.frame5.lab \
       -in $audace(base).test2.frame5 -side top -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
-#--- Cree le bouton 'Validation' 
+#--- Cree le bouton 'Validation'
 button $audace(base).test2.but_valid \
    -text "$caption(smedianrvb,executer)" -borderwidth 2 \
-   -command { 
+   -command {
       catch {
          set nom "$infos(nom_image)"
-         set nom1 "$infos(nom_mediane)" 
-         set nb "$infos(nbre_images)"    
+         set nom1 "$infos(nom_mediane)"
+         set nb "$infos(nbre_images)"
          set infos(type_image) "couleur"
          #--- Separe les couleurs
          for { set k 1 } { $k <= $infos(nbre_images) } { incr k } {
@@ -207,16 +207,16 @@ button $audace(base).test2.but_valid \
          delete2 ${nom}r ${nb}
          delete2 ${nom}v ${nb}
          delete2 ${nom}b ${nb}
-         #--- Detruit la fenêtre devant l'image  
+         #--- Detruit la fenêtre devant l'image
          destroy $audace(base).test2
       }
-   } 
+   }
 pack $audace(base).test2.but_valid \
    -in $audace(base).test2 -side bottom -anchor center \
    -padx 3 -pady 5 -ipadx 5 -ipady 3
 
-#--- Detruit la fenetre avec la croix en haut a droite 
-bind $audace(base).test2 <Destroy> { destroy $audace(base).test2 } 
+#--- Detruit la fenetre avec la croix en haut a droite
+bind $audace(base).test2 <Destroy> { destroy $audace(base).test2 }
 
 #--- Mise a jour dynamique des couleurs
 ::confColor::applyColor $audace(base).test2

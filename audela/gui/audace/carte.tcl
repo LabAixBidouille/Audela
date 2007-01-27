@@ -3,14 +3,14 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carte.tcl,v 1.3 2006-06-20 17:21:17 robertdelmas Exp $
+# Mise a jour $Id: carte.tcl,v 1.4 2007-01-27 15:08:05 robertdelmas Exp $
 #
 
 namespace eval ::carte {
    global audace
 
    #--- chargement des captions
-   uplevel #0  "source \"[file join $audace(rep_caption) carte.cap]\""
+   source [file join $audace(rep_caption) carte.cap]
 
    #------------------------------------------------------------
    #  showMapFromBuffer
@@ -37,12 +37,12 @@ namespace eval ::carte {
       if { "$ra" != "" && "$dec" != "" } {
          #--- je convertis RA au format HMS
          set ra "[mc_angle2hms $ra 360 zero 0 auto string]"
-         #--- je supprime les decimales des secondes 
+         #--- je supprime les decimales des secondes
          set ra [string range $ra 0 [expr [string first "s" "$ra" ] ] ]
 
          #--- je convertis DEC au format DMS
          set dec "[mc_angle2dms $dec 90 zero 0 + string ] "
-         #--- je supprime les decimales des secondes 
+         #--- je supprime les decimales des secondes
          set dec [string range $dec 0 [expr [string first "s" "$dec" ] ] ]
 
          set zoom_carte "10"
@@ -62,7 +62,7 @@ namespace eval ::carte {
    #     nom_objet  : nom de l'objet   (ex : "NGC7000")
    #     ad         : ascension droite (ex : "16h41m42s")
    #     dec        : declinaison      (ex : "+36d28m00s")
-   #     zoom_objet : champ 1 à 10 
+   #     zoom_objet : champ 1 à 10
    #     avant_plan : 1=mettre la carte au premier plan 0=ne pas mettre au premier plan
    #  return 0 (OK) , 1(error)
    #------------------------------------------------------------
@@ -84,7 +84,7 @@ namespace eval ::carte {
                ::confCat::run
             }
          }
-      } else { 
+      } else {
          #--- Affichage de la fenetre de configuration des cartes si aucune carte n'est selectionnee
          set choice [tk_messageBox -message "$caption(carte,error_no_map)" -title "$caption(carte,title)" \
             -icon question -type yesno]
@@ -98,7 +98,7 @@ namespace eval ::carte {
    #------------------------------------------------------------
    #  getSelectedObject {}
    #     recupere les coordonnées et le nom de l'objet selectionne dans la carte
-   #  
+   #
    #  return [list $ra $dec $objName ]
    #     $ra      : right ascension (ex : "16h41m42s")
    #     $dec     : declinaison     (ex : "+36d28m00s")
@@ -119,7 +119,7 @@ namespace eval ::carte {
    #------------------------------------------------------------
    #  isReady
    #     informe de l'etat de la connexion au logiciel qui affiche la carte
-   #  
+   #
    #  return 0 (ready) , 1 (not ready)
    #
    #------------------------------------------------------------

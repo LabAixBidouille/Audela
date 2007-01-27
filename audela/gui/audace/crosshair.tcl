@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: crosshair.tcl,v 1.7 2006-11-25 10:15:20 michelpujol Exp $
+# Mise a jour $Id: crosshair.tcl,v 1.8 2007-01-27 15:14:07 robertdelmas Exp $
 #
 
 namespace eval ::Crosshair {
@@ -12,14 +12,14 @@ namespace eval ::Crosshair {
    #------------------------------------------------------------
    #  init
    #     initialise le driver
-   #  
+   #
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
       variable private
       global audace
 
-      uplevel #0 "source \"[file join $audace(rep_caption) crosshair.cap]\""
+      source [ file join $audace(rep_caption) crosshair.cap ]
 
       initConf
       set private(imageSize) " "
@@ -62,7 +62,7 @@ namespace eval ::Crosshair {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le nom et le label du driver
-   #  
+   #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"]
    #
    #------------------------------------------------------------
@@ -112,7 +112,7 @@ namespace eval ::Crosshair {
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
-      
+
       #--- j'initialise les valeurs
       confToWidget $visuNo
 
@@ -121,7 +121,7 @@ namespace eval ::Crosshair {
       pack $frm.frameState -side top -fill both -expand 1
 
       frame $frm.frameColor -borderwidth 1 -relief raised
-      pack $frm.frameColor -side top -fill both -expand 1 
+      pack $frm.frameColor -side top -fill both -expand 1
 
       #--- current state
       checkbutton $frm.frameState.currentstate -text "$caption(crosshair,current_state_label)" \
@@ -144,13 +144,13 @@ namespace eval ::Crosshair {
    }
 
    #==============================================================
-   # Fonctions specifiques 
+   # Fonctions specifiques
    #==============================================================
 
    #------------------------------------------------------------
    #  showHelp
-   #  aide 
-   #   
+   #  aide
+   #
    #------------------------------------------------------------
    proc showHelp { } {
       global help
@@ -160,19 +160,19 @@ namespace eval ::Crosshair {
 
    #------------------------------------------------------------
    #  changeColor
-   #  change la couleur du reticule 
-   #   
+   #  change la couleur du reticule
+   #
    #------------------------------------------------------------
    proc changeColor { frm } {
       variable widget
       global caption
 
       set temp [tk_chooseColor -initialcolor $::Crosshair::widget(color) -parent ${Crosshair::widget(frm)} \
-         -title ${caption(crosshair,color_crosshair)} ] 
-      if  { "$temp" != "" } {  
-         set Crosshair::widget(color) "$temp" 
+         -title ${caption(crosshair,color_crosshair)} ]
+      if  { "$temp" != "" } {
+         set Crosshair::widget(color) "$temp"
          ${Crosshair::widget(frm)}.frameColor.butColor_color_invariant configure \
-            -bg $::Crosshair::widget(color) -bg $::Crosshair::widget(color) 
+            -bg $::Crosshair::widget(color) -bg $::Crosshair::widget(color)
       }
    }
 

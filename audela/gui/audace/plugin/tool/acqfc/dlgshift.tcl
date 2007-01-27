@@ -2,48 +2,45 @@
 # Fichier : dlgshift.tcl
 # Description : Fenetre dialog pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: dlgshift.tcl,v 1.3 2006-06-20 20:41:56 robertdelmas Exp $
+# Mise a jour $Id: dlgshift.tcl,v 1.4 2007-01-27 15:14:23 robertdelmas Exp $
 #
 
 namespace eval DlgShift {
-   variable This 
+   variable This
 
    #------------------------------------------------------------
-   #  init 
+   #  init
    #      load configuration file
    #------------------------------------------------------------
-   proc init { } {         
+   proc init { } {
       global audace
       global fileName
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc dlgshift.cap ]\""
+      source [ file join $audace(rep_plugin) tool acqfc dlgshift.cap ]
 
       #--- set fileName
-      set fileName [ file join $audace(rep_plugin) tool acqfc dlgshift_ini.tcl ] 
+      set fileName [ file join $audace(rep_plugin) tool acqfc dlgshift_ini.tcl ]
 
       #--- Variables will be ready to use, so load data now
       loadDataFile
    }
 
    #------------------------------------------------------------
-   #  run 
-   #      display dialog 
+   #  run
+   #      display dialog
    #------------------------------------------------------------
    proc run { this } {
-      variable This 
-     
-      set This $this
-      
-      createDialog
+      variable This
 
+      set This $this
+      createDialog
       tkwait window $This
-      
       return
    }
 
    #------------------------------------------------------------
-   #  cmdSave 
+   #  cmdSave
    #------------------------------------------------------------
    proc cmdSave { } {
       variable This
@@ -52,40 +49,39 @@ namespace eval DlgShift {
 
       #---
       ::DlgShift::recup_position
-      
+
       set arrayName "panneau"
       set namePattern "DlgShift*"
-            
-      #--- save new values into the file         
+
+      #--- save new values into the file
       set fid [open [file join $fileName] w]
       puts $fid "global $arrayName"
-      
+
       foreach a [lsort [array names $arrayName $namePattern ]] {
          puts $fid "set panneau($a) \"[lindex [array get $arrayName $a] 1]\""
-      }      
+      }
       close $fid
-   
+
       #--- close the dialog window
       closeDialog
-   }          
+   }
 
    #------------------------------------------------------------
    #  cmdCancel
    #      close dialog without saving
    #------------------------------------------------------------
-   proc cmdCancel { } {  
+   proc cmdCancel { } {
       global fileName
 
       #--- reload old values
-      loadDataFile 
-                     
+      loadDataFile
       #--- close the dialog window
       closeDialog
-   } 
+   }
 
    #------------------------------------------------------------
-   #  loadDataFile 
-   #      read file  
+   #  loadDataFile
+   #      read file
    #      display fields values in the grid
    #------------------------------------------------------------
    proc loadDataFile { } {
@@ -101,22 +97,22 @@ namespace eval DlgShift {
 
       return [array get $arrayName]
    }
-    
+
    #------------------------------------------------------------
-   #  closeDialog 
+   #  closeDialog
    #      close dialog
    #------------------------------------------------------------
    proc closeDialog { } {
       variable This
-      
+
       #--- close and destroy the dialog window
-      destroy $This     
-      unset This 
+      destroy $This
+      unset This
 
    }
 
    #------------------------------------------------------------
-   #  Decalage_Telescope 
+   #  Decalage_Telescope
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
    proc Decalage_Telescope { } {
@@ -133,7 +129,7 @@ namespace eval DlgShift {
 
          console::affiche_erreur "::telescope::setSpeed $panneau(DlgShift,shiftSpeed) \n"
          ::telescope::decodeSpeedDlgShift
-         
+
          #--- Sur l'axe est/ouest
          if { $panneau(DlgShift,xShiftDirection) != "" } {
             if { $panneau(DlgShift,xShiftDirection) == "$caption(dlgshift,est)" } {
@@ -141,8 +137,8 @@ namespace eval DlgShift {
             } elseif { $panneau(DlgShift,xShiftDirection) == "$caption(dlgshift,ouest)" } {
                set panneau(DlgShift,xShiftDirection1) "w"
             }
-            ::telescope::move $panneau(DlgShift,xShiftDirection1) 
-            after [expr $panneau(DlgShift,xShiftTime) * 1000] 
+            ::telescope::move $panneau(DlgShift,xShiftDirection1)
+            after [expr $panneau(DlgShift,xShiftTime) * 1000]
             ::telescope::stop $panneau(DlgShift,xShiftDirection1)
          }
          #--- Sur l'axe nord/sud
@@ -152,8 +148,8 @@ namespace eval DlgShift {
             } elseif { $panneau(DlgShift,yShiftDirection) == "$caption(dlgshift,sud)" } {
                set panneau(DlgShift,yShiftDirection1) "s"
             }
-            ::telescope::move $panneau(DlgShift,yShiftDirection1) 
-            after [expr $panneau(DlgShift,yShiftTime) * 1000] 
+            ::telescope::move $panneau(DlgShift,yShiftDirection1)
+            after [expr $panneau(DlgShift,yShiftTime) * 1000]
             ::telescope::stop $panneau(DlgShift,yShiftDirection1)
          }
          if { ( $panneau(DlgShift,xShiftDirection) != "" ) || ( $panneau(DlgShift,yShiftDirection) != "" ) } {
@@ -163,7 +159,7 @@ namespace eval DlgShift {
    }
 
    #------------------------------------------------------------
-   #  recup_position 
+   #  recup_position
    #      give position window
    #------------------------------------------------------------
    proc recup_position { } {
@@ -173,11 +169,11 @@ namespace eval DlgShift {
       set panneau(DlgShift,geometry) [ wm geometry $This ]
       set deb [ expr 1 + [ string first + $panneau(DlgShift,geometry) ] ]
       set fin [ string length $panneau(DlgShift,geometry) ]
-      set panneau(DlgShift,position) "+[string range $panneau(DlgShift,geometry) $deb $fin]"     
+      set panneau(DlgShift,position) "+[string range $panneau(DlgShift,geometry) $deb $fin]"
    }
 
    #------------------------------------------------------------
-   #  createDialog 
+   #  createDialog
    #      display dialog window
    #------------------------------------------------------------
    proc createDialog { } {
@@ -197,10 +193,10 @@ namespace eval DlgShift {
       if { [ info exists panneau(DlgShift,geometry) ] } {
          set deb [ expr 1 + [ string first + $panneau(DlgShift,geometry) ] ]
          set fin [ string length $panneau(DlgShift,geometry) ]
-         set panneau(DlgShift,position) "+[string range $panneau(DlgShift,geometry) $deb $fin]"     
+         set panneau(DlgShift,position) "+[string range $panneau(DlgShift,geometry) $deb $fin]"
       }
 
-      #--- create toplevel window 
+      #--- create toplevel window
       toplevel $This -class Toplevel
       wm geometry $This $panneau(DlgShift,position)
       wm title $This $caption(dlgshift,title)
@@ -218,11 +214,11 @@ namespace eval DlgShift {
       label $This.frameConfig.labelDirectionx -width 34 -borderwidth 2 -relief groove \
          -text $caption(dlgshift,labelDirectionx)
       grid configure $This.frameConfig.labelDirectionx -column 0 -row 1 -sticky we -in $This.frameConfig -ipadx 15 -ipady 5
-      
+
       label $This.frameConfig.labelTimey -width 34 -borderwidth 2 -relief groove \
          -text $caption(dlgshift,labelTimey)
       grid configure $This.frameConfig.labelTimey -column 0 -row 2 -sticky we -in $This.frameConfig -ipadx 15 -ipady 5
-      
+
       label $This.frameConfig.labelDirectiony -width 34 -borderwidth 2 -relief groove \
          -text $caption(dlgshift,labelDirectiony)
       grid configure $This.frameConfig.labelDirectiony -column 0 -row 3 -sticky we -in $This.frameConfig -ipadx 15 -ipady 5
@@ -230,15 +226,15 @@ namespace eval DlgShift {
       label $This.frameConfig.labelSpeed -width 34 -borderwidth 2 -relief groove \
          -text $caption(dlgshift,labelSpeed)
       grid configure $This.frameConfig.labelSpeed -column 0 -row 4 -sticky we -in $This.frameConfig -ipadx 15 -ipady 5
-      
+
       #--- entry xShiftTime
       entry $This.frameConfig.xShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShift,xShiftTime)        
+         -textvariable panneau(DlgShift,xShiftTime)
       grid configure $This.frameConfig.xShiftTime -column 1 -row 0 -sticky we -in $This.frameConfig -ipady 5
-      
+
       menubutton $This.frameConfig.xShiftDirection -textvariable panneau(DlgShift,xShiftDirection) \
          -menu $This.frameConfig.xShiftDirection.menu -relief raised
-      grid configure $This.frameConfig.xShiftDirection -column 1 -row 1 -sticky we -in $This.frameConfig 
+      grid configure $This.frameConfig.xShiftDirection -column 1 -row 1 -sticky we -in $This.frameConfig
       set m [menu $This.frameConfig.xShiftDirection.menu -tearoff 0]
       foreach xShiftDirection "$caption(dlgshift,est) $caption(dlgshift,ouest)" {
          $m add radiobutton -label "$xShiftDirection" \
@@ -250,12 +246,12 @@ namespace eval DlgShift {
 
       #--- entry yShiftTime
       entry $This.frameConfig.yShiftTime -width 5 -borderwidth 2 -justify center \
-         -textvariable panneau(DlgShift,yShiftTime)        
+         -textvariable panneau(DlgShift,yShiftTime)
       grid configure $This.frameConfig.yShiftTime -column 1 -row 2 -sticky we -in $This.frameConfig -ipady 5
 
       menubutton $This.frameConfig.yShiftDirection -textvariable panneau(DlgShift,yShiftDirection) \
          -menu $This.frameConfig.yShiftDirection.menu -relief raised
-      grid configure $This.frameConfig.yShiftDirection -column 1 -row 3 -sticky we -in $This.frameConfig 
+      grid configure $This.frameConfig.yShiftDirection -column 1 -row 3 -sticky we -in $This.frameConfig
       set m [menu $This.frameConfig.yShiftDirection.menu -tearoff 0]
       foreach yShiftDirection "$caption(dlgshift,nord) $caption(dlgshift,sud)" {
          $m add radiobutton -label "$yShiftDirection" \
@@ -275,7 +271,7 @@ namespace eval DlgShift {
 
       menubutton $This.frameConfig.shiftSpeed -textvariable panneau(DlgShift,shiftSpeed) \
          -menu $This.frameConfig.shiftSpeed.menu -relief raised
-      grid configure $This.frameConfig.shiftSpeed -column 1 -row 4 -sticky we -in $This.frameConfig 
+      grid configure $This.frameConfig.shiftSpeed -column 1 -row 4 -sticky we -in $This.frameConfig
       set m [menu $This.frameConfig.shiftSpeed.menu -tearoff 0]
       foreach shiftSpeed $speed_list {
          $m add radiobutton -label "$shiftSpeed" \
@@ -301,7 +297,7 @@ namespace eval DlgShift {
          -borderwidth 2  -command "::DlgShift::cmdSave"
       pack   $This.frameButton.buttonSave -in $This.frameButton -anchor e -fill none \
          -padx 3 -pady 3 -ipadx 5 -ipady 3
-      
+
       pack $This.frameButton -side bottom -fill both -expand 0
 
       #--- La fenetre est active

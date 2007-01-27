@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.21 2007-01-20 10:17:53 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.22 2007-01-27 15:12:27 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -30,7 +30,7 @@ namespace eval ::confTel {
       if { ! [ info exists conf(telescope,position) ] } { set conf(telescope,position) "+110+20" }
 
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_caption) conftel.cap ]\""
+      source [ file join $audace(rep_caption) conftel.cap ]
 
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecom.tcl ]\""

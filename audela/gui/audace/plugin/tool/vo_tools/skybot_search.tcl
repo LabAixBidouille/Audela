@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.8 2006-07-04 22:15:59 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.9 2007-01-27 15:23:44 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -10,7 +10,7 @@ namespace eval skybot_Search {
    global voconf
 
    #--- Chargement des captions
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_search.cap ]\""
+   source [ file join $audace(rep_plugin) tool vo_tools skybot_search.cap ]
 
    #
    # skybot_Search::run this
@@ -76,7 +76,7 @@ namespace eval skybot_Search {
       if { $filename != "" } {
          #--- un fichier est fourni
          set voconf(session_filename) $filename
-	 set voconf(session_dir) [ file dirname $filename ]
+         set voconf(session_dir) [ file dirname $filename ]
          #--- ouverture et lecture du fichier
          if [catch {file size $voconf(session_filename)} filesize ] {
             tk_messageBox -icon error -message [concat "$caption(search,msg_openfile) \"$voconf(session_filename)\":\n$filesize"]
@@ -115,7 +115,7 @@ namespace eval skybot_Search {
                         }
                       }
                     }
-	       }   
+               }
             }
          }
          ::skybot_Search::charger
@@ -168,7 +168,7 @@ namespace eval skybot_Search {
       #--- sauvegarde des donnees de session
       if { $filename != "" } {
          set voconf(session_filename) $filename
-	 set voconf(session_dir) [ file dirname $filename ]
+         set voconf(session_dir) [ file dirname $filename ]
          ::skybot_Search::save_session 
       }
    }
@@ -255,9 +255,9 @@ namespace eval skybot_Search {
          #--- Calcule les coordonnees equatoriales du centre de l'image
          ::skybot_Search::Centre&Champ
 
-	 #--- Affichage des fleches de direction
-	 ::skybot_Search::Trace_Repere
-	 
+         #--- Affichage des fleches de direction
+         ::skybot_Search::Trace_Repere
+
          #--- A-t-on choisi l'unite de la duree de pose ?
          if { $voconf(unite_pose) == "0" } {
             set choix [ tk_messageBox -title $caption(search,msg_attention) -type yesno \
@@ -636,9 +636,9 @@ namespace eval skybot_Search {
         menu $This.frame0.aide.menu
           $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
           $This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command { ::audace::Lance_Site_htm $myurl(skybot_doc) }
-	  $This.frame0.aide.menu add separator
+          $This.frame0.aide.menu add separator
           $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
-#	  $This.frame0.aide.menu add separator
+#          $This.frame0.aide.menu add separator
 #          $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
         pack $This.frame0.aide -side right
       #--- barre de menu
@@ -665,7 +665,7 @@ namespace eval skybot_Search {
            #--- Cree une ligne d'entree
            set input_img [entry $load.ent -textvariable voconf(nom_image) -borderwidth 1 -relief groove]
            pack $input_img -in $load -side left -anchor w -expand 1 -fill x -padx 2
-	   #--- Cree le bouton parcourir
+           #--- Cree le bouton parcourir
            button $load.explore -text "$caption(search,parcourir)" -width 3 -command { ::skybot_Search::charger }
            pack $load.explore -in $load -side left -anchor c -fill x -padx 6
 
@@ -711,7 +711,7 @@ namespace eval skybot_Search {
             #--- Cree un frame pour determiner l'unite du temps de pose
             set utdp [frame $tdp.unite_temps_pose -borderwidth 0]
             pack $utdp \
-	      -in $tdp -side left -anchor w -expand 0 -fill x
+              -in $tdp -side left -anchor w -expand 0 -fill x
              #--- Bouton radio Secondes
              radiobutton $utdp.radiobutton_secondes -highlightthickness 0 -state normal \
                -text "$caption(search,secondes)" -value 1 -variable voconf(unite_pose) \
@@ -766,7 +766,7 @@ namespace eval skybot_Search {
         #--- Cree un frame pour les caracteristiques du FOV
         set fov [frame $This.frame3.fov -borderwidth 1 -relief solid]
         pack $fov -in $This.frame3 \
-	  -anchor w -side top -expand 0 -fill x -padx 10
+          -anchor w -side top -expand 0 -fill x -padx 10
 
           #--- Cree un frame pour acceuillir les caracteristiques du FOV
           frame $fov.ca -borderwidth 0 -relief flat
@@ -1980,7 +1980,7 @@ namespace eval skybot_Search {
          #--- Repere les objets sur l'image
          $audace(hCanvas) delete cadres
          for { set i 0 } { $i <= [ expr $voconf(j) - 1 ] } { incr i } {
-	    #--- Quelques raccourcis
+            #--- Quelques raccourcis
             set tbl $This.frame7.tbl      
             #--- Coordonnees equatoriales de l'objet
             set voconf(AD_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,2 -text ] 4 ] ]
@@ -1992,7 +1992,7 @@ namespace eval skybot_Search {
             #--- Materialisation des objets dans l'image
             ::skybot_Search::Trace_Objet $tbl $i $img_xy $can_xy "orange"
          }
-	 ::skybot_Search::Trace_Repere
+         ::skybot_Search::Trace_Repere
       } else {
          #--- Efface les reperes des objets
          $audace(hCanvas) delete cadres
