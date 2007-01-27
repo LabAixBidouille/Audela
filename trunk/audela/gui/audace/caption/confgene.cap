@@ -1,13 +1,13 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.11 2007-01-21 11:59:58 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.12 2007-01-27 14:39:31 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -21,7 +21,7 @@ set caption(confgene,type_fenetre)                          "Window Type"
 set caption(confgene,fichier_image)                         "Image Files"
 set caption(confgene,fichier_image_fits)                    "FITS Files"
 set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds"
-set caption(confgene,fichier_images_choix_format)           "# Enregistrer les images au format :"
+set caption(confgene,fichier_images_choix_format)           "Save images as:"
 set caption(confgene,fichier_images_entier)                 "Integer"
 set caption(confgene,fichier_images_flottant)               "Floating"
 set caption(confgene,fichier_image_ext_defaut)              "Default Filename Extension:"
@@ -330,9 +330,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image)                      "Ficheros de imágenes"
    set caption(confgene,fichier_image_fits)                 "Ficheros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización"
-   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
-   set caption(confgene,fichier_images_entier)              "# Entier"
-   set caption(confgene,fichier_images_flottant)            "# Flottant"
+   set caption(confgene,fichier_images_choix_format)        "Guardar imagenes en formato:"
+   set caption(confgene,fichier_images_entier)              "Entero"
+   set caption(confgene,fichier_images_flottant)            "Flotante"
    set caption(confgene,fichier_image_ext_defaut)           "Extension por defecto del fichero:"
    set caption(confgene,fichier_image_new_ext)              "Se puede elegir la extensión de fichero:"
    set caption(confgene,fichier_image_compres)              "Ficheros de imágenes comprimidos (.gz)"
@@ -433,9 +433,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image)                      "Bild Datei"
    set caption(confgene,fichier_image_fits)                 "FITS Datei"
    set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern"
-   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
-   set caption(confgene,fichier_images_entier)              "# Entier"
-   set caption(confgene,fichier_images_flottant)            "# Flottant"
+   set caption(confgene,fichier_images_choix_format)        "Bilder im Format speichern:"
+   set caption(confgene,fichier_images_entier)              "Ganz"
+   set caption(confgene,fichier_images_flottant)            "Fließkomma"
    set caption(confgene,fichier_image_ext_defaut)           "Mangel Streckung:"
    set caption(confgene,fichier_image_new_ext)              "Sie können eure Streckung wählen:"
    set caption(confgene,fichier_image_compres)              "Verminderte Bild Datei (.gz)"
@@ -536,9 +536,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image)                      "Ficheiros de imagens"
    set caption(confgene,fichier_image_fits)                 "Ficheiros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização"
-   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
-   set caption(confgene,fichier_images_entier)              "# Entier"
-   set caption(confgene,fichier_images_flottant)            "# Flottant"
+   set caption(confgene,fichier_images_choix_format)        "Guardar as imagens em formato:"
+   set caption(confgene,fichier_images_entier)              "Inteiro"
+   set caption(confgene,fichier_images_flottant)            "Flutuante"
    set caption(confgene,fichier_image_ext_defaut)           "Extensão por defeito do ficheiro:"
    set caption(confgene,fichier_image_new_ext)              "Pode escolher a extensão do fichero:"
    set caption(confgene,fichier_image_compres)              "Ficheiros de imagem comprimidos (.gz)"

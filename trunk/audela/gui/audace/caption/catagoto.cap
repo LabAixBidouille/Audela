@@ -1,13 +1,13 @@
 #
 # Fichier : catagoto.cap
-# Mise a jour $Id: catagoto.cap,v 1.4 2006-10-20 13:27:21 alainklotz Exp $
+# Mise a jour $Id: catagoto.cap,v 1.5 2007-01-27 14:37:23 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

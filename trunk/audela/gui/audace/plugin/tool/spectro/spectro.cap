@@ -1,13 +1,13 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.9 2007-01-01 11:51:54 robertdelmas Exp $
+# Mise a jour $Id: spectro.cap,v 1.10 2007-01-27 14:55:59 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

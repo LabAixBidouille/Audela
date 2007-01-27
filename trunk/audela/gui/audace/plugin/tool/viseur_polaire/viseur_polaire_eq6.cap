@@ -1,13 +1,13 @@
 #
 # Fichier : viseur_polaire_eq6.cap
-# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.5 2006-11-09 13:17:52 audelateam Exp $
+# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.6 2007-01-27 14:59:10 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

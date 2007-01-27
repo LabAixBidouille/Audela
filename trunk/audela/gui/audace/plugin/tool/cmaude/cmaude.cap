@@ -1,13 +1,13 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.17 2007-01-12 19:11:00 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.18 2007-01-27 14:37:55 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

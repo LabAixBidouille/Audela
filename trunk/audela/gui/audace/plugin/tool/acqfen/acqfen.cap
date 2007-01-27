@@ -1,13 +1,13 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.6 2006-12-04 13:45:25 audelateam Exp $
+# Mise a jour $Id: acqfen.cap,v 1.7 2007-01-27 14:26:56 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -29,7 +29,7 @@ set caption(acqfen,bin,4)              "4x4 Binning"
 set caption(acqfen,GO)                 "GO"
 set caption(acqfen,stop)               "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
 set caption(acqfen,fenreglfen)         "Setting Window for Windowed Acquisitions"
 set caption(acqfen,fenreglfen1)        "Nb of CCD Flushing before Each Acquisition"
 set caption(acqfen,fenreglfen11)       "Default"
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)               "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Fenêtre de réglages des acquisitions fenêtrées"
    set caption(acqfen,fenreglfen1)     "Nombre d'effacements du CCD avant chaque acquisition"
    set caption(acqfen,fenreglfen11)    "Par défaut"
@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Finestra per regolazioni acquisizione parziale"
    set caption(acqfen,fenreglfen1)     "Numero di cicli pulitura CCD prima di ogni esposizione"
    set caption(acqfen,fenreglfen11)    "Default"
@@ -209,7 +209,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Panel de ajustes para adqusicion de sub-cuadro"
    set caption(acqfen,fenreglfen1)     "Número de pasadas de limpieza del CCD"
    set caption(acqfen,fenreglfen11)    "Por defecto"
@@ -269,7 +269,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Anschaffungen"
    set caption(acqfen,fenreglfen1)     "CCD Löschung Zahl vor jede Anschaffung"
    set caption(acqfen,fenreglfen11)    "Mangel Wahl"
@@ -329,7 +329,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Janela de ajuste das aquisições em janela"
    set caption(acqfen,fenreglfen1)     "Número de vezes que o CCD deve ser apagado antes de cada aquisição"
    set caption(acqfen,fenreglfen11)    "Por defeito"
@@ -389,7 +389,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,GO)              "GO"
    set caption(acqfen,stop)            "STOP"
 
-#--- Textes réglages acquisitions série et continu   
+#--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Setting Window for Windowed Acquisitions"
    set caption(acqfen,fenreglfen1)     "Nb of CCD Flushing before Each Acquisition"
    set caption(acqfen,fenreglfen11)    "Default"

@@ -1,13 +1,13 @@
 #
 # Fichier : horloge_astro.cap
-# Mise a jour $Id: horloge_astro.cap,v 1.6 2006-11-10 13:21:50 audelateam Exp $
+# Mise a jour $Id: horloge_astro.cap,v 1.7 2007-01-27 14:45:48 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

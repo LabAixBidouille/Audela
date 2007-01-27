@@ -1,13 +1,13 @@
 #
 # Fichier : filtrage.cap
-# Mise a jour $Id: filtrage.cap,v 1.6 2006-12-04 13:22:10 audelateam Exp $
+# Mise a jour $Id: filtrage.cap,v 1.7 2007-01-27 14:43:45 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

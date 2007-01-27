@@ -1,13 +1,13 @@
 #
 # Fichier : photometry.cap
-# Mise a jour $Id: photometry.cap,v 1.8 2006-11-09 13:17:49 audelateam Exp $
+# Mise a jour $Id: photometry.cap,v 1.9 2007-01-27 14:49:10 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

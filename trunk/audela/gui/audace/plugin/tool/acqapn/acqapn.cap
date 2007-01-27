@@ -1,13 +1,13 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.6 2006-11-10 13:19:03 audelateam Exp $
+# Mise a jour $Id: acqapn.cap,v 1.7 2007-01-27 14:25:41 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

@@ -1,13 +1,13 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.12 2006-11-09 13:17:50 audelateam Exp $
+# Mise a jour $Id: scan.cap,v 1.13 2007-01-27 14:52:10 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -229,10 +229,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,nom_blanc)      "O nome do ficheiro não deve conter espaços."
    set caption(scan,mauvais_car)    "O nome do ficheiro contém caracteres inválidos."
    set caption(scan,saisir_indice)  "Introduza um valor de índice."
-   set caption(scan,indice_entier)  "Índice inválido (deve ser um inteiro positivo)." 
+   set caption(scan,indice_entier)  "Índice inválido (deve ser um inteiro positivo)."
    set caption(scan,confirmation)   "Confirmar"
    set caption(scan,fichier_existe) "Este ficheiro já existe no disco.\nTem a certeza que deseja guardar ?"
- 
+
    set caption(scan,attention)      "Atenção"
    set caption(scan,message)        "Esta ferramenta funciona apenas com uma camara Audine pilotada por\numa porta paralela, por uma AudiNet ou por uma EthernAude."
 

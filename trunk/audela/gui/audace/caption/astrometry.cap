@@ -1,13 +1,13 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.12 2007-01-12 19:09:12 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.13 2007-01-27 14:27:52 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

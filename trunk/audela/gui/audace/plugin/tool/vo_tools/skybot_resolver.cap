@@ -1,13 +1,13 @@
 #
 # Fichier : skybot_resolver.cap
-# Mise a jour $Id: skybot_resolver.cap,v 1.9 2006-11-09 13:17:52 audelateam Exp $
+# Mise a jour $Id: skybot_resolver.cap,v 1.10 2007-01-27 14:53:36 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -371,7 +371,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,calcul_ephemerides) "Cálculo das efemérides do alvo"
 
    set caption(resolver,titre_fov)          "Características do campo de visão :"
-   set caption(resolver,taille_champ)       "Dimensão do campo de visão :"	
+   set caption(resolver,taille_champ)       "Dimensão do campo de visão :"
    set caption(resolver,filter)             "Filtro sobre os erros de posição :"
 
    set caption(resolver,asteroide)          "Asteróides"

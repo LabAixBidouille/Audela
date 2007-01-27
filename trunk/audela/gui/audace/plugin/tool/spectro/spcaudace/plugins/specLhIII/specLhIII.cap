@@ -1,13 +1,13 @@
 #
 # Fichier : specLhIII.cap
-# Mise a jour $Id: specLhIII.cap,v 1.3 2007-01-02 16:11:13 robertdelmas Exp $
+# Mise a jour $Id: specLhIII.cap,v 1.4 2007-01-27 14:55:44 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -46,7 +46,7 @@ if { [string compare $langage "french"] == 0 } {
    set caption(specLhIII,spnoirs)               "Fichiers de noirs : "
    set caption(specLhIII,spPLUs)                "Fichiers de PLUs : "
    set caption(specLhIII,spnoirsPLUs)           "Fichiers de noirs des PLUs : "
-   set caption(specLhIII,spnoirsneon)           "Fichiers de noirs du néon : "   
+   set caption(specLhIII,spnoirsneon)           "Fichiers de noirs du néon : "
    set caption(specLhIII,spoffsets)             "Fichiers d'offset : "
    set caption(specLhIII,resfitbess)            ".fit (BeSS)"
    set caption(specLhIII,resfit)                ".fit"
@@ -63,7 +63,7 @@ if { [string compare $langage "french"] == 0 } {
    set caption(specLhIII,spequipt)              "Equipement"
    set caption(specLhIII,spsiteobs)             "Site d'observation"
    set caption(specLhIII,spobservers)           "Observateurs"
-   set caption(specLhIII,spfichcosme)           "Fichier cosmétique: " 
+   set caption(specLhIII,spfichcosme)           "Fichier cosmétique: "
    set caption(specLhIII,fichcalibneon)         "Raies du néon: "
    set caption(specLhIII,fichcalibatm)          "Raies de l'atmosphère : "
    set caption(specLhIII,spcrbreponse)          "Réponse instrumentale : "

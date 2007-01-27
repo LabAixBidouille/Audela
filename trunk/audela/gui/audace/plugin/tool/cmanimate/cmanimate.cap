@@ -1,13 +1,13 @@
 #
 # Fichier : cmanimate.cap
-# Mise a jour $Id: cmanimate.cap,v 1.6 2006-11-09 13:17:48 audelateam Exp $
+# Mise a jour $Id: cmanimate.cap,v 1.7 2007-01-27 14:37:37 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

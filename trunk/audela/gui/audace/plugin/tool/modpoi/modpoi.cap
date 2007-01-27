@@ -1,13 +1,13 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.12 2007-01-12 19:13:56 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.13 2007-01-27 14:46:52 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -926,7 +926,7 @@ telescope keypad buttons:"
    set caption(modpoi,wiz4,prev)             "<< Back"
    set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
    set caption(modpoi,wiz4,comment_auto)     "Automatic centering in progress..."
- 
+
    set caption(modpoi,wiz5,title)            "Aiming Model: Results of Computations"
    set caption(modpoi,wiz5,title1)           "Aiming Model: Edit Aiming Model"
 

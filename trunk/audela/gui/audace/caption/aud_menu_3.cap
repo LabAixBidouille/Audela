@@ -1,13 +1,13 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.8 2007-01-12 19:09:47 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.9 2007-01-27 14:28:40 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

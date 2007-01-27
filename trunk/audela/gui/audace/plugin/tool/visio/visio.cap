@@ -1,13 +1,13 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.6 2006-12-04 13:48:14 audelateam Exp $
+# Mise a jour $Id: visio.cap,v 1.7 2007-01-27 14:59:51 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -38,7 +38,7 @@ set caption(visio,aide)                   "Help"
 set caption(visio,ok)                     "OK"
 set caption(visio,quitter)                "Exit"
 
-#--- Textes fenêtres renommer série  
+#--- Textes fenêtres renommer série
 set caption(visio,renommer2)              "Renaming the current series"
 set caption(visio,oldserie)               "Current Name:"
 set caption(visio,newserie)               "New Name:"
@@ -92,18 +92,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,aide)                "Aide"
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Quitter"
-   
-   #--- Textes fenêtres renommer série  
+
+   #--- Textes fenêtres renommer série
    set caption(visio,renommer2)           "Renommer la série courante"
    set caption(visio,oldserie)            "Nom actuel :"
    set caption(visio,newserie)            "Nouveau nom :"
    set caption(visio,confirmrenom)        "Le nom proposé existe déjà. Les deux séries seront réindexées.\nVoulez-vous poursuivre ?"
-   
+
    #--- Textes fenêtre supprimer série
    set caption(visio,oui)                 "Oui"
    set caption(visio,non)                 "Non"
    set caption(visio,confirmsuppr)        "Confirmer la suppression de la série courante ?"
-   
+
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)           "ZIP"
    set caption(visio,feninidisket)        "Sauvegarde zip sur disquette"
@@ -147,13 +147,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,aide)                "Aiuto"
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Esci"
-   
-   #--- Textes fenêtres renommer série  
+
+   #--- Textes fenêtres renommer série
    set caption(visio,renommer2)           "Rinominare la serie corrente"
    set caption(visio,oldserie)            "Nome attuale:"
    set caption(visio,newserie)            "Nuovo nome:"
    set caption(visio,confirmrenom)        "Il nome proposto esiste gia'. Le due serie saranno reindicizzate.\nVolete continuare ?"
-   
+
    #--- Textes fenêtre supprimer série
    set caption(visio,oui)                 "Si"
    set caption(visio,non)                 "No"
@@ -203,7 +203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Salir"
 
-   #--- Textes fenêtres renommer série  
+   #--- Textes fenêtres renommer série
    set caption(visio,renommer2)           "Renombrar la serie actual"
    set caption(visio,oldserie)            "Nombre actual:"
    set caption(visio,newserie)            "Nombre nuevo:"
@@ -213,7 +213,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,oui)                 "Sí"
    set caption(visio,non)                 "No"
    set caption(visio,confirmsuppr)        "Confirma que quire borrar la serie actual?"
-      
+
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "ZIP"
    set caption(visio,feninidisket)        "Guardair zip a disquete"
@@ -263,12 +263,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,oldserie)            "Jetzigen Namen:"
    set caption(visio,newserie)            "Neuen Namen:"
    set caption(visio,confirmrenom)        "Der vorgelegten Namen existiert schon. Die zwei Sätzen werden wiederindexiert.\nVollen sie weiterführen ?"
-   
+
    #--- Textes fenêtre supprimer série
    set caption(visio,oui)                 "Ja"
    set caption(visio,non)                 "Nein"
    set caption(visio,confirmsuppr)        "Die jetzigen Reihe Abschaffung bestätigen ?"
-   
+
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "ZIP"
    set caption(visio,feninidisket)        "Auf Diskette Zip SIcherung"
@@ -312,20 +312,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,aide)                "Ajuda"
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Sair"
-   
-   #--- Textes fenêtres renommer série  
+
+   #--- Textes fenêtres renommer série
    set caption(visio,renommer2)           "Mudar o nome da série actual"
    set caption(visio,oldserie)            "Nome actual :"
    set caption(visio,newserie)            "Novo nome :"
    set caption(visio,confirmrenom)        "O nome escolhido já existe. As duas séries serão indexadas de novo.\nDeseja continuar ?"
-   
+
    #--- Textes fenêtre supprimer série
    set caption(visio,oui)                 "Sim"
    set caption(visio,non)                 "Não"
    set caption(visio,confirmsuppr)        "Tem a certeza que deseja eliminar a série actual ?"
-   
+
    #--- Textes fenêtre copie ZIP
-   set caption(visio,zip)           	"ZIP"
+   set caption(visio,zip)                 "ZIP"
    set caption(visio,feninidisket)        "Guardar zip em disquete"
    set caption(visio,fenfulldisket)       "Cópia terminada para a disquete n°"
    set caption(visio,fenfulldisket1)      ""
@@ -368,7 +368,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Exit"
 
-   #--- Textes fenêtres renommer série  
+   #--- Textes fenêtres renommer série
    set caption(visio,renommer2)           "Renaming the current series"
    set caption(visio,oldserie)            "Current Name:"
    set caption(visio,newserie)            "New Name:"

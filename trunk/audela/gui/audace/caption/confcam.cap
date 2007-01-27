@@ -1,13 +1,13 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.26 2007-01-14 16:05:03 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.27 2007-01-27 14:38:31 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
