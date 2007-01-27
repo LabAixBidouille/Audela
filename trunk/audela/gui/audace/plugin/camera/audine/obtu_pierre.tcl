@@ -2,7 +2,7 @@
 # Fichier : obtu_pierre.tcl
 # Description : Permet le parametrage de l'obturateur a base de servo pour modelisme
 # Auteurs : Pierre Thierry et Robert DELMAS
-# Mise a jour $Id: obtu_pierre.tcl,v 1.3 2006-06-20 19:19:28 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.tcl,v 1.4 2007-01-27 15:18:31 robertdelmas Exp $
 #
 
 namespace eval Obtu_Pierre {
@@ -25,13 +25,13 @@ namespace eval Obtu_Pierre {
       set confcolor(obtu,vala)    "$parametres(obtu,vala)"
       set confcolor(obtu,valb)    "$parametres(obtu,valb)"
       set confcolor(obtu,valc)    "$parametres(obtu,valc)"
-      set confcolor(obtu,vald)    "0" 
+      set confcolor(obtu,vald)    "0"
       set confcolor(obtu,vale)    "$parametres(obtu,vale)"
       set confcolor(obtu,valt)    "$parametres(obtu,valt)"
       set confcolor(obtu,valflag) "$parametres(obtu,valflag)"
 
       #--- Creation de la fenetre de configuration
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -44,7 +44,7 @@ namespace eval Obtu_Pierre {
       global audace
       global confcolor
 
-      if { $confcolor(obtu,vald) == "1" } { 
+      if { $confcolor(obtu,vald) == "1" } {
          catch {
             cam$audace(camNo) obtupierre $confcolor(obtu,vala) $confcolor(obtu,valb) $confcolor(obtu,valc) \
                $confcolor(obtu,vald) $confcolor(obtu,vale) $confcolor(obtu,valt) $confcolor(obtu,valflag)
@@ -54,7 +54,7 @@ namespace eval Obtu_Pierre {
             cam$audace(camNo) obtupierre $confcolor(obtu,valb) $confcolor(obtu,valb) $confcolor(obtu,valb) \
                $confcolor(obtu,vald) $confcolor(obtu,vale) $confcolor(obtu,valt) $confcolor(obtu,valflag)
          }
-      } elseif { $confcolor(obtu,vald) == "3" } { 
+      } elseif { $confcolor(obtu,vald) == "3" } {
          catch {
             cam$audace(camNo) obtupierre $confcolor(obtu,vala) $confcolor(obtu,vala) $confcolor(obtu,vala) \
                $confcolor(obtu,vald) $confcolor(obtu,vale) $confcolor(obtu,valt) $confcolor(obtu,valflag)
@@ -126,8 +126,8 @@ namespace eval Obtu_Pierre {
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
-            foreach { a b } [ array get parametres ] { 
-               puts $fichier "set parametres($a) \"$b\"" 
+            foreach { a b } [ array get parametres ] {
+               puts $fichier "set parametres($a) \"$b\""
          }
             close $fichier
          }
@@ -160,11 +160,11 @@ namespace eval Obtu_Pierre {
       }
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.cap ]\""
+      source [ file join $audace(rep_plugin) camera audine obtu_pierre.cap ]
 
-      #--- Cree la fenetre $This de niveau le plus haut 
-      toplevel $This -class Toplevel 
-      wm geometry $This +450+100 
+      #--- Cree la fenetre $This de niveau le plus haut
+      toplevel $This -class toplevel
+      wm geometry $This +450+100
       wm resizable $This 0 0
       wm title $This $caption(obtu_pierre,title)
 
@@ -182,9 +182,9 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,title_pth)"
          pack $This.frame0.lab \
             -in $This.frame0 -side top -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.frame1 \
          -borderwidth 0 -cursor arrow
       pack $This.frame1 \
@@ -192,8 +192,8 @@ namespace eval Obtu_Pierre {
 
          radiobutton $This.frame1.rad1 -anchor nw -highlightthickness 0 -text "$caption(obtu_pierre,synchro)" \
             -value 1 -variable confcolor(obtu,vald) -padx 0 -pady 0 \
-            -command { 
-               if { $confcolor(obtu,vald) == "1" } { 
+            -command {
+               if { $confcolor(obtu,vald) == "1" } {
                   $::Obtu_Pierre::This.frame2.ent configure -state normal
                   $::Obtu_Pierre::This.frame3.ent configure -state normal
                   $::Obtu_Pierre::This.frame4.ent configure -state normal
@@ -203,10 +203,10 @@ namespace eval Obtu_Pierre {
                }
             }
          pack $This.frame1.rad1 -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
          radiobutton $This.frame1.rad2 -anchor nw -highlightthickness 0 -text "$caption(obtu_pierre,ouvert)" \
             -value 2 -variable confcolor(obtu,vald) -padx 0 -pady 0 \
-            -command { 
+            -command {
                if { $confcolor(obtu,vald) == "2" } {
                   $::Obtu_Pierre::This.frame2.ent configure -state disabled
                   $::Obtu_Pierre::This.frame3.ent configure -state normal
@@ -217,11 +217,11 @@ namespace eval Obtu_Pierre {
                }
             }
          pack $This.frame1.rad2 -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
          radiobutton $This.frame1.rad3 -anchor nw -highlightthickness 0 -text "$caption(obtu_pierre,ferme)" \
             -value 3 -variable confcolor(obtu,vald) -padx 0 -pady 0 \
-            -command { 
-               if { $confcolor(obtu,vald) == "3" } { 
+            -command {
+               if { $confcolor(obtu,vald) == "3" } {
                   $::Obtu_Pierre::This.frame2.ent configure -state normal
                   $::Obtu_Pierre::This.frame3.ent configure -state disabled
                   $::Obtu_Pierre::This.frame4.ent configure -state disabled
@@ -231,9 +231,9 @@ namespace eval Obtu_Pierre {
                }
             }
          pack $This.frame1.rad3 -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.frame2 \
          -borderwidth 0 -cursor arrow
       pack $This.frame2 \
@@ -244,16 +244,16 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,a)"
          pack $This.frame2.lab \
             -in $This.frame2 -side left -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
          #--- Cree l'entry
          entry $This.frame2.ent \
             -textvariable confcolor(obtu,vala) -state disabled
          pack $This.frame2.ent \
             -in $This.frame2 -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.frame3 \
          -borderwidth 0 -cursor arrow
       pack $This.frame3 \
@@ -264,16 +264,16 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,b)"
          pack $This.frame3.lab \
             -in $This.frame3 -side left -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
          #--- Cree l'entry
          entry $This.frame3.ent \
             -textvariable confcolor(obtu,valb) -state disabled
          pack $This.frame3.ent \
             -in $This.frame3 -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.frame4 \
          -borderwidth 0 -cursor arrow
       pack $This.frame4 \
@@ -284,16 +284,16 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,c)"
          pack $This.frame4.lab \
             -in $This.frame4 -side left -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
          #--- Cree l'entry
          entry $This.frame4.ent \
             -textvariable confcolor(obtu,valc) -state disabled
          pack $This.frame4.ent \
             -in $This.frame4 -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.frame5 \
          -borderwidth 0 -cursor arrow
       pack $This.frame5 \
@@ -304,16 +304,16 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,e)"
          pack $This.frame5.lab \
             -in $This.frame5 -side left -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
          #--- Cree l'entry
          entry $This.frame5.ent \
             -textvariable confcolor(obtu,vale) -width 50
          pack $This.frame5.ent \
             -in $This.frame5 -side left -anchor center -expand 1 \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.framet \
          -borderwidth 0 -cursor arrow
       pack $This.framet \
@@ -324,16 +324,16 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,t)"
          pack $This.framet.lab \
             -in $This.framet -side left -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
          #--- Cree l'entry
          entry $This.framet.ent \
             -textvariable confcolor(obtu,valt)
          pack $This.framet.ent \
             -in $This.framet -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.frameflag \
          -borderwidth 0 -cursor arrow
       pack $This.frameflag \
@@ -344,40 +344,40 @@ namespace eval Obtu_Pierre {
             -text "$caption(obtu_pierre,flag)"
          pack $This.frameflag.lab \
             -in $This.frameflag -side left -anchor center \
-            -padx 3 -pady 3  
+            -padx 3 -pady 3
 
          #--- Cree l'entry
          entry $This.frameflag.ent \
             -textvariable confcolor(obtu,valflag)
          pack $This.frameflag.ent \
             -in $This.frameflag -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3  
+            -padx 10 -pady 3
 
-      #--- Cree un frame 
+      #--- Cree un frame
       frame $This.button \
          -borderwidth 0 -cursor arrow
       pack $This.button \
          -in $This -anchor center -side bottom -expand 0 -fill x
 
-         #--- Cree le bouton 'Valider ces valeurs' 
+         #--- Cree le bouton 'Valider ces valeurs'
          button $This.button.but_valid \
             -text "$caption(obtu_pierre,valider)" -borderwidth 2 \
-            -command { ::Obtu_Pierre::valider }  
-         if { $confcolor(obtu,vald) != "0" } {   
+            -command { ::Obtu_Pierre::valider }
+         if { $confcolor(obtu,vald) != "0" } {
             pack $This.button.but_valid \
                -in $This.button -side left -anchor center \
                -padx 30 -pady 10 -ipadx 5 -ipady 5
-         }  
+         }
 
-         #--- Cree le bouton 'Fermer' 
+         #--- Cree le bouton 'Fermer'
          button $This.button.but_fermer \
             -text "$caption(obtu_pierre,fermer)" -borderwidth 2 \
-            -command { ::Obtu_Pierre::fermer }  
+            -command { ::Obtu_Pierre::fermer }
          pack $This.button.but_fermer \
             -in $This.button -side right -anchor center \
             -padx 30 -pady 10 -ipadx 5 -ipady 5
 
-      #--- Detruit la fenetre avec la croix en haut a droite 
+      #--- Detruit la fenetre avec la croix en haut a droite
       bind $This <Destroy> { ::Obtu_Pierre::fermer }
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

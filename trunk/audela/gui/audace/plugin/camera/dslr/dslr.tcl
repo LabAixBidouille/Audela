@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.6 2006-10-15 15:58:28 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.7 2007-01-27 15:15:19 robertdelmas Exp $
 #
 
 namespace eval cameraDSLR {
@@ -12,7 +12,7 @@ namespace eval cameraDSLR {
       global conf
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.cap ]\""
+      source [ file join $audace(rep_plugin) camera dslr dslr.cap ]
 
       #--- Initialisation de la position de la fenetre
       if { ! [ info exists conf(dslr,telecharge_mode) ] } { set conf(dslr,telecharge_mode) "2" }
@@ -62,7 +62,7 @@ namespace eval cameraDSLR {
       radiobutton $audace(base).telecharge_image.rad1 -anchor nw -highlightthickness 1 \
         -padx 0 -pady 0 -state normal \
         -text "$caption(dslr,pas_telecharger)" -value 1 -variable conf(dslr,telecharge_mode) \
-        -command "::cameraDSLR::changerSelectionTelechargementAPN $visuNo" 
+        -command "::cameraDSLR::changerSelectionTelechargementAPN $visuNo"
       pack $audace(base).telecharge_image.rad1 -anchor w -expand 1 -fill none \
         -side top -padx 30 -pady 5
       radiobutton $audace(base).telecharge_image.rad2 -anchor nw -highlightthickness 0 \

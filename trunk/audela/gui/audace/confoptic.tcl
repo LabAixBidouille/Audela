@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.12 2006-12-28 16:26:42 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.13 2007-01-27 15:11:43 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -11,12 +11,12 @@ namespace eval ::confOptic {
    #  init { }
    #     Initialise les captions et les variables de
    #     configuration de chaque systeme optique
-   #  
+   #
    #------------------------------------------------------------
    proc init { } {
       global audace
 
-      uplevel #0 "source \"[ file join $audace(rep_caption) confoptic.cap ]\""
+      source [ file join $audace(rep_caption) confoptic.cap ]
       initConf
    }
 
@@ -24,7 +24,7 @@ namespace eval ::confOptic {
    #  run { }
    #     Cree la fenetre de choix et de configuration des
    #     systemes optiques associes aux cameras A, B et C
-   #  
+   #
    #------------------------------------------------------------
    proc run { visuNo } {
       variable This
@@ -44,7 +44,7 @@ namespace eval ::confOptic {
    #  initConf { }
    #     Initialise les parametres de chaque systeme optique
    #     dans le tableau conf()
-   #  
+   #
    #------------------------------------------------------------
    proc initConf { } {
       variable widget
@@ -220,7 +220,7 @@ namespace eval ::confOptic {
    #     Fonction appellee lors de l'appui sur le bouton 'OK'
    #     pour appliquer la configuration et fermer la fenetre
    #     de reglage des systemes optiques
-   #  
+   #
    #------------------------------------------------------------
    proc ok { visuNo } {
       variable This
@@ -238,7 +238,7 @@ namespace eval ::confOptic {
    #     Fonction appellee lors de l'appui sur le bouton
    #     'Appliquer' pour memoriser et appliquer la
    #     configuration
-   #  
+   #
    #------------------------------------------------------------
    proc appliquer { } {
       variable This
@@ -257,7 +257,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  showHelp { }
    #     Aide
-   #  
+   #
    #------------------------------------------------------------
    proc afficherAide { } {
       variable This
@@ -277,7 +277,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  fermer { }
    #     Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   #  
+   #
    #------------------------------------------------------------
    proc fermer { visuNo } {
       variable This
@@ -299,7 +299,7 @@ namespace eval ::confOptic {
    #  recup_position { }
    #     Permet de recuperer et de sauvegarder la position
    #     de la fenetre de configuration des systemes optiques
-   #  
+   #
    #------------------------------------------------------------
    proc recup_position { } {
       variable This
@@ -317,7 +317,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  createDialog { }
    #     Creation de la boite qui va accueillir les onglets
-   #  
+   #
    #------------------------------------------------------------
    proc createDialog { visuNo } {
       variable This
@@ -391,7 +391,7 @@ namespace eval ::confOptic {
    #  select [ cam_item ]
    #     Selectionne un onglet en passant le nom de la
    #     camera (A, B ou C)
-   #  
+   #
    #------------------------------------------------------------
    proc select { { cam_item A } } {
       variable This
@@ -408,7 +408,7 @@ namespace eval ::confOptic {
    #  confToWidget { }
    #     Copie les parametres du tableau conf() dans les
    #     variables des widgets
-   #  
+   #
    #------------------------------------------------------------
    proc confToWidget { } {
       variable widget
@@ -460,7 +460,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  widgetToConf { }
    #     Copie les valeurs des widgets dans le tableau conf()
-   #  
+   #
    #------------------------------------------------------------
    proc widgetToConf { } {
       variable private
@@ -631,7 +631,7 @@ namespace eval ::confOptic {
    #  cbCommand_A { }
    #     (appelee par la combobox a chaque changement de selection)
    #     Affiche les valeurs dans les widgets pour la camera A
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc cbCommand_A { cb } {
@@ -658,7 +658,7 @@ namespace eval ::confOptic {
    #  cbCommand_B { }
    #     (appelee par la combobox a chaque changement de selection)
    #     Affiche les valeurs dans les widgets pour la camera B
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc cbCommand_B { cb } {
@@ -685,7 +685,7 @@ namespace eval ::confOptic {
    #  cbCommand_C { }
    #     (appelee par la combobox a chaque changement de selection)
    #     Affiche les valeurs dans les widgets pour la camera C
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc cbCommand_C { cb } {
@@ -711,7 +711,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  fillConfigPage1 { }
    #     Fenetre de configuration de la camera CCD A
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc fillConfigPage1 { nn } {
@@ -924,7 +924,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  fillConfigPage2 { }
    #     Fenetre de configuration de la camera CCD B
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc fillConfigPage2 { nn } {
@@ -1137,7 +1137,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  fillConfigPage3 { }
    #     Fenetre de configuration de la camera CCD C
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc fillConfigPage3 { nn } {
@@ -1354,7 +1354,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  MAJ_Binning { }
    #     Affichage des binnings disponibles selon les cameras
-   #  
+   #
    #------------------------------------------------------------
 
    proc MAJ_Binning { cam_item frm { varname "" } { arrayindex "" } { operation "" } } {
@@ -1390,7 +1390,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  Impact_Binning { }
    #     Prise en compte du binning choisi
-   #  
+   #
    #------------------------------------------------------------
    proc Impact_Binning { cam_item frm } {
       variable widget
@@ -1423,7 +1423,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  Calculette { }
    #     Calcule les differents parametres du systeme optique
-   #  
+   #
    #------------------------------------------------------------
    proc Calculette { cam_item frm } {
       variable widget
@@ -1485,7 +1485,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  MAJ_Conf_Camera { }
    #     Mise a jour des parametres de la camera CCD
-   #  
+   #
    #------------------------------------------------------------
    proc MAJ_Conf_Camera { cam_item frm } {
       variable widget

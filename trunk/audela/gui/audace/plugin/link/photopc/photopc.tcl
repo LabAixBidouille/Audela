@@ -2,7 +2,7 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: photopc.tcl,v 1.3 2006-09-28 19:52:32 michelpujol Exp $
+# Mise a jour $Id: photopc.tcl,v 1.4 2007-01-27 15:16:32 robertdelmas Exp $
 #
 
 package provide photopc 1.0
@@ -23,7 +23,7 @@ package provide photopc 1.0
 #     isReady           : informe de l'etat de fonctionnement du driver
 #
 # Procedures specifiques a ce driver :
-#     
+#
 
 namespace eval photopc {
 }
@@ -31,7 +31,7 @@ namespace eval photopc {
 #------------------------------------------------------------
 #  configureDriver
 #     configure le driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::photopc::configureDriver { } {
@@ -46,7 +46,7 @@ proc ::photopc::configureDriver { } {
 #------------------------------------------------------------
 #  confToWidget
 #     copie les parametres du tableau conf() dans les variables des widgets
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::photopc::confToWidget { } {
@@ -57,8 +57,8 @@ proc ::photopc::confToWidget { } {
 
 #------------------------------------------------------------
 #  create
-#     demarre la liaison 
-#  
+#     demarre la liaison
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::photopc::create { linkLabel deviceId usage comment } {
@@ -69,7 +69,7 @@ proc ::photopc::create { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 #  delete
 #     arrete la liaison et libere les ressources occupees
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::photopc::delete { linkLabel deviceId usage } {
@@ -78,9 +78,9 @@ proc ::photopc::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-#  fillConfigPage 
+#  fillConfigPage
 #     fenetre de configuration du driver
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::photopc::fillConfigPage { frm } {
@@ -92,9 +92,9 @@ proc ::photopc::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType 
+#  getDriverType
 #     retourne le type de driver
-#  
+#
 #  return "link"
 #------------------------------------------------------------
 proc ::photopc::getDriverType { } {
@@ -104,7 +104,7 @@ proc ::photopc::getDriverType { } {
 #------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
-#  
+#
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::photopc::getHelp { } {
@@ -114,7 +114,7 @@ proc ::photopc::getHelp { } {
 #------------------------------------------------------------
 #  getLabel
 #     retourne le label du driver
-#  
+#
 #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
 proc ::photopc::getLabel { } {
@@ -124,10 +124,10 @@ proc ::photopc::getLabel { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex 
-#   retourne l'index du link
-#   
-#   retourne une chaine vide si le link n'existe pas
+# getLinkIndex
+#    retourne l'index du link
+#
+#  retourne une chaine vide si le link n'existe pas
 #
 #------------------------------------------------------------
 proc ::photopc::getLinkIndex { linkLabel } {
@@ -142,7 +142,7 @@ proc ::photopc::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels 
+# getLinkLabels
 #    retourne le label du seul link
 #
 #------------------------------------------------------------
@@ -167,14 +167,14 @@ proc ::photopc::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#  
+#
 #  return namespace name
 #------------------------------------------------------------
 proc ::photopc::init { } {
    variable private
 
    #--- Charge le fichier caption
-   uplevel #0  "source \"[ file join $::audace(rep_plugin) link photopc photopc.cap ]\""
+   source [ file join $::audace(rep_plugin) link photopc photopc.cap ]
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "photopc"
@@ -191,7 +191,7 @@ proc ::photopc::init { } {
 #------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::photopc::initConf { } {
@@ -201,9 +201,9 @@ proc ::photopc::initConf { } {
 }
 
 #------------------------------------------------------------
-#  isReady 
+#  isReady
 #     informe de l'etat de fonctionnement du driver
-#  
+#
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------
 proc ::photopc::isReady { } {
@@ -213,7 +213,7 @@ proc ::photopc::isReady { } {
 #------------------------------------------------------------
 #  selectConfigItem
 #     selectionne un link dans la fenetre de configuration
-#  
+#
 #  return nothing
 #------------------------------------------------------------
 proc ::photopc::selectConfigLink { linkLabel } {
@@ -225,7 +225,7 @@ proc ::photopc::selectConfigLink { linkLabel } {
 #------------------------------------------------------------
 #  widgetToConf
 #     copie les variables des widgets dans le tableau conf()
-#  
+#
 #  return rien
 #------------------------------------------------------------
 proc ::photopc::widgetToConf { } {

@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.6 2007-01-20 10:40:44 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.7 2007-01-27 15:09:04 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -29,7 +29,7 @@ namespace eval cataGoto {
       if { ! [ info exists conf(cataObjetUtilisateur,position) ] } { set conf(cataObjetUtilisateur,position) "+140+40" }
 
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_caption) catagoto.cap ]\""
+      source [ file join $audace(rep_caption) catagoto.cap ]
 
    }
 
@@ -320,51 +320,51 @@ namespace eval cataGoto {
       }
 
       #--- Preparation des affichages nom, magnitude, AD et Dec.
-      switch -exact -- $confGotoPlanete(planete) { 
-      0 { set confGotoPlanete(choisi) "$caption(catagoto,soleil)" 
+      switch -exact -- $confGotoPlanete(planete) {
+      0 { set confGotoPlanete(choisi) "$caption(catagoto,soleil)"
            set planete_choisie [mc_ephem {Sun} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      1 { set confGotoPlanete(choisi) "$caption(catagoto,lune)" 
+      1 { set confGotoPlanete(choisi) "$caption(catagoto,lune)"
            set planete_choisie [mc_ephem {Moon} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE} -topo $audace(posobs,observateur,gps)]
         }
-      2 { set confGotoPlanete(choisi) "$caption(catagoto,mercure)" 
+      2 { set confGotoPlanete(choisi) "$caption(catagoto,mercure)"
            set planete_choisie [mc_ephem {Mercury} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE ELONG} -topo $audace(posobs,observateur,gps)]
         }
-      3 { set confGotoPlanete(choisi) "$caption(catagoto,venus)" 
+      3 { set confGotoPlanete(choisi) "$caption(catagoto,venus)"
            set planete_choisie [mc_ephem {Venus} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE ELONG} -topo $audace(posobs,observateur,gps)]
         }
-      4 { set confGotoPlanete(choisi) "$caption(catagoto,mars)" 
+      4 { set confGotoPlanete(choisi) "$caption(catagoto,mars)"
            set planete_choisie [mc_ephem {Mars} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      5 { set confGotoPlanete(choisi) "$caption(catagoto,jupiter)" 
+      5 { set confGotoPlanete(choisi) "$caption(catagoto,jupiter)"
            set planete_choisie [mc_ephem {Jupiter} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      6 { set confGotoPlanete(choisi) "$caption(catagoto,saturne)" 
+      6 { set confGotoPlanete(choisi) "$caption(catagoto,saturne)"
            set planete_choisie [mc_ephem {Saturn} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      7 { set confGotoPlanete(choisi) "$caption(catagoto,uranus)" 
+      7 { set confGotoPlanete(choisi) "$caption(catagoto,uranus)"
            set planete_choisie [mc_ephem {Uranus} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      8 { set confGotoPlanete(choisi) "$caption(catagoto,neptune)" 
+      8 { set confGotoPlanete(choisi) "$caption(catagoto,neptune)"
            set planete_choisie [mc_ephem {Neptune} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      9 { set confGotoPlanete(choisi) "$caption(catagoto,pluton)" 
+      9 { set confGotoPlanete(choisi) "$caption(catagoto,pluton)"
            set planete_choisie [mc_ephem {Pluto} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
       }
       $audace(base).gotoPlanete.frame2.frame3.lab3a configure -text "$confGotoPlanete(choisi)"
 
-      #--- Extraction du nom pour l'affichage de la carte de champ 
+      #--- Extraction du nom pour l'affichage de la carte de champ
       set cataGoto(carte,nom_objet) "[lindex [lindex $planete_choisie 0] 0]"
       if { $cataGoto(carte,nom_objet) == "Sun" } {
          set cataGoto(carte,zoom_objet) "7"
@@ -442,7 +442,7 @@ namespace eval cataGoto {
          uplevel #0 { pack $audace(base).gotoPlanete.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x }
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).gotoPlanete
-      }    
+      }
       $audace(base).gotoPlanete.frame2.frame6.labURLRed7a configure \
          -text "$catalogue(planete_hauteur)$caption(catagoto,degre)" -fg $fg
       #--- Azimut
@@ -662,7 +662,7 @@ namespace eval cataGoto {
          $audace(base).cataAsteroide.frame1.rechercher configure -relief raised -state normal
       }
 
-      #--- Extraction du nom pour l'affichage de la carte de champ 
+      #--- Extraction du nom pour l'affichage de la carte de champ
       set cataGoto(carte,nom_objet)  "$catalogue(asteroide_choisi)"
       set cataGoto(carte,zoom_objet) "8"
 
@@ -934,7 +934,7 @@ namespace eval cataGoto {
       global audace
       global catalogue
       global cataGoto
-      
+
       set cataGoto(carte,nom_objet) ""
       set cataGoto(carte,ad) ""
       set cataGoto(carte,dec) ""
@@ -955,7 +955,7 @@ namespace eval cataGoto {
       #--- Ferme le fichier des objets
       close $f
 
-      #--- Extraction du nom pour l'affichage de la carte de champ 
+      #--- Extraction du nom pour l'affichage de la carte de champ
       set cataGoto(carte,nom_objet) "[lindex $objet_choisi 0]"
       set cataGoto(carte,zoom_objet) "8"
 
@@ -1222,7 +1222,7 @@ namespace eval cataGoto {
          $audace(base).cataEtoile.frame2.frame4.lab5a configure -text "$catalogue(etoile_ad)"
          set catalogue(etoile_dec) "[lindex $thisstar 6]d[lindex $thisstar 7]m[lindex $thisstar 8]"
          $audace(base).cataEtoile.frame2.frame4.lab6a configure -text "$catalogue(etoile_dec)"
-         #--- Extraction des coordonnees pour l'affichage de la carte de champ 
+         #--- Extraction des coordonnees pour l'affichage de la carte de champ
          set cataGoto(carte,nom_objet) "#etoile#"
          set cataGoto(carte,ad) "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]s"
          set cataGoto(carte,dec) "[lindex $thisstar 6]d[lindex $thisstar 7]'[lindex $thisstar 8]"
@@ -1431,7 +1431,7 @@ namespace eval cataGoto {
                   set catalogue(validation) "2"
                   set catalogue(autre_catalogue) "2"
                   destroy $audace(base).cataObjetUtilisateur
-               } 
+               }
             uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame7.fermer -side right -padx 10 -pady 5 -ipady 5 -fill x }
          uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame7 -side bottom -fill both -expand 1 }
 
@@ -1608,7 +1608,7 @@ namespace eval cataGoto {
       #--- Rend le bouton fermer actif
       $audace(base).cataObjetUtilisateur.frame7.fermer configure -state normal
    }
-   
+
 }
 
 ::cataGoto::init

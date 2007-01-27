@@ -2,7 +2,7 @@
 # Fichier : testaudine.tcl
 # Description : Permet de faire les tests lors de la fabrication d'une Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: testaudine.tcl,v 1.4 2006-08-26 14:56:12 robertdelmas Exp $
+# Mise a jour $Id: testaudine.tcl,v 1.5 2007-01-27 15:18:12 robertdelmas Exp $
 #
 
 namespace eval testAudine {
@@ -18,7 +18,7 @@ namespace eval testAudine {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -51,9 +51,9 @@ namespace eval testAudine {
       }
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.cap ]\""
+      source [ file join $audace(rep_plugin) camera audine testaudine.cap ]
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(testaudine,titre)
       set posx_testAudine [ lindex [ split [ wm geometry $audace(base).confCam ] "+" ] 1 ]
@@ -66,7 +66,7 @@ namespace eval testAudine {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -110,9 +110,9 @@ namespace eval testAudine {
       label $This.lab4 -text "$caption(testaudine,oscillo)"
       pack $This.lab4 -in $This.frame6 -anchor center -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'Test' - Cycle de transfert Zone image / Registre horizontal 
+      #--- Cree le bouton 'Test' - Cycle de transfert Zone image / Registre horizontal
       button $This.but_test1 -text "$caption(testaudine,test1)" -width 8 -borderwidth 2 \
-         -command { cam$audace(camNo) test $conf(audine,test) } 
+         -command { cam$audace(camNo) test $conf(audine,test) }
       pack $This.but_test1 -in $This.frame7 -anchor center -side left -padx 10 -pady 5 -ipady 5
 
       #--- Zone a renseigner pour le nombre de cycles de transfert Zone image / Registre horizontal
@@ -124,9 +124,9 @@ namespace eval testAudine {
       label $This.lab5 -text "$caption(testaudine,text3)"
       pack $This.lab5 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
 
-      #--- Cree le bouton 'Test 2' - Cycle de lecture rapide 
+      #--- Cree le bouton 'Test 2' - Cycle de lecture rapide
       button $This.but_test2 -text "$caption(testaudine,test2)" -width 8 -borderwidth 2 \
-         -command { cam$audace(camNo) test2 $conf(audine,test2) } 
+         -command { cam$audace(camNo) test2 $conf(audine,test2) }
       pack $This.but_test2 -in $This.frame8 -anchor center -side left -padx 10 -pady 5 -ipady 5
 
       #--- Zone a renseigner pour le nombre de cycles de lecture rapide
@@ -138,9 +138,9 @@ namespace eval testAudine {
       label $This.lab6 -text "$caption(testaudine,text4)"
       pack $This.lab6 -in $This.frame8 -anchor center -side left -padx 5 -pady 5
 
-      #--- Cree le bouton 'Fermer' 
+      #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(testaudine,fermer)" -width 7 -borderwidth 2 \
-         -command { ::testAudine::fermer } 
+         -command { ::testAudine::fermer }
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active

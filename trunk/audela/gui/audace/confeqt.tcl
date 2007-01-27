@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.5 2006-06-20 17:25:25 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.6 2007-01-27 15:09:37 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -36,7 +36,7 @@ namespace eval ::confEqt {
       if { ! [ info exists conf(confEqt,position) ] } { set conf(confEqt,position) "+155+100" }
 
       #--- charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_caption) confeqt.cap ]\""
+      source [ file join $audace(rep_caption) confeqt.cap ]
 
       findDriver
 
@@ -60,8 +60,8 @@ namespace eval ::confEqt {
 
    #------------------------------------------------------------
    # run
-   # Affiche la fenetre de choix et de configuration 
-   # 
+   # Affiche la fenetre de choix et de configuration
+   #
    #------------------------------------------------------------
    proc run { } {
       variable private
@@ -76,7 +76,7 @@ namespace eval ::confEqt {
    #------------------------------------------------------------
    # ok
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-   # la configuration, et fermer la fenetre de reglage 
+   # la configuration, et fermer la fenetre de reglage
    #------------------------------------------------------------
    proc ok { } {
       variable private
@@ -107,7 +107,7 @@ namespace eval ::confEqt {
 
       #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ] 
+      set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
          set conf(confEqt) [lindex $private(namespacelist) $index]
       } else {
@@ -116,14 +116,14 @@ namespace eval ::confEqt {
 
       #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
       foreach name $private(namespacelist) {
-         set drivername [ $name\:\:widgetToConf ]    
+         set drivername [ $name\:\:widgetToConf ]
       }
 
       #--- Affichage d'un message d'alerte si necessaire
       ::confEqt::Connect_Equipement
 
       #--- je demarre le driver selectionne
-      configureDriver    
+      configureDriver
 
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -151,7 +151,7 @@ namespace eval ::confEqt {
 
       #--- je recupere le label de l'onglet selectionne
       set private(conf_confEqt) [Rnotebook:currentName $private(frm).usr.book ]
-      #--- je recupere le namespace correspondant au label  
+      #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
       set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
@@ -287,7 +287,7 @@ namespace eval ::confEqt {
       button $private(frm).cmd.aide -text "$caption(confeqt,aide)" -relief raised -state normal -width 8 \
          -command " ::confEqt::afficheAide "
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $private(frm).cmd -side top -fill x    
+      pack $private(frm).cmd -side top -fill x
 
       #---
       focus $private(frm)
@@ -309,7 +309,7 @@ namespace eval ::confEqt {
    proc select { { name "" } } {
       variable private
 
-      #--- je recupere le label correspondant au namespace  
+      #--- je recupere le label correspondant au namespace
       set index [ lsearch -exact $private(namespacelist) "$name" ]
       if { $index != -1 } {
          Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ]
@@ -329,20 +329,20 @@ namespace eval ::confEqt {
          return
       }
 
-      #--- je charge les drivers 
+      #--- je charge les drivers
       if { [llength $private(namespacelist)] <1 } {
-         findDriver   
+         findDriver
       }
 
-      #--- j'arrete le driver 
+      #--- j'arrete le driver
       catch { $conf(confEqt)\:\:stopDriver }
-      #--- je configure le driver 
+      #--- je configure le driver
       catch { $conf(confEqt)\:\:configureDriver }
    }
 
    #------------------------------------------------------------
    # stopDriver
-   #    arrete le driver selectionne 
+   #    arrete le driver selectionne
    #
    # return rien
    #------------------------------------------------------------
@@ -356,13 +356,13 @@ namespace eval ::confEqt {
 
    #------------------------------------------------------------
    # findDriver
-   # recherche les fichiers .tcl presents dans driverPattern 
+   # recherche les fichiers .tcl presents dans driverPattern
    #
-   # conditions : 
+   # conditions :
    #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
    #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
    #  - le driver doit avoir une procedure getlabel
-   # 
+   #
    # si le driver remplit les conditions
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
    #    sinon le fichier tcl est ignore car ce n'est pas un driver
@@ -370,7 +370,7 @@ namespace eval ::confEqt {
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
    proc findDriver { } {
-      variable private 
+      variable private
       global audace
       global caption
 
@@ -380,12 +380,12 @@ namespace eval ::confEqt {
 
       #--- chargement des differentes fenetres de configuration des drivers
       set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-      
+
       if { "$filelist" == "" } {
          #--- aucun fichier correct
          return 1
       }
-      
+
       #--- je recherche les drivers repondant au filtre driverPattern
       foreach fichier [glob $private(driverPattern)] {
          uplevel #0 "source $fichier"
@@ -393,11 +393,11 @@ namespace eval ::confEqt {
             set equipname [ file tail [ file dirname "$fichier" ] ]
             package require $equipname
             if { [$equipname\:\:getDriverType] == $private(driverType) } {
-               set driverlabel "[$equipname\:\:getLabel]" 
+               set driverlabel "[$equipname\:\:getLabel]"
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $equipname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#$caption(confeqt,equipement) $driverlabel v[package present $equipname]\n"                 
+               $audace(console)::affiche_prompt "#$caption(confeqt,equipement) $driverlabel v[package present $equipname]\n"
             }
          }
       }

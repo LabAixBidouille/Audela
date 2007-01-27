@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.5 2006-07-04 22:16:28 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.6 2007-01-27 15:24:06 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -10,7 +10,7 @@ namespace eval skybot_Statut {
    global voconf
 
    #--- Chargement des captions
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_statut.cap ]\""
+   source [ file join $audace(rep_plugin) tool vo_tools skybot_statut.cap ]
 
    #
    # skybot_Statut::run this

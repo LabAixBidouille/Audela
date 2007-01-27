@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.8 2006-10-07 10:27:17 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.9 2007-01-27 15:05:08 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -118,9 +118,9 @@ namespace eval AlAudine_NT {
       }
 
       #--- Chargement des captions
-      uplevel #0 "source \"[ file join $audace(rep_plugin) link ethernaude alaudine_nt.cap ]\""
+      source [ file join $audace(rep_plugin) link ethernaude alaudine_nt.cap ]
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(alaudine_nt,titre)
       wm geometry $This $confCam(alaudine_nt,position)
@@ -132,7 +132,7 @@ namespace eval AlAudine_NT {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1

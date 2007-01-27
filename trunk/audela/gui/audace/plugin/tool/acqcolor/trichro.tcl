@@ -2,21 +2,21 @@
 # Fichier : trichro.tcl
 # Description : Outil pour importer une trichromie
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: trichro.tcl,v 1.3 2006-06-20 20:37:46 robertdelmas Exp $
+# Mise a jour $Id: trichro.tcl,v 1.4 2007-01-27 15:23:25 robertdelmas Exp $
 #
 
 global audace caption conf infos
 
 #--- Chargement des captions
-uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqcolor trichro.cap ]\""
+source [ file join $audace(rep_plugin) tool acqcolor trichro.cap ]
 
 #--- Initialisation des variables
-set infos(image_r)   "$caption(trichro,interro)" 
-set infos(image_v)   "$caption(trichro,interro)" 
-set infos(image_b)   "$caption(trichro,interro)" 
-set infos(image_rvb) "$caption(trichro,interro)" 
+set infos(image_r)   "$caption(trichro,interro)"
+set infos(image_v)   "$caption(trichro,interro)"
+set infos(image_b)   "$caption(trichro,interro)"
+set infos(image_rvb) "$caption(trichro,interro)"
 
-#--- Cree la fenetre .test3 de niveau le plus haut 
+#--- Cree la fenetre .test3 de niveau le plus haut
 if [ winfo exists $audace(base).test3 ] {
    wm withdraw $audace(base).test3
    wm deiconify $audace(base).test3
@@ -24,7 +24,7 @@ if [ winfo exists $audace(base).test3 ] {
    return
 }
 toplevel $audace(base).test3 -class Toplevel
-wm geometry $audace(base).test3 +440+190 
+wm geometry $audace(base).test3 +440+190
 wm title $audace(base).test3 $caption(trichro,titre)
 
 #--- La nouvelle fenetre est active
@@ -36,14 +36,14 @@ frame $audace(base).test3.frame0 \
 pack $audace(base).test3.frame0 \
    -in $audace(base).test3 -anchor nw -side top -expand 0 -fill x
 
-   #--- Cree le label 'titre' 
+   #--- Cree le label 'titre'
    label $audace(base).test3.frame0.lab \
       -text "$caption(trichro,comment)"
    pack $audace(base).test3.frame0.lab \
       -in $audace(base).test3.frame0 -side top -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test3.frame1 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test3.frame1 \
@@ -76,9 +76,9 @@ pack $audace(base).test3.frame1 \
       -textvariable infos(dir) -width 45
    pack $audace(base).test3.frame1.ent \
       -in $audace(base).test3.frame1 -side left -anchor center -expand 1 \
-      -padx 10 -pady 3  
+      -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test3.frame2 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test3.frame2 \
@@ -109,9 +109,9 @@ pack $audace(base).test3.frame2 \
       -textvariable infos(image_r)
    pack $audace(base).test3.frame2.ent \
       -in $audace(base).test3.frame2 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3  
+      -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test3.frame3 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test3.frame3 \
@@ -142,11 +142,11 @@ pack $audace(base).test3.frame3 \
       -textvariable infos(image_v)
    pack $audace(base).test3.frame3.ent \
       -in $audace(base).test3.frame3 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3  
+      -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test3.frame4 \
-   -borderwidth 0 -cursor arrow 
+   -borderwidth 0 -cursor arrow
 pack $audace(base).test3.frame4 \
    -in $audace(base).test3 -anchor center -side top -expand 0 -fill x
 
@@ -175,9 +175,9 @@ pack $audace(base).test3.frame4 \
       -textvariable infos(image_b)
    pack $audace(base).test3.frame4.ent \
       -in $audace(base).test3.frame4 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3  
+      -padx 10 -pady 3
 
-#--- Cree un frame 
+#--- Cree un frame
 frame $audace(base).test3.frame5 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).test3.frame5 \
@@ -188,19 +188,19 @@ pack $audace(base).test3.frame5 \
       -text "$caption(trichro,nom_image)"
    pack $audace(base).test3.frame5.lab \
       -in $audace(base).test3.frame5 -side left -anchor center \
-      -padx 3 -pady 3  
+      -padx 3 -pady 3
 
    #--- Cree l'entry
    entry $audace(base).test3.frame5.ent \
       -textvariable infos(image_rvb)
    pack $audace(base).test3.frame5.ent \
       -in $audace(base).test3.frame5 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3  
+      -padx 10 -pady 3
 
-#--- Cree le bouton 'Validation' 
+#--- Cree le bouton 'Validation'
 button $audace(base).test3.but_valid \
    -text "$caption(trichro,executer)" -borderwidth 2 \
-   -command { 
+   -command {
       if { [ buf1001 imageready ] == "1" } {
          #--- Charge l'image dans 3 fichiers
          set infos(type_image) "couleur"
@@ -210,7 +210,7 @@ button $audace(base).test3.but_valid \
          rgb_load {$nomr$conf(extension,defaut)} {$nomv$conf(extension,defaut)} {$nomb$conf(extension,defaut)}
          #--- Affiche l'image
          set infos(type_image) "couleur"
-         testvisu 
+         testvisu
          #--- Sauve l'image dans un seul fichier
          set filename [ file join $infos(dir) $infos(image_rvb) ]
          rgb_save $filename$conf(extension,defaut)
@@ -219,10 +219,10 @@ button $audace(base).test3.but_valid \
    }
 pack $audace(base).test3.but_valid \
    -in $audace(base).test3 -side bottom -anchor center \
-   -padx 3 -pady 5 -ipadx 5 -ipady 3  
+   -padx 3 -pady 5 -ipadx 5 -ipady 3
 
-#--- Detruit la fenetre avec la croix en haut a droite 
-bind $audace(base).test3 <Destroy> { destroy $audace(base).test3 } 
+#--- Detruit la fenetre avec la croix en haut a droite
+bind $audace(base).test3 <Destroy> { destroy $audace(base).test3 }
 
 #--- Mise a jour dynamique des couleurs
 ::confColor::applyColor $audace(base).test3

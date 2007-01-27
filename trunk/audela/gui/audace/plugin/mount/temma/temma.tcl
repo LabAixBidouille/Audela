@@ -2,14 +2,14 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.5 2007-01-20 10:51:03 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.6 2007-01-27 15:21:26 robertdelmas Exp $
 #
 
 #
 # Renvoi l'etat des moteurs (non encore inclu dans la librairie)
 #    1 : Si les moteurs fonctionnent
 #    0 : Si les moteurs sont hors tension
-#   -1 : Si Temma n'est pas connecte 
+#   -1 : Si Temma n'est pas connecte
 #
 proc temma_get_motor { } {
    global audace
@@ -27,19 +27,19 @@ proc temma_get_motor { } {
       set resu "-1"
    }
    return $resu
-} 
+}
 
 namespace eval confTemmaMobile {
 
    #
    # confTemmaMobile::init (est lance automatiquement au chargement de ce fichier tcl)
-   # Initialise les variables caption(...) 
+   # Initialise les variables caption(...)
    #
    proc init { } {
       global audace
- 
+
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temma.cap ]\""
+      source [ file join $audace(rep_plugin) mount temma temma.cap ]
    }
 
    #
@@ -128,7 +128,7 @@ namespace eval confTemmaMobile {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(temma,para_mobile)
       set posx_temma_para_mobile [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
@@ -146,7 +146,7 @@ namespace eval confTemmaMobile {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -197,14 +197,14 @@ namespace eval confTemmaMobile {
       label $This.lab_2 -text "$caption(temma,para_mobile_dec)"
       pack $This.lab_2 -in $This.frame7 -anchor n -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'OK' 
+      #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(temma,ok)" -width 7 -borderwidth 2 \
-         -command { ::confTemmaMobile::ok } 
+         -command { ::confTemmaMobile::ok }
       pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Annuler' 
+      #--- Cree le bouton 'Annuler'
       button $This.but_cancel -text "$caption(temma,annuler)" -width 10 -borderwidth 2 \
-         -command { ::confTemmaMobile::fermer  } 
+         -command { ::confTemmaMobile::fermer }
       pack $This.but_cancel -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree la console texte d'aide

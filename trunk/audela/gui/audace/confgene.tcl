@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.17 2007-01-21 12:00:26 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.18 2007-01-27 15:09:57 robertdelmas Exp $
 #
 
 #
@@ -1084,10 +1084,10 @@ namespace eval confFichierIma {
       pack $This.frame2 -side top -fill x
 
       TitleFrame $This.frame3 -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_fits)"
-      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1 -padx 2
+      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1 -padx 2 -pady 2
 
       TitleFrame $This.frame4 -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_jpg)"
-      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1 -padx 2
+      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1 -padx 2 -pady 2
 
       frame $This.frame5 -borderwidth 0 -relief raised
       pack $This.frame5 -in [ $This.frame3 getframe ] -side top -fill both -expand 1

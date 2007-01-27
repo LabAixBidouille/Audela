@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.5 2006-10-30 18:15:35 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.6 2007-01-27 15:20:26 robertdelmas Exp $
 #
 
 package provide lx200pad 1.0
@@ -37,18 +37,18 @@ namespace eval ::lx200pad {
    #==============================================================
    # Procedures generiques de configuration des drivers
    #==============================================================
-   
+
    #------------------------------------------------------------
    #  init
    #     initialise le driver
-   #  
+   #
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
       global audace
 
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_plugin) pad lx200pad lx200pad.cap ]\""
+      source [ file join $audace(rep_plugin) pad lx200pad lx200pad.cap ]
 
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
@@ -62,7 +62,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  getDriverType
    #     retourne le type de driver
-   #  
+   #
    #  return "pad"
    #------------------------------------------------------------
    proc getDriverType { } {
@@ -72,7 +72,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le label du driver
-   #  
+   #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
@@ -84,7 +84,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  getHelp
    #     retourne la documentation du driver
-   #  
+   #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
@@ -93,9 +93,9 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  initConf 
+   #  initConf
    #     initialise les parametres dans le tableau conf()
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc initConf { } {
@@ -111,7 +111,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
-   #  
+   #
    #  return rien
    #
    #------------------------------------------------------------
@@ -126,7 +126,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  widgetToConf
    #     copie les variables des widgets dans le tableau conf()
-   #  
+   #
    #  return rien
    #
    #------------------------------------------------------------
@@ -141,7 +141,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  fillConfigPage
    #     fenetre de configuration du driver
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
@@ -163,7 +163,7 @@ namespace eval ::lx200pad {
       label $frm.labSize -text "$caption(lx200pad,pad_size)"
       pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
 
-      #--- Definition de la taille de la raquette 
+      #--- Definition de la taille de la raquette
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $frm.taille \
          -width 7          \
@@ -184,7 +184,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  configureDriver
    #     configure le driver
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc configureDriver { } {
@@ -198,7 +198,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  stopDriver
    #     arrete le driver et libere les ressources occupees
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc stopDriver { } {
@@ -226,7 +226,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  isReady
    #     informe de l'etat de fonctionnement du driver
-   #  
+   #
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
@@ -323,15 +323,15 @@ namespace eval ::lx200pad {
       label .lx200pad.display.ra \
          -font [ list {Courier} $geomlx200(fontsize20) $geomlx200(textthick) ] \
          -textvariable audace(telescope,getra) -bg $colorlx200(backdisp) \
-         -fg $colorlx200(textdisp) -relief flat -height 1 -width 12  
-      pack .lx200pad.display.ra -in .lx200pad.display  -anchor center  -pady 0 
-      
+         -fg $colorlx200(textdisp) -relief flat -height 1 -width 12
+      pack .lx200pad.display.ra -in .lx200pad.display -anchor center -pady 0
+
       #--- Label pour DEC
       label .lx200pad.display.dec \
          -font [ list {Courier} $geomlx200(fontsize20) $geomlx200(textthick) ] \
          -textvariable audace(telescope,getdec) -bg $colorlx200(backdisp) \
          -fg $colorlx200(textdisp) -relief flat -height 1 -width 12
-      pack .lx200pad.display.dec -in .lx200pad.display  -anchor center -pady 0  
+      pack .lx200pad.display.dec -in .lx200pad.display -anchor center -pady 0
 
       pack .lx200pad.display -in .lx200pad  -fill x -side top -pady $geomlx200(10pixels) -padx 12
 
@@ -485,7 +485,7 @@ namespace eval ::lx200pad {
       #--- Create the button 'E'
       frame .lx200pad.card.e \
          -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad) 
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.card.e \
          -in .lx200pad.card -side right
       #--- Button-design
@@ -571,7 +571,7 @@ namespace eval ::lx200pad {
       #--- Create the light 'slew'
       frame .lx200pad.789.slew \
          -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $color(green) 
+         -borderwidth 0 -relief flat -bg $color(green)
       pack .lx200pad.789.slew \
          -in .lx200pad.789 -side left -fill y
       canvas .lx200pad.789.slew.canv1 \
@@ -699,7 +699,7 @@ namespace eval ::lx200pad {
       #--- Create the light 'find'
       frame .lx200pad.456.find \
          -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $color(red) 
+         -borderwidth 0 -relief flat -bg $color(red)
       pack .lx200pad.456.find \
          -in .lx200pad.456 -side left -fill y
       canvas .lx200pad.456.find.canv1 \
@@ -1100,17 +1100,17 @@ namespace eval ::lx200pad {
          bind $zonelx200(e).lab <ButtonPress-1>   { ::telescope::move e }
          bind $zonelx200(e) <ButtonRelease-1>     { ::telescope::stop e }
          bind $zonelx200(e).lab <ButtonRelease-1> { ::telescope::stop e }
-         
+
          bind $zonelx200(w) <ButtonPress-1>       { ::telescope::move w }
          bind $zonelx200(w).lab <ButtonPress-1>   { ::telescope::move w }
          bind $zonelx200(w) <ButtonRelease-1>     { ::telescope::stop w }
          bind $zonelx200(w).lab <ButtonRelease-1> { ::telescope::stop w }
-         
+
          bind $zonelx200(s) <ButtonPress-1>       { ::telescope::move s }
          bind $zonelx200(s).lab <ButtonPress-1>   { ::telescope::move s }
          bind $zonelx200(s) <ButtonRelease-1>     { ::telescope::stop s }
          bind $zonelx200(s).lab <ButtonRelease-1> { ::telescope::stop s }
-         
+
          bind $zonelx200(n) <ButtonPress-1>       { ::telescope::move n }
          bind $zonelx200(n).lab <ButtonPress-1>   { ::telescope::move n }
          bind $zonelx200(n) <ButtonRelease-1>     { ::telescope::stop n }
@@ -1158,7 +1158,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    #  startSurveilleSpeed
    #   lance ::lx200pad::surveilleSpeed si ce n'est pas deja fait
-   #    
+   #
    #  return rien
    #------------------------------------------------------------
    proc startSurveilleSpeed { } {
@@ -1180,7 +1180,7 @@ namespace eval ::lx200pad {
    #   surveille les modifications de audace(telescope,speed) en tache de fond
    #   car les canvas qui sont mis a jour en fonction audace(telescope,speed)
    #   ne possedent pas le parametre -textvariable pour se mettre a jour automatiquement
-   #    
+   #
    #  return rien
    #------------------------------------------------------------
    proc surveilleSpeed { } {

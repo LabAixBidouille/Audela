@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.4 2006-06-20 18:31:54 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.5 2007-01-27 15:19:07 robertdelmas Exp $
 #
 
 package provide guide 1.0
@@ -24,7 +24,7 @@ package provide guide 1.0
 # Procedures specifiques a ce driver :
 #     gotoObject        : affiche la carte de champ de l'objet
 #     launch            : lance GUIDE
-#    
+#
 namespace eval guide {
    global audace
 
@@ -35,7 +35,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  init
    #     initialise le driver
-   #  
+   #
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
@@ -47,17 +47,17 @@ namespace eval guide {
          return ""
       } else {
          #--- Je charge les variables d'environnement
-         initConf   
+         initConf
          #--- Charge le fichier caption
-         uplevel #0 "source \"[ file join $audace(rep_plugin) chart guide guide.cap ]\" "
+         source [ file join $audace(rep_plugin) chart guide guide.cap ]
          return [ namespace current ]
       }
    }
 
    #------------------------------------------------------------
-   #  getDriverType 
+   #  getDriverType
    #     retourne le type de driver
-   #  
+   #
    #  return "catalog"
    #------------------------------------------------------------
    proc getDriverType { } {
@@ -67,7 +67,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le label du driver
-   #  
+   #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
@@ -79,7 +79,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  getHelp
    #     retourne la documentation du driver
-   #  
+   #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
@@ -88,9 +88,9 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  initConf 
+   #  initConf
    #     initialise les parametres dans le tableau conf()
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc initConf { } {
@@ -106,7 +106,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  Recherche_Fichier
    #     lancement de la recherche du fichier executable de guide
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc Recherche_Fichier { } {
@@ -124,7 +124,7 @@ namespace eval guide {
          set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
          set repertoire_2 [ string trimleft $repertoire_2 "{" ]
-         set repertoire_2 [ string trimright $repertoire_2 "}" ]  
+         set repertoire_2 [ string trimright $repertoire_2 "}" ]
          if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
             #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
             set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
@@ -154,7 +154,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc confToWidget { } {
@@ -169,7 +169,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  widgetToConf
    #     copie les variable des widgets dans le tableau conf()
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc widgetToConf { } {
@@ -184,7 +184,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  fillConfigPage
    #     fenetre de configuration du driver
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
@@ -193,10 +193,10 @@ namespace eval guide {
       global caption
       global color
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
-      
-      #--- J'initialise les valeurs 
+
+      #--- J'initialise les valeurs
       confToWidget
 
       #--- Creation des differents frames
@@ -265,7 +265,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  configureDriver
    #     configure le driver
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc configureDriver { } {
@@ -280,7 +280,7 @@ namespace eval guide {
    #------------------------------------------------------------
    #  stopDriver
    #     arrete le driver
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc stopDriver { } {
@@ -292,14 +292,14 @@ namespace eval guide {
    #------------------------------------------------------------
    #  isReady
    #     informe de l'etat de fonctionnement du driver
-   #  
+   #
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
 
       #--- Je teste si la librairie libgs.dll est chargee
       set erreur [ catch { gs_version } result ]
-      if { $erreur != "0"  || $result == "" } {
+      if { $erreur != "0" || $result == "" } {
          #--- La librairie libgs.dll est chargee
          set ready 1
       } else {
@@ -324,9 +324,9 @@ namespace eval guide {
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       global caption
-      
+
       set result "0"
-      
+
       #--- Je mets en forme dec pour GUIDE
       #--- Je remplace les unites d, m, s par \° \' \"
       set dec [ string map { m "\'" s "\"" } $dec ]
@@ -361,7 +361,6 @@ namespace eval guide {
                      gs_guide coord $ad $dec { J2000 }
                   }
                } msg ]
-                  
                if { $msg == "1" } {
                   set choix [ tk_messageBox -type ok -icon warning -title "$caption(guide,attention)" \
                      -message "$caption(guide,verification)" ]

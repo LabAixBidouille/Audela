@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.4 2006-10-16 16:49:15 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.5 2007-01-27 15:12:01 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -36,7 +36,7 @@ namespace eval ::confPad {
       if { ! [ info exists conf(confPad,position) ] } { set conf(confPad,position) "+155+100" }
 
       #--- charge le fichier caption
-      uplevel #0  "source \"[ file join $audace(rep_caption) confpad.cap ]\""
+      source [ file join $audace(rep_caption) confpad.cap ]
 
       findDriver
 
@@ -50,7 +50,7 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le titre de la fenetre
-   #  
+   #
    #  return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
@@ -62,7 +62,7 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    # run
    # Affiche la fenetre de choix et de configuration
-   # 
+   #
    #------------------------------------------------------------
    proc run { } {
       variable private
@@ -105,9 +105,9 @@ namespace eval ::confPad {
       #--- j'arrete la raquette precedente
       stopDriver
 
-      #--- je recupere le namespace correspondant au label  
+      #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ] 
+      set index [lsearch -exact $private(driverlist) $label ]
       if { $index != -1 } {
          set conf(confPad) [lindex $private(namespacelist) $index]
       } else {
@@ -214,7 +214,7 @@ namespace eval ::confPad {
       }
 
       #--- je mets a jour la liste des drivers
-      if { [findDriver] == 1 } { 
+      if { [findDriver] == 1 } {
          return 1
       }
 
@@ -296,7 +296,7 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    proc select { { name "" } } {
       variable private
- 
+
       #--- je recupere le label correspondant au namespace
       set index [ lsearch -exact $private(namespacelist) "$name" ]
       if { $index != -1 } {
@@ -317,7 +317,7 @@ namespace eval ::confPad {
          return
       }
 
-      #--- je charge les drivers 
+      #--- je charge les drivers
       if { [llength $private(namespacelist)] <1 } {
          findDriver
       }
@@ -332,7 +332,7 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    #  stopDriver
    #     arrete le driver selectionne
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc stopDriver { } {
@@ -347,11 +347,11 @@ namespace eval ::confPad {
    # findDriver
    # recherche les fichiers .tcl presents dans driverPattern
    #
-   # conditions : 
+   # conditions :
    #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
    #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
    #  - le driver doit avoir une procedure getlabel
-   # 
+   #
    # si le driver remplit les conditions
    #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
    # sinon le fichier tcl est ignore car ce n'est pas un driver
@@ -369,7 +369,7 @@ namespace eval ::confPad {
 
       #--- chargement des differentes fenetres de configuration des drivers
       set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-      
+
       if { "$filelist" == "" } {
          #--- aucun fichier correct
          return 1
@@ -378,7 +378,7 @@ namespace eval ::confPad {
       #--- je recherche les drivers repondant au filtre driverPattern
       foreach fichier [glob $private(driverPattern)] {
          uplevel #0 "source $fichier"
-         catch { 
+         catch {
             set padname [ file tail [ file dirname "$fichier" ] ]
             package require $padname
             if { [$padname\:\:getDriverType] == $private(driverType) } {
