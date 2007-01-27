@@ -1,13 +1,13 @@
 #
 # Fichier : obj_lune_2.cap
-# Mise a jour $Id: obj_lune_2.cap,v 1.5 2006-11-09 13:17:49 audelateam Exp $
+# Mise a jour $Id: obj_lune_2.cap,v 1.6 2007-01-27 14:47:57 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

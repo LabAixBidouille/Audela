@@ -1,13 +1,13 @@
 #
 # Fichier : compute_stellaire.cap
-# Mise a jour $Id: compute_stellaire.cap,v 1.5 2006-11-10 13:08:44 audelateam Exp $
+# Mise a jour $Id: compute_stellaire.cap,v 1.6 2007-01-27 14:38:12 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

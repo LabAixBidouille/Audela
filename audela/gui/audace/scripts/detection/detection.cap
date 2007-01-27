@@ -1,13 +1,13 @@
 #
 # Fichier : detection.cap
-# Mise a jour $Id: detection.cap,v 1.7 2006-12-04 13:49:52 audelateam Exp $
+# Mise a jour $Id: detection.cap,v 1.8 2007-01-27 14:41:47 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

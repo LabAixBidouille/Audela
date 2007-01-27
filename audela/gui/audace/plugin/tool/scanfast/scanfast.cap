@@ -1,13 +1,13 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.12 2007-01-21 12:00:45 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.13 2007-01-27 14:52:36 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -230,7 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Aviso"
    set caption(scanfast,message)          "Esta herramienta soli puede utilizarse con una Audine atacada\na traves de puerto paralelo, una interfaz AudiNet o EthernAude."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
+   set caption(scanfast,calcul_confirm)   "Ejecutar el cálculo de parametros?"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -286,7 +286,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Achtung"
    set caption(scanfast,message)          "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
+   set caption(scanfast,calcul_confirm)   "Wollen sie eine Parameter Rechnung laufen lassen?"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -342,7 +342,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Atenção"
    set caption(scanfast,message)          "Esta ferramenta funciona apenas com uma camara Audine pilotada por\numa porta paralela, por uma AudiNet ou por uma EthernAude."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
+   set caption(scanfast,calcul_confirm)   "Deseja iniciar um cálculo de parâmetros?"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

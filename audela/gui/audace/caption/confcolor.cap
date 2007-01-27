@@ -1,13 +1,13 @@
 #
 # Fichier : confcolor.cap
-# Mise a jour $Id: confcolor.cap,v 1.5 2006-10-20 17:40:26 robertdelmas Exp $
+# Mise a jour $Id: confcolor.cap,v 1.6 2007-01-27 14:39:02 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

@@ -1,13 +1,13 @@
 #
 # Fichier : fullscreen.cap
-# Mise a jour $Id: fullscreen.cap,v 1.9 2006-10-21 12:56:12 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.cap,v 1.10 2007-01-27 14:44:41 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

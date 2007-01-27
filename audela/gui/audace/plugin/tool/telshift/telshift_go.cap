@@ -1,13 +1,13 @@
 #
 # Fichier : telshift_go.cap
-# Mise a jour $Id: telshift_go.cap,v 1.5 2006-11-09 13:17:51 audelateam Exp $
+# Mise a jour $Id: telshift_go.cap,v 1.6 2007-01-27 14:57:47 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

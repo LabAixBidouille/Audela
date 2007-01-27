@@ -1,13 +1,13 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.13 2007-01-19 16:53:22 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.14 2007-01-27 14:55:15 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

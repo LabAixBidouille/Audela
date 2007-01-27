@@ -1,13 +1,13 @@
 #
 # Fichier : external.cap
-# Mise a jour $Id: external.cap,v 1.4 2006-10-31 17:28:22 robertdelmas Exp $
+# Mise a jour $Id: external.cap,v 1.5 2007-01-27 14:43:15 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

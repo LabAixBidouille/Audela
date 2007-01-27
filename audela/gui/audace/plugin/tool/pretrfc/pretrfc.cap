@@ -1,13 +1,13 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.6 2006-12-04 13:47:22 audelateam Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.7 2007-01-27 14:49:57 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -157,8 +157,7 @@ set caption(pretrfc,SoustrNoirPondStel)         "# Subtract dark frame from sky 
 set caption(pretrfc,LitTpsStellaire)            "# Read sky image exposure time:\n"
 set caption(pretrfc,OptBrutes)                  "# Dark frame subtraction through optimization:\n"
 set caption(pretrfc,filtrage)                   "# Filtering the offset image:\n"
-set caption(pretrfc,SoustrPrechBrut)            "# Subtract offset frame from sky images (offset frame\ 
-                                                   not included in the dark frame):\n"
+set caption(pretrfc,SoustrPrechBrut)            "# Subtract offset frame from sky images (offset frame not included in the dark frame):\n"
 set caption(pretrfc,ModeBrutSimple)             "# Calculation Mode: Simple Dark Frame subtraction\n"
 set caption(pretrfc,ModeBrutRapTps)             "# Calculation Mode: Exposure Time Ratio\n"
 set caption(pretrfc,ModeBrutOpt)                "# Calculation Mode: Dark Frame Subtraction through Otpimization\n"
@@ -318,8 +317,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,LitTpsStellaire)         "# Lit le temps d'exposition des images stellaires :\n"
    set caption(pretrfc,OptBrutes)               "# Soustraction du noir par optimisation :\n"
    set caption(pretrfc,filtrage)                "# Filtrage de l'image de précharge :\n"
-   set caption(pretrfc,SoustrPrechBrut)         "# Soustrait la précharge des images brutes (la précharge\
-                                                   n'est pas contenue dans le noir) :\n"
+   set caption(pretrfc,SoustrPrechBrut)         "# Soustrait la précharge des images brutes (la précharge n'est pas contenue dans le noir) :\n"
    set caption(pretrfc,ModeBrutSimple)          "# Mode de calcul : Soustraction simple du noir\n"
    set caption(pretrfc,ModeBrutRapTps)          "# Mode de calcul : Rapport des temps de pose\n"
    set caption(pretrfc,ModeBrutOpt)             "# Mode de calcul : Soustraction du noir par optimisation\n"
@@ -478,7 +476,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,LitTpsStellaire)         "# Lettura tempo esposizione dalle immagini stellari:\n"
    set caption(pretrfc,OptBrutes)               "# Sottrazione del dark per ottimizzazione:\n"
    set caption(pretrfc,filtrage)                "# Filtro su l'immagine di offset:\n"
-   set caption(pretrfc,SoustrPrechBrut)         "# Sottrazione dell'offset dalle immagini grezze (l'offset\ non e' contenuto nel dark):\n"
+   set caption(pretrfc,SoustrPrechBrut)         "# Sottrazione dell'offset dalle immagini grezze (l'offset non e' contenuto nel dark):\n"
    set caption(pretrfc,ModeBrutSimple)          "# Modalita' calcolo: Sottrazione semplice del dark\n"
    set caption(pretrfc,ModeBrutRapTps)          "# Modalita' calcolo: Rapporto fra i tempi di posa\n"
    set caption(pretrfc,ModeBrutOpt)             "# Modalita' calcolo: Sottrazione del dark di ottimizzazione\n"
@@ -638,8 +636,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,LitTpsStellaire)         "# Lee tiempos de exposición de las imágenes estelares:\n"
    set caption(pretrfc,OptBrutes)               "# Resta de dark por optimización:\n"
    set caption(pretrfc,filtrage)                "# Filtrado de la imágen de offset:\n"
-   set caption(pretrfc,SoustrPrechBrut)         "# Resta del offset a las imágenes brutas (el offset\
-                                                   no está contenido en el dark):\n"
+   set caption(pretrfc,SoustrPrechBrut)         "# Resta del offset a las imágenes brutas (el offset no está contenido en el dark):\n"
    set caption(pretrfc,ModeBrutSimple)          "# Modo de cálculo: Resta simple de dark\n"
    set caption(pretrfc,ModeBrutRapTps)          "# Modo de cálculo: Relación de tiempos de exposición\n"
    set caption(pretrfc,ModeBrutOpt)             "# Modo de cálculo: Resta de dark por optimización\n"
@@ -799,8 +796,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,LitTpsStellaire)         "# Lest die Bildleuchtung Zeit der Sternbilder:\n"
    set caption(pretrfc,OptBrutes)               "# Schwarz Abziehung bei Optimierung:\n"
    set caption(pretrfc,filtrage)                "# Vorladung Bild Optimierung:\n"
-   set caption(pretrfc,SoustrPrechBrut)         "# Abzieht die Vorladung der roh Bilder(die Vorladung\
-                                                   ist nicht im Schwarz enthalten):\n"
+   set caption(pretrfc,SoustrPrechBrut)         "# Abzieht die Vorladung der roh Bilder(die Vorladung ist nicht im Schwarz enthalten):\n"
    set caption(pretrfc,ModeBrutSimple)          "# Rechnung Modus: einfache Schwarz Abziehung\n"
    set caption(pretrfc,ModeBrutRapTps)          "# Rechnung Modus: Verhältnis der Bildleuchtung Zeiten\n"
    set caption(pretrfc,ModeBrutOpt)             "# Rechnung Modus: Schwarz Abziehung bei Optimierung\n"
@@ -960,8 +956,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,LitTpsStellaire)         "# Ler o tempo de exposição das imagens estelares :\n"
    set caption(pretrfc,OptBrutes)               "# Subtracção da imagem de dark frame por optimização :\n"
    set caption(pretrfc,filtrage)                "# Filtragem da imagem de pré-carregamento :\n"
-   set caption(pretrfc,SoustrPrechBrut)         "# Subtrair a pré-carga das imagens em bruto (a pré-carga\
-                                                   não está contida na drak-frame) :\n"
+   set caption(pretrfc,SoustrPrechBrut)         "# Subtrair a pré-carga das imagens em bruto (a pré-carga não está contida na drak-frame) :\n"
    set caption(pretrfc,ModeBrutSimple)          "# Modo de cálculo : Subtracção simples da imagem de dark frame\n"
    set caption(pretrfc,ModeBrutRapTps)          "# Modo de cálculo : Relação do tempo de exposição\n"
    set caption(pretrfc,ModeBrutOpt)             "# Modo de cálculo : Subtracção da imagem de dark frame por optimização\n"
@@ -1118,8 +1113,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,LitTpsStellaire)         "# Read sky image exposure time:\n"
    set caption(pretrfc,OptBrutes)               "# Dark frame subtraction through optimization:\n"
    set caption(pretrfc,filtrage)                "# Filtering the offset image:\n"
-   set caption(pretrfc,SoustrPrechBrut)         "# Subtract offset frame from sky images (offset frame\ 
-                                                   not included in the dark frame):\n"
+   set caption(pretrfc,SoustrPrechBrut)         "# Subtract offset frame from sky images (offset frame not included in the dark frame):\n"
    set caption(pretrfc,ModeBrutSimple)          "# Calculation Mode: Simple Dark Frame subtraction\n"
    set caption(pretrfc,ModeBrutRapTps)          "# Calculation Mode: Exposure Time Ratio\n"
    set caption(pretrfc,ModeBrutOpt)             "# Calculation Mode: Dark Frame Subtraction through Otpimization\n"

@@ -1,13 +1,13 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.7 2006-12-04 13:45:41 audelateam Exp $
+# Mise a jour $Id: animate.cap,v 1.8 2007-01-27 14:27:34 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

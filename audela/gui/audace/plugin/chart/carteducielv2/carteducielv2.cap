@@ -1,13 +1,13 @@
 #
 # Fichier : cartedicielv2.cap
-# Mise a jour $Id: carteducielv2.cap,v 1.5 2006-11-02 17:32:55 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.cap,v 1.6 2007-01-27 14:36:43 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

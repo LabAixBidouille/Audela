@@ -1,13 +1,13 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.7 2007-01-06 16:10:35 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.8 2007-01-27 15:00:17 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
@@ -166,7 +166,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,slideshow)             "Mostra"
    set caption(visio2,play_movie)            "Vedi filmato"
    set caption(visio2,help)                  "Aiuto..."
-   
+
    #--- messages
    set caption(visio2,dialog_title)          "Visualizzatore 2"
    set caption(visio2,delete_file_confirm)   "Siete sicuri di voler cancellare il file?"
@@ -319,7 +319,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,audace)                "Aud'ACE"
    set caption(visio2,title)                 "Visualizador 2"
 
-   #--- types de fichier	
+   #--- types de fichier
    set caption(visio2,parent_folder)         "Directório raiz"
    set caption(visio2,folder)                "Directório"
    set caption(visio2,image)                 "Imagem"

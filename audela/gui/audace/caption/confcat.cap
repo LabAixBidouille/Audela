@@ -1,13 +1,13 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.6 2006-11-10 13:08:44 audelateam Exp $
+# Mise a jour $Id: confcat.cap,v 1.7 2007-01-27 14:38:46 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

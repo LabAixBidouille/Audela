@@ -1,13 +1,13 @@
 #
 # Fichier : obtu_pierre.cap
-# Mise a jour $Id: obtu_pierre.cap,v 1.6 2006-12-04 13:51:23 audelateam Exp $
+# Mise a jour $Id: obtu_pierre.cap,v 1.7 2007-01-27 14:48:22 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 

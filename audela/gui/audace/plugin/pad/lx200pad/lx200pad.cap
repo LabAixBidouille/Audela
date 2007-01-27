@@ -1,13 +1,13 @@
 #
 # Fichier : lx200pad.cap
-# Mise a jour $Id: lx200pad.cap,v 1.5 2006-11-02 17:33:35 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.cap,v 1.6 2007-01-27 14:46:15 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 # *************** Version anglaise ****************************
 
