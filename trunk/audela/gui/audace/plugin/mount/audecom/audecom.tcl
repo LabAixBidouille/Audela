@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecom.tcl,v 1.4 2006-11-22 08:01:37 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.5 2007-01-27 15:06:24 robertdelmas Exp $
 #
 
 #
@@ -25,13 +25,13 @@ namespace eval confAudecomMot {
 
    #
    # confAudecomMot::init (est lance automatiquement au chargement de ce fichier tcl)
-   # Initialise les variables caption(...) 
+   # Initialise les variables caption(...)
    #
    proc init { } {
       global audace
- 
+
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecom.cap ]\""
+      source [ file join $audace(rep_plugin) mount audecom audecom.cap ]
    }
 
    #
@@ -43,7 +43,7 @@ namespace eval confAudecomMot {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -91,7 +91,7 @@ namespace eval confAudecomMot {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(audecom,para_mot)
       set posx_audecom_para_mot [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
@@ -111,7 +111,7 @@ namespace eval confAudecomMot {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill x
@@ -161,9 +161,9 @@ namespace eval confAudecomMot {
       frame $This.frame18 -borderwidth 0 -relief raised
       pack $This.frame18 -in $This.frame8 -side bottom -fill both -expand 1
 
-      #--- Cree le bouton 'Aide' du rattrapage des jeux en AD et Dec. 
+      #--- Cree le bouton 'Aide' du rattrapage des jeux en AD et Dec.
       button $This.but_aide0 -text "$caption(audecom,aide)" -height 3 -width 2 -borderwidth 2 \
-         -command { ::confAudecomMot::aide0 } 
+         -command { ::confAudecomMot::aide0 }
       pack $This.but_aide0 -in $This.frame5 -anchor center -side left -padx 10 -pady 0
 
       #--- De l'amplitude du rattrapage des jeux en A.D.
@@ -231,7 +231,7 @@ namespace eval confAudecomMot {
          pack $This.lab10 -in $This.frame10 -anchor center -side bottom -padx 0 -pady 11
       }
 
-      #--- Cree le bouton 'Aide' de la vitesse maxi en A.D. 
+      #--- Cree le bouton 'Aide' de la vitesse maxi en A.D.
       button $This.but_aide1 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomMot::aide1 }
       pack $This.but_aide1 -in $This.frame17 -anchor center -side left -padx 10 -pady 5
@@ -245,7 +245,7 @@ namespace eval confAudecomMot {
          pack $This.limp -in $This.frame17 -anchor center -side right -padx 5 -pady 5
       }
 
-      #--- Cree le bouton 'Aide' de la vitesse maxi en Dec. 
+      #--- Cree le bouton 'Aide' de la vitesse maxi en Dec.
       button $This.but_aide2 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomMot::aide2 }
       pack $This.but_aide2 -in $This.frame16 -anchor center -side left -padx 10 -pady 5
@@ -259,9 +259,9 @@ namespace eval confAudecomMot {
          pack $This.maxad -in $This.frame16 -anchor center -side right -padx 5 -pady 5
       }
 
-      #--- Cree le bouton 'Aide' de la largeur des impulsions 
+      #--- Cree le bouton 'Aide' de la largeur des impulsions
       button $This.but_aide3 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
-         -command { ::confAudecomMot::aide3 } 
+         -command { ::confAudecomMot::aide3 }
       pack $This.but_aide3 -in $This.frame15 -anchor center -side left -padx 10 -pady 5
 
       #--- De la largeur des impulsions
@@ -273,14 +273,14 @@ namespace eval confAudecomMot {
          pack $This.maxdec -in $This.frame15 -anchor center -side right -padx 5 -pady 5
       }
 
-      #--- Cree le bouton 'OK' 
+      #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(audecom,ok)" -width 7 -borderwidth 2 \
-         -command { ::confAudecomMot::ok } 
+         -command { ::confAudecomMot::ok }
       pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Annuler' 
+      #--- Cree le bouton 'Annuler'
       button $This.but_cancel -text "$caption(audecom,annuler)" -width 10 -borderwidth 2 \
-         -command { ::confAudecomMot::fermer  } 
+         -command { ::confAudecomMot::fermer }
       pack $This.but_cancel -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree la console texte d'aide
@@ -397,7 +397,7 @@ namespace eval confAudecomFoc {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -444,7 +444,7 @@ namespace eval confAudecomFoc {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(audecom,para_foc)
       set posx_audecom_para_foc [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
@@ -463,7 +463,7 @@ namespace eval confAudecomFoc {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -483,7 +483,7 @@ namespace eval confAudecomFoc {
       frame $This.frame8 -borderwidth 0 -relief raised
       pack $This.frame8 -in $This.frame1 -side top -fill both -expand 1
 
-      #--- Cree le bouton 'Aide' de la vitesse du moteur 
+      #--- Cree le bouton 'Aide' de la vitesse du moteur
       button $This.but_aide1 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomFoc::aide1 }
       pack $This.but_aide1 -in $This.frame3 -anchor center -side left -padx 10 -pady 5
@@ -502,7 +502,7 @@ namespace eval confAudecomFoc {
       label $This.lab2 -text "$caption(audecom,limite_vit)"
       pack $This.lab2 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
 
-      #--- Cree le bouton 'Aide' de la direction du mouvement 
+      #--- Cree le bouton 'Aide' de la direction du mouvement
       button $This.but_aide2 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomFoc::aide2 }
       pack $This.but_aide2 -in $This.frame4 -anchor center -side left -padx 10 -pady 5
@@ -557,14 +557,14 @@ namespace eval confAudecomFoc {
       label $This.lab5 -text "$caption(audecom,pas)"
       pack $This.lab5 -in $This.frame8 -anchor center -side left -padx 5 -pady 5
 
-      #--- Cree le bouton 'OK' 
+      #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(audecom,ok)" -width 7 -borderwidth 2 \
-         -command { ::confAudecomFoc::ok } 
+         -command { ::confAudecomFoc::ok }
       pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Annuler' 
+      #--- Cree le bouton 'Annuler'
       button $This.but_cancel -text "$caption(audecom,annuler)" -width 10 -borderwidth 2 \
-         -command { ::confAudecomFoc::fermer  } 
+         -command { ::confAudecomFoc::fermer }
       pack $This.but_cancel -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree la console texte d'aide
@@ -660,7 +660,7 @@ namespace eval confAudecomPec {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -708,7 +708,7 @@ namespace eval confAudecomPec {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(audecom,prog_pec)
       set posx_audecom_prog_pec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
@@ -744,7 +744,7 @@ namespace eval confAudecomPec {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -797,7 +797,7 @@ namespace eval confAudecomPec {
       frame $This.frame19 -borderwidth 0 -relief raised
       pack $This.frame19 -in $This.frame15 -side top -fill both -expand 1
 
-      #--- Cree le bouton 'Aide' de la vitesse de suivi nominale 
+      #--- Cree le bouton 'Aide' de la vitesse de suivi nominale
       button $This.but_aide1 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
          -command { ::confAudecomPec::aide1 }
       pack $This.but_aide1 -in $This.frame16 -anchor center -side left -padx 10 -pady 5
@@ -813,7 +813,7 @@ namespace eval confAudecomPec {
 
       #--- Cree le bouton 'Aide' de l'intervalle de choix de la vitesse de suivi
       button $This.but_aide2 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
-         -command { ::confAudecomPec::aide2 } 
+         -command { ::confAudecomPec::aide2 }
       pack $This.but_aide2 -in $This.frame17 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle les limites des corrections et la reduction
@@ -827,7 +827,7 @@ namespace eval confAudecomPec {
       label $This.lab4 -text "$caption(audecom,somme_ti)"
       pack $This.lab4 -in $This.frame6 -anchor center -side top -padx 10 -pady 9
 
-      label $This.labURL5 -text "$caption(audecom,non_calcul)" -relief groove -fg $color(blue) -width 13 
+      label $This.labURL5 -text "$caption(audecom,non_calcul)" -relief groove -fg $color(blue) -width 13
       pack $This.labURL5 -in $This.frame6 -anchor center -side top -padx 10 -pady 9
 
       #--- Cree la zone a renseigner t0
@@ -850,7 +850,7 @@ namespace eval confAudecomPec {
 
       #--- Cree la zone a renseigner t2
       label $This.lab8 -text "$caption(audecom,t2)"
-      pack $This.lab8 -in $This.frame7 -anchor center -side top -padx 5 -pady 5 
+      pack $This.lab8 -in $This.frame7 -anchor center -side top -padx 5 -pady 5
 
       catch {
          entry $This.t2 -textvariable confAudecomPec(audecom,t2) -width 5 -justify center
@@ -1012,12 +1012,12 @@ namespace eval confAudecomPec {
 
       #--- Cree le bouton 'Calculer' la moyenne de la somme de t1 a t19
       button $This.but_calculer -text "$caption(audecom,calculer)" -borderwidth 2 \
-         -command { ::confAudecomPec::moyti } 
+         -command { ::confAudecomPec::moyti }
       pack $This.but_calculer -in $This.frame18 -anchor center -side top -pady 9 -ipadx 10 -ipady 5 -expand true
 
       #--- Cree le bouton 'Aide' pour la periodicite du PEC
       button $This.but_aide3 -text "$caption(audecom,aide)" -width 2 -borderwidth 2 \
-         -command { ::confAudecomPec::aide3 } 
+         -command { ::confAudecomPec::aide3 }
       pack $This.but_aide3 -in $This.frame19 -anchor center -side left -padx 10 -pady 9
 
       #--- Cree la zone a renseigner (r)
@@ -1029,14 +1029,14 @@ namespace eval confAudecomPec {
          pack $This.rpec -in $This.frame19 -anchor center -side left -padx 10 -pady 9
       }
 
-      #--- Cree le bouton 'OK' 
+      #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(audecom,ok)" -width 7 -borderwidth 2 \
-         -command { ::confAudecomPec::ok } 
+         -command { ::confAudecomPec::ok }
       pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Annuler' 
+      #--- Cree le bouton 'Annuler'
       button $This.but_cancel -text "$caption(audecom,annuler)" -width 10 -borderwidth 2 \
-         -command { ::confAudecomPec::fermer  } 
+         -command { ::confAudecomPec::fermer }
       pack $This.but_cancel -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree la console texte d'aide
@@ -1097,9 +1097,9 @@ namespace eval confAudecomPec {
    global caption
 
    $This.lst1 delete 1.0 end
-   $This.lst1 insert end "\n"   
+   $This.lst1 insert end "\n"
    $This.lst1 insert end "$caption(audecom,prog_pec,aide31)\n"
-   $This.lst1 insert end "\n"   
+   $This.lst1 insert end "\n"
    $This.lst1 see insert
    }
 
@@ -1180,7 +1180,7 @@ namespace eval confAudecomPec {
    proc widgetToConf { } {
       global confTel
       global confAudecomPec
-   
+
       set confTel(audecom,t0)   $confAudecomPec(audecom,t0)
       set confTel(audecom,t1)   $confAudecomPec(audecom,t1)
       set confTel(audecom,t2)   $confAudecomPec(audecom,t2)
@@ -1226,7 +1226,7 @@ namespace eval confAudecomKing {
       set This $this
       set frm $frmm(Telscp3)
       $frm.ctlking configure -relief groove -state disabled
-      createDialog 
+      createDialog
       tkwait visibility $This
       Clock_et_King
    }
@@ -1271,7 +1271,7 @@ namespace eval confAudecomKing {
       set confgene(posobs,estouest) $conf(posobs,estouest)
       set confgene(posobs,long)     $conf(posobs,long)
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(audecom,ctrl_king)
       set posx_audecom_ctrl_king [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
@@ -1289,7 +1289,7 @@ namespace eval confAudecomKing {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -1460,9 +1460,9 @@ namespace eval confAudecomKing {
       label $This.lab32 -borderwidth 1 -textvariable "confAudecomKing(coefking)" -width 14 -anchor w
       pack $This.lab32 -in $This.frame14 -anchor w -side top -padx 5 -pady 1
 
-      #--- Cree le bouton 'Fermer' 
+      #--- Cree le bouton 'Fermer'
       button $This.but_close -text "$caption(audecom,fermer)" -width 7 -borderwidth 2 \
-         -command { ::confAudecomKing::fermer  } 
+         -command { ::confAudecomKing::fermer }
       pack $This.but_close -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
@@ -1599,7 +1599,7 @@ namespace eval confAudecomKing {
       } else {
          #--- Rien
       }
-   } 
+   }
 }
 
 #
@@ -1620,7 +1620,7 @@ namespace eval confAudecomMobile {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
       tkwait visibility $This
    }
 
@@ -1694,7 +1694,7 @@ namespace eval confAudecomMobile {
          return
       }
 
-      #--- Cree la fenetre $This de niveau le plus haut 
+      #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(audecom,para_mobile)
       set posx_audecom_para_mobile [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
@@ -1712,7 +1712,7 @@ namespace eval confAudecomMobile {
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief raised
-      pack $This.frame2 -side top -fill x 
+      pack $This.frame2 -side top -fill x
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -1783,14 +1783,14 @@ namespace eval confAudecomMobile {
       label $This.lab2 -text "$caption(audecom,para_mobile_dec)"
       pack $This.lab2 -in $This.frame9 -anchor n -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'OK' 
+      #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(audecom,ok)" -width 7 -borderwidth 2 \
-         -command { ::confAudecomMobile::ok } 
+         -command { ::confAudecomMobile::ok }
       pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
-      #--- Cree le bouton 'Annuler' 
+      #--- Cree le bouton 'Annuler'
       button $This.but_cancel -text "$caption(audecom,annuler)" -width 10 -borderwidth 2 \
-         -command { ::confAudecomMobile::fermer  } 
+         -command { ::confAudecomMobile::fermer }
       pack $This.but_cancel -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree la console texte d'aide

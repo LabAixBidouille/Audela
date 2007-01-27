@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.51 2007-01-21 11:58:37 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.52 2007-01-27 15:05:49 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -142,26 +142,26 @@ namespace eval ::audace {
       set audace(rep_doc_pdf) [ file join $audace(rep_audela) audace doc_pdf ]
 
       #--- Chargement des legendes et textes pour differentes langues
-      uplevel #0 "source \"[ file join $audace(rep_caption) caption.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_1.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_2.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_3.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_4.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_5.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_6.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_7.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) aud_menu_8.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) confgene.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) confgene_en-tete.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) confgene_touche.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) astrometry.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) bifsconv.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) compute_stellaire.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) divers.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) iris.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) fieldchart.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) filtrage.cap ]\""
-      uplevel #0 "source \"[ file join $audace(rep_caption) poly.cap ]\""
+      source [ file join $audace(rep_caption) caption.cap ]
+      source [ file join $audace(rep_caption) aud_menu_1.cap ]
+      source [ file join $audace(rep_caption) aud_menu_2.cap ]
+      source [ file join $audace(rep_caption) aud_menu_3.cap ]
+      source [ file join $audace(rep_caption) aud_menu_4.cap ]
+      source [ file join $audace(rep_caption) aud_menu_5.cap ]
+      source [ file join $audace(rep_caption) aud_menu_6.cap ]
+      source [ file join $audace(rep_caption) aud_menu_7.cap ]
+      source [ file join $audace(rep_caption) aud_menu_8.cap ]
+      source [ file join $audace(rep_caption) confgene.cap ]
+      source [ file join $audace(rep_caption) confgene_en-tete.cap ]
+      source [ file join $audace(rep_caption) confgene_touche.cap ]
+      source [ file join $audace(rep_caption) astrometry.cap ]
+      source [ file join $audace(rep_caption) bifsconv.cap ]
+      source [ file join $audace(rep_caption) compute_stellaire.cap ]
+      source [ file join $audace(rep_caption) divers.cap ]
+      source [ file join $audace(rep_caption) iris.cap ]
+      source [ file join $audace(rep_caption) fieldchart.cap ]
+      source [ file join $audace(rep_caption) filtrage.cap ]
+      source [ file join $audace(rep_caption) poly.cap ]
 
       #--- Creation de la console
       ::console::create
@@ -459,7 +459,7 @@ namespace eval ::audace {
       if {$ipmask!=$ipmaskhost} {
          set ipmask $ipmaskhost
       }
-      if {($ipnum==$ipnumhost)||($ipnum=="")} {
+      if { ( $ipnum == $ipnumhost ) || ( $ipnum == "" ) } {
          set ipnum [expr $ipnumhost+10]
          if {$ipnum>255} {
             set ipnum [expr $ipnumhost-10]
@@ -1322,7 +1322,7 @@ proc Scrolled_Listbox { f args } {
 }
 
 proc Scroll_Set { scrollbar geoCmd offset size } {
-   if {$offset != 0.0 || $size != 1.0 } {
+   if { $offset != 0.0 || $size != 1.0 } {
       eval $geoCmd
    }
    $scrollbar set $offset $size
@@ -1341,7 +1341,7 @@ proc save_cursor { } {
             #--- Le catch permet de traiter le cas des fenetres qui n'ont pas l'option -cursor
             #--- en les ignorant (exemple BWidget)
             set cursor [lindex [$w configure -cursor] 4]
-            if {[winfo toplevel $w] == $w || $cursor != ""} {
+            if { [ winfo toplevel $w ] == $w || $cursor != "" } {
                lappend busy [list $w $cursor]
             }
          }

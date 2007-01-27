@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.53 2007-01-20 10:41:36 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.54 2007-01-27 15:06:52 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -18,7 +18,7 @@ namespace eval ::confCam {
       global caption
 
       #--- Charge le fichier caption
-      uplevel #0 "source \"[ file join $audace(rep_caption) confcam.cap ]\""
+      source [ file join $audace(rep_caption) confcam.cap ]
 
       #--- initConf
       if { ! [ info exists conf(camera,A,camName) ] } { set conf(camera,A,camName) "" }
@@ -2689,7 +2689,7 @@ namespace eval ::confCam {
             ::confCam::ConfDSLR
             ::confLink::run ::confCam(dslr,port) { gphoto2 photopc } \
                "- $caption(confcam,acquisition) - $caption(confcam,dslr)"
-         } 
+         }
       pack $frm.configure -in $frm.frame1 -side left -pady 10 -ipadx 10 -ipady 1
 
       #--- Choix du port ou de la liaison
@@ -4462,7 +4462,7 @@ namespace eval ::confCam {
                      cam$camNo shuttertype audine reverse
                   } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine)" } {
                      cam$camNo shuttertype audine
-                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_i2c)" } { 
+                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_i2c)" } {
                      cam$camNo shuttertype audine
                   } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_thierry)" } {
                      set confcolor(obtu_pierre) "1"
