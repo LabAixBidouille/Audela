@@ -1,13 +1,13 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.8 2007-01-26 05:17:35 alainklotz Exp $
+# Mise a jour $Id: calaphot.cap,v 1.9 2007-01-27 15:47:33 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global texte_photo
+global texte_photo langage
 
 # *************** Version anglaise ****************************
 
