@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.15 2007-01-27 12:35:38 alainklotz Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.16 2007-01-27 16:00:18 robertdelmas Exp $
 #
 # offset  value
 # offset2  in out const number ?first_index? ?tt_options?
@@ -591,10 +591,10 @@ proc subsky2 {args} {
    set back_kernel [lindex $args 3]
    set back_threshold [lindex $args 4]
    if {$back_threshold<0} {
-	   set back_threshold 0
+      set back_threshold 0
    }
    if {$back_threshold>1} {
-	   set back_threshold 1
+      set back_threshold 1
    }
    set first 1
    set options ""
@@ -623,14 +623,14 @@ proc subsky {args} {
       error "Usage: subsky back_kernel back_threshold ?tt_options?"
       return $error;
    }
-   # --- decode la ligne de commande source audace/surchaud.tcl ; subsky2 ic a 2 20 0.20 40
+   # --- decode la ligne de commande source audace/surchaud.tcl ; subsky ic a 2 20 0.20 40
    set back_kernel [lindex $args 0]
    set back_threshold [lindex $args 1]
    if {$back_threshold<0} {
-	   set back_threshold 0
+      set back_threshold 0
    }
    if {$back_threshold>1} {
-	   set back_threshold 1
+      set back_threshold 1
    }
    set options ""
    if {$argc>=3} {
@@ -658,14 +658,14 @@ proc window2 {args} {
    set x2 [lindex $box 2]
    set y2 [lindex $box 3]
    if {$x2<$x1} {
-	   set dummy $x1
-	   set x1 $x2
-	   set x2 $dummy
+      set dummy $x1
+      set x1 $x2
+      set x2 $dummy
    }
    if {$y2<$y1} {
-	   set dummy $y1
-	   set y1 $y2
-	   set y2 $dummy
+      set dummy $y1
+      set y1 $y2
+      set y2 $dummy
    }
    set first 1
    set options ""
