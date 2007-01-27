@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.4 2006-07-04 22:17:07 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.5 2007-01-27 15:17:49 robertdelmas Exp $
 #
 
 package provide vo_tools 1.0
@@ -80,7 +80,7 @@ proc VO_ToolsBuildIF { This } {
 
       pack $This.fra2 -side top -fill x
 
-      #--- Frame des services SkyBoT 
+      #--- Frame des services SkyBoT
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de recherche d'objets du Systeme Solaire dans le champ
