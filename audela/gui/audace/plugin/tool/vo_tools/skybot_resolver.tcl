@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.10 2006-07-04 22:35:55 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.11 2007-01-28 09:30:43 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -12,7 +12,7 @@ namespace eval skybot_Resolver {
    package require xml
 
    #--- Chargement des captions
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_resolver.cap ]\""
+   source [ file join $audace(rep_plugin) tool vo_tools skybot_resolver.cap ]
 
    #
    # skybot_Resolver::run this
@@ -144,7 +144,7 @@ namespace eval skybot_Resolver {
    #
    # skybot_Resolver::Extract_Sesame_Data
    # Extraction des donnees dans la reponse XML de Sesame
-   # 
+   #
     proc Extract_Sesame_Data { xml } {
 
       set ok(name) 0
@@ -607,7 +607,7 @@ namespace eval skybot_Resolver {
       global voconf
 
       #--- Quelques raccourcis utiles
-      set tbl $frame.tbl      
+      set tbl $frame.tbl
       set popupTbl $frame.popupTbl
       set menu $frame.menu
 
@@ -623,7 +623,7 @@ namespace eval skybot_Resolver {
       $frame.vsb configure -command [ list $tbl yview ]
       $frame.hsb configure -command [ list $tbl xview ]
 
-      #--- Menu pop-up associe a la table 
+      #--- Menu pop-up associe a la table
       menu $popupTbl -tearoff no
       #--- Acces au mode Goto
       $popupTbl add command -label $caption(resolver,goto) -state disabled
@@ -634,7 +634,7 @@ namespace eval skybot_Resolver {
          -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_3 }
 
       #--- Gestion des evenements
-      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ] 
+      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
       bind $tbl <<ListboxSelect>>          [ list ::skybot_Resolver::cmdButton1Click $This.frame5 ]
    }
 
@@ -659,7 +659,7 @@ namespace eval skybot_Resolver {
       global ok
 
       #--- Quelques raccourcis utiles
-      set tbl $frame.tbl      
+      set tbl $frame.tbl
       set popupTbl $frame.popupTbl
 
       #--- Selection d'une ligne
@@ -691,7 +691,7 @@ namespace eval skybot_Resolver {
          #--- Activation de l'acces au mode Goto
          $popupTbl entryconfigure $caption(resolver,goto) -state normal \
             -command { if { [ ::tel::list ] == "" } {
-                          ::confTel::run 
+                          ::confTel::run
                           tkwait window $audace(base).confTel
                        }
                        ::skybot_Resolver::affiche_Outil_Tlscp
@@ -793,7 +793,7 @@ namespace eval skybot_Resolver {
             $::skybot_Resolver::This configure -cursor arrow
             return "failed"
          }
-	 return 0
+         return 0
 
       } else {
 
@@ -863,7 +863,7 @@ namespace eval skybot_Resolver {
          set erreur [ catch { vo_sesame $voconf(nom_objet) "xi" $voconf(sesame_server) } response ]
          if { $erreur == "0" } {
             set rep [ Extract_Sesame_Data $response ]
-            if { $rep != "1" } { 
+            if { $rep != "1" } {
                set ok(sesame) 1
                set voconf(sesame) $rep
                set voconf(type) "SIMBAD"
@@ -915,7 +915,7 @@ namespace eval skybot_Resolver {
             set voconf(liste) $caption(resolver,msg_noresolver)
          } else {
             #--- au moins un resolver a ete invoque mais:
-            if { $ok(sesame) == "2" && $ok(skybot) == "2" } { 
+            if { $ok(sesame) == "2" && $ok(skybot) == "2" } {
                #--- les 2 resolvers n'ont pas trouve
                set erreur -2
                set voconf(liste) [ concat "$caption(resolver,msg_objnotfound)$voconf(sesame_server)" ]
@@ -937,8 +937,8 @@ namespace eval skybot_Resolver {
       #--- Affichage des resultats
       if { $erreur == "0" } {
          #--- Les resultats se presentent sous la forme d'une chaine de caractere, chaque ligne
-	 #--- etant separees par un ';' et chaque donnees par un '|'
-	  set voconf(liste) [split $voconf(liste) ";"]
+         #--- etant separees par un ';' et chaque donnees par un '|'
+         set voconf(liste) [split $voconf(liste) ";"]
 
          #--- Extraction, suppression des virgules et creation des colonnes du tableau
          set liste_titres [ lindex $voconf(liste) 0 ]
@@ -1131,10 +1131,10 @@ namespace eval skybot_Resolver {
       #--- Affichage des resultats
       if { $erreur == "0" } {
          #--- Les resultats se presentent sous la forme d'une chaine de caractere, chaque ligne
-	 #--- etant separees par un ';' et chaque donnees par un '|'
-	 set voconf(liste) [ lrange [ split $voconf(liste) ";" ] 0 end-1 ]
+         #--- etant separees par un ';' et chaque donnees par un '|'
+         set voconf(liste) [ lrange [ split $voconf(liste) ";" ] 0 end-1 ]
 
-	 #--- Extraction, suppression des virgules et creation des colonnes du tableau
+         #--- Extraction, suppression des virgules et creation des colonnes du tableau
          set liste_titres [ lindex $voconf(liste) 0 ]
          regsub -all "," $liste_titres "" liste_titres
          for { set i 1 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
@@ -1146,7 +1146,7 @@ namespace eval skybot_Resolver {
             $::skybot_Resolver::This.frame5.tbl columnconfigure 1 -sortmode dictionary
          }
          #--- Si l'objet a ete resolu par Sesame, on l'ajoute dans la table
-         if { $ok(sesame) == "1" } { 
+         if { $ok(sesame) == "1" } {
             set obj_sesame [ split [ lindex $voconf(sesame) 1 ] "|" ]
             #--- Mise en forme de l'ascension droite
             set ad [ expr 15.0 * [ lindex $obj_sesame 2 ] ]
@@ -1165,7 +1165,7 @@ namespace eval skybot_Resolver {
             $::skybot_Resolver::This.frame5.tbl cellconfigure 0,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
          }
          #--- Extraction du resultat
-         for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } { 
+         for { set i 1 } { $i <= [ expr [ llength $voconf(liste) ] - 1 ] } { incr i } {
             set vo_objet($i) [ split [ lindex $voconf(liste) $i ] "|" ]
             #--- Mise en forme de l'ascension droite
             set ad [ expr 15.0 * [ lindex $vo_objet($i) 2 ] ]
