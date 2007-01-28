@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.9 2007-01-27 15:23:44 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.10 2007-01-28 09:29:11 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -90,7 +90,7 @@ namespace eval skybot_Search {
          close $fileid
          #--- chargement des donnees de session
          set data_session [ split $data_session "\n"]
-         if { [ llength $data_session ] < 4 } { 
+         if { [ llength $data_session ] < 4 } {
             tk_messageBox -icon error -message $caption(search,msg_notgoodfile)
             return
          }
@@ -98,16 +98,16 @@ namespace eval skybot_Search {
          set voconf(liste) ""
          foreach line $data_session {
             if [ regexp (config) $line ] {
-               set inconfig "1" 
+               set inconfig "1"
                if [ regexp (end) $line ] { set inconfig "0" }
             } else {
                switch $inconfig {
-                  1 { if { [ regexp (image) $line ] } { set voconf(nom_image) [ string trim [ lindex [ split  $line ":" ] 1 ] ] } 
+                  1 { if { [ regexp (image) $line ] } { set voconf(nom_image) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
                       if { [ regexp (fov_size) $line ] } { set voconf(taille_champ) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
                       if { [ regexp (filter) $line ] } { set voconf(filter) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
                       if { [ regexp (userloc) $line ] } { set voconf(observer) [ string trim [ lindex [ split  $line ":" ] 1 ] ] }
                     }
-                  0 { if { $line != "" } { 
+                  0 { if { $line != "" } {
                         if { $voconf(liste) == "" } {
                           set voconf(liste) $line
                         } else {
@@ -124,7 +124,6 @@ namespace eval skybot_Search {
          #--- Si une image est chargee alors on repere les objets sur l'image
          if { $voconf(image_existe) == "1" } { ::skybot_Search::cmdRepere_Efface }
       }
-      
    }
 
    #
@@ -169,7 +168,7 @@ namespace eval skybot_Search {
       if { $filename != "" } {
          set voconf(session_filename) $filename
          set voconf(session_dir) [ file dirname $filename ]
-         ::skybot_Search::save_session 
+         ::skybot_Search::save_session
       }
    }
 
@@ -420,10 +419,10 @@ namespace eval skybot_Search {
       set lgaxe "30"
       #--- coordonnees du centre de la representation des axes
       set can0_xy [ list "35" "35" ]
-      set img0_xy [ ::audace::canvas2Picture $can0_xy ] 
+      set img0_xy [ ::audace::canvas2Picture $can0_xy ]
       set img0_radec [ buf$audace(bufNo) xy2radec $img0_xy 2 ]
       #--- coordonnees du point du segment en alpha
-      set img1_radec [ list [expr [lindex $img0_radec 0]+$lgaxe*abs($voconf(scale_x))] [lindex $img0_radec 1] ] 
+      set img1_radec [ list [expr [lindex $img0_radec 0]+$lgaxe*abs($voconf(scale_x))] [lindex $img0_radec 1] ]
       set dir_EW "E"
       if { [expr [lindex $img1_radec 0]-[lindex $img0_radec 0]] < 0 } { set dir_EW "W" }
       set img1_xy [ buf$audace(bufNo) radec2xy $img1_radec ]
@@ -432,7 +431,7 @@ namespace eval skybot_Search {
       set img2_radec [ list [lindex $img0_radec 0] [expr [lindex $img0_radec 1]+$lgaxe*abs($voconf(scale_y))] ]
       set dir_NS "N"
       if { [expr [lindex $img2_radec 1]-[lindex $img0_radec 1]] < 0 } { set dir_NS "S" }
-      set img2_xy [ buf$audace(bufNo) radec2xy $img2_radec ] 
+      set img2_xy [ buf$audace(bufNo) radec2xy $img2_radec ]
       set can2_xy [ ::audace::picture2Canvas $img2_xy ]
       #--- trace du repere
       $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "green" -tags cadres -width 1.0 -arrow last
@@ -440,7 +439,7 @@ namespace eval skybot_Search {
       $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can2_xy 0] [lindex $can2_xy 1]  -fill "green" -tags cadres -width 1.0 -arrow last
       $audace(hCanvas) create text [expr [lindex $can2_xy 0]-10] [expr [lindex $can2_xy 1]-1] -text $dir_NS -justify center -fill "green" -tags cadres -font $audace(font,arial_7_n)
    }
-   
+
    #
    # skybot_Search::DateImage
    # Permet de calculer la date de l'image
@@ -670,7 +669,7 @@ namespace eval skybot_Search {
            pack $load.explore -in $load -side left -anchor c -fill x -padx 6
 
       #--- Cree un frame pour les caracteristiques de l'image
-      frame $This.frame2 -borderwidth 0 
+      frame $This.frame2 -borderwidth 0
       pack $This.frame2 \
          -in $This -anchor s -side top -expand 0 -fill x \
          -pady 6
@@ -687,7 +686,7 @@ namespace eval skybot_Search {
         set img [frame $This.frame2.img -borderwidth 1 -relief solid]
         pack $img -in $This.frame2 -anchor w -side top -expand 0 -fill x -padx 10
 
-          #--- Cree un frame pour les parametres 
+          #--- Cree un frame pour les parametres
           frame $img.par -borderwidth 0 -relief flat
           pack $img.par \
             -in $img -anchor w -side left -expand 0 -fill x
@@ -810,7 +809,7 @@ namespace eval skybot_Search {
                 -width 30 -anchor w -borderwidth 0 -relief flat
               pack $fov.ca.b.label_dec_image \
                 -in $fov.ca.b -side left -anchor w -padx 1
-              #--- Cree une ligne d'entree pour la variable 
+              #--- Cree une ligne d'entree pour la variable
               entry $fov.ca.b.data_dec_dms \
                 -textvariable voconf(centre_dec_image_d) \
                 -borderwidth 1 -relief groove -width 25 -justify center
@@ -873,7 +872,7 @@ namespace eval skybot_Search {
                  -command { ::skybot_Search::GetInfo "date" }
               pack $fov.ca.d.label_format_date \
                  -in $fov.ca.d -side left -anchor w -padx 1
- 
+
              #--- Cree un frame pour le filtre
             frame $fov.ca.e -borderwidth 0 -relief flat
             pack $fov.ca.e \
@@ -916,7 +915,7 @@ namespace eval skybot_Search {
                 -borderwidth 1 -relief groove -width 25 -justify center
               pack $fov.ca.f.data_iau_code \
                 -in $fov.ca.f -anchor w -side left -padx 1
-              #--- Cree un bouton info 
+              #--- Cree un bouton info
               button $fov.ca.f.format_iau_code -state active \
                  -borderwidth 0 -relief flat -anchor c \
                  -text "$caption(search,info)" \
@@ -930,7 +929,7 @@ namespace eval skybot_Search {
             -in $fov -anchor s -side right -expand 0 -fill both \
             -padx 3 -pady 2
 
-            #--- Creation du bouton visualisation dans Aladin 
+            #--- Creation du bouton visualisation dans Aladin
             button $fov.al.but_aladin -relief raised -state disabled \
                -text "$caption(search,view_aladin)" -borderwidth 2 \
                -command { set dim_fov [ split $voconf(taille_champ) "x" ]
@@ -950,7 +949,7 @@ namespace eval skybot_Search {
                -font $audace(font,arial_6_b) \
                -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
             pack $fov.al.but_iau_code \
-               -in $fov.al -side bottom -anchor c -padx 5 -pady 1 -expand 0 
+               -in $fov.al -side bottom -anchor c -padx 5 -pady 1 -expand 0
 
 
       #--- Cree un frame pour y mettre les boutons
@@ -1053,7 +1052,7 @@ namespace eval skybot_Search {
       global paramwindow
 
       #--- Quelques raccourcis utiles
-      set tbl $frame.tbl      
+      set tbl $frame.tbl
       set popupTbl $frame.popupTbl
       set filtres $frame.popupTbl.filtres
       set paramwindow $This.param
@@ -1071,7 +1070,7 @@ namespace eval skybot_Search {
       $frame.vsb configure -command [ list $tbl yview ]
       $frame.hsb configure -command [ list $tbl xview ]
 
-      #--- Menu pop-up associe a la table 
+      #--- Menu pop-up associe a la table
       menu $popupTbl -title $caption(search,popup_tbl)
         # Pour marquer les reperes sur les objets
         $popupTbl add radiobutton -label $caption(search,voir) -state disabled \
@@ -1090,7 +1089,7 @@ namespace eval skybot_Search {
         # Labels des objets dans l'image
         $popupTbl add checkbutton -label $caption(search,label_objets) -state disabled \
            -variable voconf(label_objets) \
-           -command { ::skybot_Search::cmdRepere_Efface} 
+           -command { ::skybot_Search::cmdRepere_Efface}
         # Separateur
         $popupTbl add separator
 
@@ -1148,7 +1147,7 @@ namespace eval skybot_Search {
            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
 
       #--- Gestion des evenements
-      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ] 
+      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
       bind $tbl <<ListboxSelect>>          [ list ::skybot_Search::cmdButton1Click $This.frame7 ]
 
    }
@@ -1205,14 +1204,14 @@ namespace eval skybot_Search {
 
       #--- Init. pour les spinbox
       switch $filter {
-        mag { set valfrom "-30" 
+        mag { set valfrom "-30"
               set valto   "40" }
-        err { set valfrom "0" 
+        err { set valfrom "0"
               set valto   "100000" }
         dig -
-        dih { set valfrom "0" 
+        dih { set valfrom "0"
               set valto   "150" }
-        ppm { set valfrom "0" 
+        ppm { set valfrom "0"
               set valto   "10000" }
       }
 
@@ -1243,14 +1242,14 @@ namespace eval skybot_Search {
         pack $inputs -in $paramwindow.zparam -anchor w -side top -expand 0 -fill x -padx 10
 
         if { $filter != "none" } {
-          
+
           #--- Cree un frame pour les spinbox des min-max du parametre courant
           frame $inputs.s -borderwidth 0 -relief flat
           pack $inputs.s \
             -in $inputs -anchor w -side top -expand 0 -fill both \
             -padx 3 -pady 3
 
-            #--- Cree un label 
+            #--- Cree un label
             label $inputs.s.label_spin \
                -text "$caption(search,[concat "param_spin$filter"])" \
                -width 43 -anchor w -borderwidth 0 -relief flat
@@ -1268,7 +1267,7 @@ namespace eval skybot_Search {
                -increment 1.0 -from $valfrom -to $valto
             pack $inputs.s.spinbox2 \
                -in $inputs.s -side left -anchor w -padx 3
-            #--- Cree un bouton info 
+            #--- Cree un bouton info
             button $inputs.s.format_spin -state active \
                -borderwidth 0 -relief flat -anchor c \
                -text "$caption(search,info)" \
@@ -1283,7 +1282,7 @@ namespace eval skybot_Search {
             pack $inputs.a \
               -in $inputs -anchor w -side top -expand 0 -fill both \
               -padx 3 -pady 3
-              #--- Cree un label 
+              #--- Cree un label
               label $inputs.a.label_radius_base \
                 -text "$caption(search,param_basecircle)" \
                 -width 43 -anchor w -borderwidth 0 -relief flat
@@ -1295,7 +1294,7 @@ namespace eval skybot_Search {
                 -borderwidth 1 -relief groove -width 13 -justify center
               pack $inputs.a.radius_base \
                 -in $inputs.a -side left -anchor w -padx 3
-              #--- Cree un bouton info 
+              #--- Cree un bouton info
               button $inputs.a.format_radius_base -state active \
                  -borderwidth 0 -relief flat -anchor c \
                  -text "$caption(search,info)" \
@@ -1308,7 +1307,7 @@ namespace eval skybot_Search {
             pack $inputs.b \
               -in $inputs -anchor w -side top -expand 0 -fill both \
               -padx 3 -pady 3
-              #--- Cree un label 
+              #--- Cree un label
               label $inputs.b.label_radius_scale \
                 -text "$caption(search,param_scalecircle)" \
                 -width 43 -anchor w -borderwidth 0 -relief flat
@@ -1320,7 +1319,7 @@ namespace eval skybot_Search {
                 -borderwidth 1 -relief groove -width 13 -justify center
               pack $inputs.b.radius_scale \
                 -in $inputs.b -side left -anchor w -padx 3
-              #--- Cree un bouton info 
+              #--- Cree un bouton info
               button $inputs.b.format_radius_scale -state active \
                  -borderwidth 0 -relief flat -anchor c \
                  -text "$caption(search,info)" \
@@ -1335,7 +1334,7 @@ namespace eval skybot_Search {
             pack $inputs.c \
               -in $inputs -anchor w -side top -expand 0 -fill both \
               -padx 3 -pady 3
-              #--- Cree un label 
+              #--- Cree un label
               label $inputs.c.label_arrow_base \
                 -text "$caption(search,param_basearrow)" \
                 -width 43 -anchor w -borderwidth 0 -relief flat
@@ -1347,7 +1346,7 @@ namespace eval skybot_Search {
                 -borderwidth 1 -relief groove -width 13 -justify center
               pack $inputs.c.arrow_base \
                 -in $inputs.c -side left -anchor w -padx 3
-              #--- Cree un bouton info 
+              #--- Cree un bouton info
               button $inputs.c.format_arrow_base -state active \
                 -borderwidth 0 -relief flat -anchor c \
                 -text "$caption(search,info)" \
@@ -1364,7 +1363,7 @@ namespace eval skybot_Search {
           pack $inputs.d \
             -in $inputs -anchor w -side top -expand 0 -fill both \
             -padx 3 -pady 3
-            #--- Cree un label 
+            #--- Cree un label
             label $inputs.d.label_radius_fixe \
               -text "$caption(search,param_fixecircle)" \
               -width 43 -anchor w -borderwidth 0 -relief flat
@@ -1376,7 +1375,7 @@ namespace eval skybot_Search {
               -borderwidth 1 -relief groove -width 13 -justify center
             pack $inputs.d.radius_fixe \
               -in $inputs.d -side left -anchor w -padx 3
-            #--- Cree un bouton info 
+            #--- Cree un bouton info
             button $inputs.d.format_radius_fixe -state active \
                -borderwidth 0 -relief flat -anchor c \
                -text "$caption(search,info)" \
@@ -1454,7 +1453,7 @@ namespace eval skybot_Search {
       global current_object
 
       #--- Quelques raccourcis utiles
-      set tbl $frame.tbl      
+      set tbl $frame.tbl
       set popupTbl $frame.popupTbl
 
       #--- Selection d'une ligne
@@ -1509,7 +1508,7 @@ namespace eval skybot_Search {
             #--- Active l'acces au mode Goto
             $popupTbl entryconfigure $caption(search,goto) -state normal \
                -command { if { [ ::tel::list ] == "" } {
-                             ::confTel::run 
+                             ::confTel::run
                              tkwait window $audace(base).confTel
                           }
                           ::skybot_Resolver::affiche_Outil_Tlscp
@@ -1827,7 +1826,7 @@ namespace eval skybot_Search {
                  $::skybot_Search::This.frame7.tbl insert end $vo_objet($i)
               }
             } else {
-              #--- sinon on garde tous les objets 
+              #--- sinon on garde tous les objets
               incr voconf(j)
               $::skybot_Search::This.frame7.tbl insert end $vo_objet($i)
             }
@@ -1846,7 +1845,7 @@ namespace eval skybot_Search {
             set dec [ $::skybot_Search::This.frame7.tbl cellcget $i,3 -text ]
             $::skybot_Search::This.frame7.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
          }
-         #--- Trie par ordre alphabetique de la premiere colonne 
+         #--- Trie par ordre alphabetique de la premiere colonne
          ::skybot_Search::cmdSortColumn $::skybot_Search::This.frame7.tbl 7
          #--- Si une image est chargee alors on valide les entrees du popup 'bouton-3' de la table
          if {$voconf(image_existe) == "1"} {
@@ -1889,7 +1888,7 @@ namespace eval skybot_Search {
       set radius_base $voconf(radius_base)
       set radius_scale $voconf(radius_scale)
       set arrow_base $voconf(arrow_base)
-      
+
       #--- Fonctions filtres
       set traceobjet 0
       switch $voconf(type_filtre) {
@@ -1904,21 +1903,21 @@ namespace eval skybot_Search {
                   set objerr [ lindex [ $tbl cellconfigure $idx,6 -text ] 4 ]
                   if { $objerr >= $voconf(min_err) && $objerr  <= $voconf(max_err) } {
                      set traceobjet 1
-                     set radius [ expr $radius_base + $radius_scale*($objerr-$valMinFiltre(err))/($valMaxFiltre(err)-$valMinFiltre(err)) ] 
+                     set radius [ expr $radius_base + $radius_scale*($objerr-$valMinFiltre(err))/($valMaxFiltre(err)-$valMinFiltre(err)) ]
                   }
                  }
         dig     { set FormTrace "circle"
                   set objdig [ lindex [ $tbl cellconfigure $idx,10 -text ] 4 ]
                   if { $objdig >= $voconf(min_dig) && $objdig  <= $voconf(max_dig) } {
                      set traceobjet 1
-                     set radius [ expr $radius_base + $radius_scale*($objdig-$valMinFiltre(dig))/($valMaxFiltre(dig)-$valMinFiltre(dig)) ] 
+                     set radius [ expr $radius_base + $radius_scale*($objdig-$valMinFiltre(dig))/($valMaxFiltre(dig)-$valMinFiltre(dig)) ]
                   }
                  }
         dih     { set FormTrace "circle"
                   set objdih [ lindex [ $tbl cellconfigure $idx,11 -text ] 4 ]
                   if { $objdih >= $voconf(min_dih) && $objdih  <= $voconf(max_dih) } {
                      set traceobjet 1
-                     set radius [ expr $radius_base + $radius_scale*($objdih-$valMinFiltre(dih))/($valMaxFiltre(dih)-$valMinFiltre(dih)) ] 
+                     set radius [ expr $radius_base + $radius_scale*($objdih-$valMinFiltre(dih))/($valMaxFiltre(dih)-$valMinFiltre(dih)) ]
                   }
                  }
         ppm     { set FormTrace "arrow"
@@ -1981,7 +1980,7 @@ namespace eval skybot_Search {
          $audace(hCanvas) delete cadres
          for { set i 0 } { $i <= [ expr $voconf(j) - 1 ] } { incr i } {
             #--- Quelques raccourcis
-            set tbl $This.frame7.tbl      
+            set tbl $This.frame7.tbl
             #--- Coordonnees equatoriales de l'objet
             set voconf(AD_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,2 -text ] 4 ] ]
             set voconf(Dec_objet) [ mc_angle2deg [ lindex [ $tbl cellconfigure $i,3 -text ] 4 ] ]

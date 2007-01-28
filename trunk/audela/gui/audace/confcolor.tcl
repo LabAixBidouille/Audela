@@ -2,14 +2,14 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.10 2006-12-16 23:41:55 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.11 2007-01-28 09:25:48 robertdelmas Exp $
 #
 
 namespace eval confColor {
    global audace
 
    #--- Charge le fichier caption
-   source [ file join $audace(rep_caption) confcolor.cap ] 
+   source [ file join $audace(rep_caption) confcolor.cap ]
 
    proc init { } {
       global audace
@@ -155,8 +155,8 @@ namespace eval confColor {
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
    proc confToWidget { visuNo } {
-      variable widget  
-      global conf  
+      variable widget
+      global conf
 
       set widget(position) "$conf(confcolor,position)"
 
@@ -174,7 +174,7 @@ namespace eval confColor {
    #  copie les variable des widgets dans le tableau conf()
    #------------------------------------------------------------
    proc apply { visuNo } {
-      variable widget 
+      variable widget
       global audace
       global conf
 
@@ -216,11 +216,11 @@ namespace eval confColor {
 
    #------------------------------------------------------------
    #  ::confColor::fillConfigPage { }
-   #  fenetre de configuration 
-   #  
+   #  fenetre de configuration
+   #
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
-      variable widget 
+      variable widget
       global conf
       global caption
 
@@ -266,7 +266,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    #  ::confColor::close
    #  est appele quand on ferme la fenetre sans sauvegarder les modifications
-   #     
+   #
    #  param : aucun
    #------------------------------------------------------------
    proc close { visuNo } {
@@ -293,7 +293,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    #  ::confColor::chooseAppearance
    #  est appele quand on change d'apparence jour/nuit
-   #     
+   #
    #  param : type de couleur  ( background, foreground, ...)
    #------------------------------------------------------------
    proc chooseAppearance { } {
@@ -326,9 +326,9 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::chooseColor 
+   #  ::confColor::chooseColor
    #  est appelle quand on clique sur un bouton d'une couleur
-   #     
+   #
    #  param : type de couleur ( background, foreground, ...)
    #------------------------------------------------------------
    proc chooseColor { colorType buttonName } {
@@ -344,10 +344,10 @@ namespace eval confColor {
 
       set a [ tk_chooseColor -initialcolor $widget(color,$appearance,$colorType) \
          -title "$caption(confcolor,selection) $colorType" \
-         -parent "$audace(base).select_color" ] 
+         -parent "$audace(base).select_color" ]
       if { [ llength $a ] > "0" } {
          set widget(color,$appearance,$colorType) $a
-         set audace(color,$colorType) $a 
+         set audace(color,$colorType) $a
          $buttonName configure -fg $widget(color,$appearance,$colorType) -bg $widget(color,$appearance,$colorType)
       }
 
@@ -363,7 +363,7 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::applyColor 
+   #  ::confColor::applyColor
    #     est appele apres avoir choisi une nouvelle couleur
    #     et applique la couleur en fonction de la charte des couleurs de Audace (voir doc de programmation)
    #
@@ -499,7 +499,7 @@ namespace eval confColor {
          ComboBox {
             #--- Couleur de la valeur selectionnee dans l'entry de la combobox
             $w configure -selectbackground $audace(color,entryBackColor) -selectforeground $audace(color,entryTextColor)
-         }            
+         }
          default {
             #--- Trace pour faire apparaitre les widget non traités
            ### console::disp "Defaut ==> w=$w class=[ winfo class $w ]\n"
@@ -512,7 +512,7 @@ namespace eval confColor {
 
    #------------------------------------------------------------
    #  ::confColor::restoreFactoryColor
-   #  restaure les couleur usine 
+   #  restaure les couleur usine
    #------------------------------------------------------------
    proc restoreFactoryColor { } {
       variable widget
@@ -525,7 +525,7 @@ namespace eval confColor {
          -title "$caption(confcolor,couleur_defaut)" \
          -icon question \
          -type yesno ]
-     
+
       if {"$choice"=="no"} {
          return
       }

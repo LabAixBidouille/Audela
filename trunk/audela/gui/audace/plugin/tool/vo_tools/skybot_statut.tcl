@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.6 2007-01-27 15:24:06 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.7 2007-01-28 09:26:10 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -21,7 +21,7 @@ namespace eval skybot_Statut {
       variable This
 
       set This $this
-      createDialog 
+      createDialog
    }
 
    #
