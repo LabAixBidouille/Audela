@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.13 2006-12-02 14:08:22 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.14 2007-01-28 09:25:15 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -46,6 +46,7 @@ namespace eval ::astrometry {
    proc recup_position { } {
       variable astrom
 
+      #---
       set astrom(geometry) [ wm geometry $astrom(This) ]
       set deb [ expr 1 + [ string first + $astrom(geometry) ] ]
       set fin [ string length $astrom(geometry) ]
@@ -58,6 +59,9 @@ namespace eval ::astrometry {
       variable astrom
       global audace
       global caption
+
+      #--- Chargement du package Img pour visualiser l'image jpg de calibration
+      package require Img 1.3
 
       #--- Recherche une image dans le buffer
       if { [ buf$audace(bufNo) imageready ] == "0" } {
