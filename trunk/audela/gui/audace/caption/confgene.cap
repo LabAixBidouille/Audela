@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.12 2007-01-27 14:39:31 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.13 2007-01-29 21:56:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -227,9 +227,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image)                      "Files immagine"
    set caption(confgene,fichier_image_fits)                 "Files FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Salvare le immagini con la soglia di visualizzazione"
-   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
-   set caption(confgene,fichier_images_entier)              "# Entier"
-   set caption(confgene,fichier_images_flottant)            "# Flottant"
+   set caption(confgene,fichier_images_choix_format)        "Salvare immagini come:"
+   set caption(confgene,fichier_images_entier)              "Intero"
+   set caption(confgene,fichier_images_flottant)            "Virgola mobile"
    set caption(confgene,fichier_image_ext_defaut)           "Estensione di default:"
    set caption(confgene,fichier_image_new_ext)              "Potete cambiare l'estensione:"
    set caption(confgene,fichier_image_compres)              "Files immagini compresse (.gz)"
@@ -639,9 +639,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image)                      "Billedfil"
    set caption(confgene,fichier_image_fits)                 "FITS Filer"
    set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi"
-   set caption(confgene,fichier_images_choix_format)        "# Enregistrer les images au format :"
-   set caption(confgene,fichier_images_entier)              "# Entier"
-   set caption(confgene,fichier_images_flottant)            "# Flottant"
+   set caption(confgene,fichier_images_choix_format)        "Gem billeder som:"
+   set caption(confgene,fichier_images_entier)              "Helt tal"
+   set caption(confgene,fichier_images_flottant)            "Flydende"
    set caption(confgene,fichier_image_ext_defaut)           "Standand filtype (extension):"
    set caption(confgene,fichier_image_new_ext)              "Valg af filtype (extension):"
    set caption(confgene,fichier_image_compres)              "Komprimeret billedfil(.gz)"
