@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.13 2007-01-27 14:52:36 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.14 2007-01-29 21:57:07 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -174,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Attenzione"
    set caption(scanfast,message)          "Questa funzione va usata solamente con una camera Audine pilotata\ntramite porta parallela, AudiNet o per una EthernAude."
-   set caption(scanfast,calcul_confirm)   "# Voulez-vous lancer un calcul des paramètres ?"
+   set caption(scanfast,calcul_confirm)   "Volete eseguire un calcolo dei parametri?"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
