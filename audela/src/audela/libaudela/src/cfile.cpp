@@ -111,6 +111,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    int msg;                         // Code erreur de libtt
    int naxis,naxis1,naxis2,naxis3;
    int nb_keys;
+   TPixelFormat pixelFormat;
    char **keynames=NULL;
    char **values=NULL;
    char **comments=NULL;
@@ -127,10 +128,26 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          &nb_keys,&keynames,&values,&comments,&units,&datatypes);
       if(msg) throw CErrorLibtt(msg);
       
+      switch (dataTypeOut) {
+         case TBYTE :
+            pixelFormat = FORMAT_BYTE;
+            break;
+         case TUSHORT :
+            pixelFormat = FORMAT_SHORT;
+            break;
+         case TSHORT  :
+            pixelFormat = FORMAT_USHORT;
+            break;
+         case TFLOAT  :
+            pixelFormat = FORMAT_FLOAT;
+            break;
+         default :
+            throw CError("LoadFits error: format dataTypeOut=%d not supported.",dataTypeOut);
+      }
 
       if (naxis3 == 1) {
          // je copie les donnees dans la variable de sortie
-         *pixels = new CPixelsGray(naxis1, naxis2, FORMAT_FLOAT, ppix, 0, 0);
+         *pixels = new CPixelsGray(naxis1, naxis2, pixelFormat, ppix, 0, 0);
 
          // je copie les mots cles dans la variable de sortie      
          *keywords = new CFitsKeywords();
@@ -150,7 +167,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    	         &nb_keys,&keynames,&values,&comments,&units,&datatypes);
          
          // je copie les pixels dans la variable de sortie
-         *pixels = new CPixelsRgb(naxis1, naxis2, FORMAT_FLOAT, ppixR, ppixG, ppixB);
+         *pixels = new CPixelsRgb(naxis1, naxis2, pixelFormat, ppixR, ppixG, ppixB);
          
          // je copie les mots cles dans la variable de sortie      
          *keywords = new CFitsKeywords();
@@ -395,7 +412,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
       break;
    default:
        // methode inconue
-      throw CError("convertCfa2Rgb interpolationMethod=%d unknown", interpolationMethod);
+      throw CError("CFile::cfa2Rgb: interpolationMethod=%d unknown", interpolationMethod);
    }
 
    // je recupere les parametres indispensable a l'interpolation
@@ -404,29 +421,29 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    if ( (kwd = cfaKeywords->FindKeyword("RAW_COLORS")) != NULL ) {      
       dataInfo.colors = kwd->GetIntValue();
    } else {
-      throw CError("convertCfa2Rgbnot keyword RAW_COLORS not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_COLORS not found");
 
    }
    if ( (kwd = cfaKeywords->FindKeyword("RAW_BLACK")) != NULL ) {      
       dataInfo.black = kwd->GetIntValue();
    } else {
-      throw CError("convertCfa2Rgbnot keyword RAW_BLACK not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_BLACK not found");
    }
    if ( (kwd = cfaKeywords->FindKeyword("RAW_MAXIMUM")) != NULL ) {      
       dataInfo.maximum = kwd->GetIntValue();
    } else {
-      throw CError("convertCfa2Rgbnot keyword RAW_MAXIMUM not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_MAXIMUM not found");
    }
    if ( (kwd = cfaKeywords->FindKeyword("RAW_FILTER")) != NULL ) {      
       sscanf(kwd->GetStringValue(),"%u",&dataInfo.filters);
    } else {
-      throw CError("convertCfa2Rgbnot keyword RAW_FILTER not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_FILTER not found");
    }
 
    // je recupere les valeurs des pixels
    cfaData = (unsigned short*) malloc( cfaPixels->GetWidth() * cfaPixels->GetHeight() * sizeof (unsigned short) );
    if( cfaData == NULL ) {
-      CError("convertCfa2Rgbnot enougth memory");
+      CError("CFile::cfa2Rgb: enougth memory");
    }
    cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (int) cfaData );
 
@@ -462,7 +479,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    } else {
       if (cfaData != NULL) free(cfaData);
       if (rgbData != NULL) libdcraw_freeBuffer(rgbData);
-      throw CError("libdcraw_fileRaw2Cfa error=%d", result);
+      throw CError("libdcraw_fileRaw2Cfa: error=%d", result);
    }      
 
  
