@@ -7,7 +7,7 @@
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
-set version 1.4.0-beta1
+set version 1.4.0-beta1b
 
    proc analdir { base } {
       global tab result resultfile f base0
@@ -45,6 +45,9 @@ set version 1.4.0-beta1
                regsub ${base0} "$dirname" "" temp
                regsub -all / "$temp" \\ name2
                set name2 "{app}\\$name2"
+               if {[string range $shortname 0 1]==".#"} {
+	               continue
+               }
                if {$shortname=="PortTalk.sys"} {
                   append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
                }
@@ -88,7 +91,7 @@ set version 1.4.0-beta1
                #}
                #append result "Directory of $thisfile\n"
 				#analdir $thisfile
-				if {([file tail $thisfile] != "CVS") && ([file tail $thisfile] != "src") && ([file tail $thisfile] != "dev")} {
+				if {([file tail $thisfile] != "CVS") && ([file tail $thisfile] != "src") && ([file tail $thisfile] != "dev") && ([file tail $thisfile] != "ros")} {
 					analdir $thisfile
 				}
                #incr tab -1
