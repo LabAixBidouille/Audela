@@ -46,6 +46,7 @@ int CmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    char ligne[_MAX_PATH+256];
    char interpolationMethod[256];
    int retour;
+   int saving_type = USHORT_IMG;
 
    if ((argc!=4)) {
       sprintf(ligne,"Usage: %s cfaFilename interpolation rgbFilename",argv[0]);
@@ -77,6 +78,9 @@ int CmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 
          // je convertis l'image CFA en RGB
          CFile::cfa2Rgb(cfaPixels, cfaKeywords, 1,  &rgbPixels, &rgbKeywords);
+
+         // j'ajoute le mot cle BITPIX obligatoire
+         rgbKeywords->Add("BITPIX",&saving_type,TINT,"","");
 
          // j'enregistre l'image dans le fichier FITS RGB
          CFile::saveFits(rgbFileName, TUSHORT, rgbPixels, rgbKeywords);
