@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.4 2006-08-26 21:23:17 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.5 2007-01-31 22:56:19 michelpujol Exp $
 #
 
 package provide foc 1.0
@@ -58,9 +58,9 @@ namespace eval ::Focs {
 
    proc Adapt_Panneau_Foc { { a "" } { b "" } { c "" } } {
       variable This
-      global audace
+      global audace 
 
-      if { [ ::focus::possedeControleEtendu ] == "1" } {
+      if { [ ::focus::possedeControleEtendu $::panneau(Focs,focuser) ] == "1" } {
          #--- Avec controle etendu 
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
@@ -92,6 +92,7 @@ namespace eval ::Focs {
 
       trace add variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
       pack $This -side left -fill y
+      set ::panneau(Focs,focuser)    "focuserlx200"
       ::Focs::Adapt_Panneau_Foc
    }
 
@@ -324,7 +325,7 @@ namespace eval ::Focs {
    }
 
    proc cmdSpeed { } {
-      ::focus::incrementSpeed
+      ::focus::incrementSpeed $::panneau(Focs,focuser)
    }
 
    proc cmdFocus { command } {
@@ -334,7 +335,7 @@ namespace eval ::Focs {
       $This.fra4.we.canv1 configure -relief ridge
       $This.fra4.we.canv2 configure -relief ridge
       #--- Commande
-      ::focus::move $command
+      ::focus::move $::panneau(Focs,focuser) $command
    }
 
    proc cmdInitfoc { } {
@@ -416,7 +417,7 @@ namespace eval ::Focs {
                split $nbpas1 "\n"
                set audace(focus,nbpas1) [ lindex $nbpas1 0 ]
                #--- Lance le goto du focaliseur
-               ::focus::goto 
+               ::focus::goto $::panneau(Focs,focuser)
                #--- Affiche la position d'arrivee
                $This.fra5.fra1.lab1 configure -textvariable audace(focus,nbpas1)
             }

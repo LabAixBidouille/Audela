@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.6 2007-01-27 15:21:09 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.7 2007-01-31 22:55:51 michelpujol Exp $
 #
 
 package provide superpad 1.0
@@ -98,6 +98,7 @@ namespace eval ::superpad {
       if { ! [ info exists conf(superpad,centerspeed) ] } { set conf(superpad,centerspeed) "140" }
       if { ! [ info exists conf(superpad,visible) ] }     { set conf(superpad,visible)     "1" }
       if { ! [ info exists conf(superpad,position) ] }    { set conf(superpad,position)    "100+100" }
+      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel)    "focuserjmi" }
 
       return
    }
@@ -115,6 +116,7 @@ namespace eval ::superpad {
       set widget(padsize)     $conf(superpad,padsize)
       set widget(visible)     $conf(superpad,visible)
       set widget(centerspeed) $conf(superpad,centerspeed)
+      set widget(focuserLabel) $conf(superpad,focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -130,6 +132,7 @@ namespace eval ::superpad {
       set conf(superpad,padsize)     $widget(padsize)
       set conf(superpad,visible)     $widget(visible)
       set conf(superpad,centerspeed) $widget(centerspeed)
+      set conf(superpad,focuserLabel) $widget(focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -179,6 +182,11 @@ namespace eval ::superpad {
       #--- Entry centerspeed
       entry $frm.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
       pack $frm.entrycenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+
+      #--- Fram focuser
+      ::confEqt::createFrameFocuser $frm.frame2.focuser ::superpad::widget(focuserLabel) 
+      pack $frm.frame2.focuser -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+
 
       #--- Raquette toujours visible
       checkbutton $frm.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
@@ -952,7 +960,7 @@ namespace eval FrameFocusManager {
    #      change speed of focus motor
    #------------------------------------------------------------
    proc cmdFocusSpeed { {value " "} } {
-      ::focus::incrementSpeed
+      ::focus::incrementSpeed $::conf(superpad,focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -1029,20 +1037,20 @@ namespace eval FrameFocusManager {
 
       #--- focus move
       bind $zone(moins) <ButtonPress-1> {
-         ::focus::move "-"
+         ::focus::move $::conf(superpad,focuserLabel) "-"
          [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backpad)
       }
       bind $zone(moins) <ButtonRelease-1> {
-         ::focus::move "stop"
+         ::focus::move $::conf(superpad,focuserLabel) "stop"
          [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backkey)
       }
 
       bind $zone(plus) <ButtonPress-1> {
-         ::focus::move "+"
+         ::focus::move $::conf(superpad,focuserLabel) "+"
          [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backpad)
       }
       bind $zone(plus) <ButtonRelease-1> {
-         ::focus::move "stop"
+         ::focus::move $::conf(superpad,focuserLabel) "stop"
          [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backkey)
       }
 
