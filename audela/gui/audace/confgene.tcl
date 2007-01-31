@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.18 2007-01-27 15:09:57 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.19 2007-01-31 21:32:34 michelpujol Exp $
 #
 
 #
@@ -2641,8 +2641,6 @@ namespace eval confVersion {
 #     namespace::close            pour le bouton fermer ou ok
 
 namespace eval confGenerique {
-   variable This
-   variable NameSpace
 
    #
    # confGenerique::run
@@ -2661,23 +2659,18 @@ namespace eval confGenerique {
    #  si mode=nomodal
    #     retourne 0
    #
-   proc run { this namespace { visuNo "1" } {mode "modal"}} {
-      variable This
-      variable NameSpace
+   proc run { This NameSpace { visuNo "1" } {mode "modal"}} {
       variable confResult
-
-      set This $this
-      set NameSpace $namespace
-      set confResult "0"
-
-      createDialog $visuNo
+      set confResult($NameSpace) "0"
+      createDialog $visuNo $NameSpace $This
 
       if { $mode == "modal" } {
          #--- j'attends la fermeture de la fenetre avant de terminer
          tkwait window $This
       }
 
-      return $confResult
+      return $confResult($NameSpace)
+
    }
 
    #
@@ -2685,24 +2678,20 @@ namespace eval confGenerique {
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
    # et fermer la fenetre de configuration generique
    #
-   proc ok { visuNo } {
-      variable This
+   proc ok { visuNo NameSpace This } {
       variable confResult
-
-      ::confGenerique::apply $visuNo
-      set confResult "1"
-      ::confGenerique::close $visuNo
+      set confResult($NameSpace) "1"
+      ::confGenerique::apply $visuNo $NameSpace
+      ::confGenerique::close $visuNo $NameSpace $This
    }
 
    #
    # confGenerique::apply
    # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour memoriser et appliquer la configuration
    #
-   proc apply { visuNo } {
-      variable NameSpace
-
+   proc apply { visuNo NameSpace  } {
       if { [info procs $NameSpace\:\:apply ] != "" } {
-         $NameSpace\:\:apply $visuNo
+         $NameSpace\:\:apply $visuNo 
       }
    }
 
@@ -2710,8 +2699,7 @@ namespace eval confGenerique {
    # confGenerique::afficherAide
    # Fonction 'afficherAide' pour afficher l'aide
    #
-   proc showHelp { } {
-      variable NameSpace
+   proc showHelp { NameSpace } {
 
       set result [ catch { $NameSpace\:\:showHelp } msg ]
       if { $result == "1" } {
@@ -2724,10 +2712,9 @@ namespace eval confGenerique {
    #
    # confGenerique::close
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   #
-   proc close { visuNo } {
-      variable This
-      variable NameSpace
+   # Ferme la fenetre si la procedure namepace::close retourne une valeur
+   # differente de "0"  
+   proc close { visuNo NameSpace This } {
 
       if { [info procs $NameSpace\:\:close ] != "" } {
          #--- appelle la procedure "close"
@@ -2738,11 +2725,10 @@ namespace eval confGenerique {
       }
       #--- supprime la fenetre
       destroy $This
+      return 
    }
 
-   proc createDialog { visuNo } {
-      variable This
-      variable NameSpace
+   proc createDialog { visuNo NameSpace This} {
       global conf
       global caption
 
@@ -2772,14 +2758,14 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::ok $visuNo"
+         -command "::confGenerique::ok $visuNo $NameSpace $This"
       if { $conf(ok+appliquer) == "1" } {
          pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3  -ipady 5
       }
 
       #--- Cree le bouton 'Appliquer'
       button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
-         -command "::confGenerique::apply $visuNo"
+         -command "::confGenerique::apply $visuNo $NameSpace "
       pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree un label 'Invisible' pour simuler un espacement
@@ -2788,7 +2774,7 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::close $visuNo"
+         -command "::confGenerique::close $visuNo $NameSpace $This"
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Aide'
