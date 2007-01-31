@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Mise a jour $Id: confeqt.cap,v 1.5 2007-01-27 14:39:15 robertdelmas Exp $
+# Mise a jour $Id: confeqt.cap,v 1.6 2007-01-31 22:55:24 michelpujol Exp $
 #
 
 #=========================================================================
@@ -18,6 +18,7 @@ set caption(confeqt,ok)                     "OK"
 set caption(confeqt,appliquer)              "Apply"
 set caption(confeqt,fermer)                 "Close"
 set caption(confeqt,aide)                   "Help"
+set caption(confeqt,configurer)             "Configure"
 
 set caption(confeqt,attention)              "Warning"
 set caption(confeqt,connexion_texte1)       "Equipment Connection in Progress..."
@@ -33,6 +34,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,appliquer)           "Appliquer"
    set caption(confeqt,fermer)              "Fermer"
    set caption(confeqt,aide)                "Aide"
+   set caption(confeqt,configurer)          "Configurer"
 
    set caption(confeqt,attention)           "Attention"
    set caption(confeqt,connexion_texte1)    "Veuillez patienter quelques secondes"
@@ -48,6 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,appliquer)           "Applica"
    set caption(confeqt,fermer)              "Chiudi"
    set caption(confeqt,aide)                "Aiuto"
+   set caption(confeqt,configurer)          "###Configurer"
 
    set caption(confeqt,attention)           "Attenzione"
    set caption(confeqt,connexion_texte1)    "Attendere qualche secondo per la"
@@ -63,6 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,appliquer)           "Aplicar"
    set caption(confeqt,fermer)              "Cerrar"
    set caption(confeqt,aide)                "Ayuda"
+   set caption(confeqt,configurer)          "###Configurer"
 
    set caption(confeqt,attention)           "!Cuidado¡"
    set caption(confeqt,connexion_texte1)    "Conectando con al equipo..."
@@ -78,6 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,appliquer)           "Anwenden"
    set caption(confeqt,fermer)              "Schließen"
    set caption(confeqt,aide)                "Hilfe"
+   set caption(confeqt,configurer)          "###Configurer"
 
    set caption(confeqt,attention)           "Achtung"
    set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"
@@ -93,6 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,appliquer)           "Aplicar"
    set caption(confeqt,fermer)              "Fechar"
    set caption(confeqt,aide)                "Ajuda"
+   set caption(confeqt,configurer)          "###Configurer"
 
    set caption(confeqt,attention)           "Atenção"
    set caption(confeqt,connexion_texte1)    "A conectar-se ao equipamento..."
@@ -108,6 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,appliquer)           "Apply"
    set caption(confeqt,fermer)              "Close"
    set caption(confeqt,aide)                "Help"
+   set caption(confeqt,configurer)          "###Configurer"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."

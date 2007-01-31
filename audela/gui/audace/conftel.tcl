@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.22 2007-01-27 15:12:27 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.23 2007-01-31 22:54:01 michelpujol Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2595,11 +2595,11 @@ namespace eval ::confTel {
       if { $erreur == "0" } {
          if  { $conf(telescope) != "ouranos" } {
             ::telescope::setSpeed "$audace(telescope,speed)"
-            ::focus::setSpeed "$audace(focus,speed)"
+            ::focus::setSpeed "focuserlx200" "$audace(focus,speed)"
 
          } else {
             ::telescope::setSpeed "0"
-            ::focus::setSpeed "0"
+            ::focus::setSpeed "focuserlx200" "0"
          }
          ::telescope::afficheCoord
       }
