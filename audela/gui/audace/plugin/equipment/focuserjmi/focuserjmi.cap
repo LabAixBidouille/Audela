@@ -1,0 +1,80 @@
+#
+# Fichier : focuserlx200.cap
+# Mise a jour $Id: focuserjmi.cap,v 1.1 2007-01-31 22:46:50 michelpujol Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+global langage
+
+# *************** Version anglaise ****************************
+
+   set caption(focuserjmi,label)          "#Focuser JMI"
+   set caption(focuserjmi,link)           "#Liaison"
+   set caption(focuserjmi,configure)      "#Configurer"
+   set caption(focuserjmi,bitStart)       "#n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "#n°bit de direction"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(focuserjmi,label)          "Focuser JMI"
+   set caption(focuserjmi,link)           "Liaison"
+   set caption(focuserjmi,configure)      "Configurer"
+   set caption(focuserjmi,bitStart)       "n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "n°bit de direction"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(focuserjmi,label)          "#Focuser JMI"
+   set caption(focuserjmi,link)           "#Liaison"
+   set caption(focuserjmi,configure)      "#Configurer"
+   set caption(focuserjmi,bitStart)       "#n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "#n°bit de direction"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(focuserjmi,label)          "#Focuser JMI"
+   set caption(focuserjmi,link)           "#Liaison"
+   set caption(focuserjmi,configure)      "#Configurer"
+   set caption(focuserjmi,bitStart)       "#n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "#n°bit de direction"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(focuserjmi,label)          "#Focuser JMI"
+   set caption(focuserjmi,link)           "#Liaison"
+   set caption(focuserjmi,configure)      "#Configurer"
+   set caption(focuserjmi,bitStart)       "#n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "#n°bit de direction"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(focuserjmi,label)          "#Focuser JMI"
+   set caption(focuserjmi,link)           "#Liaison"
+   set caption(focuserjmi,configure)      "#Configurer"
+   set caption(focuserjmi,bitStart)       "#n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "#n°bit de direction"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(focuserjmi,label)          "#Focuser JMI"
+   set caption(focuserjmi,link)           "#Liaison"
+   set caption(focuserjmi,configure)      "#Configurer"
+   set caption(focuserjmi,bitStart)       "#n°bit de demarrage"
+   set caption(focuserjmi,bitDirection)   "#n°bit de direction"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
