@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.52 2007-01-27 15:05:49 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.53 2007-01-31 22:51:27 michelpujol Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -929,10 +929,8 @@ namespace eval ::audace {
          ::confPad::configureDriver
       }
 
-      #--- Connexion au demarrage de l'equipement
-      if { $conf(confEqt,start) == "1" } {
-         ::confEqt::configureDriver
-      }
+      #--- Connexion au demarrage des equipements
+      confEqt::startDriver
 
       #--- Connexion au demarrage du driver de carte
       if { $conf(confCat,start) == "1" } {
