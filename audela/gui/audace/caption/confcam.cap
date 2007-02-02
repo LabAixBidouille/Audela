@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.27 2007-01-27 14:38:31 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.28 2007-02-02 23:10:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -29,7 +29,6 @@ set caption(confcam,sbig)                       "SBIG"
 set caption(confcam,cookbook)                   "CB245"
 set caption(confcam,starlight)                  "Starlight"
 set caption(confcam,kitty)                      "Kitty"
-set caption(confcam,webcam)                     "WebCam"
 set caption(confcam,th7852A)                    "TH7852A"
 set caption(confcam,scr1300xtc)                 "SCR1300XTC"
 set caption(confcam,dslr)                       "Digital Camera"
@@ -113,15 +112,6 @@ set caption(confcam,refroidissement_off)        "Off"
 set caption(confcam,temperature_CCD)            "CCD Temperature:"
 set caption(confcam,test)                       "SX28 Test"
 
-set caption(confcam,webcam_canal_usb)           "USB Video Channel"
-set caption(confcam,webcam_longuepose)          "S. Chambers Long Exposure Option"
-set caption(confcam,webcam_longueposeport)      "Control Port for the Option"
-set caption(confcam,webcam_longueposebit)       "Control Bit Number"
-set caption(confcam,webcam_longueposestart)     "Control when exposure begins"
-set caption(confcam,conf_webcam)                "Video Source Selection"
-set caption(confcam,format_webcam)              "Video Format Selection"
-set caption(confcam,ccd_N_B)                    "B&W CCD Modified Webcam"
-
 set caption(confcam,th7852a_coef)               "Coefficient"
 set caption(confcam,th7852a_ISA)                "Bus ISA"
 
@@ -172,8 +162,6 @@ set caption(confcam,site_sbig)                  "http://www.sbig.com/"
 set caption(confcam,site_cookbook)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 set caption(confcam,site_starlight)             "http://www.starlight-xpress.co.uk/index.htm"
 set caption(confcam,site_kitty)                 "http://perso.wanadoo.fr/bernard.dalstein/"
-set caption(confcam,site_webcam)                "http://www.astrocam.org/"
-set caption(confcam,site_webcam_chambers)       "http://www.pmdo.com/wintro.htm"
 set caption(confcam,site_th7852a)               "To be created"
 set caption(confcam,site_scr1300xtc)            "http://synonyme.nerim.net/imagerie/HomePage.html"
 set caption(confcam,site_dslr)                  "http://gphoto.sourceforge.net/"
@@ -202,7 +190,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,cookbook)                "CB245"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "APN"
@@ -286,15 +273,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Température du CCD :"
    set caption(confcam,test)                    "Test du SX28"
 
-   set caption(confcam,webcam_canal_usb)        "Canal vidéo USB"
-   set caption(confcam,webcam_longuepose)       "Option longue pose (S. Chambers)"
-   set caption(confcam,webcam_longueposeport)   "Port de contrôle de l'option"
-   set caption(confcam,webcam_longueposebit)    "Numéro du bit de commande"
-   set caption(confcam,webcam_longueposestart)  "Commande au début de la pose"
-   set caption(confcam,conf_webcam)             "Sélection de la source video"
-   set caption(confcam,format_webcam)           "Sélection du format video"
-   set caption(confcam,ccd_N_B)                 "WebCam modifiée avec CCD N&B"
-
    set caption(confcam,th7852a_coef)            "Coefficient"
    set caption(confcam,th7852a_ISA)             "Bus ISA"
 
@@ -345,8 +323,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_webcam)             "http://www.astrocam.org/"
-   set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
    set caption(confcam,site_th7852a)            "A créer"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
@@ -375,7 +351,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,cookbook)                "CB245"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Fotocamera digitale"
@@ -459,15 +434,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "CCD Temperatura:"
    set caption(confcam,test)                    "SX28 Test"
 
-   set caption(confcam,webcam_canal_usb)        "Canale video USB"
-   set caption(confcam,webcam_longuepose)       "Opzione lunga posa (S. Chambers)"
-   set caption(confcam,webcam_longueposeport)   "Porta di controllo dell'opzione"
-   set caption(confcam,webcam_longueposebit)    "Numero bit del comando"
-   set caption(confcam,webcam_longueposestart)  "Comando all'inizio della posa"
-   set caption(confcam,conf_webcam)             "Selezione sorgente video"
-   set caption(confcam,format_webcam)           "Selezione del formato video"
-   set caption(confcam,ccd_N_B)                 "Webcam modificata con CCD B&N"
-
    set caption(confcam,th7852a_coef)            "Coefficiente"
    set caption(confcam,th7852a_ISA)             "Bus ISA"
 
@@ -518,8 +484,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_webcam)             "http://www.astrocam.org/"
-   set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
    set caption(confcam,site_th7852a)            "Crea"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
@@ -548,7 +512,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,cookbook)                "CB245"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Cámara digital"
@@ -632,15 +595,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Temperatura CCD:"
    set caption(confcam,test)                    "Test SX28"
 
-   set caption(confcam,webcam_canal_usb)        "Canal vídeo USB"
-   set caption(confcam,webcam_longuepose)       "Opcion de exposición larga (S. Chambers)"
-   set caption(confcam,webcam_longueposeport)   "Puerto de control para la opcion"
-   set caption(confcam,webcam_longueposebit)    "Número del bit de control"
-   set caption(confcam,webcam_longueposestart)  "Control cuando empieza la exposición"
-   set caption(confcam,conf_webcam)             "Selección de la entrada de vídeo"
-   set caption(confcam,format_webcam)           "Selección de formato de vídeo"
-   set caption(confcam,ccd_N_B)                 "CCD Webcam Blanco y Negro modificada"
-
    set caption(confcam,th7852a_coef)            "Coeficiente"
    set caption(confcam,th7852a_ISA)             "Bus ISA"
 
@@ -691,8 +645,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_webcam)             "http://www.astrocam.org/"
-   set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
    set caption(confcam,site_th7852a)            "A crear"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
@@ -721,7 +673,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,cookbook)                "CB245"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Digital Fotoapparat"
@@ -805,15 +756,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Temperatur CCD:"
    set caption(confcam,test)                    "Test SX28"
 
-   set caption(confcam,webcam_canal_usb)        "USB Video Kanal"
-   set caption(confcam,webcam_longuepose)       "Lange Belichtung Option (S. Chambers)"
-   set caption(confcam,webcam_longueposeport)   "Kontroll Port der Option"
-   set caption(confcam,webcam_longueposebit)    "Steuer Bit Nummer"
-   set caption(confcam,webcam_longueposestart)  "Anfang der Belichtung Antrieb"
-   set caption(confcam,conf_webcam)             "Wahl der Videoquelle"
-   set caption(confcam,format_webcam)           "Wahl des Videoformats"
-   set caption(confcam,ccd_N_B)                 "Veränderte Schwartz/Weiss Webcam CCD"
-
    set caption(confcam,th7852a_coef)            "Faktor"
    set caption(confcam,th7852a_ISA)             "Bus ISA"
 
@@ -864,8 +806,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_webcam)             "http://www.astrocam.org/"
-   set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
    set caption(confcam,site_th7852a)            "Zu schaffen"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
@@ -894,7 +834,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,cookbook)                "CB245"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Digital Câmara"
@@ -978,15 +917,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "Temperatura do CCD:"
    set caption(confcam,test)                    "Teste SX28"
 
-   set caption(confcam,webcam_canal_usb)        "Canal Video USB"
-   set caption(confcam,webcam_longuepose)       "Opção de Longa Exposição S. Chambers"
-   set caption(confcam,webcam_longueposeport)   "Controlo do Porto para a Opção"
-   set caption(confcam,webcam_longueposebit)    "Controlo do Número do Bit"
-   set caption(confcam,webcam_longueposestart)  "Controlar o Início da Exposição"
-   set caption(confcam,conf_webcam)             "Selecção de Fonte Video"
-   set caption(confcam,format_webcam)           "Selecção do Formato Video"
-   set caption(confcam,ccd_N_B)                 "Webcam Modificada (CCD B&W)"
-
    set caption(confcam,th7852a_coef)            "Coeficiente"
    set caption(confcam,th7852a_ISA)             "Bus ISA"
 
@@ -1037,8 +967,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_webcam)             "http://www.astrocam.org/"
-   set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
    set caption(confcam,site_th7852a)            "To be created"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
@@ -1067,7 +995,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,cookbook)                "CB245"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,webcam)                  "WebCam"
    set caption(confcam,th7852A)                 "TH7852A"
    set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Digital Camera"
@@ -1151,15 +1078,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,temperature_CCD)         "CCD Temperature:"
    set caption(confcam,test)                    "SX28 Test"
 
-   set caption(confcam,webcam_canal_usb)        "USB Video Channel"
-   set caption(confcam,webcam_longuepose)       "S. Chambers Long Exposure Option"
-   set caption(confcam,webcam_longueposeport)   "Control Port for the Option"
-   set caption(confcam,webcam_longueposebit)    "Control Bit Number"
-   set caption(confcam,webcam_longueposestart)  "Control when exposure begins"
-   set caption(confcam,conf_webcam)             "Video Source Selection"
-   set caption(confcam,format_webcam)           "Video Format Selection"
-   set caption(confcam,ccd_N_B)                 "B&W CCD Modified Webcam"
-
    set caption(confcam,th7852a_coef)            "Coefficient"
    set caption(confcam,th7852a_ISA)             "Bus ISA"
 
@@ -1210,8 +1128,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_webcam)             "http://www.astrocam.org/"
-   set caption(confcam,site_webcam_chambers)    "http://www.pmdo.com/wintro.htm"
    set caption(confcam,site_th7852a)            "To be created"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
