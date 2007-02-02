@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.10 2007-01-06 16:13:06 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.11 2007-02-02 23:18:05 robertdelmas Exp $
 #
 
 package provide spectro 1.0
@@ -17,7 +17,7 @@ namespace eval ::spectro {
       global audace
 
       #--- Chargement des fonctions de spectrographie
-      uplevel #0 source [ file join $audace(rep_plugin) tool spectro spcaudace.tcl ]
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace.tcl ]\""
       #--- Mise en place de l'interface graphique
       createPanel $in.spectro
    }
