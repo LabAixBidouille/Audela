@@ -2,13 +2,12 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.7 2007-01-31 22:52:22 michelpujol Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.8 2007-02-02 23:33:00 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
 
 }
-
 
 #------------------------------------------------------------
 # ::confEqt::init ( est lance automatiquement au chargement de ce fichier tcl)
@@ -28,13 +27,13 @@ proc ::confEqt::init { } {
    if { ! [ info exists conf(confEqt,start) ] }    { set conf(confEqt,start)    "0" }
    if { ! [ info exists conf(confEqt,position) ] } { set conf(confEqt,position) "+155+100" }
 
-   #--- vaiables locales 
+   #--- vaiables locales
    set private(namespaceList) ""
    set private(labelList)     ""
    set private(frm)           "$audace(base).confeqt"
    set private(focuser)       ""
    set private(variableSelectedFocuser)  ""
-   
+
    #--- je charge la liste des plugins
    findPlugin
 }
@@ -53,8 +52,8 @@ proc ::confEqt::getLabel { } {
 
 #------------------------------------------------------------
 # ::confEqt::run
-# Affiche la fenetre de choix et de configuration 
-# 
+# Affiche la fenetre de choix et de configuration
+#
 #------------------------------------------------------------
 proc ::confEqt::run { { variableSelectedFocuser "" } } {
    if { [createDialog ]==0 } {
@@ -70,7 +69,7 @@ proc ::confEqt::run { { variableSelectedFocuser "" } } {
 #------------------------------------------------------------
 # ::confEqt::ok
 # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-# la configuration, et fermer la fenetre de reglage 
+# la configuration, et fermer la fenetre de reglage
 #------------------------------------------------------------
 proc ::confEqt::ok { } {
    variable private
@@ -98,7 +97,7 @@ proc ::confEqt::appliquer { } {
 
    #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
-   set index [lsearch -exact $private(labelList) $label ] 
+   set index [lsearch -exact $private(labelList) $label ]
    if { $index != -1 } {
       set conf(confEqt) [lindex $private(namespacelist) $index]
    } else {
@@ -107,14 +106,14 @@ proc ::confEqt::appliquer { } {
 
    #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
    foreach pluginLabel $private(namespacelist) {
-      ::confEqt::configurePlugin $pluginLabel  
+      ::confEqt::configurePlugin $pluginLabel
    }
 
    #--- Affichage d'un message d'alerte si necessaire
    ::confEqt::Connect_Equipement
 
    #--- je demarre le driver selectionne
-   createPlugin $conf(confEqt)   
+   createPlugin $conf(confEqt)
 
    if { $private(variableSelectedFocuser) != "" } {
       set $private(variableSelectedFocuser) $conf(confEqt)
@@ -146,7 +145,7 @@ proc ::confEqt::afficheAide { } {
 
    #--- je recupere le label de l'onglet selectionne
    set private(conf_confEqt) [Rnotebook:currentName $private(frm).usr.book ]
-   #--- je recupere le namespace correspondant au label  
+   #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
    set index [lsearch -exact $private(labelList) $label ]
    if { $index != -1 } {
@@ -197,14 +196,13 @@ proc ::confEqt::recup_position { } {
 
 #------------------------------------------------------------
 # confEqt::configurePlugin
-# configure le plugin 
+# configure le plugin
 #------------------------------------------------------------
 proc ::confEqt::configurePlugin { pluginLabel } {
    if { $pluginLabel != "" } {
-      ::$pluginLabel\::configurePlugin 
+      ::$pluginLabel\::configurePlugin
    }
 }
-
 
 #------------------------------------------------------------
 # ::confEqt::createDialog
@@ -281,7 +279,7 @@ proc ::confEqt::createDialog { } {
    button $private(frm).cmd.aide -text "$caption(confeqt,aide)" -relief raised -state normal -width 8 \
       -command " ::confEqt::afficheAide "
    pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-   pack $private(frm).cmd -side top -fill x    
+   pack $private(frm).cmd -side top -fill x
 
    #---
    focus $private(frm)
@@ -303,7 +301,7 @@ proc ::confEqt::createDialog { } {
 proc ::confEqt::select { { name "" } } {
    variable private
 
-   #--- je recupere le label correspondant au namespace  
+   #--- je recupere le label correspondant au namespace
    set index [ lsearch -exact $private(namespacelist) "$name" ]
    if { $index != -1 } {
       Rnotebook:select $private(frm).usr.book [ lindex $private(labelList) $index ]
@@ -314,9 +312,9 @@ proc ::confEqt::select { { name "" } } {
 # ::confEqt::createPlugin
 #    cree le plugin dont le nom est donne en parametre
 #------------------------------------------------------------
-proc ::confEqt::createPlugin { pluginLabel } {   
+proc ::confEqt::createPlugin { pluginLabel } {
    if { $pluginLabel != "" } {
-      #--- je demarrer le driver 
+      #--- je demarrer le driver
       ::$pluginLabel\::createPlugin
    }
 }
@@ -337,11 +335,11 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 # ::confEqt::findPlugin
 #   recherche les plugins presents
 #
-# conditions : 
+# conditions :
 #  - le plugin doit retourner un namespace non nul quand on charge son source .tcl
 #  - le plugin doit avoir une procedure getDriverType qui retourne "equipment" ou "focuser"
 #  - le plugin doit avoir une procedure getlabel
-# 
+#
 # si le plugin remplit les conditions
 #    son label est ajouté dans la liste labelList, et son namespace est ajoute dans namespacelist
 #    sinon le fichier tcl est ignore car ce n'est pas un driver
@@ -349,23 +347,23 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 # retrun 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confEqt::findPlugin { } {
-   variable private 
+   variable private
    global audace
    global caption
 
    #--- j'initialise les listes vides
    set private(namespacelist)  ""
-   set private(labelList)     ""
+   set private(labelList)      ""
    set pluginPattern [ file join audace plugin equipment * pkgIndex.tcl ]
 
    #--- chargement des differentes fenetres de configuration des drivers
    set error [catch { glob -nocomplain $pluginPattern } filelist ]
-   
+
    if { "$filelist" == "" } {
       #--- aucun fichier correct
       return 1
    }
-   
+
    #--- je recherche les drivers repondant au filtre driverPattern
    foreach pkgIndex $filelist {
       catch {
@@ -373,15 +371,15 @@ proc ::confEqt::findPlugin { } {
          set packageName [uplevel #0 source "$pkgIndex"]
          #--- je charge le package
          package require $packageName
-         
+
          set equipname $packageName
          if { [$equipname\:\:getPluginType] == "equipment"
               || [$equipname\:\:getPluginType] == "focuser" } {
-            set pluginlabel "[$equipname\:\:getLabel]" 
+            set pluginlabel "[$equipname\:\:getLabel]"
             #--- si c'est un plugin valide, je l'ajoute dans la liste
             lappend private(namespacelist) $equipname
             lappend private(labelList) $pluginlabel
-            $audace(console)::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v[package present $equipname]\n"                 
+            $audace(console)::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v[package present $equipname]\n"
          }
       } catchMessage
       #--- j'affiche le message d'erreur et je continu la recherche des plugins
@@ -447,86 +445,85 @@ proc ::confEqt::Connect_Equipement { } {
 # ::confEqt::createFrameFocuser
 #    Cree une frame pour selectionner le focuser
 #    Cette frame est destinee a etre insere dans une fenetre.
-# Parametres :  
+# Parametres :
 #    frm     : chemin TK de la frame a creer
-#    variableSelectedFocuser : nom de la variable dans laquelle est copié le nom 
-#                          du focuser selectionné 
-# Return  
+#    variableSelectedFocuser : nom de la variable dans laquelle est copié le nom
+#                              du focuser selectionné
+# Return
 #    nothing
 # Exemple:
 #    ::confEqt::createFrameFocuser $frm.focuserList ::confCam(audine,focuser)
-#     pack $frm.focuserList -in $frm -anchor center -side right -padx 10
+#    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
 #
 #------------------------------------------------------------
 proc ::confEqt::createFrameFocuser { frm variableSelectedFocuser } {
    variable private
    global conf
    global caption
-   
+
    set private(frame) $frm
    #--- je cree la frame si elle n'existe pas deja
    if { [winfo exists $frm ] == 0 } {
       frame $private(frame) -borderwidth 0 -relief raised
    }
 
-   #--- je recupere le nom de la variable 
+   #--- je recupere le nom de la variable
    set private(variableSelectedFocuser) $variableSelectedFocuser
-   
+
    ComboBox $frm.list \
-         -width 10         \
-         -height [llength $private(namespaceList)] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -textvariable $::confEqt::private(variableSelectedFocuser) \
-         -editable 0       \
-         -values $private(namespaceList)
-         
+      -width 10         \
+      -height [llength $private(namespaceList)] \
+      -relief sunken    \
+      -borderwidth 1    \
+      -textvariable $::confEqt::private(variableSelectedFocuser) \
+      -editable 0       \
+      -values $private(namespaceList)
    pack $frm.list -in $frm -anchor center -side left -padx 0 -pady 10
 
    #--- bouton de configuration de l'equipement
    button $frm.configure -text "$caption(confeqt,configurer) ..." \
-      -command { 
+      -command {
          ::confEqt::run
       }
    pack $frm.configure -in $frm -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
-   
+
 }
 
 #------------------------------------------------------------
 # ::confEqt::startDriver
-#   lance tous les plugins 
+#   lance tous les plugins
 #
 #------------------------------------------------------------
 proc ::confEqt::startDriver { } {
-   variable private 
-   
+   variable private
+
    #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
    foreach pluginLabel $private(namespacelist) {
       if { [::$pluginLabel\::getStartFlag] == 1 } {
          set catchError [ catch { ::$pluginLabel\::createPlugin  } catchMessage ]
          if { $catchError == 1 } {
             #--- j'affiche un message d'erreur
-            ::console::affiche_erreur "Error start equipment $pluginLabel :  $catchMessage\n"            
+            ::console::affiche_erreur "Error start equipment $pluginLabel : $catchMessage\n"
          }
       }
    }
 }
+
 #------------------------------------------------------------
 # ::confEqt::stopDriver
 #   arrete tous les plugins qui sont en service
 #
 #------------------------------------------------------------
 proc ::confEqt::stopDriver { } {
-   variable private 
+   variable private
 
    #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
    foreach pluginLabel $private(namespacelist) {
       if { [::$pluginLabel\::isReady] == 1 } {
-         ::$pluginLabel\::deletePlugin  
+         ::$pluginLabel\::deletePlugin
       }
    }
 }
-
 
 #--- connexion au demarrage du driver selectionne par defaut
 ::confEqt::init
