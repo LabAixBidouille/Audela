@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.44 2007-01-22 18:53:50 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.45 2007-02-02 23:16:49 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -601,17 +601,30 @@ namespace eval ::confVisu {
       variable private
       global caption
       global color
+      global confCam
 
       set private($visuNo,camNo) $camNo
       if { $camNo == 0 } {
-         set private($visuNo,camName) ""
+         set private($visuNo,camName)        ""
+         set private($visuNo,camProductName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
-            $private($visuNo,This).fra1.labCam_name_labURL configure -text $caption(confVisu,tiret) -fg $color(blue)
+            $private($visuNo,This).fra1.labCam_name_labURL configure -text "$caption(confVisu,tiret)" -fg $color(blue)
          }
       } else {
-         set private($visuNo,camName) [cam$camNo name]
+         set private($visuNo,camName)        [cam$camNo name]
          set private($visuNo,camProductName) [cam$camNo product]
-         $private($visuNo,This).fra1.labCam_name_labURL configure -text "$private($visuNo,camName) $model" -fg $color(blue)
+         #--- Je determine cam_item
+         if { $confCam(A,camNo) == $camNo } {
+            set cam_item "A"
+         } elseif { $confCam(B,camNo) == $camNo } {
+            set cam_item "B"
+         } elseif { $confCam(C,camNo) == $camNo } {
+            set cam_item "C"
+         } else {
+            set cam_item ""
+         }
+         #--- J'affiche le nom de la camera
+         $private($visuNo,This).fra1.labCam_name_labURL configure -text "$cam_item - $private($visuNo,camName) $model" -fg $color(blue)
       }
    }
 
