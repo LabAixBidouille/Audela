@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.35 2007-01-20 13:07:46 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.36 2007-02-02 23:12:27 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -248,7 +248,7 @@ namespace eval ::AcqFC {
          set panneau(AcqFC,$visuNo,lg_film) "$parametres(acqFC,$visuNo,lg_film)"
       }
 
-      AcqFCBuildIF $visuNo 
+      AcqFCBuildIF $visuNo
 
       #--- Traitement du bouton Configuration pour la camera APN (DSLR)
       if { ( $panneau(AcqFC,$visuNo,mode) == "6" ) || ( $panneau(AcqFC,$visuNo,mode) == "7" ) } {
@@ -291,17 +291,17 @@ namespace eval ::AcqFC {
       global audace conf panneau
 
       #---
-      set camNo [ ::confVisu::getCamNo $visuNo ] 
+      set camNo [ ::confVisu::getCamNo $visuNo ]
       if { $camNo == "0" } {
-         #--- La camera n'a pas ete encore selectionnee 
+         #--- La camera n'a pas ete encore selectionnee
          set camProduct ""
-      } else { 
+      } else {
          set camProduct [ cam$camNo product ]
       }
       #---
       if { "$camProduct" == "webcam" } {
          #--- C'est une WebCam
-         if { $conf(webcam,longuepose) == "0" } {
+         if { [ ::confCam::getLongExposure $camNo ] == "0" } {
             #--- Cas d'une WebCam standard
             pack forget $panneau(AcqFC,$visuNo,This).pose.but
             pack forget $panneau(AcqFC,$visuNo,This).pose.lab
@@ -446,8 +446,8 @@ namespace eval ::AcqFC {
         if [ catch { open $nom_fichier w } fichier ] {
            #---
         } else {
-           foreach { a b } [ array get parametres ] { 
-              puts $fichier "set parametres($a) \"$b\"" 
+           foreach { a b } [ array get parametres ] {
+              puts $fichier "set parametres($a) \"$b\""
            }
            close $fichier
         }
@@ -463,11 +463,11 @@ namespace eval ::AcqFC {
       if { $panneau(AcqFC,$visuNo,mode) == "4" } {
          ::AcqFC::Intervalle_continu_1 $visuNo
       } elseif { $panneau(AcqFC,$visuNo,mode) == "5" } {
-         ::AcqFC::Intervalle_continu_2 $visuNo   
+         ::AcqFC::Intervalle_continu_2 $visuNo
       } elseif { $panneau(AcqFC,$visuNo,mode) == "6" } {
-         ::AcqFC::selectVideoMode $visuNo 
+         ::AcqFC::selectVideoMode $visuNo
       } elseif { $panneau(AcqFC,$visuNo,mode) == "7" } {
-         ::AcqFC::selectVideoMode $visuNo 
+         ::AcqFC::selectVideoMode $visuNo
       }
 
       pack $panneau(AcqFC,$visuNo,This) -side left -fill y
@@ -499,7 +499,7 @@ namespace eval ::AcqFC {
       global panneau
 
       pack forget $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
-      
+
       if { $panneau(AcqFC,$visuNo,showvideopreview) == "1" } {
          catch { stopVideoPreview $visuNo }
       }
@@ -795,7 +795,7 @@ namespace eval ::AcqFC {
                           set integre non
                           if { $choix == "ok" } {
                              #--- Ouverture de la fenetre de selection des cameras
-                             ::confTel::run 
+                             ::confTel::run
                              tkwait window $audace(base).confTel
                           }
                           ::audace::menustate normal
@@ -867,7 +867,7 @@ namespace eval ::AcqFC {
                           set integre non
                           if { $choix == "ok" } {
                              #--- Ouverture de la fenetre de selection des cameras
-                             ::confTel::run 
+                             ::confTel::run
                              tkwait window $audace(base).confTel
                           }
                           ::audace::menustate normal
@@ -959,7 +959,7 @@ namespace eval ::AcqFC {
                           set integre non
                           if { $choix == "ok" } {
                              #--- Ouverture de la fenetre de selection des cameras
-                             ::confTel::run 
+                             ::confTel::run
                              tkwait window $audace(base).confTel
                           }
                           ::audace::menustate normal
@@ -1066,7 +1066,7 @@ namespace eval ::AcqFC {
                           set integre non
                           if { $choix == "ok" } {
                              #--- Ouverture de la fenetre de selection des cameras
-                             ::confTel::run 
+                             ::confTel::run
                              tkwait window $audace(base).confTel
                           }
                           ::audace::menustate normal
@@ -1078,7 +1078,7 @@ namespace eval ::AcqFC {
                     #--- Verifier qu'il s'agit bien d'une WebCam
                     if { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)" 
+                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)"
                        set integre non
                     }
                     #--- Verifier qu'il y a bien un nom de fichier
@@ -1140,8 +1140,8 @@ namespace eval ::AcqFC {
                     #--- Verifier qu'il s'agit bien d'une WebCam
                     if { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)" 
-                       set integre non   
+                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)"
+                       set integre non
                     }
                     #--- Verifier qu'il y a bien un nom de fichier
                     if { $panneau(AcqFC,$visuNo,nom_image) == "" } {
@@ -1228,7 +1228,8 @@ namespace eval ::AcqFC {
               #--- Pose en cours
               set panneau(AcqFC,$visuNo,pose_en_cours) "1"
               #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
-              if { ( [ ::confVisu::getProduct $visuNo ] == "webcam" ) && ( $conf(webcam,longuepose) == "0" ) } {
+              set camNo [ ::confVisu::getCamNo $visuNo ]
+              if { ( [ ::confVisu::getProduct $visuNo ] == "webcam" ) && ( [ ::confCam::getLongExposure $camNo ] == "0" ) } {
                  set panneau(AcqFC,$visuNo,pose) "0"
               }
               #--- Branchement selon le mode de prise de vue
@@ -1264,7 +1265,7 @@ namespace eval ::AcqFC {
                     set heure $audace(tu,format,hmsint)
                     if { $panneau(AcqFC,$visuNo,simulation) == "1" } {
                        Message $visuNo consolog $caption(acqfc,lance_simu)
-                    } 
+                    }
                     Message $visuNo consolog $caption(acqfc,lanceserie) \
                        $panneau(AcqFC,$visuNo,nb_images) $heure
                     Message $visuNo consolog $caption(acqfc,nomgen) $panneau(AcqFC,$visuNo,nom_image) \
@@ -1272,7 +1273,7 @@ namespace eval ::AcqFC {
                     #--- Debut de la premiere pose
                     if { $panneau(AcqFC,$visuNo,simulation) == "1" } {
                        set panneau(AcqFC,$visuNo,debut) [ clock second ]
-                    } 
+                    }
                     for { set i 1 } { ( $i <= $panneau(AcqFC,$visuNo,nb_images) ) && ( $panneau(AcqFC,$visuNo,demande_arret) == "0" ) } { incr i } {
                        acq $visuNo $panneau(AcqFC,$visuNo,pose) $panneau(AcqFC,$visuNo,bin)
                        #--- Je dois encore sauvegarder l'image
@@ -1314,14 +1315,14 @@ namespace eval ::AcqFC {
                        set panneau(AcqFC,$visuNo,fin) [ clock second ]
                        set panneau(AcqFC,$visuNo,intervalle) [ expr $panneau(AcqFC,$visuNo,fin) - $panneau(AcqFC,$visuNo,debut) ]
                        Message $visuNo consolog $caption(acqfc,fin_simu)
-                    } 
+                    }
                     #--- Cas particulier des cameras APN (DSLR)
                     if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::AcqFC::GoStop loadlastimage $msg \n"
-                       } else { 
+                       } else {
                           ::console::disp "::AcqFC::GoStop loadlastimage OK \n"
                        }
                        #--- Visualisation de l'image
@@ -1391,7 +1392,7 @@ namespace eval ::AcqFC {
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::AcqFC::GoStop loadlastimage $msg \n"
-                       } else { 
+                       } else {
                           ::console::disp "::AcqFC::GoStop loadlastimage OK \n"
                        }
                        #--- Visualisation de l'image
@@ -1464,7 +1465,7 @@ namespace eval ::AcqFC {
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::AcqFC::GoStop loadlastimage $msg \n"
-                       } else { 
+                       } else {
                           ::console::disp "::AcqFC::GoStop loadlastimage OK \n"
                        }
                        #--- Visualisation de l'image
@@ -1543,7 +1544,7 @@ namespace eval ::AcqFC {
                     }
                     set heure $audace(tu,format,hmsint)
                     Message $visuNo consolog $caption(acqfc,arrcont) $heure
-                    if { $panneau(AcqFC,$visuNo,enregistrer) == "1" } { 
+                    if { $panneau(AcqFC,$visuNo,enregistrer) == "1" } {
                        set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) - 1 ]
                        Message $visuNo consolog $caption(acqfc,dersauve) [append nom $panneau(AcqFC,$visuNo,index)]
                        set panneau(AcqFC,$visuNo,index) [ expr $panneau(AcqFC,$visuNo,index) + 1 ]
@@ -1554,7 +1555,7 @@ namespace eval ::AcqFC {
                        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::AcqFC::GoStop loadlastimage $msg \n"
-                       } else { 
+                       } else {
                           ::console::disp "::AcqFC::GoStop loadlastimage OK \n"
                        }
                        #--- Visualisation de l'image
@@ -1579,7 +1580,7 @@ namespace eval ::AcqFC {
                     set heure $audace(tu,format,hmsint)
                     Message $visuNo consolog $caption(acqfc,acqvideo) \
                        $panneau(AcqFC,$visuNo,lg_film) $panneau(AcqFC,$visuNo,rate) $heure
-                    set nom $panneau(AcqFC,$visuNo,nom_image)                     
+                    set nom $panneau(AcqFC,$visuNo,nom_image)
                     #--- Pour eviter un nom de fichier qui commence par un blanc
                     set nom [lindex $nom 0]
                     if { $panneau(AcqFC,$visuNo,indexer) == "1" } {
@@ -1977,7 +1978,7 @@ namespace eval ::AcqFC {
       set result [ catch { cam$camNo loadlastimage } msg ]
       if { $result == "1" } {
          ::console::disp "::AcqFC::acq loadlastimage camNo$camNo error=$msg \n"
-      } else { 
+      } else {
          ::console::disp "::AcqFC::acq loadlastimage visuNo$visuNo OK \n"
          ::confVisu::autovisu $visuNo
       }
@@ -2038,7 +2039,7 @@ namespace eval ::AcqFC {
         }
         #---
         return 1
-      } 
+      }
 
       set panneau(AcqFC,$visuNo,showvideopreview) "1"
       return 0
@@ -2073,7 +2074,7 @@ namespace eval ::AcqFC {
 
       if { $panneau(AcqFC,$visuNo,avancement_acq) == "1" } {
          #--- Recuperation de la position de la fenetre
-         ::AcqFC::recup_position_1 $visuNo 
+         ::AcqFC::recup_position_1 $visuNo
 
          #--- Initialisation de la barre de progression
          set cpt "100"
@@ -2351,8 +2352,8 @@ namespace eval ::AcqFC {
          log {
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
-            catch { 
-                puts -nonewline $::AcqFC::log_id [eval [concat {format} $args]] 
+            catch {
+                puts -nonewline $::AcqFC::log_id [eval [concat {format} $args]]
                 #--- Force l'ecriture immediate sur le disque
                 flush $::AcqFC::log_id
              }
@@ -2367,8 +2368,8 @@ namespace eval ::AcqFC {
             }
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
-            catch { 
-                puts -nonewline $::AcqFC::log_id [eval [concat {format} $args]] 
+            catch {
+                puts -nonewline $::AcqFC::log_id [eval [concat {format} $args]]
                 #--- Force l'ecriture immediate sur le disque
                 flush $::AcqFC::log_id
             }
@@ -2384,8 +2385,8 @@ namespace eval ::AcqFC {
 
 #***** Bouton pour le decalage du telescope ***********************
 # cmdShiftConfig{}
-#    affiche la fenetre de configuration pour modifier les parametres 
-#    de deplacement du telescope entre 2 acquisitions d'une serie         
+#    affiche la fenetre de configuration pour modifier les parametres
+#    de deplacement du telescope entre 2 acquisitions d'une serie
 #------------------------------------------------------------------
    proc cmdShiftConfig { visuNo } {
       global audace
@@ -2402,7 +2403,7 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,intervalle)            "....."
       set panneau(AcqFC,$visuNo,simulation_deja_faite) "0"
 
-      ::AcqFC::recup_position $visuNo 
+      ::AcqFC::recup_position $visuNo
 
       #--- Initialisation de la position de la fenetre
       if { ! [ info exists conf(acqfc,continu1,position) ] } { set conf(acqfc,continu1,position) "+120+260" }
@@ -2850,7 +2851,7 @@ namespace eval ::AcqFC {
       pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
 
       frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -borderwidth 1 -relief raised
-      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -side top -fill x 
+      pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame2 -side top -fill x
 
       frame $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3 -borderwidth 0 -relief raised
       pack $panneau(AcqFC,$visuNo,base).selectWindowedFenster.frame3 \
