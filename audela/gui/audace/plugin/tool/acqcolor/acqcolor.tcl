@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.10 2006-10-28 15:36:44 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.11 2007-02-02 15:01:59 alainklotz Exp $
 #
 
 proc testexit { } {
@@ -19,7 +19,7 @@ proc testexit { } {
 #--- Chargement de la librairie
 load librgb[info sharedlibextension]
 
-#--- Definition des variables globales (arrays) 
+#--- Definition des variables globales (arrays)
 global caption
 global audace
 global confcolor
@@ -39,17 +39,17 @@ set zone(image1,naxis2) "0"
 set zone(image2,naxis1) "0"
 set zone(image2,naxis2) "0"
 
-#--- Initialisation des variables d'infos 
-set infos(MouseState) "rien" 
-set infos(box)        {1 1 1 1} 
+#--- Initialisation des variables d'infos
+set infos(MouseState) "rien"
+set infos(box)        {1 1 1 1}
 set infos(type_image) ""
 set infos(dir)        ""
 catch {
    set infos(dir) $audace(rep_images)
 }
 
-#--- Valeurs numeriques a placer sur l'ecran 
-set confcolor(exptime) "1" 
+#--- Valeurs numeriques a placer sur l'ecran
+set confcolor(exptime) "1"
 set confcolor(nombre)  "3"
 set confcolor(name)    "i"
 set confcolor(indice)  "1"
@@ -70,11 +70,11 @@ if { $conf(color_nb_fenetre) == "0" } {
    set dimy1 515
 }
 
-# 
+#
 # Scrolled_Canvas
 # Cree un canvas scrollable, ainsi que les deux scrollbars pour le deplacer
 # Ref: Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392
-# 
+#
 proc color_Scrolled_Canvas { c args } {
    frame $c
    eval {canvas $c.canvas \
@@ -682,7 +682,7 @@ bind $zone(image1) <Motion> {
    }
    #--- Affichage des coordonnees
    wm title $audace(base).test "$caption(acqcolor,main_title) ($audace(acqvisu,ccd_model)) ($xi,$yi) = $intens   "
-} 
+}
 
 #--- Declare une connexion avec une camera Audine couleur sur LPT1
 if {$audace(acqvisu,ccd)=="kac1310"} {
@@ -852,7 +852,7 @@ proc testacqfen { } {
       $audace(base).test.frame2.fra0.labURL_decompte configure -text $caption(acqcolor,lecture) -fg $color(red)
       update
    }
-   cam1000 acq 
+   cam1000 acq
    #--- Alarme sonore de fin de pose
    ::camera::alarme_sonore $confcolor(exptime)
    #--- Appel du timer
@@ -909,7 +909,7 @@ proc testtotal { } {
    vwait status_cam1000
    set infos(type_image) "couleur"
    rgb_split 1000
-   testvisu 
+   testvisu
    #--- Affichage du status
    $audace(base).test.frame2.fra0.labURL_decompte configure -text ""
    #--- Gestion graphique du bouton
@@ -947,7 +947,7 @@ proc seprvb { } {
 proc trichro { } {
    global audace
 
-   catch { 
+   catch {
       source [ file join $audace(rep_plugin) tool acqcolor trichro.tcl ]
    }
 }
@@ -987,7 +987,7 @@ proc testvisu { } {
       set mycuts3 [ testgetseuils 1000 ]
       set infos(rgbcuts) [ list $mycuts1 $mycuts2 $mycuts3 ]
       #--- Definit les limites de seuils bas et haut et place les
-      #--- curseurs des barres de seuil au bon endroit 
+      #--- curseurs des barres de seuil au bon endroit
       set lohi [ testseuillimites 1000 1 ]
       testsetscales $lohi 1
       set lohi [ testseuillimites 1000 2 ]
@@ -1163,9 +1163,9 @@ proc testsave { } {
       if { $infos(type_image) == "couleur" } {
          for { set k 1 } { $k <= 3 } { incr k } {
             set kk [ expr $k-1 ]
-            set hi [ buf100$k getkwd MIPS-HI ] 
+            set hi [ buf100$k getkwd MIPS-HI ]
             buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
-            set lo [ buf100$k getkwd MIPS-LO ] 
+            set lo [ buf100$k getkwd MIPS-LO ]
             buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
          }
          rgb_save $filename
@@ -1212,7 +1212,7 @@ proc testgetseuils { bufnum } {
    }
    if { $hi == "" } {
       #--- Sinon on fait un stat sur l'image
-      buf$bufnum stat 
+      buf$bufnum stat
       set hi [ lindex [ buf$bufnum getkwd MIPS-HI ] 1 ]
       set lo [ lindex [ buf$bufnum getkwd MIPS-LO ] 1 ]
    }
@@ -1228,9 +1228,9 @@ proc testgetseuils { bufnum } {
    return [ list $hi $lo ]
 }
 
-# 
+#
 # Nouvelle valeur de seuil haut
-# 
+#
 proc testchangeHiCut1 { foo } {
    global zone
    global infos
@@ -1312,9 +1312,9 @@ proc testchangeHiCut3 { foo } {
    }
 }
 
-# 
+#
 # Nouvelle valeur de seuil bas
-# 
+#
 proc testchangeLoCut1 { foo } {
    global zone
    global infos
@@ -1396,9 +1396,9 @@ proc testchangeLoCut3 { foo } {
    }
 }
 
-# 
+#
 # Les coordonnees coord sont des coordonnees canvas et non ecran
-# 
+#
 proc testboxBegin { coord } {
    global infos
 
@@ -1406,9 +1406,9 @@ proc testboxBegin { coord } {
    set infos(box,1) [ testscreen2Canvas $coord ]
 }
 
-# 
+#
 # Les coordonnees x et y sont des coordonnees canvas et non ecran
-# 
+#
 proc testboxDrag { coord } {
    global audace
    global infos
@@ -1430,9 +1430,9 @@ proc testboxDrag { coord } {
       -outline $audace(color,drag_rectangle) -tag selBox ]
 }
 
-# 
+#
 # Les coordonnees x et y sont des coordonnees canvas et non ecran
-# 
+#
 proc testboxEnd { coord } {
    global infos
    global zone
@@ -1463,7 +1463,7 @@ proc testboxEnd { coord } {
    }
 }
 
-# 
+#
 # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une
 # liste de deux entiers, et retourne également une liste de deux entiers
 #
@@ -1475,10 +1475,10 @@ proc testscreen2Canvas { coord } {
    return [ list $xx $yy ]
 }
 
-# 
+#
 # Transforme des coordonnees canvas en coordonnees image. L'argument est une
 # liste de deux entiers, et retourne également une liste de deux entiers
-# 
+#
 proc testcanvas2Picture { coord } {
    global zone
 
@@ -1514,16 +1514,32 @@ proc testjpeg { } {
          append infos(dir) "/"
       }
       if { $infos(type_image) == "couleur" } {
+         buf1000 save [ file join $infos(dir) rgbdummy ]
          for { set k 1 } { $k <= 3 } { incr k } {
             set kk [ expr $k-1 ]
-            set hi [ buf100$k getkwd MIPS-HI ]
-            buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
-            set lo [ buf100$k getkwd MIPS-LO ]
-            buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
+            buf1001 load3d "[ file join $infos(dir) rgbdummy ][ buf1000 extension ]" $k
+            set hi [ buf1001 getkwd MIPS-HI ]
+            buf1001 setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
+            set lo [ buf1001 getkwd MIPS-LO ]
+            buf1001 setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
+            buf1001 setkwd [ list NAXIS 2 int {} {} ]
+            buf1001 save [ file join $infos(dir) rgbdummy$k ]
          }
-         rgb_save [ file join $infos(dir) rgbdummy ]
-         fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1000 extension ]" $filename
+         fits2colorjpeg "[ file join $infos(dir) rgbdummy1 ][ buf1001 extension ]" "[ file join $infos(dir) rgbdummy2 ][ buf1001 extension ]" "[ file join $infos(dir) rgbdummy3 ][ buf1001 extension ]" $filename 80
          catch { file delete [ file join $infos(dir) rgbdummy ][ buf1000 extension ] }
+         catch { file delete [ file join $infos(dir) rgbdummy1 ][ buf1001 extension ] }
+         catch { file delete [ file join $infos(dir) rgbdummy2 ][ buf1001 extension ] }
+         catch { file delete [ file join $infos(dir) rgbdummy3 ][ buf1001 extension ] }
+         #for { set k 1 } { $k <= 3 } { incr k } {
+         #   set kk [ expr $k-1 ]
+         #   set hi [ buf100$k getkwd MIPS-HI ]
+         #   buf100$k setkwd [ lreplace $hi 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 0 ] ]
+         #   set lo [ buf100$k getkwd MIPS-LO ]
+         #   buf100$k setkwd [ lreplace $lo 1 1 [ lindex [ lindex $infos(rgbcuts) $kk ] 1 ] ]
+         #}
+         #rgb_save [ file join $infos(dir) rgbdummy ]
+         #fits2colorjpeg "[ file join $infos(dir) rgbdummy ][ buf1000 extension ]" $filename
+         #catch { file delete [ file join $infos(dir) rgbdummy ][ buf1000 extension ] }
       }
       if { $infos(type_image) == "noiretblanc" } {
          buf1000 sauve_jpeg $filename
