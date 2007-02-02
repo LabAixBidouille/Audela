@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.55 2007-02-02 23:14:44 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.56 2007-02-02 23:54:46 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -2932,7 +2932,7 @@ namespace eval ::confCam {
    #----------------------------------------------------------------------------
    proc select { cam_item { camName "audine" } } {
       variable This
-      global confCam frmm
+      global frmm
 
       set nn $This.usr.book
       switch -exact -- $camName {
@@ -2943,8 +2943,8 @@ namespace eval ::confCam {
          starlight   { Rnotebook:raise $nn 5 }
          kitty       { Rnotebook:raise $nn 6 }
          webcam      {
-            ::$confCam($cam_item,camName)\::confToWidget $cam_item
-            ::$confCam($cam_item,camName)\::fillConfigPage $frmm(Camera7) $cam_item
+            ::webcam::confToWidget $cam_item
+            ::webcam::fillConfigPage $frmm(Camera7) $cam_item
             Rnotebook:raise $nn 7
          }
          th7852a     { Rnotebook:raise $nn 8 }
@@ -3013,7 +3013,7 @@ namespace eval ::confCam {
                ::confCam::ConfKitty
             }
             webcam {
-               ::$confCam($cam_item,camName)\::stop $camNo $cam_item
+               ::webcam::stop $camNo $cam_item
             }
             dslr {
                #--- Si la fenetre Telechargement d'images est affichee, je la ferme
@@ -3073,7 +3073,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList { camNo } {
-      global conf confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
@@ -3124,7 +3124,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList_Scan { camNo } {
-      global conf confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
@@ -3243,8 +3243,6 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasLongExposure { camNo } {
-      global confCam
-
       #--- Je verifie si la camera est capable de fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
       #---
@@ -3266,7 +3264,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasVideo { camNo } {
-      global conf confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3295,7 +3293,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasScan { camNo } {
-      global conf confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3330,7 +3328,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasShutter { camNo } {
-      global conf confCam
+      global conf
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3367,7 +3365,6 @@ namespace eval ::confCam {
    proc getShutterOption { camNo } {
       global conf
       global caption
-      global confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3932,7 +3929,7 @@ namespace eval ::confCam {
                }
             }
             webcam {
-               ::$confCam($cam_item,camName)\::configureCamera $cam_item
+               ::webcam::configureCamera $cam_item
             }
             th7852a {
                set camNo [ cam::create camth "unknown" -name TH7852A ]
@@ -4354,7 +4351,7 @@ namespace eval ::confCam {
          }
          webcam {
             #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$cam_item,...)
-            ::$confCam($cam_item,camName)\::widgetToConf $cam_item
+            ::webcam::widgetToConf $cam_item
          }
          th7852a {
             #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
