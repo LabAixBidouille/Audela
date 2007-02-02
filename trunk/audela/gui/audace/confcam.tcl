@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.54 2007-01-27 15:06:52 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.55 2007-02-02 23:14:44 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -28,6 +28,9 @@ namespace eval ::confCam {
       if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
       if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
       if { ! [ info exists conf(camera,position) ] }  { set conf(camera,position)  "+25+45" }
+
+      #--- Charge les plugins des cameras
+      source [ file join $audace(rep_plugin) camera webcam webcam.tcl ]
 
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
@@ -88,17 +91,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(kitty,on_off) ] }  { set conf(kitty,on_off)  "1" }
 
       #--- initConf 7
-      if { ! [ info exists conf(webcam,longuepose) ] }           { set conf(webcam,longuepose)           "0" }
-      if { ! [ info exists conf(webcam,longueposeport) ] }       { set conf(webcam,longueposeport)       "LPT1:" }
-      if { ! [ info exists conf(webcam,longueposelinkbit) ] }    { set conf(webcam,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(webcam,longueposestartvalue) ] } { set conf(webcam,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,longueposestopvalue) ] }  { set conf(webcam,longueposestopvalue)  "1" }
-      if { ! [ info exists conf(webcam,mirh) ] }                 { set conf(webcam,mirh)                 "0" }
-      if { ! [ info exists conf(webcam,mirv) ] }                 { set conf(webcam,mirv)                 "0" }
-      if { ! [ info exists conf(webcam,channel) ] }              { set conf(webcam,channel)              "0" }
-      if { ! [ info exists conf(webcam,ccd_N_B) ] }              { set conf(webcam,ccd_N_B)              "0" }
-      if { ! [ info exists conf(webcam,dim_ccd_N_B) ] }          { set conf(webcam,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,ccd) ] }                  { set conf(webcam,ccd)                  "" }
+      ::webcam::init
 
       #--- initConf 8
       if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
@@ -170,8 +163,7 @@ namespace eval ::confCam {
    # confCam::run
    # Cree la fenetre de choix et de configuration des cameras
    # This = chemin de la fenetre
-   # confCam(A,camName) = nom de la camera (audine hisis sbig cookbook starlight kitty webcam \
-   # th7852a scr1300xtc dslr andor fingerlakes)
+   # confCam(A,camName) = nom de la camera
    #
    proc run { } {
       variable This
@@ -180,9 +172,9 @@ namespace eval ::confCam {
 
       set This "$audace(base).confCam"
       createDialog
-      if { $confCam($confCam(cam_item),camName) != "" } {
-         set cam_item $confCam(cam_item)
-         select $confCam($cam_item,camName)
+      set cam_item $confCam(cam_item)
+      if { $confCam($cam_item,camName) != "" } {
+         select $cam_item $confCam($cam_item,camName)
          if { [ string compare $confCam($cam_item,camName) sbig ] == "0" } {
             ::confCam::SbigDispTemp
          } elseif { [ string compare $confCam($cam_item,camName) kitty ] == "0" } {
@@ -195,7 +187,7 @@ namespace eval ::confCam {
             ::confCam::AndorDispTemp
          }
       } else {
-         select audine
+         select $cam_item audine
       }
       catch { tkwait visibility $This }
    }
@@ -329,8 +321,8 @@ namespace eval ::confCam {
 
       if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera1)
-         if { [::confCam::getProduct $confCam($cam_item,camNo)] == "audine" && \
-            [::confLink::getLinkNamespace $confCam(audine,port)] == "parallelport" } {
+         if { [ ::confCam::getProduct $confCam($cam_item,camNo) ] == "audine" && \
+            [ ::confLink::getLinkNamespace $confCam(audine,port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera actif
             $frm.test configure -state normal
          } else {
@@ -367,57 +359,6 @@ namespace eval ::confCam {
                $frm.temp_ccd configure -state disabled
                $frm.test configure -state disabled
             }
-         }
-      }
-   }
-
-   #
-   # confCam::ConfWebCam
-   # Permet d'activer ou de desactiver les boutons de configuration de la WebCam
-   #
-   proc ConfWebCam { } {
-      global audace
-      global confCam
-      global frmm
-
-      set cam_item $confCam(cam_item)
-
-      if { [ winfo exists $audace(base).confCam ] } {
-         set frm $frmm(Camera7)
-         if { [::confCam::getProduct $confCam($cam_item,camNo)] == "webcam" } {
-            #--- Boutons de configuration de la WebCam actif
-            $frm.conf_webcam configure -state normal
-            $frm.format_webcam configure -state normal
-         } else {
-            #--- Boutons de configuration de la WebCam inactif
-            $frm.conf_webcam configure -state disabled
-            $frm.format_webcam configure -state disabled
-         }
-         if { $confCam(webcam,longuepose) == "1" } {
-            #--- Widgets de configuration de la longue pose actifs
-            $frm.lpport configure -state normal
-            $frm.configure configure -state normal
-            $frm.longueposelinkbit configure -state normal
-            $frm.longueposestartvalue configure -state normal
-         } else {
-            #--- Widgets de configuration de la longue pose inactifs
-            $frm.lpport configure -state disabled
-            $frm.configure configure -state disabled
-            $frm.longueposelinkbit configure -state disabled
-            $frm.longueposestartvalue configure -state disabled
-         }
-         if { $confCam(webcam,ccd_N_B) == "1" } {
-            if { $confCam(webcam,dim_ccd_N_B) == "1/4''" } {
-               set confCam(webcam,ccd) "ICX098BL-6"
-            } elseif { $confCam(webcam,dim_ccd_N_B) == "1/3''" } {
-               set confCam(webcam,ccd) "ICX424AL-6"
-            } elseif { $confCam(webcam,dim_ccd_N_B) == "1/2''" } {
-               set confCam(webcam,ccd) "ICX414AL-6"
-            }
-            pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
-         } else {
-            set confCam(webcam,ccd) "ICX098BQ-A"
-            pack forget $frm.frame14
          }
       }
    }
@@ -493,7 +434,7 @@ namespace eval ::confCam {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
-         select $confCam($confCam(cam_item),camName)
+         select $confCam(cam_item) $confCam($confCam(cam_item),camName)
          focus $This
          return
       }
@@ -2161,244 +2102,14 @@ namespace eval ::confCam {
    # Fenetre de configuration des WebCam
    #
    proc fillPage7 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
-
-      #--- confToWidget
-      set confCam(webcam,longuepose)           $conf(webcam,longuepose)
-      set confCam(webcam,longueposeport)       $conf(webcam,longueposeport)
-      set confCam(webcam,longueposelinkbit)    $conf(webcam,longueposelinkbit)
-      set confCam(webcam,longueposestartvalue) $conf(webcam,longueposestartvalue)
-      set confCam(webcam,longueposestopvalue)  $conf(webcam,longueposestopvalue)
-      set confCam(webcam,mirh)                 $conf(webcam,mirh)
-      set confCam(webcam,mirv)                 $conf(webcam,mirv)
-      set confCam(webcam,channel)              $conf(webcam,channel)
-      set confCam(webcam,ccd_N_B)              $conf(webcam,ccd_N_B)
-      set confCam(webcam,dim_ccd_N_B)          $conf(webcam,dim_ccd_N_B)
-      set confCam(webcam,ccd)                  $conf(webcam,ccd)
+      global confCam frmm
 
       #--- Initialisation
       set frmm(Camera7) [ Rnotebook:frame $nn 7 ]
       set frm $frmm(Camera7)
 
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill both -expand 1
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side bottom -fill x -pady 2
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -in $frm.frame1 -side left -fill both -expand 1
-
-      frame $frm.frame3a -borderwidth 0 -relief raised
-      pack $frm.frame3a -in $frm.frame1 -side left -fill both -expand 1
-
-      frame $frm.frame4 -borderwidth 1 -relief solid
-      pack $frm.frame4 -in $frm.frame3a -side top -fill x
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame3 -side bottom -fill x -pady 5
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame3 -side bottom -fill x -pady 5
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame3 -side left -fill x -pady 5
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame3 -side left -fill x -pady 5
-
-      frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -in $frm.frame4 -side top -fill x -pady 5
-
-      frame $frm.frame10 -borderwidth 0 -relief raised
-      pack $frm.frame10 -in $frm.frame4 -side top -fill x -pady 5
-
-      frame $frm.frame11 -borderwidth 0 -relief raised
-      pack $frm.frame11 -in $frm.frame4 -side top -fill x -pady 5
-
-      frame $frm.frame12 -borderwidth 0 -relief raised
-      pack $frm.frame12 -in $frm.frame4 -side top -fill x -pady 5
-
-      frame $frm.frame13 -borderwidth 0 -relief raised
-      pack $frm.frame13 -in $frm.frame3a -side bottom -fill x -pady 5
-
-      frame $frm.frame14 -borderwidth 0 -relief raised
-      pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
-
-      #--- Definition du canal USB
-      label $frm.lab1 -text "$caption(confcam,webcam_canal_usb)"
-      pack $frm.lab1 -in $frm.frame7 -anchor center -side left -padx 10
-
-      #--- Je constitue la liste des canaux USB
-      set list_combobox [ list 0 1 2 3 4 5 6 7 8 9 ]
-
-      #--- Choix du canal USB
-      ComboBox $frm.port \
-         -width 7          \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -textvariable confCam(webcam,channel) \
-         -editable 0       \
-         -values $list_combobox
-      pack $frm.port -in $frm.frame7 -anchor center -side left -padx 10
-
-      #--- Miroir en x et en y
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(webcam,mirh)
-      pack $frm.mirx -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
-
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(webcam,mirv)
-      pack $frm.miry -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
-
-      #--- Boutons de configuration de la source et du format video
-      button $frm.conf_webcam -text "$caption(confcam,conf_webcam)" \
-         -command { global confCam ; cam$confCam($confCam(cam_item),camNo) videosource }
-      pack $frm.conf_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
-      button $frm.format_webcam -text "$caption(confcam,format_webcam)" \
-         -command { global confCam ; cam$confCam($confCam(cam_item),camNo) videoformat }
-      pack $frm.format_webcam -in $frm.frame5 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
-
-      #--- Option longue pose avec lien au site web de Steve Chambers
-      checkbutton $frm.longuepose -highlightthickness 0 -variable confCam(webcam,longuepose) \
-         -command {::confCam::ConfWebCam }
-      pack $frm.longuepose -in $frm.frame9 -anchor center -side left -pady 3
-
-      label $frm.labURL_a -text "$caption(confcam,webcam_longuepose)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL_a -in $frm.frame9 -anchor center -side left -pady 3
-
-      label $frm.lab2 -text "$caption(confcam,webcam_longueposeport)"
-      pack $frm.lab2 -in $frm.frame10 -anchor center -side left -padx 3 -pady 5
-
-      #--- Je constitue la liste des liaisons pour la longuepose
-      set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" } ]
-
-      #--- Je verifie le contenu de la liste
-      if { [llength $list_combobox ] > 0 } {
-         #--- si la liste n'est pas vide,
-         #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_combobox $confCam(webcam,longueposeport)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
-            #--- je la remplace par le premier item de la liste
-            set confCam(webcam,longueposeport) [lindex $list_combobox 0]
-         }
-      } else {
-         #--- si la liste est vide
-         #--- je desactive l'option longue pose
-         set confCam(webcam,longueposeport) ""
-         set confCam(webcam,longuepose) 0
-         #--- j'empeche de selectionner l'option longue
-         $frm.longuepose configure -state disable
-      }
-
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.lpport \
-         -width 13         \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable confCam(webcam,longueposeport) \
-         -values $list_combobox \
-         -modifycmd {
-            ::confCam::configureWebcamLinkLonguePose
-         }
-      pack $frm.lpport -in $frm.frame10 -anchor center -side right -padx 10 -pady 5
-
-      #--- Bouton de configuration des liaisons
-      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confCam::configureWebcamLinkLonguePose
-            ::confLink::run ::confCam(webcam,longueposeport) { parallelport quickremote } \
-               "- $caption(confcam,dslr_longuepose) - $caption(confcam,webcam)"
-         }
-      pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
-
-      label $frm.lab3 -text "$caption(confcam,webcam_longueposebit)"
-      pack $frm.lab3 -in $frm.frame11 -anchor center -side left -padx 3 -pady 5
-
-      set list_combobox [ list 0 1 2 3 4 5 6 7 ]
-      ComboBox $frm.longueposelinkbit \
-         -width 7          \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -textvariable confCam(webcam,longueposelinkbit) \
-         -editable 0       \
-         -values $list_combobox
-      pack $frm.longueposelinkbit -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
-
-      label $frm.lab4 -text "$caption(confcam,webcam_longueposestart)"
-      pack $frm.lab4 -in $frm.frame12 -anchor center -side left -padx 3 -pady 5
-
-      entry $frm.longueposestartvalue -width 4 -textvariable confCam(webcam,longueposestartvalue) -justify center
-      pack $frm.longueposestartvalue -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
-
-      #--- WebCam modifiee avec un capteur Noir et Blanc
-      checkbutton $frm.ccd_N_B -text "$caption(confcam,ccd_N_B)" -highlightthickness 0 \
-         -variable confCam(webcam,ccd_N_B) -command { ::confCam::ConfWebCam }
-      pack $frm.ccd_N_B -in $frm.frame13 -anchor center -side left -pady 3 -pady 8
-
-      set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
-      ComboBox $frm.dim_ccd_N_B \
-         -width 6         \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable confCam(webcam,dim_ccd_N_B) \
-         -modifycmd "::confCam::ConfWebCam" \
-         -values $list_combobox
-      pack $frm.dim_ccd_N_B -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
-
-      #--- Gestion des boutons actifs/inactifs
-      ::confCam::ConfWebCam
-
-      #--- Site web officiel des WebCam
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
-
-      label $frm.labURL -text "$caption(confcam,site_webcam)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      #--- Pour le site web de reference
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_webcam)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera7)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera7)
-         $frm.labURL configure -fg $color(blue)
-      }
-      #--- Pour le site web de Steve Chambers
-      bind $frm.labURL_a <ButtonPress-1> {
-         set filename "$caption(confcam,site_webcam_chambers)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL_a <Enter> {
-         global frmm
-         set frm $frmm(Camera7)
-         $frm.labURL_a configure -fg $color(purple)
-      }
-      bind $frm.labURL_a <Leave> {
-         global frmm
-         set frm $frmm(Camera7)
-         $frm.labURL_a configure -fg $color(blue)
-      }
+      #--- Construction de l'interface graphique
+      ::webcam::fillConfigPage $frm $confCam(cam_item)
    }
 
    #
@@ -2815,7 +2526,7 @@ namespace eval ::confCam {
       }
 
       #--- Gestion des 2 types de liaisons suivant les APN (DSLR) utilisés
-      if { [::confLink::getLinkNamespace $confCam(dslr,port) ] == "photopc" } {
+      if { [ ::confLink::getLinkNamespace $confCam(dslr,port) ] == "photopc" } {
          pack $frm.frame2 -side top -fill x
          pack $frm.frame3 -side top -fill x
          pack forget $frm.frame4
@@ -2828,7 +2539,7 @@ namespace eval ::confCam {
          pack forget $frm.frame11
          pack $frm.frame12 -side bottom -fill x -pady 2
          pack forget $frm.frame13
-      } elseif { [::confLink::getLinkNamespace $confCam(dslr,port) ] == "gphoto2" } {
+      } elseif { [ ::confLink::getLinkNamespace $confCam(dslr,port) ] == "gphoto2" } {
          pack forget $frm.frame2
          pack forget $frm.frame3
          pack $frm.frame4 -side top -fill x
@@ -3219,9 +2930,9 @@ namespace eval ::confCam {
    # Selectionne un onglet en passant le nom (eventuellement) de
    # la camera decrite dans l'onglet
    #----------------------------------------------------------------------------
-   proc select { { camName "default" } } {
+   proc select { cam_item { camName "audine" } } {
       variable This
-      global confCam
+      global confCam frmm
 
       set nn $This.usr.book
       switch -exact -- $camName {
@@ -3231,7 +2942,11 @@ namespace eval ::confCam {
          cookbook    { Rnotebook:raise $nn 4 }
          starlight   { Rnotebook:raise $nn 5 }
          kitty       { Rnotebook:raise $nn 6 }
-         webcam      { Rnotebook:raise $nn 7 }
+         webcam      {
+            ::$confCam($cam_item,camName)\::confToWidget $cam_item
+            ::$confCam($cam_item,camName)\::fillConfigPage $frmm(Camera7) $cam_item
+            Rnotebook:raise $nn 7
+         }
          th7852a     { Rnotebook:raise $nn 8 }
          scr1300xtc  { Rnotebook:raise $nn 9 }
          dslr        { Rnotebook:raise $nn 10 }
@@ -3248,13 +2963,17 @@ namespace eval ::confCam {
    #    aucun
    #----------------------------------------------------------------------------
    proc selectCamItem { } {
+      variable This
       global confCam
 
       #--- je recupere l'item courant
       set cam_item $confCam(cam_item)
 
+      #--- je recupere le nom de la camera a partir de l'onglet courant
+      set index [expr [Rnotebook:currentIndex $This.usr.book ] - 1 ]
+
       #--- je selectionne l'onglet correspondant a la camera de cet item
-      ::confCam::select $confCam($cam_item,camName)
+      ::confCam::select $cam_item [lindex $confCam(names) $index]
    }
 
    #----------------------------------------------------------------------------
@@ -3275,7 +2994,11 @@ namespace eval ::confCam {
             set confCam($cam_item,visuNo) "0"
          }
 
-         #--- je ferme les ressources specifiques de la camera
+         #--- Supprime la camera
+         set result [ catch { cam::delete $camNo } erreur ]
+         if { $result == "1" } { console::affiche_erreur "$erreur \n" }
+
+         #--- Je ferme les ressources specifiques de la camera
          switch -exact -- $confCam($cam_item,camName) {
             audine {
                #--- Je ferme la liaison d'acquisition de la camera
@@ -3290,11 +3013,7 @@ namespace eval ::confCam {
                ::confCam::ConfKitty
             }
             webcam {
-               ::confCam::ConfWebCam
-               #--- je ferme la liaison longuepose
-               if { $conf(webcam,longuepose) == 1 } {
-                  ::confLink::delete $conf(webcam,longueposeport) "cam$camNo" "longuepose"
-               }
+               ::$confCam($cam_item,camName)\::stop $camNo $cam_item
             }
             dslr {
                #--- Si la fenetre Telechargement d'images est affichee, je la ferme
@@ -3302,7 +3021,7 @@ namespace eval ::confCam {
                   destroy $audace(base).telecharge_image
                }
                ::confCam::ConfDSLR
-               #--- je ferme la liaison longuepose
+               #--- Je ferme la liaison longuepose
                if { $conf(dslr,longuepose) == 1 } {
                   ::confLink::delete $conf(dslr,longueposeport) "cam$camNo" "longuepose"
                }
@@ -3314,10 +3033,6 @@ namespace eval ::confCam {
                }
             }
          }
-
-         #--- Supprime la camera
-         set result [ catch { cam::delete $camNo } erreur ]
-         if { $result == "1" } { console::affiche_erreur "$erreur \n" }
       }
 
       #--- Raz des parametres de l'item
@@ -3358,7 +3073,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList { camNo } {
-      global conf
+      global conf confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
@@ -3366,7 +3081,7 @@ namespace eval ::confCam {
          #---
          switch $product {
             audine {
-               switch [::confLink::getLinkNamespace $conf(audine,port)] {
+               switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "parallelport" {
                      set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
                   }
@@ -3382,7 +3097,7 @@ namespace eval ::confCam {
                }
             }
             webcam {
-               set binningList { 1x1 }
+               set binningList [ ::webcam::getBinningList ]
             }
             dslr {
                set binningList [cam$camNo quality list]
@@ -3409,25 +3124,74 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc getBinningList_Scan { camNo } {
-      global conf
+      global conf confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } product]
       if { $result == 0 } {
-         if { $product == "audine" } {
-            switch [::confLink::getLinkNamespace $conf(audine,port)] {
-               "parallelport" { set binningList_Scan { 1x1 2x2 4x4 } }
-               "audinet"      { set binningList_Scan { 1x1 2x2 4x4 } }
-               "ethernaude"   { set binningList_Scan { 1x1 2x2 } }
-               default        { set binningList_Scan { } }
+         #---
+         switch $product {
+            audine {
+               switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
+                  "parallelport" { set binningList_Scan { 1x1 2x2 4x4 } }
+                  "audinet"      { set binningList_Scan { 1x1 2x2 4x4 } }
+                  "ethernaude"   { set binningList_Scan { 1x1 2x2 } }
+                  default        { set binningList_Scan { } }
+               }
             }
-         } else {
-            set binningList_Scan { }
+            webcam {
+               set binningList_Scan [ ::webcam::getBinningListScan ]
+            }
+            default {
+               set binningList_Scan { }
+            }
          }
       } else {
          set binningList_Scan { }
       }
       return $binningList_Scan
+   }
+
+   #
+   # confCam::getLongExposure
+   #    Retourne 1 si le mode longue pose est activé
+   #    Retourne 0 sinon
+   #  Parametres :
+   #    camNo : Numero de la camera
+   #
+   proc getLongExposure { camNo } {
+      global confCam
+
+      set result 1
+      #--- Je recupere le nom de la camera
+      if { $camNo != 0 } {
+         set camProduct [cam$camNo product]
+         if { [hasLongExposure $camNo] == 1 } {
+            #--- Je determine cam_item
+            if { $confCam(A,camNo) == $camNo } {
+               set cam_item "A"
+            } elseif { $confCam(B,camNo) == $camNo } {
+               set cam_item "B"
+            } elseif { $confCam(C,camNo) == $camNo } {
+               set cam_item "C"
+            } else {
+               set cam_item ""
+            }
+            #---
+            if { $cam_item != "" } {
+               switch $camProduct {
+                  webcam {
+                     set result [::$camProduct\::getLongExposure $cam_item]
+                  }
+                  default {
+                     #--- Toutes les cameras sont en longue pose par defaut
+                     set result 1
+                  }
+               }
+            }
+         }
+      }
+      return $result
    }
 
    #
@@ -3471,6 +3235,30 @@ namespace eval ::confCam {
    }
 
    #
+   # confCam::hasLongExposure
+   #    Retourne "1" si la camera possede un mode longue pose
+   #    Retourne "0" sinon
+   #
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
+   proc hasLongExposure { camNo } {
+      global confCam
+
+      #--- Je verifie si la camera est capable de fournir son nom de famille
+      set result [ catch { cam$camNo product } camProduct ]
+      #---
+      if { $result == 0 } {
+         switch $camProduct {
+            webcam  { return [ ::webcam::hasLongExposure ] }
+            default { return 0 }
+         }
+      } else {
+         return 0
+      }
+   }
+
+   #
    # confCam::hasVideo
    #    Retourne "1" si la camera possede un mode video, sinon retourne "0"
    #
@@ -3478,7 +3266,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasVideo { camNo } {
-      global conf
+      global conf confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3486,12 +3274,12 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch -exact -- $camProduct {
             audine  {
-               switch [::confLink::getLinkNamespace $conf(audine,port)] {
+               switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "ethernaude"   { return 1 }
                   default        { return 0 }
                }
             }
-            webcam  { return 1 }
+            webcam  { return [ ::webcam::hasVideo ] }
             default { return 0 }
          }
       } else {
@@ -3507,7 +3295,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasScan { camNo } {
-      global conf
+      global conf confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3515,12 +3303,15 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch -exact -- $camProduct {
             audine {
-               switch -exact [::confLink::getLinkNamespace $conf(audine,port)] {
+               switch -exact [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "parallelport" { return 1 }
                   "audinet"      { return 1 }
                   "ethernaude"   { return 1 }
                   default        { return 0 }
                }
+            }
+            webcam {
+               return [ ::webcam::hasScan ]
             }
             default {
                return 0
@@ -3539,7 +3330,7 @@ namespace eval ::confCam {
    #     camNo : Numero de la camera
    #
    proc hasShutter { camNo } {
-      global conf
+      global conf confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3555,6 +3346,7 @@ namespace eval ::confCam {
                            }
                         }
             sbig        { return 1 }
+            webcam      { return [ ::webcam::hasShutter ] }
             andor       { return 1 }
             fingerlakes { return 1 }
             cemes       { return 1 }
@@ -3575,7 +3367,7 @@ namespace eval ::confCam {
    proc getShutterOption { camNo } {
       global conf
       global caption
-      global conf
+      global confCam
 
       #--- Je verifie si la camera est capable fournir son nom de famille
       set result [ catch { cam$camNo product } camProduct ]
@@ -3583,7 +3375,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch $camProduct {
             audine {
-               switch [::confLink::getLinkNamespace $conf(audine,port)] {
+               switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "parallelport" {
                      #--- O + F + S
                      set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
@@ -3613,6 +3405,9 @@ namespace eval ::confCam {
             sbig {
                #--- O + F + S - A confirmer avec le materiel
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+            }
+            webcam {
+               set ShutterOptionList [ ::webcam::getShutterOption ]
             }
             andor {
                #--- O + F + S - A confirmer avec le materiel
@@ -3673,24 +3468,6 @@ namespace eval ::confCam {
          pack $frm.frame11 -in $frm.frame4 -anchor n -side bottom -fill both -expand true
          pack forget $frm.frame12
          pack $frm.frame13 -side bottom -fill x -pady 2
-      }
-   }
-
-   #
-   # confCam::configureWebcamLinkLonguePose
-   #    Positionne la liaison sur celle qui vient d'etre selectionnee pour
-   #    la longue pose de la camera WebCam
-   #
-   proc configureWebcamLinkLonguePose { } {
-      global confCam
-
-      #--- Je positionne startvalue par defaut en fonction du type de liaison
-      if { [ ::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "parallelport" } {
-         set confCam(webcam,longueposestartvalue) "0"
-         set confCam(webcam,longueposestopvalue)  "1"
-      } elseif { [ ::confLink::getLinkNamespace $confCam(webcam,longueposeport) ] == "quickremote" } {
-         set confCam(webcam,longueposestartvalue) "1"
-         set confCam(webcam,longueposestopvalue)  "0"
       }
    }
 
@@ -4155,47 +3932,7 @@ namespace eval ::confCam {
                }
             }
             webcam {
-               set camNo [ cam::create webcam USB -channel $conf(webcam,channel) \
-                  -lpport $conf(webcam,longueposeport) -name WEBCAM -ccd $conf(webcam,ccd) ]
-               console::affiche_erreur "$caption(confcam,webcam_canal_usb) ($caption(confcam,webcam))\
-                  $caption(confcam,2points) Channel = $conf(webcam,channel)\n"
-               console::affiche_erreur "$caption(confcam,webcam_longuepose) $caption(confcam,2points)\
-                  $conf(webcam,longuepose)\n"
-               console::affiche_saut "\n"
-               set confCam($cam_item,camNo) $camNo
-               cam$camNo buf [visu$visuNo buf]
-               cam$camNo mirrorh $conf(webcam,mirh)
-               cam$camNo mirrorv $conf(webcam,mirv)
-               #--- Parametrage des longues poses
-               if { $conf(webcam,longuepose) == "1" } {
-                  switch [::confLink::getLinkNamespace $conf(webcam,longueposeport)] {
-                     parallelport {
-                        #--- Je cree la liaison longue pose
-                        set linkNo [::confLink::create $conf(webcam,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,longueposelinkbit)"]
-                        #---
-                        cam$camNo longuepose 1
-                        cam$camNo longueposelinkno $linkNo
-                        cam$camNo longueposelinkbit $conf(webcam,longueposelinkbit)
-                        cam$camNo longueposestartvalue $conf(webcam,longueposestartvalue)
-                        cam$camNo longueposestopvalue $conf(webcam,longueposestopvalue)
-                     }
-                     quickremote {
-                        #--- Je cree la liaison longue pose
-                        set linkNo [::confLink::create $conf(webcam,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,longueposelinkbit)"]
-                        #---
-                        cam$camNo longuepose 1
-                        cam$camNo longueposelinkno $linkNo
-                        cam$camNo longueposelinkbit $conf(webcam,longueposelinkbit)
-                        cam$camNo longueposestartvalue $conf(webcam,longueposestartvalue)
-                        cam$camNo longueposestopvalue $conf(webcam,longueposestopvalue)
-                     }
-                  }
-               } else {
-                  #--- Pas de liaison longue pose
-                  cam$camNo longuepose 0
-               }
-               #---
-               ::confVisu::visuDynamix $visuNo 255 -255
+               ::$confCam($cam_item,camName)\::configureCamera $cam_item
             }
             th7852a {
                set camNo [ cam::create camth "unknown" -name TH7852A ]
@@ -4221,7 +3958,7 @@ namespace eval ::confCam {
                ::confVisu::visuDynamix $visuNo 4096 -4096
             }
             dslr {
-               switch [::confLink::getLinkNamespace $conf(dslr,port)] {
+               switch [ ::confLink::getLinkNamespace $conf(dslr,port) ] {
                   gphoto2 {
                      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir $::audela_start_dir ]
                      set confCam($cam_item,camNo) $camNo
@@ -4235,10 +3972,10 @@ namespace eval ::confCam {
                      cam$camNo systemservice 0
                      #--- Parametrage des longues poses
                      if { $conf(dslr,longuepose) == "1" } {
-                        switch [::confLink::getLinkNamespace $conf(dslr,longueposeport)] {
+                        switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
                            parallelport {
                               #--- Je cree la liaison longue pose
-                              set linkNo [::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)"]
+                              set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
                               #---
                               cam$camNo longuepose 1
                               cam$camNo longueposelinkno $linkNo
@@ -4248,7 +3985,7 @@ namespace eval ::confCam {
                            }
                            quickremote {
                               #--- Je cree la liaison longue pose
-                              set linkNo [::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)"]
+                              set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
                               #---
                               cam$camNo longuepose 1
                               cam$camNo longueposelinkno $linkNo
@@ -4381,17 +4118,17 @@ namespace eval ::confCam {
                }
                #--- je cree la camera en fonction de la liaison choisie
                #--- A MODIFER: creer d'abord la liaison, puis la camera audine
-               switch [::confLink::getLinkNamespace $conf(audine,port)] {
+               switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   parallelport {
                      set camNo [cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
                      cam$camNo cantype $conf(audine,can)
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8"]
+                     set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                   }
                   quickaudine {
                      set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
+                     set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                   ethernaude {
                      ### set conf(ethernaude,host) [ ::audace::verifip $conf(ethernaude,host) ]
@@ -4429,7 +4166,7 @@ namespace eval ::confCam {
                         }
                      }
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
+                     set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                   audinet {
                      set camNo [cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
@@ -4437,7 +4174,7 @@ namespace eval ::confCam {
                         -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) \
                         -debug_cam $conf(audinet,debug) ]
                      #--- je cree la liaison utilisée par la camera pour l'acquisition
-                     set linkNo [::confLink::create $conf(audine,port) "cam$camNo" "acquisition" ""]
+                     set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                }
                #--- fin switch conf(audine,port)
@@ -4457,7 +4194,7 @@ namespace eval ::confCam {
 
                #--- je parametre le type de l'obturateur
                #--- (sauf pour l'EthernAude qui est commande par l'option -shutterinvert)
-               if { [::confLink::getLinkNamespace $conf(audine,port)] != "ethernaude" } {
+               if { [ ::confLink::getLinkNamespace $conf(audine,port) ] != "ethernaude" } {
                   if { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine-)" } {
                      cam$camNo shuttertype audine reverse
                   } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine)" } {
@@ -4473,7 +4210,7 @@ namespace eval ::confCam {
 
                #--- je parametre le fonctionnement de l'ampli du CCD
                #--- (sans effet sur l'EthernAude et l'AudiNet)
-               if { [::confLink::getLinkNamespace $conf(audine,port)] == "parallelport" } {
+               if { [ ::confLink::getLinkNamespace $conf(audine,port) ] == "parallelport" } {
                   switch -exact -- $conf(audine,ampli_ccd) {
                      0 { cam$camNo ampli "synchro" }
                      1 { cam$camNo ampli "on" }
@@ -4487,7 +4224,7 @@ namespace eval ::confCam {
                #--- j'affiche un message d'information
                console::affiche_erreur "$caption(confcam,camera) [ cam$camNo name ] ([ cam$camNo ccd ])\n"
                console::affiche_erreur "$caption(confcam,port_liaison)\
-                  ([::[::confLink::getLinkNamespace $conf(audine,port)]::getLabel])\
+                  ([ ::[ ::confLink::getLinkNamespace $conf(audine,port) ]::getLabel ])\
                   $caption(confcam,2points) $conf(audine,port)\n"
                console::affiche_saut "\n"
             }
@@ -4511,7 +4248,7 @@ namespace eval ::confCam {
 
       #--- Traitement des erreurs detectees par le catch
       if { $erreur == "1" } {
-         tk_messageBox -message "$errorMessage" -icon error
+         tk_messageBox -message "$errorMessage \n $::errorInfo" -icon error
          #--- En cas de probleme, je desactive le demarrage automatique
          set conf(camera,$cam_item,start) "0"
          #--- En cas de probleme, camera par defaut
@@ -4523,7 +4260,7 @@ namespace eval ::confCam {
       #--- Gestion des boutons actifs/inactifs
       ::confCam::ConfAudine
       ::confCam::ConfKitty
-      ::confCam::ConfWebCam
+      ::webcam::ConfigWebCam $cam_item
       ::confCam::ConfDSLR
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectCamera ] {
@@ -4553,119 +4290,123 @@ namespace eval ::confCam {
 
       set nn $This.usr.book
 
-      set index [expr [Rnotebook:currentIndex $nn ] - 1 ]
-      set confCam($cam_item,camName) [lindex $confCam(names) $index]
-      set conf(camera,$cam_item,camName) [lindex $confCam(names) $index]
+      set index                             [ expr [ Rnotebook:currentIndex $nn ] - 1 ]
+      set confCam($cam_item,camName)        [ lindex $confCam(names) $index ]
+      set conf(camera,$cam_item,camName)    [ lindex $confCam(names) $index ]
 
-      #--- Memorise la configuration de Audine dans le tableau conf(audine,...)
-      set frm [ Rnotebook:frame $nn 1 ]
-      set conf(audine,ampli_ccd)            [ lsearch "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" "$confCam(audine,ampli_ccd)" ]
-      set conf(audine,can)                  $confCam(audine,can)
-      set conf(audine,ccd)                  $confCam(audine,ccd)
-      set conf(audine,foncobtu)             [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(audine,foncobtu)" ]
-      set conf(audine,mirh)                 $confCam(audine,mirh)
-      set conf(audine,mirv)                 $confCam(audine,mirv)
-      set conf(audine,port)                 $confCam(audine,port)
-      set conf(audine,typeobtu)             $confCam(audine,typeobtu)
-      #--- Memorise la configuration des Hi-SIS dans le tableau conf(hisis,...)
-      set frm [ Rnotebook:frame $nn 2 ]
-      set conf(hisis,delai_a)               $confCam(hisis,delai_a)
-      set conf(hisis,delai_b)               $confCam(hisis,delai_b)
-      set conf(hisis,delai_c)               $confCam(hisis,delai_c)
-      set conf(hisis,foncobtu)              [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(hisis,foncobtu)" ]
-      set conf(hisis,mirh)                  $confCam(hisis,mirh)
-      set conf(hisis,mirv)                  $confCam(hisis,mirv)
-      set conf(hisis,modele)                [ lindex "11 22 23 24 33 36 39 43 44 48" $confCam(hisis,modele) ]
-      set conf(hisis,port)                  $confCam(hisis,port)
-      set conf(hisis,res)                   $confCam(hisis,res)
-      #--- Memorise la configuration de la SBIG dans le tableau conf(sbig,...)
-      set frm [ Rnotebook:frame $nn 3 ]
-      set conf(sbig,cool)                   $confCam(sbig,cool)
-      set conf(sbig,foncobtu)               [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(sbig,foncobtu)" ]
-      set conf(sbig,host)                   $confCam(sbig,host)
-      set conf(sbig,mirh)                   $confCam(sbig,mirh)
-      set conf(sbig,mirv)                   $confCam(sbig,mirv)
-      set conf(sbig,port)                   $confCam(sbig,port)
-      set conf(sbig,temp)                   $confCam(sbig,temp)
-      #--- Memorise la configuration de la CB245 dans le tableau conf(cookbook,...)
-      set frm [ Rnotebook:frame $nn 4 ]
-      set conf(cookbook,mirh)               $confCam(cookbook,mirh)
-      set conf(cookbook,mirv)               $confCam(cookbook,mirv)
-      set conf(cookbook,port)               $confCam(cookbook,port)
-      #--- Memorise la configuration des Starlight dans le tableau conf(starlight,...)
-      set frm [ Rnotebook:frame $nn 5 ]
-      set conf(starlight,acc)               [ lsearch "$caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur)" "$confCam(starlight,acc)" ]
-      set conf(starlight,mirh)              $confCam(starlight,mirh)
-      set conf(starlight,mirv)              $confCam(starlight,mirv)
-      set conf(starlight,modele)            [ lindex "MX516 MX916 HX516" $confCam(starlight,modele) ]
-      set conf(starlight,port)              $confCam(starlight,port)
-      #--- Memorise la configuration des Kitty dans le tableau conf(kitty,...)
-      set frm [ Rnotebook:frame $nn 6 ]
-      set conf(kitty,captemp)               [ lsearch "$caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5)" "$confCam(kitty,captemp)" ]
-      set conf(kitty,mirh)                  $confCam(kitty,mirh)
-      set conf(kitty,mirv)                  $confCam(kitty,mirv)
-      set conf(kitty,modele)                $confCam(kitty,modele)
-      set conf(kitty,port)                  $confCam(kitty,port)
-      set conf(kitty,res)                   $confCam(kitty,res)
-      set conf(kitty,on_off)                $confCam(kitty,on_off)
-      #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,...)
-      set frm [ Rnotebook:frame $nn 7 ]
-      set conf(webcam,longuepose)           $confCam(webcam,longuepose)
-      set conf(webcam,longueposeport)       $confCam(webcam,longueposeport)
-      set conf(webcam,longueposelinkbit)    $confCam(webcam,longueposelinkbit)
-      set conf(webcam,longueposestartvalue) $confCam(webcam,longueposestartvalue)
-      set conf(webcam,longueposestopvalue)  $confCam(webcam,longueposestopvalue)
-      set conf(webcam,mirh)                 $confCam(webcam,mirh)
-      set conf(webcam,mirv)                 $confCam(webcam,mirv)
-      set conf(webcam,channel)              $confCam(webcam,channel)
-      set conf(webcam,ccd_N_B)              $confCam(webcam,ccd_N_B)
-      set conf(webcam,dim_ccd_N_B)          $confCam(webcam,dim_ccd_N_B)
-      set conf(webcam,ccd)                  $confCam(webcam,ccd)
-      #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
-      set frm [ Rnotebook:frame $nn 8 ]
-      set conf(th7852a,coef)                $confCam(th7852a,coef)
-      set conf(th7852a,mirh)                $confCam(th7852a,mirh)
-      set conf(th7852a,mirv)                $confCam(th7852a,mirv)
-      #--- Memorise la configuration de la SCR1300XTC dans le tableau conf(scr1300xtc,...)
-      set frm [ Rnotebook:frame $nn 9 ]
-      set conf(scr1300xtc,mirh)             $confCam(scr1300xtc,mirh)
-      set conf(scr1300xtc,mirv)             $confCam(scr1300xtc,mirv)
-      set conf(scr1300xtc,port)             $confCam(scr1300xtc,port)
-      #--- Memorise la configuration de l'APN (DSLR) dans le tableau conf(dslr,...) et conf(apn,...)
-      set frm [ Rnotebook:frame $nn 10 ]
-      set conf(dslr,port)                   $confCam(dslr,port)
-      set conf(dslr,longuepose)             $confCam(dslr,longuepose)
-      set conf(dslr,longueposeport)         $confCam(dslr,longueposeport)
-      set conf(dslr,longueposelinkbit)      $confCam(dslr,longueposelinkbit)
-      set conf(dslr,longueposestartvalue)   $confCam(dslr,longueposestartvalue)
-      set conf(dslr,longueposestopvalue)    $confCam(dslr,longueposestopvalue)
-      set conf(dslr,statut_service)         $confCam(dslr,statut_service)
-      set conf(dslr,mirh)                   $confCam(dslr,mirh)
-      set conf(dslr,mirv)                   $confCam(dslr,mirv)
-      set conf(apn,baud)                    $confCam(apn,baud)
-     ### set conf(apn,serial_port)             $confCam(apn,serial_port)
-      if { [ info exists confCam(apn,model) ] } {
-         set conf(apn,model)                $confCam(apn,model)
-      } else {
-         catch { unset conf(apn,model) }
+      switch $conf(camera,$cam_item,camName) {
+         audine {
+            #--- Memorise la configuration de Audine dans le tableau conf(audine,...)
+            set conf(audine,ampli_ccd)            [ lsearch "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" "$confCam(audine,ampli_ccd)" ]
+            set conf(audine,can)                  $confCam(audine,can)
+            set conf(audine,ccd)                  $confCam(audine,ccd)
+            set conf(audine,foncobtu)             [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(audine,foncobtu)" ]
+            set conf(audine,mirh)                 $confCam(audine,mirh)
+            set conf(audine,mirv)                 $confCam(audine,mirv)
+            set conf(audine,port)                 $confCam(audine,port)
+            set conf(audine,typeobtu)             $confCam(audine,typeobtu)
+         }
+         hisis {
+            #--- Memorise la configuration des Hi-SIS dans le tableau conf(hisis,...)
+            set conf(hisis,delai_a)               $confCam(hisis,delai_a)
+            set conf(hisis,delai_b)               $confCam(hisis,delai_b)
+            set conf(hisis,delai_c)               $confCam(hisis,delai_c)
+            set conf(hisis,foncobtu)              [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(hisis,foncobtu)" ]
+            set conf(hisis,mirh)                  $confCam(hisis,mirh)
+            set conf(hisis,mirv)                  $confCam(hisis,mirv)
+            set conf(hisis,modele)                [ lindex "11 22 23 24 33 36 39 43 44 48" $confCam(hisis,modele) ]
+            set conf(hisis,port)                  $confCam(hisis,port)
+            set conf(hisis,res)                   $confCam(hisis,res)
+         }
+         sbig {
+            #--- Memorise la configuration de la SBIG dans le tableau conf(sbig,...)
+            set conf(sbig,cool)                   $confCam(sbig,cool)
+            set conf(sbig,foncobtu)               [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(sbig,foncobtu)" ]
+            set conf(sbig,host)                   $confCam(sbig,host)
+            set conf(sbig,mirh)                   $confCam(sbig,mirh)
+            set conf(sbig,mirv)                   $confCam(sbig,mirv)
+            set conf(sbig,port)                   $confCam(sbig,port)
+            set conf(sbig,temp)                   $confCam(sbig,temp)
+         }
+         cookbook {
+            #--- Memorise la configuration de la CB245 dans le tableau conf(cookbook,...)
+            set conf(cookbook,mirh)               $confCam(cookbook,mirh)
+            set conf(cookbook,mirv)               $confCam(cookbook,mirv)
+            set conf(cookbook,port)               $confCam(cookbook,port)
+         }
+         starlight {
+            #--- Memorise la configuration des Starlight dans le tableau conf(starlight,...)
+            set conf(starlight,acc)               [ lsearch "$caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur)" "$confCam(starlight,acc)" ]
+            set conf(starlight,mirh)              $confCam(starlight,mirh)
+            set conf(starlight,mirv)              $confCam(starlight,mirv)
+            set conf(starlight,modele)            [ lindex "MX516 MX916 HX516" $confCam(starlight,modele) ]
+            set conf(starlight,port)              $confCam(starlight,port)
+         }
+         kitty {
+            #--- Memorise la configuration des Kitty dans le tableau conf(kitty,...)
+            set conf(kitty,captemp)               [ lsearch "$caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5)" "$confCam(kitty,captemp)" ]
+            set conf(kitty,mirh)                  $confCam(kitty,mirh)
+            set conf(kitty,mirv)                  $confCam(kitty,mirv)
+            set conf(kitty,modele)                $confCam(kitty,modele)
+            set conf(kitty,port)                  $confCam(kitty,port)
+            set conf(kitty,res)                   $confCam(kitty,res)
+            set conf(kitty,on_off)                $confCam(kitty,on_off)
+         }
+         webcam {
+            #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$cam_item,...)
+            ::$confCam($cam_item,camName)\::widgetToConf $cam_item
+         }
+         th7852a {
+            #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
+            set conf(th7852a,coef)                $confCam(th7852a,coef)
+            set conf(th7852a,mirh)                $confCam(th7852a,mirh)
+            set conf(th7852a,mirv)                $confCam(th7852a,mirv)
+         }
+         scr1300xtc {
+            #--- Memorise la configuration de la SCR1300XTC dans le tableau conf(scr1300xtc,...)
+            set conf(scr1300xtc,mirh)             $confCam(scr1300xtc,mirh)
+            set conf(scr1300xtc,mirv)             $confCam(scr1300xtc,mirv)
+            set conf(scr1300xtc,port)             $confCam(scr1300xtc,port)
+         }
+         dslr {
+            #--- Memorise la configuration de l'APN (DSLR) dans le tableau conf(dslr,...) et conf(apn,...)
+            set conf(dslr,port)                   $confCam(dslr,port)
+            set conf(dslr,longuepose)             $confCam(dslr,longuepose)
+            set conf(dslr,longueposeport)         $confCam(dslr,longueposeport)
+            set conf(dslr,longueposelinkbit)      $confCam(dslr,longueposelinkbit)
+            set conf(dslr,longueposestartvalue)   $confCam(dslr,longueposestartvalue)
+            set conf(dslr,longueposestopvalue)    $confCam(dslr,longueposestopvalue)
+            set conf(dslr,statut_service)         $confCam(dslr,statut_service)
+            set conf(dslr,mirh)                   $confCam(dslr,mirh)
+            set conf(dslr,mirv)                   $confCam(dslr,mirv)
+            set conf(apn,baud)                    $confCam(apn,baud)
+           ### set conf(apn,serial_port)             $confCam(apn,serial_port)
+            if { [ info exists confCam(apn,model) ] } {
+               set conf(apn,model)                $confCam(apn,model)
+            } else {
+               catch { unset conf(apn,model) }
+            }
+         }
+         andor {
+            #--- Memorise la configuration de la Andor dans le tableau conf(andor,...)
+            set conf(andor,cool)                  $confCam(andor,cool)
+            set conf(andor,foncobtu)              [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(andor,foncobtu)" ]
+            set conf(andor,config)                $confCam(andor,config)
+            set conf(andor,mirh)                  $confCam(andor,mirh)
+            set conf(andor,mirv)                  $confCam(andor,mirv)
+            set conf(andor,temp)                  $confCam(andor,temp)
+            set conf(andor,ouvert_obtu)           $confCam(andor,ouvert_obtu)
+            set conf(andor,ferm_obtu)             $confCam(andor,ferm_obtu)
+         }
+         fingerlakes {
+            #--- Memorise la configuration de la FLI dans le tableau conf(fingerlakes,...)
+            set conf(fingerlakes,cool)            $confCam(fingerlakes,cool)
+            set conf(fingerlakes,foncobtu)        [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(fingerlakes,foncobtu)" ]
+            set conf(fingerlakes,mirh)            $confCam(fingerlakes,mirh)
+            set conf(fingerlakes,mirv)            $confCam(fingerlakes,mirv)
+            set conf(fingerlakes,temp)            $confCam(fingerlakes,temp)
+         }
       }
-      #--- Memorise la configuration de la Andor dans le tableau conf(andor,...)
-      set frm [ Rnotebook:frame $nn 11 ]
-      set conf(andor,cool)                  $confCam(andor,cool)
-      set conf(andor,foncobtu)              [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(andor,foncobtu)" ]
-      set conf(andor,config)                $confCam(andor,config)
-      set conf(andor,mirh)                  $confCam(andor,mirh)
-      set conf(andor,mirv)                  $confCam(andor,mirv)
-      set conf(andor,temp)                  $confCam(andor,temp)
-      set conf(andor,ouvert_obtu)           $confCam(andor,ouvert_obtu)
-      set conf(andor,ferm_obtu)             $confCam(andor,ferm_obtu)
-      #--- Memorise la configuration de la FLI dans le tableau conf(fingerlakes,...)
-      set frm [ Rnotebook:frame $nn 12 ]
-      set conf(fingerlakes,cool)            $confCam(fingerlakes,cool)
-      set conf(fingerlakes,foncobtu)        [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(fingerlakes,foncobtu)" ]
-      set conf(fingerlakes,mirh)            $confCam(fingerlakes,mirh)
-      set conf(fingerlakes,mirv)            $confCam(fingerlakes,mirv)
-      set conf(fingerlakes,temp)            $confCam(fingerlakes,temp)
    }
 
    proc SbigDispTemp { } {
