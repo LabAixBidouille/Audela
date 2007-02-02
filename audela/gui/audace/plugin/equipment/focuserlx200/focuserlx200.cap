@@ -1,62 +1,61 @@
 #
 # Fichier : focuserlx200.cap
-# Mise a jour $Id: focuserlx200.cap,v 1.1 2007-01-31 22:47:46 michelpujol Exp $
+# Mise a jour $Id: focuserlx200.cap,v 1.2 2007-02-02 18:24:05 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
-global langage
+global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(focuserlx200,label)       "Focuser LX200"
-set caption(focuserlx200,configure)   "Configure"
-set caption(focuserlx200,link)        "#les commandes sont envoyées au telescope LX200"
+set caption(focuserlx200,label)          "LX200 Focuser"
+set caption(focuserlx200,configure)      "Set up"
+set caption(focuserlx200,link)           "# Les commandes sont envoyées à la monture LX200"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(focuserlx200,label)       "Focuser LX200"
+   set caption(focuserlx200,label)       "Focaliseur LX200"
    set caption(focuserlx200,configure)   "Configurer"
-   set caption(focuserlx200,link)        "les commandes sont envoyées au telescope LX200"
+   set caption(focuserlx200,link)        "Les commandes sont envoyées à la monture LX200"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(focuserlx200,label)       "Focuser LX200"
-   set caption(focuserlx200,configure)   "#Configurer"
-   set caption(focuserlx200,link)        "#les commandes sont envoyées au telescope LX200"
+   set caption(focuserlx200,label)       "Focheggiatore LX200"
+   set caption(focuserlx200,configure)   "Configurare"
+   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(focuserlx200,label)       "Focuser LX200"
-   set caption(focuserlx200,configure)   "#Configurer"
-   set caption(focuserlx200,link)        "#les commandes sont envoyées au telescope LX200"
+   set caption(focuserlx200,label)       "Enfocador LX200"
+   set caption(focuserlx200,configure)   "Configurar"
+   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(focuserlx200,label)       "Focuser LX200"
-   set caption(focuserlx200,configure)   "#Configurer"
-   set caption(focuserlx200,link)        "#les commandes sont envoyées au telescope LX200"
+   set caption(focuserlx200,label)       "LX200 Scharfeinstellung"
+   set caption(focuserlx200,configure)   "Konfigurieren"
+   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(focuserlx200,label)       "Focuser LX200"
-   set caption(focuserlx200,configure)   "#Configurer"
-   set caption(focuserlx200,link)        "#les commandes sont envoyées au telescope LX200"
+   set caption(focuserlx200,label)       "Focador LX200"
+   set caption(focuserlx200,configure)   "Configurar"
+   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(focuserlx200,label)       "Focuser LX200"
-   set caption(focuserlx200,configure)   "#Configurer"
-   set caption(focuserlx200,link)        "#les commandes sont envoyées au telescope LX200"
+   set caption(focuserlx200,label)       "LX200 Focuser"
+   set caption(focuserlx200,configure)   "Set up"
+   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
 
 }
 
