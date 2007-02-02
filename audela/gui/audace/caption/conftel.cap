@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.23 2007-01-27 14:41:17 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.24 2007-02-02 18:19:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -476,7 +476,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,mac_address)                   "Dirección MAC"
    set caption(conftel,autoflush)                     "Borrado del puerto serie"
    set caption(conftel,focuser_type)                  "Tipo de enfocador"
-   set caption(conftel,focuser_i2c_address)           "Puerto I2C "
+   set caption(conftel,focuser_i2c_address)           "Puerto I2C"
 
    set caption(conftel,temma_version)                 "Versión:"
    set caption(conftel,temma_modele_1)                "EM-10/200-Temma-PC-Jr"
