@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.5 2007-01-27 15:12:01 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.6 2007-02-03 19:41:13 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -230,13 +230,13 @@ namespace eval ::confPad {
 
       toplevel $private(frm)
       if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $private(frm) 550x200$private(confPad,position)
-         wm minsize $private(frm) 550 200
+         wm geometry $private(frm) 550x256$private(confPad,position)
+         wm minsize $private(frm) 550 256
       } else {
-         wm geometry $private(frm) 440x200$private(confPad,position)
-         wm minsize $private(frm) 440 200
+         wm geometry $private(frm) 440x256$private(confPad,position)
+         wm minsize $private(frm) 440 256
       }
-      wm resizable $private(frm) 0 0
+      wm resizable $private(frm) 1 1
       wm deiconify $private(frm)
       wm title $private(frm) "$caption(confpad,config)"
       wm protocol $private(frm) WM_DELETE_WINDOW "::confPad::fermer"
