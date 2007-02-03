@@ -70,6 +70,8 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 
 AudeLA est capable de piloter les equipements suivants :
 - La roue a filtres developpee dans le cadre de l'association Aude.
+- Focaliseur JMI.
+- Focaliseur LX200.
 
 Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont 
 integres en fonction des moyens et des connaissances disponibles, n'etant pas a 
