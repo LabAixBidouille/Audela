@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.1 2007-02-02 23:19:22 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.2 2007-02-03 00:49:46 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -38,22 +38,24 @@ proc ::webcam::init { } {
 # ::webcam::confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
-proc ::webcam::confToWidget { cam_item } {
+proc ::webcam::confToWidget { } {
    variable private
    global conf
 
    #--- Recupere la configuration de la WebCam dans le tableau private($cam_item,...)
-   set private($cam_item,longuepose)           $conf(webcam,$cam_item,longuepose)
-   set private($cam_item,longueposeport)       $conf(webcam,$cam_item,longueposeport)
-   set private($cam_item,longueposelinkbit)    $conf(webcam,$cam_item,longueposelinkbit)
-   set private($cam_item,longueposestartvalue) $conf(webcam,$cam_item,longueposestartvalue)
-   set private($cam_item,longueposestopvalue)  $conf(webcam,$cam_item,longueposestopvalue)
-   set private($cam_item,mirh)                 $conf(webcam,$cam_item,mirh)
-   set private($cam_item,mirv)                 $conf(webcam,$cam_item,mirv)
-   set private($cam_item,channel)              $conf(webcam,$cam_item,channel)
-   set private($cam_item,ccd_N_B)              $conf(webcam,$cam_item,ccd_N_B)
-   set private($cam_item,dim_ccd_N_B)          $conf(webcam,$cam_item,dim_ccd_N_B)
-   set private($cam_item,ccd)                  $conf(webcam,$cam_item,ccd)
+   foreach cam_item { A B C } {
+      set private($cam_item,longuepose)           $conf(webcam,$cam_item,longuepose)
+      set private($cam_item,longueposeport)       $conf(webcam,$cam_item,longueposeport)
+      set private($cam_item,longueposelinkbit)    $conf(webcam,$cam_item,longueposelinkbit)
+      set private($cam_item,longueposestartvalue) $conf(webcam,$cam_item,longueposestartvalue)
+      set private($cam_item,longueposestopvalue)  $conf(webcam,$cam_item,longueposestopvalue)
+      set private($cam_item,mirh)                 $conf(webcam,$cam_item,mirh)
+      set private($cam_item,mirv)                 $conf(webcam,$cam_item,mirv)
+      set private($cam_item,channel)              $conf(webcam,$cam_item,channel)
+      set private($cam_item,ccd_N_B)              $conf(webcam,$cam_item,ccd_N_B)
+      set private($cam_item,dim_ccd_N_B)          $conf(webcam,$cam_item,dim_ccd_N_B)
+      set private($cam_item,ccd)                  $conf(webcam,$cam_item,ccd)
+   }
 }
 
 #
@@ -87,7 +89,7 @@ proc ::webcam::fillConfigPage { frm cam_item } {
    global audace caption color confCam
 
    #--- confToWidget
-   ::webcam::confToWidget $cam_item
+   ::webcam::confToWidget
 
    #--- Supprime tous les widgets de l'onglet
    foreach i [ winfo children $frm ] {
