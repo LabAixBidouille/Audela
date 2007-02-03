@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.2 2007-02-02 18:23:46 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.3 2007-02-03 18:19:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,65 +11,79 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-   set caption(focuserjmi,label)          "JMI Focuser"
-   set caption(focuserjmi,link)           "Link"
-   set caption(focuserjmi,configure)      "Set up"
-   set caption(focuserjmi,bitStart)       "# N° du bit de démarrage"
-   set caption(focuserjmi,bitDirection)   "# N° du bit de direction"
+set caption(focuserjmi,label)                 "JMI Focuser"
+set caption(focuserjmi,link)                  "Link"
+set caption(focuserjmi,configure)             "Set up"
+set caption(focuserjmi,bitStart)              "# N° du bit de démarrage"
+set caption(focuserjmi,bitDirection)          "# N° du bit de direction"
+
+set caption(focuserjmi,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(focuserjmi,label)          "Focaliseur JMI"
-   set caption(focuserjmi,link)           "Liaison"
-   set caption(focuserjmi,configure)      "Configurer"
-   set caption(focuserjmi,bitStart)       "N° du bit de démarrage"
-   set caption(focuserjmi,bitDirection)   "N° du bit de direction"
+   set caption(focuserjmi,label)              "Focaliseur JMI"
+   set caption(focuserjmi,link)               "Liaison"
+   set caption(focuserjmi,configure)          "Configurer"
+   set caption(focuserjmi,bitStart)           "N° du bit de démarrage"
+   set caption(focuserjmi,bitDirection)       "N° du bit de direction"
+
+   set caption(focuserjmi,creer_au_demarrage) "Connexion automatique de cet équipement au prochain démarrage"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(focuserjmi,label)          "Focheggiatore JMI"
-   set caption(focuserjmi,link)           "Collegamento"
-   set caption(focuserjmi,configure)      "Configurare"
-   set caption(focuserjmi,bitStart)       "# N° du bit de démarrage"
-   set caption(focuserjmi,bitDirection)   "# N° du bit de direction"
+   set caption(focuserjmi,label)              "Focheggiatore JMI"
+   set caption(focuserjmi,link)               "Collegamento"
+   set caption(focuserjmi,configure)          "Configurare"
+   set caption(focuserjmi,bitStart)           "# N° du bit de démarrage"
+   set caption(focuserjmi,bitDirection)       "# N° du bit de direction"
+
+   set caption(focuserjmi,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(focuserjmi,label)          "Enfocador JMI"
-   set caption(focuserjmi,link)           "Enlace"
-   set caption(focuserjmi,configure)      "Configurar"
-   set caption(focuserjmi,bitStart)       "# N° du bit de démarrage"
-   set caption(focuserjmi,bitDirection)   "# N° du bit de direction"
+   set caption(focuserjmi,label)              "Enfocador JMI"
+   set caption(focuserjmi,link)               "Enlace"
+   set caption(focuserjmi,configure)          "Configurar"
+   set caption(focuserjmi,bitStart)           "# N° du bit de démarrage"
+   set caption(focuserjmi,bitDirection)       "# N° du bit de direction"
+
+   set caption(focuserjmi,creer_au_demarrage) "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(focuserjmi,label)          "JMI Scharfeinstellung"
-   set caption(focuserjmi,link)           "Link"
-   set caption(focuserjmi,configure)      "Konfigurieren"
-   set caption(focuserjmi,bitStart)       "# N° du bit de démarrage"
-   set caption(focuserjmi,bitDirection)   "# N° du bit de direction"
+   set caption(focuserjmi,label)              "JMI Scharfeinstellung"
+   set caption(focuserjmi,link)               "Link"
+   set caption(focuserjmi,configure)          "Konfigurieren"
+   set caption(focuserjmi,bitStart)           "# N° du bit de démarrage"
+   set caption(focuserjmi,bitDirection)       "# N° du bit de direction"
+
+   set caption(focuserjmi,creer_au_demarrage) "Nächste Mal diese Einrichtung automatisch anschließen"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(focuserjmi,label)          "Focador JMI"
-   set caption(focuserjmi,link)           "Ligação"
-   set caption(focuserjmi,configure)      "Configurar"
-   set caption(focuserjmi,bitStart)       "# N° du bit de démarrage"
-   set caption(focuserjmi,bitDirection)   "# N° du bit de direction"
+   set caption(focuserjmi,label)              "Focador JMI"
+   set caption(focuserjmi,link)               "Ligação"
+   set caption(focuserjmi,configure)          "Configurar"
+   set caption(focuserjmi,bitStart)           "# N° du bit de démarrage"
+   set caption(focuserjmi,bitDirection)       "# N° du bit de direction"
+
+   set caption(focuserjmi,creer_au_demarrage) "O equipamento conecta-se automaticamente na próxima execução do programa"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(focuserjmi,label)          "JMI Focuser"
-   set caption(focuserjmi,link)           "Link"
-   set caption(focuserjmi,configure)      "Set up"
-   set caption(focuserjmi,bitStart)       "# N° du bit de demarrage"
-   set caption(focuserjmi,bitDirection)   "# N° du bit de direction"
+   set caption(focuserjmi,label)              "JMI Focuser"
+   set caption(focuserjmi,link)               "Link"
+   set caption(focuserjmi,configure)          "Set up"
+   set caption(focuserjmi,bitStart)           "# N° du bit de demarrage"
+   set caption(focuserjmi,bitDirection)       "# N° du bit de direction"
+
+   set caption(focuserjmi,creer_au_demarrage) "Next time software is run connect this equipment automatically"
 
 }
 
