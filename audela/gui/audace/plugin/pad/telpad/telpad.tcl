@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.6 2007-01-27 15:20:47 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.7 2007-02-03 20:35:54 robertdelmas Exp $
 #
 
 package provide telpad 1.0
@@ -99,8 +99,9 @@ namespace eval telpad {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(telpad,visible) ] }    { set conf(telpad,visible)    "1" }
-      if { ! [ info exists conf(telpad,wmgeometry) ] } { set conf(telpad,wmgeometry) "157x254+657+252" }
+      if { ! [ info exists conf(telpad,visible) ] }      { set conf(telpad,visible)      "1" }
+      if { ! [ info exists conf(telpad,wmgeometry) ] }   { set conf(telpad,wmgeometry)   "157x254+657+252" }
+      if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "focuserlx200" }
 
       return
    }
@@ -115,7 +116,8 @@ namespace eval telpad {
       variable widget
       global conf
 
-      set widget(visible) $conf(telpad,visible)
+      set widget(visible)      $conf(telpad,visible)
+      set widget(focuserLabel) $conf(telpad,focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -128,7 +130,8 @@ namespace eval telpad {
       variable widget
       global conf
 
-      set conf(telpad,visible) $widget(visible)
+      set conf(telpad,visible)      $widget(visible)
+      set conf(telpad,focuserLabel) $widget(focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -149,10 +152,17 @@ namespace eval telpad {
       frame $frm.frame1 -borderwidth 0 -relief raised
       pack $frm.frame1 -side top -fill both -expand 0
 
+      frame $frm.frame2 -borderwidth 0 -relief raised
+      pack $frm.frame2 -side top -fill both -expand 0
+
+      #--- Frame focuser
+      ::confEqt::createFrameFocuser $frm.frame1.focuser ::telpad::widget(focuserLabel)
+      pack $frm.frame1.focuser -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+
       #--- Raquette toujours visible
       checkbutton $frm.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
          -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.visible -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
    }
 
    #------------------------------------------------------------
@@ -396,7 +406,7 @@ namespace eval telpad {
       set zone(plus)  $This.frame4.we.canv2
 
       #--- Binding de la vitesse du moteur de focalisation
-      bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed }
+      bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) }
 
       #--- Cardinal moves
       bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move - } }
@@ -408,7 +418,7 @@ namespace eval telpad {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
