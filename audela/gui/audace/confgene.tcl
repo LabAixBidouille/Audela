@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.19 2007-01-31 21:32:34 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.20 2007-02-03 20:15:34 robertdelmas Exp $
 #
 
 #
@@ -2639,6 +2639,7 @@ namespace eval confVersion {
 #     namespace::showHelp         pour le bouton d'aide
 #     namespace::apply            pour le bouton appliquer ou ok
 #     namespace::close            pour le bouton fermer ou ok
+#
 
 namespace eval confGenerique {
 
@@ -2659,8 +2660,9 @@ namespace eval confGenerique {
    #  si mode=nomodal
    #     retourne 0
    #
-   proc run { This NameSpace { visuNo "1" } {mode "modal"}} {
+   proc run { This NameSpace { visuNo "1" } { mode "modal" } } {
       variable confResult
+
       set confResult($NameSpace) "0"
       createDialog $visuNo $NameSpace $This
 
@@ -2680,6 +2682,7 @@ namespace eval confGenerique {
    #
    proc ok { visuNo NameSpace This } {
       variable confResult
+
       set confResult($NameSpace) "1"
       ::confGenerique::apply $visuNo $NameSpace
       ::confGenerique::close $visuNo $NameSpace $This
@@ -2689,9 +2692,9 @@ namespace eval confGenerique {
    # confGenerique::apply
    # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour memoriser et appliquer la configuration
    #
-   proc apply { visuNo NameSpace  } {
+   proc apply { visuNo NameSpace } {
       if { [info procs $NameSpace\:\:apply ] != "" } {
-         $NameSpace\:\:apply $visuNo 
+         $NameSpace\:\:apply $visuNo
       }
    }
 
@@ -2700,7 +2703,6 @@ namespace eval confGenerique {
    # Fonction 'afficherAide' pour afficher l'aide
    #
    proc showHelp { NameSpace } {
-
       set result [ catch { $NameSpace\:\:showHelp } msg ]
       if { $result == "1" } {
          ::console::affiche_erreur "$msg\n"
@@ -2713,9 +2715,8 @@ namespace eval confGenerique {
    # confGenerique::close
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    # Ferme la fenetre si la procedure namepace::close retourne une valeur
-   # differente de "0"  
+   # differente de "0"
    proc close { visuNo NameSpace This } {
-
       if { [info procs $NameSpace\:\:close ] != "" } {
          #--- appelle la procedure "close"
          set result [$NameSpace\:\:close $visuNo]
@@ -2725,12 +2726,11 @@ namespace eval confGenerique {
       }
       #--- supprime la fenetre
       destroy $This
-      return 
+      return
    }
 
    proc createDialog { visuNo NameSpace This} {
-      global conf
-      global caption
+      global caption conf
 
       if { [winfo exists $This] } {
          wm withdraw $This
