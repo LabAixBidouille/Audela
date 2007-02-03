@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.10 2007-01-31 22:45:47 michelpujol Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.11 2007-02-03 18:17:13 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
@@ -10,17 +10,18 @@ package provide bermasaude 1.0
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
 #     init              : Initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : Retourne le nom affichable du driver
+#     getLabel          : Retourne le nom affichable du plugin
 #     getHelp           : Retourne la documentation htm associee
-#     getDriverType     : Retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : Initialise les parametres de configuration s'ils n'existent pas dans le tableau conf()
+#     getStartFlag      : Retourne l'indicateur de lancement au démarrage
+#     getPluginType     : Retourne le type de plugin
 #     fillConfigPage    : Affiche la fenetre de configuration de ce driver
-#     confToWidget      : Copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : Copie les variables des widgets dans le tableau conf()
-#     configureDriver   : Configure le driver
-#     stopDriver        : Arrete le driver et libere les ressources occupees
+#     createPlugin      : Cree une instance du plugin
+#     deletePlugin      : Arrete une instance du plugin et libere les ressources occupees
+#     configurePlugin   : Configure le plugin
 #     isReady           : Informe de l'etat de fonctionnement du driver
 #
+
+
 # Procedures specifiques a ce driver :
 #     Representation_roue_a_filtres : Representation graphique de la roue a filtres
 #     choix_nom_bouton              : Choix du nom des boutons (couleur des filtres)
@@ -53,7 +54,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    #  init (est lance automatiquement au chargement de ce fichier tcl)
    #     initialise le driver
-   #  
+   #
    #  return namespace name
    #------------------------------------------------------------
    proc init { } {
@@ -75,9 +76,9 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
+   #  getPluginType
    #     retourne le type de driver
-   #  
+   #
    #  return "equipment"
    #------------------------------------------------------------
    proc getPluginType { } {
@@ -87,7 +88,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    #  getLabel
    #     retourne le label du driver
-   #  
+   #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
@@ -99,7 +100,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    #  getHelp
    #     retourne la documentation du driver
-   #  
+   #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
@@ -109,7 +110,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    #  getStartFlag
    #     retourne l'indicateur de lancement au démarrage de Audela
-   #  
+   #
    #  return 0 ou 1
    #------------------------------------------------------------
    proc getStartFlag { } {
@@ -117,23 +118,23 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
-   #  fillConfigPage 
+   #  fillConfigPage
    #     fenetre de configuration du driver
-   #  
+   #
    #  return nothing
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
       global audace bermasaude caption color zone conf
 
-      #--- Copie de conf(...) dans lea variable widget
+      #--- Copie de conf(...) dans la variable widget
       set widget(port)  $conf(bermasaude,port)
       set widget(combi) [ lindex "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
          $conf(bermasaude,combi) ]
       #--- Prise en compte des liaisons
       set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
 
-      #--- Je memorise la reference de la frame 
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
       #--- Choix des couleurs
@@ -255,15 +256,15 @@ namespace eval bermasaude {
       label $frm.lab103 -text "$caption(bermasaude,site_web_ref)"
       pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(bermasaude,site_bermasaude)" -font $audace(font,url) -fg $color(blue) 
+      label $frm.labURL -text "$caption(bermasaude,site_bermasaude)" -font $audace(font,url) -fg $color(blue)
       pack $frm.labURL -in $frm.frame3 -side top -fill x -pady 2
 
       #--- frame checkbutton creer au demarrage
-      frame $frm.start -borderwidth 1 -relief raised
-         checkbutton $frm.start.chk -text "$caption(confeqt,creer_au_demarrage)" \
+      frame $frm.start -borderwidth 0 -relief flat
+         checkbutton $frm.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(bermasaude,start)
          pack $frm.start.chk -side top -padx 3 -pady 3 -fill x
-      pack $frm.start -side bottom -fill x
+      pack $frm.start -in $frm.frame3 -side bottom -fill x
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $frm.labURL <ButtonPress-1> {
@@ -298,21 +299,32 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    #  configurePlugin
-   #     configure la roue a filtre
-   #  
+   #     configure le plugin
+   #
    #  return nothing
    #------------------------------------------------------------
    proc configurePlugin { } {
       variable widget
-      global audace bermasaude caption conf ttybermasaude
+      global caption conf
 
-     #--- Memorise la configuration de la roue a filtres BerMasAude dans le tableau conf(bermasaude,...)
+      #--- Memorise la configuration de la roue a filtres BerMasAude dans le tableau conf(bermasaude,...)
       set conf(bermasaude,port)  $widget(port)
       set conf(bermasaude,combi) [ lsearch "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
          "$widget(combi)" ]
+   }
+
+   #------------------------------------------------------------
+   #  createPlugin
+   #     configure la roue a filtre
+   #
+   #  return nothing
+   #------------------------------------------------------------
+   proc createPlugin { } {
+      variable widget
+      global audace bermasaude caption conf ttybermasaude
 
       #--- Affichage d'un message d'alerte si necessaire
-      ::confEqt::Connect_Equipement
+     ### ::confEqt::Connect_Equipement
 
       #--- Inhibe les menus
       ::audace::menustate disabled
@@ -363,23 +375,23 @@ namespace eval bermasaude {
       }
 
       #--- Restaure les menus
-      ::audace::menustate normal 
+      ::audace::menustate normal
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver et libere les ressources occupees
-   #  
+   #  deletePlugin
+   #     arrete le plugin et libere les ressources occupees
+   #
    #  return nothing
    #------------------------------------------------------------
-   proc stopDriver { } {
-      return
+   proc deletePlugin { } {
+
    }
 
    #------------------------------------------------------------
-   #  isReady 
+   #  isReady
    #     informe de l'etat de fonctionnement du driver
-   #  
+   #
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
@@ -387,7 +399,7 @@ namespace eval bermasaude {
    }
 
    #==============================================================
-   # Procedures specifiques du driver 
+   # Procedures specifiques du driver
    #==============================================================
 
    #------------------------------------------------------------
@@ -496,9 +508,9 @@ namespace eval bermasaude {
          $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) -fill $bermasaude(color_filtre) \
             -tags cadres -width 2.0
          #--- Demande la position courante de la roue a filtres
-         while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } { 
-            after 1000 
-         } 
+         while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
+            after 1000
+         }
          set num_filtre_position [ ::bermasaude::bermasaude_position $ttybermasaude ]
          ::console::affiche_resultat "$caption(bermasaude,bermasaude_filtre_arrive_1)\
             $bermasaude(caption_position_$num_filtre_position) $caption(bermasaude,bermasaude_filtre_arrive_2)\n\n"
@@ -611,9 +623,9 @@ namespace eval bermasaude {
          set num_filtre_arrive [ ::bermasaude::bermasaude_aller_a $ttybermasaude [ list $bermasaude(position) ] ]
 
          #--- Affichage de la position de destination
-         while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } { 
-            after 1000 
-         } 
+         while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
+            after 1000
+         }
          set num_filtre_position_arrivee [ ::bermasaude::bermasaude_position $ttybermasaude ]
          ::console::affiche_erreur "$caption(bermasaude,bermasaude_filtre_arrive_1)\
             $bermasaude(caption_position_$num_filtre_position_arrivee)\
@@ -632,10 +644,10 @@ namespace eval bermasaude {
 # Procedures du driver de la roue a filtres (BerMasAude)
 #------------------------------------------------------------
 
-    proc bermasaude_create { port } { 
+    proc bermasaude_create { port } {
        global bermasaude
 
-       #--- Etablit la liaison 
+       #--- Etablit la liaison
        if { $::tcl_platform(platform) == "unix" } {
           set port [ string tolower [ string trim $port ] ]
           set num [ expr [ string index $port 3 ] - 1 ]
@@ -702,10 +714,10 @@ namespace eval bermasaude {
        puts -nonewline $ttybermasaude "$num_filtre\r"
        after [ expr $bermasaude(attente) ]
        #--- Boucle jusqu'au positionnement du filtre destination
-       after 1000 
-       while { [ bermasaude_etat_roue $ttybermasaude ] == "1" } { 
-          after 1000 
-       } 
+       after 1000
+       while { [ bermasaude_etat_roue $ttybermasaude ] == "1" } {
+          after 1000
+       }
        return $num_filtre
     }
 
@@ -722,9 +734,9 @@ namespace eval bermasaude {
        return $num_filtre_position
     }
 
-    proc bermasaude_delete { ttybermasaude } { 
+    proc bermasaude_delete { ttybermasaude } {
        #--- Ferme la liaison
-       close $ttybermasaude 
+       close $ttybermasaude
     }
 
 }

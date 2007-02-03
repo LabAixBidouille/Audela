@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.8 2007-02-02 23:33:00 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.9 2007-02-03 18:17:41 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -24,15 +24,14 @@ proc ::confEqt::init { } {
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confEqt) ] }          { set conf(confEqt)          "" }
-   if { ! [ info exists conf(confEqt,start) ] }    { set conf(confEqt,start)    "0" }
    if { ! [ info exists conf(confEqt,position) ] } { set conf(confEqt,position) "+155+100" }
 
-   #--- vaiables locales
-   set private(namespaceList) ""
-   set private(labelList)     ""
-   set private(frm)           "$audace(base).confeqt"
-   set private(focuser)       ""
-   set private(variableSelectedFocuser)  ""
+   #--- variables locales
+   set private(namespaceList)           ""
+   set private(labelList)               ""
+   set private(frm)                     "$audace(base).confeqt"
+   set private(focuser)                 ""
+   set private(variableSelectedFocuser) ""
 
    #--- je charge la liste des plugins
    findPlugin
@@ -58,7 +57,7 @@ proc ::confEqt::getLabel { } {
 proc ::confEqt::run { { variableSelectedFocuser "" } } {
    if { [createDialog ]==0 } {
       set private(variableSelectedFocuser) $variableSelectedFocuser
-      if { $variableSelectedFocuser != "" }  {
+      if { $variableSelectedFocuser != "" } {
          select [set $variableSelectedFocuser]
       } else {
          set private(variableSelectedFocuser) ""
@@ -215,7 +214,7 @@ proc ::confEqt::createDialog { } {
    global conf
    global caption
 
-   if { [winfo exists $private(frm)] } {
+   if { [ winfo exists $private(frm) ] } {
       wm withdraw $private(frm)
       wm deiconify $private(frm)
       focus $private(frm)
@@ -313,10 +312,27 @@ proc ::confEqt::select { { name "" } } {
 #    cree le plugin dont le nom est donne en parametre
 #------------------------------------------------------------
 proc ::confEqt::createPlugin { pluginLabel } {
+   global audace
+
+   #--- Affichage d'un message d'alerte si necessaire
+   ::confEqt::Connect_Equipement
+
+   #--- Inhibe les menus
+   ::audace::menustate disabled
+
+   #--- Cree le plugin
    if { $pluginLabel != "" } {
       #--- je demarrer le driver
       ::$pluginLabel\::createPlugin
    }
+
+   #--- Effacement du message d'alerte s'il existe
+   if [ winfo exists $audace(base).connectEquipement ] {
+      destroy $audace(base).connectEquipement
+   }
+
+   #--- Restaure les menus
+   ::audace::menustate normal
 }
 
 #------------------------------------------------------------
@@ -352,8 +368,8 @@ proc ::confEqt::findPlugin { } {
    global caption
 
    #--- j'initialise les listes vides
-   set private(namespacelist)  ""
-   set private(labelList)      ""
+   set private(namespacelist) ""
+   set private(labelList)     ""
    set pluginPattern [ file join audace plugin equipment * pkgIndex.tcl ]
 
    #--- chargement des differentes fenetres de configuration des drivers
@@ -389,7 +405,7 @@ proc ::confEqt::findPlugin { } {
    }
    $audace(console)::affiche_prompt "\n"
 
-   if { [llength $private(namespacelist)] <1 } {
+   if { [llength $private(namespacelist)] < 1 } {
       #--- pas driver correct
       return 1
    } else {
@@ -415,7 +431,7 @@ proc ::confEqt::Connect_Equipement { } {
    toplevel $audace(base).connectEquipement
    wm resizable $audace(base).connectEquipement 0 0
    wm title $audace(base).connectEquipement "$caption(confeqt,attention)"
-   if { [ info exists private(frm) ] } {
+   if { [ winfo exists $audace(base).confeqt ] } {
       set posx_connectEquipement [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
       set posy_connectEquipement [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
       wm geometry $audace(base).connectEquipement +[ expr $posx_connectEquipement + 50 ]+[ expr $posy_connectEquipement + 100 ]
@@ -496,17 +512,32 @@ proc ::confEqt::createFrameFocuser { frm variableSelectedFocuser } {
 #------------------------------------------------------------
 proc ::confEqt::startDriver { } {
    variable private
+   global audace
+
+   #--- Affichage d'un message d'alerte si necessaire
+   ::confEqt::Connect_Equipement
+
+   #--- Inhibe les menus
+   ::audace::menustate disabled
 
    #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
    foreach pluginLabel $private(namespacelist) {
       if { [::$pluginLabel\::getStartFlag] == 1 } {
-         set catchError [ catch { ::$pluginLabel\::createPlugin  } catchMessage ]
+         set catchError [ catch { ::$pluginLabel\::createPlugin } catchMessage ]
          if { $catchError == 1 } {
             #--- j'affiche un message d'erreur
             ::console::affiche_erreur "Error start equipment $pluginLabel : $catchMessage\n"
          }
       }
    }
+
+   #--- Effacement du message d'alerte s'il existe
+   if [ winfo exists $audace(base).connectEquipement ] {
+      destroy $audace(base).connectEquipement
+   }
+
+   #--- Restaure les menus
+   ::audace::menustate normal
 }
 
 #------------------------------------------------------------
