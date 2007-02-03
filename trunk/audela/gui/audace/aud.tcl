@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.53 2007-01-31 22:51:27 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.54 2007-02-03 19:52:49 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -482,7 +482,7 @@ namespace eval ::audace {
       wm deiconify $This
 
       #--- Je cree la visu de la fenetre principale
-      set visuNo [::confVisu::create $audace(base)]
+      set visuNo [ ::confVisu::create $audace(base) ]
 
       #---
       wm title $This "$caption(audace,titre) (visu$visuNo)"
@@ -602,7 +602,7 @@ namespace eval ::audace {
             } \
          "
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[ ::Crosshair::getLabel ]..." \
               "::Crosshair::run $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,pretraite)"
@@ -914,7 +914,7 @@ namespace eval ::audace {
       }
 
       #--- Connexion au demarrage des cameras
-      confCam::startDriver
+      ::confCam::startDriver
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {
@@ -930,7 +930,7 @@ namespace eval ::audace {
       }
 
       #--- Connexion au demarrage des equipements
-      confEqt::startDriver
+      ::confEqt::startDriver
 
       #--- Connexion au demarrage du driver de carte
       if { $conf(confCat,start) == "1" } {
