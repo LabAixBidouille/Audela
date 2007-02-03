@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.7 2007-01-31 22:55:51 michelpujol Exp $
+# Mise a jour $Id: superpad.tcl,v 1.8 2007-02-03 19:41:50 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -94,11 +94,11 @@ namespace eval ::superpad {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(superpad,padsize) ] }     { set conf(superpad,padsize)     "0.5" }
-      if { ! [ info exists conf(superpad,centerspeed) ] } { set conf(superpad,centerspeed) "140" }
-      if { ! [ info exists conf(superpad,visible) ] }     { set conf(superpad,visible)     "1" }
-      if { ! [ info exists conf(superpad,position) ] }    { set conf(superpad,position)    "100+100" }
-      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel)    "focuserjmi" }
+      if { ! [ info exists conf(superpad,padsize) ] }      { set conf(superpad,padsize)      "0.5" }
+      if { ! [ info exists conf(superpad,centerspeed) ] }  { set conf(superpad,centerspeed)  "140" }
+      if { ! [ info exists conf(superpad,visible) ] }      { set conf(superpad,visible)      "1" }
+      if { ! [ info exists conf(superpad,position) ] }     { set conf(superpad,position)     "100+100" }
+      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "focuserjmi" }
 
       return
    }
@@ -113,9 +113,9 @@ namespace eval ::superpad {
       variable widget
       global conf
 
-      set widget(padsize)     $conf(superpad,padsize)
-      set widget(visible)     $conf(superpad,visible)
-      set widget(centerspeed) $conf(superpad,centerspeed)
+      set widget(padsize)      $conf(superpad,padsize)
+      set widget(visible)      $conf(superpad,visible)
+      set widget(centerspeed)  $conf(superpad,centerspeed)
       set widget(focuserLabel) $conf(superpad,focuserLabel)
    }
 
@@ -129,9 +129,9 @@ namespace eval ::superpad {
       variable widget
       global conf
 
-      set conf(superpad,padsize)     $widget(padsize)
-      set conf(superpad,visible)     $widget(visible)
-      set conf(superpad,centerspeed) $widget(centerspeed)
+      set conf(superpad,padsize)      $widget(padsize)
+      set conf(superpad,visible)      $widget(visible)
+      set conf(superpad,centerspeed)  $widget(centerspeed)
       set conf(superpad,focuserLabel) $widget(focuserLabel)
    }
 
@@ -159,6 +159,9 @@ namespace eval ::superpad {
       frame $frm.frame3 -borderwidth 0 -relief raised
       pack $frm.frame3 -side top -fill both -expand 0
 
+      frame $frm.frame4 -borderwidth 0 -relief raised
+      pack $frm.frame4 -side top -fill both -expand 0
+
       #--- Label pad size
       label $frm.labSize -text "$caption(superpad,pad_size)"
       pack $frm.labSize -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
@@ -184,14 +187,13 @@ namespace eval ::superpad {
       pack $frm.entrycenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
 
       #--- Fram focuser
-      ::confEqt::createFrameFocuser $frm.frame2.focuser ::superpad::widget(focuserLabel) 
-      pack $frm.frame2.focuser -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
-
+      ::confEqt::createFrameFocuser $frm.frame3.focuser ::superpad::widget(focuserLabel)
+      pack $frm.frame3.focuser -in $frm.frame3 -anchor nw -side left -padx 10 -pady 10
 
       #--- Raquette toujours visible
       checkbutton $frm.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
          -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.visible -in $frm.frame3 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.visible -in $frm.frame4 -anchor nw -side left -padx 10 -pady 10
    }
 
    #------------------------------------------------------------
