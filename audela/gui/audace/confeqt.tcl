@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.9 2007-02-03 18:17:41 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.10 2007-02-03 19:43:16 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -239,7 +239,7 @@ proc ::confEqt::createDialog { } {
       wm geometry $private(frm) 460x405$private(confEqt,position)
       wm minsize $private(frm) 460 405
    }
-   wm resizable $private(frm) 1 0
+   wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confeqt,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confEqt::fermer"
@@ -487,12 +487,12 @@ proc ::confEqt::createFrameFocuser { frm variableSelectedFocuser } {
    set private(variableSelectedFocuser) $variableSelectedFocuser
 
    ComboBox $frm.list \
-      -width 10         \
+      -width 10       \
       -height [llength $private(namespaceList)] \
-      -relief sunken    \
-      -borderwidth 1    \
+      -relief sunken  \
+      -borderwidth 1  \
       -textvariable $::confEqt::private(variableSelectedFocuser) \
-      -editable 0       \
+      -editable 0     \
       -values $private(namespaceList)
    pack $frm.list -in $frm -anchor center -side left -padx 0 -pady 10
 
@@ -502,7 +502,6 @@ proc ::confEqt::createFrameFocuser { frm variableSelectedFocuser } {
          ::confEqt::run
       }
    pack $frm.configure -in $frm -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
-
 }
 
 #------------------------------------------------------------
