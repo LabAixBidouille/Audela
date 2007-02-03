@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Mise a jour $Id: confeqt.cap,v 1.6 2007-01-31 22:55:24 michelpujol Exp $
+# Mise a jour $Id: confeqt.cap,v 1.7 2007-02-03 19:39:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,12 +13,11 @@ global caption langage
 
 set caption(confeqt,equipement)             "Equipment:"
 set caption(confeqt,config)                 "Equipment Setup"
-set caption(confeqt,creer_au_demarrage)     "Next time software is run connect this equipment automatically"
 set caption(confeqt,ok)                     "OK"
 set caption(confeqt,appliquer)              "Apply"
 set caption(confeqt,fermer)                 "Close"
 set caption(confeqt,aide)                   "Help"
-set caption(confeqt,configurer)             "Configure"
+set caption(confeqt,configurer)             "Set up"
 
 set caption(confeqt,attention)              "Warning"
 set caption(confeqt,connexion_texte1)       "Equipment Connection in Progress..."
@@ -29,7 +28,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,equipement)          "Equipement :"
    set caption(confeqt,config)              "Configuration de l'équipement"
-   set caption(confeqt,creer_au_demarrage)  "Connexion automatique de cet équipement au prochain démarrage"
    set caption(confeqt,ok)                  "OK"
    set caption(confeqt,appliquer)           "Appliquer"
    set caption(confeqt,fermer)              "Fermer"
@@ -45,12 +43,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,equipement)          "Equipaggiamento:"
    set caption(confeqt,config)              "Configurazione equipaggiamento"
-   set caption(confeqt,creer_au_demarrage)  "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
    set caption(confeqt,ok)                  "OK"
    set caption(confeqt,appliquer)           "Applica"
    set caption(confeqt,fermer)              "Chiudi"
    set caption(confeqt,aide)                "Aiuto"
-   set caption(confeqt,configurer)          "###Configurer"
+   set caption(confeqt,configurer)          "Configurare"
 
    set caption(confeqt,attention)           "Attenzione"
    set caption(confeqt,connexion_texte1)    "Attendere qualche secondo per la"
@@ -61,12 +58,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,equipement)          "Equipo:"
    set caption(confeqt,config)              "Configuración del equipo"
-   set caption(confeqt,creer_au_demarrage)  "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
    set caption(confeqt,ok)                  "OK"
    set caption(confeqt,appliquer)           "Aplicar"
    set caption(confeqt,fermer)              "Cerrar"
    set caption(confeqt,aide)                "Ayuda"
-   set caption(confeqt,configurer)          "###Configurer"
+   set caption(confeqt,configurer)          "Configurar"
 
    set caption(confeqt,attention)           "!Cuidado¡"
    set caption(confeqt,connexion_texte1)    "Conectando con al equipo..."
@@ -77,12 +73,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,equipement)          "Einrichtung:"
    set caption(confeqt,config)              "Einrichtung Konfiguration"
-   set caption(confeqt,creer_au_demarrage)  "Nächste Mal diese Einrichtung automatisch anschließen"
    set caption(confeqt,ok)                  "OK"
    set caption(confeqt,appliquer)           "Anwenden"
    set caption(confeqt,fermer)              "Schließen"
    set caption(confeqt,aide)                "Hilfe"
-   set caption(confeqt,configurer)          "###Configurer"
+   set caption(confeqt,configurer)          "Konfigurieren"
 
    set caption(confeqt,attention)           "Achtung"
    set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"
@@ -93,12 +88,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,equipement)          "Equipamento:"
    set caption(confeqt,config)              "Configuração do equipamento"
-   set caption(confeqt,creer_au_demarrage)  "O equipamento conecta-se automaticamente na próxima execução do programa"
    set caption(confeqt,ok)                  "OK"
    set caption(confeqt,appliquer)           "Aplicar"
    set caption(confeqt,fermer)              "Fechar"
    set caption(confeqt,aide)                "Ajuda"
-   set caption(confeqt,configurer)          "###Configurer"
+   set caption(confeqt,configurer)          "Configurar"
 
    set caption(confeqt,attention)           "Atenção"
    set caption(confeqt,connexion_texte1)    "A conectar-se ao equipamento..."
@@ -109,12 +103,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,equipement)          "Equipement:"
    set caption(confeqt,config)              "Equipment Setup"
-   set caption(confeqt,creer_au_demarrage)  "Next time software is run connect this equipment automatically"
    set caption(confeqt,ok)                  "OK"
    set caption(confeqt,appliquer)           "Apply"
    set caption(confeqt,fermer)              "Close"
    set caption(confeqt,aide)                "Help"
-   set caption(confeqt,configurer)          "###Configurer"
+   set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
