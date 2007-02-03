@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.8 2007-02-03 19:41:50 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.9 2007-02-03 20:36:22 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -186,7 +186,7 @@ namespace eval ::superpad {
       entry $frm.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
       pack $frm.entrycenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
 
-      #--- Fram focuser
+      #--- Frame focuser
       ::confEqt::createFrameFocuser $frm.frame3.focuser ::superpad::widget(focuserLabel)
       pack $frm.frame3.focuser -in $frm.frame3 -anchor nw -side left -padx 10 -pady 10
 
@@ -347,7 +347,7 @@ namespace eval ::superpad {
       focus .superpad
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind .superpad <Key-F1> { $audace(console)::GiveFocus }
+      bind .superpad <Key-F1> { ::console::GiveFocus }
 
    }
 
@@ -1166,7 +1166,7 @@ namespace eval DlgSelectStar {
       set searchId [array startsearch stars]
       while { [array anymore stars $searchId] == 1 } {
          set value [array nextelement stars $searchId]
-         #$audace(console)::affiche_resultat "value = $value $This.frameButton.button$value\n"
+        # ::console::affiche_resultat "value = $value $This.frameButton.button$value\n"
          button $This.frameButton.button$value -text $value -borderwidth 2 -command "::DlgSelectStar::select $value"
          grid configure $This.frameButton.button$value -column $c -row $r -sticky we -in $This.frameButton
          incr c
