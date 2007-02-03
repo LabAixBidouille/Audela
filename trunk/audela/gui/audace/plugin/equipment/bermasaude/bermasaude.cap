@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.11 2007-01-27 14:35:23 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.12 2007-02-03 18:19:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -44,6 +44,8 @@ set caption(bermasaude,bermasaude_filtre_depart_2)     "filter is about to chang
 set caption(bermasaude,bermasaude_filtre_encours_1)    "Positioning of"
 set caption(bermasaude,bermasaude_filtre_encours_2)    "filter in progress..."
 
+set caption(bermasaude,creer_au_demarrage)             "Next time software is run connect this equipment automatically"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -79,6 +81,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_depart_2)  "va être changé."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Positionnement du filtre"
    set caption(bermasaude,bermasaude_filtre_encours_2) "en cours..."
+
+   set caption(bermasaude,creer_au_demarrage)          "Connexion automatique de cet équipement au prochain démarrage"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -116,6 +120,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_encours_1) "Posizionamento del filtro"
    set caption(bermasaude,bermasaude_filtre_encours_2) "in corso..."
 
+   set caption(bermasaude,creer_au_demarrage)          "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -151,6 +157,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_depart_2)  "va a cambiar."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Posicionado del filtro"
    set caption(bermasaude,bermasaude_filtre_encours_2) "en progreso..."
+
+   set caption(bermasaude,creer_au_demarrage)          "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -188,6 +196,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_encours_1) "Der"
    set caption(bermasaude,bermasaude_filtre_encours_2) "Filter Einstellung laufend..."
 
+   set caption(bermasaude,creer_au_demarrage)          "Nächste Mal diese Einrichtung automatisch anschließen"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -224,6 +234,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_encours_1) "Posicionamento do filtro"
    set caption(bermasaude,bermasaude_filtre_encours_2) "em curso..."
 
+   set caption(bermasaude,creer_au_demarrage)          "O equipamento conecta-se automaticamente na próxima execução do programa"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -259,6 +271,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_depart_2)  "filter skiftes."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Anbringelse af"
    set caption(bermasaude,bermasaude_filtre_encours_2) "filter udføres..."
+
+   set caption(bermasaude,creer_au_demarrage)          "# Next time software is run connect this equipment automatically"
 
 }
 
