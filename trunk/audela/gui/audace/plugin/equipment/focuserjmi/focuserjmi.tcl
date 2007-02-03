@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.2 2007-02-02 19:00:04 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.3 2007-02-03 18:20:52 robertdelmas Exp $
 #
 
 #
@@ -187,8 +187,8 @@ proc ::focuserjmi::fillConfigPage { frm } {
    grid $frm.frame1.bitDirection -row 2 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
 
    #--- frame checkbutton creer au demarrage
-   frame $frm.start -borderwidth 1 -relief raised
-      checkbutton $frm.start.chk -text "$caption(confeqt,creer_au_demarrage)" \
+   frame $frm.start -borderwidth 0 -relief flat
+      checkbutton $frm.start.chk -text "$caption(focuserjmi,creer_au_demarrage)" \
          -highlightthickness 0 -variable conf(focuserjmi,start)
       pack $frm.start.chk -side top -padx 3 -pady 3 -fill x
    pack $frm.start -side bottom -fill x
