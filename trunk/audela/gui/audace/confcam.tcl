@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.57 2007-02-03 00:50:46 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.58 2007-02-03 18:26:05 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -201,9 +201,6 @@ namespace eval ::confCam {
       global confCam
 
       if { $conf(camera,A,start) == "1" } {
-         if { $conf(confLink,start) == "1" } {
-            ::confLink::configureDriver
-         }
          set confCam(A,camName)  $conf(camera,A,camName)
          ::confCam::configureCamera "A"
       }
