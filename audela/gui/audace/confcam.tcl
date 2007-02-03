@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.56 2007-02-02 23:54:46 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.57 2007-02-03 00:50:46 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -2943,7 +2943,6 @@ namespace eval ::confCam {
          starlight   { Rnotebook:raise $nn 5 }
          kitty       { Rnotebook:raise $nn 6 }
          webcam      {
-            ::webcam::confToWidget $cam_item
             ::webcam::fillConfigPage $frmm(Camera7) $cam_item
             Rnotebook:raise $nn 7
          }
@@ -4245,7 +4244,7 @@ namespace eval ::confCam {
 
       #--- Traitement des erreurs detectees par le catch
       if { $erreur == "1" } {
-         tk_messageBox -message "$errorMessage \n $::errorInfo" -icon error
+         tk_messageBox -message "$errorMessage" -icon error
          #--- En cas de probleme, je desactive le demarrage automatique
          set conf(camera,$cam_item,start) "0"
          #--- En cas de probleme, camera par defaut
