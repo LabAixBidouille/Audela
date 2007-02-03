@@ -2,7 +2,7 @@
 # Fichier : focuser.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.2 2007-02-02 19:00:38 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.3 2007-02-03 18:21:50 robertdelmas Exp $
 #
 
 #
@@ -88,7 +88,7 @@ proc ::focuserlx200::getHelp { } {
 #  return 0 ou 1
 #------------------------------------------------------------
 proc ::focuserlx200::getStartFlag { } {
-   #--- le focuser lx200 est demarre automatique a la creation du telescope
+   #--- le focuser lx200 est demarre automatiquement a la creation du telescope
    return 0
 }
 
