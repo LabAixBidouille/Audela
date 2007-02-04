@@ -33,7 +33,7 @@ global audela
 if { [regexp {1.3.0} $audela(version) match resu ] } {
     set repspc [ file join $audace(rep_scripts) spcaudace ]
     #--- Chargement de l'éditeur de profil :
-    source [ file join $repspc spc_ini.tcl ]
+    source [ file join $repspc spc_cap.tcl ]
     source [ file join $repspc spc_gui.tcl ]
 } else {
     set repspc [ file join $audace(rep_plugin) tool spectro spcaudace ]
@@ -42,6 +42,7 @@ if { [regexp {1.3.0} $audela(version) match resu ] } {
 
 #--- Chargement des fonctionnalités :
 source [ file join $repspc spc_io.tcl ]
+source [ file join $repspc spc_ini.tcl ]
 source [ file join $repspc spc_profil.tcl ]
 source [ file join $repspc spc_calibrage.tcl ]
 source [ file join $repspc spc_analyse.tcl ]

@@ -1232,10 +1232,12 @@ proc spc_rinstrum { args } {
 
        #--- Lissage de la reponse instrumentale :
        ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
+       #- Meth 1 :
        set rinstrum1 [ spc_smooth2 $rinstrum0 ]
        set rinstrum2 [ spc_passebas $rinstrum1 ]
        set rinstrum3 [ spc_passebas $rinstrum2 ]
        set rinstrum [ spc_passebas $rinstrum3 ]
+       #- Meth2 pour 2400 t/mm : 3 passebas (110, 35, 10) + spc_smooth2.
 
 
        #--- Nettoyage des fichiers temporaires :

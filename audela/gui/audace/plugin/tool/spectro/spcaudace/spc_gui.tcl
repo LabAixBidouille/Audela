@@ -163,7 +163,7 @@ proc spc_winini { } {
       #.spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
       .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
-      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_zone" -underline 0
+      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       #bind .spc <Control-N> spc_open_fitfile

@@ -969,7 +969,7 @@ proc spc_traite2rinstrum { args } {
        } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
 	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
 	   ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
-	   set fgeom [ spc_slantimgs $fpretrait $pente ]
+	   set fgeom [ spc_slant2imgs $fpretrait $pente ]
        } else {
 	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
 	   set fgeom "$fpretrait"

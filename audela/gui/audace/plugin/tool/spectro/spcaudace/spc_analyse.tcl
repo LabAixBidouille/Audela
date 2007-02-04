@@ -256,16 +256,16 @@ proc spc_intensity { args } {
 
    if {[llength $args] == 4} {
      set fichier [ lindex $args 0 ]
-     set ldeb [ expr int([lindex $args 1 ]) ]
-     set lfin [ expr int([lindex $args 2]) ]
+     set ldeb [ expr round([lindex $args 1 ]) ]
+     set lfin [ expr round([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     #buf$audace(bufNo) load $fichier
      set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
      set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
      set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
      set xfin [ expr int(($lfin-$crval)/$cdelt) ]
+     set lcentre [ expr 0.5*($ldeb+$lfin) ]
 
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
@@ -279,8 +279,9 @@ proc spc_intensity { args } {
      }
      # Attention, $lreponse 2 est en pixels
      set if0 [ expr ([ lindex $lreponse 2 ]*$cdelt+$crval)*.601*sqrt(acos(-1)) ]
+     #set if0 1.
      set intensity [ expr [ lindex $lreponse 0 ]*$if0 ]
-     ::console::affiche_resultat "L'intensité de la raie est : $intensity ADU.Angstroms\n"
+     ::console::affiche_resultat "L'intensité de la raie $lcentre est : $intensity ADU.Angstroms\n"
      return $intensity
 
    } else {
@@ -473,6 +474,7 @@ proc spc_findbiglines { args } {
 	    set largeur [ expr int([ lindex $args 2 ]) ]
 	} else {
 	    ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
+	    return 0
 	}
 	set pas [ expr int($largeur/2) ]
 
@@ -690,3 +692,259 @@ proc spc_snr { args } {
    }
 }
 #****************************************************************#
+
+
+
+####################################################################
+# Procédure de calcul d'intensité d'une raie par intgégration (méthode des trapèzes)
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 07-01-19
+# Date modification : 07-01-19
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_integrate { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 3 } {
+	set filename [ lindex $args 0 ]
+	set xdeb [ lindex $args 1 ]
+	set xfin [ lindex $args 2 ]
+
+	#--- Conversion des données en liste :
+	set listevals [ spc_fits2data $filename ]
+	set xvals [ lindex $listevals 0 ]
+	set yvals [ lindex $listevals 1 ]
+
+	foreach xval $xvals yval $yvals {
+	    if { $xval>=$xdeb && $xval<=$xfin } {
+		lappend xsel $xval
+		lappend ysel $yval
+	    }
+	}
+
+	#--- Calcul de l'aire sous la raie :
+	set valsselect [ list $xsel $ysel ]
+	set intensity [ spc_aire $valsselect ]
+	#set ew [ expr $intensity-($xfin-$xdeb) ]
+
+	if { 0==1 } {
+	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
+	set deltal [ expr abs($xfin-$xdeb) ]
+	set snr [ spc_snr $filename ]
+	set rapport [ expr $intensity/$deltal ]
+	if { $rapport>=1.0 } {
+	    set deltal [ expr $ew+0.1 ]
+	    ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+	}
+	if { $snr != 0 } {
+	    set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+	} else {
+	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n" ]
+	    set sigma 0
+	}
+        }
+
+	#--- Affichage des résultats :
+	#::console::affiche_resultat "L'intensité de la raie sur ($xdeb-$xfin) vaut $intensity ADU.anstrom(s)\nsigma(I)=$sigma ADU.angstrom\n"
+        ::console::affiche_resultat "L'intensité de la raie sur ($xdeb-$xfin) vaut $intensity ADU.anstrom(s)\n"
+	return $intensity
+    } else {
+	::console::affiche_erreur "Usage: spc_integrate nom_profil_raies lanmba_dep lambda_fin\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Procédure de calcul d'intensité d'une raie par intgégration (méthode des trapèzes)
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 07-01-23
+# Date modification : 07-01-23
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_integratec { args } {
+    global conf
+    global audace
+
+    if { [llength $args]==3 || [llength $args]==4 } {
+	if { [llength $args]==3 } {
+	    set filename [ lindex $args 0 ]
+	    set ldeb [ lindex $args 1 ]
+	    set lfin [ lindex $args 2 ]
+	} elseif { [llength $args]==4 } {
+	    set filename [ lindex $args 0 ]
+	    set ldeb [ lindex $args 1 ]
+	    set lfin [ lindex $args 2 ]
+	    set continuum [ lindex $args 3 ]
+	}
+
+	#--- Conversion des données en liste :
+	set listevals [ spc_fits2data $filename ]
+	set xvals [ lindex $listevals 0 ]
+	set yvals [ lindex $listevals 1 ]
+
+
+	#--- Détermination de la valeur du continuum de la raie :
+	if { [llength $args]==3 } {
+	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	    set listemotsclef [ buf$audace(bufNo) getkwds ]
+	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+		set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+	    } else {
+		set disp 1.
+	    }
+	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+		set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	    } else {
+		set lambda 1.
+	    }
+	    set xdeb [ expr round(($ldeb-$lambda0)/$disp) ]
+	    set xfin [ expr round(($lfin-$lambda0)/$disp) ]
+	    set continuum [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]	    
+	} elseif { [llength $args]==4 } {
+	    set continuum $continuum
+	}
+
+	#--- Création de la liste des valeurs sélectionnées par l'intervalle :
+	foreach xval $xvals yval $yvals {
+	    if { $xval>=$ldeb && $xval<=$lfin } {
+		lappend xsel $xval
+		lappend ysel [ expr $yval-$continuum ]
+	    }
+	}
+
+	#--- Retrait du continuum a chaque intensité sélectionnée :
+	#foreach y $ysel {
+	#    lappend yselc [ expr $y-$offset ]
+	#}
+
+	#--- Calcul de l'aire sous la raie :
+	set valsselect [ list $xsel $ysel ]
+	set intensity [ spc_aire $valsselect ]
+
+	#--- Affichage des résultats :
+        ::console::affiche_resultat "L'intensité de la raie sur ($ldeb-$lfin) vaut $intensity ADU.anstrom(s) ; Continuum à $continuum ADU\n"
+	return $intensity
+    } else {
+	::console::affiche_erreur "Usage: spc_integratec nom_profil_raies lanmba_dep lambda_fin ?valeur_continuum?\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Procédure de calcul de l'amplitude (Imax) d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 07-01-20
+# Date modification : 07-01-20
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_imax { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 3 } {
+	set fichier [ lindex $args 0 ]
+	set lambda [ lindex $args 1 ]
+	set largeur [ lindex $args 2 ]
+
+	#--- Calcul de xdeb et xfin  en pixels :
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	set listemotsclef [ buf$audace(bufNo) getkwds ]
+	if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	    set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+	} else {
+	    set disp 1.
+	}
+	if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	    set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	} else {
+	    set lambda 1.
+	}
+	#-- Calcul des limites de l'ajustement pour une dispersion linéaire :
+	set xdeb [ expr round(($lambda-0.5*$largeur-$lambda0)/$disp) ]
+	set xfin [ expr round(($lambda+0.5*$largeur-$lambda0)/$disp) ]
+
+	#--- Ajustement gaussien:
+	set gaussparams [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ]
+	set imax [ lindex $gaussparams 0 ]
+	set xcentre [ lindex $gaussparams 1 ]
+	set lcentre [ expr $disp*$xcentre+$lambda0 ]
+
+	#--- Affichage des résultats :
+        ::console::affiche_resultat "L'amplitude de la raie centrée en $lcentre vaut $imax ADU\n"
+	set resul [ list $imax $lcentre ]
+	return $resul
+    } else {
+	::console::affiche_erreur "Usage: spc_imax nom_profil_raies longueur_d_onde_raie largeur\n"
+    }
+}
+#***************************************************************************#
+
+
+
+
+####################################################################
+# Procédure de calcul de l'amplitude (Imax) d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 07-01-20
+# Date modification : 07-01-20
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_imax0 { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 3 } {
+	set filename [ lindex $args 0 ]
+	set xdeb [ lindex $args 1 ]
+	set xfin [ lindex $args 2 ]
+
+	#--- Conversion des données en liste :
+	set listevals [ spc_fits2data $filename ]
+	set xvals [ lindex $listevals 0 ]
+	set yvals [ lindex $listevals 1 ]
+
+	foreach xval $xvals yval $yvals {
+	    if { $xval>=$xdeb && $xval<=$xfin } {
+		lappend xsel $xval
+		lappend ysel $yval
+	    }
+	}
+
+	#--- Calcul de la dérive de la raie :
+	set valsselect [ list $xsel $ysel ]
+	set valderiv [ spc_derivation $valsselect ]
+	set yderiv [ lindex $valderiv 1 ]
+::console::affiche_resultat "$yderiv\n"
+
+	#--- Détermine la zéro :
+	set i 0
+	foreach x $xsel y $yderiv {
+	    if { $y==0 } {
+		set ximax $x
+		break
+	    }
+	    incr i
+	}
+	set yimax [ lindex $ysel $i ]
+
+	#--- Affichage des résultats :
+        ::console::affiche_resultat "L'amplitude de la raie sur ($xdeb-$xfin) vaut $yimax ADU\n"
+	return $yimax
+    } else {
+	::console::affiche_erreur "Usage: spc_imax nom_profil_raies lanmba_dep lambda_fin\n"
+    }
+}
+#***************************************************************************#
