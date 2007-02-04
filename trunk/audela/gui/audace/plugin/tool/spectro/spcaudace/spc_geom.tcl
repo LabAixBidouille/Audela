@@ -493,6 +493,7 @@ proc spc_crop { args } {
 # Date creation : 28-05-2006
 # Date modification : 06-06-2006/061220
 # Arguments : fichier fits 2D d'une lampe de calibration
+# ATTENTION : 2 parametres sont ici fixes en dur : la largeur des raies et la demi-largeur de la fenetre de decoupage autour de la raie choisie.
 ####################################################################
 
 proc spc_smilex { args } {
@@ -595,12 +596,17 @@ proc spc_smilex { args } {
 	     set hauteur [ expr 2*int($yinf-1) ]
 	     set profil_inf [ spc_profily $filenamespc $yinf $hauteur ]
 	 }
+	 set xinf 0
 	 set raies [ lsort -real -increasing -index 0 [ spc_findbiglines $profil_inf e 10 ] ]
 	 foreach raie $raies {
 	     if { [ lindex $raie 1 ] != 0.0 } {
 		 set xinf [ lindex $raie 0 ]
 		 break
 	     }
+	 }
+	 #- Si n'a pas trouve de raie, prend la raie d'abscisse la plus petite (id. la plus a gauche) :
+	 if { $xinf==0 } {
+	     set xinf [ lindex [ lindex $raies 0 ] 0 ]
 	 }
 	 file delete "$audace(rep_images)/$profil_inf$conf(extension,defaut)"
 	 
@@ -1148,15 +1154,17 @@ proc spc_slant2imgs { args } {
 	set liste_sp [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_spectres}\[0-9\]*$conf(extension,defaut) ] ]
 
 	#--- Applique le smile aux spectres incriminés :
-	foreach spectre in $liste_sp {
+	set i 1
+	foreach spectre $liste_sp {
 	    set lespectre [ file tail $spectre ]
 	    buf$audace(bufNo) load "$audace(rep_images)/$lespectre"
 	    buf$audace(bufNo) imaseries "TILT trans_x=$pente trans_y=0"
-	    buf$audace(bufNo) save "$audace(rep_images)/${lespectre}_slt$conf(extension,defaut)"
-	    ::console::affiche_resultat "Image corrigée sauvée sous ${lespectre}_slt$conf(extension,defaut).\n"
+	    buf$audace(bufNo) save "$audace(rep_images)/${nom_spectres}_slt-$i$conf(extension,defaut)"
+	    ::console::affiche_resultat "Image corrigée sauvée sous ${nom_spectres}_slt-$i$conf(extension,defaut).\n"
+	    incr i
 	}
 
-	return ${nom_spectres}_slt
+	return ${nom_spectres}_slt-
     } else {
 	::console::affiche_erreur "Usage: spc_slant2imgs nom_générique_spectre2D_a_corriger pente_slant\n\n"
     }

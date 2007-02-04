@@ -739,7 +739,7 @@ proc spc_bigsmooth2 { args } {
 
 proc spc_select { args } {
 
-   global audace
+   global audace audela
    global conf
 
    if {[llength $args] == 3} {
@@ -757,12 +757,24 @@ proc spc_select { args } {
 
        set abscisses ""
        set intensites ""
-       for {set k 0} {$k<$naxis1} {incr k} {
-	   #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
-	   lappend abscisses [expr $xdepart+($k)*$disper*1.0]
-	   #--- Lit la valeur des elements du fichier fit
-	   lappend intensites [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
-	   ##lappend profilspc(intensite) $intensite
+       #---- Audela 130 :
+       if { [regexp {1.3.0} $audela(version) match resu ] } {
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	       lappend abscisses [expr $xdepart+($k)*$disper*1.0]
+	       #--- Lit la valeur des elements du fichier fit
+	       lappend intensites [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
+	       ##lappend profilspc(intensite) $intensite
+	   }
+       #---- Audela 140 :
+       } else {
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	       lappend abscisses [expr $xdepart+($k)*$disper*1.0]
+	       #--- Lit la valeur des elements du fichier fit
+	       lappend intensites [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1]] 1 ]
+	       ##lappend profilspc(intensite) $intensite
+	   }
        }
 
        #--- Sélection des longueurs d'onde à découper
@@ -834,7 +846,7 @@ proc spc_select { args } {
 
 proc spc_select0 { args } {
 
-   global audace
+   global audace audela
    global conf
 
    if {[llength $args] == 3} {
@@ -854,22 +866,44 @@ proc spc_select0 { args } {
        set intensites ""
        set nabscisses ""
        set nintensites ""
-       for {set k 0} {$k<$naxis1} {incr k} {
-	   #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
-	   set abscisse [expr $xdepart+($k)*$disper*1.0]
-	   lappend abscisses $abscisse
-	   #--- Lit la valeur des elements du fichier fit
-	   set intensite [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
-	   lappend intensites $intensite
-	   #--- Alimente le nouveau spectre
-
-	   if { $abscisse >= $xdeb && $abscisse <= $xfin } {
-	       lappend nabscisses $abscisse
-	       lappend nintensites $intensite
-	       # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
-	       incr k
+       #---- Audela 130 :
+       if { [regexp {1.3.0} $audela(version) match resu ] } {
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	       set abscisse [expr $xdepart+($k)*$disper*1.0]
+	       lappend abscisses $abscisse
+	       #--- Lit la valeur des elements du fichier fit
+	       set intensite [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
+	       lappend intensites $intensite
+	       #--- Alimente le nouveau spectre
+	       
+	       if { $abscisse >= $xdeb && $abscisse <= $xfin } {
+		   lappend nabscisses $abscisse
+		   lappend nintensites $intensite
+		   # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
+		   incr k
+	       }
+	   }
+       #---- Audela 140 :
+       } else {
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	       set abscisse [expr $xdepart+($k)*$disper*1.0]
+	       lappend abscisses $abscisse
+	       #--- Lit la valeur des elements du fichier fit
+	       set intensite [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1]] 1 ]
+	       lappend intensites $intensite
+	       #--- Alimente le nouveau spectre
+	       
+	       if { $abscisse >= $xdeb && $abscisse <= $xfin } {
+		   lappend nabscisses $abscisse
+		   lappend nintensites $intensite
+		   # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
+		   incr k
+	       }
 	   }
        }
+
        set longr [ llength $nabscisses ]
        ::console::affiche_resultat "Selection : $longr\n"
        #--- Sélection des longueurs d'onde à découper

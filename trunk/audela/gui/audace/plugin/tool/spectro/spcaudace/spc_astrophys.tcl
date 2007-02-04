@@ -35,7 +35,7 @@ proc spc_vradiale { args } {
        set delta_lambda [ lindex $args 0 ]
        set lambda [lindex $args 1 ]
        
-       set vrad [ expr 299792.458*$delata_lambda/lambda ]
+       set vrad [ expr 299792.458*$delta_lambda/$lambda ]
        ::console::affiche_resultat "La vitesse radiale de l'objet est : $vrad km/s\n"
        return $vrad
    } else {
@@ -62,21 +62,187 @@ proc spc_npte { args } {
    global audace
    global conf
 
-   if {[llength $args] == 3} {
-     set I_5007 [ lindex $args 0 ]
-     set I_4959 [ expr int([lindex $args 1 ]) ]
-     set I_4363 [ expr int([lindex $args 2]) ]
+   if { [llength $args] == 3 || [llength $args] == 6 } {
+     if {[llength $args] == 3} {
+	 set I_5007 [ lindex $args 0 ]
+	 set I_4959 [ expr [lindex $args 1 ] ]
+	 set I_4363 [ expr [lindex $args 2] ]
+     } elseif {[llength $args] == 6} {
+	 set I_5007 [ lindex $args 0 ]
+	 set I_4959 [ expr [lindex $args 1 ] ]
+	 set I_4363 [ expr [lindex $args 2] ]
+	 set dI1 [ lindex $args 3 ]
+	 set dI2 [ lindex $args 4 ]
+	 set dI3 [ lindex $args 5 ]
+     } else {
+	 ::console::affiche_erreur "Usage: spc_npte I_5007 I_4959 I_4363 ?dI1 dI2 dI3?\n\n"
+	 return 0
+     }
 
+     #--- Calcul de la température : 
      set R [ expr ($I_5007+$I_4959)/$I_4363 ]
      set Te [ expr (3.29*1E4)/(log($R/8.30)) ]
-     ::console::affiche_resultat "Le température électronique de la nébuleuse est : $Te Kelvin\n"
-     return $Te
+
+     #--- Calcul de l'erreur sur le calcul :
+     if {[llength $args] == 6} {
+	 set dTe [ expr $Te/(log($R)-log(8.32))*(($dI1+$dI2)/($I_5007+$I_4959)+$dI3/$I_4363) ]
+     } else {
+	 ::console::affiche_resultat "Pas de calcul de dTe\n"
+	 set dTe 0
+     }
+
+     #--- Affichage du resultat :
+     ::console::affiche_resultat "Le température électronique de la nébuleuse est : $Te Kelvin ; dTe=$dTe\nR(OIII)=$R\n"
+     set resul [ list $Te $dTe $R ]
+     return $resul
    } else {
-     ::console::affiche_erreur "Usage: spc_npte I_5007 I_4959 I_4363\n\n"
+     ::console::affiche_erreur "Usage: spc_npte I_5007 I_4959 I_4363 ?dI1 dI2 dI3?\n\n"
    }
 
 }
 #*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 13-08-2005
+# Date de mise à jour : 13-08-2005
+# Arguments : I_5007 I_4959 I_4363
+# Modèle utilisé : A. Acker, Astronomie, méthodes et calculs, MASSON, p.104.
+##########################################################
+
+proc spc_te { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 2} {
+       set fichier [ lindex $args 0 ]
+       set largeur [ lindex $args 1 ]
+       set dlargeur [ expr $largeur/2. ]
+
+       #--- Détermination de la valeur du continuum de la raie :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+       } else {
+	   set disp 1.
+       }
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	   set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+       } else {
+	   set lambda 1.
+       }
+       #-- Raie 1 :
+       set ldeb1 [ expr 5006.8-$dlargeur ]
+       set lfin1 [ expr 5006.8+$dlargeur ]
+       set xdeb [ expr round(($ldeb1-$lambda0)/$disp) ]
+       set xfin [ expr round(($lfin1-$lambda0)/$disp) ]
+       set continuum1 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
+       #-- Raie 2 :
+       set ldeb2 [ expr 4958.9-$dlargeur ]
+       set lfin2 [ expr 4958.9+$dlargeur ]
+       set xdeb [ expr round(($ldeb2-$lambda0)/$disp) ]
+       set xfin [ expr round(($lfin2-$lambda0)/$disp) ]
+       set continuum2 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
+       #-- Le continuum est choisi comme la plus petite des 2 valeurs :
+       if { $continuum1<=$continuum2 } {
+	   set continuum $continuum1
+       } else {
+	   set continuum $continuum2
+       }
+       #set continuum [ expr 0.5*($continuum1+$continuum2) ]
+       ::console::affiche_resultat "Le continuum trouvé pour ($continuum1 ; $continuum2) vaut $continuum\n"
+
+
+       #--- Calcul de l'intensite des raies [OIII] :
+       set I_5007 [ spc_integratec $fichier $ldeb1 $lfin1 $continuum ]
+       set I_4959 [ spc_integratec $fichier $ldeb2 $lfin2 $continuum ]
+       set dlargeur4363 [ expr 0.5625*$dlargeur ]
+       set ldeb [ expr 4363-$dlargeur4363 ]
+       set lfin [ expr 4363+$dlargeur4363 ]
+       set I_4363 [ spc_integratec $fichier $ldeb $lfin $continuum ]
+
+       #--- Calcul de la tempéreture électronique :
+       set R [ expr ($I_5007+$I_4959)/$I_4363 ]
+       set Te [ expr (3.29*1E4)/(log($R/8.30)) ]
+       ::console::affiche_resultat "Le température électronique de la nébuleuse est : $Te Kelvin\nR(OIII)=$R\n"
+       set resul [ list $Te $R ]
+       return $resul
+   } else {
+     ::console::affiche_erreur "Usage: spc_te profil_de_raies_etalonne largeur_raie\n\n"
+   }
+
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 13-08-2005
+# Date de mise à jour : 13-08-20052007-01-20
+# Arguments : Te I_6584 I_6548 I_5755
+# Modèle utilisé : Practical Amateur Spectroscopy, Stephen F. TONKIN, Springer, p.164.
+#        set Ne [ expr 1/(2.9*1E(-3))*((8.5*sqrt($Te)*10^(10800/$Te))/$R-1) ]
+# Nouveau modele : Astrnomie astrophysique, A. Acker, Dunod, 2005, p.278.
+##########################################################
+
+proc spc_npte2 { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 4 ||[llength $args] == 8 } {
+       if {[llength $args] == 4 } {
+	   set Te [ lindex $args 0 ]
+	   set I_6584 [ lindex $args 1 ]
+	   set I_6548 [ expr int([lindex $args 2 ]) ]
+	   set I_5755 [ expr int([lindex $args 3]) ]
+       } elseif {[llength $args] == 8 } {
+	   set Te [ lindex $args 0 ]
+	   set I_6584 [ lindex $args 1 ]
+	   set I_6548 [ expr int([lindex $args 2 ]) ]
+	   set I_5755 [ expr int([lindex $args 3]) ]
+	   set dTe [ lindex $args 4 ]
+	   set dI1 [ lindex $args 4 ]
+	   set dI2 [ lindex $args 4 ]
+	   set dI3 [ lindex $args 4 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_npne Te I_6584 I_6548 I_5755 ?dTe dI1 dI2 dI3?\n\n"
+	   return 0
+       }
+
+       #--- Calcul du rapport des raies et de la densite électronique :
+       set R [ expr ($I_6584+$I_6548)/$I_5755 ]
+       set Ne [ expr sqrt($Te)*1E4/25*(6.91*exp(25000/$Te)/$R-1) ]
+
+       #--- Calcul de l'erreur sur la densité Ne :
+       if {[llength $args] == 8} {
+	   set dNe [ expr $Ne*(0.5*$dTe/$Te+(1/$R*(($dI1+$dI2)/($I_6584+$I_6548)+$dI3/$I_5755)+$dTe*25000/($R*$Te))*6.91*exp(25000/$Te)/(6.91/$R*exp(25000/$Te)-1)) ]
+       } else {
+	   ::console::affiche_resultat "Pas de calcul de dNe\n"
+	   set dNe 0
+       }
+       
+
+       #--- Affichage et formatage des resultats :
+       ::console::affiche_resultat "Le densité électronique de la nébuleuse est : $Ne e-/cm^3 ; dNe=$dNe\nR(NII)=$R\n"
+       set resul [ list $Ne $dNe $R ]
+       return $resul
+   } else {
+     ::console::affiche_erreur "Usage: spc_npte2 Te I_6584 I_6548 I_5755 ?dTe dI1 dI2 dI3?\n\n"
+   }
+
+}
+#*******************************************************************************#
+
 
 
 ##########################################################
@@ -94,6 +260,134 @@ proc spc_npne { args } {
    global audace
    global conf
 
+   if { [llength $args] == 3 || [llength $args] == 6 } {
+       if { [llength $args] == 3 } {
+	   set Te [ lindex $args 0 ]
+	   set I_6717 [ lindex $args 1 ]
+	   set I_6731 [ lindex $args 2 ]
+       } elseif { [llength $args] == 6 } {
+	   set Te [ lindex $args 0 ]
+	   set I_6717 [ lindex $args 1 ]
+	   set I_6731 [ lindex $args 2 ]
+	   set dTe [ lindex $args 3 ]
+	   set dI_6717 [ lindex $args 4 ]
+	   set dI_6731 [ lindex $args 5 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_npne Te I_6717 I_6731 ?dTe dI6717 dI6731?\n\n"
+       }
+
+       #--- Calcul du rapport des raies et de la densité électronique :
+       set R [ expr $I_6717/$I_6731 ]
+       set Ne [ expr 100*sqrt($Te)*($R-1.49)/(5.617-12.8*$R) ]
+
+       #--- Calcul de l'incertitude sur Ne :
+       if { [llength $args] == 6 } {
+	   set dNe [ expr $Ne*(0.5*$dTe/$Te+$R*($dI_6717/$I_6717-$dI_6731/$I_6731)*(12.8/abs(5.617-12.8*$R)+1/abs($R-1.49))) ]
+       } else {
+	   set dNe 0.
+       }
+
+       #--- Formatage et affichage du résultat :
+       ::console::affiche_resultat "Le densité électronique de la nébuleuse est : $Ne e-/cm^3 ; R(SII)=$R ; dNe=$dNe\n"
+       set resul [ list $Ne $dNe $R ]
+       return $resul
+   } else {
+	   ::console::affiche_erreur "Usage: spc_npne Te I_6717 I_6731 ?dTe dI6717 dI6731?\n\n"
+   }
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 23-01-2007
+# Date de mise à jour : 23-01-2007
+# Arguments : 
+# Modèle utilisé : A. Acker, Astronomie, méthodes et calculs, MASSON, p.105.
+##########################################################
+
+proc spc_ne { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 3} {
+       set fichier [ lindex $args 0 ]
+       set Te [ lindex $args 1 ]
+       set largeur [ lindex $args 2 ]
+       set dlargeur [ expr $largeur/2. ]
+
+       #--- Détermination de la valeur du continuum de la raie :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+       } else {
+	   set disp 1.
+       }
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	   set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+       } else {
+	   set lambda 1.
+       }
+       #-- Raie 1 :
+       set ldeb1 [ expr 6717-$dlargeur ]
+       set lfin1 [ expr 6717+$dlargeur ]
+       set xdeb [ expr round(($ldeb1-$lambda0)/$disp) ]
+       set xfin [ expr round(($lfin1-$lambda0)/$disp) ]
+       set continuum1 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
+       #-- Raie 2 :
+       set ldeb2 [ expr 6731-$dlargeur ]
+       set lfin2 [ expr 6731+$dlargeur ]
+       set xdeb [ expr round(($ldeb2-$lambda0)/$disp) ]
+       set xfin [ expr round(($lfin2-$lambda0)/$disp) ]
+       set continuum2 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
+       #-- Le continuum est choisi comme la plus petite des 2 valeurs :
+       if { $continuum1<=$continuum2 } {
+	   set continuum $continuum1
+       } else {
+	   set continuum $continuum2
+       }
+       #set continuum [ expr 0.5*($continuum1+$continuum2) ]
+       ::console::affiche_resultat "Le continuum trouvé pour ($continuum1 ; $continuum2) vaut $continuum\n"
+
+       #--- Calcul de l'intensite des raies [OIII] :
+       set I_6717 [ spc_integratec $fichier $ldeb1 $lfin1 $continuum ]
+       set I_6731 [ spc_integratec $fichier $ldeb2 $lfin2 $continuum ]
+
+       #--- Calcul de la tempéreture électronique :
+       set R [ expr $I_6717/$I_6731 ]
+       set Ne [ expr 100*sqrt($Te)*($R-1.49)/(5.617-12.8*$R) ]
+       ::console::affiche_resultat "La densité électronique de la nébuleuse est : $Ne e-/cm^3 ; R(SII)=$R ; \n"
+       set resul [ list $Ne $R ]
+       return $resul
+   } else {
+     ::console::affiche_erreur "Usage: spc_ne profil_de_raies_etalonne Te largeur_raie\n\n"
+   }
+
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la température électronique d'une nébuleuse à raies d'émission
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 13-08-2005
+# Date de mise à jour : 13-08-2005
+# Arguments : Te I_6584 I_6548 I_5755
+# Modèle utilisé : Practical Amateur Spectroscopy, Stephen F. TONKIN, Springer, p.164.
+##########################################################
+
+proc spc_ne1 { args } {
+
+   global audace
+   global conf
+
    if {[llength $args] == 4} {
      set Te [ lindex $args 0 ]
      set I_6584 [ lindex $args 1 ]
@@ -105,7 +399,7 @@ proc spc_npne { args } {
      ::console::affiche_resultat "Le densité électronique de la nébuleuse est : $Ne Kelvin\n"
      return $Ne
    } else {
-     ::console::affiche_erreur "Usage: spc_npne Te I_6584 I_6548 I_5755\n\n"
+     ::console::affiche_erreur "Usage: spc_ne Te I_6584 I_6548 I_5755\n\n"
    }
 
 }
@@ -394,7 +688,7 @@ proc spc_ew_211205 { args } {
 
 
 ####################################################################
-# Procédure de calcul d'intensité d'une raie
+# Procédure de calcul de la largeur équivalente d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 1-09-2006

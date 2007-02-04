@@ -170,7 +170,7 @@ proc openspc { args } {
 
 proc openspcncal { args } {
    global conf
-   global audace
+   global audace audela
 
  if {[llength $args] == 2} {
    set repertoire [ lindex $args 0 ]
@@ -183,9 +183,15 @@ proc openspcncal { args } {
 
    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
 
-   for {set k 1} {$k<=$naxis1} {incr k} {
-       # Lit la valeur des elements du fichier fit
-       lappend intensites [buf$audace(bufNo) getpix [list $k 1]]
+   if { [regexp {1.3.0} $audela(version) match resu ] } {
+       for {set k 1} {$k<=$naxis1} {incr k} {
+	   # Lit la valeur des elements du fichier fit
+	   lappend intensites [buf$audace(bufNo) getpix [list $k 1]]
+       }
+   } else {
+       for {set k 1} {$k<=$naxis1} {incr k} {
+	   lappend intensites [ lindex [buf$audace(bufNo) getpix [list $k 1]] 1 ]
+       }
    }
    set spectre [list $intensites $naxis1]
    return $spectre
@@ -209,7 +215,7 @@ proc openspcncal { args } {
 
 proc openspccal { args } {
    global conf
-   global audace
+   global audace audela
 
  if {[llength $args] == 2} {
    set repertoire [ lindex $args 0 ]
@@ -231,17 +237,21 @@ proc openspccal { args } {
    # Type de spectre : LINEAR ou NONLINEAR
    set dtype [lindex [buf$audace(bufNo) getkwd "CTYPE1"] 1]
 
-   for {set k 1} {$k<=$naxis1} {incr k} {
-       #-- Lit la valeur des elements du fichier fit
-       # lappend intensites [buf$audace(bufNo) getpix [list $k 1]]
-       #-- Gestion des valeurs "nan" de l'intensite
-       set ival [ buf$audace(bufNo) getpix [list $k 1] ]
-       #if { $ival == "nan" } {
-	#   lappend intensites 0
-	#   ::console::affiche_resultat "Cas nan : $ival\n"
-       #} else {
+   if { [regexp {1.3.0} $audela(version) match resu ] } {
+       for {set k 1} {$k<=$naxis1} {incr k} {
+	   #-- Lit la valeur des elements du fichier fit
+	   # lappend intensites [buf$audace(bufNo) getpix [list $k 1]]
+	   #-- Gestion des valeurs "nan" de l'intensite
+	   set ival [ buf$audace(bufNo) getpix [list $k 1] ]
+	   #if { $ival == "nan" } {
+	   #   lappend intensites 0
+	   #   ::console::affiche_resultat "Cas nan : $ival\n"
+	   #} else {
 	   lappend intensites $ival
-       #}
+	   #}
+       }
+   } else {
+       set ival [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
    }
    set spectre [list $intensites $naxis1 $xdepart $xincr $xcenter "$dtype"]
    return $spectre
@@ -266,7 +276,7 @@ proc openspccal { args } {
 proc spc_openspcfits { args } {
 
     global conf
-    global audace
+    global audace audela
 
     if {[llength $args] == 1} {
 	set filenamespc [ lindex $args 0 ]
@@ -279,7 +289,7 @@ proc spc_openspcfits { args } {
 	#--- Dispersion du spectre : =1 si profil non étalonné
 	set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
 	::console::affiche_resultat "$naxis1 points à traiter\n"
-	
+	if { [regexp {1.3.0} $audela(version) match resu ] } {	
 	    #--- Une liste commence à 0 ; Un vecteur fits commence à 1
 	   for {set k 0} {$k<$naxis1} {incr k} {
 		#--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
@@ -287,9 +297,16 @@ proc spc_openspcfits { args } {
 		#--- Lit la valeur (intensite) des elements du fichier fit
 		lappend ordonnees [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
 	    }
-
-	set sortie [list $abscisses $ordonnees]
-	return $sortie
+       } else {
+	   for {set k 0} {$k<$naxis1} {incr k} {
+		#--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+		lappend abscisses [expr $xdepart+($k)*$xincr*1.0]
+		#--- Lit la valeur (intensite) des elements du fichier fit
+		lappend ordonnees [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1]] 1 ]
+	    }
+       }
+       set sortie [list $abscisses $ordonnees]
+       return $sortie
     } else {
 	::console::affiche_erreur "Usage: spc_openspcfits fichier_profil.fit\n\n"
     }
@@ -309,8 +326,8 @@ proc spc_openspcfits { args } {
 proc spc_dat2fits { args } {
 
     global conf
-    global audace
-    set extsp ".dat"
+    global audace spcaudace
+
     #set nbunit "float"
     set nbunit "double"
     set precision 0.05
@@ -323,6 +340,7 @@ proc spc_dat2fits { args } {
 	    set filenameout [ lindex $args 1 ]
 	} else {
 	    ::console::affiche_erreur "Usage: spc_dat2fits fichier_profil.dat ?fichier_sortie.fit?\n\n"
+	    return 0
 	}
 	## === Lecture du fichier de donnees du profil de raie ===
 	set input [open "$audace(rep_images)/$filenamespc" r]
@@ -472,11 +490,11 @@ proc spc_dat2fits { args } {
 proc spc_fits2dat { args } {
 
   global conf
-  global audace
+  global audace spcaudace
+  global audela
   #global profilspc
   # global captionspc
   global colorspc
-  set extsp ".dat"
 
   if {[llength $args] <= 2} {
      if  {[llength $args] == 1} {
@@ -527,7 +545,7 @@ proc spc_fits2dat { args } {
 
      if {[llength $args] == 1} {
 	 set fileetalonnespc [ file rootname $filenamespc ]
-	 set fileout ${fileetalonnespc}$extsp
+	 set fileout ${fileetalonnespc}$spcaudace(extdat)
 	 set file_id [open "$audace(rep_images)/$fileout" w+]
      } elseif {[llength $args] == 2} {
 	 set fileout $filenameout
@@ -537,44 +555,88 @@ proc spc_fits2dat { args } {
 	 return 0
      }
 
-     if { $lambda0 != 1 } {
-	 if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	   #-- Calibration non-linéaire :
-	   if { $spc_a < 0.01 } {
-	       for {set k 0} {$k<$naxis1} {incr k} {
-		   #- Ancienne formulation < 070104 :
-		   set lambda [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-		   set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
-		   puts $file_id "$lambda\t$intensite\r"
-	       }
-	   } else {
-	       for {set k 0} {$k<$naxis1} {incr k} {
-		   set lambda [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-		   set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
-		   puts $file_id "$lambda\t$intensite\r"
-	       }
-	   }
+     if { [regexp {1.3.0} $audela(version) match resu ] } {
+	 #--- Lecture pixels Audela 130 :
+	 if { $lambda0 != 1 } {
+	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+		 #-- Calibration non-linéaire :
+		 if { $spc_a < 0.01 } {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 #- Ancienne formulation < 070104 :
+			 set lambda [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+			 set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+			 puts $file_id "$lambda\t$intensite\r"
+		     }
+		 } else {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 set lambda [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+			 set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+			 puts $file_id "$lambda\t$intensite\r"
+		     }
+		 }
+	     } else {
+		 #-- Calibration linéaire :
+		 #-- Une liste commence à 0 ; Un vecteur fits commence à 1
+		 for {set k 0} {$k<$naxis1} {incr k} {
+		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+		     set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     #-- Lit la valeur des elements du fichier fit
+		     set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		     ##lappend profilspc(intensite) $intensite
+		     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
+		     puts $file_id "$lambda\t$intensite"
+		 }
+	     }
 	 } else {
-	     #-- Calibration linéaire :
-	     #-- Une liste commence à 0 ; Un vecteur fits commence à 1
+	     #-- Profil non calibré :
 	     for {set k 0} {$k<$naxis1} {incr k} {
-		 #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
-		 set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
-		 #-- Lit la valeur des elements du fichier fit
-		 set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
-		 ##lappend profilspc(intensite) $intensite
-		 #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
-		 puts $file_id "$lambda\t$intensite"
+		 set pixel [expr $k+1]
+		 set intensite [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
+		 puts $file_id "$pixel\t$intensite\r"
 	     }
 	 }
      } else {
-	 #-- Profil non calibré :
-	 for {set k 0} {$k<$naxis1} {incr k} {
-	     set pixel [expr $k+1]
-	     set intensite [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
-	     puts $file_id "$pixel\t$intensite\r"
+	 #--- Lecture pixels Audela 140 :
+	 if { $lambda0 != 1 } {
+	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+		 #-- Calibration non-linéaire :
+		 if { $spc_a < 0.01 } {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 #- Ancienne formulation < 070104 :
+			 set lambda [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+			 set intensite [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+			 puts $file_id "$lambda\t$intensite\r"
+		     }
+		 } else {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 set lambda [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+			 set intensite [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+			 puts $file_id "$lambda\t$intensite\r"
+		     }
+		 }
+	     } else {
+		 #-- Calibration linéaire :
+		 #-- Une liste commence à 0 ; Un vecteur fits commence à 1
+		 for {set k 0} {$k<$naxis1} {incr k} {
+		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+		     set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     #-- Lit la valeur des elements du fichier fit
+		     set intensite [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		     ##lappend profilspc(intensite) $intensite
+		     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
+		     puts $file_id "$lambda\t$intensite"
+		 }
+	     }
+	 } else {
+	     #-- Profil non calibré :
+	     for {set k 0} {$k<$naxis1} {incr k} {
+		 set pixel [expr $k+1]
+		 set intensite [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		 puts $file_id "$pixel\t$intensite\r"
+	     }
 	 }
      }
+
      close $file_id
      ::console::affiche_resultat "Fichier fits exporté sous $audace(rep_images)/$fileout\n"
      #--- Renvoie le nom du fichier avec l'extension $extsp :
@@ -617,6 +679,7 @@ proc spc_data2fits { args } {
 	set nbunit "float"
     } else {
 	::console::affiche_erreur "Usage: spc_data2fits nom_fichier_fits_sortie liste_coordonnées_x_et_y unitées_coordonnées (float/double)\n\n"
+	return 0
     }
 
 	set abscisses [lindex $coordonnees 0]
@@ -625,7 +688,8 @@ proc spc_data2fits { args } {
 
 	#--- Création du fichier fits
 	buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
-	buf$audace(bufNo) setkwd [list "NAXIS1" $len int "" ""]
+	buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+	buf$audace(bufNo) setkwd [ list "NAXIS1" $len int "" "" ]
 	# buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
 
 	#--- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
@@ -715,7 +779,7 @@ proc spc_data2fits { args } {
 proc spc_fits2data { args } {
 
  global conf
- global audace
+ global audace audela
 
  if {[llength $args] == 1} {
      set filenamespc [ lindex $args 0 ]
@@ -747,36 +811,73 @@ proc spc_fits2data { args } {
      #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
      ::console::affiche_resultat "$naxis1 intensités à traiter...\n"
 
-     #--- Spectre calibré en lambda
-     if { $lambda0 != 1 } {
-	 #-- Calibration non-linéaire :
-	 if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	     if { $spc_a < 0.01 } {
-		 for {set k 0} {$k<$naxis1} {incr k} {
-		     #- Ancienne formulation < 070104 :
-		     #- Une liste commence à 0 ; Un vecteur fits commence à 1
-		     lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-		     lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+     #---- Pour Audela
+     if { [regexp {1.3.0} $audela(version) match resu ] } {
+	 #--- Spectre calibré en lambda
+	 if { $lambda0 != 1 } {
+	     #-- Calibration non-linéaire :
+	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+		 if { $spc_a < 0.01 } {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 #- Ancienne formulation < 070104 :
+			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
+			 lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+			 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		     }
+		 } else {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
+			 lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+			 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		     }
 		 }
+		 #-- Calibration linéaire :
 	     } else {
 		 for {set k 0} {$k<$naxis1} {incr k} {
-		     #- Une liste commence à 0 ; Un vecteur fits commence à 1
-		     lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+		     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
 		     lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
 		 }
 	     }
-	     #-- Calibration linéaire :
 	 } else {
+	     #--- Spectre non calibré en lambda :	 
 	     for {set k 0} {$k<$naxis1} {incr k} {
-		 lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
+		 lappend abscisses [ expr $k+1 ]
 		 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
 	     }
 	 }
+     #---- Audela 140 :
      } else {
-	 #--- Spectre non calibré en lambda :	 
-	 for {set k 0} {$k<$naxis1} {incr k} {
-	     lappend abscisses [ expr $k+1 ]
-	     lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+	 #--- Spectre calibré en lambda
+	 if { $lambda0 != 1 } {
+	     #-- Calibration non-linéaire :
+	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+		 if { $spc_a < 0.01 } {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 #- Ancienne formulation < 070104 :
+			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
+			 lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+			 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		     }
+		 } else {
+		     for {set k 0} {$k<$naxis1} {incr k} {
+			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
+			 lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+			 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		     }
+		 }
+		 #-- Calibration linéaire :
+	     } else {
+		 for {set k 0} {$k<$naxis1} {incr k} {
+		     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		 }
+	     }
+	 } else {
+	     #--- Spectre non calibré en lambda :	 
+	     for {set k 0} {$k<$naxis1} {incr k} {
+		 lappend abscisses [ expr $k+1 ]
+		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ] 
+	     }
 	 }
      }
      set coordonnees [list $abscisses $intensites]
@@ -800,7 +901,7 @@ proc spc_fits2data { args } {
 proc spc_fits2datadlin { args } {
 
  global conf
- global audace
+ global audace audela
 
  if {[llength $args] == 1} {
      set filenamespc [ lindex $args 0 ]
@@ -817,17 +918,35 @@ proc spc_fits2datadlin { args } {
      #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
      ::console::affiche_resultat "$naxis1 intensités à traiter...\n"
 
-     #--- Spectre calibré en lambda de dispersion imposée linéaire :
-     if { $lambda0 != 1 } {
-	 for {set k 0} {$k<$naxis1} {incr k} {
-	     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
-	     lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+     #---- Audela 130 :
+     if { [regexp {1.3.0} $audela(version) match resu ] } {
+	 #--- Spectre calibré en lambda de dispersion imposée linéaire :
+	 if { $lambda0 != 1 } {
+	     for {set k 0} {$k<$naxis1} {incr k} {
+		 lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
+		 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+	     }
+	 } else {
+	     #--- Spectre non calibré en lambda :	 
+	     for {set k 0} {$k<$naxis1} {incr k} {
+		 lappend abscisses [ expr $k+1 ]
+		 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+	     }
 	 }
+     #---- Audela 140 :
      } else {
-	 #--- Spectre non calibré en lambda :	 
-	 for {set k 0} {$k<$naxis1} {incr k} {
-	     lappend abscisses [ expr $k+1 ]
-	     lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+	 #--- Spectre calibré en lambda de dispersion imposée linéaire :
+	 if { $lambda0 != 1 } {
+	     for {set k 0} {$k<$naxis1} {incr k} {
+		 lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
+		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+	     }
+	 } else {
+	     #--- Spectre non calibré en lambda :	 
+	     for {set k 0} {$k<$naxis1} {incr k} {
+		 lappend abscisses [ expr $k+1 ]
+		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+	     }
 	 }
      }
      set coordonnees [list $abscisses $intensites]
@@ -850,7 +969,7 @@ proc spc_fits2datadlin { args } {
 ####################################################################
 
 proc spc_fit2pngman { args } {
-    global audace
+    global audace spcaudace
     global conf
 
     if { [llength $args] == 5 } {
@@ -859,15 +978,14 @@ proc spc_fit2pngman { args } {
 	set legendex [ lindex $args 2 ]
 	set legendey [ lindex $args 3 ]
 	set pas [ lindex $args 4 ]
-	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-	set ext ".dat"
+
 	spc_fits2dat $fichier
 	# Retire l'extension .fit du nom du fichier
 	set spcfile [ file rootname $fichier ]
 
 	#--- Prepare le script pour gnuplot
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	put $file_id "call \"${repertoire_gp}/gp_spc.cfg\" \"${spcfile}$ext\" \"$titre\" * * * * $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	put $file_id "call \"$spcaudace(repgp)/gp_spc.cfg\" \"${spcfile}$spcaudace(extdat)\" \"$titre\" * * * * $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Execute Gnuplot pour l'export en png
@@ -898,11 +1016,10 @@ proc spc_fit2pngman { args } {
 ####################################################################
 
 proc spc_fit2png { args } {
-    global audace
+    global audace spcaudace
     global conf
     global tcl_platform
-    set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-    set extsp ".dat"
+
     #-- 3%=0.03
     set lpart 0
 
@@ -943,10 +1060,10 @@ proc spc_fit2png { args } {
 	set spcfile [ file rootname $fichier ]
 	
 	#--- Créée le fichier script pour gnuplot :
-	## exec echo "call \"${repertoire_gp}/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
-	# exec echo "call \"${repertoire_gp}/gp_novisu.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
+	## exec echo "call \"$spcaudace(repgp)/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
+	# exec echo "call \"$spcaudace(repgp)/gp_novisu.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	puts $file_id "call \"${repertoire_gp}/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$extsp\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id "call \"$spcaudace(repgp)/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -963,12 +1080,12 @@ proc spc_fit2png { args } {
 	    # exec $gnuplotex "$audace(rep_images)/${spcfile}.gp"
 	    # exec gnuplot "$audace(rep_images)/${spcfile}.gp"
 	    #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
 	}
 
 	#--- Effacement des fichiers de batch :
-	file delete "$audace(rep_images)/${spcfile}$extsp"
+	file delete "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
 	file delete "$audace(rep_images)/${spcfile}.gp"
 	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
 	return "${spcfile}.png"
@@ -981,7 +1098,7 @@ proc spc_fit2png { args } {
 
 
 ####################################################################
-#  Procedure de conversion de fichier profil de raie calibré .fit en .png evec précision de la légende
+#  Procedure de conversion d'une série de fichiers profil de raie calibré .fit en .png evec précision de la légende
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 03-01-2007
@@ -990,11 +1107,10 @@ proc spc_fit2png { args } {
 ####################################################################
 
 proc spc_fit2pngleg { args } {
-    global audace
+    global audace spcaudace
     global conf
     global tcl_platform
     set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-    set extsp ".dat"
     #-- 3%=0.03
     set lpart 0
 
@@ -1053,7 +1169,7 @@ proc spc_fit2pngleg { args } {
 	
 	#--- Créée le fichier script pour gnuplot :
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	puts $file_id "call \"${repertoire_gp}/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$extsp\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id "call \"$spcaudace(repgp)/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -1061,12 +1177,12 @@ proc spc_fit2pngleg { args } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
 	} else {
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
 	}
 
 	#--- Effacement des fichiers de batch :
-	file delete "$audace(rep_images)/${spcfile}$extsp"
+	file delete "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
 	file delete "$audace(rep_images)/${spcfile}.gp"
 
 	#--- Fin du script :
@@ -1080,6 +1196,123 @@ proc spc_fit2pngleg { args } {
 
 
 
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .fit en .png
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 29-01-2007
+# Date modification : 29-01-2007
+# Arguments : fichiers .fit du profil de raie
+####################################################################
+
+proc spc_multifit2png { args } {
+    global audace spcaudace
+    global conf
+    global tcl_platform
+
+    #-- 3%=0.03
+    set lpart 0
+
+    if { [llength $args] != 0 } {
+
+	set len [ llength $args ]
+	#--- Creation d'une liste de fichier sans extension :
+	set listefile ""
+	foreach fichier $args {
+	    lappend listefile [ file rootname $fichier ]
+	}
+
+	#--- Adapte la légende de l'abscisse :
+	set fichier1 [ lindex $args 0 ]
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
+	set listemotsclef [ buf$audace(bufNo) getkwds ]
+	if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	} else {
+	    set xdeb 1.0
+	}
+	if { $xdeb0 == 1.0 } {
+	    set legendex "Position (Pixel)"
+	} else {
+	    set legendex "Wavelength (A)"
+	}
+	set titre ""
+	set legendey ""
+
+	#--- Conversion en dat :
+	set i 1
+	set listedat ""
+	set plotcmd ""
+	foreach fichier $listefile {
+	    set filedat [ spc_fits2dat $fichier ]
+	    lappend listedat $filedat
+	    if { $i != $len } {
+		#append plotcmd "'$audace(rep_images)/$filedat' w l, "
+		append plotcmd "'$filedat' w l, "
+	    } else {
+		#append plotcmd "'$audace(rep_images)/$filedat' w l"
+		append plotcmd "'$filedat' w l"
+	    }
+	    incr i
+	}
+
+	#--- Construction du fichier btach de Gnuplot :
+	set xdeb "*"
+	set xfin "*"
+	set file_id [open "$audace(rep_images)/multiplot.gp" w+]
+	# puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+	close $file_id
+
+	#===================
+	if { 0>1 } {
+	    set fichier [ file rootname [ lindex $args 0 ] ]
+	    set titre [ lindex $args 1 ]
+	    #set xdeb "*"
+	    #set xfin "*"
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	    #-- Demarre et fini le graphe en deçca de 3% des limites pour l'esthetique
+	    set largeur [ expr $lpart*$naxis1 ]
+	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	    set xdeb [ expr $xdeb0+$largeur ]
+	    set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+	    set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+	#} elseif { [llength $args] == 4 } {
+	    set fichier [ file rootname [ lindex $args 0 ] ]
+	    set titre [ lindex $args 1 ]
+	    set xdeb [ lindex $args 2 ]
+	    set xfin [ lindex $args 3 ]
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	}
+	#============================
+
+	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+	set repdflt [ bm_goodrep ]
+	if { $tcl_platform(os)=="Linux" } {
+	    set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
+	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
+	} else {
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
+	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
+	}
+	cd $repdflt
+
+	#--- Effacement des fichiers de batch :
+	file delete "$audace(rep_images)/multiplot.gp"
+        foreach fichier $listedat {
+	    file delete "$audace(rep_images)/$fichier"
+        }
+	::console::affiche_resultat "Profils de raie exporté sous multiplot.png\n"
+	return "multiplot.png"
+    } else {
+	::console::affiche_erreur "Usage: spc_multifit2png fichier_fits1 fichier_fits2 ... fichier_fitsn\n\n"
+    }
+}
+####################################################################
+
+
 
 ####################################################################
 #  Procedure de conversion de fichier profil de raie calibré .fit en .png evec précision de la légende
@@ -1091,11 +1324,10 @@ proc spc_fit2pngleg { args } {
 ####################################################################
 
 proc spc_fit2ps { args } {
-    global audace
+    global audace spcaudace
     global conf
     global tcl_platform
-    set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-    set extsp ".dat"
+
     #-- 3%=0.03
     set lpart 0
 
@@ -1147,7 +1379,7 @@ proc spc_fit2ps { args } {
 	
 	#--- Créée le fichier script pour gnuplot :
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	puts $file_id "call \"${repertoire_gp}/gp_ps.cfg\" \"$audace(rep_images)/${spcfile}$extsp\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.ps\" \"$legendex\" \"$legendey\" "
+	puts $file_id "call \"$spcaudace(repgp)/gp_ps.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.ps\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -1155,12 +1387,12 @@ proc spc_fit2ps { args } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
 	} else {
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "gnuplot résultat : $answer\n"
 	}
 
 	#--- Effacement des fichiers de batch :
-	file delete "$audace(rep_images)/${spcfile}$extsp"
+	file delete "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
 	file delete "$audace(rep_images)/${spcfile}.gp"
 
 	#--- Fin du script :
@@ -1185,7 +1417,7 @@ proc spc_fit2ps { args } {
 ####################################################################
 
 proc spc_fit2pngbat { args } {
-   global audace
+   global audace spcaudace
    global conf
    set ecart 0.005
 
@@ -1227,9 +1459,9 @@ proc spc_fit2pngbat { args } {
        spc_fits2dat $fichier
        # Retire l'extension .fit du nom du fichier
        set spcfile [ file rootname $fichier ]
-       #exec echo "call \"${repertoire_gp}/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
+       #exec echo "call \"$spcaudace(repgp)/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
        set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-       puts $file_id "call \"${repertoire_gp}/gp_visu.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
+       puts $file_id "call \"$spcaudace(repgp)/gp_visu.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
        close $file_id
        set file_id [open "$audace(rep_images)/trace_gp.bat" w+]
        puts $file_id "gnuplot \"${spcfile}.gp\" "
@@ -1254,7 +1486,7 @@ proc spc_fit2pngbat { args } {
 ####################################################################
 
 proc spc_dat2png { args } {
-    global audace
+    global audace spcaudace
     global conf
     global tcl_platform
 
@@ -1290,9 +1522,6 @@ proc spc_dat2png { args } {
 	    set legendex "Wavelength (A)"
 	}
 	set legendey "Intensity (ADU)"
-
-	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-	set ext ".dat"
 	
 	#spc_fits2dat $fichier
 	#-- Retire l'extension .fit du nom du fichier
@@ -1300,7 +1529,7 @@ proc spc_dat2png { args } {
 	
 	#--- Créée le fichier script pour gnuplot :
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	puts $file_id "call \"${repertoire_gp}/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id "call \"$spcaudace(repgp)/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -1308,7 +1537,7 @@ proc spc_dat2png { args } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	} else {
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	}
 
@@ -1332,7 +1561,7 @@ proc spc_dat2png { args } {
 ####################################################################
 
 proc spc_dat2pngman { args } {
-    global audace
+    global audace spcaudace
     global conf
 
     if { [llength $args] == 5 } {
@@ -1341,15 +1570,13 @@ proc spc_dat2pngman { args } {
 	set legendex [ lindex $args 2 ]
 	set legendey [ lindex $args 3 ]
 	set pas [ lindex $args 4 ]
-	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
 
-	set ext ".dat"
 	# Retire l'extension .fit du nom du fichier
 	set spcfile [ file rootname $fichier ]
 
 	#--- Prepare le script pour gnuplot
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	put $file_id "call \"${repertoire_gp}/gp_spc.cfg\" \"${spcfile}$ext\" \"$titre\" * * * * $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	put $file_id "call \"$spcaudace(repgp)/gp_spc.cfg\" \"${spcfile}$spcaudace(extdat)\" \"$titre\" * * * * $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Execute Gnuplot pour l'export en png
@@ -1357,7 +1584,7 @@ proc spc_dat2pngman { args } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	} else {
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	}
 	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
@@ -1504,11 +1731,11 @@ proc spc_spc2fits { args } {
 proc spc_spc2fits2 { args } {
 
  global conf
- global audace
+ global audace spcaudace
  global profilspc
  global captionspc
  global colorspc
- set extsp "dat"
+
 
  if {[llength $args] == 1} {
    set filenamespc [ lindex $args 0 ]
@@ -1628,8 +1855,8 @@ proc spc_spc2fits2 { args } {
 proc spc_spcs2fits { args } {
 
     global conf
-    global audace
-    set extvspec ".spc"
+    global audace spcaudace
+
 
     if {[llength $args] == 1} {
 	set repertoire [ lindex $args 0 ]
@@ -1637,7 +1864,7 @@ proc spc_spcs2fits { args } {
 	set rep_courant [ pwd ]
 	set audace(rep_images) $repertoire
 	cd $repertoire
-	set liste_fichiers [ lsort -dictionary [ glob *$extvspec ] ]
+	set liste_fichiers [ lsort -dictionary [ glob *$spcaudace(extvspec) ] ]
 	foreach fichier $liste_fichiers {
 	    ::console::affiche_resultat "$fichier\n"
 	    spc_spc2fits $fichier
@@ -1663,8 +1890,7 @@ proc spc_spcs2fits { args } {
 proc spc_dats2fits { args } {
 
     global conf
-    global audace
-    set extspec ".dat"
+    global audace spcaudace
 
     if {[llength $args] == 1} {
 	set repertoire [ lindex $args 0 ]
@@ -1672,7 +1898,7 @@ proc spc_dats2fits { args } {
 	set rep_courant [ pwd ]
 	set audace(rep_images) $repertoire
 	cd $repertoire
-	set liste_fichiers [ lsort -dictionary [ glob *$extspec ] ]
+	set liste_fichiers [ lsort -dictionary [ glob *$spcaudace(extdat) ] ]
 	foreach fichier $liste_fichiers {
 	    ::console::affiche_resultat "$fichier\n"
 	    spc_dat2fits $fichier
@@ -1699,11 +1925,11 @@ proc spc_dats2fits { args } {
 proc spc_readchemfiles { args } {
 
     global conf
-    global audace
+    global audace spcaudace
     set extdata ".txt"
-    set fileelements "spcaudace/data/chimie/stellar_lines.txt"
-    set fileneon "spcaudace/data/chimie/neon.txt"
-    set fileeau "spcaudace/data/chimie/h2o.txt"
+    set fileelements "stellar_lines.txt"
+    set fileneon "neon.txt"
+    set fileeau "h2o.txt"
 
     if { [ llength $args ] <= 1 } {
 	if { [ llength $args ] == 1 } {
@@ -1715,7 +1941,7 @@ proc spc_readchemfiles { args } {
 	}
 
 	#--- Lecture du fichier des raies stellaires
-	set input [open "$audace(rep_scripts)/$fileelements" r]
+	set input [open "$spcaudace(repchimie)/$fileelements" r]
 	set contents [split [read $input] \n]
 	close $input
 	foreach ligne $contents {
@@ -1726,7 +1952,7 @@ proc spc_readchemfiles { args } {
 	}
 
 	#--- Lecture du fichier des raies de l'eau
-	set input [open "$audace(rep_scripts)/$fileeau" r]
+	set input [open "$spcaudace(repchimie)/$fileeau" r]
 	set contents [split [read $input] \n]
 	close $input
 	foreach ligne $contents {
@@ -1737,7 +1963,7 @@ proc spc_readchemfiles { args } {
 	}
 
 	#--- Lecture du fichier des raies du neon
-	set input [open "$audace(rep_scripts)/$fileneon" r]
+	set input [open "$spcaudace(repchimie)/$fileneon" r]
 	set contents [split [read $input] \n]
 	close $input
 	foreach ligne $contents {
@@ -2154,7 +2380,7 @@ proc spc_dat2png_27042006 { args } {
 	
 	#--- Créée le fichier script pour gnuplot :
 	set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-	puts $file_id "call \"${repertoire_gp}/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id "call \"$spcaudace(repgp)/gp_novisu.cfg\" \"$audace(rep_images)/${spcfile}$ext\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
 	close $file_id
 
 	#--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -2162,7 +2388,7 @@ proc spc_dat2png_27042006 { args } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	} else {
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	}
 

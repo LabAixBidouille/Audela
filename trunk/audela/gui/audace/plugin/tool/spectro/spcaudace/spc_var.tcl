@@ -1,68 +1,62 @@
 ####################################################################
-# Specification des varibles utilisees par spcaudace
-# et chargement des librairies
+# Spécification des variables utilisées par spcaudace
+# 
 ####################################################################
 
 
 #----------------------------------------------------------------------------------#
-global audace
-global conf
+#--- Initialisation des variables d'environnement d'SpcAudace :
+global audela audace
+global spcaudace
 
-#----------------------------------------------------------------------------------#
-## ***** Chargement de la lib BLT *****
-## Il a ete necessaire que je fasse un lien symbolique : ln -s /usr/lib/libBLT.2.4.so.8.3 /usr/lib/libBLT.2.4.so
-#::console::affiche_resultat "$tcl_platform(os)\n"
-package require BLT
-#load $audace(rep_install)/lib/blt2.4/BLT24[info sharedlibextension]
+set spcaudace(extdat) ".dat"
+set spcaudace(exttxt) ".txt"
+set spcaudace(extvspec) ".spc"
 
-
-#----------------------------------------------------------------------------------#
-set extsp "dat"
-set extdflt "fit"
-
-
-#----------------------------------------------------------------------------------#
-proc spc_goodrep {} {
-   global audace
-
-   set repdflt [pwd]
-   cd $audace(rep_images)
-   return $repdflt
+#--- Répertoire d'SpcAudace :
+if { [regexp {1.3.0} $audela(version) match resu ] } {
+    set spcaudace(repspc) [ file join $audace(rep_scripts) spcaudace ]
+} else {
+    set spcaudace(repspc) [ file join $audace(rep_plugin) tool spectro spcaudace ]
+}
+#--- Répertoire de Gnuplot :
+if { [regexp {1.3.0} $audela(version) match resu ] } {
+    set spcaudace(repgp) [ file join $audace(rep_scripts) spcaudace gp ]
+} else {
+    set spcaudace(repgp) [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
+}
+#--- Répertoire des données chimiques :
+if { [regexp {1.3.0} $audela(version) match resu ] } {
+    set spcaudace(repchimie) [ file join $audace(rep_scripts) spcaudace data chimie ]
+} else {
+    set spcaudace(repchimie) [ file join $audace(rep_plugin) tool spectro spcaudace data chimie ]
 }
 
 
 #----------------------------------------------------------------------------------#
-#**** Fonctions de chargement des des plugins *********
-proc spc_bessmodule {} {
+# Couleurs et répertoires : (pris dans spc_cap.tcl et toujours présent -> migration à terminer)
 
-    global audace
-    global conf
-    global audela
+#--- definition of colors
+#--- definition des couleurs
+set colorspc(back) #123456
+set colorspc(back_infos) #FFCCDD
+set colorspc(fore_infos) #000000
+set colorspc(back_graphborder) #CCCCCC
+set colorspc(plotbackground) #FFFFFF
+set colorspc(profile) #000088
 
-    if { [regexp {1.3.0} $audela(version) match resu ] } {
-	source [ file join $audace(rep_scripts) spcaudace plugins bess_module bess_module.tcl ]
-    } else {
-	set repspc [ file join $audace(rep_plugin) tool spectro spcaudace ]
-	source [ file join $repspc plugins bess_module bess_module.tcl ]
-    }
+#--- definition of variables
+#--- definition des variables
+if { [info exists profilspc(initialfile)] == 0 } {
+   set profilspc(initialfile) " "
+}
+if { [info exists profilspc(xunit)] == 0 } {
+   set profilspc(xunit) "screen coord"
+}
+if { [info exists profilspc(yunit)] == 0 } {
+   set profilspc(yunit) "screen coord"
 }
 
-
-
-#--- Amorcage d'initialisation de vecteurs pour la fonction BLT::spline qui bug :
-proc spc_vectorini {} {
-   blt::vector x(10) y(10) sy(10)
-   for {set i 10} {$i>0} {incr i -1} { 
-      set x($i-1) [expr $i*$i]
-      set y($i-1) [expr sin($i*$i*$i)]
-   }
-   x sort y
-   x populate sx 10
-   blt::spline natural x y sx sy
-}
-
-spc_vectorini
-#*********************************************************#
 
 
 
