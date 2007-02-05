@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.5 2007-02-05 01:35:58 alainklotz Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.6 2007-02-05 17:05:14 robertdelmas Exp $
 #
 
 proc globgalsn { args } {
@@ -755,6 +755,7 @@ proc snvisuconfiguration_save { } {
 }
 # ==========================================================================================
 
+# ==========================================================================================
 proc sn_verif_wcs { bufNo } {
    set calib 1
    if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
@@ -801,7 +802,9 @@ proc sn_verif_wcs { bufNo } {
       return 0
    }
 }
+# ==========================================================================================
 
+# ==========================================================================================
 proc sn_center_radec { bufNo } {
    set res [sn_verif_wcs $bufNo]
    if {$res==0} {
@@ -815,5 +818,6 @@ proc sn_center_radec { bufNo } {
    set ra [mc_angle2hms $ra 360 zero 2 auto list]
    set dec [mc_angle2dms $dec 90 zero 1 + list]
    return "{ $ra $dec }"
-
 }
+# ==========================================================================================
+
