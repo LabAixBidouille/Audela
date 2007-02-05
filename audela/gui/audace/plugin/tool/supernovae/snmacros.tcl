@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.4 2007-01-13 08:05:24 alainklotz Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.5 2007-02-05 01:35:58 alainklotz Exp $
 #
 
 proc globgalsn { args } {
@@ -755,3 +755,65 @@ proc snvisuconfiguration_save { } {
 }
 # ==========================================================================================
 
+proc sn_verif_wcs { bufNo } {
+   set calib 1
+   if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
+      set calib 0
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
+      set calib 0
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
+      set calib 0
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
+      set calib 0
+   }
+   set classic 0
+   set nouveau 0
+   if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
+      incr nouveau
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
+      incr nouveau
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
+      incr nouveau
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
+      incr nouveau
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
+      incr classic
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
+      incr classic
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
+      incr classic
+   }
+   if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
+      incr classic
+   }
+   if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
+      return 1
+   } else {
+      return 0
+   }
+}
+
+proc sn_center_radec { bufNo } {
+   set res [sn_verif_wcs $bufNo]
+   if {$res==0} {
+      return ""
+   }
+   set x [expr [buf$bufNo getpixelswidth]/2.]
+   set y [expr [buf$bufNo getpixelsheight]/2.]
+   set radec [buf$bufNo xy2radec [list $x $y]]
+   set ra [lindex $radec 0]
+   set dec [lindex $radec 1]
+   set ra [mc_angle2hms $ra 360 zero 2 auto list]
+   set dec [mc_angle2dms $dec 90 zero 1 + list]
+   return "{ $ra $dec }"
+
+}

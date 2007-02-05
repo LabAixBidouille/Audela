@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.11 2007-01-19 22:01:11 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.12 2007-02-05 01:35:58 alainklotz Exp $
 #
 
 global audace
@@ -891,7 +891,7 @@ proc affimages { } {
       visu$num(visu_1) disp
       $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
-      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result"
+      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)]"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
       pack $audace(base).snvisu.lst1.scr1 \
@@ -1960,9 +1960,15 @@ proc snblinkimage { } {
       buf$num(buffer1) save "$audace(rep_images)/dummy1"
       set objefile "__dummy__"
       set error [ catch {
-         ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" STAT objefile"
-         ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER translate=never"
-         ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
+         set wcs1 [sn_verif_wcs $num(buffer1)]
+         set wcs2 [sn_verif_wcs $b]
+         if {($wcs1==0)||($wcs2==0)} {
+            ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" STAT objefile"
+            ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER translate=never"
+            ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 2 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
+         } else {
+            ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummy\" 1 2 \"$ext\" \"$audace(rep_images)\" \"dummyb\" 1 \"$ext\" REGISTER matchwcs"
+         }
       } msg ]
       #--- Interception de l'erreur
       if { $error == "1" } {
