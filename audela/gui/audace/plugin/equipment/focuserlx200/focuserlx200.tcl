@@ -1,8 +1,8 @@
 #
-# Fichier : focuser.tcl
+# Fichier : focuserlx200.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.3 2007-02-03 18:21:50 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.4 2007-02-07 20:32:37 robertdelmas Exp $
 #
 
 #
@@ -35,9 +35,6 @@ namespace eval ::focuserlx200 {
 #------------------------------------------------------------
 proc ::focuserlx200::init { } {
    global audace
-   global conf
-   global caption
-   variable private
 
    package provide focuserlx200 1.0
 
@@ -68,6 +65,7 @@ proc ::focuserlx200::getPluginType { } {
 #------------------------------------------------------------
 proc ::focuserlx200::getLabel { } {
    global caption
+
    return "$caption(focuserlx200,label)"
 }
 
@@ -88,7 +86,7 @@ proc ::focuserlx200::getHelp { } {
 #  return 0 ou 1
 #------------------------------------------------------------
 proc ::focuserlx200::getStartFlag { } {
-   #--- le focuser lx200 est demarre automatiquement a la creation du telescope
+   #--- le focuser LX200 est demarre automatiquement a la creation du telescope
    return 0
 }
 
@@ -99,8 +97,6 @@ proc ::focuserlx200::getStartFlag { } {
 #  return rien
 #------------------------------------------------------------
 proc ::focuserlx200::fillConfigPage { frm } {
-   variable widget
-   global conf
    global caption
 
    #--- je copie les donnees de conf(...) dans les variables widget(...)
@@ -133,7 +129,7 @@ proc ::focuserlx200::configurePlugin { } {
 #------------------------------------------------------------
 proc ::focuserlx200::createPlugin { } {
    #--- il n'y a rien a faire pour ce focuser car il utilise la liaison du
-   #--- telescope lx200
+   #--- telescope LX200
    return
 }
 
@@ -145,7 +141,7 @@ proc ::focuserlx200::createPlugin { } {
 #------------------------------------------------------------
 proc ::focuserlx200::deletePlugin { } {
    #--- il n'y a rien a faire pour ce focuser car il utilise la liaison du
-   #--- telescope lx200
+   #--- telescope LX200
    return
 }
 
@@ -159,7 +155,7 @@ proc ::focuserlx200::isReady { } {
    global audace
 
    set result "0"
-   #--- le focuser est ready si le telescope lx200 est deja cree
+   #--- le focuser est ready si le telescope LX200 est deja cree
    if { [ ::tel::list ] != "" } {
       if { [tel$audace(telNo) name] == "LX200" } {
          set result "1"

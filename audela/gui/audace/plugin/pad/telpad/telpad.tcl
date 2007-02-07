@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.7 2007-02-03 20:35:54 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.8 2007-02-07 20:33:37 robertdelmas Exp $
 #
 
 package provide telpad 1.0
@@ -29,8 +29,6 @@ package provide telpad 1.0
 #
 
 namespace eval telpad {
-   variable This
-   global telpad
 
    #==============================================================
    # Procedures generiques de configuration des drivers
@@ -86,7 +84,6 @@ namespace eval telpad {
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
-
       return "telpad.htm"
    }
 
@@ -142,7 +139,6 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      variable private
       global caption
 
       #--- Je memorise la reference de la frame
@@ -186,7 +182,6 @@ namespace eval telpad {
    #  return nothing
    #------------------------------------------------------------
    proc stopDriver { } {
-
       #--- Ferme la raquette
       fermer
       return
@@ -245,9 +240,7 @@ namespace eval telpad {
    proc createDialog { } {
       variable This
       variable widget
-      global audace
-      global conf
-      global caption
+      global audace caption conf
 
       if { [ winfo exists $This ] } {
          destroy $This
@@ -409,10 +402,10 @@ namespace eval telpad {
       bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) }
 
       #--- Cardinal moves
-      bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move - } }
-      bind $zone(moins) <ButtonRelease-1> { ::focus::move stop }
-      bind $zone(plus)  <ButtonPress-1>   { catch { ::focus::move + } }
-      bind $zone(plus)  <ButtonRelease-1> { ::focus::move stop }
+      bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) - } }
+      bind $zone(moins) <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
+      bind $zone(plus)  <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) + } }
+      bind $zone(plus)  <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
 
       #--- La fenetre est active
       focus $This
