@@ -1,6 +1,6 @@
 #
 # Fichier : focuserlx200.cap
-# Mise a jour $Id: focuserlx200.cap,v 1.2 2007-02-02 18:24:05 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.cap,v 1.3 2007-02-07 20:30:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,49 +13,77 @@ global caption langage
 
 set caption(focuserlx200,label)          "LX200 Focuser"
 set caption(focuserlx200,configure)      "Set up"
-set caption(focuserlx200,link)           "# Les commandes sont envoyées à la monture LX200"
+set caption(focuserlx200,link)           "Controls are sent to the LX200 mount."
+
+set caption(focuserlx200,x1)             "x1"
+set caption(focuserlx200,x5)             "x5"
+set caption(focuserlx200,interro)        "?"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(focuserlx200,label)       "Focaliseur LX200"
    set caption(focuserlx200,configure)   "Configurer"
-   set caption(focuserlx200,link)        "Les commandes sont envoyées à la monture LX200"
+   set caption(focuserlx200,link)        "Les commandes sont envoyées à la monture LX200."
+
+   set caption(focuserlx200,x1)          "x1"
+   set caption(focuserlx200,x5)          "x5"
+   set caption(focuserlx200,interro)     "?"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(focuserlx200,label)       "Focheggiatore LX200"
    set caption(focuserlx200,configure)   "Configurare"
-   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
+   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200."
+
+   set caption(focuserlx200,x1)          "x1"
+   set caption(focuserlx200,x5)          "x5"
+   set caption(focuserlx200,interro)     "?"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(focuserlx200,label)       "Enfocador LX200"
    set caption(focuserlx200,configure)   "Configurar"
-   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
+   set caption(focuserlx200,link)        "Las ordenes se mandan a la montura LX200."
+
+   set caption(focuserlx200,x1)          "x1"
+   set caption(focuserlx200,x5)          "x5"
+   set caption(focuserlx200,interro)     "?"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(focuserlx200,label)       "LX200 Scharfeinstellung"
    set caption(focuserlx200,configure)   "Konfigurieren"
-   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
+   set caption(focuserlx200,link)        "Die Steuervorrichtungen sind zum LX200 Gestell geschickt."
+
+   set caption(focuserlx200,x1)          "x1"
+   set caption(focuserlx200,x5)          "x5"
+   set caption(focuserlx200,interro)     "?"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(focuserlx200,label)       "Focador LX200"
    set caption(focuserlx200,configure)   "Configurar"
-   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
+   set caption(focuserlx200,link)        "Os comandos são enviados à montagem LX200."
+
+   set caption(focuserlx200,x1)          "x1"
+   set caption(focuserlx200,x5)          "x5"
+   set caption(focuserlx200,interro)     "?"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(focuserlx200,label)       "LX200 Focuser"
-   set caption(focuserlx200,configure)   "Set up"
-   set caption(focuserlx200,link)        "# Les commandes sont envoyées à la monture LX200"
+   set caption(focuserlx200,label)       "# LX200 Focuser"
+   set caption(focuserlx200,configure)   "# Set up"
+   set caption(focuserlx200,link)        "# Controls are sent to the LX200 mount."
+
+   set caption(focuserlx200,x1)          "x1"
+   set caption(focuserlx200,x5)          "x5"
+   set caption(focuserlx200,interro)     "?"
 
 }
 
