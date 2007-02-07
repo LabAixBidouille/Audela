@@ -1,0 +1,93 @@
+#
+# Fichier : focuseraudecom.cap
+# Mise a jour $Id: focuseraudecom.cap,v 1.1 2007-02-07 20:38:18 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(focuseraudecom,label)          "AudeCom Focuser"
+set caption(focuseraudecom,configure)      "Set up"
+set caption(focuseraudecom,link)           "Controls are sent to the AudeCom mount."
+
+set caption(focuseraudecom,x1)             "x1"
+set caption(focuseraudecom,x5)             "x5"
+set caption(focuseraudecom,interro)        "?"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "Focaliseur AudeCom"
+   set caption(focuseraudecom,configure)   "Configurer"
+   set caption(focuseraudecom,link)        "Les commandes sont envoyées à la monture AudeCom."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "Focheggiatore AudeCom"
+   set caption(focuseraudecom,configure)   "Configurare"
+   set caption(focuseraudecom,link)        "# Les commandes sont envoyées à la monture AudeCom."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "Enfocador AudeCom"
+   set caption(focuseraudecom,configure)   "Configurar"
+   set caption(focuseraudecom,link)        "Las ordenes se mandan a la montura AudeCom."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "AudeCom Scharfeinstellung"
+   set caption(focuseraudecom,configure)   "Konfigurieren"
+   set caption(focuseraudecom,link)        "Die Steuervorrichtungen sind zum AudeCom Gestell geschickt."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "Focador AudeCom"
+   set caption(focuseraudecom,configure)   "Configurar"
+   set caption(focuseraudecom,link)        "Os comandos são enviados à montagem AudeCom."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "# AudeCom Focuser"
+   set caption(focuseraudecom,configure)   "# Set up"
+   set caption(focuseraudecom,link)        "# Controls are sent to the AudeCom mount."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
