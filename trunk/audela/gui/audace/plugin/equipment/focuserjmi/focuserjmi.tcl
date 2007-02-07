@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.3 2007-02-03 18:20:52 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.4 2007-02-07 20:31:39 robertdelmas Exp $
 #
 
 #
@@ -34,9 +34,8 @@ namespace eval ::focuserjmi {
 #  return namespace name
 #------------------------------------------------------------
 proc ::focuserjmi::init { } {
-   global conf
-   global caption
    variable private
+   global conf
 
    package provide focuserjmi 1.0
 
@@ -265,8 +264,8 @@ proc ::focuserjmi::isReady { } {
 #     si command = "stop" , arrete le mouvement
 #------------------------------------------------------------
 proc ::focuserjmi::move { command } {
-   global conf
    variable private
+   global conf
 
    if { [isReady] == 0 } {
       return

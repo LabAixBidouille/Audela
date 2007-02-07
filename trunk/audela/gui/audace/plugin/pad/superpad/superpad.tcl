@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.9 2007-02-03 20:36:22 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.10 2007-02-07 20:33:15 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -983,6 +983,7 @@ namespace eval FrameFocusManager {
       variable private
       global audace
       global caption
+      global conf
       global colorpad
       global geompad
       global panneau
