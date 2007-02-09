@@ -814,9 +814,9 @@ void cam_update_window(struct camprop *cam)
     if (cam->y2 > maxy - 1)
 	cam->y2 = maxy - 1;
 
-    cam->w = (cam->x2 - cam->x1 + 1) / cam->binx;
+    cam->w = (cam->x2 - cam->x1 ) / cam->binx + 1;
     cam->x2 = cam->x1 + cam->w * cam->binx - 1;
-    cam->h = (cam->y2 - cam->y1 + 1) / cam->biny;
+    cam->h = (cam->y2 - cam->y1 ) / cam->biny + 1;
     cam->y2 = cam->y1 + cam->h * cam->biny - 1;
 
 }
