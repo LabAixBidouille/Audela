@@ -295,32 +295,36 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 
 void cam_update_window(struct camprop *cam)
 {
-    int maxx, maxy;
-    maxx = cam->nb_photox;
-    maxy = cam->nb_photoy;
-    if (cam->x1 > cam->x2)
-	libcam_swap(&(cam->x1), &(cam->x2));
-    if (cam->x1 < 0)
-	cam->x1 = 0;
-    if (cam->x2 > maxx - 1)
-	cam->x2 = maxx - 1;
-
-    if (cam->y1 > cam->y2)
-	libcam_swap(&(cam->y1), &(cam->y2));
-    if (cam->y1 < 0)
-	cam->y1 = 0;
-    if (cam->y2 > maxy - 1)
-	cam->y2 = maxy - 1;
-/*
+   int maxx, maxy, iswap;
+   maxx = cam->nb_photox;
+   maxy = cam->nb_photoy;
+   if (cam->x1 > cam->x2) {
+      iswap= cam->x1;
+      cam->x1 = cam->x2;
+      cam->x2 = iswap;
+   }
+   if (cam->x1 < 0) {
+      cam->x1 = 0;
+   }
+   if (cam->x2 > maxx - 1) {
+      cam->x2 = maxx - 1;
+   }
+   
+   if (cam->y1 > cam->y2) {
+      iswap= cam->y1;
+      cam->y1 = cam->y2;
+      cam->y2 = iswap;
+   }
+   if (cam->y1 < 0) {
+      cam->y1 = 0;
+   }
+   if (cam->y2 > maxy - 1) {
+      cam->y2 = maxy - 1;
+   }
    cam->w = ( cam->x2 - cam->x1) / cam->binx + 1;
    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
    cam->h = ( cam->y2 - cam->y1) / cam->biny + 1;
    cam->y2 = cam->y1 + cam->h * cam->biny - 1;
-*/
-    cam->w = (cam->x2 - cam->x1 + 1) / cam->binx;
-    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
-    cam->h = (cam->y2 - cam->y1 + 1) / cam->biny;
-    cam->y2 = cam->y1 + cam->h * cam->biny - 1;
 }
 
 void cam_ampli_on(struct camprop *cam)
