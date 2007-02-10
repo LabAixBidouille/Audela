@@ -1,12 +1,12 @@
 #
 # Fichier : focuseraudecom.tcl
-# Description : Gere un focuser sur port parallele ou quickremote
-# Auteur : Michel PUJOL
-# Mise a jour $Id: focuseraudecom.tcl,v 1.1 2007-02-07 20:38:38 robertdelmas Exp $
+# Description : Gere le focuser associe a la monture AudeCom
+# Auteur : Robert DELMAS
+# Mise a jour $Id: focuseraudecom.tcl,v 1.2 2007-02-10 17:51:37 robertdelmas Exp $
 #
 
 #
-# Procedures generiques obligatoires (pour configurer tous les plugins camera, telescope, equipement) :
+# Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
 #     init              : Initialise le namespace (appelee pendant le chargement de ce source)
 #     getLabel          : Retourne le nom affichable du plugin
 #     getHelp           : Retourne la documentation htm associee
@@ -86,7 +86,7 @@ proc ::focuseraudecom::getHelp { } {
 #  return 0 ou 1
 #------------------------------------------------------------
 proc ::focuseraudecom::getStartFlag { } {
-   #--- le focuser AudeCom est demarre automatiquement a la creation du telescope
+   #--- le focuser AudeCom est demarre automatiquement a la creation de la monture
    return 0
 }
 
@@ -128,8 +128,8 @@ proc ::focuseraudecom::configurePlugin { } {
 #  return nothing
 #------------------------------------------------------------
 proc ::focuseraudecom::createPlugin { } {
-   #--- il n'y a rien a faire pour ce focuser car il utilise la liaison du
-   #--- telescope AudeCom
+   #--- il n'y a rien a faire pour ce focuser car il utilise la liaison serie
+   #--- de la monture AudeCom
    return
 }
 
@@ -140,8 +140,8 @@ proc ::focuseraudecom::createPlugin { } {
 #  return nothing
 #------------------------------------------------------------
 proc ::focuseraudecom::deletePlugin { } {
-   #--- il n'y a rien a faire pour ce focuser car il utilise la liaison du
-   #--- telescope AudeCom
+   #--- il n'y a rien a faire pour ce focuser car il utilise la liaison serie
+   #--- de la monture AudeCom
    return
 }
 
@@ -155,7 +155,7 @@ proc ::focuseraudecom::isReady { } {
    global audace
 
    set result "0"
-   #--- le focuser est ready si le telescope AudeCom est deja cree
+   #--- le focuser est ready si la monture AudeCom est deja cree
    if { [ ::tel::list ] != "" } {
       if { [tel$audace(telNo) name] == "AudeCom" } {
          set result "1"
@@ -175,8 +175,7 @@ proc ::focuseraudecom::isReady { } {
 #     si command = "stop" , arrete le mouvement
 #------------------------------------------------------------
 proc ::focuseraudecom::move { command } {
-   global conf
-   global audace
+   global audace conf
 
    if { [ ::tel::list ] != "" } {
       if { $audace(focus,labelspeed) != "?" } {
@@ -201,7 +200,7 @@ proc ::focuseraudecom::move { command } {
    } else {
       if { $command != "stop" } {
          ::confTel::run
-        # tkwait window $audace(base).confTel
+        ### tkwait window $audace(base).confTel
       }
    }
 }
@@ -212,10 +211,9 @@ proc ::focuseraudecom::move { command } {
 #     et met la nouvelle valeur de la position dans la variable audace(focus,nbpas1)
 #------------------------------------------------------------
 proc ::focuseraudecom::goto { } {
-   global conf
-   global audace
+   global audace conf
 
-   #--- Direction de focalisation prioritaire : extrafocale
+   #--- Direction de focalisation prioritaire : Extrafocale
    if { $conf(audecom,intra_extra) == "1" } {
       if { $audace(focus,nbpas2) > "$audace(focus,nbpas1)" } {
          #--- Envoie la foc a la consigne
@@ -231,7 +229,7 @@ proc ::focuseraudecom::goto { } {
          #--- Envoie la foc a la consigne
          tel$audace(telNo) focus goto $audace(focus,nbpas2)
       }
-   #--- Direction de focalisation prioritaire : intrafocale
+   #--- Direction de focalisation prioritaire : Intrafocale
    } else {
       if { $audace(focus,nbpas2) < "$audace(focus,nbpas1)" } {
          #--- Envoie la foc a la consigne
@@ -267,8 +265,7 @@ proc ::focuseraudecom::goto { } {
 #     incremente la vitesse du focus et appelle la procedure setSpeed
 #------------------------------------------------------------
 proc ::focuseraudecom::incrementSpeed { } {
-   global conf
-   global audace
+   global audace caption conf
 
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
@@ -280,13 +277,14 @@ proc ::focuseraudecom::incrementSpeed { } {
             ::focuseraudecom::setSpeed "1"
          }
       } elseif { $conf(telescope) == "lx200" } {
-         if { $audace(focus,speed) == "0" } {
-            ::focuseraudecom::setSpeed "1"
-         } else {
-            ::focuseraudecom::setSpeed "0"
-         }
+         #--- Inactif pour autres montures
+         ::focuseraudecom::setSpeed "0"
+         #--- Message d'alerte
+         tk_messageBox -title $caption(focuseraudecom,attention) -type ok -icon error \
+            -message "$caption(focuseraudecom,msg1)\n$caption(focuseraudecom,msg2)"
+         ::confPad::run
       } else {
-         #--- Inactif pour autres telescopes
+         #--- Inactif pour autres montures
          ::focuseraudecom::setSpeed "0"
       }
    } else {
@@ -300,12 +298,10 @@ proc ::focuseraudecom::incrementSpeed { } {
 #  ::focuseraudecom::setSpeed
 #     change la vitesse du focus
 #     met a jour les variables audace(focus,speed), audace(focus,labelspeed)
-#     change la vitesse de mouvement du telescope
+#     change la vitesse de mouvement de la monture
 #------------------------------------------------------------
 proc ::focuseraudecom::setSpeed { { value "0" } } {
-   global conf
-   global audace
-   global caption
+   global audace caption conf
 
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
@@ -313,20 +309,10 @@ proc ::focuseraudecom::setSpeed { { value "0" } } {
             set audace(focus,speed) "1"
             set audace(focus,labelspeed) "$caption(focuseraudecom,x5)"
             ::telescope::setSpeed "2"
-         } else {
+         } elseif { $value == "0" } {
             set audace(focus,speed) "0"
             set audace(focus,labelspeed) "$caption(focuseraudecom,x1)"
             ::telescope::setSpeed "1"
-         }
-      } elseif { $conf(telescope) == "lx200" } {
-         if { $value == "1" } {
-            set audace(focus,speed) "1"
-            set audace(focus,labelspeed) "2"
-            ::telescope::setSpeed "3"
-         } elseif { $value == "0" } {
-            set audace(focus,speed) "0"
-            set audace(focus,labelspeed) "1"
-            ::telescope::setSpeed "2"
          }
       } else {
          set audace(focus,speed) "0"
@@ -341,13 +327,13 @@ proc ::focuseraudecom::setSpeed { { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focuseraudecom::possedeControleEtendu
-#     retourne 1 si le telescope possede un controle etendu du focus (AudeCom)
+#     retourne 1 si la monture possede un controle etendu du focus (AudeCom)
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focuseraudecom::possedeControleEtendu { } {
    global conf
 
-   if { $conf(telescope) == "audecom"  } {
+   if { $conf(telescope) == "audecom" } {
       set result "1"
    } else {
       set result "0"
