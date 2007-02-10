@@ -1218,8 +1218,14 @@ proc spc_multifit2png { args } {
 	set len [ llength $args ]
 	#--- Creation d'une liste de fichier sans extension :
 	set listefile ""
+	set i 1
 	foreach fichier $args {
-	    lappend listefile [ file rootname $fichier ]
+	    #if { $i==1 } {
+		#set verticaloffset [ lindex $args 0 ]
+	    #} else {
+		lappend listefile [ file rootname $fichier ]
+	    #}
+	    incr i
 	}
 
 	#--- Adapte la légende de l'abscisse :
@@ -1248,6 +1254,9 @@ proc spc_multifit2png { args } {
 	    lappend listedat $filedat
 	    if { $i != $len } {
 		#append plotcmd "'$audace(rep_images)/$filedat' w l, "
+		append plotcmd "'$filedat' w l, "
+		#append plotcmd "'$filedat' using 1:($2+$i) w l, "
+	    } elseif { $i==1 } {
 		append plotcmd "'$filedat' w l, "
 	    } else {
 		#append plotcmd "'$audace(rep_images)/$filedat' w l"

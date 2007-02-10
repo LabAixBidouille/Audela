@@ -498,7 +498,7 @@ proc spc_crop { args } {
 
 proc spc_smilex { args } {
 
-    global audace
+    global audace spcaudace
     global conf
     global flag_ok
     set pourcentimg 0.01
@@ -527,7 +527,8 @@ proc spc_smilex { args } {
 	# set pas [ expr $naxis2i/200 ]
 	set pas [ expr int($pourcentimg*$naxis2i) ]
 
-
+	#----- Si hauteur>hmax : on tient compte du smilex :
+	if { $naxis2i > $spcaudace(hmax) } {
      #------------------------------------------------------------------------#
      #--- Selection d'une raie à la sourie
      if { $flagmanuel == "o" } {
@@ -711,7 +712,11 @@ proc spc_smilex { args } {
 	    set results [ list ${filespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
 	    return $results
 	}
-
+      } else {
+	  ::console::affiche_resultat "La seule déformation horisontale est du slant...\n"
+	  set results [ spc_slant filenamespc ]
+	  return $results
+      }
     } else {
 	# ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration xdeb ydeb xfin yfin\n\n"
 	::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
