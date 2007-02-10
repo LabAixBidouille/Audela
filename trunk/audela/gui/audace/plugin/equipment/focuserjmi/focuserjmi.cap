@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.4 2007-02-07 20:30:18 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.5 2007-02-10 17:49:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -36,8 +36,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,label)              "Focheggiatore JMI"
    set caption(focuserjmi,link)               "Collegamento"
    set caption(focuserjmi,configure)          "Configurare"
-   set caption(focuserjmi,bitStart)           "# Numéro du bit de démarrage"
-   set caption(focuserjmi,bitDirection)       "# Numéro du bit de direction"
+   set caption(focuserjmi,bitStart)           "Numero del bit di start"
+   set caption(focuserjmi,bitDirection)       "Numero del bit di direzione"
 
    set caption(focuserjmi,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
 
