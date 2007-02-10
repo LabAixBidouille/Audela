@@ -9,6 +9,7 @@
 global audela audace
 global spcaudace
 
+#--- Extension des fichiers :
 set spcaudace(extdat) ".dat"
 set spcaudace(exttxt) ".txt"
 set spcaudace(extvspec) ".spc"
@@ -31,6 +32,11 @@ if { [regexp {1.3.0} $audela(version) match resu ] } {
 } else {
     set spcaudace(repchimie) [ file join $audace(rep_plugin) tool spectro spcaudace data chimie ]
 }
+
+#--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
+set spcaudace(hmax) 300
+
 
 
 #----------------------------------------------------------------------------------#

@@ -1213,10 +1213,10 @@ proc spc_traite2srinstrum { args } {
        ::console::affiche_resultat "\n\n**** Correction de la réponse intrumentale ****\n\n"
        #set rinstrum_ech [ spc_echant $rinstrum $fcal ]
        #set fricorr [ spc_div $fcal $rinstrum_ech ]
-       #- Beaucoup de mise a 0
-       #set fricorr [ spc_divri $fcal $rinstrum ]
+       #- Beaucoup de mise a 0 si methode avec reechant avant. Methode courante est calibreloifile :
+       set fricorr [ spc_divri $fcal $rinstrum ]
        #- 040107 :
-       set fricorr [ spc_div $fcal $rinstrum ]
+       #set fricorr [ spc_div $fcal $rinstrum ]
 
        if { $fricorr == 0 } {
 	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"

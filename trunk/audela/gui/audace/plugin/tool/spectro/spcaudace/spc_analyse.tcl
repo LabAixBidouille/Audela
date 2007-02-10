@@ -198,46 +198,94 @@ proc spc_centergravl { args } {
 
 
 ##########################################################
-#  Procedure de détermination du centre d'une raie spectrale modelisee par une gaussienne.
+# Procedure de détermination du centre d'une raie spectrale modelisee par une gaussienne.
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de création : 21-12-2005
-# Date de mise à jour : 21-12-2005
-# Arguments : fichier .fit du profil de raies, x_centre, a/e (renseigne sur raie emission ou absorption)
+# Date de création : 08-02-2007
+# Date de mise à jour : 08-02-2007
+# Arguments : fichier .fit du profil de raie, lambda_centre, type_de_raie (a/e), ?largeur_raie?
 ##########################################################
 
-proc spc_centergaussauto { args } {
+proc spc_autocentergaussl { args } {
 
    global audace
    global conf
+   #-- largeur en pixels de la raie :
+   set largeur 4.
 
-   if {[llength $args] == 3} {
-     set fichier [ lindex $args 0 ]
-     set xcentre [ expr int([lindex $args 1 ]) ]
-     set type [ lindex $args 2 ]
+   if { [llength $args] == 3 || [llength $args] == 4 } {
+       if { [llength $args] == 3 } {
+	   set fichier [ lindex $args 0 ]
+	   set lcentre [ expr [lindex $args 1 ] ]
+	   set type [ lindex $args 2 ]
+	   set dlargeur [ expr $largeur*0.5 ]
+       } elseif { [llength $args] == 4 } {
+	   set fichier [ lindex $args 0 ]
+	   set lcentre [ expr [lindex $args 1 ] ]
+	   set type [ lindex $args 2 ]
+	   set dlargeur [ expr 0.5*[ lindex $args 3 ] ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_autocentergaussl profil_raies_fits_calibré lambda_approchée type_raie (a/e) ?largeur_raie?\n\n"
+	   return 0
+       }
 
-     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     #buf$audace(bufNo) load $fichier
-     set listcoords [list $xdeb 1 $xfin 1]
-     if { [string compare $type "a"] == 0 } {
-	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	 buf$audace(bufNo) mult -1.0
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	 # Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
-     } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-     }
-     # Le second element de la liste reponse est le centre X de la gaussienne
-     set centre [lindex $lreponse 1]
-     ::console::affiche_resultat "Le centre de la raie est : $centre (pixels)\n"
-     return $centre
+       #--- Entoure la raie 4 A de largeur
+       set ldeb [ expr $lcentre-$dlargeur ]
+       set lfin [ expr $lcentre+$dlargeur ]
+       
+       #--- Charge la liste des mots clefs :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
 
+       #--- Cas d'une calibration non-linéaire :
+       if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+	   #-- Polynome : lambda=a+bx+cx^2
+	   set a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
+	   set b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
+	   set c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
+	   #-- J'utilise la solution généralement positive de la méthode du discriminent :
+	   set xdeb [ expr round((-$b+sqrt($b*$b-4*$a*($c-$ldeb)))/(2*$a)) ]
+	   set xfin [ expr round((-$b+sqrt($b*$b-4*$a*($c-$lfin)))/(2*$a)) ]
+       } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set lambda0 [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+	   set dispersion [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+	   set xdeb [ expr round(($ldeb-$lambda0)/$dispersion) ]
+	   set xfin [ expr round(($lfin-$lambda0)/$dispersion) ]
+       }
+
+       #--- Détermine le centre gaussien de la raie :
+       set listcoords [ list $xdeb 1 $xfin 1 ]
+       if { [string compare $type "a"] == 0 } {
+	   #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+	   buf$audace(bufNo) mult -1.0
+	   # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
+	   set lreponse [buf$audace(bufNo) fitgauss $listcoords ]
+	   #-- Inverse de nouveau le spectre pour le rendre comme l'original
+	   buf$audace(bufNo) mult -1.0
+       } elseif { [string compare $type "e"] == 0 } {
+	   set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
+       }
+       #-- Le second element de la liste reponse est le centre X de la gaussienne
+       set xcentre [lindex $lreponse 1]
+       #set lreponse [ buf$audace(bufNo) centro $listcoords ]
+       #set xcentre [lindex $lreponse 0]
+
+       #--- Calcul la longueur de de la raie :
+       if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+	   set lambda_centre [ expr $a+$b*$xcentre+$c*$xcentre*$xcentre ]
+       } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set lambda_centre [ expr $xcentre*$dispersion+$lambda0 ]
+       }
+
+       #--- Formatage du résultat :
+       ::console::affiche_resultat "Le centre de la raie est : $lambda_centre Angstroms\n"
+       return $lambda_centre       
    } else {
-     ::console::affiche_erreur "Usage: spc_centergaussauto profil_de_raies (non calibré) x_centre a/e\n\n"
+       ::console::affiche_erreur "Usage: spc_autocentergaussl profil_raies_fits_calibré lambda_approchée type_raie (a/e) ?largeur_raie?\n\n"
    }
 }
 #****************************************************************#
+
 
 
 ##########################################################

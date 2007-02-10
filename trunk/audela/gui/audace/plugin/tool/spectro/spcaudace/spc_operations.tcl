@@ -1232,8 +1232,10 @@ proc spc_divri { args } {
 	set fichier [ file tail [ file rootname $numerateur ] ]
 
 	#--- Rééchantillonne la réponse intrumentale sur le spectre à corriger :
-	set denominateur_ech [ spc_echant $denominateur $numerateur ]
-	#set denominateur_ech $denominateur
+	# set denominateur_ech $denominateur
+	# set denominateur_ech [ spc_echant $denominateur $numerateur ]
+	set denominateur_ech [ spc_calibreloifile $numerateur $denominateur ]
+
 
 	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
 	if { [ spc_compare $numerateur $denominateur_ech ] == 1 } {
@@ -1277,6 +1279,8 @@ proc spc_divri { args } {
 	    set ordonnees2 [ lindex $contenu2 1 ]
 
 	    #--- Division :
+	    #-- Meth1 : gestion pixels oscillants :
+	    if {1=0} {
 	    set nordos ""
 	    set i 0
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
@@ -1296,6 +1300,21 @@ proc spc_divri { args } {
 		}
 	    }
 	    ::console::affiche_resultat "Fin de la division : $i division(s) par 0 ou mise(s) à 0.\n"
+	    }
+	    #-- Meth2 : division simple :
+	    set nordos [ list ]
+	    set i 0
+	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
+		if { $ordo2 == 0.0 } {
+		    lappend nordos 0.0
+		    #::console::affiche_resultat "Val = $ordo2\n"
+		    incr i
+		} else {
+		    lappend nordos [ expr 1.0*$ordo1/$ordo2 ]
+		}
+	    }
+	    ::console::affiche_resultat "Fin de la division : $i divisions par 0.\n"
+
 
 	    #--- Enregistrement du resultat au format fits
 	    set ncontenu [ list $abscisses $nordos ]

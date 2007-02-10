@@ -26,7 +26,7 @@
 # Arguments : delta_lambda lambda
 ##########################################################
 
-proc spc_vradiale { args } {
+proc spc_vdoppler { args } {
 
    global audace
    global conf
@@ -36,14 +36,205 @@ proc spc_vradiale { args } {
        set lambda [lindex $args 1 ]
        
        set vrad [ expr 299792.458*$delta_lambda/$lambda ]
-       ::console::affiche_resultat "La vitesse radiale de l'objet est : $vrad km/s\n"
+       ::console::affiche_resultat "La vitesse Doppler de l'objet est : $vrad km/s\n"
        return $vrad
    } else {
-       ::console::affiche_erreur "Usage: spc_vradiale delta_lambda lambda\n\n"
+       ::console::affiche_erreur "Usage: spc_vdoppler delta_lambda lambda_raie_référence\n\n"
    }
 
 }
 #*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de la vitesse héliocentrique pour une correction de la vitesse radiale
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 08-02-2007
+# Date de mise à jour : 08-02-2007
+# Arguments : profil_raies_étalonné lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
+##########################################################
+
+proc spc_vhelio { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 1 || [llength $args] == 7 || [llength $args] == 10 } {
+       if { [llength $args] == 1 } {
+	   set spectre [ lindex $args 0 ]
+       } elseif { [llength $args] == 7 } {
+	   set spectre [ lindex $args 0 ]
+	   set ra_h [ lindex $args 1 ]
+	   set ra_m [ lindex $args 2 ]
+	   set ra_s [ lindex $args 3 ]
+	   set dec_d [ lindex $args 4 ]
+	   set dec_m [ lindex $args 5 ]
+	   set dec_s [ lindex $args 6 ]
+       } elseif { [llength $args] == 10 } {
+	   set spectre [ lindex $args 0 ]
+	   set ra_h [ lindex $args 1 ]
+	   set ra_m [ lindex $args 2 ]
+	   set ra_s [ lindex $args 3 ]
+	   set dec_d [ lindex $args 4 ]
+	   set dec_m [ lindex $args 5 ]
+	   set dec_s [ lindex $args 6 ]
+	   set jj [ lindex $args 7 ]
+	   set mm [ lindex $args 8 ]
+	   set aaaaa [ lindex $args 9 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   return 0
+       }
+
+       #--- Charge les mots clefs :
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+
+
+       #--- Détermine les paramètres de date et de coordonnées si nécessaire :
+       # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
+       if { [llength $args] == 1 } {
+	   # OBJCTRA = '00 16 42.089'
+	   if { [ lsearch $listemotsclef "OBJCTRA" ] !=-1 } {
+	       set ra [ lindex [buf$audace(bufNo) getkwd "OBJCTRA"] 1 ]
+	       set ra_h [ lindex $ra 0 ]
+	       set ra_m [ lindex $ra 0 ]
+	       set ra_s [ lindex $ra 0 ]
+	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+	   }
+	   # OBJCTDEC= '-05 23 52.444'
+	   if { [ lsearch $listemotsclef "OBJCTDEC" ] !=-1 } {
+	       set dec [ lindex [buf$audace(bufNo) getkwd "OBJCTDEC"] 1 ]
+	       set dec_d [ lindex $dec 0 ]
+	       set dec_m [ lindex $dec 0 ]
+	       set dec_s [ lindex $dec 0 ]
+	       set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+	   }
+	   # DATE-OBS : 2005-11-26T20:47:04
+	   if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
+	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1 ]
+	       set ldate [ mc_date2ymdhms $ladate ]
+	       set y [ lindex $ldate 0 ]
+	       set mo [ lindex $ldate 1 ]
+	       set d [ lindex $ldate 2 ]
+	       set datef [ list $d $mo $y ]
+	   }
+       } elseif { [llength $args] == 7 } {
+	   # DATE-OBS : 2005-11-26T20:47:04
+	   if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
+	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1 ]
+	       set ldate [ mc_date2ymdhms $ladate ]
+	       set y [ lindex $ldate 0 ]
+	       set mo [ lindex $ldate 1 ]
+	       set d [ lindex $ldate 2 ]
+	       set datef [ list $d $mo $y ]
+	   }
+	   set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+	   set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+       } elseif { [llength $args] == 10 } {
+	   set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+	   set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+	   set datef [ list $jj $mm $aaaa ]
+       }
+
+       #--- Calcul de la vitesse héliocentrique :
+       set vhelio [ lindex [ mc_baryvel $datef $raf $decf J2000.0 ] 0 ]
+
+       #--- Formatage du résultat :
+       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut : $vhelio km/s\n"
+       return $vhelio
+   } else {
+	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+   }
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la vitesse radiale en km/s à l'aide du décalage d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 08-02-2007
+# Date de mise à jour : 08-02-2007
+# Arguments : profil_raies_étalonné, lambda_raie_approché, ?
+##########################################################
+
+proc spc_vradiale { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 4 || [llength $args] == 10 || [llength $args] == 13 } {
+       if { [llength $args] == 4 } {
+	   set spectre [ lindex $args 0 ]
+	   set typeraie [ lindex $args 1 ]
+	   set lambda_approchee [lindex $args 2 ]
+	   set lambda_ref [lindex $args 3 ]
+       } elseif { [llength $args] == 10 } {
+	   set spectre [ lindex $args 0 ]
+	   set typeraie [ lindex $args 1 ]
+	   set lambda_approchee [lindex $args 2 ]
+	   set lambda_ref [lindex $args 3 ]
+	   set ra_h [ lindex $args 4 ]
+	   set ra_m [ lindex $args 5 ]
+	   set ra_s [ lindex $args 6 ]
+	   set dec_d [ lindex $args 7 ]
+	   set dec_m [ lindex $args 8 ]
+	   set dec_s [ lindex $args 9 ]
+       } elseif { [llength $args] == 13 } {
+	   set spectre [ lindex $args 0 ]
+	   set typeraie [ lindex $args 1 ]
+	   set lambda_approchee [lindex $args 2 ]
+	   set lambda_ref [lindex $args 3 ]
+	   set ra_h [ lindex $args 4 ]
+	   set ra_m [ lindex $args 5 ]
+	   set ra_s [ lindex $args 6 ]
+	   set dec_d [ lindex $args 7 ]
+	   set dec_m [ lindex $args 8 ]
+	   set dec_s [ lindex $args 9 ]
+	   set jj [ lindex $args 10 ]
+	   set mm [ lindex $args 12 ]
+	   set aaaa [ lindex $args 12 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_vradiale profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   return 0
+       }
+
+
+       #--- Calcul la correction héliocentrique :
+       # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
+       if { [llength $args] == 4 } {
+	   set vhelio [ spc_vhelio $spectre ]
+       } elseif { [llength $args] == 10 } {
+	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s ]
+       } elseif { [llength $args] == 13 } {
+	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s $dd $mm $aaaa ]
+       } else {
+	   ::console::affiche_erreur "Impossible de calculer vhélio ; Usage: spc_vradiale profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   return 0
+       }
+
+       #--- Centre gaussien de la raie étudié :
+       set lambda_centre [ spc_autocentergaussl $spectre $lambda_approchee $typeraie ]
+       set delta_lambda [ expr $lambda_centre-$lambda_ref ]
+
+       #--- Calcul la vitesse radiale :
+       set vrad [ expr 299792.458*$delta_lambda/$lambda_ref ]
+       set vradcorrigee [ expr $vrad+$vhelio ]
+
+       #--- Formatage du résultat :
+       ::console::affiche_resultat "La vitesse radiale de l'objet est : $vradcorrigee km/s (Vrad=$vrad km/s, Vhelio=$vhelio km/s)\n"
+       set results [ list $vradcorrigee $vrad $vhelio ]
+       return $results
+   } else {
+       ::console::affiche_erreur "Usage: spc_vradiale profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+   }
+}
+#*******************************************************************************#
+
 
 
 
@@ -109,8 +300,8 @@ proc spc_npte { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 13-08-2005
-# Date de mise à jour : 13-08-2005
-# Arguments : I_5007 I_4959 I_4363
+# Date de mise à jour : 23-01-2007
+# Arguments : profil_de_raies_etalonne largeur_raie
 # Modèle utilisé : A. Acker, Astronomie, méthodes et calculs, MASSON, p.104.
 ##########################################################
 
@@ -192,9 +383,10 @@ proc spc_te { args } {
 # Modèle utilisé : Practical Amateur Spectroscopy, Stephen F. TONKIN, Springer, p.164.
 #        set Ne [ expr 1/(2.9*1E(-3))*((8.5*sqrt($Te)*10^(10800/$Te))/$R-1) ]
 # Nouveau modele : Astrnomie astrophysique, A. Acker, Dunod, 2005, p.278.
+# REmarque importante : les raies de l'azote sont utilisées pour le calcul de Te et pas Ne. Donc cette focntion n'est pas utilisée pour l'instant.
 ##########################################################
 
-proc spc_npte2 { args } {
+proc spc_npne2 { args } {
 
    global audace
    global conf
@@ -237,7 +429,7 @@ proc spc_npte2 { args } {
        set resul [ list $Ne $dNe $R ]
        return $resul
    } else {
-     ::console::affiche_erreur "Usage: spc_npte2 Te I_6584 I_6548 I_5755 ?dTe dI1 dI2 dI3?\n\n"
+     ::console::affiche_erreur "Usage: spc_npne2 Te I_6584 I_6548 I_5755 ?dTe dI1 dI2 dI3?\n\n"
    }
 
 }
@@ -250,7 +442,7 @@ proc spc_npte2 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 13-08-2005
-# Date de mise à jour : 13-08-2005
+# Date de mise à jour : 23-01-2007
 # Arguments : Te I_6584 I_6548 I_5755
 # Modèle utilisé : Practical Amateur Spectroscopy, Stephen F. TONKIN, Springer, p.164.
 ##########################################################
@@ -383,7 +575,7 @@ proc spc_ne { args } {
 # Modèle utilisé : Practical Amateur Spectroscopy, Stephen F. TONKIN, Springer, p.164.
 ##########################################################
 
-proc spc_ne1 { args } {
+proc spc_ne2 { args } {
 
    global audace
    global conf
