@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: plotxy.tcl,v 1.4 2007-01-21 11:58:14 robertdelmas Exp $
+# Mise a jour $Id: plotxy.tcl,v 1.5 2007-02-10 17:47:07 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -108,7 +108,7 @@ namespace eval ::plotxy {
                focus $baseplotxy
                #--- Raccourci qui donne le focus a la Console et positionne le curseur dans
                               #--- la ligne de commande
-               bind $baseplotxy <Key-F1> { $audace(console)::GiveFocus }
+               bind $baseplotxy <Key-F1> { ::console::GiveFocus }
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $baseplotxy
                ::confColor::applyColor $baseplotxy.xy

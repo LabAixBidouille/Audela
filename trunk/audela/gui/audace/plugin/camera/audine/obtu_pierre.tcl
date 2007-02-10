@@ -2,7 +2,7 @@
 # Fichier : obtu_pierre.tcl
 # Description : Permet le parametrage de l'obturateur a base de servo pour modelisme
 # Auteurs : Pierre Thierry et Robert DELMAS
-# Mise a jour $Id: obtu_pierre.tcl,v 1.4 2007-01-27 15:18:31 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.tcl,v 1.5 2007-02-10 17:46:25 robertdelmas Exp $
 #
 
 namespace eval Obtu_Pierre {
@@ -381,7 +381,7 @@ namespace eval Obtu_Pierre {
       bind $This <Destroy> { ::Obtu_Pierre::fermer }
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

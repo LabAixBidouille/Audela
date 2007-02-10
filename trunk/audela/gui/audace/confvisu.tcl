@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.45 2007-02-02 23:16:49 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.46 2007-02-10 17:45:10 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -1123,7 +1123,7 @@ namespace eval ::confVisu {
       set This $private($visuNo,This)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- bind des labels des seuils
       bind $This.fra1.lab1 <ButtonPress-1> "::confVisu::onCutLabelLeftClick   $visuNo"
@@ -1186,7 +1186,7 @@ namespace eval ::confVisu {
       set This $private($visuNo,This)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- bind des labels des seuils
       bind $This.fra1.lab1 <ButtonPress-1> ""

@@ -2,7 +2,7 @@
 # Fichier : testaudine.tcl
 # Description : Permet de faire les tests lors de la fabrication d'une Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: testaudine.tcl,v 1.5 2007-01-27 15:18:12 robertdelmas Exp $
+# Mise a jour $Id: testaudine.tcl,v 1.6 2007-02-10 17:49:00 robertdelmas Exp $
 #
 
 namespace eval testAudine {
@@ -147,7 +147,7 @@ namespace eval testAudine {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

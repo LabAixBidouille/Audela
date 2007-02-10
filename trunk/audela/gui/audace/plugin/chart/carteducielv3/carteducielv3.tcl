@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.7 2007-01-27 15:08:43 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.8 2007-02-10 17:42:43 robertdelmas Exp $
 #
 
 package provide carteducielv3 1.0
@@ -819,7 +819,7 @@ namespace eval carteducielv3 {
       #--- Ouvre le logiciel
       if [catch $a_effectuer input] {
          #--- Affichage du message d'erreur sur la console
-         $audace(console)::affiche_erreur "$caption(carteducielv3,rate)\n"
+         ::console::affiche_erreur "$caption(carteducielv3,rate)\n"
          #--- Ouvre la fenetre de configuration des editeurs
          set conf(confCat) "::carteducielv3"
          ::confCat::run
@@ -843,7 +843,7 @@ namespace eval carteducielv3 {
          ::console::disp $filename
          ::console::affiche_saut "\n"
          set audace(current_edit) $input
-         $audace(console)::affiche_resultat "$caption(carteducielv3,gagne)\n"
+         ::console::affiche_resultat "$caption(carteducielv3,gagne)\n"
          cd "$pwd0"
       }
       after 2000

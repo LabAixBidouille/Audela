@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.7 2007-01-28 09:26:10 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.8 2007-02-10 17:48:29 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -236,7 +236,7 @@ namespace eval skybot_Statut {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

@@ -2,7 +2,7 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.4 2007-01-27 15:24:30 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.5 2007-02-10 17:46:47 robertdelmas Exp $
 #
 
 global confTel
@@ -538,7 +538,7 @@ namespace eval OuranosCom {
             #--- La fenetre est active
             focus $audace(base).tjrsvisible
             #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-            bind $audace(base).tjrsvisible <Key-F1> { $audace(console)::GiveFocus }
+            bind $audace(base).tjrsvisible <Key-F1> { ::console::GiveFocus }
          }
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).tjrsvisible
@@ -599,7 +599,7 @@ namespace eval OuranosCom {
             #--- La fenetre est active
             focus $audace(base).tjrsvisible_x10
             #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-            bind $audace(base).tjrsvisible_x10 <Key-F1> { $audace(console)::GiveFocus }
+            bind $audace(base).tjrsvisible_x10 <Key-F1> { ::console::GiveFocus }
          }
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).tjrsvisible_x10

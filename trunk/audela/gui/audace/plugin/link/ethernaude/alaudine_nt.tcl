@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.9 2007-01-27 15:05:08 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.10 2007-02-10 17:40:21 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -242,7 +242,7 @@ namespace eval AlAudine_NT {
       }
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.10 2007-01-28 09:29:11 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.11 2007-02-10 17:48:08 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -951,7 +951,6 @@ namespace eval skybot_Search {
             pack $fov.al.but_iau_code \
                -in $fov.al -side bottom -anchor c -padx 5 -pady 1 -expand 0
 
-
       #--- Cree un frame pour y mettre les boutons
       frame $This.frame6 -borderwidth 0
       pack $This.frame6 \
@@ -1020,7 +1019,7 @@ namespace eval skybot_Search {
       #--- La touche Entree est equivalente au bouton "Lancement de la recherche"
       bind $This <Key-Return>  { ::skybot_Search::cmdSearch }
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
       #--- Raccourci pour quitter le panneau
       bind $This <Control-q> { ::skybot_Search::fermer }
       #--- Raccourci pour ouvrir une sauvegarde

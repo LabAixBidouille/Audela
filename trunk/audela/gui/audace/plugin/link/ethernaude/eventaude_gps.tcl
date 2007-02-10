@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.7 2007-01-27 15:18:51 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.8 2007-02-10 17:45:33 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -230,7 +230,7 @@ namespace eval eventAude_GPS {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

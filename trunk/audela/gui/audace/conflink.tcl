@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.12 2007-01-27 15:11:21 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.13 2007-02-10 17:44:33 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -196,7 +196,6 @@ proc ::confLink::recup_position { } {
 #------------------------------------------------------------
 proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    variable private
-   global audace
    global conf
    global caption
 
@@ -289,7 +288,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $private(frm) <Key-F1> { $audace(console)::GiveFocus }
+   bind $private(frm) <Key-F1> { ::console::GiveFocus }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $private(frm)
@@ -417,7 +416,6 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 #------------------------------------------------------------
 proc ::confLink::findDriver { } {
    variable private
-   global audace
    global caption
 
    #--- j'initialise les listes vides
@@ -441,7 +439,7 @@ proc ::confLink::findDriver { } {
       set linkname [ file tail [ file dirname "$fichierPkgIndex" ] ]
       package require $linkname
       #--- je verifie que le namespace possede les procedure getDriverType et getLabel
-      if { [namespace which -command $linkname\:\:getDriverType] != "" 
+      if { [namespace which -command $linkname\:\:getDriverType] != ""
            && [namespace which -command $linkname\:\:getLabel] != "" } {
          #--- verifie que driver est du type attendu
          set driverType [$linkname\:\:getDriverType]
@@ -451,11 +449,11 @@ proc ::confLink::findDriver { } {
             #--- c'est un driver valide, je l'ajoute dans la liste
             lappend private(namespacelist) $linkname
             lappend private(driverlist) $driverlabel
-            $audace(console)::affiche_prompt "#$caption(conflink,liaison) $driverlabel v[package present $linkname]\n"
+            ::console::affiche_prompt "#$caption(conflink,liaison) $driverlabel v[package present $linkname]\n"
          }
       }
    }
-   $audace(console)::affiche_prompt "\n"
+   ::console::affiche_prompt "\n"
 
    if { [llength $private(namespacelist)] <1 } {
       #--- pas driver correct
@@ -602,7 +600,7 @@ proc ::confLink::getLinkNo { linkLabel } {
       set linkIndex [$linkNamespace\:\:getLinkIndex $linkLabel]
       #--- je recherche la liaison deja ouverte qui a le meme namespace et le meme index
       foreach linkNo [link::list] {
-         if {    "[link$linkNo drivername]" == $linkNamespace 
+         if {    "[link$linkNo drivername]" == $linkNamespace
               && "[link$linkNo index]" == $linkIndex } {
             return $linkNo
          }

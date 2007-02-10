@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.6 2007-01-27 15:20:26 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.7 2007-02-10 17:46:07 robertdelmas Exp $
 #
 
 package provide lx200pad 1.0
@@ -1083,7 +1083,7 @@ namespace eval ::lx200pad {
       focus .lx200pad
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind .lx200pad <Key-F1> { $audace(console)::GiveFocus }
+      bind .lx200pad <Key-F1> { ::console::GiveFocus }
 
       # =========================================
       # === Setting the binding

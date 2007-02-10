@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.6 2007-01-27 15:21:26 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.7 2007-02-10 17:48:43 robertdelmas Exp $
 #
 
 #
@@ -223,7 +223,7 @@ namespace eval confTemmaMobile {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

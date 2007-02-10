@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'catalog'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.5 2007-01-27 15:09:21 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.6 2007-02-10 17:43:54 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -292,7 +292,7 @@ namespace eval ::confCat {
       focus $private(frm)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $private(frm) <Key-F1> { $audace(console)::GiveFocus }
+      bind $private(frm) <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $private(frm)
@@ -337,7 +337,7 @@ namespace eval ::confCat {
       #--- je configure le driver
       catch {
          $conf(confCat)\:\:configureDriver
-         $audace(console)::affiche_prompt "# $fichier\n"
+         ::console::affiche_prompt "# $fichier\n"
       }
 
    }
@@ -399,11 +399,11 @@ namespace eval ::confCat {
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $catname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#$caption(confcat,carte) $driverlabel v[package present $catname]\n"
+               ::console::affiche_prompt "#$caption(confcat,carte) $driverlabel v[package present $catname]\n"
             }
          }
       }
-      $audace(console)::affiche_prompt "\n"
+      ::console::affiche_prompt "\n"
 
       if { [llength $private(namespacelist)] <1 } {
          #--- aucun driver correct

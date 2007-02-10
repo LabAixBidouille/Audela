@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.5 2007-01-27 15:19:07 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.6 2007-02-10 17:45:49 robertdelmas Exp $
 #
 
 package provide guide 1.0
@@ -407,7 +407,7 @@ namespace eval guide {
       #--- Ouvre le logiciel
       if [ catch $a_effectuer input ] {
          #--- Affichage du message d'erreur sur la console
-         $audace(console)::affiche_erreur "$caption(guide,rate)\n"
+         ::console::affiche_erreur "$caption(guide,rate)\n"
          #--- Ouvre la fenetre de configuration des editeurs
          set conf(confCat) "::guide"
          ::confCat::run
@@ -432,7 +432,7 @@ namespace eval guide {
          ::console::disp $filename
          ::console::affiche_saut "\n"
          set audace(current_edit) $input
-         $audace(console)::affiche_resultat "$caption(guide,gagne)\n"
+         ::console::affiche_resultat "$caption(guide,gagne)\n"
          cd "$pwd0"
       }
       return "0"

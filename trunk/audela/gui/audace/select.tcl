@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Mise a jour $Id: select.tcl,v 1.6 2006-08-21 11:51:25 alainklotz Exp $
+# Mise a jour $Id: select.tcl,v 1.7 2007-02-10 17:47:24 robertdelmas Exp $
 #
 
 namespace eval ::selectWindow {
@@ -106,7 +106,7 @@ namespace eval ::selectWindow {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
