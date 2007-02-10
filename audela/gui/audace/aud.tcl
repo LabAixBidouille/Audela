@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.54 2007-02-03 19:52:49 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.55 2007-02-10 17:40:43 robertdelmas Exp $
 
 #--- Passage de TCL/TK 8.3 a 8.4
 ###tk::unsupported::ExposePrivateCommand *
@@ -77,7 +77,6 @@ namespace eval ::audace {
       #--- Dans l'interface Aud'ACE, c'est la premiere fois que l'on appelle une fonction de libaudela
       #--- Si libaudela n'a pas ete chargee, ca plante ici. D'ou le catch
       #--- Utilisation de la Console
-      set audace(console) "::console"
       set audace(Console) ".console"
       #--- Initialisation de variables pour la fenetre Editeurs...
       set confgene(EditScript,error_script) "1"

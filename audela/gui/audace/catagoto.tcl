@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.7 2007-01-27 15:09:04 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.8 2007-02-10 17:43:03 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -138,7 +138,7 @@ namespace eval cataGoto {
       focus $audace(base).gotoPlanete
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).gotoPlanete <Key-F1> { $audace(console)::GiveFocus }
+      bind $audace(base).gotoPlanete <Key-F1> { ::console::GiveFocus }
 
       #--- Cree l'affichage de la fenetre de selection et des boutons
       set confGotoPlanete(planete) "10"
@@ -500,7 +500,7 @@ namespace eval cataGoto {
       focus $audace(base).cataAsteroide
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).cataAsteroide <Key-F1> { $audace(console)::GiveFocus }
+      bind $audace(base).cataAsteroide <Key-F1> { ::console::GiveFocus }
 
       #--- Cree l'affichage de la fenetre de selection et des boutons
       frame $audace(base).cataAsteroide.frame1 -borderwidth 1 -relief raised
@@ -805,7 +805,7 @@ namespace eval cataGoto {
       focus $audace(base).cataObjet
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).cataObjet <Key-F1> { $audace(console)::GiveFocus }
+      bind $audace(base).cataObjet <Key-F1> { ::console::GiveFocus }
 
       #--- Cree l'affichage de la fenetre de selection et des boutons
       frame $audace(base).cataObjet.frame1 -borderwidth 1 -relief raised
@@ -1086,7 +1086,7 @@ namespace eval cataGoto {
       focus $audace(base).cataEtoile
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).cataEtoile <Key-F1> { $audace(console)::GiveFocus }
+      bind $audace(base).cataEtoile <Key-F1> { ::console::GiveFocus }
 
       #--- Cree l'affichage du catalogue dans une fenetre a defilement
       frame $audace(base).cataEtoile.frame1 -borderwidth 1 -relief raised
@@ -1408,7 +1408,7 @@ namespace eval cataGoto {
          focus $audace(base).cataObjetUtilisateur
 
          #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-         bind $audace(base).cataObjetUtilisateur <Key-F1> { $audace(console)::GiveFocus }
+         bind $audace(base).cataObjetUtilisateur <Key-F1> { ::console::GiveFocus }
 
          #--- Cree l'affichage du catalogue dans une fenetre a defilement
          frame $audace(base).cataObjetUtilisateur.frame1 -borderwidth 1 -relief raised

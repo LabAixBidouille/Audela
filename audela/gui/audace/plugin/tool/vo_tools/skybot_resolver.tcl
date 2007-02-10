@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.11 2007-01-28 09:30:43 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.12 2007-02-10 17:47:46 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -587,7 +587,7 @@ namespace eval skybot_Resolver {
       focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Choix par defaut du curseur
       $This configure -cursor arrow

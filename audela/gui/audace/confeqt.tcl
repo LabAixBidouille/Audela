@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.11 2007-02-07 20:29:16 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.12 2007-02-10 17:44:11 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -246,7 +246,6 @@ proc ::confEqt::configurePlugin { pluginLabel } {
 #------------------------------------------------------------
 proc ::confEqt::createDialog { } {
    variable private
-   global audace
    global conf
    global caption
 
@@ -320,7 +319,7 @@ proc ::confEqt::createDialog { } {
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $private(frm) <Key-F1> { $audace(console)::GiveFocus }
+   bind $private(frm) <Key-F1> { ::console::GiveFocus }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $private(frm)
@@ -382,7 +381,6 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 #------------------------------------------------------------
 proc ::confEqt::findPlugin { } {
    variable private
-   global audace
    global caption
 
    #--- j'initialise les listes vides
@@ -411,7 +409,7 @@ proc ::confEqt::findPlugin { } {
             set pluginlabel "[$equipname\:\:getLabel]"
             #--- si c'est un plugin valide, je l'ajoute dans la liste des plugins
             lappend private(namespaceList) $equipname
-            $audace(console)::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v[package present $equipname]\n"
+            ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v[package present $equipname]\n"
          }
       } catchMessage]
       #--- j'affiche le message d'erreur et je continu la recherche des plugins
@@ -419,7 +417,7 @@ proc ::confEqt::findPlugin { } {
          console::affiche_erreur "::confEqt::findPlugin $catchMessage \n"
       }
    }
-   $audace(console)::affiche_prompt "\n"
+   ::console::affiche_prompt "\n"
 
    if { [llength $private(namespaceList)] <1 } {
       #--- pas plugin correct

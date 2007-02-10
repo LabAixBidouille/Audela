@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.6 2007-02-03 19:41:13 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.7 2007-02-10 17:44:49 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -18,7 +18,7 @@ namespace eval ::confPad {
    }
 
    #------------------------------------------------------------
-   # init  ( est lance automatiquement au chargement de ce fichier tcl)
+   # init ( est lance automatiquement au chargement de ce fichier tcl)
    # initialise les variable conf(..) et caption(..)
    # demarrer le driver selectionne par defaut
    #------------------------------------------------------------
@@ -202,7 +202,6 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    proc createDialog { } {
       variable private
-      global audace
       global conf
       global caption
 
@@ -281,7 +280,7 @@ namespace eval ::confPad {
       focus $private(frm)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $private(frm) <Key-F1> { $audace(console)::GiveFocus }
+      bind $private(frm) <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $private(frm)
@@ -360,7 +359,6 @@ namespace eval ::confPad {
    #------------------------------------------------------------
    proc findDriver { } {
       variable private
-      global audace
       global caption
 
       #--- j'initialise les listes vides
@@ -386,11 +384,11 @@ namespace eval ::confPad {
                #--- si c'est un driver valide, je l'ajoute dans la liste
                lappend private(namespacelist) $padname
                lappend private(driverlist) $driverlabel
-               $audace(console)::affiche_prompt "#$caption(confpad,raquette) $driverlabel v[package present $padname]\n"
+               ::console::affiche_prompt "#$caption(confpad,raquette) $driverlabel v[package present $padname]\n"
             }
          }
       }
-      $audace(console)::affiche_prompt "\n"
+      ::console::affiche_prompt "\n"
 
       if { [llength $private(namespacelist)] <1 } {
          #--- pas driver correct
