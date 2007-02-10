@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.6 2006-12-02 08:39:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.7 2007-02-10 18:05:58 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -457,7 +457,7 @@ namespace eval ::newScript {
       wm resizable $This 0 0
       wm deiconify $This
       wm title $This "$caption(newscript,nouveau_script)"
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::newScript::cmdClose
 
@@ -484,7 +484,7 @@ namespace eval ::newScript {
          #--- Cree le bouton 'Annuler'
          button $This.frame2.annuler -text "$caption(newscript,annuler)" -width 8 -command { ::newScript::cmdClose }
          pack $This.frame2.annuler -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
-         #--- Cree le bouton 'Aide' 
+         #--- Cree le bouton 'Aide'
          button $This.frame2.aide -text "$caption(newscript,aide)" -width 8 -command { ::newScript::afficheAide }
          pack $This.frame2.aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
          #--- Commandes associees
@@ -532,7 +532,7 @@ namespace eval ::newScript {
    #
    proc afficheAide { } {
       global help
- 
+
       ::audace::showHelpItem "$help(dir,fichier)" "1050nouveau_script.htm"
    }
 

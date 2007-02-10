@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.2 2006-11-05 09:26:15 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.3 2007-02-10 18:07:48 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -422,7 +422,7 @@ namespace eval ::mapWindow {
       global mapWindow
 
       if { $mapWindow(FieldFromImage) == "1" } {
-         pack forget $This.usr.2 
+         pack forget $This.usr.2
       } else {
          pack $This.usr.2 -side top -fill both
       }
