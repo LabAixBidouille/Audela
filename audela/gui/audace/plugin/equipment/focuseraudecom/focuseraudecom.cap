@@ -1,6 +1,6 @@
 #
 # Fichier : focuseraudecom.cap
-# Mise a jour $Id: focuseraudecom.cap,v 1.1 2007-02-07 20:38:18 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.cap,v 1.2 2007-02-10 17:49:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,8 +12,11 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(focuseraudecom,label)          "AudeCom Focuser"
-set caption(focuseraudecom,configure)      "Set up"
 set caption(focuseraudecom,link)           "Controls are sent to the AudeCom mount."
+
+set caption(focuseraudecom,attention)      "Warning"
+set caption(focuseraudecom,msg1)           "You chose the AudeCom focuser for this hand controller."
+set caption(focuseraudecom,msg2)           "It cannot be used with this mount."
 
 set caption(focuseraudecom,x1)             "x1"
 set caption(focuseraudecom,x5)             "x5"
@@ -23,8 +26,11 @@ set caption(focuseraudecom,interro)        "?"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(focuseraudecom,label)       "Focaliseur AudeCom"
-   set caption(focuseraudecom,configure)   "Configurer"
    set caption(focuseraudecom,link)        "Les commandes sont envoyées à la monture AudeCom."
+
+   set caption(focuseraudecom,attention)   "Attention"
+   set caption(focuseraudecom,msg1)        "Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg2)        "Il ne fonctionne pas avec cette monture."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -34,8 +40,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(focuseraudecom,label)       "Focheggiatore AudeCom"
-   set caption(focuseraudecom,configure)   "Configurare"
-   set caption(focuseraudecom,link)        "# Les commandes sont envoyées à la monture AudeCom."
+   set caption(focuseraudecom,link)        "I comandi sono inviati alla montatura AudeCom."
+
+   set caption(focuseraudecom,attention)   "Attenzione"
+   set caption(focuseraudecom,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg2)        "# Il ne fonctionne pas avec cette monture."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -45,8 +54,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(focuseraudecom,label)       "Enfocador AudeCom"
-   set caption(focuseraudecom,configure)   "Configurar"
    set caption(focuseraudecom,link)        "Las ordenes se mandan a la montura AudeCom."
+
+   set caption(focuseraudecom,attention)   "Cuidado"
+   set caption(focuseraudecom,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg2)        "# Il ne fonctionne pas avec cette monture."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -56,8 +68,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(focuseraudecom,label)       "AudeCom Scharfeinstellung"
-   set caption(focuseraudecom,configure)   "Konfigurieren"
    set caption(focuseraudecom,link)        "Die Steuervorrichtungen sind zum AudeCom Gestell geschickt."
+
+   set caption(focuseraudecom,attention)   "Achtung"
+   set caption(focuseraudecom,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg2)        "# Il ne fonctionne pas avec cette monture."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -67,8 +82,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(focuseraudecom,label)       "Focador AudeCom"
-   set caption(focuseraudecom,configure)   "Configurar"
    set caption(focuseraudecom,link)        "Os comandos são enviados à montagem AudeCom."
+
+   set caption(focuseraudecom,attention)   "Aviso"
+   set caption(focuseraudecom,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg2)        "# Il ne fonctionne pas avec cette monture."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -78,8 +96,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(focuseraudecom,label)       "# AudeCom Focuser"
-   set caption(focuseraudecom,configure)   "# Set up"
    set caption(focuseraudecom,link)        "# Controls are sent to the AudeCom mount."
+
+   set caption(focuseraudecom,attention)   "Advarsel"
+   set caption(focuseraudecom,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg2)        "# Il ne fonctionne pas avec cette monture."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
