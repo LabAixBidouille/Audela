@@ -2,11 +2,11 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.4 2007-02-07 20:31:39 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.5 2007-02-10 17:50:22 robertdelmas Exp $
 #
 
 #
-# Procedures generiques obligatoires (pour configurer tous les plugins camera, telescope, equipement) :
+# Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
 #     configurePlugin   : Configure le plugin
 #     createPlugin      : Cree une instance du plugin
 #     deletePlugin      : Arrete une instance du plugin et libere les ressources occupees
@@ -104,8 +104,7 @@ proc ::focuserjmi::getStartFlag { } {
 #------------------------------------------------------------
 proc ::focuserjmi::fillConfigPage { frm } {
    variable widget
-   global conf
-   global caption
+   global caption conf
 
    #--- je copie les donnees de conf(...) dans les variables widget(...)
    set widget(link)         $conf(focuserjmi,link)
