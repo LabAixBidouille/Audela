@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.4 2006-11-12 16:33:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.5 2007-02-10 18:07:02 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -50,7 +50,7 @@ namespace eval ::cwdWindow {
       set cwdWindow(sous_repertoire) $date
       #---
       toplevel $This
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm resizable $This 0 0
       wm title $This "$caption(cwdWindow,repertoire)"
       wm protocol $This WM_DELETE_WINDOW ::cwdWindow::cmdClose
@@ -146,7 +146,7 @@ namespace eval ::cwdWindow {
       set cwdWindow(dir_images) $subDirectory
       update
       focus $This.usr.1.a.ent1
-      event generate $This.usr.1.a.ent1 <Control-e> 
+      event generate $This.usr.1.a.ent1 <Control-e>
    }
 
    #
@@ -382,7 +382,7 @@ namespace eval ::confEditScript {
       wm resizable $This 0 0
       wm deiconify $This
       wm title $This "$caption(confeditscript,editeurs)"
-      wm geometry $This +180+50 
+      wm geometry $This +180+50
       wm protocol $This WM_DELETE_WINDOW ::confEditScript::cmdClose
 
       #--- Ecriture du chemin d'un repertoire et du nom d'un lecteur
@@ -540,7 +540,7 @@ namespace eval ::confEditScript {
          #--- Cree le bouton 'Fermer'
          button $This.cmd.fermer -text "$caption(aud_menu_7,fermer)" -width 7 -command ::confEditScript::cmdClose
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         #--- Cree le bouton 'Aide' 
+         #--- Cree le bouton 'Aide'
          button $This.cmd.aide -text "$caption(aud_menu_7,aide)" -width 7 -command ::confEditScript::afficheAide
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x

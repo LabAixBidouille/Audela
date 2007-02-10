@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.8 2006-11-17 18:46:17 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.9 2007-02-10 18:06:19 robertdelmas Exp $
 #
 
 namespace eval ::traiteImage {
@@ -114,7 +114,7 @@ namespace eval ::traiteImage {
       #---
       set traiteImage(subskyWindow_back_kernel)    $conf(back_kernel)
       set traiteImage(subskyWindow_back_threshold) $conf(back_threshold)
-      
+
       #---
       toplevel $This
       wm resizable $This 0 0
@@ -137,28 +137,28 @@ namespace eval ::traiteImage {
                pack $This.usr.2.1.lab1 -side left -padx 10 -pady 5
                entry $This.usr.2.1.ent1 -textvariable traiteImage(offsetWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5 
+               pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
                label $This.usr.2.2.lab2 -text "$caption(traiteImage,cte_mult)"
                pack $This.usr.2.2.lab2 -side left -padx 10 -pady 5
                entry $This.usr.2.2.ent2 -textvariable traiteImage(multWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5 
+               pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5
            # pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
                label $This.usr.2.3.lab3 -text "$caption(traiteImage,valeur_fond_ciel)"
                pack $This.usr.2.3.lab3 -side left -padx 10 -pady 5
                entry $This.usr.2.3.ent3 -textvariable traiteImage(noffsetWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5 
+               pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
            # pack $This.usr.2.3 -side top -fill both
             frame $This.usr.2.4 -borderwidth 0 -relief flat
                label $This.usr.2.4.lab4 -text "$caption(traiteImage,valeur_fond_ciel)"
                pack $This.usr.2.4.lab4 -side left -padx 10 -pady 5
                entry $This.usr.2.4.ent4 -textvariable traiteImage(ngainWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5 
+               pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5
            # pack $This.usr.2.4 -side top -fill both
             frame $This.usr.2.5 -borderwidth 0 -relief flat
                button $This.usr.2.5.btn1 -text "$caption(traiteImage,parcourir)" -command ::traiteImage::parcourir
@@ -168,14 +168,14 @@ namespace eval ::traiteImage {
                entry $This.usr.2.5.ent5 -textvariable traiteImage(addWindow_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.5.ent5 -side right -padx 10 -pady 5
-           # pack $This.usr.2.5 -side top -fill both 
+           # pack $This.usr.2.5 -side top -fill both
             frame $This.usr.2.6 -borderwidth 0 -relief flat
                label $This.usr.2.6.lab6 -text "$caption(traiteImage,ajouter_cte)"
                pack $This.usr.2.6.lab6 -side left -padx 10 -pady 5
                entry $This.usr.2.6.ent6 -textvariable traiteImage(addWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.6.ent6 -side right -padx 10 -pady 5
-           # pack $This.usr.2.6 -side top -fill both 
+           # pack $This.usr.2.6 -side top -fill both
             frame $This.usr.2.7 -borderwidth 0 -relief flat
                button $This.usr.2.7.btn2 -text "$caption(traiteImage,parcourir)" -command ::traiteImage::parcourir
                pack $This.usr.2.7.btn2 -side left -padx 10 -pady 5 -ipady 5
@@ -184,14 +184,14 @@ namespace eval ::traiteImage {
                entry $This.usr.2.7.ent7 -textvariable traiteImage(subWindow_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.7.ent7 -side right -padx 10 -pady 5
-           # pack $This.usr.2.7 -side top -fill both 
+           # pack $This.usr.2.7 -side top -fill both
             frame $This.usr.2.8 -borderwidth 0 -relief flat
                label $This.usr.2.8.lab8 -text "$caption(traiteImage,ajouter_cte)"
                pack $This.usr.2.8.lab8 -side left -padx 10 -pady 5
                entry $This.usr.2.8.ent8 -textvariable traiteImage(subWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.8.ent8 -side right -padx 10 -pady 5
-           # pack $This.usr.2.8 -side top -fill both 
+           # pack $This.usr.2.8 -side top -fill both
             frame $This.usr.2.9 -borderwidth 0 -relief flat
                button $This.usr.2.9.btn3 -text "$caption(traiteImage,parcourir)" -command ::traiteImage::parcourir
                pack $This.usr.2.9.btn3 -side left -padx 10 -pady 5 -ipady 5
@@ -200,55 +200,55 @@ namespace eval ::traiteImage {
                entry $This.usr.2.9.ent9 -textvariable traiteImage(divWindow_filename) -width 20 \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.9.ent9 -side right -padx 10 -pady 5
-           # pack $This.usr.2.9 -side top -fill x 
+           # pack $This.usr.2.9 -side top -fill x
             frame $This.usr.2.10 -borderwidth 0 -relief flat
                label $This.usr.2.10.lab10 -text "$caption(traiteImage,cte_mult)"
                pack $This.usr.2.10.lab10 -side left -padx 10 -pady 5
                entry $This.usr.2.10.ent10 -textvariable traiteImage(divWindow_value) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.10.ent10 -side right -padx 10 -pady 5
-           # pack $This.usr.2.10 -side top -fill x 
+           # pack $This.usr.2.10 -side top -fill x
             frame $This.usr.2.11 -borderwidth 0 -relief flat
                label $This.usr.2.11.lab11 -text "$caption(traiteImage,multx)"
                pack $This.usr.2.11.lab11 -side left -padx 10 -pady 10
                entry $This.usr.2.11.ent11 -textvariable traiteImage(scaleWindow_multx) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.11.ent11 -side right -padx 10 -pady 10 
+               pack $This.usr.2.11.ent11 -side right -padx 10 -pady 10
            # pack $This.usr.2.11 -side top -fill x
             frame $This.usr.2.12 -borderwidth 0 -relief flat
                label $This.usr.2.12.lab12 -text "$caption(traiteImage,multy)"
                pack $This.usr.2.12.lab12 -side left -padx 10 -pady 5
                entry $This.usr.2.12.ent12 -textvariable traiteImage(scaleWindow_multy) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.12.ent12 -side right -padx 10 -pady 5 
+               pack $This.usr.2.12.ent12 -side right -padx 10 -pady 5
            # pack $This.usr.2.12 -side top -fill x
             frame $This.usr.2.13 -borderwidth 0 -relief flat
                label $This.usr.2.13.lab13 -text "$caption(traiteImage,grille_subsky)"
                pack $This.usr.2.13.lab13 -side left -padx 10 -pady 10
                entry $This.usr.2.13.ent13 -textvariable traiteImage(subskyWindow_back_kernel) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.13.ent13 -side right -padx 10 -pady 10 
+               pack $This.usr.2.13.ent13 -side right -padx 10 -pady 10
            # pack $This.usr.2.13 -side top -fill x
             frame $This.usr.2.14 -borderwidth 0 -relief flat
                label $This.usr.2.14.lab14 -text "$caption(traiteImage,seuil_subsky)"
                pack $This.usr.2.14.lab14 -side left -padx 10 -pady 5
                entry $This.usr.2.14.ent14 -textvariable traiteImage(subskyWindow_back_threshold) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.14.ent14 -side right -padx 10 -pady 5 
+               pack $This.usr.2.14.ent14 -side right -padx 10 -pady 5
            # pack $This.usr.2.14 -side top -fill x
             frame $This.usr.2.15 -borderwidth 0 -relief flat
                label $This.usr.2.15.lab15 -text "$caption(traiteImage,clip_min)"
                pack $This.usr.2.15.lab15 -side left -padx 10 -pady 10
                entry $This.usr.2.15.ent15 -textvariable traiteImage(clipWindow_mini) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.15.ent15 -side right -padx 10 -pady 10 
+               pack $This.usr.2.15.ent15 -side right -padx 10 -pady 10
            # pack $This.usr.2.15 -side top -fill x
             frame $This.usr.2.16 -borderwidth 0 -relief flat
                label $This.usr.2.16.lab16 -text "$caption(traiteImage,clip_max)"
                pack $This.usr.2.16.lab16 -side left -padx 10 -pady 5
                entry $This.usr.2.16.ent16 -textvariable traiteImage(clipWindow_maxi) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.16.ent16 -side right -padx 10 -pady 5 
+               pack $This.usr.2.16.ent16 -side right -padx 10 -pady 5
            # pack $This.usr.2.16 -side top -fill both
             frame $This.usr.2.17 -borderwidth 0 -relief flat
                button $This.usr.2.17.but_defaut -text "$caption(traiteImage,valeur_par_defaut)" \
@@ -347,7 +347,7 @@ namespace eval ::traiteImage {
             -command { ::traiteImage::cmdClose }
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
          button $This.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
-            -command { ::traiteImage::afficheAide } 
+            -command { ::traiteImage::afficheAide }
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
 
@@ -1489,14 +1489,14 @@ namespace eval ::traiteWindow {
                pack $This.usr.6.1.lab1 -side left -padx 10 -pady 10
                entry $This.usr.6.1.ent1 -textvariable traiteWindow(scaleWindow_multx) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.6.1.ent1 -side right -padx 10 -pady 10 
+               pack $This.usr.6.1.ent1 -side right -padx 10 -pady 10
             pack $This.usr.6.1 -side top -fill x
             frame $This.usr.6.2 -borderwidth 0 -relief flat
                label $This.usr.6.2.lab2 -text "$caption(traiteImage,multy)"
                pack $This.usr.6.2.lab2 -side left -padx 10 -pady 5
                entry $This.usr.6.2.ent2 -textvariable traiteWindow(scaleWindow_multy) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.6.2.ent2 -side right -padx 10 -pady 5 
+               pack $This.usr.6.2.ent2 -side right -padx 10 -pady 5
             pack $This.usr.6.2 -side top -fill x
             frame $This.usr.6.3 -borderwidth 0 -relief flat
                button $This.usr.6.3.but_defaut -text "$caption(traiteImage,valeur_par_defaut)" \
@@ -1626,7 +1626,7 @@ namespace eval ::traiteWindow {
             -command { ::traiteWindow::cmdClose }
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
          button $This.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
-            -command { ::traiteWindow::afficheAide } 
+            -command { ::traiteWindow::afficheAide }
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
 
@@ -2609,7 +2609,7 @@ namespace eval ::faireImageRef {
             -command { ::faireImageRef::cmdClose }
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
          button $This.cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
-            -command { ::faireImageRef::afficheAide } 
+            -command { ::faireImageRef::afficheAide }
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
 

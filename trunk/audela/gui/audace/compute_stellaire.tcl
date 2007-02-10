@@ -2,7 +2,7 @@
 # Fichier : compute_stellaire.tcl
 # Description : Fonction de prétraitement automatique
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: compute_stellaire.tcl,v 1.4 2006-06-20 17:23:43 robertdelmas Exp $
+# Mise a jour $Id: compute_stellaire.tcl,v 1.5 2007-02-10 18:07:33 robertdelmas Exp $
 #
 
 # Documentation : Voir le fichier compute_stellaire.htm dans le dossier doc_html
@@ -185,7 +185,7 @@ proc compute_stellaire {args} {
                 if {$noirsdePLUs!="pas_de_noirsdePLUs"} {
                     # Création de l'image de noir de PLUs (par médiane)
                     console::affiche_resultat "$caption(compute,tmp_noirdePLUs)"
-                    # NB : on ne refait explicitement le calcul de médiane que si les noirs de PLUs sont différents des noirs, 
+                    # NB : on ne refait explicitement le calcul de médiane que si les noirs de PLUs sont différents des noirs,
                     # sinon le noir a déjà été calculé précédemment et figure toujours dans le buffer temporaire
                     if {$noirs != $noirsdePLUs } {
                         mediane $noirsdePLUs -rep "$rep" -ext $ext -buf $num_buf_tmp -polyNo $in_polyNo
@@ -201,7 +201,7 @@ proc compute_stellaire {args} {
 
                     # Suppression de la série temporaire de PLUs nettoyées du noir
                     suppr_serie tmp_PLU-noir_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
-                    
+
                 } else {
                     # Normalisation du gain des PLUs
                     console::affiche_resultat "$caption(compute,tmp_PLUnorm_X)"
@@ -222,12 +222,12 @@ proc compute_stellaire {args} {
                 # Suppression des images temporaires nettoyées du noir
                 suppr_serie tmp_brute-noir_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 
-                # On indique dans la variable serie_a_recaler le nom de la 
+                # On indique dans la variable serie_a_recaler le nom de la
                 # série sur laquelle il faut faire le recalage stellaire
                 set serie_a_trier "tmp_pret_"
                 set ext_serie_a_trier [lindex [decomp $ext] 3]
                 set rep_serie_a_trier $rep_tmp
-                # On indique dans la variable suppr_apres_recalage s'il faut 
+                # On indique dans la variable suppr_apres_recalage s'il faut
                 # supprimer ou pas cette série après avoir effectué l'alignement
                 set suppr_apres_tri 1
 
@@ -239,12 +239,12 @@ proc compute_stellaire {args} {
 
             } else {
 
-                # On indique dans la variable serie_a_recaler le nom de la 
+                # On indique dans la variable serie_a_recaler le nom de la
                 # série sur laquelle il faut faire le recalage stellaire
                 set serie_a_trier "tmp_brute-noir_"
                 set ext_serie_a_trier [lindex [decomp $ext] 3]
                 set rep_serie_trier $rep_tmp
-                # On indique dans la variable suppr_apres_recalage s'il faut 
+                # On indique dans la variable suppr_apres_recalage s'il faut
                 # supprimer ou pas cette série après avoir effectué l'alignement
                 set suppr_apres_tri 1
 
@@ -257,12 +257,12 @@ proc compute_stellaire {args} {
 
         } else {
 
-            # On indique dans la variable serie_a_recaler le nom de la 
+            # On indique dans la variable serie_a_recaler le nom de la
             # série sur laquelle il faut faire le recalage stellaire
             set serie_a_trier $brutes
             set ext_serie_a_trier $ext
             set rep_serie_a_trier $rep
-            # On indique dans la variable suppr_apres_recalage s'il faut 
+            # On indique dans la variable suppr_apres_recalage s'il faut
             # supprimer ou pas cette série après avoir effectué l'alignement
             set suppr_apres_tri 0
 
@@ -329,9 +329,9 @@ proc compute_stellaire {args} {
             set latit_obs [lindex $posit_obs 3]
 
             # Date/Heure moyenne de l'observation
-            # ATTENTION MÉTHODE UN PEU BRUTE POUR L'INSTANT, ON SE CONTENTE DE 
+            # ATTENTION MÉTHODE UN PEU BRUTE POUR L'INSTANT, ON SE CONTENTE DE
             # RÉCUPÉRER L'INFO POUR LA PREMIÈRE IMAGE QUI TOMBE SOUS LA MAIN
-            charge $brutes[lindex $index_brutes 0] -rep $rep -ext $ext -polyNo $in_polyNo -buf $num_buf_tmp      
+            charge $brutes[lindex $index_brutes 0] -rep $rep -ext $ext -polyNo $in_polyNo -buf $num_buf_tmp
             set date_obs [buf$num_buf_tmp getkwd "DATE-OBS"]
 
             # On récupère les infos utiles dans l'en-tête de la première image concernant
@@ -379,7 +379,7 @@ proc compute_stellaire {args} {
 
         # Suppression des images triées temporaires
         suppr_serie tmp_registr_ -rep $rep_tmp -ext [lindex [decomp $ext] 3]
-        
+
         # Chargement de l'image finale
         charge tmp_finale -rep $rep_tmp -ext [lindex [decomp $ext] 3]
 

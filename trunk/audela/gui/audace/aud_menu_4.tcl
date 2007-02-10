@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.5 2006-11-12 16:07:45 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.6 2007-02-10 18:06:44 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -246,7 +246,7 @@ namespace eval ::traiteFilters {
             -command { ::traiteFilters::cmdClose }
          pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
          button $This.cmd.aide -text "$caption(traiteFilters,aide)" -width 7 \
-            -command { ::traiteFilters::afficheAide } 
+            -command { ::traiteFilters::afficheAide }
          pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
       pack $This.cmd -side top -fill x
 
