@@ -1741,11 +1741,10 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
  * AstroSlitCentro
  *  calcule le baricentre du signal sur une fente de spectrometre
  *  
- *  Si une erreur survient pendant le traitement, buffer->pix conserve l'ancien tableau de pixels
  *  Parameters IN: 
  *    x1,y1,x2,y2 : fenetre de recherche
  *    y0     :  position de la fente
- *    w      :  largeur de la fentre (distance entre les deux levres
+ *    w      :  distance entre les deux levres
  *    w2     :  largeur d'une levre
  *  Parameters OUT: 
  *    *xc, *yc :  baricentre du signal sur les levres
@@ -1754,13 +1753,15 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
  *    void
  *
  */
-void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int w, double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2) {
+void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, double signalRatio, double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2) {
    int i, j;                          // Index de parcours de l'image
    TYPE_PIXELS *pixTemp, *p;
    double *table=NULL;
    double s1, s2, v, tableOffset, pixelOffset;
    int width, height, naxis1, naxis2, y0;
    double gauss[4], ecart;
+   double sumRatio;
+   int signe;
    
    naxis1 = this->pix->GetWidth();
    naxis2 = this->pix->GetHeight();
@@ -1840,41 +1841,61 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int w, double *xc,
    s2=0;
    // je calcule le signal sur la levre haute
    for (i=0;i<width;i++) {
-      for (j=y0+w/2;j<height;j++) {
+      for (j=y0+slitWidth/2;j<height;j++) {
          s1+=(double)p[i+j*width];
       }
    }
 
    // je calcule le signal sur la levre basse
    for (i=0;i<width;i++) {
-      for (j=0;j<y0-w/2;j++) {
+      for (j=0;j<y0-slitWidth/2;j++) {
          s2+=(double)p[i+j*width];
             //-pixelOffset/2.0
       }
    }
 
+/*
    if (s1==0.0 && s2 == 0.0) 
       *yc=(double)y0;
-   else if (s2/s1>=1. && s2/s1<2.)
+   else if (s2/s1>= 1.0 && s2/s1< 1.1 )
       *yc=(double)y0;
-   else if (s2/s1>=2. && s2/s1<15.)
+   else if (s2/s1>= 1.1 && s2/s1<1.2 )
+      *yc=(double)y0-1.0;
+   else if (s2/s1>= 1.2 && s2/s1<1.4)
       *yc=(double)y0-2.0;
-   else if (s2/s1>=15. && s2/s1<25.)
+   else if (s2/s1>= 1.4 && s2/s1<1.8)
+      *yc=(double)y0-3.0;
+   else if (s2/s1>= 1.8)
       *yc=(double)y0-4.0;
-   else if (s2/s1>=25. && s2/s1<50.)
-      *yc=(double)y0-6.0;
-   else if (s2/s1>=100.)
-      *yc=(double)y0-8.0;
-   else if (s1/s2>=1. && s1/s2<2.)
+
+   else if (s1/s2<1.1)
       *yc=(double)y0;
-   else if (s1/s2>=2. && s1/s2<15.)
+   else if (s1/s2>=  1.1 && s1/s2<1.2 )
+      *yc=(double)y0+1.0;
+   else if (s1/s2>=  1.2 && s1/s2<1.4 )
       *yc=(double)y0+2.0;
-   else if (s1/s2>=15. && s1/s2<25.)
+   else if (s1/s2>=  1.4 && s1/s2<1.8)
+      *yc=(double)y0+3.0;
+   else if (s1/s2>= 1.8 )
       *yc=(double)y0+4.0;
-   else if (s1/s2>=25. && s1/s2<50.)
-      *yc=(double)y0+6.0;
-   else if (s1/s2>=100.)
-      *yc=(double)y0+8.0;
+*/
+
+   if (s1==0.0) s1 = 1.0;
+   if (s2==0.0) s2 = 1.0; 
+   
+   if (s2>=s1) {
+      sumRatio = (s2/s1 - 1.0) * (-1.0);
+   } else  {
+      sumRatio = (s1/s2 - 1.0) ;
+   }
+
+   // je convertis le ratio des flux en nombre de pixels sur l'axe y
+   *yc=(double)y0 +   sumRatio * signalRatio;
+
+   // ecretage des valeurs 
+   if ( *yc < 0 )      *yc = 0;
+   if ( *yc > height ) *yc = height;
+
 
    // je change de repere de coordonnees
    *yc += y1;

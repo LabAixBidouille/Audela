@@ -127,7 +127,7 @@ public:
    void AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1, double r2,double r3, 
                       double *flux, double* f23, double* fmoy, double* sigma, int *n1);
    void AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double *yc);
-   void AstroSlitCentro(int x1, int y1, int x2, int y2, int w, double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2);
+   void AstroSlitCentro(int x1, int y1, int x2, int y2, int w, double signalRatio,double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2);
    void Autocut(double *phicut,double *plocut,double *pmode);
    void BinX(int x1, int x2, int width);
    void BinY(int y1, int y2, int height);
