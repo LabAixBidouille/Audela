@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.10 2006-12-10 15:23:58 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.11 2007-02-10 10:36:23 michelpujol Exp $
 #
 
 package provide autoguider 1.0
@@ -28,6 +28,8 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
    variable private
    global audace conf
 
+   set ::caption(autguider,darkError) "echec de la soustration du dark "
+
    if { ! [ info exists conf(autoguider,pose) ] }                { set conf(autoguider,pose)                 "0" }
    if { ! [ info exists conf(autoguider,binning) ] }             { set conf(autoguider,binning)              [lindex $audace(list_binning) 1] }
    if { ! [ info exists conf(autoguider,intervalle)] }           { set conf(autoguider,intervalle)           ".5" }
@@ -43,7 +45,16 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,showTarget)] }           { set conf(autoguider,showTarget)           "1" }
    if { ! [ info exists conf(autoguider,targetBoxSize)] }        { set conf(autoguider,targetBoxSize)        "16" }
    if { ! [ info exists conf(autoguider,configWindowPosition)] } { set conf(autoguider,configWindowPosition) "+0+0" }
-   if { ! [ info exists conf(autoguider,enableDeclinaison)] }    { set conf(autoguider,enableDeclinaison)    "1" }
+   if { ! [ info exists conf(autoguider,declinaisonEnabled)] }   { set conf(autoguider,declinaisonEnabled)   "1" }
+   if { ! [ info exists conf(autoguider,cumulEnabled)] }         { set conf(autoguider,cumulEnabled)         "0" }
+   if { ! [ info exists conf(autoguider,cumulNb)] }              { set conf(autoguider,cumulNb)              "5" }
+   if { ! [ info exists conf(autoguider,darkEnabled)] }          { set conf(autoguider,darkEnabled)          "0" }
+   if { ! [ info exists conf(autoguider,darkFileName)] }         { set conf(autoguider,darkFileName)         "dark.fit"  }
+   if { ! [ info exists conf(autoguider,slitWidth)] }            { set conf(autoguider,slitWidth)            "4"  }
+   if { ! [ info exists conf(autoguider,slitRatio)] }            { set conf(autoguider,slitRatio)            "1.0"  }
+   if { ! [ info exists conf(autoguider,lipWidth)] }             { set conf(autoguider,lipWidth)             "4"  }
+   if { ! [ info exists conf(autoguider,alphaReverse)] }         { set conf(autoguider,alphaReverse)         "0"  }
+   if { ! [ info exists conf(autoguider,deltaReverse)] }         { set conf(autoguider,deltaReverse)         "0"  }
 
    set private($visuNo,base)              $in
    set private($visuNo,This)              "$in.autoguider"
@@ -59,7 +70,6 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
    set private($visuNo,delay,delta)       "0.00"
    set private($visuNo,originCoord)       "" 
    set private($visuNo,targetCoord)       ""
-   set private($visuNo,hTarget)           ""
    set private($visuNo,interval)          ""
    set private($visuNo,previousClock)     "0"
    set private($visuNo,updateAxis)        "0"
@@ -233,28 +243,16 @@ proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
       set camProduct [ cam$camNo product ]
    }
 
-   #--- je calcule format des boutons
-   if { "$camProduct" == "webcam" } {
-      if { $conf(webcam,longuepose) == "0" } {
-         set panelFormat "1"
-         set ::conf(autoguider,pose) "0"
-      }
-   } else {
-      set panelFormat "0"
-   }
-
    #--- j'adapte les boutons de selection de pose et de binning
-   switch $panelFormat {
-      0 {
-         #--- cameras autre que webcam
+   if { [confCam::getLongExposure $camNo] == "1" } {
+         #--- cameras autre que webcam, ou webcam avec la longue pose
          pack $This.pose.lab1 -anchor center -side left -padx 5
          pack $This.pose.combo -anchor center -side left -fill x -expand 1
          pack $This.binning.lab1 -anchor center -side left -padx 0
          pack $This.binning.combo -anchor center -side left -fill x -expand true
          pack forget $This.pose.confwebcam
          pack forget $This.binning.selectBinning
-      }
-      1 {
+   } else {
          #--- webcam
          pack forget $This.pose.lab1
          pack forget $This.pose.combo
@@ -262,7 +260,8 @@ proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
          pack forget $This.binning.combo
          pack $This.pose.confwebcam -anchor center -side left -fill x -expand 1
          pack $This.binning.selectBinning  -anchor center -side left -fill x -expand 1
-      }
+      #--- je met la pose a zero car cette varaible n'est utilisee et doit etre nulle
+      set ::conf(autoguider,pose) "0"
    }
 }
 
@@ -279,6 +278,8 @@ proc ::autoguider::startTool { { visuNo 1 } } {
 
    #--- je change le bind du bouton droit de la souris
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::autoguider::setOrigin $visuNo %x %y"
+   #--- je change le bind du double-clic du bouton gauche de la souris
+   ::confVisu::createBindCanvas $visuNo <Double-1> "::autoguider::setTargetCoord $visuNo %x %y"
 
    #--- j'affiche la cible si necessaire
    if { $::conf(autoguider,showTarget) == "1" } {
@@ -378,12 +379,25 @@ proc ::autoguider::startAcquisition { visuNo } {
       cam$camNo acq
       vwait status_cam$camNo
 
+      #--- je soutrais le dark 
+      if { $::conf(autoguider,darkEnabled) == "1" } {
+         catch { 
+            buf$bufNo sub [file join $::audace(rep_images) $::conf(autoguider,darkFileName)] 0 
+         } catchMessage
+         if { $catchMessage != "" } {
+            #--- j'arrete le suivi
+            ::autoguider::stopAcquisition $visuNo
+            #--- j'affiche un message d'erreur
+            tk_messageBox -message "$caption(autguider,darkError)\n$catchMessage" -title "$caption(autoguider,titre)" -icon error
+         }
+      }
+      
       #--- j'affiche l'image si c'est autorise
       if { $::conf(autoguider,showImage) == "1" } {
          ::confVisu::autovisu $visuNo
       }
 
-      #--- je prends le centre de l'image pour origine si elle n'est deja fixee
+      #--- si l'origine n'est pas deja fixee, je prends le centre de l'image pour origine
       if { $private($visuNo,targetCoord) == "" } {
          if { $private($visuNo,originCoord) == "" } {
             set private($visuNo,originCoord) [list [expr [buf$bufNo getpixelswidth]/2] [expr [buf$bufNo getpixelsheight]/2] ] 
@@ -392,25 +406,53 @@ proc ::autoguider::startAcquisition { visuNo } {
          set private($visuNo,targetCoord) $private($visuNo,originCoord)
       }
 
-      #--- je mets a jour les axes si c'est necessaire
+      #--- je mets a jour l'affichage des axes si c'est necessaire
       if { $private($visuNo,updateAxis) == 1 } {
          createAlphaDeltaAxis $visuNo $private($visuNo,originCoord) $::conf(autoguider,angle)
          set private($visuNo,updateAxis) 0
       }
 
-      #--- je calcule la position de la zone cible autour de l'etoile
-      set x  [lindex $private($visuNo,targetCoord) 0]
-      set y  [lindex $private($visuNo,targetCoord) 1]
-      set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
-      set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
-      set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
-      set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
-      set targetBoxPicture [list $x1 $y1 $x2 $y2]
+      #--- je calcule la position de l'etoile guide dans la zone cible
+      if { $::conf(autoguider,detection)=="PSF" } {
+         #--- je calcule les coordonnees de la cible autour de l'etoile
+         set x  [lindex $private($visuNo,targetCoord) 0]
+         set y  [lindex $private($visuNo,targetCoord) 1]
+         set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+         set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+         set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
+         set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+         set private($visuNo,targetCoord) [buf$bufNo centro "[list $x1 $y1 $x2 $y2]"]
+         console::disp "result0=$private($visuNo,targetCoord) \n"
+      } else {
+         set ydelta [expr abs([lindex $private($visuNo,originCoord) 1] - [lindex $private($visuNo,targetCoord) 1]) ]
+         set yslit [expr $::conf(autoguider,lipWidth) + $::conf(autoguider,slitWidth)/2 ]
+         if { $ydelta <= $yslit } {
+             #--- l'etoile est une levre 
+             #--- la zone de recherche est  
+             set x  [lindex $private($visuNo,targetCoord) 0]
+             set y  [lindex $private($visuNo,originCoord) 1]
+             set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+             set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+             set y1 [expr int($y) - $yslit]
+             set y2 [expr int($y) + $yslit]
+             set result [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $::conf(autoguider,slitWidth) $::conf(autoguider,slitRatio) ] 
+             set private($visuNo,targetCoord) [lrange $result 0 1]
+             console::disp "slit=$result \n"
+         } else {
+             #--- l'etoile n'est pas sur une levre
+             set x  [lindex $private($visuNo,targetCoord) 0]
+             set y  [lindex $private($visuNo,targetCoord) 1]
+             set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+             set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+             set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
+             set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+             set result [buf$bufNo centro "[list $x1 $y1 $x2 $y2]" ] 
+             set private($visuNo,targetCoord) [lrange $result 0 1]
+             console::disp "centro=$result \n"
+         }
+      }
 
-      #--- je calcule la position de l'etoile guide dasn la zone cible
-      set private($visuNo,targetCoord) [buf$bufNo centro "$targetBoxPicture"]
-
-      #--- je calcule l'ecart de position par rapport a la position origine
+      #--- je calcule l'ecart de position par rapport a la position d'origine
       set private($visuNo,dx) [format "%##0.1f" [expr [lindex $private($visuNo,targetCoord) 0] - [lindex $private($visuNo,originCoord) 0] ]]
       set private($visuNo,dy) [format "%##0.1f" [expr [lindex $private($visuNo,targetCoord) 1] - [lindex $private($visuNo,originCoord) 1] ]]
 
@@ -423,7 +465,7 @@ proc ::autoguider::startAcquisition { visuNo } {
       set nextClock [clock clicks -milliseconds ]
       set private($visuNo,interval) "[expr $nextClock - $private($visuNo,previousClock)] ms"
       set private($visuNo,previousClock) $nextClock 
-      #--- je permets le refraichissement de l'affichage des nouvelles valeurs
+      #--- je provoque le refraichissement de l'affichage des nouvelles valeurs
       update
 
       #--- je deplace le telescope si c'est autorise
@@ -462,7 +504,7 @@ proc ::autoguider::startAcquisition { visuNo } {
 proc ::autoguider::stopAcquisition { visuNo } {
    variable private 
 
-   #--- si le suivi est en cours , je demande l'arret
+   #--- je demande l'arret du suivi s'il est en cours
    if { $private($visuNo,suiviState) == 1 } {
       set private($visuNo,suiviState) 2
    }
@@ -470,7 +512,7 @@ proc ::autoguider::stopAcquisition { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::initMount
-#    initialise les parametres de la monture : selectionne la plus petite vitesse)
+#    initialise les parametres de la monture : selectionne la plus petite vitesse
 #      
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -490,7 +532,7 @@ proc ::autoguider::initMount { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::setOrigin
-#   initialise le point origine x0, y0
+#   initialise le point origine dans private(visuNo,originCoord)
 # 
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -498,7 +540,25 @@ proc ::autoguider::initMount { visuNo } {
 #------------------------------------------------------------
 proc ::autoguider::setOrigin { visuNo x y } {
    variable private
-   global conf
+
+   ::autoguider::setTargetCoord $visuNo $x $y
+   set private($visuNo,originCoord) $private($visuNo,targetCoord)
+   
+   #--- je dessine les axes sur la nouvelle origine
+   changeShowAlphaDeltaAxis $visuNo
+   
+}
+
+#------------------------------------------------------------
+# ::autoguider::setTargetCoord
+#   initialise le point origine dans private(visuNo,originCoord)
+# 
+# parametres :
+#   visuNo    : numero de la visu courante
+#   x,y       : coordonnees de l'origine des axes (referentiel ecran)
+#------------------------------------------------------------
+proc ::autoguider::setTargetCoord { visuNo x y } {
+   variable private
 
    #--- petits raccourcis pour se simplier le codage
    set zoom [visu$visuNo zoom]
@@ -514,60 +574,103 @@ proc ::autoguider::setOrigin { visuNo x y } {
    set coord [::confVisu::canvas2Picture $visuNo $coord]
 
    #--- je recherche la nouvelle position de l'etoile dans la zone cible
-   set x  [lindex $coord 0]
-   set y  [lindex $coord 1]
-   set x1 [expr $x - $::conf(autoguider,targetBoxSize)]
-   set x2 [expr $x + $::conf(autoguider,targetBoxSize)]
-   set y1 [expr $y - $::conf(autoguider,targetBoxSize)]
-   set y2 [expr $y + $::conf(autoguider,targetBoxSize)]
-   set centro [buf$bufNo centro [list $x1 $y1 $x2 $y2] ]
-   set private($visuNo,originCoord) $centro
-   set private($visuNo,targetCoord) $centro
-
-   #--- je dessine les axes sur la nouvelle origine
-   changeShowAlphaDeltaAxis $visuNo
+   if { $::conf(autoguider,detection)=="PSF"} {
+      set x  [lindex $coord 0]
+      set y  [lindex $coord 1]
+      set x1 [expr $x - $::conf(autoguider,targetBoxSize)]
+      set x2 [expr $x + $::conf(autoguider,targetBoxSize)]
+      set y1 [expr $y - $::conf(autoguider,targetBoxSize)]
+      set y2 [expr $y + $::conf(autoguider,targetBoxSize)]
+      set centro [buf$bufNo centro [list $x1 $y1 $x2 $y2] ]
+      set private($visuNo,targetCoord) $centro
+   } else {
+      set private($visuNo,targetCoord) $coord
+   }   
+   #--- je dessine la cible aux nouvelle coordonneessur la nouvelle origine
+   moveTarget $visuNo $private($visuNo,targetCoord)
 }
-
 #------------------------------------------------------------
 # ::autoguider::createTarget
 #  affiche la cible autour du point de coordonnees targetCoord
-#  
+#
+#           PSF                     SLIT           
+#       *----------* y1=y0+w   *----------*  y2=y0+w                                    
+#       |          |           |          |                                       
+#       |          |           *----------*  s2=y0+slitWidth/2                                      
+#     ..|..........|...........|..........|..
+#       |          |           *----------*  s1=y0-slitWidth/2                               
+#       |          |           |          |                            
+#       *----------* y1=y0-w   *----------*  y1=y0-w                        
+#       x1         x2          x1         x2                       
 # parametres :
 #   visuNo    : numero de la visu courante
 #   targetCoord : coordonnees de la cible (referentiel buffer)
 #------------------------------------------------------------
-proc ::autoguider::createTarget { visuNo targetCoord } {
+proc ::autoguider::createTarget { visuNo } {
    variable private
 
    #--- je supprime l'affichage precedent de la cible
    deleteTarget $visuNo
 
-   #--- je calcule les coordonnees dans l'image
-   set x  [lindex $targetCoord 0]
-   set y  [lindex $targetCoord 1]
-   set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
-   set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
-   set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
-   set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+   if { $::conf(autoguider,detection) == "PSF" } {
+      #--- je calcule les coordonnees dans l'image
+      set x  [lindex $private($visuNo,targetCoord) 0]
+      set y  [lindex $private($visuNo,targetCoord) 1]
+      set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+      set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+      set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
+      set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+   
+      #--- je calcule les coordonnees dans le canvas
+      set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
+      set x  [lindex $coord 0]
+      set y  [lindex $coord 1]
+      set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
+      set x1 [lindex $coord 0]
+      set y1 [lindex $coord 1]
+      set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
+      set x2 [lindex $coord 0]
+      set y2 [lindex $coord 1]
+   
+      #--- j'affiche la cible
+      $private($visuNo,hCanvas) create rect $x1 $y1 $x2 $y2 -outline red -offset center -tag target
+   } else {
+      #--- je calcule les coordonnees dans l'image
+      set x  [lindex $private($visuNo,targetCoord) 0]
+      set y  [lindex $private($visuNo,targetCoord) 1]
+      set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+      set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+      set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
+      set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+      set s1 [expr int($y) - $::conf(autoguider,slitWidth)/2]
+      set s2 [expr int($y) + $::conf(autoguider,slitWidth)/2]
+   
+      #--- je calcule les coordonnees dans le canvas
+      set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
+      set x  [lindex $coord 0]
+      set y  [lindex $coord 1]
+      set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
+      set x1 [lindex $coord 0]
+      set y1 [lindex $coord 1]
+      set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
+      set x2 [lindex $coord 0]
+      set y2 [lindex $coord 1]
+      set coord [::confVisu::picture2Canvas $visuNo [list $x1 $s1 ]]
+      set x1 [lindex $coord 0]
+      set s1 [lindex $coord 1]
+      set coord [::confVisu::picture2Canvas $visuNo [list $x2 $s2 ]]
+      set x2 [lindex $coord 0]
+      set s2 [lindex $coord 1]
 
-   #--- je calcule les coordonnees dans le canvas
-   set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
-   set x  [lindex $coord 0]
-   set y  [lindex $coord 1]
-   set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
-   set x1 [lindex $coord 0]
-   set y1 [lindex $coord 1]
-   set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
-   set x2 [lindex $coord 0]
-   set y2 [lindex $coord 1]
-
-   #--- j'affiche la cible
-   set private($visuNo,hTarget) [eval {$private($visuNo,hCanvas) create rect} $x1 $y1 $x2 $y2 -outline red -offset center -tag target]
+      #--- j'affiche la cible
+      $private($visuNo,hCanvas) create rect $x1 $y1 $x2 $s1 -outline red -offset center -tag target1
+      $private($visuNo,hCanvas) create rect $x1 $s2 $x2 $y2 -outline red -offset center -tag target2
+   }
 }
 
 #------------------------------------------------------------
 # ::autoguider::createAlphaDeltaAxis
-#    dessine les axes alpha et delta
+#   dessine les axes alpha et delta
 # 
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -608,11 +711,10 @@ proc ::autoguider::deleteTarget { visuNo } {
    variable private
 
    #--- je supprime l'ffichage de la cible
-   if { $private($visuNo,hTarget) != "" } {
-      $private($visuNo,hCanvas) delete $private($visuNo,hTarget)
-      set private($visuNo,hTarget) ""
-      $private($visuNo,hCanvas) dtag target
-   }
+   $private($visuNo,hCanvas) delete "target" "target1" "target2"
+   $private($visuNo,hCanvas) dtag "target" 
+   $private($visuNo,hCanvas) dtag "target1" 
+   $private($visuNo,hCanvas) dtag "target2" 
 }
 
 #------------------------------------------------------------
@@ -627,30 +729,66 @@ proc ::autoguider::moveTarget { visuNo targetCoord } {
    variable private
 
    #--- je cree la cible si elle n'existe pas
-   if { $private($visuNo,hTarget) == "" } {
-      createTarget $visuNo $targetCoord
+   if { [$private($visuNo,hCanvas) gettags target] == "" 
+     && [$private($visuNo,hCanvas) gettags target1] == ""} {
+      createTarget $visuNo
    } else {
-      #--- je calcule les coordonnees dans l'image
-      set x  [lindex $targetCoord 0]
-      set y  [lindex $targetCoord 1]
-      set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
-      set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
-      set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
-      set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+      if { $::conf(autoguider,detection) == "PSF" } {
 
-      #--- je calcule les coordonnees dans le canvas
-      set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
-      set x  [lindex $coord 0]
-      set y  [lindex $coord 1]
-      set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
-      set x1 [lindex $coord 0]
-      set y1 [lindex $coord 1]
-      set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
-      set x2 [lindex $coord 0]
-      set y2 [lindex $coord 1]
-
-      #--- je convertis les coordonnes image en coordonnees canvas
-      $private($visuNo,hCanvas) coords "target" [list $x1 $y1 $x2 $y2]
+         #--- je calcule les coordonnees dans le buffer
+         set x  [lindex $targetCoord 0]
+         set y  [lindex $targetCoord 1]
+         set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+         set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+         set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
+         set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+         
+         #--- je calcule les coordonnees dans le canvas
+         set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
+         set x  [lindex $coord 0]
+         set y  [lindex $coord 1]
+         set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
+         set x1 [lindex $coord 0]
+         set y1 [lindex $coord 1]
+         set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
+         set x2 [lindex $coord 0]
+         set y2 [lindex $coord 1]
+         
+         #--- je convertis les coordonnes image en coordonnees canvas
+         $private($visuNo,hCanvas) coords "target" [list $x1 $y1 $x2 $y2]
+      } else {
+         
+         #--- je calcule les coordonnees dans l'image
+         set x  [lindex $targetCoord 0]
+         set y  [lindex $targetCoord 1]
+         set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
+         set x2 [expr int($x) + $::conf(autoguider,targetBoxSize)]
+         set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
+         set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
+         set s1 [expr int($y) - $::conf(autoguider,slitWidth)/2]
+         set s2 [expr int($y) + $::conf(autoguider,slitWidth)/2]
+         
+         #--- je calcule les coordonnees dans le canvas
+         set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
+         set x  [lindex $coord 0]
+         set y  [lindex $coord 1]
+         set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
+         set x1 [lindex $coord 0]
+         set y1 [lindex $coord 1]
+         set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
+         set x2 [lindex $coord 0]
+         set y2 [lindex $coord 1]
+         set coord [::confVisu::picture2Canvas $visuNo [list $x1 $s1 ]]
+         set x1 [lindex $coord 0]
+         set s1 [lindex $coord 1]
+         set coord [::confVisu::picture2Canvas $visuNo [list $x2 $s2 ]]
+         set x2 [lindex $coord 0]
+         set s2 [lindex $coord 1]
+         
+         #--- j'affiche la cible
+         $private($visuNo,hCanvas) coords "target1" [list $x1 $y1 $x2 $s1] 
+         $private($visuNo,hCanvas) coords "target2" [list $x1 $s2 $x2 $y2]
+      }
    }
 }
 
@@ -663,7 +801,7 @@ proc ::autoguider::moveTarget { visuNo targetCoord } {
 #   coord     : coordonnees de l'origine des axes (referentiel buffer)
 #   angle     : angle d'inclinaison des axes (en degres)
 #   label1    : libelle de l'extremite negative de l'axe
-#   label2    : libllle de l'extremite positive de l'axe
+#   label2    : libelle de l'extremite positive de l'axe
 #------------------------------------------------------------
 proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
    variable private
@@ -806,7 +944,7 @@ proc ::autoguider::changeShowTarget { visuNo } {
 
 ##console::disp "private($visuNo,targetCoord)=$private($visuNo,targetCoord)\n"
       #--- j'affiche la zone cible
-      createTarget $visuNo $private($visuNo,targetCoord)
+      createTarget $visuNo 
    }
 }
 
@@ -841,35 +979,16 @@ proc ::autoguider::webcamConfigure { visuNo } {
 #------------------------------------------------------------
 proc ::autoguider::selectBinning { visuNo } {
    variable private
-   global caption conf
 
-   set panelFormat "0"
-   #--- je verifie que la camera est disponible
-   set camNo [ ::confVisu::getCamNo $visuNo ]
-   if { $camNo == "0" } {
-      #--- La camera n'a pas ete encore selectionnee
-      set camProduct ""
-   } else {
-      set camProduct [ cam$camNo product ]
-   }
-
-   if { "$camProduct" == "webcam" } {
-      if { $conf(webcam,longuepose) == "0" } {
-         set panelFormat "1"
-      }
-   }
-
-   switch $panelFormat {
-     "0" {
-         #--- j'affiche le bouton de choix de binning par defaut
-     }
-     "1" {
-         #--- j'affiche le bouton de choix de binning de la webcam
-         set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] videoformat } ]
+   set camNo [::confVisu::getCamNo $visuNo ]
+   
+   if { [confCam::getLongExposure $camNo] == "0" } {
+         #--- j'affiche la fentre de choix de binning de la webcam
+         set result [ catch { cam$camNo videoformat } ]
          if { $result == "1" } {
             if { [ ::confVisu::getCamera $visuNo ] == "" } {
                ::audace::menustate disabled
-               set choix [ tk_messageBox -title $caption(autoguider,pb) -type ok \
+               set choix [ tk_messageBox -title $::caption(autoguider,pb) -type ok \
                      -message $caption(autoguider,selcam) ]
                set integre non
                if { $choix == "ok" } {
@@ -886,7 +1005,6 @@ proc ::autoguider::selectBinning { visuNo } {
             ::confVisu::setVideo $visuNo "0"
             ::confVisu::setVideo $visuNo "1"
          }
-      }
    }
 
    #--- je position l'indicateur qui doit mettre a jour les axes
@@ -931,11 +1049,19 @@ proc ::autoguider::updateTelescope { visuNo dx dy } {
 
    #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
    set alphaDelay [expr int((cos($angle) * $dx - sin($angle) *$dy) * 1000.0 / $conf(autoguider,alphaSpeed))]
-   set delayDelta [expr int((sin($angle) * $dx + cos($angle) *$dy) * 1000.0 / $conf(autoguider,deltaSpeed))]
+   set deltaDelay [expr int((sin($angle) * $dx + cos($angle) *$dy) * 1000.0 / $conf(autoguider,deltaSpeed))]
 
    #--- calcul des durees minimales de deplacement alpha et delta (en millisecondes)
    set seuilAlpha [expr $conf(autoguider,seuilx) * 1000.0 / $conf(autoguider,alphaSpeed)]
    set seuilDelta [expr $conf(autoguider,seuily) * 1000.0 / $conf(autoguider,deltaSpeed)]
+
+   #--- j'inverse le sens des deplacements si necessaire 
+   if { $conf(autoguider,alphaReverse) == "1" } {
+      set alphaDelay [expr -$alphaDelay]
+   }
+   if { $conf(autoguider,deltaReverse) == "1" } {
+      set deltaDelay [expr -$deltaDelay]
+   }
 
    #--- j'execute le deplacement alpha
    if { $alphaDelay >= 0 && $private(previousAlphaDelay) > 0 } {
@@ -956,18 +1082,18 @@ proc ::autoguider::updateTelescope { visuNo dx dy } {
    set private(previousAlphaDelay) $alphaDelay
 
    #--- j'execute le deplacement delta
-   if { $conf(autoguider,enableDeclinaison) == 1 } {
-      if { $delayDelta >= 0 && $private(previousDeltaDelay) > 0 } {
-         if { $delayDelta > $seuilDelta } {
-            set private($visuNo,delay,delta) $delayDelta
-            ::autoguider::moveTelescope $visuNo n [expr $delayDelta]
+   if { $conf(autoguider,declinaisonEnabled) == 1 } {
+      if { $deltaDelay >= 0 && $private(previousDeltaDelay) > 0 } {
+         if { $deltaDelay > $seuilDelta } {
+            set private($visuNo,delay,delta) $deltaDelay
+            ::autoguider::moveTelescope $visuNo n [expr $deltaDelay]
          } else {
             set private($visuNo,delay,delta) 0
          }
-      } elseif { $delayDelta < 0 && $private(previousDeltaDelay) < 0 } {
-         if { -$delayDelta > $seuilDelta } {
-            set private($visuNo,delay,delta) $delayDelta
-            ::autoguider::moveTelescope $visuNo s [expr -$delayDelta]
+      } elseif { $deltaDelay < 0 && $private(previousDeltaDelay) < 0 } {
+         if { -$deltaDelay > $seuilDelta } {
+            set private($visuNo,delay,delta) $deltaDelay
+            ::autoguider::moveTelescope $visuNo s [expr -$deltaDelay]
          } else {
             set private($visuNo,delay,delta) 0
          }
@@ -976,13 +1102,13 @@ proc ::autoguider::updateTelescope { visuNo dx dy } {
       set private($visuNo,delay,delta) 0
    }
 
-   set private(previousDeltaDelay) $delayDelta
+   set private(previousDeltaDelay) $deltaDelay
    update
 }
 
 #------------------------------------------------------------
 # ::autoguider::moveTelescope { }
-#   Deplace le telescope pendant un dduree determinee
+#   Deplace le telescope pendant un duree determinee
 #   Le deplacement est interrompu si private($visuNo,suiviState)!=0
 #
 # parametres :
