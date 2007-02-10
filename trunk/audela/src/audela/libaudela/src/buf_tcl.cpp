@@ -793,7 +793,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       Buffer = (CBuffer*)clientData;
       
       // Decodage du nom de fichier : chemin, nom du fichier, etc.
-      // "encoding convertfrom identity" sert a traiter coorectement les caracteres accentues
+      // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
       sprintf(ligne,"file dirname [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
       sprintf(ligne,"file tail [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(name,interp->result);
       sprintf(ligne,"file extension \"%s\"",argv[2]); Tcl_Eval(interp,ligne);
@@ -874,8 +874,13 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             } else {
                //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
                //--- save FITS file
+               if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
+                  // je supprime ".gz" à la fin du fichier parce que libtt ne supporte pas l'extension ".gz" 
+                  // a cause de la deuxième passe paour l'enregistrement des nouveaux mots cles.
+                  sprintf(ligne,"file rootname {%s}",nom_fichier); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
+               }
                Buffer->SaveFits(nom_fichier);
-               // compression eventuelle du fichier
+               // compression eventuelle du fichier               
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
                   sprintf(ligne,"catch {file delete %s.gz}",nom_fichier); Tcl_Eval(interp,ligne);
                   sprintf(ligne,"gzip %s",nom_fichier); 
@@ -885,6 +890,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }     
 
                }
+               
                retour = TCL_OK;
             }
          } else {
@@ -4506,15 +4512,16 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 {
    enum {CMD_CENTRO=1,CMD_FLUX,CMD_PHOT};
    int x1, y1, x2, y2, slitWidth, temp;                // Position de la fenetre
+   double signalRatio;
    int retour;
    char ligne[1000];
    CBuffer *buffer;
    char **listArgv;                   // Liste des argulents passes a getpix.
    int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
-   char parameters[]= "{x1 y1 x2 y2} slitwidth";
+   char parameters[]= "{x1 y1 x2 y2} slitwidth signalRatio";
    
    // On recupere les parametres (et eventuellement on en met par defaut).
-   if(argc!=4) {
+   if(argc!=5) {
       sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
@@ -4548,6 +4555,10 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             sprintf(ligne,"Usage: %s %s %s\nslitwidth must be an integer",argv[0],argv[1],parameters);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
+         } else if(Tcl_GetDouble(interp,argv[4],&signalRatio)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s %s\nsignalRatio must be a float",argv[0],argv[1],parameters);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
          } else {
             double xc, yc;                     // centroide sur la fente
             double signal1, signal2;           // signal sur les levres basse et haute
@@ -4571,7 +4582,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                   retour = TCL_ERROR;
                }
 
-               buffer->AstroSlitCentro(x1, y1, x2, y2, slitWidth, &xc, &yc, &maxi, &signal1, &signal2);
+               buffer->AstroSlitCentro(x1, y1, x2, y2, slitWidth, signalRatio, &xc, &yc, &maxi, &signal1, &signal2);
                sprintf(ligne,"%f %f %f %f %f",xc, yc, maxi, signal1, signal2);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
