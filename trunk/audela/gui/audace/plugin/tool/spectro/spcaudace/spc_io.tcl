@@ -11,8 +11,8 @@
 #####################################################################################
 
 
-# Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
-# qui seront initialisées dans le fichier cap_mauclaire.tcl
+# Remarque (par Benoit) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
+# qui seront initialisees dans le fichier cap_mauclaire.tcl
 # et renommer ce fichier mauclaire.tcl ;-)
 
 #global audace
@@ -494,7 +494,7 @@ proc spc_fits2dat { args } {
   global audela
   #global profilspc
   # global captionspc
-  global colorspc
+  # global colorspc
 
   if {[llength $args] <= 2} {
      if  {[llength $args] == 1} {
@@ -561,27 +561,27 @@ proc spc_fits2dat { args } {
 	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 		 #-- Calibration non-linéaire :
 		 if { $spc_a < 0.01 } {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 #- Ancienne formulation < 070104 :
 			 set lambda [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-			 set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+			 set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
 			 puts $file_id "$lambda\t$intensite\r"
 		     }
 		 } else {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 set lambda [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-			 set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+			 set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
 			 puts $file_id "$lambda\t$intensite\r"
 		     }
 		 }
 	     } else {
 		 #-- Calibration linéaire :
 		 #-- Une liste commence à 0 ; Un vecteur fits commence à 1
-		 for {set k 0} {$k<$naxis1} {incr k} {
+		 for {set k 1} {$k<=$naxis1} {incr k} {
 		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
 		     set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
 		     #-- Lit la valeur des elements du fichier fit
-		     set intensite [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		     set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
 		     ##lappend profilspc(intensite) $intensite
 		     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
 		     puts $file_id "$lambda\t$intensite"
@@ -589,9 +589,9 @@ proc spc_fits2dat { args } {
 	     }
 	 } else {
 	     #-- Profil non calibré :
-	     for {set k 0} {$k<$naxis1} {incr k} {
-		 set pixel [expr $k+1]
-		 set intensite [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
+	     for {set k 1} {$k<=$naxis1} {incr k} {
+		 set pixel $k
+		 set intensite [buf$audace(bufNo) getpix [list $k 1]]
 		 puts $file_id "$pixel\t$intensite\r"
 	     }
 	 }
@@ -601,27 +601,27 @@ proc spc_fits2dat { args } {
 	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 		 #-- Calibration non-linéaire :
 		 if { $spc_a < 0.01 } {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 #- Ancienne formulation < 070104 :
 			 set lambda [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-			 set intensite [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+			 set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 			 puts $file_id "$lambda\t$intensite\r"
 		     }
 		 } else {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 set lambda [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-			 set intensite [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+			 set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 			 puts $file_id "$lambda\t$intensite\r"
 		     }
 		 }
 	     } else {
 		 #-- Calibration linéaire :
 		 #-- Une liste commence à 0 ; Un vecteur fits commence à 1
-		 for {set k 0} {$k<$naxis1} {incr k} {
+		 for {set k 1} {$k<=$naxis1} {incr k} {
 		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
 		     set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
 		     #-- Lit la valeur des elements du fichier fit
-		     set intensite [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		     set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1 ] 1 ]
 		     ##lappend profilspc(intensite) $intensite
 		     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
 		     puts $file_id "$lambda\t$intensite"
@@ -629,9 +629,9 @@ proc spc_fits2dat { args } {
 	     }
 	 } else {
 	     #-- Profil non calibré :
-	     for {set k 0} {$k<$naxis1} {incr k} {
-		 set pixel [expr $k+1]
-		 set intensite [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+	     for {set k 1} {$k<=$naxis1} {incr k} {
+		 set pixel $k
+		 set intensite [ lindex [buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 		 puts $file_id "$pixel\t$intensite\r"
 	     }
 	 }
@@ -818,31 +818,31 @@ proc spc_fits2data { args } {
 	     #-- Calibration non-linéaire :
 	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 		 if { $spc_a < 0.01 } {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 #- Ancienne formulation < 070104 :
 			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
 			 lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-			 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+			 lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 		     }
 		 } else {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
 			 lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-			 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+			 lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 		     }
 		 }
 		 #-- Calibration linéaire :
 	     } else {
-		 for {set k 0} {$k<$naxis1} {incr k} {
+		 for {set k 1} {$k<=$naxis1} {incr k} {
 		     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
-		     lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		     lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 		 }
 	     }
 	 } else {
 	     #--- Spectre non calibré en lambda :	 
-	     for {set k 0} {$k<$naxis1} {incr k} {
+	     for {set k 1} {$k<=$naxis1} {incr k} {
 		 lappend abscisses [ expr $k+1 ]
-		 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		 lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 	     }
 	 }
      #---- Audela 140 :
@@ -852,31 +852,31 @@ proc spc_fits2data { args } {
 	     #-- Calibration non-linéaire :
 	     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 		 if { $spc_a < 0.01 } {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 #- Ancienne formulation < 070104 :
 			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
 			 lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-			 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+			 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 		     }
 		 } else {
-		     for {set k 0} {$k<$naxis1} {incr k} {
+		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 #- Une liste commence à 0 ; Un vecteur fits commence à 1
 			 lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-			 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+			 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 		     }
 		 }
 		 #-- Calibration linéaire :
 	     } else {
-		 for {set k 0} {$k<$naxis1} {incr k} {
+		 for {set k 1} {$k<=$naxis1} {incr k} {
 		     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
-		     lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		     lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 		 }
 	     }
 	 } else {
 	     #--- Spectre non calibré en lambda :	 
-	     for {set k 0} {$k<$naxis1} {incr k} {
-		 lappend abscisses [ expr $k+1 ]
-		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ] 
+	     for {set k 1} {$k<=$naxis1} {incr k} {
+		 lappend abscisses $k
+		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ] 
 	     }
 	 }
      }
@@ -922,30 +922,30 @@ proc spc_fits2datadlin { args } {
      if { [regexp {1.3.0} $audela(version) match resu ] } {
 	 #--- Spectre calibré en lambda de dispersion imposée linéaire :
 	 if { $lambda0 != 1 } {
-	     for {set k 0} {$k<$naxis1} {incr k} {
+	     for {set k 1} {$k<=$naxis1} {incr k} {
 		 lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
-		 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+		 lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 	     }
 	 } else {
 	     #--- Spectre non calibré en lambda :	 
-	     for {set k 0} {$k<$naxis1} {incr k} {
-		 lappend abscisses [ expr $k+1 ]
-		 lappend intensites [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ]
+	     for {set k 1} {$k<=$naxis1} {incr k} {
+		 lappend abscisses $k
+		 lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 	     }
 	 }
      #---- Audela 140 :
      } else {
 	 #--- Spectre calibré en lambda de dispersion imposée linéaire :
 	 if { $lambda0 != 1 } {
-	     for {set k 0} {$k<$naxis1} {incr k} {
+	     for {set k 1} {$k<=$naxis1} {incr k} {
 		 lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
-		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 	     }
 	 } else {
 	     #--- Spectre non calibré en lambda :	 
-	     for {set k 0} {$k<$naxis1} {incr k} {
+	     for {set k 1} {$k<=$naxis1} {incr k} {
 		 lappend abscisses [ expr $k+1 ]
-		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [expr $k+1] 1] ] 1 ]
+		 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 	     }
 	 }
      }
@@ -1309,10 +1309,12 @@ proc spc_multifit2png { args } {
 	cd $repdflt
 
 	#--- Effacement des fichiers de batch :
+	#if { 1==0 } {
 	file delete "$audace(rep_images)/multiplot.gp"
         foreach fichier $listedat {
 	    file delete "$audace(rep_images)/$fichier"
         }
+	#}
 	::console::affiche_resultat "Profils de raie exporté sous multiplot.png\n"
 	return "multiplot.png"
     } else {
