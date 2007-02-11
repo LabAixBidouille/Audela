@@ -441,6 +441,71 @@ proc spc_info { args } {
 #****************************************************************#
 
 
+##########################################################
+# Procedure d'affichage des renseignenemts d'un profil de raies
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 12-08-2005
+# Date de mise à jour : 21-12-2005
+# Arguments : fichier .fit du profil de raies
+##########################################################
+
+proc spc_coefscalibre { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 1} {
+       set fichier [ lindex $args 0 ]
+
+       #--- Capture des renseignements
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+	   set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	   if { $lambda0==1. } {
+	       set lambda0 0.
+	   }
+       } else {
+	   set lambda0 0.
+       }
+       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       } else {
+	   set dispersion 1.
+       }
+       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	   set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+       } else {
+	   set spc_a $lambda0
+       }       
+       if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+	   set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+       } else {
+	   set spc_b $dispersion
+       }
+       if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+	   set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+       } else {
+	   set spc_c 0.0
+       }
+       if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+	   set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+       } else {
+	   set spc_d 0.0
+       }       
+
+       #--- Fromatage du résultat
+       ::console::affiche_resultat "Polynôme de calibration : $spc_a+$spc_b*x+$spc_c*x^2+$spc_d*x^3\n"
+       set coefspoly [ list $spc_a $spc_b $spc_c $spc_d ]
+       return $coefspoly
+   } else {
+       ::console::affiche_erreur "Usage: spc_coefscalibre nom_fichier_fits\n\n"
+   }
+}
+#****************************************************************#
+
+
+
 
 ##########################################################
 # Procedure de comparaison de 2 profils de raies
@@ -532,8 +597,6 @@ proc spc_findbiglines { args } {
 	buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
 	#-- Renseigne sur les parametres de l'image :
 	set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
-	set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
-	set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
 	set nbrange [ expr int($naxis1/$largeur) ]
 	# ::console::affiche_resultat "nb intervalles : $nbrange\n"
 
@@ -604,6 +667,7 @@ proc spc_findbiglines { args } {
 	    }
 	}
 
+	#::console::affiche_resultat "Double liste : $doublelistesorted\n"
 	#::console::affiche_resultat "Double liste : $doubleliste\n"
 	#::console::affiche_resultat "Double liste : $doublelistesorted2\n"
 
@@ -657,9 +721,15 @@ proc spc_findbiglines { args } {
 	set selection6 $selection12
 
 	#--- Conversion des abscisses en longeueur d'onde :
+	set coefspoly [ spc_coefscalibre $filename ]
+	set spc_a [ lindex $coefspoly 0 ]
+	set spc_b [ lindex $coefspoly 1 ]
+	set spc_c [ lindex $coefspoly 2 ]
+	set spc_d [ lindex $coefspoly 3 ]
 	set k 0
 	foreach raie $selection6 {
-	    set abscisse [ expr $crval1+$cdelt1*[ lindex $raie 0 ] ]
+	    set x [ lindex $raie 0 ]
+	    set abscisse [ expr $spc_a+$spc_b*$x+$spc_c*$x*$x+$spc_d*$x*$x*$x ]
 	    set intensite [ lindex $raie 1 ]
 	    set selection6 [ lreplace $selection6 $k $k [ list $abscisse $intensite ] ]
 	    incr k
