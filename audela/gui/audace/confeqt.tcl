@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.12 2007-02-10 17:44:11 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.13 2007-02-11 09:00:55 michelpujol Exp $
 #
 
 namespace eval ::confEqt {
@@ -20,7 +20,7 @@ proc ::confEqt::init { } {
    global conf
 
    #--- charge le fichier caption
-   uplevel #0 "source \"[ file join $audace(rep_caption) confeqt.cap ]\""
+   source [ file join "$audace(rep_caption)" confeqt.cap ]
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confEqt,start) ] }    { set conf(confEqt,start)    "0" }
@@ -382,10 +382,11 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 proc ::confEqt::findPlugin { } {
    variable private
    global caption
+   global audace
 
    #--- j'initialise les listes vides
    set private(namespaceList)  ""
-   set pluginPattern [ file join audace plugin equipment * pkgIndex.tcl ]
+   set pluginPattern [ file join "$audace(rep_plugin)" equipment * pkgIndex.tcl ]
 
    #--- chargement des differentes fenetres de configuration des plugins
    set error [catch { glob -nocomplain $pluginPattern } filelist ]
@@ -399,7 +400,7 @@ proc ::confEqt::findPlugin { } {
    foreach pkgIndex $filelist {
       set catchResult [catch {
         #--- je recupere le nom du package
-         set packageName [uplevel #0 source "$pkgIndex"]
+         set packageName [source "$pkgIndex"]
          #--- je charge le package
          package require $packageName
 
@@ -414,7 +415,7 @@ proc ::confEqt::findPlugin { } {
       } catchMessage]
       #--- j'affiche le message d'erreur et je continu la recherche des plugins
       if { $catchResult !=0 } {
-         console::affiche_erreur "::confEqt::findPlugin $catchMessage \n"
+         console::affiche_erreur "::confEqt::findPlugin $::errorInfo\n"
       }
    }
    ::console::affiche_prompt "\n"
