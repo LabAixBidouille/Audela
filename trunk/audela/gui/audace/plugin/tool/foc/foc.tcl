@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.6 2007-02-03 20:08:36 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.7 2007-02-12 12:27:25 robertdelmas Exp $
 #
 
 package provide foc 1.0
@@ -34,22 +34,23 @@ namespace eval ::Focs {
       set panneau(menu_name,Focs)        "$caption(foc,focalisation)"
       set panneau(Focs,aide)             "$caption(foc,help_titre)"
       set panneau(Focs,acq)              "$caption(foc,acquisition)"
+      set panneau(Focs,menu)             "$caption(foc,centrage)"
+      set panneau(Focs,centrage_fenetre) "1"
+      set panneau(Focs,compteur)         "0"
+      set panneau(Focs,bin)              "1"
       set panneau(Focs,exptime)          "2"
       set panneau(Focs,secondes)         "$caption(foc,seconde)"
       set panneau(Focs,go)               "$caption(foc,go)"
       set panneau(Focs,stop)             "$caption(foc,stop)"
       set panneau(Focs,raz)              "$caption(foc,raz)"
-      set panneau(Focs,bin)              "1"
-      set panneau(Focs,compteur)         "0"
-      set panneau(Focs,graphe)           "$caption(foc,graphe)"
+      set panneau(Focs,focuser)          "focuserlx200"
       set panneau(Focs,motorfoc)         "$caption(foc,moteur_focus)"
       set panneau(Focs,position)         "$caption(foc,pos_focus)"
       set panneau(Focs,trouve)           "$caption(foc,se_trouve)"
-      set panneau(Focs,deplace)          "$caption(foc,aller_a)"
       set panneau(Focs,pas)              "$caption(foc,pas)"
+      set panneau(Focs,deplace)          "$caption(foc,aller_a)"
       set panneau(Focs,initialise)       "$caption(foc,init)"
-      set panneau(Focs,menu)             "$caption(foc,centrage)"
-      set panneau(Focs,centrage_fenetre) "1"
+      set panneau(Focs,graphe)           "$caption(foc,graphe)"
 
       FocsBuildIF $This
    }
@@ -60,6 +61,7 @@ namespace eval ::Focs {
 
       if { [ ::focus::possedeControleEtendu $::panneau(Focs,focuser) ] == "1" } {
          #--- Avec controle etendu
+         set ::panneau(Focs,focuser) "focuseraudecom"
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
@@ -72,6 +74,7 @@ namespace eval ::Focs {
          pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
       } else {
          #--- Sans controle etendu
+         set ::panneau(Focs,focuser) "focuserlx200"
          pack forget $This.fra5.lab1
          pack forget $This.fra5.but1
          pack forget $This.fra5.fra1.lab1
@@ -89,7 +92,6 @@ namespace eval ::Focs {
 
       trace add variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
       pack $This -side left -fill y
-      set ::panneau(Focs,focuser) "focuserlx200"
       ::Focs::Adapt_Panneau_Foc
    }
 
@@ -316,7 +318,7 @@ namespace eval ::Focs {
    }
 
    proc cmdSpeed { } {
-      ::focus::incrementSpeed $::panneau(Focs,focuser)
+      ::focus::incrementSpeed $::panneau(Focs,focuser) "tool Focs"
    }
 
    proc cmdFocus { command } {
@@ -670,6 +672,10 @@ proc FocsBuildIF { This } {
 
       #--- Frame des boutons manuels
       frame $This.fra4 -borderwidth 1 -relief groove
+
+         #--- Frame focuser
+         ::confEqt::createFrameFocuserTool $This.fra4.focuser ::panneau(Focs,focuser)
+         pack $This.fra4.focuser -in $This.fra4 -anchor nw -side top -padx 4 -pady 1
 
          #--- Label pour moteur focus
          label $This.fra4.lab1 -text $panneau(Focs,motorfoc) -relief flat
