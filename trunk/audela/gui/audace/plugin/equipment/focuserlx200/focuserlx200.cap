@@ -1,6 +1,6 @@
 #
 # Fichier : focuserlx200.cap
-# Mise a jour $Id: focuserlx200.cap,v 1.4 2007-02-10 17:49:58 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.cap,v 1.5 2007-02-12 12:29:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,6 +17,7 @@ set caption(focuserlx200,link)           "Controls are sent to the LX200 mount."
 set caption(focuserlx200,attention)      "Warning"
 set caption(focuserlx200,msg1)           "You chose the LX200 focuser for this hand controller."
 set caption(focuserlx200,msg2)           "It cannot be used with this mount."
+set caption(focuserlx200,msg3)           "You chose the LX200 focuser for this tool."
 
 set caption(focuserlx200,interro)        "?"
 
@@ -29,6 +30,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserlx200,attention)   "Attention"
    set caption(focuserlx200,msg1)        "Pour cette raquette, vous avez sélectionné le focaliseur LX200."
    set caption(focuserlx200,msg2)        "Il ne fonctionne pas avec cette monture."
+   set caption(focuserlx200,msg3)        "Pour cet outil, vous avez sélectionné le focaliseur LX200."
 
    set caption(focuserlx200,interro)     "?"
 
@@ -41,6 +43,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserlx200,attention)   "Attenzione"
    set caption(focuserlx200,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur LX200."
    set caption(focuserlx200,msg2)        "# Il ne fonctionne pas avec cette monture."
+   set caption(focuserlx200,msg3)        "# Pour cet outil, vous avez sélectionné le focaliseur LX200."
 
    set caption(focuserlx200,interro)     "?"
 
@@ -51,8 +54,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserlx200,link)        "Las ordenes se mandan a la montura LX200."
 
    set caption(focuserlx200,attention)   "Cuidado"
-   set caption(focuserlx200,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur LX200."
-   set caption(focuserlx200,msg2)        "# Il ne fonctionne pas avec cette monture."
+   set caption(focuserlx200,msg1)        "Ha seleccuonado el enfocador LX200 del controlador de mano."
+   set caption(focuserlx200,msg2)        "No se puede usar en esta montura."
+   set caption(focuserlx200,msg3)        "Ha seleccuonado el enfocador LX200 del herramienta."
 
    set caption(focuserlx200,interro)     "?"
 
@@ -65,6 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserlx200,attention)   "Achtung"
    set caption(focuserlx200,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur LX200."
    set caption(focuserlx200,msg2)        "# Il ne fonctionne pas avec cette monture."
+   set caption(focuserlx200,msg3)        "# Pour cet outil, vous avez sélectionné le focaliseur LX200."
 
    set caption(focuserlx200,interro)     "?"
 
@@ -75,8 +80,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserlx200,link)        "Os comandos são enviados à montagem LX200."
 
    set caption(focuserlx200,attention)   "Aviso"
-   set caption(focuserlx200,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur LX200."
-   set caption(focuserlx200,msg2)        "# Il ne fonctionne pas avec cette monture."
+   set caption(focuserlx200,msg1)        "Você escolheu o focador LX200 para este controlador de mão."
+   set caption(focuserlx200,msg2)        "Não pode ser usado com esta montagem."
+   set caption(focuserlx200,msg3)        "Você escolheu o focador LX200 para esta ferramenta."
 
    set caption(focuserlx200,interro)     "?"
 
@@ -89,6 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserlx200,attention)   "Advarsel"
    set caption(focuserlx200,msg1)        "# Pour cette raquette, vous avez sélectionné le focaliseur LX200."
    set caption(focuserlx200,msg2)        "# Il ne fonctionne pas avec cette monture."
+   set caption(focuserlx200,msg3)        "# Pour cet outil, vous avez sélectionné le focaliseur LX200."
 
    set caption(focuserlx200,interro)     "?"
 
