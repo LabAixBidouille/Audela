@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.2 2007-02-10 17:51:37 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.3 2007-02-12 12:36:00 robertdelmas Exp $
 #
 
 #
@@ -161,7 +161,7 @@ proc ::focuseraudecom::isReady { } {
          set result "1"
       }
    }
-   return 1
+   return $result
 }
 
 #==============================================================
@@ -264,7 +264,7 @@ proc ::focuseraudecom::goto { } {
 #  ::focuseraudecom::incrementSpeed
 #     incremente la vitesse du focus et appelle la procedure setSpeed
 #------------------------------------------------------------
-proc ::focuseraudecom::incrementSpeed { } {
+proc ::focuseraudecom::incrementSpeed { origin } {
    global audace caption conf
 
    if { [ ::tel::list ] != "" } {
@@ -279,10 +279,18 @@ proc ::focuseraudecom::incrementSpeed { } {
       } elseif { $conf(telescope) == "lx200" } {
          #--- Inactif pour autres montures
          ::focuseraudecom::setSpeed "0"
-         #--- Message d'alerte
-         tk_messageBox -title $caption(focuseraudecom,attention) -type ok -icon error \
-            -message "$caption(focuseraudecom,msg1)\n$caption(focuseraudecom,msg2)"
-         ::confPad::run
+         set origine [ lindex $origin 0 ]
+         if { $origine == "pad" } {
+            #--- Message d'alerte venant d'une raquette
+            tk_messageBox -title $caption(focuseraudecom,attention) -type ok -icon error \
+               -message "$caption(focuseraudecom,msg1)\n$caption(focuseraudecom,msg2)"
+            ::confPad::run
+         } elseif { $origine == "tool" } {
+            #--- Message d'alerte venant d'un outil
+            tk_messageBox -title $caption(focuseraudecom,attention) -type ok -icon error \
+               -message "$caption(focuseraudecom,msg3)\n$caption(focuseraudecom,msg2)"
+            ::confEqt::run ::panneau([ lindex $origin 1 ],focuser) focuser
+         }
       } else {
          #--- Inactif pour autres montures
          ::focuseraudecom::setSpeed "0"
