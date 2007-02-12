@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.8 2007-02-07 20:33:37 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.9 2007-02-12 12:40:25 robertdelmas Exp $
 #
 
 package provide telpad 1.0
@@ -399,7 +399,7 @@ namespace eval telpad {
       set zone(plus)  $This.frame4.we.canv2
 
       #--- Binding de la vitesse du moteur de focalisation
-      bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) }
+      bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) pad }
 
       #--- Cardinal moves
       bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) - } }
