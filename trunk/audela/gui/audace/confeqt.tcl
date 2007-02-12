@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.13 2007-02-11 09:00:55 michelpujol Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.14 2007-02-12 12:24:27 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -178,13 +178,15 @@ proc ::confEqt::afficheAide { } {
 
    #--- je recupere le label de l'onglet selectionne
    set private(conf_confEqt) [Rnotebook:currentName $private(frm).usr.book ]
+
    #--- je recupere le nom du plugin selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
-   set selectedPluginName  [lindex $private(notebookNameList) $index]
+   set index [ expr $index - 1 ]
+   set selectedPluginName [lindex $private(notebookNameList) $index]
 
    #--- j'affiche la documentation
-   set pluginHelp[ $::selectedPluginName)\::getHelp ]
-   ::audace::showHelpPlugin equipment $private(conf_confEqt) "$pluginHelp"
+   set pluginHelp [ $selectedPluginName\::getHelp ]
+   ::audace::showHelpPlugin equipment $selectedPluginName "$pluginHelp"
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -state normal
@@ -475,7 +477,7 @@ proc ::confEqt::Connect_Equipement { } {
 #------------------------------------------------------------
 # ::confEqt::createFrameFocuser
 #    Cree une frame pour selectionner le focuser
-#    Cette frame est destinee a etre insere dans une fenetre.
+#    Cette frame est destinee a etre inseree dans une fenetre
 # Parametres :
 #    frm     : chemin TK de la frame a creer
 #    variablePluginName : contient le nom de la variable dans laquelle sera
@@ -520,6 +522,57 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
    button $frm.configure -text "$caption(confeqt,configurer) ..." \
       -command "::confEqt::run $variablePluginName focuser"
    pack $frm.configure -in $frm -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
+
+}
+
+#------------------------------------------------------------
+# ::confEqt::createFrameFocuserTool
+#    Cree une frame pour selectionner le focuser pour un outil
+#    Cette frame est destinee a etre inseree dans une fenetre
+# Parametres :
+#    frm     : chemin TK de la frame a creer
+#    variablePluginName : contient le nom de la variable dans laquelle sera
+#                         copie le nom du focuser selectionné
+# Return
+#    nothing
+# Exemple:
+#    ::confEqt::createFrameFocuserTool $frm.focuserList ::confCam(audine,focuser)
+#    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
+#
+#------------------------------------------------------------
+proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
+   variable private
+   global conf
+   global caption
+
+   set private(frame) $frm
+   #--- je cree la frame si elle n'existe pas deja
+   if { [winfo exists $frm ] == 0 } {
+      frame $private(frame) -borderwidth 0 -relief raised
+   }
+
+   #--- je cree la liste des plugin de type "focuser"
+   set pluginList [list ]
+   foreach pluginName $private(namespaceList) {
+      if { [::$pluginName\::getPluginType] == "focuser" } {
+         lappend pluginList $pluginName
+      }
+   }
+
+   ComboBox $frm.list \
+      -width 15       \
+      -height [llength $pluginList] \
+      -relief sunken  \
+      -borderwidth 1  \
+      -textvariable $variablePluginName \
+      -editable 0     \
+      -values $pluginList
+   pack $frm.list -in $frm -anchor center -side top -padx 0 -pady 2
+
+   #--- bouton de configuration de l'equipement
+   button $frm.configure -text "$caption(confeqt,configurer) ..." \
+      -command "::confEqt::run $variablePluginName focuser"
+   pack $frm.configure -in $frm -anchor center -side top -padx 0 -pady 2 -ipadx 10 -ipady 5 -expand true
 
 }
 
