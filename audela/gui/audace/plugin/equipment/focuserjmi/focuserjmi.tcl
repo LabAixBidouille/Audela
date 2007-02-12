@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.5 2007-02-10 17:50:22 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.6 2007-02-12 12:32:53 robertdelmas Exp $
 #
 
 #
@@ -256,6 +256,10 @@ proc ::focuserjmi::isReady { } {
    }
 }
 
+#==============================================================
+# ::focuserjmi::Procedures specifiques du plugin
+#==============================================================
+
 #------------------------------------------------------------
 #  ::focuserjmi::move
 #     si command = "-" , demarre le mouvement du focus en intra focale
@@ -284,11 +288,19 @@ proc ::focuserjmi::move { command } {
 }
 
 #------------------------------------------------------------
+#  ::focuserjmi::goto
+#     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom)
+#------------------------------------------------------------
+proc ::focuserjmi::goto { } {
+   # non supportee
+}
+
+#------------------------------------------------------------
 #  ::focuserjmi::incrementSpeed
 #     incremente la vitesse du focus et appelle la procedure setSpeed
 #------------------------------------------------------------
-proc ::focuserjmi::incrementSpeed { } {
-   # non supporte
+proc ::focuserjmi::incrementSpeed { origin } {
+   # non supportee
 }
 
 #------------------------------------------------------------
@@ -296,7 +308,22 @@ proc ::focuserjmi::incrementSpeed { } {
 #     change la vitesse du focus
 #------------------------------------------------------------
 proc ::focuserjmi::setSpeed { { value "0" } } {
-   # non supporte
+   # non supportee
+}
+
+#------------------------------------------------------------
+#  ::focuserjmi::possedeControleEtendu
+#     retourne 1 si la monture possede un controle etendu du focus (AudeCom)
+#     retourne 0 sinon
+#------------------------------------------------------------
+proc ::focuserjmi::possedeControleEtendu { } {
+   global conf
+
+   if { $conf(telescope) == "audecom" } {
+      set result "1"
+   } else {
+      set result "0"
+   }
 }
 
 ::focuserjmi::init
