@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.5 2006-08-26 21:23:36 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.6 2007-02-12 17:45:12 robertdelmas Exp $
 #
 
 package provide remotectrl 1.0
@@ -27,6 +27,8 @@ namespace eval ::Rmctrl {
 
       #--- Chargement des variables
       ::Rmctrl::Chargement_Var
+      #---
+      set audace(focus,speed)           "1"
       #---
       set This $this
       set panneau(menu_name,Rmctrl)     "$caption(rmctrl,title)"
@@ -321,6 +323,27 @@ namespace eval ::Rmctrl {
       return
    }
 
+   proc cmdFocusSpeed { { value " " } } {
+      global audace
+
+      #--- Debut modif reseau
+      if {[eval "send \{::tel::list\}"]!=""} {
+         #--- Fin modif reseau
+
+         #--- Incremente la valeur et met à jour les raquettes et les outils locaux
+         ::Rmctrl::incrementFocusSpeed
+
+         #--- Met à jour les raquettes et les outils distants
+         set message "send \{::Rmctrl::setFocusSpeed $audace(focus,speed)\}"
+         eval $message
+
+      } else {
+         console::affiche_erreur "cmdSpeed erreur"
+      }
+      update
+      return
+   }
+
    #------------------------------------------------------------
    #  incrementSpeed
    #     incremente la vitesse du telescope
@@ -357,16 +380,51 @@ namespace eval ::Rmctrl {
             }
          } elseif { $conf(telescope) == "temma" } {
             #--- Pour temma, l'increment peut prendre 2 valeurs ( 1 2 )
-            if { $audace(telescope,speed) == "1" } { 
-               ::Rmctrl::setSpeed "2" 
-            } elseif { $audace(telescope,speed) == "2" } { 
-               ::Rmctrl::setSpeed "1" 
+            if { $audace(telescope,speed) == "1" } {
+               ::Rmctrl::setSpeed "2"
+            } elseif { $audace(telescope,speed) == "2" } {
+               ::Rmctrl::setSpeed "1"
             } else {
-               ::Rmctrl::setSpeed "1" 
+               ::Rmctrl::setSpeed "1"
             }
-         } else  {
+         } else {
             #--- Inactif pour autres telescopes
             ::Rmctrl::setSpeed "0"
+         }
+      }
+   }
+
+   #------------------------------------------------------------
+   #  incrementFocusSpeed
+   #     incremente la vitesse du focaliseur
+   #     et met la nouvelle valeur dans la variable audace(focus,speed)
+   #------------------------------------------------------------
+   proc incrementFocusSpeed { } {
+      global conf
+      global audace
+
+      if {[eval "send \{::tel::list\}"]!=""} {
+         if { $conf(telescope) == "audecom" } {
+            #--- Pour audecom, l'increment peut prendre 2 valeurs ( 1 2 )
+            if { $audace(focus,speed) == "1" } {
+               ::Rmctrl::setFocusSpeed "2"
+            } elseif { $audace(focus,speed) == "2" } {
+               ::Rmctrl::setFocusSpeed "1"
+            } else {
+               ::Rmctrl::setFocusSpeed "1"
+            }
+         } elseif { $conf(telescope) == "lx200" } {
+            #--- Pour lx200, l'increment peut prendre 2 valeurs ( 1 2 )
+            if { $audace(focus,speed) == "1" } {
+               ::Rmctrl::setFocusSpeed "2"
+            } elseif { $audace(focus,speed) == "2" } {
+               ::Rmctrl::setFocusSpeed "1"
+            } else {
+               ::Rmctrl::setFocusSpeed "1"
+            }
+         } else {
+            #--- Inactif pour autres telescopes
+            ::Rmctrl::setFocusSpeed "0"
          }
       }
    }
@@ -434,18 +492,18 @@ namespace eval ::Rmctrl {
             set statustel(speed) "0"
          }
       } elseif { $conf(telescope) == "temma" } {
-         if { $value == "1" } { 
-            set audace(telescope,speed) "1" 
+         if { $value == "1" } {
+            set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(rmctrl,NS)"
             set audace(telescope,rate) "0"
             set statustel(speed) "0"
-         } elseif { $value == "2" } { 
-            set audace(telescope,speed) "2" 
+         } elseif { $value == "2" } {
+            set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "$caption(rmctrl,HS)"
             set audace(telescope,rate) "1"
             set statustel(speed) "1"
          } else {
-            set audace(telescope,speed) "1" 
+            set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "$caption(rmctrl,NS)"
             set audace(telescope,rate) "0"
             set statustel(speed) "0"
@@ -454,6 +512,61 @@ namespace eval ::Rmctrl {
          set audace(telescope,speed) "1"
          set audace(telescope,labelspeed) "$caption(rmctrl,interro)"
          set audace(telescope,rate) "0"
+         set statustel(speed) "0"
+      }
+   }
+
+   #------------------------------------------------------------
+   #  setFocusSpeed
+   #     change la vitesse du focaliseur
+   #
+   #     met a jour les variables audace(focus,speed), audace(focus,labelspeed),
+   #     audace(focus,rate), statustel(speed)
+   #------------------------------------------------------------
+   proc setFocusSpeed { { value "2" } } {
+      global conf
+      global audace
+      global caption
+      global statustel
+
+      if { $conf(telescope) == "audecom" } {
+         if { $value == "1" } {
+            set audace(focus,speed) "1"
+            set audace(focus,labelspeed) "$caption(rmctrl,x1)"
+            set audace(focus,rate) "0"
+            set statustel(speed) "0"
+         } elseif { $value == "2" } {
+            set audace(focus,speed) "2"
+            set audace(focus,labelspeed) "$caption(rmctrl,x5)"
+            set audace(focus,rate) "1"
+            set statustel(speed) "0.33"
+         } else {
+            set audace(focus,speed) "2"
+            set audace(focus,labelspeed) "$caption(rmctrl,x5)"
+            set audace(focus,rate) "1"
+            set statustel(speed) "0.33"
+         }
+      } elseif { $conf(telescope) == "lx200" } {
+         if { $value == "1" } {
+            set audace(focus,speed) "1"
+            set audace(focus,labelspeed) "1"
+            set audace(focus,rate) "0"
+            set statustel(speed) "0"
+         } elseif { $value == "2" } {
+            set audace(focus,speed) "2"
+            set audace(focus,labelspeed) "2"
+            set audace(focus,rate) "1"
+            set statustel(speed) "0.33"
+         } else {
+            set audace(focus,speed) "1"
+            set audace(focus,labelspeed) "1"
+            set audace(focus,rate) "0"
+            set statustel(speed) "0"
+         }
+      } else {
+         set audace(focus,speed) "1"
+         set audace(focus,labelspeed) "$caption(rmctrl,interro)"
+         set audace(focus,rate) "0"
          set statustel(speed) "0"
       }
    }
@@ -557,7 +670,7 @@ namespace eval ::Rmctrl {
             set delay 120000
          }
          #--- Debut modif reseau
-         set message "send \{tel\$audace(telNo) focus move $direction $audace(telescope,rate)\; after $delay; tel\$audace(telNo) focus stop\}"
+         set message "send \{tel\$audace(telNo) focus move $direction $audace(focus,rate)\; after $delay; tel\$audace(telNo) focus stop\}"
          eval $message
          #--- Fin modif reseau
       } else {
@@ -880,7 +993,7 @@ proc RmctrlBuildIF { This } {
          button $This.fra4.e.canv1 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(rmctrl,est)" \
-            -width 2  \
+            -width 2 \
             -anchor center \
             -relief ridge
          pack $This.fra4.e.canv1 -in $This.fra4.e -expand 1
@@ -892,12 +1005,12 @@ proc RmctrlBuildIF { This } {
          button $This.fra4.ns.canv1 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(rmctrl,nord)" \
-            -width 2  \
+            -width 2 \
             -anchor center \
             -relief ridge
          pack $This.fra4.ns.canv1 -in $This.fra4.ns -expand 1 -side top
 
-         #--- Write the label of speed
+         #--- Write the label of moves speed
          label $This.fra4.ns.lab -font [list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
          pack $This.fra4.ns.lab -in $This.fra4.ns -expand 0 -side top -pady 6
@@ -906,7 +1019,7 @@ proc RmctrlBuildIF { This } {
          button $This.fra4.ns.canv2 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(rmctrl,sud)" \
-            -width 2  \
+            -width 2 \
             -anchor center \
             -relief ridge
          pack $This.fra4.ns.canv2 -in $This.fra4.ns -expand 1 -side bottom
@@ -918,7 +1031,7 @@ proc RmctrlBuildIF { This } {
          button $This.fra4.w.canv1 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(rmctrl,ouest)" \
-            -width 2  \
+            -width 2 \
             -anchor center \
             -relief ridge
          pack $This.fra4.w.canv1 -in $This.fra4.w -expand 1
@@ -930,6 +1043,7 @@ proc RmctrlBuildIF { This } {
 
       pack $This.fra4 -side top -fill x
 
+      #--- Cardinal speed
       bind $This.fra4.ns.lab <ButtonPress-1> { ::Rmctrl::cmdSpeed }
 
       #--- Cardinal moves
@@ -938,9 +1052,52 @@ proc RmctrlBuildIF { This } {
       bind $zone(s) <ButtonRelease-1> { catch { ::Rmctrl::cmdPulse s } }
       bind $zone(n) <ButtonRelease-1> { catch { ::Rmctrl::cmdPulse n } }
 
-      #--- Foc move
-      bind $zone(s) <ButtonRelease-3> { catch { ::Rmctrl::cmdPulseFoc - } }
-      bind $zone(n) <ButtonRelease-3> { catch { ::Rmctrl::cmdPulseFoc + } }
+      #--- Frame des boutons manuels
+      frame $This.fra5 -borderwidth 1 -relief groove
+
+         #--- Create the button '+'
+         frame $This.fra5.e -width 27 -borderwidth 0 -relief flat
+         pack $This.fra5.e -in $This.fra5 -side left -expand true -fill y
+         #--- Button-design '+'
+         button $This.fra5.e.canv1 -borderwidth 2 \
+            -font [ list {Arial} 12 bold ] \
+            -text "+" \
+            -width 2 \
+            -anchor center \
+            -relief ridge
+         pack $This.fra5.e.canv1 -in $This.fra5.e -expand 1
+
+         #--- Create the button focus speed
+         frame $This.fra5.speed -width 27 -borderwidth 0 -relief flat
+         pack $This.fra5.speed -in $This.fra5 -side left -expand true -fill y
+         #--- Write the label of focus speed
+         label $This.fra5.speed.lab -font [list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) \
+            -borderwidth 0 -relief flat
+         pack $This.fra5.speed.lab -in $This.fra5.speed -expand 0 -side top -pady 6
+
+         #--- Create the button '-'
+         frame $This.fra5.w -width 27 -borderwidth 0 -relief flat
+         pack $This.fra5.w -in $This.fra5 -side left -expand true -fill y
+         #--- Button-design '-'
+         button $This.fra5.w.canv1 -borderwidth 2 \
+            -font [ list {Arial} 12 bold ] \
+            -text "-" \
+            -width 2 \
+            -anchor center \
+            -relief ridge
+         pack $This.fra5.w.canv1 -in $This.fra5.w -expand 1
+
+         set zone(+) $This.fra5.e.canv1
+         set zone(-) $This.fra5.w.canv1
+
+      pack $This.fra5 -side top -fill x
+
+      #--- Foc speed
+      bind $This.fra5.speed.lab <ButtonPress-1> { ::Rmctrl::cmdFocusSpeed }
+
+      #--- Foc moves
+      bind $zone(+) <ButtonRelease-1> { catch { ::Rmctrl::cmdPulseFoc + } }
+      bind $zone(-) <ButtonRelease-1> { catch { ::Rmctrl::cmdPulseFoc - } }
 
       #--- Frame de l'image
       frame $This.fra6 -borderwidth 1 -relief groove
