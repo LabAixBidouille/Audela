@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.10 2007-02-07 20:33:15 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.11 2007-02-12 12:39:27 robertdelmas Exp $
 #
 
 package provide superpad 1.0
@@ -962,7 +962,7 @@ namespace eval FrameFocusManager {
    #      change speed of focus motor
    #------------------------------------------------------------
    proc cmdFocusSpeed { {value " "} } {
-      ::focus::incrementSpeed $::conf(superpad,focuserLabel)
+      ::focus::incrementSpeed $::conf(superpad,focuserLabel) pad
    }
 
    #------------------------------------------------------------
