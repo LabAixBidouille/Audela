@@ -2,7 +2,7 @@
 # Fichier : focus.tcl
 # Description : Centralise les commandes du focus du telescope
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focus.tcl,v 1.5 2007-02-03 20:22:48 robertdelmas Exp $
+# Mise a jour $Id: focus.tcl,v 1.6 2007-02-12 12:29:01 robertdelmas Exp $
 #
 
 namespace eval ::focus {
@@ -29,10 +29,11 @@ proc ::focus::move { focuserLabel command } {
 #------------------------------------------------------------
 #  ::focus::incrementSpeed
 #     incremente la vitesse du focus et appelle la procedure setSpeed
+#     origin : origine de l'action (pad ou tool)
 #------------------------------------------------------------
-proc ::focus::incrementSpeed { focuserLabel} {
+proc ::focus::incrementSpeed { focuserLabel origin } {
    if { "$focuserLabel" != "" } {
-      ::$focuserLabel\::incrementSpeed
+      ::$focuserLabel\::incrementSpeed $origin
    }
 }
 
@@ -43,6 +44,16 @@ proc ::focus::incrementSpeed { focuserLabel} {
 proc ::focus::setSpeed { focuserLabel { value "0" } } {
    if { "$focuserLabel" != "" } {
       ::$focuserLabel\::setSpeed $value
+   }
+}
+
+#------------------------------------------------------------
+#  ::focus::goto
+#     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom)
+#------------------------------------------------------------
+proc ::focus::goto { focuserLabel } {
+   if { "$focuserLabel" != "" } {
+      ::$focuserLabel\::goto
    }
 }
 
