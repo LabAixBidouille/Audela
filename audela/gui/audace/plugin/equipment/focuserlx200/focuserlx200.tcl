@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.5 2007-02-10 17:51:53 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.6 2007-02-12 12:37:58 robertdelmas Exp $
 #
 
 #
@@ -161,7 +161,7 @@ proc ::focuserlx200::isReady { } {
          set result "1"
       }
    }
-   return 1
+   return $result
 }
 
 #==============================================================
@@ -179,22 +179,12 @@ proc ::focuserlx200::move { command } {
 
    if { [ ::tel::list ] != "" } {
       if { $audace(focus,labelspeed) != "?" } {
-         if { $conf(audecom,inv_rot) == "0" } {
-            if { $command == "-" } {
-              tel$audace(telNo) focus move - $audace(focus,speed)
-            } elseif { $command == "+" } {
-              tel$audace(telNo) focus move + $audace(focus,speed)
-            } elseif { $command == "stop" } {
-              tel$audace(telNo) focus stop
-            }
-         } else {
-            if { $command == "-" } {
-              tel$audace(telNo) focus move + $audace(focus,speed)
-            } elseif { $command == "+" } {
-              tel$audace(telNo) focus move - $audace(focus,speed)
-            } elseif { $command == "stop" } {
-              tel$audace(telNo) focus stop
-            }
+         if { $command == "-" } {
+           tel$audace(telNo) focus move - $audace(focus,speed)
+         } elseif { $command == "+" } {
+           tel$audace(telNo) focus move + $audace(focus,speed)
+         } elseif { $command == "stop" } {
+           tel$audace(telNo) focus stop
          }
       }
    } else {
@@ -207,64 +197,17 @@ proc ::focuserlx200::move { command } {
 
 #------------------------------------------------------------
 #  ::focuserlx200::goto
-#     envoie le focus a la position audace(focus,nbpas2)
-#     et met la nouvelle valeur de la position dans la variable audace(focus,nbpas1)
+#     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom)
 #------------------------------------------------------------
 proc ::focuserlx200::goto { } {
-   global audace conf
-
-   #--- Direction de focalisation prioritaire : Extrafocale
-   if { $conf(audecom,intra_extra) == "1" } {
-      if { $audace(focus,nbpas2) > "$audace(focus,nbpas1)" } {
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
-      } else {
-         #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
-         #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas3 [ expr $audace(focus,nbpas2)-$conf(audecom,dep_val) ]
-         if { $nbpas3 < "-32767" } {
-            set nbpas3 "-32767"
-         }
-         tel$audace(telNo) focus goto $nbpas3
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
-      }
-   #--- Direction de focalisation prioritaire : Intrafocale
-   } else {
-      if { $audace(focus,nbpas2) < "$audace(focus,nbpas1)" } {
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
-      } else {
-         #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
-         #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas3 [ expr $audace(focus,nbpas2) + $conf(audecom,dep_val) ]
-         if { $nbpas3 > "32767" } {
-            set nbpas3 "32767"
-         }
-         tel$audace(telNo) focus goto $nbpas3
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,nbpas2)
-      }
-   }
-   #--- Boucle tant que la foc n'est pas arretee
-   set foc0 [ tel$audace(telNo) focus coord ]
-   after 500
-   set foc1 [ tel$audace(telNo) focus coord ]
-   while { $foc0 != "$foc1" } {
-      set foc0 $foc1
-      after 500
-      set foc1 [ tel$audace(telNo) focus coord ]
-   }
-   set audace(focus,nbpas1) $foc1
-   split $audace(focus,nbpas1) "\n"
-   set audace(focus,nbpas1) [ lindex $audace(focus,nbpas1) 0 ]
+   # non supportee
 }
 
 #------------------------------------------------------------
 #  ::focuserlx200::incrementSpeed
 #     incremente la vitesse du focus et appelle la procedure setSpeed
 #------------------------------------------------------------
-proc ::focuserlx200::incrementSpeed { } {
+proc ::focuserlx200::incrementSpeed { origin } {
    global audace caption conf
 
    if { [ ::tel::list ] != "" } {
@@ -279,10 +222,18 @@ proc ::focuserlx200::incrementSpeed { } {
       } elseif { $conf(telescope) == "audecom" } {
          #--- Inactif pour autres montures
          ::focuserlx200::setSpeed "0"
-         #--- Message d'alerte
-         tk_messageBox -title $caption(focuserlx200,attention) -type ok -icon error \
-            -message "$caption(focuserlx200,msg1)\n$caption(focuserlx200,msg2)"
-         ::confPad::run
+         set origine [ lindex $origin 0 ]
+         if { $origine == "pad" } {
+            #--- Message d'alerte venant d'une raquette
+            tk_messageBox -title $caption(focuserlx200,attention) -type ok -icon error \
+               -message "$caption(focuserlx200,msg1)\n$caption(focuserlx200,msg2)"
+            ::confPad::run
+         } elseif { $origine == "tool" } {
+            #--- Message d'alerte venant d'un outil
+            tk_messageBox -title $caption(focuserlx200,attention) -type ok -icon error \
+               -message "$caption(focuserlx200,msg3)\n$caption(focuserlx200,msg2)"
+            ::confEqt::run ::panneau([ lindex $origin 1 ],focuser) focuser
+         }
       } else {
          #--- Inactif pour autres montures
          ::focuserlx200::setSpeed "0"
