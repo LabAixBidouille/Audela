@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.5 2007-02-10 17:49:41 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.6 2007-02-14 16:34:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -77,13 +77,13 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(focuserjmi,label)              "# JMI Focuser"
-   set caption(focuserjmi,link)               "# Link"
-   set caption(focuserjmi,configure)          "# Set up"
-   set caption(focuserjmi,bitStart)           "# Start Bit Number"
-   set caption(focuserjmi,bitDirection)       "# Direction Bit Number"
+   set caption(focuserjmi,label)              "JMI Focuser"
+   set caption(focuserjmi,link)               "Link"
+   set caption(focuserjmi,configure)          "Opsætning"
+   set caption(focuserjmi,bitStart)           "Start bit-værdi"
+   set caption(focuserjmi,bitDirection)       "Retnings bit-værdi"
 
-   set caption(focuserjmi,creer_au_demarrage) "# Next time software is run connect this equipment automatically"
+   set caption(focuserjmi,creer_au_demarrage) "Tilslut automatisk dette udstyr ved næste start"
 
 }
 
