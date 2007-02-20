@@ -1648,10 +1648,14 @@ void CBuffer::CopyFrom(CFitsKeywords*hdr, TColorPlane plane, TYPE_PIXELS*pixels)
 
    if(hdr==NULL) throw CError(ELIBSTD_NO_KWDS);
 
-   naxis  = hdr->FindKeyword("NAXIS")->GetIntValue();
-   naxis1 = hdr->FindKeyword("NAXIS1")->GetIntValue();
+   if (hdr->FindKeyword("NAXIS")!=NULL) {
+      naxis  = hdr->FindKeyword("NAXIS")->GetIntValue();
+   }
+   if (hdr->FindKeyword("NAXIS1")!=NULL) {
+      naxis1 = hdr->FindKeyword("NAXIS1")->GetIntValue();
+   }
    if (hdr->FindKeyword("NAXIS2")!=NULL) {
-   naxis2 = hdr->FindKeyword("NAXIS2")->GetIntValue();
+      naxis2 = hdr->FindKeyword("NAXIS2")->GetIntValue();
    }
 
    FreeBuffer(DONT_KEEP_KEYWORDS);
