@@ -1290,7 +1290,7 @@ int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    CBuffer *buffer;
    CBuffer *buffer_dest;
    char *ligne;
-   int dest, retour;
+   int dest, retour, naxis1;
 
    ligne = new char[1000];
 
@@ -1312,7 +1312,10 @@ int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             buffer_dest = (CBuffer*)buf_pool->Chercher(dest);
          }
          try {
-            buffer->CopyTo(buffer_dest);
+            naxis1 = buffer->GetW();
+            if (naxis1>0) {
+               buffer->CopyTo(buffer_dest);
+            }
             retour = TCL_OK;
          } catch(const CError& e) {
             sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
