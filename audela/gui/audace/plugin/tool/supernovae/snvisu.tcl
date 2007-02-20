@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.12 2007-02-05 01:35:58 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.13 2007-02-20 09:32:19 alainklotz Exp $
 #
 
 global audace
@@ -15,6 +15,8 @@ source [ file join $audace(rep_plugin) tool supernovae sntkutil.tcl ]
 #--- Chargement de la configuration
 catch { snconfvisu_load }
 snconfvisu_verif
+
+set snvisu(afflog) 1 ; # pour affichage en log
 
 set rep(gz) "$snconfvisu(gzip)"
 
@@ -535,6 +537,8 @@ bind $zone(image2) <ButtonPress-1> {
 #--- Declare a new buffer in memory to place images
 set num(buffer1) [buf::create]
 set num(buffer2) [buf::create]
+set num(buffer1b) [buf::create]
+set num(buffer2b) [buf::create]
 if {[info exists audace]==1} {
    buf$num(buffer2) compress [buf$audace(bufNo) compress]
 }
@@ -585,6 +589,8 @@ proc sn_delete { } {
    #--- Supprime les buffer
    buf::delete $num(buffer1)
    buf::delete $num(buffer2)
+   buf::delete $num(buffer1b)
+   buf::delete $num(buffer2b)
    #---
    destroy $audace(base).snvisu
    #--- Effacement des fenetres des zooms si elles existent
@@ -611,6 +617,40 @@ proc sn_delete { } {
       file delete [ file join $snconfvisu(rep1) filter2$ext ]
       file delete [ file join $snconfvisu(rep1) filter3$ext ]
    }
+}
+
+proc sn_buflog { numbuf bufno } {
+   set n1 [buf$numbuf getpixelswidth]
+   if {$n1==0} {
+      return [list 0 0]
+   }
+   if {$numbuf!=$bufno} {
+      buf$numbuf copyto $bufno
+   }
+   set res [buf$bufno stat]
+   set fond [lindex $res 6]
+   set sigma [lindex $res 7]
+   set seuil [expr $fond-3.*$sigma]
+   buf$bufno log 1000 [expr -1.*$seuil]
+   set sb [expr 1000.*log10($fond-1.*$sigma)]
+   set n1 [buf$bufno getpixelswidth]
+   set n2 [buf$bufno getpixelsheight]
+   set d 4
+   set x1 [expr $n1/2-$d]
+   set x2 [expr $n1/2+$d]
+   set y1 [expr $n2/2-$d]
+   set y2 [expr $n2/2+$d]
+   set box [list $x1 $y1 $x2 $y2]
+   set res [buf$bufno stat $box]
+   set maxi [lindex $res 2]
+   set sh [expr 1.*$maxi]
+   buf$bufno setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
+   buf$bufno setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
+   buf$numbuf setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
+   buf$numbuf setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
+   #visu$visuno cut [list $sh $sb]
+   #visu$visuno disp
+   return [list $sh $sb]
 }
 
 proc get_seuils { numbuf } {
@@ -846,14 +886,17 @@ proc affimages { } {
    set snconfvisu(binarypath) ""
    set rep(DSS)               ""
 
+   set afflog $snvisu(afflog)
    #--- Nettoyage des 2 canvas avant affichage
    catch {
       #--- Du canvas de l'image 1
       visu$num(visu_1) clear
       buf$num(buffer1) clear
+      buf$num(buffer1b) clear
       #--- Du canvas de l'image 2
       visu$num(visu_2) clear
       buf$num(buffer2) clear
+      buf$num(buffer2b) clear
    }
 
    #--- Effacement des fenetres des zooms si elles existent
@@ -863,6 +906,16 @@ proc affimages { } {
    if { [ winfo exists $audace(base).snvisuzoom_d ] } {
       destroy $audace(base).snvisuzoom_d
    }
+
+   #
+   if {$afflog==0} {
+	   visu$num(visu_1) buf $num(buffer1)
+	   visu$num(visu_2) buf $num(buffer2)
+   } else {
+	   visu$num(visu_1) buf $num(buffer1b)
+	   visu$num(visu_2) buf $num(buffer2b)
+   }
+   #
 
    #--- Traitement des limites
    set total [llength $rep(x1)]
@@ -887,9 +940,17 @@ proc affimages { } {
       set sh [lindex $sbh 0]
       set sb [lindex $sbh 1]
       visu$num(visu_1) cut [ list $sh $sb ]
-      #---
+      #--- cas log
+      if {$afflog==1} {
+         visu$num(visu_1) cut [sn_buflog $num(buffer1) $num(buffer1b)]
+      }
+      # ---
       visu$num(visu_1) disp
-      $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
+      if {$afflog==0} {
+         $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
+      } else {
+         $zone(sh1) set [lindex [get_seuils $num(buffer1b)] 0]
+      }
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)]"
       $audace(base).snvisu.lst1 yview moveto 1.0
@@ -1044,9 +1105,17 @@ proc affimages { } {
          set sb [lindex $sbh 1]
          visu$num(visu_2) cut [ list $sh $sb ]
       }
+      #--- cas log
+      if {$afflog==1} {
+         visu$num(visu_2) cut [sn_buflog $num(buffer2) $num(buffer2b)]
+      }
       if {$result==""} {
          visu$num(visu_2) disp
-         $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+         if {$afflog==0} {
+            $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+         } else {
+            $zone(sh2) set [lindex [get_seuils $num(buffer2b)] 0]
+         }
          $zone(labelh2) configure -text "$caption(snvisu,reference) : [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]"
          #---
          set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
@@ -1054,7 +1123,11 @@ proc affimages { } {
          catch { $zone(image2) configure -scrollregion [list 0 0 $zone(naxis1_2) $zone(naxis2_2)] }
       } else {
          visu$num(visu_2) disp
-         $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+         if {$afflog==0} {
+            $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+         } else {
+            $zone(sh2) set [lindex [get_seuils $num(buffer2b)] 0]
+         }
          $zone(labelh2) configure -text ""
       }
    } else {
@@ -1945,6 +2018,16 @@ proc snblinkimage { } {
    #--- Initialisation
    set rep(blink,last) ""
 
+   #
+   set afflog $snvisu(afflog)
+   if {$afflog==0} {
+      visu$num(visu_1) buf $num(buffer1)
+      visu$num(visu_2) buf $num(buffer2)
+   } else {
+      visu$num(visu_1) buf $num(buffer1b)
+      visu$num(visu_2) buf $num(buffer2b)
+   }
+
    #--- Recentrage de l'image de reference
    set b [::buf::create]
    set ext [buf$audace(bufNo) extension]
@@ -1988,7 +2071,13 @@ proc snblinkimage { } {
          return
       }
       buf$b load "$audace(rep_images)/dummyb2"
-      set shsb [visu$num(visu_2) cut]
+      #--- cas log
+      if {$afflog==0} {
+         set shsb [visu$num(visu_2) cut]
+      } else {
+         set shsb [sn_buflog $b $b]
+      }
+      # ---
       set text0 "[buf$b getkwd MIPS-LO]"
       set text0 [lreplace $text0 1 1 [lindex $shsb 1]]
       buf$b setkwd $text0
