@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.8 2007-02-10 17:43:03 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.9 2007-02-23 23:40:12 michelpujol Exp $
 #
 
 namespace eval cataGoto {
@@ -637,8 +637,8 @@ namespace eval cataGoto {
          #--- Traitement du nom de l'asteroide
          set catalogue(asteroide_choisi) [ suppr_accents $catalogue(asteroide_choisi) ]
          #--- Demande et extraction des ephemerides
-         set erreur [ catch { vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) text basic 500 } liste ]
-         if { $erreur == "0" } {
+         set liste [vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) text basic 500 ]
+         if { [string first "SKYBOTResolver" $liste ] == -1 } {
             set liste_titres [ lindex [ lrange [ split $liste ";" ] 0 end ] 0 ]
             #--- Traitement d'une erreur particuliere, la requete repond 'item'
             if { $liste_titres == "item" } {
@@ -667,14 +667,16 @@ namespace eval cataGoto {
       set cataGoto(carte,zoom_objet) "8"
 
       #--- Preparation et affichage nom, magnitude, AD et Dec.
-      $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text [concat "([ lindex $liste_objet 0 ]) $catalogue(asteroide_choisi)"]
-      $audace(base).cataAsteroide.frame2.frame3.lab4a configure -text "$catalogue(asteroide_mag)"
       if { "$catalogue(asteroide_choisi)" == "" } {
+         $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text ""
+         $audace(base).cataAsteroide.frame2.frame3.lab4a configure -text ""
          set catalogue(asteroide_ad) "0"
          $audace(base).cataAsteroide.frame2.frame4.lab5a configure -text ""
          set catalogue(asteroide_dec) "0"
          $audace(base).cataAsteroide.frame2.frame5.lab6a configure -text ""
       } else {
+         $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text [concat "([ lindex $liste_objet 0 ]) $catalogue(asteroide_choisi)"]
+         $audace(base).cataAsteroide.frame2.frame3.lab4a configure -text "$catalogue(asteroide_mag)"
          $audace(base).cataAsteroide.frame2.frame4.lab5a configure -text "$catalogue(asteroide_ad)"
          $audace(base).cataAsteroide.frame2.frame5.lab6a configure -text "$catalogue(asteroide_dec)"
       }

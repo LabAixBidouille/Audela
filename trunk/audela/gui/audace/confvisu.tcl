@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.46 2007-02-10 17:45:10 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.47 2007-02-23 23:40:12 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -148,6 +148,7 @@ namespace eval ::confVisu {
          #--- je charge seulement les outils qui gerent les visu multiples
          ::AcqFC::Init $private($visuNo,This) $visuNo
          ::autoguider::Init $private($visuNo,This) $visuNo
+         ::tlscp::Init $private($visuNo,This) $visuNo
       }
 
       #--- je cree le menu
@@ -201,6 +202,7 @@ namespace eval ::confVisu {
          if { "$private($visuNo,This)" != "$audace(base).select" } {
             ::AcqFC::deletePanel $visuNo
             ::autoguider::deletePanel $visuNo
+            ::tlscp::deletePanel $visuNo
          }
       }
 
@@ -1377,7 +1379,7 @@ namespace eval ::confVisu {
       }
       foreach m [lsort $liste] {
          set m [lindex $m 1]
-         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,autoguider" ) } {
+         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,autoguider" ) || ( $m == "menu_name,tlscp") } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
                Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
                #--- Lancement automatique de l'outil Acquisition
@@ -1928,14 +1930,14 @@ namespace eval ::confVisu {
    proc redrawCrosshair { visuNo } {
       variable private
 
-      #--- je masque le reticule
-      hideCrosshair $visuNo
-
       if { "$private($visuNo,crosshairstate)" == "1" } {
+         #--- je masque le reticule
+         hideCrosshair $visuNo
+
          #--- j'affiche le reticule
          displayCrosshair $visuNo
+         update
       }
-      update
    }
 
    #--------------------------------------------------------------

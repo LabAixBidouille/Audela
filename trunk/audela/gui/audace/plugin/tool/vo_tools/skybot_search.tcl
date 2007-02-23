@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.11 2007-02-10 17:48:08 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.12 2007-02-23 23:40:13 michelpujol Exp $
 #
 
 namespace eval skybot_Search {
@@ -1512,7 +1512,7 @@ namespace eval skybot_Search {
                           }
                           ::skybot_Resolver::affiche_Outil_Tlscp
                           set catalogue(asteroide_choisi) $voconf(name)
-                          ::Tlscp::Gestion_Cata $caption(search,asteroide)
+                          ::tlscp::Gestion_Cata "1" $caption(search,asteroide)
                         }
          }
       }
