@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.12 2007-02-10 17:47:46 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.13 2007-02-23 23:40:13 michelpujol Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -696,7 +696,7 @@ namespace eval skybot_Resolver {
                        }
                        ::skybot_Resolver::affiche_Outil_Tlscp
                        set catalogue(asteroide_choisi) $voconf(name)
-                       ::Tlscp::Gestion_Cata $caption(resolver,asteroide)
+                       ::tlscp::Gestion_Cata "1" $caption(resolver,asteroide)
                      }
       }
    }
@@ -716,7 +716,7 @@ namespace eval skybot_Resolver {
       }
       foreach m [lsort $liste] {
          set m [lindex $m 1]
-         if { $m == "menu_name,Tlscp" } {
+         if { $m == "menu_name,tlscp" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
                #--- Lancement automatique de l'outil Telescope
                ::confVisu::selectTool $visuNo ::$ns
