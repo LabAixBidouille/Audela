@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.7 2006-11-19 17:15:00 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.8 2007-02-24 12:09:00 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -27,7 +27,7 @@ global audace
       set catalogue(validation)        "0"
    }
 
-   proc initTel { this } {
+   proc initTel { this visuNo } {
       variable Button_Init
       global conf
       global audace
@@ -36,8 +36,10 @@ global audace
 
       set Button_Init $this
 
-      if [ winfo exists $audace(base).inittel ] {
-         destroy $audace(base).inittel
+      set base [ ::confVisu::getBase $visuNo ]
+
+      if [ winfo exists $base.inittel ] {
+         destroy $base.inittel
       }
 
       if { ( $conf(telescope) == "audecom" ) && ( $confTel(audecom,connect) == "1" ) } {
@@ -46,40 +48,40 @@ global audace
          #--- Reset position telescope
          tel$audace(telNo) initcoord
 
-         toplevel $audace(base).inittel
-         wm transient $audace(base).inittel $audace(base)
-         wm resizable $audace(base).inittel 0 0
-         wm title $audace(base).inittel "$caption(telescope,inittelscp0)"
-         set posx_inittel [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
-         set posy_inittel [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-         wm geometry $audace(base).inittel +[ expr $posx_inittel + 120 ]+[ expr $posy_inittel + 105 ]
+         toplevel $base.inittel
+         wm transient $base.inittel $base
+         wm resizable $base.inittel 0 0
+         wm title $base.inittel "$caption(telescope,inittelscp0)"
+         set posx_inittel [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
+         set posy_inittel [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
+         wm geometry $base.inittel +[ expr $posx_inittel + 120 ]+[ expr $posy_inittel + 105 ]
 
          #--- Cree l'affichage du message
-         label $audace(base).inittel.lab1 -text "$caption(telescope,inittelscp1)\n$caption(telescope,inittelscp2)\n \
+         label $base.inittel.lab1 -text "$caption(telescope,inittelscp1)\n$caption(telescope,inittelscp2)\n \
             $caption(telescope,inittelscp3)\n$caption(telescope,inittelscp4)\n$caption(telescope,inittelscp5)\n \
             $caption(telescope,inittelscp6)\n\n$caption(telescope,inittelscp7)\n$caption(telescope,inittelscp8)\n \
             $caption(telescope,inittelscp9)"
-         uplevel #0 { pack $audace(base).inittel.lab1 -padx 10 -pady 2 }
+         pack $base.inittel.lab1 -padx 10 -pady 2
 
          #--- La nouvelle fenetre est active
-         focus $audace(base).inittel
+         focus $base.inittel
 
          #--- Mise a jour dynamique des couleurs
-         ::confColor::applyColor $audace(base).inittel
+         ::confColor::applyColor $base.inittel
 
          #--- Fermeture de la fenetre
-         bind $audace(base).inittel <Destroy> {
+         bind $base.inittel <Destroy> {
             #--- Les coordonnees AD et Dec sont mises a jour a la fermeture de la fenetre
             ::telescope::afficheCoord
             #--- Fermeture de la fenetre
-            destroy $audace(base).inittel
+            destroy $base.inittel
             #--- Activation du bouton initialisation
             $::telescope::Button_Init configure -relief raised -state normal
          }
 
       } else {
-         ::confTel::run 
-         tkwait window $audace(base).confTel
+         ::confTel::run
+         tkwait window $base.confTel
          #--- Activation du bouton initialisation
          $Button_Init configure -relief raised -state normal
       }
@@ -127,7 +129,7 @@ global audace
             }
          }
       } else {
-         ::confTel::run 
+         ::confTel::run
          tkwait window $audace(base).confTel
       }
       ::telescope::afficheCoord
@@ -197,12 +199,12 @@ global audace
          }
          #--- Goto
          tel$audace(telNo) radec goto $list_radec -blocking $blocking
-         #--- Boucle tant que le telescope n'est pas arrete 
-         set radec0 [ tel$audace(telNo) radec coord ] 
+         #--- Boucle tant que le telescope n'est pas arrete
+         set radec0 [ tel$audace(telNo) radec coord ]
          ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
          set audace(telescope,goto) "0"
       } else {
-         ::confTel::run 
+         ::confTel::run
          tkwait window $audace(base).confTel
       }
    }
@@ -365,7 +367,7 @@ global audace
             setSpeed "0"
          }
       } else {
-         ::confTel::run 
+         ::confTel::run
          tkwait window $audace(base).confTel
          set audace(telescope,rate) "0"
       }
@@ -406,7 +408,7 @@ global audace
                set audace(telescope,labelspeed) "$caption(telescope,200)"
                set audace(telescope,rate) "1"
                set statustel(speed) "0.66"
-            } 
+            }
          } elseif { $conf(telescope) == "lx200" } {
             if { $value == "1" } {
                set audace(telescope,speed) "1"
@@ -487,7 +489,7 @@ global audace
             set statustel(speed) "0"
          }
       } else {
-         ::confTel::run 
+         ::confTel::run
          tkwait window $audace(base).confTel
          set audace(telescope,rate) "0"
          set statustel(speed) "0"
@@ -508,7 +510,6 @@ global audace
       } else {
          set result "0"
       }
-      
       return $result
    }
 
@@ -559,10 +560,10 @@ global audace
             }
          }
       } else {
-         ::confTel::run 
+         ::confTel::run
          tkwait window $audace(base).confTel
       }
-      ::telescope::afficheCoord 
+      ::telescope::afficheCoord
    }
 
    #------------------------------------------------------------
@@ -583,7 +584,7 @@ global audace
             tel$audace(telNo) radec move $direction $audace(telescope,rate)
          }
       } else {
-         ::confTel::run 
+         ::confTel::run
         # tkwait window $audace(base).confTel
       }
    }
@@ -636,9 +637,9 @@ global audace
             tel$audace(telNo) radec stop $direction
          }
       } else {
-         ::confTel::run 
+         ::confTel::run
          tkwait window $audace(base).confTel
-      }     
+      }
       ::telescope::afficheCoord
    }
 
@@ -660,7 +661,7 @@ global audace
    #  afficheCoord
    #     met a jour l'affichage des coordonnees
    #
-   #  description : interroge le telescope et met le resultat dans 
+   #  description : interroge le telescope et met le resultat dans
    #      les variables audace(telescope,getra) et audace(telescope,getdec)
    #------------------------------------------------------------
    proc afficheCoord { } {
