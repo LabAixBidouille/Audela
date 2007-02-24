@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.9 2007-02-23 23:40:12 michelpujol Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.10 2007-02-24 12:09:51 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -148,141 +148,141 @@ namespace eval cataGoto {
             radiobutton $audace(base).gotoPlanete.frame1.frame1a.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,soleil)" -value 0 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1a.rad1 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1a.rad1 -side left -padx 5 -pady 2
             #--- Radio-bouton Lune
             radiobutton $audace(base).gotoPlanete.frame1.frame1a.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,lune)" -value 1 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1a.rad2 -side right -padx 5 -pady 2 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1a -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame1.frame1a.rad2 -side right -padx 5 -pady 2
+         pack $audace(base).gotoPlanete.frame1.frame1a -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame1.frame1b -borderwidth 0 -relief raised
             #--- Radio-bouton Mercure
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,mercure)" -value 2 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1b.rad3 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1b.rad3 -side left -padx 5 -pady 2
             #--- Radio-bouton Venus
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,venus)" -value 3 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1b.rad4 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1b.rad4 -side left -padx 5 -pady 2
             #--- Radio-bouton Mars
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad5 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,mars)" -value 4 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1b.rad5 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1b.rad5 -side left -padx 5 -pady 2
             #--- Radio-bouton Jupiter
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad6 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,jupiter)" -value 5 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1b.rad6 -side left -padx 5 -pady 2 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1b -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame1.frame1b.rad6 -side left -padx 5 -pady 2
+         pack $audace(base).gotoPlanete.frame1.frame1b -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame1.frame1c -borderwidth 0 -relief raised
             #--- Radio-bouton Saturne
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad7 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,saturne)" -value 6 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1c.rad7 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1c.rad7 -side left -padx 5 -pady 2
             #--- Radio-bouton Uranus
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad8 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,uranus)" -value 7 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1c.rad8 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1c.rad8 -side left -padx 5 -pady 2
             #--- Radio-bouton Neptune
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad9 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,neptune)" -value 8 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1c.rad9 -side left -padx 5 -pady 2 }
+            pack $audace(base).gotoPlanete.frame1.frame1c.rad9 -side left -padx 5 -pady 2
             #--- Radio-bouton Pluton
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad10 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(catagoto,pluton)" -value 9 -variable confGotoPlanete(planete) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1c.rad10 -side left -padx 5 -pady 2 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame1.frame1c -side top -fill both -expand 1 }
-      uplevel #0 { pack $audace(base).gotoPlanete.frame1 -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame1.frame1c.rad10 -side left -padx 5 -pady 2 
+         pack $audace(base).gotoPlanete.frame1.frame1c -side top -fill both -expand 1
+      pack $audace(base).gotoPlanete.frame1 -side top -fill both -expand 1
 
       #--- Cree l'affichage de la selection
       frame $audace(base).gotoPlanete.frame2 -borderwidth 1 -relief raised
          frame $audace(base).gotoPlanete.frame2.frame3 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame3.lab2 -text "$caption(catagoto,planete_choisie)" \
                -font $audace(font,arial_12_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3.lab2 -side top -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3.lab2 -side top -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3.lab3 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab3a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3.lab3a -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3.lab4 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab4a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3.lab4a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3 -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame3.lab4a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame3a -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame3a.lab41 -text "$caption(catagoto,diametre_ap)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3a.lab41 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3a.lab41 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3a.lab41a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3a.lab41a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3a -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame3a.lab41a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame3a -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame3b -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame3b.lab42 -text "$caption(catagoto,phase)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3b.lab42 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3b.lab42 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3b.lab42a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3b.lab42a -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3b.lab42a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3b.lab43 -text "$caption(catagoto,elongation)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3b.lab43 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame3b.lab43 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3b.lab43a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3b.lab43a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame3b -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame3b.lab43a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame3b -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame4.lab5 \
                -text "$caption(catagoto,RA) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame4.lab5 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame4.lab5a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame4.lab5a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame4 -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame4.lab5a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame5.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame5.lab6 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame5.lab6a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame5.lab6a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame5 -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame5.lab6a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame6.lab7 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame6.lab7 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame6.lab8 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.lab8a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame6.lab8a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame6 -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame6.lab8a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame7 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame7.lab9 -side left -padx 5 -pady 5 }
+            pack $audace(base).gotoPlanete.frame2.frame7.lab9 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame7.lab9a -text "-"
-            uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame7.lab9a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame2.frame7 -side top -fill both -expand 1 }
-      uplevel #0 { pack $audace(base).gotoPlanete.frame2 -side top -fill both -expand 1 }
+            pack $audace(base).gotoPlanete.frame2.frame7.lab9a -side left -padx 5 -pady 5
+         pack $audace(base).gotoPlanete.frame2.frame7 -side top -fill both -expand 1
+      pack $audace(base).gotoPlanete.frame2 -side top -fill both -expand 1
 
       #--- Cree l'affichage des limites en hauteur
       frame $audace(base).gotoPlanete.frame8 -borderwidth 1 -relief raised
          label $audace(base).gotoPlanete.frame8.lab10 -text "$caption(catagoto,haut_inf)"
-         uplevel #0 { pack $audace(base).gotoPlanete.frame8.lab10 -side left -padx 10 -pady 5 }
+         pack $audace(base).gotoPlanete.frame8.lab10 -side left -padx 10 -pady 5
          entry $audace(base).gotoPlanete.frame8.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
-         uplevel #0 { pack $audace(base).gotoPlanete.frame8.haut_inf -side left -padx 10 -pady 5 }
+         pack $audace(base).gotoPlanete.frame8.haut_inf -side left -padx 10 -pady 5
          label $audace(base).gotoPlanete.frame8.lab11 -text "$caption(catagoto,haut_sup)"
-         uplevel #0 { pack $audace(base).gotoPlanete.frame8.lab11 -side left -padx 10 -pady 5 }
+         pack $audace(base).gotoPlanete.frame8.lab11 -side left -padx 10 -pady 5
          entry $audace(base).gotoPlanete.frame8.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
-         uplevel #0 { pack $audace(base).gotoPlanete.frame8.haut_sup -side left -padx 10 -pady 5 }
-      uplevel #0 { pack $audace(base).gotoPlanete.frame8 -side top -fill both -expand 1 }
+         pack $audace(base).gotoPlanete.frame8.haut_sup -side left -padx 10 -pady 5
+      pack $audace(base).gotoPlanete.frame8 -side top -fill both -expand 1
 
       #--- Cree l'affichage des boutons
       frame $audace(base).gotoPlanete.frame10 -borderwidth 1 -relief raised
@@ -293,8 +293,8 @@ namespace eval cataGoto {
             set cataGoto(carte,avant_plan) "0"
             destroy $audace(base).gotoPlanete
          }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame10.fermer -side right -padx 10 -pady 5 -ipady 5 }
-      uplevel #0 { pack $audace(base).gotoPlanete.frame10 -side top -fill both -expand 1 }
+         pack $audace(base).gotoPlanete.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
+      pack $audace(base).gotoPlanete.frame10 -side top -fill both -expand 1
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).gotoPlanete
@@ -439,7 +439,7 @@ namespace eval cataGoto {
          button $audace(base).gotoPlanete.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
             set catalogue(validation) "1"
          }
-         uplevel #0 { pack $audace(base).gotoPlanete.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x }
+         pack $audace(base).gotoPlanete.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).gotoPlanete
       }
@@ -506,91 +506,91 @@ namespace eval cataGoto {
       frame $audace(base).cataAsteroide.frame1 -borderwidth 1 -relief raised
          label $audace(base).cataAsteroide.frame1.labURL -text "$caption(catagoto,besoin_internet)" \
             -font $audace(font,arial_10_b) -fg $color(red)
-         uplevel #0 { pack $audace(base).cataAsteroide.frame1.labURL -side top -padx 5 -pady 5 }
+         pack $audace(base).cataAsteroide.frame1.labURL -side top -padx 5 -pady 5
          label $audace(base).cataAsteroide.frame1.lab1 -text "$caption(catagoto,objet_choisi)"
-         uplevel #0 { pack $audace(base).cataAsteroide.frame1.lab1 -side left -padx 5 -pady 5 }
+         pack $audace(base).cataAsteroide.frame1.lab1 -side left -padx 5 -pady 5
          entry $audace(base).cataAsteroide.frame1.obj_choisi_ref -textvariable catalogue(asteroide_choisi) \
             -justify left -width 16
-         uplevel #0 { pack $audace(base).cataAsteroide.frame1.obj_choisi_ref -side left -padx 5 -pady 5 }
+         pack $audace(base).cataAsteroide.frame1.obj_choisi_ref -side left -padx 5 -pady 5
          button $audace(base).cataAsteroide.frame1.rechercher -text "$caption(catagoto,rechercher)" -width 12 \
             -command { ::cataGoto::Recherche_Asteroide }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame1.rechercher -side right -padx 10 -pady 5 -ipady 5 }
-      uplevel #0 { pack $audace(base).cataAsteroide.frame1 -side top -fill both -expand 1 }
+         pack $audace(base).cataAsteroide.frame1.rechercher -side right -padx 10 -pady 5 -ipady 5
+      pack $audace(base).cataAsteroide.frame1 -side top -fill both -expand 1
 
       #--- Cree l'affichage de la selection
       frame $audace(base).cataAsteroide.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataAsteroide.frame2.frame3 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame3.lab2 -text "$caption(catagoto,objet_choisi)" \
                -font $audace(font,arial_12_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame3.lab2 -side top -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame3.lab2 -side top -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame3.lab3 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab3a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame3.lab3a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame3.lab4 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab4a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame3.lab4a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame3 -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame2.frame3.lab4a -side left -padx 5 -pady 5
+         pack $audace(base).cataAsteroide.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame4.lab5 \
                -text "$caption(catagoto,RA) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame4.lab5 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame4.lab5a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame4.lab5a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame4 -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame2.frame4.lab5a -side left -padx 5 -pady 5
+         pack $audace(base).cataAsteroide.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame5.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame5.lab6 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame5.lab6a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame5.lab6a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame5 -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame2.frame5.lab6a -side left -padx 5 -pady 5
+         pack $audace(base).cataAsteroide.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame6.lab7 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame6.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame6.lab8 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.lab8a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame6.lab8a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame6 -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame2.frame6.lab8a -side left -padx 5 -pady 5
+         pack $audace(base).cataAsteroide.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame7 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame7.lab9 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataAsteroide.frame2.frame7.lab9 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame7.lab9a -text "-"
-            uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame7.lab9a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame2.frame7 -side top -fill both -expand 1 }
-      uplevel #0 { pack $audace(base).cataAsteroide.frame2 -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame2.frame7.lab9a -side left -padx 5 -pady 5
+         pack $audace(base).cataAsteroide.frame2.frame7 -side top -fill both -expand 1
+      pack $audace(base).cataAsteroide.frame2 -side top -fill both -expand 1
 
       #--- Cree l'affichage des limites en hauteur
       frame $audace(base).cataAsteroide.frame8 -borderwidth 1 -relief raised
          label $audace(base).cataAsteroide.frame8.lab10 -text "$caption(catagoto,haut_inf)"
-         uplevel #0 { pack $audace(base).cataAsteroide.frame8.lab10 -side left -padx 10 -pady 5 }
+         pack $audace(base).cataAsteroide.frame8.lab10 -side left -padx 10 -pady 5
          entry $audace(base).cataAsteroide.frame8.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
-         uplevel #0 { pack $audace(base).cataAsteroide.frame8.haut_inf -side left -padx 10 -pady 5 }
+         pack $audace(base).cataAsteroide.frame8.haut_inf -side left -padx 10 -pady 5
          label $audace(base).cataAsteroide.frame8.lab11 -text "$caption(catagoto,haut_sup)"
-         uplevel #0 { pack $audace(base).cataAsteroide.frame8.lab11 -side left -padx 10 -pady 5 }
+         pack $audace(base).cataAsteroide.frame8.lab11 -side left -padx 10 -pady 5
          entry $audace(base).cataAsteroide.frame8.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
-         uplevel #0 { pack $audace(base).cataAsteroide.frame8.haut_sup -side left -padx 10 -pady 5 }
-      uplevel #0 { pack $audace(base).cataAsteroide.frame8 -side top -fill both -expand 1 }
+         pack $audace(base).cataAsteroide.frame8.haut_sup -side left -padx 10 -pady 5
+      pack $audace(base).cataAsteroide.frame8 -side top -fill both -expand 1
 
       #--- Gere l'option de creation d'une carte de champ
       if { [::carte::isReady] == "0" } {
          frame $audace(base).cataAsteroide.frame9 -borderwidth 1 -relief raised
             checkbutton $audace(base).cataAsteroide.frame9.carte -text "$caption(catagoto,carte_champ)" \
                -highlightthickness 0 -variable cataGoto(carte,validation)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame9.carte -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame9.carte -side top -fill both -expand 1
             checkbutton $audace(base).cataAsteroide.frame9.cartea -text "$caption(catagoto,carte_champ_devant)" \
                -highlightthickness 0 -variable cataGoto(carte,avant_plan)
-            uplevel #0 { pack $audace(base).cataAsteroide.frame9.cartea -side top -fill both -expand 1 }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame9 -side top -fill both -expand 1 }
+            pack $audace(base).cataAsteroide.frame9.cartea -side top -fill both -expand 1
+         pack $audace(base).cataAsteroide.frame9 -side top -fill both -expand 1
       }
 
       #--- Cree l'affichage des boutons
@@ -606,8 +606,8 @@ namespace eval cataGoto {
             set cataGoto(carte,avant_plan) "0"
             destroy $audace(base).cataAsteroide
          }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame10.fermer -side right -padx 10 -pady 5 -ipady 5 }
-      uplevel #0 { pack $audace(base).cataAsteroide.frame10 -side top -fill both -expand 1 }
+         pack $audace(base).cataAsteroide.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
+      pack $audace(base).cataAsteroide.frame10 -side top -fill both -expand 1
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).cataAsteroide
@@ -631,7 +631,7 @@ namespace eval cataGoto {
       set cataGoto(carte,dec) ""
 
       #--- Envoi d'une requete a SkyBoT si necessaire
-      if { $catalogue(asteroide_choisi) != ""  } {
+      if { $catalogue(asteroide_choisi) != "" } {
          #--- Gestion du bouton
          $audace(base).cataAsteroide.frame1.rechercher configure -relief groove -state disabled
          #--- Traitement du nom de l'asteroide
@@ -699,7 +699,7 @@ namespace eval cataGoto {
             set catalogue(asteroide_mag)    ""
             set catalogue(validation)       "1"
          }
-         uplevel #0 { pack $audace(base).cataAsteroide.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x }
+         pack $audace(base).cataAsteroide.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).cataAsteroide
       }
@@ -812,91 +812,91 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la fenetre de selection et des boutons
       frame $audace(base).cataObjet.frame1 -borderwidth 1 -relief raised
          label $audace(base).cataObjet.frame1.lab1 -text "$caption(catagoto,objet_choisi)"
-         uplevel #0 { pack $audace(base).cataObjet.frame1.lab1 -side left -padx 5 -pady 5 }
+         pack $audace(base).cataObjet.frame1.lab1 -side left -padx 5 -pady 5
          entry $audace(base).cataObjet.frame1.obj_choisi_ref -textvariable catalogue(obj_choisi_ref) \
             -justify left -width 10
-         uplevel #0 { pack $audace(base).cataObjet.frame1.obj_choisi_ref -side left -padx 5 -pady 5 }
+         pack $audace(base).cataObjet.frame1.obj_choisi_ref -side left -padx 5 -pady 5
          button $audace(base).cataObjet.frame1.rechercher -text "$caption(catagoto,rechercher)" -width 12 \
             -command { ::cataGoto::Recherche_Objet }
-         uplevel #0 { pack $audace(base).cataObjet.frame1.rechercher -side right -padx 10 -pady 5 -ipady 5 }
-      uplevel #0 { pack $audace(base).cataObjet.frame1 -side top -fill both -expand 1 }
+         pack $audace(base).cataObjet.frame1.rechercher -side right -padx 10 -pady 5 -ipady 5
+      pack $audace(base).cataObjet.frame1 -side top -fill both -expand 1
 
       #--- Cree l'affichage de la selection
       frame $audace(base).cataObjet.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataObjet.frame2.frame3 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame3.lab2 -text "$caption(catagoto,objet_choisi)" \
                -font $audace(font,arial_12_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame3.lab2 -side top -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame3.lab2 -side top -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame3.lab3 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab3a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame3.lab3a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame3.lab4 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab4a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame3.lab4a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataObjet.frame2.frame3 -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame2.frame3.lab4a -side left -padx 5 -pady 5
+         pack $audace(base).cataObjet.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame4.lab5 \
                -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame4.lab5 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame4.lab5a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame4.lab5a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataObjet.frame2.frame4 -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame2.frame4.lab5a -side left -padx 5 -pady 5
+         pack $audace(base).cataObjet.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame5.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame5.lab6 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame5.lab6a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame5.lab6a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataObjet.frame2.frame5 -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame2.frame5.lab6a -side left -padx 5 -pady 5
+         pack $audace(base).cataObjet.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame6.lab7 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame6.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.labURLRed7a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame6.lab8 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.lab8a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame6.lab8a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataObjet.frame2.frame6 -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame2.frame6.lab8a -side left -padx 5 -pady 5
+         pack $audace(base).cataObjet.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame7 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame7.lab9 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataObjet.frame2.frame7.lab9 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame7.lab9a -text "-"
-            uplevel #0 { pack $audace(base).cataObjet.frame2.frame7.lab9a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataObjet.frame2.frame7 -side top -fill both -expand 1 }
-      uplevel #0 { pack $audace(base).cataObjet.frame2 -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame2.frame7.lab9a -side left -padx 5 -pady 5
+         pack $audace(base).cataObjet.frame2.frame7 -side top -fill both -expand 1
+      pack $audace(base).cataObjet.frame2 -side top -fill both -expand 1
 
       #--- Cree l'affichage des limites en hauteur
       frame $audace(base).cataObjet.frame8 -borderwidth 1 -relief raised
          label $audace(base).cataObjet.frame8.lab10 -text "$caption(catagoto,haut_inf)"
-         uplevel #0 { pack $audace(base).cataObjet.frame8.lab10 -side left -padx 10 -pady 5 }
+         pack $audace(base).cataObjet.frame8.lab10 -side left -padx 10 -pady 5
          entry $audace(base).cataObjet.frame8.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
-         uplevel #0 { pack $audace(base).cataObjet.frame8.haut_inf -side left -padx 10 -pady 5 }
+         pack $audace(base).cataObjet.frame8.haut_inf -side left -padx 10 -pady 5
          label $audace(base).cataObjet.frame8.lab11 -text "$caption(catagoto,haut_sup)"
-         uplevel #0 { pack $audace(base).cataObjet.frame8.lab11 -side left -padx 10 -pady 5 }
+         pack $audace(base).cataObjet.frame8.lab11 -side left -padx 10 -pady 5
          entry $audace(base).cataObjet.frame8.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
-         uplevel #0 { pack $audace(base).cataObjet.frame8.haut_sup -side left -padx 10 -pady 5 }
-      uplevel #0 { pack $audace(base).cataObjet.frame8 -side top -fill both -expand 1 }
+         pack $audace(base).cataObjet.frame8.haut_sup -side left -padx 10 -pady 5
+      pack $audace(base).cataObjet.frame8 -side top -fill both -expand 1
 
       #--- Gere l'option de creation d'une carte de champ
       if { [::carte::isReady] == "0" } {
          frame $audace(base).cataObjet.frame9 -borderwidth 1 -relief raised
             checkbutton $audace(base).cataObjet.frame9.carte -text "$caption(catagoto,carte_champ)" \
                -highlightthickness 0 -variable cataGoto(carte,validation)
-            uplevel #0 { pack $audace(base).cataObjet.frame9.carte -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame9.carte -side top -fill both -expand 1
             checkbutton $audace(base).cataObjet.frame9.cartea -text "$caption(catagoto,carte_champ_devant)" \
                -highlightthickness 0 -variable cataGoto(carte,avant_plan)
-            uplevel #0 { pack $audace(base).cataObjet.frame9.cartea -side top -fill both -expand 1 }
-         uplevel #0 { pack $audace(base).cataObjet.frame9 -side top -fill both -expand 1 }
+            pack $audace(base).cataObjet.frame9.cartea -side top -fill both -expand 1
+         pack $audace(base).cataObjet.frame9 -side top -fill both -expand 1
       }
 
       #--- Cree l'affichage des boutons
@@ -918,8 +918,8 @@ namespace eval cataGoto {
                destroy $audace(base).cataObjet
             }
          }
-         uplevel #0 { pack $audace(base).cataObjet.frame10.fermer -side right -padx 10 -pady 5 -ipady 5 }
-      uplevel #0 { pack $audace(base).cataObjet.frame10 -side top -fill both -expand 1 }
+         pack $audace(base).cataObjet.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
+      pack $audace(base).cataObjet.frame10 -side top -fill both -expand 1
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).cataObjet
@@ -1003,7 +1003,7 @@ namespace eval cataGoto {
                set catalogue(validation) "1"
             }
          }
-         uplevel #0 { pack $audace(base).cataObjet.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x }
+         pack $audace(base).cataObjet.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).cataObjet
       }
@@ -1094,12 +1094,12 @@ namespace eval cataGoto {
       frame $audace(base).cataEtoile.frame1 -borderwidth 1 -relief raised
          listbox $audace(base).cataEtoile.frame1.lb1 -width 59 -height 9 -borderwidth 2 -relief sunken \
             -font $audace(font,listbox) -yscrollcommand [list $audace(base).cataEtoile.frame1.scrollbar set]
-         uplevel #0 { pack $audace(base).cataEtoile.frame1.lb1 -side left -anchor nw }
+         pack $audace(base).cataEtoile.frame1.lb1 -side left -anchor nw
          scrollbar $audace(base).cataEtoile.frame1.scrollbar -orient vertical \
             -command [list $audace(base).cataEtoile.frame1.lb1 yview] -takefocus 1 -borderwidth 1
-         uplevel #0 { pack $audace(base).cataEtoile.frame1.scrollbar -side left -fill y }
+         pack $audace(base).cataEtoile.frame1.scrollbar -side left -fill y
          set zone(list_etoile) $audace(base).cataEtoile.frame1.lb1
-      uplevel #0 { pack $audace(base).cataEtoile.frame1 -side top -fill both -expand 1 }
+      pack $audace(base).cataEtoile.frame1 -side top -fill both -expand 1
 
       #--- Cree l'affichage des boutons
       frame $audace(base).cataEtoile.frame9 -borderwidth 1 -relief raised
@@ -1122,89 +1122,89 @@ namespace eval cataGoto {
                   destroy $audace(base).cataEtoile
                }
          }
-         uplevel #0 { pack $audace(base).cataEtoile.frame9.fermer -side right -padx 10 -pady 5 -ipady 5 -fill x }
-      uplevel #0 { pack $audace(base).cataEtoile.frame9 -side bottom -fill both -expand 1 }
+         pack $audace(base).cataEtoile.frame9.fermer -side right -padx 10 -pady 5 -ipady 5 -fill x
+      pack $audace(base).cataEtoile.frame9 -side bottom -fill both -expand 1
 
       #--- Gere l'option de creation d'une carte de champ
       if { [::carte::isReady] == "0" } {
          frame $audace(base).cataEtoile.frame8 -borderwidth 1 -relief raised
             checkbutton $audace(base).cataEtoile.frame8.carte -text "$caption(catagoto,carte_champ)" \
                -highlightthickness 0 -variable cataGoto(carte,validation)
-            uplevel #0 { pack $audace(base).cataEtoile.frame8.carte -side top -fill both -expand 1 }
+            pack $audace(base).cataEtoile.frame8.carte -side top -fill both -expand 1
             checkbutton $audace(base).cataEtoile.frame8.cartea -text "$caption(catagoto,carte_champ_devant)" \
                -highlightthickness 0 -variable cataGoto(carte,avant_plan)
-            uplevel #0 { pack $audace(base).cataEtoile.frame8.cartea -side top -fill both -expand 1 }
-         uplevel #0 { pack $audace(base).cataEtoile.frame8 -side bottom -fill both -expand 1 }
+            pack $audace(base).cataEtoile.frame8.cartea -side top -fill both -expand 1
+         pack $audace(base).cataEtoile.frame8 -side bottom -fill both -expand 1
       }
 
       #--- Cree l'affichage des limites en hauteur
       frame $audace(base).cataEtoile.frame7 -borderwidth 1 -relief raised
          label $audace(base).cataEtoile.frame7.lab10 -text "$caption(catagoto,haut_inf)"
-         uplevel #0 { pack $audace(base).cataEtoile.frame7.lab10 -side left -padx 10 -pady 5 }
+         pack $audace(base).cataEtoile.frame7.lab10 -side left -padx 10 -pady 5
          entry $audace(base).cataEtoile.frame7.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
-         uplevel #0 { pack $audace(base).cataEtoile.frame7.haut_inf -side left -padx 10 -pady 5 }
+         pack $audace(base).cataEtoile.frame7.haut_inf -side left -padx 10 -pady 5
          label $audace(base).cataEtoile.frame7.lab11 -text "$caption(catagoto,haut_sup)"
-         uplevel #0 { pack $audace(base).cataEtoile.frame7.lab11 -side left -padx 10 -pady 5 }
+         pack $audace(base).cataEtoile.frame7.lab11 -side left -padx 10 -pady 5
          entry $audace(base).cataEtoile.frame7.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
-         uplevel #0 { pack $audace(base).cataEtoile.frame7.haut_sup -side left -padx 10 -pady 5 }
-      uplevel #0 { pack $audace(base).cataEtoile.frame7 -side bottom -fill both -expand 1 }
+         pack $audace(base).cataEtoile.frame7.haut_sup -side left -padx 10 -pady 5
+      pack $audace(base).cataEtoile.frame7 -side bottom -fill both -expand 1
 
       #--- Cree l'affichage de la selection
       frame $audace(base).cataEtoile.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataEtoile.frame2.frame3 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame3.lab1 -text "$caption(catagoto,etoile_choisie)" \
                -font $audace(font,arial_12_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab1 -side top -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab1 -side top -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab2 -text "$caption(catagoto,nom_courant)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab2 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab2 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab2a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab2a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab2a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab3 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab3a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab3a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab4 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab4a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3.lab4a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataEtoile.frame2.frame3 -side top -fill both -expand 1 }
+            pack $audace(base).cataEtoile.frame2.frame3.lab4a -side left -padx 5 -pady 5
+         pack $audace(base).cataEtoile.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame4.lab5 \
                -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame4.lab5 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab5a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame4.lab5a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame4.lab5a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame4.lab6 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame4.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab6a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame4.lab6a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataEtoile.frame2.frame4 -side top -fill both -expand 1 }
+            pack $audace(base).cataEtoile.frame2.frame4.lab6a -side left -padx 5 -pady 5
+         pack $audace(base).cataEtoile.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame5.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame5.lab7 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame5.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.labURLRed7a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame5.labURLRed7a -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame5.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame5.lab8 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame5.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.lab8a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame5.lab8a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataEtoile.frame2.frame5 -side top -fill both -expand 1 }
+            pack $audace(base).cataEtoile.frame2.frame5.lab8a -side left -padx 5 -pady 5
+         pack $audace(base).cataEtoile.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame6.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame6.lab9 -side left -padx 5 -pady 5 }
+            pack $audace(base).cataEtoile.frame2.frame6.lab9 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame6.lab9a -text "-"
-            uplevel #0 { pack $audace(base).cataEtoile.frame2.frame6.lab9a -side left -padx 5 -pady 5 }
-         uplevel #0 { pack $audace(base).cataEtoile.frame2.frame6 -side top -fill both -expand 1 }
-      uplevel #0 { pack $audace(base).cataEtoile.frame2 -side bottom -fill both -expand 1 }
+            pack $audace(base).cataEtoile.frame2.frame6.lab9a -side left -padx 5 -pady 5
+         pack $audace(base).cataEtoile.frame2.frame6 -side top -fill both -expand 1
+      pack $audace(base).cataEtoile.frame2 -side bottom -fill both -expand 1
 
       #--- Lit le catalogue des etoiles
       ::cataGoto::LitCataEtoile
@@ -1257,7 +1257,7 @@ namespace eval cataGoto {
                   set catalogue(validation) "1"
                }
             }
-            uplevel #0 { pack $audace(base).cataEtoile.frame9.ok -side left -padx 10 -pady 5 -ipady 5 -fill x }
+            pack $audace(base).cataEtoile.frame9.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $audace(base).cataEtoile
          }
@@ -1297,9 +1297,9 @@ namespace eval cataGoto {
       set long [expr $long-2]
       set table_etbrillante(long) [expr $long + 1]
       #--- Met chaque ligne du catalogue dans une variable et acceleration de l'affichage
-      uplevel #0 { pack forget $audace(base).cataEtoile.frame1.lb1 }
-      uplevel #0 { pack forget $audace(base).cataEtoile.frame1.scrollbar }
-      uplevel #0 { pack forget $audace(base).cataEtoile.frame1 }
+      pack forget $audace(base).cataEtoile.frame1.lb1
+      pack forget $audace(base).cataEtoile.frame1.scrollbar
+      pack forget $audace(base).cataEtoile.frame1
       for {set i 0} {$i <= $long} {incr i} {
          $zone(list_etoile) insert end "[lindex $etbrillante $i]"
          set j [expr $i + 1]
@@ -1309,9 +1309,9 @@ namespace eval cataGoto {
          set table_etbrillante(altaz_$j) [mc_radec2altaz $table_etbrillante(ad_$j) $table_etbrillante(dec_$j) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
          set table_etbrillante(anglehoraire_$j) [lindex $table_etbrillante(altaz_$j) 2]
       }
-      uplevel #0 { pack $audace(base).cataEtoile.frame1.lb1 -side left -anchor nw }
-      uplevel #0 { pack $audace(base).cataEtoile.frame1.scrollbar -side left -fill y }
-      uplevel #0 { pack $audace(base).cataEtoile.frame1 -side top -fill both -expand 1 }
+      pack $audace(base).cataEtoile.frame1.lb1 -side left -anchor nw
+      pack $audace(base).cataEtoile.frame1.scrollbar -side left -fill y
+      pack $audace(base).cataEtoile.frame1 -side top -fill both -expand 1
       #--- Ferme le fichier des etoiles
       close $f
       #--- Rend le bouton fermer actif
@@ -1417,12 +1417,12 @@ namespace eval cataGoto {
             listbox $audace(base).cataObjetUtilisateur.frame1.lb1 -width 59 -height 9 -borderwidth 2 -relief sunken \
                -font $audace(font,listbox) \
                -yscrollcommand [list $audace(base).cataObjetUtilisateur.frame1.scrollbar set]
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame1.lb1 -side left -anchor nw }
+            pack $audace(base).cataObjetUtilisateur.frame1.lb1 -side left -anchor nw
             scrollbar $audace(base).cataObjetUtilisateur.frame1.scrollbar -orient vertical \
                -command [list $audace(base).cataObjetUtilisateur.frame1.lb1 yview] -takefocus 1 -borderwidth 1
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame1.scrollbar -side left -fill y }
+            pack $audace(base).cataObjetUtilisateur.frame1.scrollbar -side left -fill y
             set zone(list_objet_utilisateur) $audace(base).cataObjetUtilisateur.frame1.lb1
-         uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame1 -side top -fill both -expand 1 }
+         pack $audace(base).cataObjetUtilisateur.frame1 -side top -fill both -expand 1
 
          #--- Cree l'affichage des boutons
          frame $audace(base).cataObjetUtilisateur.frame7 -borderwidth 1 -relief raised
@@ -1434,74 +1434,74 @@ namespace eval cataGoto {
                   set catalogue(autre_catalogue) "2"
                   destroy $audace(base).cataObjetUtilisateur
                }
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame7.fermer -side right -padx 10 -pady 5 -ipady 5 -fill x }
-         uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame7 -side bottom -fill both -expand 1 }
+            pack $audace(base).cataObjetUtilisateur.frame7.fermer -side right -padx 10 -pady 5 -ipady 5 -fill x
+         pack $audace(base).cataObjetUtilisateur.frame7 -side bottom -fill both -expand 1
 
          #--- Cree l'affichage des limites en hauteur
          frame $audace(base).cataObjetUtilisateur.frame6 -borderwidth 1 -relief raised
             label $audace(base).cataObjetUtilisateur.frame6.lab8 -text "$caption(catagoto,haut_inf)"
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame6.lab8 -side left -padx 10 -pady 5 }
+            pack $audace(base).cataObjetUtilisateur.frame6.lab8 -side left -padx 10 -pady 5
             entry $audace(base).cataObjetUtilisateur.frame6.haut_inf -textvariable conf(cata,haut_inf) \
                -justify center -width 4
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame6.haut_inf -side left -padx 10 -pady 5 }
+            pack $audace(base).cataObjetUtilisateur.frame6.haut_inf -side left -padx 10 -pady 5
             label $audace(base).cataObjetUtilisateur.frame6.lab9 -text "$caption(catagoto,haut_sup)"
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame6.lab9 -side left -padx 10 -pady 5 }
+            pack $audace(base).cataObjetUtilisateur.frame6.lab9 -side left -padx 10 -pady 5
             entry $audace(base).cataObjetUtilisateur.frame6.haut_sup -textvariable conf(cata,haut_sup) \
                -justify center -width 4
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame6.haut_sup -side left -padx 10 -pady 5 }
-         uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame6 -side bottom -fill both -expand 1 }
+            pack $audace(base).cataObjetUtilisateur.frame6.haut_sup -side left -padx 10 -pady 5
+         pack $audace(base).cataObjetUtilisateur.frame6 -side bottom -fill both -expand 1
 
          #--- Cree l'affichage de la selection
          frame $audace(base).cataObjetUtilisateur.frame2 -borderwidth 1 -relief raised
             frame $audace(base).cataObjetUtilisateur.frame2.frame3 -borderwidth 0 -relief raised
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab1 -text "$caption(catagoto,objet_choisi)" \
                   -font $audace(font,arial_12_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab1 -side top -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab1 -side top -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -text "$caption(catagoto,nom)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -text "$caption(catagoto,magnitude)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -side left -padx 5 -pady 5 }
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame3 -side top -fill both -expand 1 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -side left -padx 5 -pady 5
+            pack $audace(base).cataObjetUtilisateur.frame2.frame3 -side top -fill both -expand 1
             frame $audace(base).cataObjetUtilisateur.frame2.frame4 -borderwidth 0 -relief raised
                label $audace(base).cataObjetUtilisateur.frame2.frame4.lab4 \
                   -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 \
                   -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -side left -padx 5 -pady 5 }
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame4 -side top -fill both -expand 1 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -side left -padx 5 -pady 5
+            pack $audace(base).cataObjetUtilisateur.frame2.frame4 -side top -fill both -expand 1
             frame $audace(base).cataObjetUtilisateur.frame2.frame5 -borderwidth 0 -relief raised
                label $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -text "$caption(catagoto,hauteur)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -text "$caption(catagoto,azimut)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -side left -padx 5 -pady 5 }
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame5 -side top -fill both -expand 1 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -side left -padx 5 -pady 5
+            pack $audace(base).cataObjetUtilisateur.frame2.frame5 -side top -fill both -expand 1
             frame $audace(base).cataObjetUtilisateur.frame2.frame6 -borderwidth 0 -relief raised
                label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -text "$caption(catagoto,angle_horaire)" \
                   -font $audace(font,arial_10_b)
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -side left -padx 5 -pady 5 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -text "-"
-               uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -side left -padx 5 -pady 5 }
-            uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2.frame6 -side top -fill both -expand 1 }
-         uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame2 -side bottom -fill both -expand 1 }
+               pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -side left -padx 5 -pady 5
+            pack $audace(base).cataObjetUtilisateur.frame2.frame6 -side top -fill both -expand 1
+         pack $audace(base).cataObjetUtilisateur.frame2 -side bottom -fill both -expand 1
 
          #--- Lit le catalogue des objets utilisateur
          ::cataGoto::LitCataUtilisateur
@@ -1541,7 +1541,7 @@ namespace eval cataGoto {
                         set catalogue(validation) "1"
                         set catalogue(autre_catalogue) "1"
                      }
-                  uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame7.ok -side left -padx 10 -pady 5 -ipady 5 -fill x }
+                  pack $audace(base).cataObjetUtilisateur.frame7.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $audace(base).cataObjetUtilisateur
                }
@@ -1596,15 +1596,15 @@ namespace eval cataGoto {
       set long_new [llength $objet_utilisateur]
       set long_new [expr $long_new-1]
       #--- Met chaque ligne du catalogue dans une variable et acceleration de l'affichage
-      uplevel #0 { pack forget $audace(base).cataObjetUtilisateur.frame1.lb1 }
-      uplevel #0 { pack forget $audace(base).cataObjetUtilisateur.frame1.scrollbar }
-      uplevel #0 { pack forget $audace(base).cataObjetUtilisateur.frame1 }
+      pack forget $audace(base).cataObjetUtilisateur.frame1.lb1
+      pack forget $audace(base).cataObjetUtilisateur.frame1.scrollbar
+      pack forget $audace(base).cataObjetUtilisateur.frame1
       for {set i 0} {$i <= $long_new} {incr i} {
          $zone(list_objet_utilisateur) insert end "[lindex $objet_utilisateur $i]"
       }
-      uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame1.lb1 -side left -anchor nw }
-      uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame1.scrollbar -side left -fill y }
-      uplevel #0 { pack $audace(base).cataObjetUtilisateur.frame1 -side top -fill both -expand 1 }
+      pack $audace(base).cataObjetUtilisateur.frame1.lb1 -side left -anchor nw
+      pack $audace(base).cataObjetUtilisateur.frame1.scrollbar -side left -fill y
+      pack $audace(base).cataObjetUtilisateur.frame1 -side top -fill both -expand 1
       #--- Ferme le fichier des objets utilisateur
       close $f
       #--- Rend le bouton fermer actif
