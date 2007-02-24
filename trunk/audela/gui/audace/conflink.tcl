@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.13 2007-02-10 17:44:33 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.14 2007-02-24 13:32:20 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -494,10 +494,10 @@ proc ::confLink::displayConnectMessage { } {
    #--- Cree l'affichage du message
    label $audace(base).connectLiaison.labURL_1 -text "$caption(conflink,connexion_texte1)" \
       -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).connectLiaison.labURL_1 -padx 10 -pady 2 }
+   pack $audace(base).connectLiaison.labURL_1 -padx 10 -pady 2
    label $audace(base).connectLiaison.labURL_2 -text "$caption(conflink,connexion_texte2)" \
       -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).connectLiaison.labURL_2 -padx 10 -pady 2 }
+   pack $audace(base).connectLiaison.labURL_2 -padx 10 -pady 2
    update
 
    #--- La nouvelle fenetre est active

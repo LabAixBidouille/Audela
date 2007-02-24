@@ -2,7 +2,7 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.5 2007-02-10 17:46:47 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.6 2007-02-24 13:33:13 robertdelmas Exp $
 #
 
 global confTel
@@ -519,22 +519,22 @@ namespace eval OuranosCom {
 
             #--- Cree l'affichage d'AD et Dec
             label $audace(base).tjrsvisible.lab1 -borderwidth 1 -anchor w
-            uplevel #0 { pack $audace(base).tjrsvisible.lab1 -padx 10 -pady 2 }
+            pack $audace(base).tjrsvisible.lab1 -padx 10 -pady 2
             label $audace(base).tjrsvisible.lab2 -borderwidth 1 -anchor w
-            uplevel #0 { pack $audace(base).tjrsvisible.lab2 -padx 10 -pady 2 }
+            pack $audace(base).tjrsvisible.lab2 -padx 10 -pady 2
 
             #--- Bouton radio x1
             radiobutton $audace(base).tjrsvisible.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(ouranoscom,x1)" -value 0 -variable confTel(ouranos,dim) -command {
                   destroy $audace(base).tjrsvisible_x10 ; ::OuranosCom::TjrsVisible
                }
-            uplevel #0 { pack $audace(base).tjrsvisible.rad0 -padx 20 -pady 2 -side left }
+            pack $audace(base).tjrsvisible.rad0 -padx 20 -pady 2 -side left
             #--- Bouton radio x10
             radiobutton $audace(base).tjrsvisible.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(ouranoscom,x5)" -value 1 -variable confTel(ouranos,dim) -command {
                   destroy $audace(base).tjrsvisible ; ::OuranosCom::TjrsVisible_x10
                }
-            uplevel #0 { pack $audace(base).tjrsvisible.rad1 -padx 20 -pady 2 -side right }
+            pack $audace(base).tjrsvisible.rad1 -padx 20 -pady 2 -side right
             #--- La fenetre est active
             focus $audace(base).tjrsvisible
             #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -578,9 +578,9 @@ namespace eval OuranosCom {
 
             #--- Cree l'affichage d'AD et Dec
             label $audace(base).tjrsvisible_x10.lab1 -borderwidth 1 -anchor w -font {verdana 60 bold}
-            uplevel #0 { pack $audace(base).tjrsvisible_x10.lab1 -padx 10 -pady 2 }
+            pack $audace(base).tjrsvisible_x10.lab1 -padx 10 -pady 2
             label $audace(base).tjrsvisible_x10.lab2 -borderwidth 1 -anchor w -font {verdana 60 bold}
-            uplevel #0 { pack $audace(base).tjrsvisible_x10.lab2 -padx 10 -pady 2 }
+            pack $audace(base).tjrsvisible_x10.lab2 -padx 10 -pady 2
 
             #--- Bouton radio x1
             radiobutton $audace(base).tjrsvisible_x10.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -588,14 +588,14 @@ namespace eval OuranosCom {
                -command {
                   destroy $audace(base).tjrsvisible_x10 ; ::OuranosCom::TjrsVisible
                }
-            uplevel #0 { pack $audace(base).tjrsvisible_x10.rad0 -padx 100 -pady 10 -side left }
+            pack $audace(base).tjrsvisible_x10.rad0 -padx 100 -pady 10 -side left
             #--- Bouton radio x10
             radiobutton $audace(base).tjrsvisible_x10.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -font {verdana 20 bold} -text "$caption(ouranoscom,x1)" -value 1 -variable confTel(ouranos,dim) \
                -command {
                   destroy $audace(base).tjrsvisible ; ::OuranosCom::TjrsVisible_x10
                }
-            uplevel #0 { pack $audace(base).tjrsvisible_x10.rad1 -padx 100 -pady 10 -side right }
+            pack $audace(base).tjrsvisible_x10.rad1 -padx 100 -pady 10 -side right
             #--- La fenetre est active
             focus $audace(base).tjrsvisible_x10
             #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

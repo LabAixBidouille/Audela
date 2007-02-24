@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.14 2007-02-12 12:24:27 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.15 2007-02-24 13:31:33 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -461,10 +461,10 @@ proc ::confEqt::Connect_Equipement { } {
    #--- Cree l'affichage du message
    label $audace(base).connectEquipement.labURL_1 -text "$caption(confeqt,connexion_texte1)" \
       -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).connectEquipement.labURL_1 -padx 10 -pady 2 }
+   pack $audace(base).connectEquipement.labURL_1 -padx 10 -pady 2
    label $audace(base).connectEquipement.labURL_2 -text "$caption(confeqt,connexion_texte2)" \
       -font $audace(font,arial_10_b) -fg $color(red)
-   uplevel #0 { pack $audace(base).connectEquipement.labURL_2 -padx 10 -pady 2 }
+   pack $audace(base).connectEquipement.labURL_2 -padx 10 -pady 2
    update
 
    #--- La nouvelle fenetre est active
