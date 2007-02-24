@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.24 2007-02-07 20:36:42 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.25 2007-02-24 13:32:43 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2126,9 +2126,9 @@ namespace eval ::confTel {
 
       #--- Cree l'affichage du message
       label $audace(base).format_match_ad.lab1 -text "$caption(conftel,ouranos_formataddec1)"
-      uplevel #0 { pack $audace(base).format_match_ad.lab1 -padx 10 -pady 2 }
+      pack $audace(base).format_match_ad.lab1 -padx 10 -pady 2
       label $audace(base).format_match_ad.lab2 -text "$caption(conftel,ouranos_formataddec2)"
-      uplevel #0 { pack $audace(base).format_match_ad.lab2 -padx 10 -pady 2 }
+      pack $audace(base).format_match_ad.lab2 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).format_match_ad
@@ -2163,11 +2163,11 @@ namespace eval ::confTel {
 
       #--- Cree l'affichage du message
       label $audace(base).format_match_dec.lab3 -text "$caption(conftel,ouranos_formataddec3)"
-      uplevel #0 { pack $audace(base).format_match_dec.lab3 -padx 10 -pady 2 }
+      pack $audace(base).format_match_dec.lab3 -padx 10 -pady 2
       label $audace(base).format_match_dec.lab4 -text "$caption(conftel,ouranos_formataddec4)"
-      uplevel #0 { pack $audace(base).format_match_dec.lab4 -padx 10 -pady 2 }
+      pack $audace(base).format_match_dec.lab4 -padx 10 -pady 2
       label $audace(base).format_match_dec.lab5 -text "$caption(conftel,ouranos_formataddec5)"
-      uplevel #0 { pack $audace(base).format_match_dec.lab5 -padx 10 -pady 2 }
+      pack $audace(base).format_match_dec.lab5 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).format_match_dec
@@ -2204,10 +2204,10 @@ namespace eval ::confTel {
       #--- Cree l'affichage du message
       label $audace(base).connectTelescope.labURL_1 -text "$caption(conftel,connexion_texte1)" \
          -font $audace(font,arial_10_b) -fg $color(red)
-      uplevel #0 { pack $audace(base).connectTelescope.labURL_1 -padx 10 -pady 2 }
+      pack $audace(base).connectTelescope.labURL_1 -padx 10 -pady 2
       label $audace(base).connectTelescope.labURL_2 -text "$caption(conftel,connexion_texte2)" \
          -font $audace(font,arial_10_b) -fg $color(red)
-      uplevel #0 { pack $audace(base).connectTelescope.labURL_2 -padx 10 -pady 2 }
+      pack $audace(base).connectTelescope.labURL_2 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).connectTelescope

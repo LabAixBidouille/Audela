@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.20 2007-02-03 20:15:34 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.21 2007-02-24 13:31:55 robertdelmas Exp $
 #
 
 #
@@ -377,16 +377,16 @@ namespace eval confPosObs {
 
       #--- Cree l'affichage du message
       label $audace(base).maj.lab1 -text "$caption(confgene,fichier_uai_maj1) '$confgene(posobs,fichier_station_uai)'"
-      uplevel #0 { pack $audace(base).maj.lab1 -padx 10 -pady 2 }
+      pack $audace(base).maj.lab1 -padx 10 -pady 2
       label $audace(base).maj.lab2 -text "$caption(confgene,fichier_uai_maj2)"
-      uplevel #0 { pack $audace(base).maj.lab2 -padx 10 -pady 2 }
+      pack $audace(base).maj.lab2 -padx 10 -pady 2
       label $audace(base).maj.lab3 -text "$caption(confgene,fichier_uai_maj3)"
-      uplevel #0 { pack $audace(base).maj.lab3 -padx 10 -pady 2 }
+      pack $audace(base).maj.lab3 -padx 10 -pady 2
       label $audace(base).maj.labURL4 -text "$caption(confgene,fichier_uai_maj4)" -font $audace(font,url) \
          -fg $color(blue)
-      uplevel #0 { pack $audace(base).maj.labURL4 -padx 10 -pady 2 }
+      pack $audace(base).maj.labURL4 -padx 10 -pady 2
       label $audace(base).maj.lab5 -text "$caption(confgene,fichier_uai_maj5) $confgene(posobs,fichier_station_uai)"
-      uplevel #0 { pack $audace(base).maj.lab5 -padx 10 -pady 2 }
+      pack $audace(base).maj.lab5 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).maj
@@ -424,11 +424,11 @@ namespace eval confPosObs {
 
       #--- Cree l'affichage du message
       label $audace(base).erreur.lab1 -text "$caption(confgene,fichier_uai_erreur1)"
-      uplevel #0 { pack $audace(base).erreur.lab1 -padx 10 -pady 2 }
+      pack $audace(base).erreur.lab1 -padx 10 -pady 2
       label $audace(base).erreur.lab2 -text "$caption(confgene,fichier_uai_erreur2)"
-      uplevel #0 { pack $audace(base).erreur.lab2 -padx 10 -pady 2 }
+      pack $audace(base).erreur.lab2 -padx 10 -pady 2
       label $audace(base).erreur.lab3 -text "$caption(confgene,fichier_uai_erreur3)"
-      uplevel #0 { pack $audace(base).erreur.lab3 -padx 10 -pady 2 }
+      pack $audace(base).erreur.lab3 -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).erreur

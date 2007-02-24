@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.7 2006-08-29 21:39:17 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.8 2007-02-24 13:31:16 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -84,7 +84,7 @@ namespace eval camera {
 
          #--- Cree le widget et le label du temps ecoule
          label $audace(base).progress_scan.lab_status -text "" -font $audace(font,arial_12_b) -justify center
-         uplevel #0 { pack $audace(base).progress_scan.lab_status -side top -fill x -expand true -pady 5 }
+         pack $audace(base).progress_scan.lab_status -side top -fill x -expand true -pady 5
          if { $tt == "-10" } {
             if { $conf(tempo_scan,delai) > "1" } {
                $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
@@ -236,7 +236,7 @@ namespace eval camera {
 
          #--- Cree le widget et le label du temps ecoule
          label $audace(base).progress_pose.lab_status -text "" -font $audace(font,arial_12_b) -justify center
-         uplevel #0 { pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5 }
+         pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
 
          #--- t est un nombre entier
          if { $t <= "0" } {
@@ -253,8 +253,8 @@ namespace eval camera {
          catch {
             #--- Cree le widget pour la barre de progression
             frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
-            uplevel #0 { pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
-               -anchor center -fill x -expand true -padx 8 -pady 8 }
+            pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
+               -anchor center -fill x -expand true -padx 8 -pady 8
 
             #--- Affiche de la barre de progression
             frame $audace(base).progress_pose.cadre.barre_color_invariant -height 26 -bg $color(blue)
