@@ -3,48 +3,41 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.7 2007-02-23 23:35:20 michelpujol Exp $
+# Mise a jour $Id: tel.tcl,v 1.8 2007-02-24 12:11:16 robertdelmas Exp $
 #
-
-
 
 namespace eval ::tlscp {
 }
 
-proc ::tlscp::Init { { in "" } { visuNo 1 }  } {
-   variable private
-   
+proc ::tlscp::Init { { in "" } { visuNo 1 } } {
    package provide tel 1.0
    #--- Chargement des captions
    source [ file join $::audace(rep_plugin) tool tel tel.cap ]
-
    #---
-   set ::panneau(menu_name,tlscp)   "$caption(tel,telescope)"
-
+   set ::panneau(menu_name,tlscp) "$caption(tel,telescope)"
+   #---
    createPanel $visuNo
 }
 
 proc ::tlscp::createPanel { visuNo } {
    variable private
-   global caption
-   global catalogue
-   global conf
-   global audace
+   global audace caption conf
 
-   set private($visuNo,This) "[::confVisu::getBase $visuNo].tlscp"
-   
+   #--- Initialisation des variables
+   set private($visuNo,This)        "[::confVisu::getBase $visuNo].tlscp"
    set private($visuNo,exptime)     "2"
-
    set private($visuNo,choix_bin)   "1x1 2x2 4x4"
    set private($visuNo,binning)     "2x2"
    set private($visuNo,menu)        "$caption(tel,coord)"
    set private($visuNo,cata_coord)  "$caption(tel,coord) $caption(tel,planete) $caption(tel,asteroide) \
       $caption(tel,etoile) $caption(tel,messier) $caption(tel,ngc) $caption(tel,ic) $caption(tel,utilisateur) \
       $caption(tel,zenith)"
-
    set This $private($visuNo,This)
+
    #--- Coordonnees J2000.0 de M104
    set private($visuNo,getobj)      "12h40m0 -11d37m22"
+
+   #--- Frame principal
    frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
@@ -234,7 +227,7 @@ proc ::tlscp::createPanel { visuNo } {
                -relief groove -width 5 -justify center
             pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -padx 4 -pady 2
 
-            label $This.fra6.fra1.lab1 -text $caption(tel,seconde) -relief flat  
+            label $This.fra6.fra1.lab1 -text $caption(tel,seconde) -relief flat
             pack $This.fra6.fra1.lab1 -in $This.fra6.fra1 -side left -fill none -padx 1 -pady 1
 
          pack $This.fra6.fra1 -in $This.fra6 -side top -fill x
@@ -265,13 +258,12 @@ proc ::tlscp::createPanel { visuNo } {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
-
 }
 
 #------------------------------------------------------------
 # ::tlscp::deletePanel
 #    supprime la fenetre de l'outil
-# 
+#
 #------------------------------------------------------------
 proc ::tlscp::deletePanel { visuNo } {
    variable private
@@ -283,21 +275,19 @@ proc ::tlscp::deletePanel { visuNo } {
 #------------------------------------------------------------
 # ::tlscp::adaptPanel
 #    adapte l'affichage des boutons en fonction de la camera
-#    
+#
 # parametres
 #   visuNo  : numero de la visu
 #   varName : nom de la variable surveillee
 #   varIndex: index de la variable surveillee si c'est un array
 #   operation: operation declencheuse (array read write unset)
 #------------------------------------------------------------
-
 proc ::tlscp::adaptPanel { visuNo { varName "" } { varIndex "" } { operation "" } } {
-   variable private 
+   variable private
    global conf
-   global caption
 
    set This $private($visuNo,This)
-   
+
    if { $conf(telescope) == "audecom" } {
       pack $This.fra2.fra1a.check1 -in $This.fra2.fra1a -side left -fill both -anchor center -pady 1
       #--- Evolution du script tant que la fonctionnalite "Stop Goto" sous AudeCom ne fonctionne pas
@@ -349,9 +339,9 @@ proc ::tlscp::startTool { visuNo } {
    trace add variable ::confTel(temma,modele) write "::tlscp::adaptPanel $visuNo"
    pack $private($visuNo,This) -side left -fill y
    ::tlscp::adaptPanel $visuNo
+
    #--- Je refraichis l'affichage des coordonnees
    ::telescope::afficheCoord
-
 }
 
 proc ::tlscp::stopTool { visuNo } {
@@ -374,10 +364,7 @@ proc ::tlscp::cmdMatch { visuNo } {
 
 proc ::tlscp::cmdGoto { visuNo } {
    variable private
-   global audace
-   global caption
-   global catalogue
-   global cataGoto
+   global audace caption cataGoto
 
    #--- Gestion graphique des boutons GOTO et Stop
    $private($visuNo,This).fra2.fra2a.but1 configure -relief groove -state disabled
@@ -436,19 +423,15 @@ proc ::tlscp::cmdGoto { visuNo } {
    $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal -text $caption(tel,coord) \
       -font $audace(font,arial_8_b) -command { ::telescope::afficheCoord }
    update
-
 }
 
 proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
    variable private
-   global conf
-   global audace
-   global caption
-   global catalogue
+   global audace caption catalogue conf
 
    #--- Force le type d'objets
    if { $type_objets != "" } {
-      set private($visuNo,menu) "$type_objets" 
+      set private($visuNo,menu) "$type_objets"
    }
 
    #--- Gestion des catalogues
@@ -475,45 +458,45 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj) 
+      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
       update
    } elseif { $private($visuNo,menu) == "$caption(tel,etoile)" } {
       ::cataGoto::CataEtoiles
       vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {    
+      if { $catalogue(validation) == "1" } {
          set private($visuNo,list_radec) "$catalogue(etoile_ad) $catalogue(etoile_dec)"
       } else {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj) 
+      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
       update
    } elseif { $private($visuNo,menu) == "$caption(tel,messier)" } {
       ::cataGoto::CataObjet $private($visuNo,menu)
       vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {    
+      if { $catalogue(validation) == "1" } {
          set private($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
       } else {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj) 
+      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
       update
    } elseif { $private($visuNo,menu) == "$caption(tel,ngc)" } {
       ::cataGoto::CataObjet $private($visuNo,menu)
       vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {    
+      if { $catalogue(validation) == "1" } {
          set private($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
       } else {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj) 
+      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
       update
    } elseif { $private($visuNo,menu) == "$caption(tel,ic)" } {
       ::cataGoto::CataObjet $private($visuNo,menu)
       vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {    
+      if { $catalogue(validation) == "1" } {
          set private($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
       } else {
          set private($visuNo,list_radec) $private($visuNo,getobj)
@@ -529,13 +512,13 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
       }
       if { $catalogue(utilisateur) != "" } {
          vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {    
+         if { $catalogue(validation) == "1" } {
             set private($visuNo,list_radec) "$catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec)"
          } else {
             set private($visuNo,list_radec) $private($visuNo,getobj)
          }
          set private($visuNo,getobj) $private($visuNo,list_radec)
-         $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj) 
+         $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
          update
       } else {
          set catalogue(validation) "2"
@@ -545,7 +528,7 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
       set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
       set private($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj) 
+      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
       update
    }
    if { $catalogue(validation) == "1" } {
@@ -554,9 +537,7 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
 }
 
 proc ::tlscp::PlusLong { visuNo } {
-   global conf
-   global audace
-   global caption
+   global audace caption conf
 
    set This "[::confVisu::getBase $visuNo].pluslong"
    if { $conf(audecom,gotopluslong) == "0" } {
@@ -567,12 +548,14 @@ proc ::tlscp::PlusLong { visuNo } {
       if [ winfo exists $This ] {
          destroy $This
       }
+
+      #---
       toplevel $This
       wm transient $This [::confVisu::getBase $visuNo]
       wm resizable $This 0 0
       wm title $This "$caption(tel,attention)"
-      set posx_pluslong [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
-      set posy_pluslong [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
+      set posx_pluslong [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 1 ]
+      set posy_pluslong [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 2 ]
       wm geometry $This +[ expr $posx_pluslong + 120 ]+[ expr $posy_pluslong + 105 ]
 
       #--- Cree l'affichage du message
@@ -604,11 +587,10 @@ proc ::tlscp::cmdInitTel { visuNo } {
 
    $private($visuNo,This).fra2.but3 configure -relief groove -state disabled
    update
-   ::telescope::initTel $private($visuNo,This).fra2.but3 
+   ::telescope::initTel $private($visuNo,This).fra2.but3 $visuNo
 }
 
 proc ::tlscp::FormatADDec { visuNo } {
-   global audace
    global caption
 
    set This "[::confVisu::getBase $visuNo].formataddec"
@@ -617,12 +599,13 @@ proc ::tlscp::FormatADDec { visuNo } {
       destroy $This
    }
 
+   #---
    toplevel $This
    wm transient $This [::confVisu::getBase $visuNo]
    wm title $This "$caption(tel,attention)"
    set posx_formataddec [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 1 ]
    set posy_formataddec [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 2 ]
-   wm geometry $This +[ expr $posx_formataddec + 120 ]+[ expr $posy_formataddec + 105 ]
+   wm geometry $This +[ expr $posx_formataddec + 120 ]+[ expr $posy_formataddec + 90 ]
    wm resizable $This 0 0
 
    #--- Cree l'affichage du message
@@ -644,7 +627,7 @@ proc ::tlscp::FormatADDec { visuNo } {
    ::confColor::applyColor $This
 }
 
-proc ::tlscp::cmdCtlSuivi { {value " "} } {
+proc ::tlscp::cmdCtlSuivi { { value " " } } {
    ::telescope::controleSuivi $value
 }
 
@@ -662,8 +645,7 @@ proc ::tlscp::cmdSpeed { } {
 
 proc ::tlscp::cmdGo { visuNo } {
    variable private
-   global audace
-   global caption
+   global audace caption
 
    #--- Verifie que le temps de pose est bien un réel positif
    if { [ ::tlscp::TestReel $private($visuNo,exptime) ] == "0" } {
@@ -672,13 +654,13 @@ proc ::tlscp::cmdGo { visuNo } {
    }
 
    #---
-   set camNo [confVisu::getCamNo $visuNo]
+   set camNo [::confVisu::getCamNo $visuNo]
    if { $camNo != "0" } {
       #--- Gestion graphiue du bouton
       $private($visuNo,This).fra6.but1 configure -relief groove -state disabled
       update
 
-      #--- 
+      #---
       if { ( $audace(telescope,getra) == "$caption(tel,camera)" ) && \
             ( $audace(telescope,getdec) == "$caption(tel,non_connectee)" ) } {
          ::telescope::afficheCoord
@@ -705,7 +687,7 @@ proc ::tlscp::cmdGo { visuNo } {
    } else {
       set audace(telescope,getra)  "$caption(tel,camera)"
       set audace(telescope,getdec) "$caption(tel,non_connectee)"
-      ::confCam::run 
+      ::confCam::run
       tkwait window $audace(base).confCam
       if { [ ::cam::list ] != "" } {
          ::telescope::afficheCoord
@@ -714,14 +696,9 @@ proc ::tlscp::cmdGo { visuNo } {
 }
 
 proc ::tlscp::acq { visuNo camNo exptime binning } {
-   variable private
-   global conf
-   global audace
-   global caption
-
    #--- Petits raccourcis
    set camera cam$camNo
-   set buffer buf[confVisu::getBufNo $visuNo]
+   set buffer buf[::confVisu::getBufNo $visuNo]
 
    #--- La commande exptime permet de fixer le temps de pose de l'image
    $camera exptime $exptime
