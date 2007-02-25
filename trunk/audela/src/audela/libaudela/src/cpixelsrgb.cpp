@@ -51,224 +51,155 @@ CPixelsRgb::~CPixelsRgb()
 
 }
 
-CPixelsRgb::CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY) 
+/**
+ *----------------------------------------------------------------------
+ * CPixelsRgb::CPixelsRgb
+ * Cree un objet de la classe CPixelsRgb et l'initalise avec les donnees
+ * pointee par le parametre "pixels".
+ * Les donnes "pixels" doivent contenir width*height*3 elements.
+ * et doivent etre dans l'ordre : 
+ *  R(0,0)G(0,0)B(0,0) R(1,0)G(1.0)B(1,0) R(2,0) ... 
+ * Si pixels est nul, l'objet est cree mais les donnees ne sont pas initialisees.
+ *
+ * Parameters: 
+ *    width       : Largeur en pixels
+ *    height      : Hauteur en pixels
+ *    pixelFormat : Format des donnees FORMAT_BYTE ou FORMAT_SHORT ou FORMAT_USHORT ou FORMAT_FLOAT
+ *    pixels      : pointeur des donnees. Si pixels vaut 0, l'objet CPixelsRgb est cree 
+ *                  mais les donnees ne sont pas initialisees 
+ *    reverseX    : vaut 0 ou 1. Si reverseX=1, les valeurs sur l'axe x sont inversees (= miroir vertical)
+ *    reverseY    : vaut 0 ou 1. Si reverseY=1, les valeurs sur l'axe y sont inversees (= miroir horizontal)
+ * Results:
+ *    Genere une exception CError en cas d'erreur.
+ * Side effects:
+ *    creation d'un objet de la classe CPixelsRgb
+ *----------------------------------------------------------------------
+ */
+
+CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY) 
 {
    long size;
    long t, x, y;
-
    naxis  = 3;
    naxis1 = width;
    naxis2 = height;
-
+   
    size = naxis1*naxis2*naxis;
    pix = (TYPE_PIXELS_RGB*)malloc(size * sizeof(TYPE_PIXELS_RGB));
    if(pix==0) {
       throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
    }
-
-
+      
    if( pixels != 0 ) {
       t = size;
       
-      switch (plane) {
-      case PLANE_RGB :
+      switch( pixelFormat ) {
+      case FORMAT_BYTE:
          {
-            switch( pixelFormat ) {
-            case FORMAT_BYTE:
-               {
-                  unsigned char * pixelPtr = (unsigned char *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width*naxis;x++) {
-                           *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                        }
-                     }
+            unsigned char * pixelPtr = (unsigned char *) pixels;
+            TYPE_PIXELS_RGB * pixCur = pix;
+            if (reverseY == 0) {
+               while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+            } else {
+               for (y=height-1; y>=0; y--) {
+                  t = width*y*naxis;
+                  for (x=0;x<width*naxis;x++) {
+                     *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
                   }
                }
-               break;
-               
-            case FORMAT_SHORT:
-               {
-                  short * pixelPtr = (short *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) {
-                           *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
-                     }
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width*naxis;x++) {
-                              *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                        }
-                     }
-                  }
-               }
-               break;
-            case FORMAT_USHORT:
-               {
-                  unsigned short * pixelPtr = (unsigned short *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) {
-                           *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
-                     }
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width*naxis;x++) {
-                              *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                        }
-                     }
-                  }
-               }
-               break;
-            case FORMAT_FLOAT: 
-               {
-                  float     * pixelPtr = (float *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width*naxis;x++) {
-                           *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                        }
-                     }
-                  }
-               }
-               break;
-            default : 
-               free(pix);
-               throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-               break;            
             }
-            
          }
          break;
          
-      case PLANE_R :
+      case FORMAT_SHORT:
          {
-            switch( pixelFormat ) {
-            case FORMAT_FLOAT: 
-               {
-                  float     * pixelPtr = (float *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) {
-                        *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
-                        pixelPtr++; // skip green element of pixel
-                        pixelPtr++; // skip blue  element of pixel
-                     }
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width;x++) {
-                           *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                           pixelPtr++; // skip green element of pixel
-                           pixelPtr++; // skip blue  element of pixel
-                        }
-                     }
+            short * pixelPtr = (short *) pixels;
+            TYPE_PIXELS_RGB * pixCur = pix;
+            if (reverseY == 0) {
+               while(--t>=0) {
+                  *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+               }
+            } else {
+               for (y=height-1; y>=0; y--) {
+                  t = width*y*naxis;
+                  for (x=0;x<width*naxis;x++) {
+                     *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
                   }
                }
-               break;
-            default : 
-               free(pix);
-               throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-               break;            
             }
-            
          }
          break;
-         
-      case PLANE_G :
+      case FORMAT_USHORT:
          {
-            switch( pixelFormat ) {
-            case FORMAT_FLOAT: 
-               {
-                  float     * pixelPtr = (float *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) {
-                        pixelPtr++; // skip red
-                        *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
-                        pixelPtr++; // skip blue
-                     }
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width;x++) {
-                           pixelPtr++; // skip red
-                           *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                           pixelPtr++; // skip blue
-                        }
-                        
-                     }
+            unsigned short * pixelPtr = (unsigned short *) pixels;
+            TYPE_PIXELS_RGB * pixCur = pix;
+            if (reverseY == 0) {
+               while(--t>=0) {
+                  *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+               }
+            } else {
+               for (y=height-1; y>=0; y--) {
+                  t = width*y*naxis;
+                  for (x=0;x<width*naxis;x++) {
+                     *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
                   }
                }
-               break;
-            default : 
-               free(pix);
-               throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-               break;            
             }
-            
          }
          break;
-         
-      case PLANE_B :
+      case FORMAT_FLOAT: 
          {
-            switch( pixelFormat ) {
-            case FORMAT_FLOAT: 
-               {
-                  float     * pixelPtr = (float *) pixels;
-                  TYPE_PIXELS_RGB * pixCur = pix;
-                  if (reverseY == 0) {
-                     while(--t>=0) {
-                        pixelPtr++; // skip red
-                        pixelPtr++; // skip green
-                        *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
-                     }
-                  } else {
-                     for (y=height-1; y>=0; y--) {
-                        t = width*y*naxis;
-                        for (x=0;x<width;x++) {
-                           pixelPtr++; // skip red
-                           pixelPtr++; // skip green
-                           *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
-                        }
-                     }
+            float     * pixelPtr = (float *) pixels;
+            TYPE_PIXELS_RGB * pixCur = pix;
+            if (reverseY == 0) {
+               while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+            } else {
+               for (y=height-1; y>=0; y--) {
+                  t = width*y*naxis;
+                  for (x=0;x<width*naxis;x++) {
+                     *(pixCur+(t++)) = (TYPE_PIXELS_RGB)*(pixelPtr++);
                   }
                }
-               break;
-            default : 
-               free(pix);
-               throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-               break;            
             }
-            
          }
          break;
-         
-      default :
-         throw CError(ELIBSTD_NOT_IMPLEMENTED);
-         break;
+      default : 
+         free(pix);
+         throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
+         break;            
+      }
    }
-}
    // j'inverse les pixels si reverseX=1
    if( reverseX == 1 ) {
       MirX();
    }
-
-
 }
-   
 
+/**
+ *----------------------------------------------------------------------
+ * CPixelsRgb::CPixelsRgb
+ * Cree un objet de la classe CPixelsRgb et l'initalise avec les donnees
+ * pointee par le parametre "pixels" (voir Tk
+ * Les donnes "pixels" width*height*3 elements dasn l'ordre suivant :
+ *  R(0,0)G(0,0)B(0,0) R(1,0)G(1.0)B(1,0) R(2,0) ... 
+ * 
+ * Parameters: 
+ *    width       : Largeur en pixels
+ *    height      : Hauteur en pixels
+ *    pixelSize   : Nombre de couleurs (3 ou 4)
+ *    offset      : offset des couleurs  
+ *                   offset[0] offet du rouge
+ *                   offset[1] offet du vert
+ *                   offset[2] offet du bleu
+ *                   offset[3] offet du alpha
+ *    pitch       : non utilise  
+ *    pixels      : pointeur des donnees FORMAT_BYTE (un octet par couleur).  
+ * Results:
+ *    Genere une exception CError en cas d'erreur.
+ * Side effects:
+ *    creation d'un objet de la classe CPixelsRgb
+ *----------------------------------------------------------------------
+ */
 
 CPixelsRgb::CPixelsRgb(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels)
 {
@@ -335,6 +266,27 @@ CPixelsRgb::CPixelsRgb(int width, int height, int pixelSize, int offset[4], int 
    
 }
 
+
+/**
+ *----------------------------------------------------------------------
+ * CPixelsRgb::CPixelsRgb
+ * Cree un objet de la classe CPixelsRgb et l'initalise avec les donnees
+ * pointee par le parametre "pixelsR" "pixelsG" "pixelsB".
+ * Les donnes "pixelsR" "pixelsG" "pixelsB" doivent contenir chacun width*height elements.
+ * 
+ * Parameters: 
+ *    width       : Largeur en pixels
+ *    height      : Hauteur en pixels
+ *    pixelFormat : Format des donnees FORMAT_BYTE ou FORMAT_SHORT ou FORMAT_USHORT ou FORMAT_FLOAT
+ *    pixelsR     : pointeur des donnees rouge.  
+ *    pixelsG     : pointeur des donnees vert.  
+ *    pixelsB     : pointeur des donnees bleu.  
+ * Results:
+ *    Genere une exception CError en cas d'erreur.
+ * Side effects:
+ *    creation d'un objet de la classe CPixelsRgb
+ *----------------------------------------------------------------------
+ */
 
 CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pixelsR, void *pixelsG, void *pixelsB) {
    TYPE_PIXELS_RGB *pixCur;
@@ -1727,73 +1679,6 @@ void CPixelsRgb::Sub(char *filename, float offset)
       throw e;
    }
 }
-
-CPixels * CPixelsRgb::TtImaSeries(char *s,int *nb_keys,char ***pkeynames,char ***pkeyvalues,
-                                 char ***pcomments,char ***punits, int **pdatatypes)
-{
-   TYPE_PIXELS_RGB *pixInR = NULL;
-   TYPE_PIXELS_RGB *pixInG = NULL;
-   TYPE_PIXELS_RGB *pixInB = NULL;
-   TYPE_PIXELS_RGB *pixOutR = NULL;
-   TYPE_PIXELS_RGB *pixOutG = NULL;
-   TYPE_PIXELS_RGB *pixOutB = NULL;
-   int msg, datatype;
-   int width, height;
-   CPixels * newPixels;
-   
-   try {
-      pixInR = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      pixInG = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      pixInB = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixInR, pixInG, pixInB); 
-            
-      // traitement
-      //datatype = TFLOAT;       
-      datatype = TSHORT;
-      width  = naxis1;
-      height = naxis2;      
-      msg = Libtt_main(TT_PTR_IMASERIES,13,&pixInR,&datatype,&width,&height,&pixOutR,&datatype,s,
-               nb_keys,pkeynames,pkeyvalues,pcomments,punits,pdatatypes);
-      if(msg) throw CErrorLibtt(msg);
-      width  = naxis1;
-      height = naxis2;
-      msg = Libtt_main(TT_PTR_IMASERIES,7,&pixInG,&datatype,&width,&height,&pixOutG,&datatype,s);
-      if(msg) throw CErrorLibtt(msg);
-      width  = naxis1;
-      height = naxis2;
-      msg = Libtt_main(TT_PTR_IMASERIES,7,&pixInB,&datatype,&width,&height,&pixOutB,&datatype,s);
-      if(msg) throw CErrorLibtt(msg);
-
-      // nouvelle taille en sortie du traitement
-      naxis1 = width;
-      naxis2 = height;
-      // j'enregistre la nouvelle image
-      newPixels = new CPixelsRgb( naxis1, naxis2, FORMAT_SHORT, pixOutR, pixOutG, pixOutB);            
-      free(pixInR);
-      free(pixInG);
-      free(pixInB);
-      Libtt_main(TT_PTR_FREEPTR,1,&pixOutR);
-      Libtt_main(TT_PTR_FREEPTR,1,&pixOutG);
-      Libtt_main(TT_PTR_FREEPTR,1,&pixOutB);
-      return newPixels;
-      
-   } catch (const CError& e) {
-      // je libere la mémoire
-      if(pixInR) free(pixInR);
-      if(pixInG) free(pixInG);
-      if(pixInB) free(pixInB);
-      Libtt_main(TT_PTR_FREEPTR,1,&pixOutR);
-      Libtt_main(TT_PTR_FREEPTR,1,&pixOutG);
-      Libtt_main(TT_PTR_FREEPTR,1,&pixOutB);
-      // je transmets l'exception
-      throw e;
-   }
-
- 
-}
-
 
 //***************************************************
 // unifybg                      

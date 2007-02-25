@@ -731,28 +731,6 @@ void CPixelsGray::Sub(char *filename, float offset)
    if(msg) throw CErrorLibtt(msg);
 }
 
-CPixels * CPixelsGray::TtImaSeries(char *s,int *nb_keys,char ***pkeynames,char ***pkeyvalues,
-                                 char ***pcomments,char ***punits, int **pdatatypes)
-{
-   int msg, datatype;
-   TYPE_PIXELS  * ppixOut = NULL;
-   CPixelsGray  * pixelsOut;
-
-   try {
-      datatype = TFLOAT;
-      msg = Libtt_main(TT_PTR_IMASERIES,13,&pix,&datatype,&naxis1,&naxis2,&ppixOut,&datatype,
-                        s,nb_keys,pkeynames,pkeyvalues,pcomments,punits,pdatatypes);
-      if(msg) throw CErrorLibtt(msg);
-      pixelsOut = new CPixelsGray( naxis1, naxis2, ppixOut);
-      Libtt_main(TT_PTR_FREEPTR,1,&ppixOut);
-      return pixelsOut;
-
-   } catch (const CError& e) {
-      Libtt_main(TT_PTR_FREEPTR,1,&ppixOut);
-      throw e;
-   }
-}
-
 //***************************************************
 // unifybg                      
 //                                         

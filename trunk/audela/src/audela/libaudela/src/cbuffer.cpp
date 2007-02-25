@@ -1514,7 +1514,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
       switch (compression) {
       case COMPRESS_NONE:
          {
-            pixTemp = new CPixelsRgb(plane, width, height, pixelFormat, pixels, reverseX, reverseY);
+            pixTemp = new CPixelsRgb(width, height, pixelFormat, pixels, reverseX, reverseY);
             break;
          }         
       case COMPRESS_JPEG :
@@ -1527,7 +1527,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             
             result  = libdcjpeg_decodeBuffer((unsigned char*) pixels, pixelSize, &decodedData, &decodedSize, &width, &height);            
             if (result == 0 )  {
-               pixTemp = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, reverseX, reverseY);
+               pixTemp = new CPixelsRgb(width, height, FORMAT_BYTE, decodedData, reverseX, reverseY);
                // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
                libdcjpeg_freeBuffer(decodedData);
             } else {
@@ -1765,7 +1765,6 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    int width, height, naxis1, naxis2, y0;
    double gauss[4], ecart;
    double sumRatio;
-   int signe;
    
    naxis1 = this->pix->GetWidth();
    naxis2 = this->pix->GetHeight();
@@ -2094,7 +2093,8 @@ void CBuffer::Unsmear(float coef)
 
 void CBuffer::TtImaSeries(char *s)
 {
-   CFitsKeyword *k;
+   
+   CFitsKeyword *keyword;
    int msg;
    int nb_keys;
    char **keynames=NULL;
@@ -2102,15 +2102,23 @@ void CBuffer::TtImaSeries(char *s)
    char **comments=NULL;
    char **units=NULL;
    int *datatypes=NULL;
+   int datatypeIn = 0;
+   int datatypeOut = NULL;
 //   char valchar[80];
-   TYPE_PIXELS *ppixOut=NULL;
-   //TYPE_PIXELS *ppixIn=NULL;
-   CPixels * pixelsOut;
-
-
-   nb_keys = keywords->GetKeywordNb();
+   TYPE_PIXELS *pixOut=NULL;
+   TYPE_PIXELS *pixIn=NULL;
+   TYPE_PIXELS *pixOutR = NULL;
+   TYPE_PIXELS *pixOutG = NULL;
+   TYPE_PIXELS *pixOutB = NULL;
+   int naxis, naxis1, naxis2, naxis3;
+   CPixels * newPixels = NULL;
+   CFitsKeywords *newKeywords = new CFitsKeywords();
 
    try {
+      naxis1 = pix->GetWidth();
+      naxis2 = pix->GetHeight();
+      nb_keys = keywords->GetKeywordNb();
+
       // Allocation de l'espace memoire pour les tableaux de mots-cles
       msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
       if(msg) throw CErrorLibtt(msg);
@@ -2118,45 +2126,157 @@ void CBuffer::TtImaSeries(char *s)
       // Conversion keywords vers tableaux 'Made in Klotz'
       keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
       
-      // traitement de l'image
-      pixelsOut = pix->TtImaSeries(s, &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-      delete pix;
-      pix = pixelsOut;
-      
-      // On recupere les mots cles
-      keywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
-      //sprintf(valchar,"%d",pix->GetWidth() );
-      //SetKeyword("NAXIS1",valchar,"int","","");
-      //sprintf(valchar,"%d",pix->GetHeight());
-      //SetKeyword("NAXIS2",valchar,"isnt","","");
+      switch ( this->pix->getPixelClass() ) {
+      case CLASS_GRAY :
+         // je recupere les pixels GREY
+         naxis1 = pix->GetWidth();
+         naxis2 = pix->GetHeight();
+         naxis3 = 0;
+         pixIn = (TYPE_PIXELS *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
+         this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_GREY, (int) pixIn);
+         // j'applique le traitement
+         datatypeIn = TFLOAT;
+         datatypeOut = TFLOAT;
+         msg = Libtt_main(TT_PTR_IMASERIES,13,&pixIn,&datatypeIn,&naxis1,&naxis2,&pixOut,&datatypeOut,
+                           s,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         if(msg) throw CErrorLibtt(msg);
+
+         // Je recupere les mots cles
+         newKeywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+
+         // je recherche le valeurs de NAXIS et NAXIS3 
+         // pour savoir si TT_PTR_IMASERIES a cree une image RGB ou GREY
+         keyword = newKeywords->FindKeyword("NAXIS");
+         if (keyword != NULL ) {
+            naxis = keyword->GetIntValue();
+         } else {
+            throw CError( "CBuffer::TtImaSeries NAXIS keyword not found"); 
+         }
+         if ( naxis >= 1 ) {
+            keyword = newKeywords->FindKeyword("NAXIS1");
+            if (keyword != NULL ) {
+               naxis1 = keyword->GetIntValue();
+            } else {
+               throw CError( "CBuffer::TtImaSeries NAXIS1 keyword not found"); 
+            }
+         }
+         if ( naxis >= 2 ) {
+            keyword = newKeywords->FindKeyword("NAXIS2");
+            if (keyword != NULL ) {
+               naxis2 = keyword->GetIntValue();
+            } else {
+               throw CError( "CBuffer::TtImaSeries NAXIS2 keyword not found"); 
+            }
+         }
+         if ( naxis >= 3 ) {
+            keyword = newKeywords->FindKeyword("NAXIS3");
+            if (keyword != NULL ) {
+               naxis3 = keyword->GetIntValue();
+            } else {
+               throw CError( "CBuffer::TtImaSeries NAXIS3 keyword not found"); 
+            }
+         }
+         
+         // je cree le nouvel objet contenant les pixels
+         if ( naxis==3 && naxis3==3) {
+            // c'est une image couleur RGB
+            newPixels = new CPixelsRgb( naxis1, naxis2, FORMAT_FLOAT, pixOut, 0 , 0);
+         } else {
+            // c'est une image en niceau de gris
+            newPixels = new CPixelsGray( naxis1, naxis2, FORMAT_FLOAT, pixOut, 0 , 0);         
+         }         
+
+         free(pixIn);
+         Libtt_main(TT_PTR_FREEPTR,1,&pixOut);
+         break;
+
+       case CLASS_RGB :
+         // je repete le traitement pour chacun des 3 plans
+         naxis1 = pix->GetWidth();
+         naxis2 = pix->GetHeight();
+         pixIn = (TYPE_PIXELS *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
+         datatypeIn = TFLOAT;
+         datatypeOut = TFLOAT;
+         this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_R, (int) pixIn);
+         msg = Libtt_main(TT_PTR_IMASERIES,13,&pixIn,&datatypeIn,&naxis1,&naxis2,&pixOutR,&datatypeOut,s,
+                  &nb_keys,&keynames,&values,&comments,&units,&datatypes);
+         if(msg) throw CErrorLibtt(msg);
+         
+         naxis1 = pix->GetWidth();  // je reinitialise naxis1, naxis2 au cas ou le traitement les aurait modifies
+         naxis2 = pix->GetHeight();
+         this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_G, (int) pixIn);
+         msg = Libtt_main(TT_PTR_IMASERIES,7,&pixIn,&datatypeIn,&naxis1,&naxis2,&pixOutG,&datatypeOut,s);
+         if(msg) throw CErrorLibtt(msg);
+         
+         naxis1 = pix->GetWidth(); // je reinitialise naxis1, naxis2 au cas ou le traitement les aurait modifies
+         naxis2 = pix->GetHeight();
+         this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_B, (int) pixIn);
+         msg = Libtt_main(TT_PTR_IMASERIES,7,&pixIn,&datatypeIn,&naxis1,&naxis2,&pixOutB,&datatypeOut,s);
+         if(msg) throw CErrorLibtt(msg);
+
+         // je cree le nouvel objet contenant les pixels
+         // en supposant le resultat est une image RGB (a modifier si ce n'est pas le cas)
+         newPixels = new CPixelsRgb( naxis1, naxis2, FORMAT_FLOAT, pixOutR, pixOutG, pixOutB); 
+
+         // Je recupere les mots cles
+         newKeywords->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
+
+         free(pixIn);
+         Libtt_main(TT_PTR_FREEPTR,1,&pixOutR);
+         Libtt_main(TT_PTR_FREEPTR,1,&pixOutG);
+         Libtt_main(TT_PTR_FREEPTR,1,&pixOutB);
+         break;
+
+       default : 
+         throw CError( "CBuffer::TtImaSeries is not implemented for class of pixels %s",
+            CPixels::getPixelClassName(this->pix->getPixelClass()));
+      }
+
+      // je supprime les anciens pixels du buffer
+      delete this->pix;
+      // j'affecte les nouveaus pixels au buffer
+      this->pix = newPixels;
+
+      delete this->keywords;
+      this->keywords = newKeywords;
+
       
       // On reinitialise les parametres astrometriques
       p_ast->valid = 0;
-      k = keywords->FindKeyword("BITPIX");
-      if(k==0) {
+
+      // On reinitialise les parametres astrometriques
+      p_ast->valid = 0;
+
+      keyword = keywords->FindKeyword("BITPIX");
+      if(keyword==0) {
          saving_type = USHORT_IMG;
       } else {
          saving_type = keywords->FindKeyword("BITPIX")->GetIntValue();
       }
       if(saving_type==16) {
-         k = keywords->FindKeyword("BZERO");
-         if((k)&&(k->GetIntValue()==32768)) {
+         keyword = keywords->FindKeyword("BZERO");
+         if((keyword)&&(keyword->GetIntValue()==32768)) {
             saving_type = USHORT_IMG;
          }
       } else if(saving_type==32) {
-         k = keywords->FindKeyword("BZERO");
-         if((k)&&(k->GetIntValue()==-(2^31))) {
+         keyword = keywords->FindKeyword("BZERO");
+         if((keyword)&&(keyword->GetIntValue()==-(2^31))) {
             saving_type = ULONG_IMG;
          }
       }
       // Liberation de la memoire allouee par libtt
       msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);   
-      msg = Libtt_main(TT_PTR_FREEPTR,1,&ppixOut);
       
    } catch (const CError& e) {
       // je libere la mémoire
-      msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-      msg = Libtt_main(TT_PTR_FREEPTR,1,&ppixOut);
+      if(pixIn) free(pixIn);
+      if(newPixels) delete newPixels;
+      if(newKeywords) delete newKeywords;
+      Libtt_main(TT_PTR_FREEPTR,1,&pixOut);
+      Libtt_main(TT_PTR_FREEPTR,1,&pixOutR);
+      Libtt_main(TT_PTR_FREEPTR,1,&pixOutG);
+      Libtt_main(TT_PTR_FREEPTR,1,&pixOutB);
+      Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
       // je transmets l'exception
       throw e;
    }
