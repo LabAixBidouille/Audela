@@ -27,8 +27,10 @@
 #define __TTUSER2H__
 
 /* --- autorized between 2001 and 2999 ---*/
-#define TT_IMASERIES_USER2_PROFILE2 2001
-#define TT_IMASERIES_USER2_LOPT 2002
+#define TT_IMASERIES_USER2_PROFILE2       2001
+#define TT_IMASERIES_USER2_LOPT           2002
+#define TT_IMASERIES_USER2_SMOOTHSG       2003
+#define TT_IMASERIES_USER2_COLOR_SPECTRUM 2004
 
 /* --- autorized between 2001 and 2999 ---*/
 #define TT_IMASTACK_USER2_TUTU 2001
@@ -40,6 +42,12 @@ typedef struct {
    int height;
    char direction[2];
    char filename[11];
+   int nl;
+   int nr;
+   int ld;
+   int m;
+   double wavelengthmin;
+   double wavelengthmax;
 } TT_USER2_IMA_SERIES;
 
 /* --- Ajout de parametres pour la classe ima/stack --- */
