@@ -294,7 +294,7 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          *pixels = new CPixelsGray(width, height, FORMAT_BYTE, decodedData, 0, 0);
          naxis = 1;
       } else if ( naxis3 == 3 ) {
-         *pixels = new CPixelsRgb(PLANE_RGB, width, height, FORMAT_BYTE, decodedData, 0, 0);
+         *pixels = new CPixelsRgb(width, height, FORMAT_BYTE, decodedData, 0, 0);
          naxis = 3;
       } else { 
          throw new CError("loadJpeg : unsupported value naxis3=%d ", naxis3);
@@ -451,7 +451,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    result = libdcraw_bufferCfa2Rgb(cfaData, &dataInfo, method, &rgbData);
    if (result == 0 )  {      
       // je copie les pixels dans la variable de sortie (en inversant les Y)
-      *rgbPixels = new CPixelsRgb(PLANE_RGB, dataInfo.width, dataInfo.height, FORMAT_USHORT, rgbData, 0, 1);
+      *rgbPixels = new CPixelsRgb(dataInfo.width, dataInfo.height, FORMAT_USHORT, rgbData, 0, 1);
                   
       // je cree les mots cles en sortie     
       *rgbKeywords = new CFitsKeywords();

@@ -31,7 +31,7 @@ typedef  short TYPE_PIXELS_RGB;
 class LIBAUDELA_API CPixelsRgb : public CPixels
 {
 public:
-   CPixelsRgb(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY);
+   CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY);
    CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void *pixelsR, void *pixelsG, void *pixelsB);
    CPixelsRgb(int naxis1, int naxis2, int pixelSize, int offset[4], int pitch, unsigned char * pixels);
 	virtual ~CPixelsRgb();
@@ -82,8 +82,6 @@ public:
    void SetPix(TColorPlane plane,TYPE_PIXELS val,int x, int y);
    //void SetPixels(TYPE_PIXELS_RGB *pixelsR, TYPE_PIXELS_RGB *pixelsG, TYPE_PIXELS_RGB *pixelsB);
    void Sub(char *filename, float offset);
-   CPixels * TtImaSeries(char *s,int *nb_keys,char ***pkeynames,char ***pkeyvalues,
-                                 char ***pcomments,char ***punits, int **pdatatypes);
    void Unsmear(float coef);
    void Window(int x1, int y1, int x2, int y2);
    void UnifyBg();

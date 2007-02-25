@@ -96,8 +96,6 @@ public:
    virtual void Rot(float x0, float y0, float angle)=0;
    virtual void SetPix(TColorPlane plane,TYPE_PIXELS val,int x, int y)=0;
    virtual void Sub(char *filename, float offset)=0;
-   virtual CPixels *  TtImaSeries(char *s,int *nb_keys,char ***pkeynames,char ***pkeyvalues,
-                                 char ***pcomments,char ***punits, int **pdatatypes)=0;
    virtual void Unsmear(float coef)=0;
    virtual void Window(int x1, int y1, int x2, int y2)=0;
    virtual void UnifyBg()=0;
