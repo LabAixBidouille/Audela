@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.47 2007-02-23 23:40:12 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.48 2007-02-25 22:34:06 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -267,11 +267,11 @@ namespace eval ::confVisu {
          if { "$private($visuNo,picture_w)" == "" } {
             set private($visuNo,picture_w) 0
          }
-         if { [buf$bufNo getnaxis] == 1 } {
+         if { [buf$bufNo getpixelsheight] == 1 } {
             #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visu
             set private($visuNo,picture_h) [visu$visuNo thickness]
          } else {
-            #--- dans le cas d'une image 2D ou plus, la hauteur est la valeur retournee par le buffer
+            #--- dans le cas d'une image 2D ou plus, la hauteur est la hauteur retournee par le buffer
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
          }
 
@@ -1597,12 +1597,19 @@ namespace eval ::confVisu {
          set yi "$caption(confVisu,tiret)"
          set intensite "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
       } else {
-         #--- xi et yi sont des 'coordonnees-image'
+         #--- xi et yi sont des 'coordonnees-buffer'
          set xi [ lindex $coord 0 ]
          set yi [ lindex $coord 1 ]
-
+         #--- si le buffer ne contient qu'une ligne , j'affiche l'instenisé de 
+         #--- cette quelque soit le la position verticale du curseur de la souris
+         #--- dans l'image car c'est la meme valeur sur toute la colonne  
+         if { [buf$bufNo getpixelsheight]==1 } {
+            set yii 1
+         } else {
+            set yii $yi
+         }
          #--- ii contiendra l'intensite du pixel pointe
-         set result [catch { set ii [ buf$bufNo getpix [ list $xi $yi ] ] } ]
+         set result [catch { set ii [ buf$bufNo getpix [ list $xi $yii ] ] } ]
          if { $result == 0 } {
             if { $private($visuNo,intensity) == "1" } {
                if { [ lindex $ii 0 ] == "1" } {
@@ -1930,13 +1937,11 @@ namespace eval ::confVisu {
    proc redrawCrosshair { visuNo } {
       variable private
 
+      #--- je masque le reticule
+      hideCrosshair $visuNo
       if { "$private($visuNo,crosshairstate)" == "1" } {
-         #--- je masque le reticule
-         hideCrosshair $visuNo
-
          #--- j'affiche le reticule
          displayCrosshair $visuNo
-         update
       }
    }
 
