@@ -604,6 +604,7 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    int listArgc;
    int x1, y1, x2, y2, i;
    char **listArgv;
+   int naxis1, naxis2;
 
    ligne = (char*)calloc(200,sizeof(char));
    if((argc!=2)&&(argc!=3)) {
@@ -659,10 +660,10 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                   x1 = i;
                }
                buffer = CBuffer::Chercher(visu->bufnum);
-               int naxis1 = buffer->GetW();
-               int naxis2 = buffer->GetH();
+               naxis1 = buffer->GetW();
 
-               if( buffer->GetNaxis() == 1 ) {
+               // s'il n'y qu'une ligne, naxis2 vaut thickness
+               if( buffer->GetH() == 1 ) {
                   naxis2 = visu->GetThickness();
                } else {
                   naxis2 = buffer->GetH();
