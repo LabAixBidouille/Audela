@@ -651,13 +651,10 @@ int CVisu::UpdateDisplay()
    }
 
    // calcul de largeur et de la hauteur d'affichage
-   if( buffer->GetNaxis() == 1 || 
-       (buffer->GetNaxis() == 2 && buffer->GetH()==1) ) {
+   if( buffer->GetH()==1) {
       // une image 1D est étalée sur plusieurs lignes
       orgww = xx2 - xx1 + 1; // Largeur 
       orgwh = thickness_1d;
-      //yy1 = 0;
-      //yy2 = 0;
    } else {
       // image 2D 
       orgww = xx2 - xx1 + 1; // Largeur 
@@ -683,8 +680,8 @@ int CVisu::UpdateDisplay()
       cuts,
       pal.pal, ptr);
 
-   if( buffer->GetNaxis() == 1 || 
-       (buffer->GetNaxis() == 2 && buffer->GetH()==1) ) {
+   // s'il n'y a qu'une ligne , je duplique la ligne "thickness" fois a l'affichae
+   if( buffer->GetH()==1 ) {
       unsigned char *ptr2;
       ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
       if(ptr2==NULL) {
@@ -695,6 +692,7 @@ int CVisu::UpdateDisplay()
          memcpy(ptr2+y*orgww*3, ptr, orgww*3);
       }
       free(ptr);
+      // ptr pointe sur le nouveau buffer contenant la ligne dupliquee
       ptr = ptr2;
    }
       
