@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.21 2007-02-24 13:31:55 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.22 2007-03-02 17:22:27 michelpujol Exp $
 #
 
 #
@@ -2702,7 +2702,7 @@ namespace eval confGenerique {
    # confGenerique::afficherAide
    # Fonction 'afficherAide' pour afficher l'aide
    #
-   proc showHelp { NameSpace } {
+   proc showHelp { visuNo NameSpace } {
       set result [ catch { $NameSpace\:\:showHelp } msg ]
       if { $result == "1" } {
          ::console::affiche_erreur "$msg\n"
@@ -2779,7 +2779,7 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::showHelp"
+         -command "::confGenerique::showHelp $visuNo $NameSpace"
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
