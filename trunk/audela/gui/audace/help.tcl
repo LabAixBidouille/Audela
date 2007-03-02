@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise a jour $Id: help.tcl,v 1.2 2006-11-15 20:47:54 robertdelmas Exp $
+# Mise a jour $Id: help.tcl,v 1.3 2007-03-02 17:24:38 michelpujol Exp $
 #
 
 ###########################################################################################
@@ -132,6 +132,50 @@ namespace eval ::audace {
       if { $relativeFileName != "" } {
          #--- J'affiche le fichier d'aide
          ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(rep_plugin) $pluginType $pluginName \
+            $audace(help_langage) $relativeFileName ] 1 $tag
+      } else {
+         #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
+         ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,intro) \
+            "1010presentation.htm" ] 1 ""
+      }
+
+      #--- Focus
+      focus $audace(help_window)
+
+   }
+
+   #----------------------------------------------------------------------------------------
+   #  ::audace::showHelpScript
+   #  
+   #  affiche l'aide d'un script quelconque 
+   #  le fichier d'aide doit etre dans le repertoire 
+   #  scriptDirectory/langage/xxx.htm
+   #
+   #  parametres :
+   #     scriptDirectory : repertoire du fichier d'aide
+   #     relativeFileName : nom du fichier d'aide
+   #     tag             : balise anchor dans la page HTML (optionel)
+   #
+   #  exemple : ::audace::showHelpScript $audace(rep_script) testaudela.htm
+   #----------------------------------------------------------------------------------------
+   proc ::audace::showHelpScript { scriptDirectory  { relativeFileName "" } { tag "" } } {
+      global audace help
+
+      #--- J'affiche la fenetre si ce n'est pas deja fait
+      if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
+         ::audace::initHelp
+      } else {
+         if { [ winfo exists $audace(base).help ] } {
+            wm deiconify $audace(base).help
+         }
+      }
+
+      #--- J'attends que la fenetre d'aide soit creee
+      update
+
+      if { $scriptDirectory != "" } {
+         #--- J'affiche le fichier d'aide
+         ::HelpViewer::LoadFile $audace(help_window) [ file join $scriptDirectory \
             $audace(help_langage) $relativeFileName ] 1 $tag
       } else {
          #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
