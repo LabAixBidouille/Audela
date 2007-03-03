@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.22 2007-03-02 17:22:27 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.23 2007-03-03 21:55:17 robertdelmas Exp $
 #
 
 #
@@ -2651,7 +2651,7 @@ namespace eval confGenerique {
    #  this      : chemin TK de la fenetre
    #  namespace : namespace des fonctions specifiques
    #  visuNo    : numero de la visu courante
-   #  mode      : modal (attend la fermeture la fenetre) ou nomodal (retourne immediatement)
+   #  mode      : modal (attend la fermeture de la fenetre) ou nomodal (retourne immediatement)
    #
    # return
    #  si mode=modal
@@ -2699,8 +2699,8 @@ namespace eval confGenerique {
    }
 
    #
-   # confGenerique::afficherAide
-   # Fonction 'afficherAide' pour afficher l'aide
+   # confGenerique::showHelp
+   # Fonction 'showHelp' pour afficher l'aide
    #
    proc showHelp { visuNo NameSpace } {
       set result [ catch { $NameSpace\:\:showHelp } msg ]
