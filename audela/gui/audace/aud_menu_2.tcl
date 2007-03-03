@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.4 2007-01-21 11:58:57 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.5 2007-03-03 22:06:03 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -750,9 +750,6 @@ namespace eval ::seuilWindow {
       global audace conf num selectWindow seuilWindow snconfvisu snvisu tmp
 
       #---
-      save_cursor
-      all_cursor watch
-      #---
       if { $seuilWindow($visuNo,seuilWindowAuto_Manuel) == "2" } {
          set ::confVisu::private($visuNo,maxdyn) $seuilWindow($visuNo,max)
          set ::confVisu::private($visuNo,mindyn) $seuilWindow($visuNo,min)
@@ -784,8 +781,6 @@ namespace eval ::seuilWindow {
       }
       #--- Recuperation de la position de la fenetre de reglages
       seuils_recup_position $visuNo
-      #---
-      restore_cursor
    }
 
    #
