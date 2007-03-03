@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.48 2007-02-25 22:34:06 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.49 2007-03-03 21:52:43 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -1600,9 +1600,9 @@ namespace eval ::confVisu {
          #--- xi et yi sont des 'coordonnees-buffer'
          set xi [ lindex $coord 0 ]
          set yi [ lindex $coord 1 ]
-         #--- si le buffer ne contient qu'une ligne , j'affiche l'instenisé de 
-         #--- cette quelque soit le la position verticale du curseur de la souris
-         #--- dans l'image car c'est la meme valeur sur toute la colonne  
+         #--- si le buffer ne contient qu'une ligne , j'affiche l'intensite de
+         #--- cette ligne quelque soit la position verticale du curseur de la
+         #--- souris dans l'image car c'est la meme valeur sur toute la colonne
          if { [buf$bufNo getpixelsheight]==1 } {
             set yii 1
          } else {
@@ -1627,7 +1627,7 @@ namespace eval ::confVisu {
                }
             }
          } else {
-            #--- je traite le cas ou la taille de l'image a ete changee vant de mettre
+            #--- je traite le cas ou la taille de l'image a ete changee avant de mettre
             #--- a jour les parametres confisu (par exemple acquition en cours avec une camera)
             set xi "$caption(confVisu,tiret)"
             set yi "$caption(confVisu,tiret)"
@@ -1806,12 +1806,9 @@ namespace eval ::confVisu {
 
       if { $private($visuNo,autovisuEnCours) == "0" } {
          set private($visuNo,autovisuEnCours) "1"
-         save_cursor
-         all_cursor watch
          #--- Le -force permet de forcer la visu si on a choisi
          #--- dans le panneau de config "pas de recalcul automatique"
          ::confVisu::autovisu $visuNo -force
-         restore_cursor
          set private($visuNo,autovisuEnCours) "0"
       }
    }
