@@ -1,20 +1,27 @@
 #
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
-# Auteur  : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.16 2007-01-27 16:00:18 robertdelmas Exp $
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: surchaud.tcl,v 1.17 2007-03-03 22:03:10 robertdelmas Exp $
 #
 # offset  value
+# offset1  in out const ?tt_options?
 # offset2  in out const number ?first_index? ?tt_options?
+# ngain1  in out const ?tt_options?
 # ngain2  in out const number ?first_index? ?tt_options?
+# noffset1  in out const ?tt_options?
 # noffset2  in out const number ?first_index? ?tt_options?
 # add  operand value
+# add1  in operand out const ?tt_options?
 # add2  in operand out const number ?first_index? ?tt_options?
 # sub  operand value
+# sub1  in operand out const ?tt_options?
 # sub2  in operand out const number ?first_index? ?tt_options?
 # div  operand value
+# div1  in operand out const ?tt_options?
 # div2  in operand out const number ?first_index? ?tt_options?
 # opt  dark offset
+# opt1  in dark offset out const ?tt_options?
 # opt2  in dark offset out const number ?first_index? ?tt_options?
 # subky  back_kernel back_threshold  ?tt_options?
 # subsky2  back_kernel back_threshold ?first_index? ?tt_options?
@@ -34,9 +41,11 @@
 # convgauss  sigma
 # convgauss2  in out number sigma ?first_index? ?tt_options?
 # mult  const
+# mult1  in out const ?tt_options?
 # mult2  in out const number ?first_index? ?tt_options?
 # trans  dx dy
 # trans2  in out dx dy number ?first_index? ?tt_options?
+# scale1  in out scale_x scale_y ?tt_options?
 # scale2  in out number scale_x scale_y ?first_index? ?tt_options?
 #
 
@@ -51,6 +60,25 @@ proc offset {args} {
       ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage: offset value"
+   }
+}
+
+proc offset1 {args} {
+   # in out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {($n>=3)} {
+      set ext [buf$audace(bufNo) extension]
+      set options ""
+      if {$n>=4} {
+         set options "[lrange $args 3 end]"
+      }
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" OFFSET offset=[lindex $args 2] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: offset1 in out const ?tt_options?"
    }
 }
 
@@ -78,6 +106,25 @@ proc offset2 {args} {
    }
 }
 
+proc ngain1 {args} {
+   # in out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {($n>=3)} {
+      set ext [buf$audace(bufNo) extension]
+      set options ""
+      if {$n>=4} {
+         set options "[lrange $args 3 end]"
+      }
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" NORMGAIN normgain_value=[lindex $args 2] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: ngain1 in out const ?tt_options?"
+   }
+}
+
 proc ngain2 {args} {
    # in out const number ?first_index? ?tt_options?
    global audace
@@ -99,6 +146,25 @@ proc ngain2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: ngain2 in out const number ?first_index? ?tt_options?"
+   }
+}
+
+proc noffset1 {args} {
+   # in out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {($n>=3)} {
+      set ext [buf$audace(bufNo) extension]
+      set options ""
+      if {$n>=4} {
+         set options "[lrange $args 3 end]"
+      }
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" NORMOFFSET normoffset_value=[lindex $args 2] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: noffset1 in out const ?tt_options?"
    }
 }
 
@@ -151,6 +217,41 @@ proc add {args} {
       ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage: add operand value"
+   }
+}
+
+proc add1 {args} {
+   # in operand out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {$n>=4} {
+      set operand [lindex $args 1]
+      if {[file dirname $operand]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set operand "$audace(rep_images)/$operand"
+            } else {
+               set operand "$audace(rep_images)$operand"
+            }
+         }
+      }
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ext [file extension "$operand"]
+      if {$ext==""} {
+         set operand "${operand}[buf$audace(bufNo) extension]"
+      }
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" ADD \"file=$operand\" offset=[lindex $args 3] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: add1 in operand out const ?tt_options?"
    }
 }
 
@@ -222,6 +323,41 @@ proc sub {args} {
    }
 }
 
+proc sub1 {args} {
+   # in operand out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {$n>=4} {
+      set operand [lindex $args 1]
+      if {[file dirname $operand]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set operand "$audace(rep_images)/$operand"
+            } else {
+               set operand "$audace(rep_images)$operand"
+            }
+         }
+      }
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ext [file extension "$operand"]
+      if {$ext==""} {
+         set operand "${operand}[buf$audace(bufNo) extension]"
+      }
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: sub1 in operand out const ?tt_options?"
+   }
+}
+
 proc sub2 {args} {
    # in operand out const number ?first_index? ?tt_options?
    global audace
@@ -255,7 +391,7 @@ proc sub2 {args} {
       }
       set ni [expr [lindex $args 4]+$first-1]
       set ext [buf$audace(bufNo) extension]
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sub2 in operand out const number ?first_index? ?tt_options?"
@@ -287,6 +423,41 @@ proc div {args} {
       ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage: div operand value"
+   }
+}
+
+proc div1 {args} {
+   # in operand out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {$n>=4} {
+      set operand [lindex $args 1]
+      if {[file dirname $operand]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set operand "$audace(rep_images)/$operand"
+            } else {
+               set operand "$audace(rep_images)$operand"
+            }
+         }
+      }
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ext [file extension "$operand"]
+      if {$ext==""} {
+         set operand "${operand}[buf$audace(bufNo) extension]"
+      }
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" DIV \"file=$operand\" constant=[lindex $args 3] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: div1 in operand out const ?tt_options?"
    }
 }
 
@@ -369,6 +540,59 @@ proc opt {args} {
       ::audace::autovisu $audace(visuNo)
    } else {
       error "Usage: opt dark offset"
+   }
+}
+
+proc opt1 {args} {
+   # in dark offset out ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {$n>=4} {
+      set operand [lindex $args 1]
+      if {[file dirname $operand]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set operand "$audace(rep_images)/$operand"
+            } else {
+               set operand "$audace(rep_images)$operand"
+            }
+         }
+      }
+      set ext [file extension "$operand"]
+      if {$ext==""} {
+         set operand "${operand}[buf$audace(bufNo) extension]"
+      }
+      set dark "$operand"
+      set operand [lindex $args 2]
+      if {[file dirname $operand]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set operand "$audace(rep_images)/$operand"
+            } else {
+               set operand "$audace(rep_images)$operand"
+            }
+         }
+      }
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ext [file extension "$operand"]
+      if {$ext==""} {
+         set operand "${operand}[buf$audace(bufNo) extension]"
+      }
+      set offset "$operand"
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" . \"$ext\" OPT \"dark=$dark\" \"bias=$offset\" $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: opt1 in dark offset out ?tt_options?"
    }
 }
 
@@ -917,6 +1141,25 @@ proc mult {args} {
    }
 }
 
+proc mult1 {args} {
+   # in out const ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {$n>=3} {
+      set options ""
+      if {$n>=4} {
+         set options "[lrange $args 3 end]"
+      }
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MULT constant=[lindex $args 2] $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: mult1 in out const ?tt_options?"
+   }
+}
+
 proc mult2 {args} {
    # in out const number ?first_index? ?tt_options?
    global audace
@@ -976,6 +1219,24 @@ proc trans2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: trans2 in out dx dy number ?first_index? ?tt_options?"
+   }
+}
+
+proc scale1 {args} {
+   # in out scale_x scale_y ?tt_options?
+   global audace
+   global caption
+
+   set n [llength $args]
+   if {$n>=4} {
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" RESAMPLE \"paramresample=[lindex $args 2] 0 0 0 [lindex $args 3] 0\" normaflux=1 $options"
+   } else {
+      error "Usage: scale1 in out scale_x scale_y ?tt_options?"
    }
 }
 
