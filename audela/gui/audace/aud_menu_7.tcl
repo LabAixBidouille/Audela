@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.5 2007-02-10 18:07:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.6 2007-03-03 22:09:28 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -257,9 +257,6 @@ namespace eval ::cwdWindow {
    proc cmdApply { } {
       global audace caption conf cwdWindow
 
-      #---
-      save_cursor
-      all_cursor watch
       #--- Substituer les \ par des /
       regsub -all {[\\]} $cwdWindow(dir_images) "/" cwdWindow(dir_images)
       regsub -all {[\\]} $cwdWindow(dir_scripts) "/" cwdWindow(dir_scripts)
@@ -272,7 +269,6 @@ namespace eval ::cwdWindow {
          set m "$cwdWindow(dir_images)"
          append m "$caption(cwdWindow,pas_repertoire)"
          tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
-         restore_cursor
          return -1
       }
 
@@ -283,7 +279,6 @@ namespace eval ::cwdWindow {
          set m "$cwdWindow(dir_scripts)"
          append m "$caption(cwdWindow,pas_repertoire)"
          tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
-         restore_cursor
          return -1
       }
 
@@ -294,11 +289,9 @@ namespace eval ::cwdWindow {
          set m "$cwdWindow(dir_catalogues)"
          append m "$caption(cwdWindow,pas_repertoire)"
          tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
-         restore_cursor
          return -1
       }
 
-      restore_cursor
       return 0
    }
 
