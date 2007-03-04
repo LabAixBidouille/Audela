@@ -1,4 +1,4 @@
-AudeLA-1.4.0-BETA1 (20060804)
+AudeLA-1.4.0-BETA1 (20070304)
 
 
 1. Introduction
@@ -70,6 +70,7 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 
 AudeLA est capable de piloter les equipements suivants :
 - La roue a filtres developpee dans le cadre de l'association Aude.
+- Focaliseur AudeCom.
 - Focaliseur JMI.
 - Focaliseur LX200.
 
