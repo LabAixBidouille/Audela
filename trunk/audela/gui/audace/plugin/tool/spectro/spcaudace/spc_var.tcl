@@ -9,6 +9,11 @@
 global audela audace
 global spcaudace
 
+#--- Version d'SpcAudace :
+set spcaudace(version) "04a-03-2007"
+# ::audace::date_sys2ut ?Date?
+#set spcaudace(version) [ file mtime $spcaudace(repspc) ]
+
 #--- Extension des fichiers :
 set spcaudace(extdat) ".dat"
 set spcaudace(exttxt) ".txt"
@@ -20,18 +25,15 @@ if { [regexp {1.3.0} $audela(version) match resu ] } {
 } else {
     set spcaudace(repspc) [ file join $audace(rep_plugin) tool spectro spcaudace ]
 }
+
 #--- Répertoire de Gnuplot :
-if { [regexp {1.3.0} $audela(version) match resu ] } {
-    set spcaudace(repgp) [ file join $audace(rep_scripts) spcaudace gp ]
-} else {
-    set spcaudace(repgp) [ file join $audace(rep_plugin) tool spectro spcaudace gp ]
-}
+set spcaudace(repgp) [ file join $spcaudace(repspc) gp ]
+
 #--- Répertoire des données chimiques :
-if { [regexp {1.3.0} $audela(version) match resu ] } {
-    set spcaudace(repchimie) [ file join $audace(rep_scripts) spcaudace data chimie ]
-} else {
-    set spcaudace(repchimie) [ file join $audace(rep_plugin) tool spectro spcaudace data chimie ]
-}
+set spcaudace(repchimie) [ file join $spcaudace(repspc) data chimie ]
+
+#--- Répertoire de la bibliothèque spectrale :
+set spcaudace(rep_spcbib) [ file join $spcaudace(repspc) data bibliotheque_spectrale ]
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :

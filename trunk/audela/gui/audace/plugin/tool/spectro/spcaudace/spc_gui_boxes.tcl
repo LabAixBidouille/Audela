@@ -1017,11 +1017,9 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 
    proc run { {positionxy 20+20} } {
       global conf
-      global audace
+      global audace spcaudace
       global captionspc
       global color
-
-      # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
 
       set liste_methreg [ list "spc" "reg" ]
       set liste_methcos [ list "o" "n" ]
@@ -1177,7 +1175,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
-	      -command { set audace(param_spc_audace,geom2rinstrum,config,etoile_cat) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale ] ] }
+	      -command { set audace(param_spc_audace,geom2rinstrum,config,etoile_cat) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $spcaudace(rep_spcbib) ] ] }
       pack .param_spc_audace_geom2rinstrum.etoile_cat.explore -side left -padx 7 -pady 3 -ipady 0
       entry  .param_spc_audace_geom2rinstrum.etoile_cat.entry  \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
@@ -1433,11 +1431,9 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 
    proc run { {positionxy 20+20} } {
       global conf
-      global audace
+      global audace spcaudace
       global captionspc
       global color
-
-      # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
 
       set liste_methreg [ list "spc" "reg" ]
       set liste_methcos [ list "o" "n" ]
@@ -1593,7 +1589,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,geom2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,geom2rinstrum,color,backpad) \
-	      -command { set audace(param_spc_audace,geom2rinstrum,config,etoile_cat) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale ] ] }
+	      -command { set audace(param_spc_audace,geom2rinstrum,config,etoile_cat) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $spcaudace(rep_spcbib) ] ] }
       pack .param_spc_audace_geom2rinstrum.etoile_cat.explore -side left -padx 7 -pady 3 -ipady 0
       entry  .param_spc_audace_geom2rinstrum.etoile_cat.entry  \
 	      -font $audace(param_spc_audace,geom2rinstrum,font,c12b) \
@@ -1818,468 +1814,6 @@ namespace eval ::param_spc_audace_geom2rinstrum {
       if { [ winfo exists .param_spc_audace_geom2rinstrum ] } {
 	  #--- Enregistre la position de la fenetre
 	  set geom [wm geometry .param_spc_audace_geom2rinstrum]
-	  set deb [expr 1+[string first + $geom ]]
-	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
-      }
-  }
-
-  
-}
-#****************************************************************************#
-
-
-
-
-
-########################################################################
-# Boîte graphique de saisie des paramètres pour la metafonction spc_traite2calibre
-# Intitulé : Prétraitement -> calibration
-#
-# Auteurs : Benjamin Mauclaire
-# Date de création : 09-07-2006
-# Date de modification : 14-08-2006/23-09-06
-# Utilisée par : spc_traitecalibre (meta)
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
-########################################################################
-
-
-namespace eval ::param_spc_audace_traite2calibre {
-
-   proc run { {positionxy 20+20} } {
-      global conf
-      global audace
-      global captionspc
-      global color
-
-      set liste_methreg [ list "spc" "reg" "none" ]
-      set liste_methcos [ list "o" "n" ]
-      set liste_methsel [ list "large" "serre" ]
-      set liste_methsky [ list "med" "moy" "moy2" "sup" "inf" "back" "none" ]
-      set liste_methinv [ list "o" "n" ]
-      set liste_methbin [ list "add" "rober" "horne" ]
-      set liste_norma [ list "o" "n" ]
-      set liste_smooth [ list "o" "n" ]
-      set liste_on [ list "o" "n" ]
-
-      if { [ string length [ info commands .param_spc_audace_traite2calibre.* ] ] != "0" } {
-         destroy .param_spc_audace_traite2calibre
-      }
-
-      # === Initialisation des variables qui seront changées
-      set audace(param_spc_audace,traite2calibre,config,offset) "none"
-      set audace(param_spc_audace,traite2calibre,config,methreg) "spc"
-      set audace(param_spc_audace,traite2calibre,config,methsel) "large"
-      set audace(param_spc_audace,traite2calibre,config,methsky) "med"
-      set audace(param_spc_audace,traite2calibre,config,methbin) "rober"
-      set audace(param_spc_audace,traite2calibre,config,methinv) "o"
-      set audace(param_spc_audace,traite2calibre,config,methcos) "o"
-      set audace(param_spc_audace,traite2calibre,config,smooth) "n"
-      set audace(param_spc_audace,traite2calibre,config,norma) "n"
-      set audace(param_spc_audace,traite2calibre,config,ejbad) "o"
-      set audace(param_spc_audace,traite2calibre,config,ejtilt) "n"
-
-
-      # === Variables d'environnement
-      # backpad : #F0F0FF
-      set audace(param_spc_audace,traite2calibre,color,textkey) $color(blue_pad)
-      set audace(param_spc_audace,traite2calibre,color,backpad) #ECE9D8
-      set audace(param_spc_audace,traite2calibre,color,backdisp) $color(white)
-      set audace(param_spc_audace,traite2calibre,color,textdisp) #FF0000
-      set audace(param_spc_audace,traite2calibre,font,c12b) [ list {Arial} 10 bold ]
-      set audace(param_spc_audace,traite2calibre,font,c10b) [ list {Arial} 10 bold ]
-      
-      # === Captions
-      set caption(param_spc_audace,traite2calibre,titre2) "Prétraitement -> calibration"
-      set caption(param_spc_audace,traite2calibre,titre) "Réduction de spectres"
-      set caption(param_spc_audace,traite2calibre,stop_button) "Annuler"
-      set caption(param_spc_audace,traite2calibre,return_button) "OK"
-      set caption(param_spc_audace,traite2calibre,config,brut) "Nom générique des spectres bruts"
-      set caption(param_spc_audace,traite2calibre,config,noir) "Nom générique des noirs"
-      set caption(param_spc_audace,traite2calibre,config,plu) "Nom générique des plu(s)"
-      set caption(param_spc_audace,traite2calibre,config,noirplu) "Nom générique des noirs de plu"
-      set caption(param_spc_audace,traite2calibre,config,offset) "Nom générique des offset(s)"
-      set caption(param_spc_audace,traite2calibre,config,lampe) "Spectre 2D de lampe de calibration"
-      set caption(param_spc_audace,traite2calibre,config,methreg) "Méthode d'appariement"
-      set caption(param_spc_audace,traite2calibre,config,methcos) "Retrait des cosmics (o/n)"
-      set caption(param_spc_audace,traite2calibre,config,methsel) "Méthode de détection du spectre"
-      set caption(param_spc_audace,traite2calibre,config,methsky) "Méthode de soustraction du fond de ciel"
-      set caption(param_spc_audace,traite2calibre,config,methbin) "Méthode de binning des colonnes"
-      set caption(param_spc_audace,traite2calibre,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
-      set caption(param_spc_audace,traite2calibre,config,smooth) "Adoucissement (o/n)"
-      set caption(param_spc_audace,traite2calibre,config,ejbad) "Rejet des spectres trop faibles (o/n)"
-      set caption(param_spc_audace,traite2calibre,config,ejtilt) "Rejet des spectres trop inclinés (o/n)"
-      
-      
-      # === Met en place l'interface graphique
-      
-      #--- Cree la fenetre .param_spc_audace_traite2calibre de niveau le plus haut
-      toplevel .param_spc_audace_traite2calibre -class Toplevel -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      wm geometry .param_spc_audace_traite2calibre 450x515+10+10
-      wm resizable .param_spc_audace_traite2calibre 1 1
-      wm title .param_spc_audace_traite2calibre $caption(param_spc_audace,traite2calibre,titre)
-      wm protocol .param_spc_audace_traite2calibre WM_DELETE_WINDOW "::param_spc_audace_traite2calibre::annuler"
-      
-      #--- Create the title
-      #--- Cree le titre
-      label .param_spc_audace_traite2calibre.title \
-	      -font [ list {Arial} 16 bold ] -text $caption(param_spc_audace,traite2calibre,titre2) \
-	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey)
-      pack .param_spc_audace_traite2calibre.title \
-	      -in .param_spc_audace_traite2calibre -fill x -side top -pady 15
-      
-      # --- Boutons du bas
-      frame .param_spc_audace_traite2calibre.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      #-- Bouton Annuler
-      button .param_spc_audace_traite2calibre.stop_button  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,stop_button)" \
-	      -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) \
-	      -command {::param_spc_audace_traite2calibre::annuler}
-      pack  .param_spc_audace_traite2calibre.stop_button -in .param_spc_audace_traite2calibre.buttons -side left -fill none -padx 3 -pady 3
-      #-- Bouton OK
-      button .param_spc_audace_traite2calibre.return_button  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,return_button)" \
-	      -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) \
-	      -command {::param_spc_audace_traite2calibre::go}
-      pack  .param_spc_audace_traite2calibre.return_button -in .param_spc_audace_traite2calibre.buttons -side right -fill none -padx 3 -pady 3
-      pack .param_spc_audace_traite2calibre.buttons -in .param_spc_audace_traite2calibre -fill x -pady 0 -padx 0 -anchor s -side bottom
-
-      
-      #--- Label + Entry pour brut
-      frame .param_spc_audace_traite2calibre.brut -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.brut.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,brut) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.brut.label -in .param_spc_audace_traite2calibre.brut -side left -fill none
-      entry  .param_spc_audace_traite2calibre.brut.entry  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -textvariable audace(param_spc_audace,traite2calibre,config,brut) -bg $audace(param_spc_audace,traite2calibre,color,backdisp) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textdisp) -relief flat -width 70
-      pack  .param_spc_audace_traite2calibre.brut.entry -in .param_spc_audace_traite2calibre.brut -side left -fill none
-      pack .param_spc_audace_traite2calibre.brut -in .param_spc_audace_traite2calibre -fill none -pady 1 -padx 12
-
-      #--- Label + Entry pour noir
-      frame .param_spc_audace_traite2calibre.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.noir.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,noir) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.noir.label -in .param_spc_audace_traite2calibre.noir -side left -fill none
-      entry  .param_spc_audace_traite2calibre.noir.entry  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -textvariable audace(param_spc_audace,traite2calibre,config,noir) -bg $audace(param_spc_audace,traite2calibre,color,backdisp) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textdisp) -relief flat -width 70
-      pack  .param_spc_audace_traite2calibre.noir.entry -in .param_spc_audace_traite2calibre.noir -side left -fill none
-      pack .param_spc_audace_traite2calibre.noir -in .param_spc_audace_traite2calibre -fill none -pady 1 -padx 12
-
-
-      #--- Label + Entry pour plu
-      frame .param_spc_audace_traite2calibre.plu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.plu.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,plu) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.plu.label -in .param_spc_audace_traite2calibre.plu -side left -fill none
-      entry  .param_spc_audace_traite2calibre.plu.entry  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -textvariable audace(param_spc_audace,traite2calibre,config,plu) -bg $audace(param_spc_audace,traite2calibre,color,backdisp) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textdisp) -relief flat -width 70
-      pack  .param_spc_audace_traite2calibre.plu.entry -in .param_spc_audace_traite2calibre.plu -side left -fill none
-      pack .param_spc_audace_traite2calibre.plu -in .param_spc_audace_traite2calibre -fill none -pady 1 -padx 12
-
-
-      #--- Label + Entry pour noirplu
-      frame .param_spc_audace_traite2calibre.noirplu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.noirplu.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,noirplu) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.noirplu.label -in .param_spc_audace_traite2calibre.noirplu -side left -fill none
-      entry  .param_spc_audace_traite2calibre.noirplu.entry  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -textvariable audace(param_spc_audace,traite2calibre,config,noirplu) -bg $audace(param_spc_audace,traite2calibre,color,backdisp) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textdisp) -relief flat -width 70
-      pack  .param_spc_audace_traite2calibre.noirplu.entry -in .param_spc_audace_traite2calibre.noirplu -side left -fill none
-      pack .param_spc_audace_traite2calibre.noirplu -in .param_spc_audace_traite2calibre -fill none -pady 1 -padx 12
-
-
-      #--- Label + Entry pour offset
-      frame .param_spc_audace_traite2calibre.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.offset.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,offset) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.offset.label -in .param_spc_audace_traite2calibre.offset -side left -fill none
-      entry  .param_spc_audace_traite2calibre.offset.entry  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -textvariable audace(param_spc_audace,traite2calibre,config,offset) -bg $audace(param_spc_audace,traite2calibre,color,backdisp) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textdisp) -relief flat -width 70
-      pack  .param_spc_audace_traite2calibre.offset.entry -in .param_spc_audace_traite2calibre.offset -side left -fill none
-      pack .param_spc_audace_traite2calibre.offset -in .param_spc_audace_traite2calibre -fill none -pady 1 -padx 12
-
-
-      #--- Label + Entry pour lampe
-      frame .param_spc_audace_traite2calibre.lampe -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.lampe.label -text "$caption(param_spc_audace,traite2calibre,config,lampe)" -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b)
-      pack  .param_spc_audace_traite2calibre.lampe.label -in .param_spc_audace_traite2calibre.lampe -side left -fill none
-      button .param_spc_audace_traite2calibre.lampe.explore -text "$captionspc(parcourir)" -width 1 \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief raised \
-	      -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -command { set audace(param_spc_audace,traite2calibre,config,lampe) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
-      pack .param_spc_audace_traite2calibre.lampe.explore -side left -padx 7 -pady 3 -ipady 0
-      entry  .param_spc_audace_traite2calibre.lampe.entry  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -textvariable audace(param_spc_audace,traite2calibre,config,lampe) -bg $audace(param_spc_audace,traite2calibre,color,backdisp) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textdisp) -relief flat -width 70
-      pack  .param_spc_audace_traite2calibre.lampe.entry -in .param_spc_audace_traite2calibre.lampe -side left -fill none
-      pack .param_spc_audace_traite2calibre.lampe -in .param_spc_audace_traite2calibre -fill none -pady 1 -padx 12
-
-      
-      #--- Label + Entry pour methreg
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.methreg -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.methreg.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,methreg) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.methreg.label -in .param_spc_audace_traite2calibre.methreg -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.methreg.combobox \
-         -width 7          \
-         -height [ llength $liste_methreg ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,methreg) \
-         -values $liste_methreg
-      pack  .param_spc_audace_traite2calibre.methreg.combobox -in .param_spc_audace_traite2calibre.methreg -side right -fill none
-      pack .param_spc_audace_traite2calibre.methreg -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-
-      #--- Label + Entry pour methcos
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.methcos.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,methcos) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.methcos.label -in .param_spc_audace_traite2calibre.methcos -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.methcos.combobox \
-         -width 7          \
-         -height [ llength $liste_methcos ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,methcos) \
-         -values $liste_methcos
-      pack  .param_spc_audace_traite2calibre.methcos.combobox -in .param_spc_audace_traite2calibre.methcos -side right -fill none
-      pack .param_spc_audace_traite2calibre.methcos -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-      
-      #--- Label + Entry pour methsel
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.methsel -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.methsel.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,methsel) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.methsel.label -in .param_spc_audace_traite2calibre.methsel -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.methsel.combobox \
-         -width 7          \
-         -height [ llength $liste_methsel ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,methsel) \
-         -values $liste_methsel
-      pack  .param_spc_audace_traite2calibre.methsel.combobox -in .param_spc_audace_traite2calibre.methsel -side right -fill none
-      pack .param_spc_audace_traite2calibre.methsel -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-      
-      #--- Label + Entry pour methsky
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.methsky -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.methsky.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,methsky) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.methsky.label -in .param_spc_audace_traite2calibre.methsky -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.methsky.combobox \
-         -width 7          \
-         -height [ llength $liste_methsky ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,methsky) \
-         -values $liste_methsky
-      pack  .param_spc_audace_traite2calibre.methsky.combobox -in .param_spc_audace_traite2calibre.methsky -side right -fill none
-      pack .param_spc_audace_traite2calibre.methsky -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-      
-      #--- Label + Entry pour methbin
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.methbin -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.methbin.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,methbin) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.methbin.label -in .param_spc_audace_traite2calibre.methbin -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.methbin.combobox \
-         -width 7          \
-         -height [ llength $liste_methbin ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,methbin) \
-         -values $liste_methbin
-      pack  .param_spc_audace_traite2calibre.methbin.combobox -in .param_spc_audace_traite2calibre.methbin -side right -fill none
-      pack .param_spc_audace_traite2calibre.methbin -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-
-
-      #--- Label + Entry pour methinv
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.methinv -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.methinv.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,methinv) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.methinv.label -in .param_spc_audace_traite2calibre.methinv -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.methinv.combobox \
-         -width 7          \
-         -height [ llength $liste_methinv ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,methinv) \
-         -values $liste_methinv
-      pack  .param_spc_audace_traite2calibre.methinv.combobox -in .param_spc_audace_traite2calibre.methinv -side right -fill none
-      pack .param_spc_audace_traite2calibre.methinv -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-
-      #--- Label + Entry pour smooth
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.smooth -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.smooth.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,smooth) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.smooth.label -in .param_spc_audace_traite2calibre.smooth -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.smooth.combobox \
-         -width 7          \
-         -height [ llength $liste_smooth ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,smooth) \
-         -values $liste_smooth
-      pack  .param_spc_audace_traite2calibre.smooth.combobox -in .param_spc_audace_traite2calibre.smooth -side right -fill none
-      pack .param_spc_audace_traite2calibre.smooth -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour ejbad
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.ejbad -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.ejbad.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,ejbad) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.ejbad.label -in .param_spc_audace_traite2calibre.ejbad -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.ejbad.combobox \
-         -width 7          \
-         -height [ llength $liste_on ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,ejbad) \
-         -values $liste_on
-      pack  .param_spc_audace_traite2calibre.ejbad.combobox -in .param_spc_audace_traite2calibre.ejbad -side right -fill none
-      pack .param_spc_audace_traite2calibre.ejbad -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour ejtilt
-      #-- Partie Label
-      frame .param_spc_audace_traite2calibre.ejtilt -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2calibre,color,backpad)
-      label .param_spc_audace_traite2calibre.ejtilt.label  \
-	      -font $audace(param_spc_audace,traite2calibre,font,c12b) \
-	      -text "$caption(param_spc_audace,traite2calibre,config,ejtilt) " -bg $audace(param_spc_audace,traite2calibre,color,backpad) \
-	      -fg $audace(param_spc_audace,traite2calibre,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2calibre.ejtilt.label -in .param_spc_audace_traite2calibre.ejtilt -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2calibre.ejtilt.combobox \
-         -width 7          \
-         -height [ llength $liste_on ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traite2calibre,config,ejtilt) \
-         -values $liste_on
-      pack  .param_spc_audace_traite2calibre.ejtilt.combobox -in .param_spc_audace_traite2calibre.ejtilt -side right -fill none
-      pack .param_spc_audace_traite2calibre.ejtilt -in .param_spc_audace_traite2calibre -fill x -pady 1 -padx 12
-
-  }
-  
-  
-  proc go {} {
-      global audace
-      global caption
-
-      ::param_spc_audace_traite2calibre::recup_conf
-      set brut $audace(param_spc_audace,traite2calibre,config,brut)
-      set noir $audace(param_spc_audace,traite2calibre,config,noir)
-      set plu $audace(param_spc_audace,traite2calibre,config,plu)
-      set noirplu $audace(param_spc_audace,traite2calibre,config,noirplu)
-      set offset $audace(param_spc_audace,traite2calibre,config,offset)
-      set lampe $audace(param_spc_audace,traite2calibre,config,lampe)
-      set methreg $audace(param_spc_audace,traite2calibre,config,methreg)
-      set methcos $audace(param_spc_audace,traite2calibre,config,methcos)
-      set methsel $audace(param_spc_audace,traite2calibre,config,methsel)
-      set methsky $audace(param_spc_audace,traite2calibre,config,methsky)
-      set methbin $audace(param_spc_audace,traite2calibre,config,methbin)
-      set methinv $audace(param_spc_audace,traite2calibre,config,methinv)
-      set smooth $audace(param_spc_audace,traite2calibre,config,smooth)
-      set ejbad $audace(param_spc_audace,traite2calibre,config,ejbad)
-      set ejtilt $audace(param_spc_audace,traite2calibre,config,ejtilt)
-      set listeargs [ list $brut $noir $plu $noirplu $offset $lampe $methreg $methcos $methsel $methsky $methbin $methinv $smooth $ejbad $ejtilt ]
-
-      #--- Lancement de la fonction spcaudace :
-      #-- Si tous les champs sont /= "" on execute le calcul :
-      if { [ spc_testguiargs $listeargs ] == 1 } {
-	  set fileout [ spc_traite2calibre $brut $noir $plu $noirplu $offset $lampe $methreg $methcos $methsel $methsky $methinv $methbin $smooth $ejbad $ejtilt ]
-	  destroy .param_spc_audace_traite2calibre
-	  return $fileout
-      }
-  }
-
-  proc annuler {} {
-      global audace
-      global caption
-      ::param_spc_audace_traite2calibre::recup_conf
-      destroy .param_spc_audace_traite2calibre
-  }
-
-
-  proc recup_conf {} {
-      global conf
-      global audace
-      
-      if { [ winfo exists .param_spc_audace_traite2calibre ] } {
-	  #--- Enregistre la position de la fenetre
-	  set geom [wm geometry .param_spc_audace_traite2calibre]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
 	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
@@ -3301,6 +2835,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
 
 
 
+
 ########################################################################
 # Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2rinstrum
 # Intitulé : Traitement -> réponse instrumentale
@@ -3316,12 +2851,10 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 
    proc run { {positionxy 20+20} } {
       global conf
-      global audace
+      global audace spcaudace
       global captionspc
       global color
-      set rep_speclib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
 
-      # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
 
       set liste_methreg [ list "spc" "reg" ]
       set liste_methcos [ list "o" "n" ]
@@ -3339,7 +2872,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 
       # === Initialisation des variables qui seront changées
       set audace(param_spc_audace,traite2rinstrum,config,methreg) "spc"
-      set audace(param_spc_audace,traite2rinstrum,config,methsel) "large"
+      set audace(param_spc_audace,traite2rinstrum,config,methsel) "serre"
       set audace(param_spc_audace,traite2rinstrum,config,methsky) "med"
       set audace(param_spc_audace,traite2rinstrum,config,methbin) "rober"
       set audace(param_spc_audace,traite2rinstrum,config,methinv) "o"
@@ -3392,7 +2925,8 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       
       #--- Cree la fenetre .param_spc_audace_traite2rinstrum de niveau le plus haut
       toplevel .param_spc_audace_traite2rinstrum -class Toplevel -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
-      wm geometry .param_spc_audace_traite2rinstrum 450x630+10+10
+      # wm geometry .param_spc_audace_traite2rinstrum 450x630+10+10
+      wm geometry .param_spc_audace_traite2rinstrum 450x611+10+10
       wm resizable .param_spc_audace_traite2rinstrum 1 1
       wm title .param_spc_audace_traite2rinstrum $caption(param_spc_audace,traite2rinstrum,titre)
       wm protocol .param_spc_audace_traite2rinstrum WM_DELETE_WINDOW "::param_spc_audace_traite2rinstrum::annuler"
@@ -3487,6 +3021,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 
 
       #--- Label + Entry pour offset
+      if { 0==1 } {
       frame .param_spc_audace_traite2rinstrum.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
       label .param_spc_audace_traite2rinstrum.offset.label  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
@@ -3499,6 +3034,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2rinstrum.offset.entry -in .param_spc_audace_traite2rinstrum.offset -side left -fill none
       pack .param_spc_audace_traite2rinstrum.offset -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
+       }
 
       #--- Label + Entry pour lampe
       frame .param_spc_audace_traite2rinstrum.lampe -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
@@ -3551,7 +3087,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
-	      -command { set audace(param_spc_audace,traite2rinstrum,config,etoile_cat) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale ] ] }
+	      -command { set audace(param_spc_audace,traite2rinstrum,config,etoile_cat) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $spcaudace(rep_spcbib) ] ] }
       pack .param_spc_audace_traite2rinstrum.etoile_cat.explore -side left -padx 7 -pady 3 -ipady 0
       entry  .param_spc_audace_traite2rinstrum.etoile_cat.entry  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
@@ -3710,6 +3246,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       pack .param_spc_audace_traite2rinstrum.methinv -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
+      if { 0==1 } {
       #--- Label + Entry pour norma
       #-- Partie Label
       frame .param_spc_audace_traite2rinstrum.norma -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
@@ -3750,7 +3287,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
          -values $liste_smooth
       pack  .param_spc_audace_traite2rinstrum.smooth.combobox -in .param_spc_audace_traite2rinstrum.smooth -side right -fill none
       pack .param_spc_audace_traite2rinstrum.smooth -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
-
+      }
 
       #--- Label + Entry pour ejbad
       #-- Partie Label
@@ -3811,6 +3348,17 @@ namespace eval ::param_spc_audace_traite2rinstrum {
          -values $liste_on
       pack  .param_spc_audace_traite2rinstrum.methraie.combobox -in .param_spc_audace_traite2rinstrum.methraie -side right -fill none
       pack .param_spc_audace_traite2rinstrum.methraie -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
+
+
+      #--- Message sur les réponses intrumentales :
+      label .param_spc_audace_traite2rinstrum.message1 \
+	      -font [ list {Arial} 12 bold ] -text "Utiliser une des 3 réponses instrumentales \n créée dans votre dossier image :\n ajustement linéaire, ajustement de degré 2 ou lissée." \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
+	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey)
+      pack .param_spc_audace_traite2rinstrum.message1 \
+	      -in .param_spc_audace_traite2rinstrum -fill x -side top -pady 15
+
+
 
   }
   
@@ -3898,8 +3446,6 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       global captionspc
       global color
 
-      # global rep_spc_bib "$audace(rep_scripts)/spcaudace/data/bibliotheque_spectrale"
-
       set liste_methreg [ list "spc" "reg" ]
       set liste_methcos [ list "o" "n" ]
       set liste_methsel [ list "large" "serre" ]
@@ -3916,7 +3462,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 
       # === Initialisation des variables qui seront changées
       set audace(param_spc_audace,traite2srinstrum,config,methreg) "spc"
-      set audace(param_spc_audace,traite2srinstrum,config,methsel) "large"
+      set audace(param_spc_audace,traite2srinstrum,config,methsel) "serre"
       set audace(param_spc_audace,traite2srinstrum,config,methsky) "med"
       set audace(param_spc_audace,traite2srinstrum,config,methbin) "rober"
       set audace(param_spc_audace,traite2srinstrum,config,methinv) "o"
@@ -4059,6 +3605,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       pack .param_spc_audace_traite2srinstrum.noirplu -in .param_spc_audace_traite2srinstrum -fill none -pady 1 -padx 12
 
 
+      if {1==0} {
       #--- Label + Entry pour offset
       frame .param_spc_audace_traite2srinstrum.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2srinstrum,color,backpad)
       label .param_spc_audace_traite2srinstrum.offset.label  \
@@ -4072,6 +3619,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 	      -fg $audace(param_spc_audace,traite2srinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2srinstrum.offset.entry -in .param_spc_audace_traite2srinstrum.offset -side left -fill none
       pack .param_spc_audace_traite2srinstrum.offset -in .param_spc_audace_traite2srinstrum -fill none -pady 1 -padx 12
+      }
 
       #--- Label + Entry pour lampe
       frame .param_spc_audace_traite2srinstrum.lampe -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2srinstrum,color,backpad)
@@ -4396,6 +3944,374 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       if { [ winfo exists .param_spc_audace_traite2srinstrum ] } {
 	  #--- Enregistre la position de la fenetre
 	  set geom [wm geometry .param_spc_audace_traite2srinstrum]
+	  set deb [expr 1+[string first + $geom ]]
+	  set fin [string length $geom]
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
+      }
+  }
+
+  
+}
+#****************************************************************************#
+
+
+
+
+########################################################################
+# Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2calibre
+# Intitulé : Prétraitement -> calibration
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 28-02-2007
+# Date de modification : 28-02-2002
+# Utilisée par : spc_traite2calibre
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu offset nom_spectre_lampe methode_détection_spectre (large, serre) methode_binning (add, rober, horne) methmasters (o/n)
+#        $brut $noir $plu $noirplu $offset $lampe $methcos $methsel $methinv $methbin $methraie
+########################################################################
+
+namespace eval ::param_spc_audace_lampe2calibre {
+
+   proc run { {positionxy 20+20} } {
+      global conf
+      global audace spcaudace
+      global captionspc
+      global color
+
+
+      set liste_methcos [ list "o" "n" ]
+      set liste_methsel [ list "large" "serre" ]
+      set liste_methinv [ list "o" "n" ]
+      set liste_methbin [ list "add" "rober" "horne" ]
+      set liste_on [ list "o" "n" ]
+
+      if { [ string length [ info commands .param_spc_audace_lampe2calibre.* ] ] != "0" } {
+         destroy .param_spc_audace_lampe2calibre
+      }
+
+      # === Initialisation des variables qui seront changées
+      set audace(param_spc_audace,lampe2calibre,config,methsel) "serre"
+      set audace(param_spc_audace,lampe2calibre,config,methsky) "med"
+      set audace(param_spc_audace,lampe2calibre,config,methbin) "rober"
+      set audace(param_spc_audace,lampe2calibre,config,methinv) "o"
+      set audace(param_spc_audace,lampe2calibre,config,methcos) "o"
+      set audace(param_spc_audace,lampe2calibre,config,offset) "none"
+      set audace(param_spc_audace,lampe2calibre,config,methraie) "n"
+
+
+      # === Variables d'environnement
+      # backpad : #F0F0FF
+      set audace(param_spc_audace,lampe2calibre,color,textkey) $color(blue_pad)
+      set audace(param_spc_audace,lampe2calibre,color,backpad) #ECE9D8
+      set audace(param_spc_audace,lampe2calibre,color,backdisp) $color(white)
+      set audace(param_spc_audace,lampe2calibre,color,textdisp) #FF0000
+      set audace(param_spc_audace,lampe2calibre,font,c12b) [ list {Arial} 10 bold ]
+      set audace(param_spc_audace,lampe2calibre,font,c10b) [ list {Arial} 10 bold ]
+      
+      # === Captions
+      set caption(param_spc_audace,lampe2calibre,titre2) "Lampe -> géométrie+calibration"
+      set caption(param_spc_audace,lampe2calibre,titre) "Réduction de spectres"
+      set caption(param_spc_audace,lampe2calibre,stop_button) "Annuler"
+      set caption(param_spc_audace,lampe2calibre,return_button) "OK"
+      set caption(param_spc_audace,lampe2calibre,config,brut) "Nom générique des spectres bruts"
+      set caption(param_spc_audace,lampe2calibre,config,noir) "Nom générique des noirs"
+      set caption(param_spc_audace,lampe2calibre,config,plu) "Nom générique des plu(s)"
+      set caption(param_spc_audace,lampe2calibre,config,noirplu) "Nom générique des noirs de plu"
+      set caption(param_spc_audace,lampe2calibre,config,offset) "Nom générique des offset(s)"
+      set caption(param_spc_audace,lampe2calibre,config,lampe) "Spectre 2D de lampe de calibration"
+      set caption(param_spc_audace,lampe2calibre,config,methcos) "Retrait des cosmics (o/n)"
+      set caption(param_spc_audace,lampe2calibre,config,methsel) "Methode de détection du spectre"
+      set caption(param_spc_audace,lampe2calibre,config,methbin) "Méthode de binning des colonnes"
+      set caption(param_spc_audace,lampe2calibre,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
+      set caption(param_spc_audace,lampe2calibre,config,methraie) "Sélection manuelle d'une raie pour la géométrie (o/n)"
+
+      
+      # === Met en place l'interface graphique
+      
+      #--- Cree la fenetre .param_spc_audace_lampe2calibre de niveau le plus haut
+      toplevel .param_spc_audace_lampe2calibre -class Toplevel -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      # wm geometry .param_spc_audace_lampe2calibre 450x630+10+10
+      wm geometry .param_spc_audace_lampe2calibre 450x330+10+10
+      wm resizable .param_spc_audace_lampe2calibre 1 1
+      wm title .param_spc_audace_lampe2calibre $caption(param_spc_audace,lampe2calibre,titre)
+      wm protocol .param_spc_audace_lampe2calibre WM_DELETE_WINDOW "::param_spc_audace_lampe2calibre::annuler"
+      
+      #--- Create the title
+      #--- Cree le titre
+      label .param_spc_audace_lampe2calibre.title \
+	      -font [ list {Arial} 16 bold ] -text $caption(param_spc_audace,lampe2calibre,titre2) \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey)
+      pack .param_spc_audace_lampe2calibre.title \
+	      -in .param_spc_audace_lampe2calibre -fill x -side top -pady 15
+      
+      # --- Boutons du bas
+      frame .param_spc_audace_lampe2calibre.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      #-- Bouton Annuler
+      button .param_spc_audace_lampe2calibre.stop_button  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,stop_button)" \
+	      -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) \
+	      -command {::param_spc_audace_lampe2calibre::annuler}
+      pack  .param_spc_audace_lampe2calibre.stop_button -in .param_spc_audace_lampe2calibre.buttons -side left -fill none -padx 3 -pady 3
+      #-- Bouton OK
+      button .param_spc_audace_lampe2calibre.return_button  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,return_button)" \
+	      -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) \
+	      -command {::param_spc_audace_lampe2calibre::go}
+      pack  .param_spc_audace_lampe2calibre.return_button -in .param_spc_audace_lampe2calibre.buttons -side right -fill none -padx 3 -pady 3
+      pack .param_spc_audace_lampe2calibre.buttons -in .param_spc_audace_lampe2calibre -fill x -pady 0 -padx 0 -anchor s -side bottom
+
+
+      #--- Label + Entry pour brut
+      frame .param_spc_audace_lampe2calibre.brut -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.brut.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,brut) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.brut.label -in .param_spc_audace_lampe2calibre.brut -side left -fill none
+      entry  .param_spc_audace_lampe2calibre.brut.entry  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -textvariable audace(param_spc_audace,lampe2calibre,config,brut) -bg $audace(param_spc_audace,lampe2calibre,color,backdisp) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_lampe2calibre.brut.entry -in .param_spc_audace_lampe2calibre.brut -side left -fill none
+      pack .param_spc_audace_lampe2calibre.brut -in .param_spc_audace_lampe2calibre -fill none -pady 1 -padx 12
+
+      #--- Label + Entry pour noir
+      frame .param_spc_audace_lampe2calibre.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.noir.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,noir) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.noir.label -in .param_spc_audace_lampe2calibre.noir -side left -fill none
+      entry  .param_spc_audace_lampe2calibre.noir.entry  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -textvariable audace(param_spc_audace,lampe2calibre,config,noir) -bg $audace(param_spc_audace,lampe2calibre,color,backdisp) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_lampe2calibre.noir.entry -in .param_spc_audace_lampe2calibre.noir -side left -fill none
+      pack .param_spc_audace_lampe2calibre.noir -in .param_spc_audace_lampe2calibre -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour plu
+      frame .param_spc_audace_lampe2calibre.plu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.plu.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,plu) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.plu.label -in .param_spc_audace_lampe2calibre.plu -side left -fill none
+      entry  .param_spc_audace_lampe2calibre.plu.entry  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -textvariable audace(param_spc_audace,lampe2calibre,config,plu) -bg $audace(param_spc_audace,lampe2calibre,color,backdisp) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_lampe2calibre.plu.entry -in .param_spc_audace_lampe2calibre.plu -side left -fill none
+      pack .param_spc_audace_lampe2calibre.plu -in .param_spc_audace_lampe2calibre -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour noirplu
+      frame .param_spc_audace_lampe2calibre.noirplu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.noirplu.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,noirplu) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.noirplu.label -in .param_spc_audace_lampe2calibre.noirplu -side left -fill none
+      entry  .param_spc_audace_lampe2calibre.noirplu.entry  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -textvariable audace(param_spc_audace,lampe2calibre,config,noirplu) -bg $audace(param_spc_audace,lampe2calibre,color,backdisp) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_lampe2calibre.noirplu.entry -in .param_spc_audace_lampe2calibre.noirplu -side left -fill none
+      pack .param_spc_audace_lampe2calibre.noirplu -in .param_spc_audace_lampe2calibre -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour offset
+      if { 0==1 } {
+      frame .param_spc_audace_lampe2calibre.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.offset.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,offset) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.offset.label -in .param_spc_audace_lampe2calibre.offset -side left -fill none
+      entry  .param_spc_audace_lampe2calibre.offset.entry  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -textvariable audace(param_spc_audace,lampe2calibre,config,offset) -bg $audace(param_spc_audace,lampe2calibre,color,backdisp) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_lampe2calibre.offset.entry -in .param_spc_audace_lampe2calibre.offset -side left -fill none
+      pack .param_spc_audace_lampe2calibre.offset -in .param_spc_audace_lampe2calibre -fill none -pady 1 -padx 12
+       }
+
+      #--- Label + Entry pour lampe
+      frame .param_spc_audace_lampe2calibre.lampe -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.lampe.label -text "$caption(param_spc_audace,lampe2calibre,config,lampe)" -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b)
+      pack  .param_spc_audace_lampe2calibre.lampe.label -in .param_spc_audace_lampe2calibre.lampe -side left -fill none
+      button .param_spc_audace_lampe2calibre.lampe.explore -text "$captionspc(parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -command { set audace(param_spc_audace,lampe2calibre,config,lampe) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_lampe2calibre.lampe.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_lampe2calibre.lampe.entry  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -textvariable audace(param_spc_audace,lampe2calibre,config,lampe) -bg $audace(param_spc_audace,lampe2calibre,color,backdisp) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_lampe2calibre.lampe.entry -in .param_spc_audace_lampe2calibre.lampe -side left -fill none
+      pack .param_spc_audace_lampe2calibre.lampe -in .param_spc_audace_lampe2calibre -fill none -pady 1 -padx 12
+
+
+
+      #--- Label + Entry pour methcos
+      #-- Partie Label
+      frame .param_spc_audace_lampe2calibre.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.methcos.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,methcos) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.methcos.label -in .param_spc_audace_lampe2calibre.methcos -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_lampe2calibre.methcos.combobox \
+         -width 7          \
+         -height [ llength $liste_methcos ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,lampe2calibre,config,methcos) \
+         -values $liste_methcos
+      pack  .param_spc_audace_lampe2calibre.methcos.combobox -in .param_spc_audace_lampe2calibre.methcos -side right -fill none
+      pack .param_spc_audace_lampe2calibre.methcos -in .param_spc_audace_lampe2calibre -fill x -pady 1 -padx 12
+
+
+       if { 1==0 } {      
+      #--- Label + Entry pour methsel
+      #-- Partie Label
+      frame .param_spc_audace_lampe2calibre.methsel -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.methsel.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,methsel) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.methsel.label -in .param_spc_audace_lampe2calibre.methsel -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_lampe2calibre.methsel.combobox \
+         -width 7          \
+         -height [ llength $liste_methsel ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,lampe2calibre,config,methsel) \
+         -values $liste_methsel
+      pack  .param_spc_audace_lampe2calibre.methsel.combobox -in .param_spc_audace_lampe2calibre.methsel -side right -fill none
+      pack .param_spc_audace_lampe2calibre.methsel -in .param_spc_audace_lampe2calibre -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour methbin
+      #-- Partie Label
+      frame .param_spc_audace_lampe2calibre.methbin -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.methbin.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,methbin) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.methbin.label -in .param_spc_audace_lampe2calibre.methbin -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_lampe2calibre.methbin.combobox \
+         -width 7          \
+         -height [ llength $liste_methbin ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,lampe2calibre,config,methbin) \
+         -values $liste_methbin
+      pack  .param_spc_audace_lampe2calibre.methbin.combobox -in .param_spc_audace_lampe2calibre.methbin -side right -fill none
+      pack .param_spc_audace_lampe2calibre.methbin -in .param_spc_audace_lampe2calibre -fill x -pady 1 -padx 12
+      }
+
+
+      #--- Label + Entry pour methinv
+      #-- Partie Label
+      frame .param_spc_audace_lampe2calibre.methinv -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.methinv.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,methinv) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.methinv.label -in .param_spc_audace_lampe2calibre.methinv -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_lampe2calibre.methinv.combobox \
+         -width 7          \
+         -height [ llength $liste_methinv ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,lampe2calibre,config,methinv) \
+         -values $liste_methinv
+      pack  .param_spc_audace_lampe2calibre.methinv.combobox -in .param_spc_audace_lampe2calibre.methinv -side right -fill none
+      pack .param_spc_audace_lampe2calibre.methinv -in .param_spc_audace_lampe2calibre -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour methraie
+      #-- Partie Label
+      frame .param_spc_audace_lampe2calibre.methraie -borderwidth 0 -relief flat -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
+      label .param_spc_audace_lampe2calibre.methraie.label  \
+	      -font $audace(param_spc_audace,lampe2calibre,font,c12b) \
+	      -text "$caption(param_spc_audace,lampe2calibre,config,methraie) " -bg $audace(param_spc_audace,lampe2calibre,color,backpad) \
+	      -fg $audace(param_spc_audace,lampe2calibre,color,textkey) -relief flat
+      pack  .param_spc_audace_lampe2calibre.methraie.label -in .param_spc_audace_lampe2calibre.methraie -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_lampe2calibre.methraie.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,lampe2calibre,config,methraie) \
+         -values $liste_on
+      pack  .param_spc_audace_lampe2calibre.methraie.combobox -in .param_spc_audace_lampe2calibre.methraie -side right -fill none
+      pack .param_spc_audace_lampe2calibre.methraie -in .param_spc_audace_lampe2calibre -fill x -pady 1 -padx 12
+
+  }
+  
+  
+  proc go {} {
+      global audace
+      global caption
+
+      ::param_spc_audace_lampe2calibre::recup_conf
+      set brut $audace(param_spc_audace,lampe2calibre,config,brut)
+      set noir $audace(param_spc_audace,lampe2calibre,config,noir)
+      set plu $audace(param_spc_audace,lampe2calibre,config,plu)
+      set noirplu $audace(param_spc_audace,lampe2calibre,config,noirplu)
+      set offset $audace(param_spc_audace,lampe2calibre,config,offset)
+      set lampe $audace(param_spc_audace,lampe2calibre,config,lampe)
+      set methcos $audace(param_spc_audace,lampe2calibre,config,methcos)
+      set methsel $audace(param_spc_audace,lampe2calibre,config,methsel)
+      set methbin $audace(param_spc_audace,lampe2calibre,config,methbin)
+      set methinv $audace(param_spc_audace,lampe2calibre,config,methinv)
+      set methraie $audace(param_spc_audace,lampe2calibre,config,methraie)
+      set listeargs [ list $brut $noir $plu $noirplu $offset $lampe $methcos $methsel $methinv $methbin $methraie ]
+
+      #--- Lancement de la fonction spcaudace :
+      #-- Si tous les champs sont != "" on execute le calcul :
+      if { [ spc_testguiargs $listeargs ] == 1 } {
+	  set fileout [ spc_lampe2calibre $brut $noir $plu $noirplu $offset $lampe $methcos $methsel $methinv $methbin $methraie ]
+	  destroy .param_spc_audace_lampe2calibre
+	  return $fileout
+      }
+  }
+
+  proc annuler {} {
+      global audace
+      global caption
+      ::param_spc_audace_lampe2calibre::recup_conf
+      destroy .param_spc_audace_lampe2calibre
+  }
+
+
+  proc recup_conf {} {
+      global conf
+      global audace
+      
+      if { [ winfo exists .param_spc_audace_lampe2calibre ] } {
+	  #--- Enregistre la position de la fenetre
+	  set geom [wm geometry .param_spc_audace_lampe2calibre]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
 	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"

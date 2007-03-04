@@ -206,11 +206,12 @@ proc spc_winini { } {
       # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-5"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2calibre_w) -command "::param_spc_audace_traite2calibre::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-4"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-4"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-2"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-3"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
@@ -246,12 +247,15 @@ proc spc_winini { } {
       bind .spc <Control-d> spc_npne_w
 
 
-      #--- Menu Aide ---#
+      #--- Menu À propos/Aide ---#
       .spc.menuBar add cascade -menu .spc.menuBar.aide -label $captionspc(spc_aide) -underline 0
       menu .spc.menuBar.aide -tearoff 0
-      .spc.menuBar.aide add command -label $captionspc(spc_about_w) -command "spc_about" -underline 0
+      # .spc.menuBar.aide add command -label $captionspc(spc_version_w) -command "spc_version" -underline 0
+      .spc.menuBar.aide add command -label $captionspc(spc_version_w)
+      .spc.menuBar.aide add command -label $captionspc(spc_about_w)
+      .spc.menuBar.aide add command -label $captionspc(spc_contrib_w)
       .spc configure -menu .spc.menuBar
-      bind .spc <Control-A> spc_about_w
+      #bind .spc <Control-A> spc_about_w
 
       #--- Fenêtre de graphe BLT ---#
       blt::graph .spc.g -plotbackground $colorspc(plotbackground)
@@ -411,18 +415,31 @@ proc pvisu { } {
    set div_x 10
    set div_y 5
    #set echellex [expr $len/10]
+
+   #set echellex [expr int($len/($div_x*10))*10]
+   #.spc.g axis configure x -stepsize $echellex
+
    set echellex [expr int($len/($div_x*10))*10]
+   if { [expr $vx(end) < $vx(0) ] } {
+       set echellex [expr $echellex * -1 ]
+   }
    .spc.g axis configure x -stepsize $echellex
+
    #scrollbar .hors -command {.spc.g axis view x } -orient horizontal
    #.spc.g axis configure x -stepsize $echellex -scrollcommand { .hors set }
 
-   set tmp_i [ lsort -real -decreasing $profilspc(intensite) ]
-   set imax [ lindex $tmp_i 0 ]
-   #set echelley [expr $i_max/5]
+   #-- Meth 1 :
+   #set tmp_i [ lsort -real -decreasing $profilspc(intensite) ]
+   #set imax [ lindex $tmp_i 0 ]
+   ##set echelley [expr $i_max/5]
    ## Petit bug ICI
-   set echelley [ expr 10*int($imax/($div_y*10)) ]
-   .spc.g axis configure y -stepsize $echelley
+   #set echelley [ expr 10*int($imax/($div_y*10)) ]
+   #.spc.g axis configure y -stepsize $echelley
 
+   #-- Meth 2 :
+   #set echelley [ expr 10*int($vy(max)/($div_y*10)) ]
+   #-- Meth 3 :
+   set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]   
 }
 #****************************************************************#
 
@@ -650,13 +667,18 @@ proc pvisu2 { args } {
    #scrollbar .hors -command {.spc.g axis view x } -orient horizontal
    #.spc.g axis configure x -stepsize $echellex -scrollcommand { .hors set }
 
-   set tmp_i [ lsort -real -decreasing $intensites ]
-   set imax [ lindex $tmp_i 0 ]
-   #set echelley [expr $i_max/5]
+   #-- Meth 1 :
+   #set tmp_i [ lsort -real -decreasing $intensites ]
+   #set imax [ lindex $tmp_i 0 ]
+   ##set echelley [expr $i_max/5]
    ## Petit bug ICI
-   set echelley [ expr 10*int($imax/($div_y*10)) ]
-   .spc.g axis configure y -stepsize $echelley
+   #set echelley [ expr 10*int($imax/($div_y*10)) ]
+   #.spc.g axis configure y -stepsize $echelley
 
+   #-- Meth 2 :
+   #set echelley [ expr 10*int($vy(max)/($div_y*10)) ]
+   #-- Meth 3 :
+   set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]
 }
 #****************************************************************#
 
