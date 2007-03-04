@@ -121,7 +121,7 @@ proc spc_pretrait { args } {
        if { $nb_dark == 1 } {
 	   ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
 	   set pref_dark $nom_dark
-	   file copy $nom_dark$conf(extension,defaut) ${pref_dark}_smd$nb_dark$conf(extension,defaut)
+	   file copy -force $nom_dark$conf(extension,defaut) ${pref_dark}_smd$nb_dark$conf(extension,defaut)
        } else {
 	   ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
 	   smedian "$nom_dark" "${pref_dark}_smd$nb_dark" $nb_dark
@@ -129,7 +129,7 @@ proc spc_pretrait { args } {
        if { $nb_darkflat == 1 } {
 	   ::console::affiche_resultat "L'image de dark de flat est $nom_darkflat$conf(extension,defaut)\n"
 	   set pref_darkflat "$nom_darkflat"
-	   file copy $nom_darkflat$conf(extension,defaut) ${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)
+	   file copy -force $nom_darkflat$conf(extension,defaut) ${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)
        } else {
 	   ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
 	   smedian "$nom_darkflat" "${pref_darkflat}_smd$nb_darkflat" $nb_darkflat
@@ -187,20 +187,20 @@ proc spc_pretrait { args } {
        delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
        if { $flag_rmmaster == "o" } {
 	   # Le 06/02/19 :
-	   file delete "${pref_dark}_smd$nb_dark$conf(extension,defaut)"
-	   file delete "${pref_flat}_smd$nb_flat$conf(extension,defaut)"
-	   file delete "${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)"
+	   file delete -force "${pref_dark}_smd$nb_dark$conf(extension,defaut)"
+	   file delete -force "${pref_flat}_smd$nb_flat$conf(extension,defaut)"
+	   file delete -force "${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)"
        }
 
        #--- Effacement des fichiers copie des masters dark, flat et dflat dus a la copie automatique de pretrait :
        if { [ regexp {.+_smd[0-9]+_smd[0-9]+} ${pref_dark}_smd$nb_dark match resul ] } {
-	   file delete "${pref_dark}_smd$nb_dark$conf(extension,defaut)"
+	   file delete -force "${pref_dark}_smd$nb_dark$conf(extension,defaut)"
        }
        if { [ regexp {.+_smd[0-9]+_smd[0-9]+} ${pref_flat}_smd$nb_flat match resul ] } {
-	   file delete "${pref_flat}_smd$nb_flat$conf(extension,defaut)"
+	   file delete -force "${pref_flat}_smd$nb_flat$conf(extension,defaut)"
        }
        if { [ regexp {.+_smd[0-9]+_smd[0-9]+} ${pref_darkflat}_smd$nb_darkflat match resul ] } {
-	   file delete "${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)"
+	   file delete -force "${pref_darkflat}_smd$nb_darkflat$conf(extension,defaut)"
        }
 
 
@@ -238,6 +238,7 @@ proc spc_norma { args } {
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
      buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
+     buf$audace(bufNo) bitpix short
      ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
    } elseif {[llength $args] == 1} {
      set fichier [ lindex $args 0 ]
@@ -246,6 +247,7 @@ proc spc_norma { args } {
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent div"
      buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
+     buf$audace(bufNo) bitpix short
      ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
    } else {
      ::console::affiche_erreur "Usage : spc_norma nom_fichier ?largeur de raie?\n\n"
@@ -295,7 +297,7 @@ proc spc_autonorma { args } {
 	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
-
+	buf$audace(bufNo) bitpix short
 	#-- Effacement des fichiers temporaires
 	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
 	return ${nom_fichier}_norm
@@ -528,6 +530,7 @@ proc spc_linear { args } {
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
      buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save $audace(rep_images)/${fichier}_cont$conf(extension,defaut)
+     buf$audace(bufNo) bitpix short
      ::console::affiche_resultat "Continuum sauvé sous ${fichier}_cont$conf(extension,defaut)\n"
    } elseif {[llength $args] == 1} {
      set fichier [ lindex $args 0 ]
@@ -536,6 +539,7 @@ proc spc_linear { args } {
      buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
      buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save $audace(rep_images)/${fichier}_cont$conf(extension,defaut)
+     buf$audace(bufNo) bitpix short
      ::console::affiche_resultat "Continuum sauvé sous $audace(rep_images)/${fichier}_cont$conf(extension,defaut)\n"
      return ${fichier}_cont
    } else {
@@ -581,6 +585,7 @@ proc spc_smooth { args } {
        buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=$sigma"
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_smo$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "Spectre adoucis sauvé sous $audace(rep_images)/${fichier}_smo$conf(extension,defaut)\n"
        return ${fichier}_smo
    } else {
@@ -819,6 +824,8 @@ proc spc_select { args } {
        #--- Initialisation à blanc d'un fichier fits
        #buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
+       buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
+       buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
 
        for {set k 0} {$k<$len} {incr k} {
 	   set intens [ lindex $nintensites $k ]
@@ -836,6 +843,7 @@ proc spc_select { args } {
        #--- Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_sel$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "Sélection sauvée sous $audace(rep_images)/${fichier}_sel$conf(extension,defaut)\n"
        return ${fichier}_sel
    } else {
@@ -952,6 +960,7 @@ proc spc_select0 { args } {
        #--- Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_sel$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "Sélection sauvée sous $audace(rep_images)/${fichier}_sel$conf(extension,defaut)\n"
        return ${fichier}_sel$conf(extension,defaut)
    } else {
@@ -1002,7 +1011,9 @@ proc spc_echant { args } {
 
 
 	#--- Récupération des coordonnées des points à interpoler :
-	set contenu [ spc_fits2datadlin $fichier_a_echant ]
+	#set contenu [ spc_fits2datadlin $fichier_a_echant ]
+	#- 20070227 : fits2data nécessaire pour la bonne calibration du spectre etoile ref cat.
+	set contenu [ spc_fits2data $fichier_a_echant ]
 	set abscisses [lindex $contenu 0]
 	set ordonnees [lindex $contenu 1]
 	set len [llength $abscisses]
@@ -1028,7 +1039,9 @@ proc spc_echant { args } {
 	##x sort y
 
 	#--- Création des abscisses des points interpolés :
-	set nabscisses [ lindex [ spc_fits2datadlin $fichier_modele ] 0]
+	#set nabscisses [ lindex [ spc_fits2datadlin $fichier_modele ] 0]
+	#- 20070227 : fits2data nécessaire pour la bonne calibration du spectre etoile ref cat : sans effet ici.
+	set nabscisses [ lindex [ spc_fits2data $fichier_modele ] 0]
 	set nlen [ llength $nabscisses ]
 	#blt::vector sx($nlen)
 	#for {set i 0} {$i<$nlen} {incr i} { 
@@ -1280,7 +1293,7 @@ proc spc_divri { args } {
 
 	    #--- Division :
 	    #-- Meth1 : gestion pixels oscillants :
-	    if {1=0} {
+	    if {1==0} {
 	    set nordos ""
 	    set i 0
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
@@ -1366,6 +1379,93 @@ proc spc_divri { args } {
     }
 }
 #*********************************************************************#
+
+
+
+
+####################################################################
+# Procédure de filtrage par la méthode de Stavitzky-Golay
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 11-02-2007
+# Date modification : 11-02-2007
+# Arguments : nom_profil_raies ?largeur_filtre? ?ordre_filtrage?
+####################################################################
+
+proc spc_smooth3 { args } {
+    global conf
+    global audace
+    #- Ordre du filtrage : 2,4 ou 6.
+
+    if { [llength $args] <= 3 } {
+	if { [llength $args] == 1 } {
+	    set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	    set largeur 16
+	    set ordre_filtre 2
+	} elseif { [llength $args] == 2 } {
+	    set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	    set largeur [ lindex $args 1 ]
+	    set ordre_filtre 2
+	} elseif { [llength $args] == 3 } {
+	    set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	    set largeur [ lindex $args 1 ]
+	    set ordre_filtre [ lindex $args 3 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_smooth3 nom_profil_raies ?largeur_filtre? ?ordre_filtrage?\n"
+	    return 0
+	}
+
+	#--- Données à traiter et paramètres :
+	set flargeur [ expr $largeur+1 ]
+	set listevals [ spc_fits2data $filename ]
+	set abscisses [ lindex $listevals 0 ]
+	set ordonnees [ lindex $listevals 1 ]
+	set len [ llength $ordonnees ]
+
+	#--- Calcul les coéfficients du polynôme de Stavitzky-Golay :
+	set coefssavgol [ spc_savgol $flargeur $dlargeur $dlargeur 0 $ordre_filtre ]
+	set len2 [ llength $coefssavgol ]
+
+	#--- Ajustement des indices des vetceurs :
+	if {1==0} {
+//seek shift index for given case nl, nr, m (see savgol).
+int *index = intvector(1, np);
+index[1]=0;
+int j=3;
+for (i=2; i<=nl+1; i++) 
+        {// index(2)=-1; index(3)=-2; index(4)=-3; index(5)=-4; index(6)=-5
+    index[i]=i-j;
+    j += 2;
+        }
+j=2;
+for (i=nl+2; i<=np; i++) 
+        {// index(7)= 5; index(8)= 4; index(9)= 3; index(10)=2; index(11)=1
+    index[i]=i-j;
+    j += 2;
+        }
+	}
+
+	#--- Applique le polynôme de filtrage aux valeurs :
+	for {set i 0} {$i<$len} { incr i } {
+	    set nordonnee 0.
+	    for {set j 1} {$j<$flargeur} { incr j } {
+		set it [ expr $i+$j ]
+		if { $it >= 0 && $it < $len } {
+		    set nordonnee [ expr $nordonnee+[ lindex $coefssavgol $j ]*[ lindex $ordonnee [ expr $i+$j ]]]
+		}
+	    }
+	    lappend nordonnees $nordonnee
+	}
+
+	#--- Formatage du résultat :
+	set filesavgol [ spc_data2fits $abscisses $nordonnees ]
+	::console::affiche_resultat "Profil de raies filtré par Stavitzky-Golay sauvé sous $filesavgol\n"
+	return $filesavgol
+    } else {
+	::console::affiche_erreur "Usage: spc_smooth3 nom_profil_raies ?largeur_filtre? ?ordre_filtrage?\n"
+    }
+}
+#***************************************************************************#
 
 
 
@@ -1541,6 +1641,67 @@ proc spc_passebas { args } {
     }
 }
 #****************************************************************#
+
+
+
+
+####################################################################
+#  Procedure de filtrage (lissage) par l'algorithme Savitzky-Golay
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-03-2007
+# Date modification : 03-03-2007
+# Arguments : profil_de_raies ??
+####################################################################
+
+proc spc_smoothsg { args } {
+    global audace
+    global conf
+
+    if { [llength $args] <= 3 } {
+	if { [llength $args] == 1 } {
+	    set fichier [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	    set demi_largeur 100
+	    set degre 2
+	} elseif { [llength $args] == 2 } {
+	    set fichier [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	    set demi_largeur [ expr int(0.5*[ lindex $args 1 ]) ]
+	    set degre 2
+	} elseif { [llength $args] == 3 } {
+	    set fichier [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	    set demi_largeur [ expr int(0.5*[ lindex $args 1 ]) ]
+	    set degre [ lindex $args 2 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?[[?largeur_filtre?] ?degre_filtrage (2,1,3)?]?\n\n"
+	    return 0
+	}
+
+	#--- Filtrage du profil :
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	buf$audace(bufNo) imaseries "SMOOTHSG NL=$demi_largeur NR=$demi_largeur LD=0 M=$degre"
+
+	#--- Retour du résultat :
+	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_linsg"
+	::console::affiche_resultat "Profil de raies exporté sous ${fichier}_lings\n"
+	return "${fichier}_linsg"
+    } else {
+	::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?[[?largeur_filtre?] ?degre_filtrage (2,1,3)?]?\n\n"
+    }
+}
+####################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1860,6 +2021,7 @@ proc spc_echant_21122005 { args } {
        #--- Sauvegarde du spectre rééchantillonné
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save $audace(rep_images)/${fichier}_ech$conf(extension,defaut)
+       buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "Profil rééchantillonné sauvé sous $audace(rep_images)/${fichier}_ech$conf(extension,defaut)\n"
        return ${fichier}_ech
    } else {
@@ -1888,7 +2050,8 @@ proc spc_echant0 { args } {
        buf$audace(bufNo) scale  $lfactor 1
        buf$audace(bufNo) setkwd [list "CDELT1" "$newdisp" float "" ""]
        buf$audace(bufNo) bitpix float
-       buf$audace(bufNo) save $audace(rep_images)/${fichier}_ech$conf(extension,defaut)
+       buf$audace(bufNo) save "$audace(rep_images)/${fichier}_ech$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "Profil rééchantillonné sauvé sous $audace(rep_images)/${fichier}_ech$conf(extension,defaut)\n"
        return ${fichier}_ech
    } else {

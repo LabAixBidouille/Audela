@@ -232,6 +232,9 @@ proc spc_ajust { args } {
 #****************************************************************#
 
 
+
+
+
 ####################################################################
 #  Procedure d'ajustement d'un nuage de points par une fonction affine
 #
@@ -387,14 +390,14 @@ proc spc_ajustdeg2 { args } {
 
 
 ####################################################################
-#  Procedure d'ajustement d'un nuage de points par un polynôme de degré 2
+#  Procedure d'ajustement d'un nuage de points par un polynôme de degré 3
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-12-2005
 # Date modification : 26-05-2005
 # Arguments : liste abscisses, liste ordonnees, erreur
 ####################################################################
-#spc_ajustdeg2 {218.67 127.32 16.67} {211 208 210.1} 1
+#spc_ajustdeg3 {218.67 127.32 16.67} {211 208 210.1} 1
 #{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
 
 proc spc_ajustdeg3 { args } {
@@ -407,8 +410,8 @@ proc spc_ajustdeg3 { args } {
 	set erreur [lindex $args 2]
 	set len [llength $ordonnees]
 
-	#--- Calcul des coefficients du polynôme d'ajustement
-	# - calcul de la matrice X 
+	#--- Calcul des coefficients du polynôme d'ajustement :
+	# - calcul de la matrice X : calcul les monônes correspondant aux différents degrés à l'abscisse xi
 	set n [llength $abscisses]
 	set x ""
 	set X "" 
@@ -463,49 +466,67 @@ proc spc_ajustfin { args } {
     if {[llength $args] == 2} {
 	set fichier [ lindex $args 0 ]
 	set erreur [ lindex $args 1 ]
-	set coordonnees_cont [spc_adjust $fichier 1]
-	set abscisses_cont [lindex $coordonnees_cont 0]
-	set ordonnees_cont [lindex $coordonnees_cont 1]
-	set len [llength $ordonnees_cont]
+
+	#--- Extraction des données et 1ier ajustement :
+	set coordonnees_cont [ spc_ajust $fichier 1 ]
+	set abscisses_cont [ lindex $coordonnees_cont 0 ]
+	set ordonnees_cont [ lindex $coordonnees_cont 1 ]
+	set len [ llength $ordonnees_cont ]
 
 	#--- Calcul la difference entre le continuum et le profil a ajuster (normaliser)
 	set nom_fichier [ file rootname $fichier ]
-	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees "double" ]
+	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees_cont "double" ]
 	buf$audace(bufNo) load $audace(rep_images)/$fichier
 	buf$audace(bufNo) sub $audace(rep_images)/$nom_continuum 0
 	buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_diffconti
 
 	#--- Affinement de l'ajustement : enlève les valeurs abérantes de la différence et ajoute la différence au continuum
-	set coords_diffconti [spc_fits2data ${nom_fichier}_diffconti]
-	set ordonnees [lindex [spc_fits2data $fichier] 1]
-	set abs_diffconti [lindex $coords_diffconti 0]
-	set ord_diffconti [lindex $coords_diffconti 1]
+	set coords_diffconti [ spc_fits2data ${nom_fichier}_diffconti ]
+	set ordonnees [lindex [ spc_fits2data $fichier] 1 ]
+	set abs_diffconti [ lindex $coords_diffconti 0 ]
+	set ord_diffconti [ lindex $coords_diffconti 1 ]
+	set yajuste [ list ]
 	for {set k 0} {$k<$len} {incr k} {
-	    set y_dc [lindex $ord_diffconti $k]
-	    set y [lindex $ordonnees $k]
+	    set y_dc [ lindex $ord_diffconti $k ]
+	    set y [ lindex $ordonnees $k ]
 	    #if {$y_dc == $y} { lappend y_aspline $y }
-	    if {$y_dc == $y} { lappend yadj $y }
+	    if {$y_dc == $y} {
+		lappend yajuste $y
+	    } else {
+		lappend yajuste [ lindex [ lindex $coordonnees_cont 1 ] $k ]
+	    }
 	}
 
 
+	#--- Affichage du graphique :
 	set flag_o 0
-	if {$flag_o /= 0} {
-	#--- Affichage du graphe
+	if {$flag_o != 0} {
 	destroy .testblt
 	toplevel .testblt
 	blt::graph .testblt.g
 	pack .testblt.g -in .testblt
 	.testblt.g legend configure -position bottom
-	set ly [lsort $yadj]
+	set ly [ lsort $yajuste ]
 	#set ly [lsort $ordonnees]
 	#set ymax [ bm_max [bm_lmax $ordonnees] [bm_lmax $yadj] ]
-	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
+	.testblt.g axis configure x -min [lindex $abscissescont 0] -max [lindex $abscisses_cont $len]
 	#.testblt.g axis configure y -min 1000 -max 5000
 	##.testblt.g axis configure y -min 1000 -max [lindex $ly $len]
 	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
 	.testblt.g element create original -symbol none -x x -y y -color blue 
 	.testblt.g element create interpolation_deg2 -symbol none -x x -y yn -color red 
 	}
+
+	::plotxy::clf
+	::plotxy::plot $abscisses_cont $yajuste r 1
+	::plotxy::hold on
+	::plotxy::plot $abscisses_cont $ordonnees ob 0
+	::plotxy::plotbackground #FFFFFF
+	#::plotxy::xlabel "x"
+	#::plotxy::ylabel "y"
+	::plotxy::title "bleu : orginal ; rouge : interpolation deg 2"
+
+
 	#--- Enregistrement des points du polynôme d'ajustement
 	#set fileetalonnespc [ file rootname $filenamespc ]
 	##set filename ${fileetalonnespc}_dat$extsp
@@ -516,7 +537,7 @@ proc spc_ajustfin { args } {
 	#    puts $file_id "$lambda\t$intensite"
 	#}
 
-	set adj_vals [list $abscisses $yadj]
+	set adj_vals [ list $abscisses_cont $yajuste ]
 	return $adj_vals
     } else {
 	::console::affiche_erreur "Usage: spc_ajustfin fichier_profil.fit erreur (1)\n\n"
@@ -662,7 +683,7 @@ proc spc_spline { args } {
 
 	return $ncoordonnees
     } else {
-	::console::affiche_erreur "Usage: spc_spline absisses ordonnées abscisses_modèles o/n représentation graphique\n\n"
+	::console::affiche_erreur "Usage: spc_spline absisses ordonnées abscisses_modèles représentation graphique (o/n)\n\n"
     }
 }
 #****************************************************************#
@@ -909,7 +930,7 @@ proc spc_bspline { args } {
     global conf
     global audace
 
-    set Nu 20 
+    set Nu 20.
 
     if { [llength $args] == 1 } {
 	set listevals [ lindex $args 0 ]

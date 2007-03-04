@@ -368,6 +368,7 @@ proc spc_detectasym { args } {
 	set ycenter [ lindex $gparams 5 ]
 	#-- Choix : la largeur de la gaussienne est de 1.9*FWHM
 	set largeur [ expr 1.9*[ lindex $gparams 6 ] ]
+	file delete "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
 	return [ list $ycenter $largeur ]
     } else {
 	::console::affiche_erreur "Usage: spc_detectasym spectre_2D_fits\n\n"
@@ -397,6 +398,7 @@ proc spc_subskyfrac { args } {
 	buf$audace(bufNo) imaseries "BACK back_kernek=15 back_threshold=0.2 sub"
 	# buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_fc"
+	buf$audace(bufNo) bitpix short
 	return ${filespacialspc}_fc
     } else {
 	::console::affiche_erreur "Usage: spc_subskyfrac spectre_2D_fits\n\n"
@@ -478,6 +480,7 @@ proc spc_binlopt { args } {
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre2d}_spc"
+	buf$audace(bufNo) bitpix short
 	::console::affiche_resultat "Profil de raies sauvé sous ${spectre2d}_spc$conf(extension,defaut)\n"
 	return ${spectre2d}_spc
     } else {
@@ -557,6 +560,7 @@ proc spc_profil { args } {
 	#--- Bining :
 	if { $methodebin == "add" } {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
+	    file delete "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
 	} elseif { $methodebin == "rober" } {
 	    #-- Cas particulier de zone de binning : elle est decoupée et c'est $spectre_zone_fc
 	    #-- au lieu de faire : [ spc_binlopt $spectre_zone_fc $ycenter $hauteur ]
@@ -572,9 +576,12 @@ proc spc_profil { args } {
 	    } else {
 		buf$audace(bufNo) save1d "$audace(rep_images)/${spectre_zone_fc}_spc"
 	    }
+	    buf$audace(bufNo) bitpix short
 	    set profil_fc ${spectre_zone_fc}_spc
+	    file delete "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
 	} else {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
+	    file delete "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
 	}
 
 	#--- Message de fin et nettoyage :
@@ -813,7 +820,7 @@ proc spc_bin { args } {
 	} else {
 	    buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_sp"
 	}
-	
+	buf$audace(bufNo) bitpix short
 	
 	## ******** Calcul une moyenne du fond du ciel prit dessus et dessous le spectre ****** ##
 	##---- Traitement d'une zone de longueur egale a la selection et de hauteur egale a celle de l'image initiale (par la suite ce sera sur une hauteur decidee a l'avance) -------------------#
@@ -826,7 +833,8 @@ proc spc_bin { args } {
 	buf$audace(bufNo) window $coords_zonev
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_zonev"
-	
+	buf$audace(bufNo) bitpix short
+
 	## On binne sur les colonnes dans la région de l'image au dessus du spectre et on sauvegarde le résultat dans ${filenamespc_spatial}_spsup	        
 	buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_spatial}_zonev"	
 	buf$audace(bufNo) biny $ysup [expr $ysup+$ht_dessus-1] 1
@@ -838,7 +846,7 @@ proc spc_bin { args } {
 	} else {
 	    buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spsup"
 	}
-	
+	buf$audace(bufNo) bitpix short	
 	
 	
 	## On binne sur les colonnes dans la région de l'image au dessous du spectre et on sauvegarde le résultat dans ${filenamespc_spatial}_spinf
@@ -853,7 +861,7 @@ proc spc_bin { args } {
 	} else {
 	    buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spinf"
 	}
-	
+	buf$audace(bufNo) bitpix short
 	
 	## Calcul une moyenne du fond du ciel prit dessus et dessous le spectre.
 	::console::affiche_resultat "Calcul de la moyenne du fond du ciel pris dessus et dessous l'image...\n"
@@ -876,7 +884,7 @@ proc spc_bin { args } {
 	} else {
 	    buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spc"
 	}
-	
+	buf$audace(bufNo) bitpix short
 
 	#--- Export au format dat :
 	# ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_spatial${extsp}\n"
@@ -941,6 +949,7 @@ proc spc_bins { args } {
       } else {
 	  buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_zone}_spc"
       }
+      buf$audace(bufNo) bitpix short
 
       ::console::affiche_resultat "\nProfil de raies sauvé sous ${filenamespc_zone}_spc$conf(extension,defaut)\n"
 
@@ -1012,7 +1021,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     } else {
 	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_sp"
     }
-
+    buf$audace(bufNo) bitpix short
 
 
     ## ******** Calcul une moyenne du fond du ciel prit dessus et dessous le spectre ****** ##
@@ -1026,7 +1035,8 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     buf$audace(bufNo) window $coords_zonev
     buf$audace(bufNo) bitpix float
     buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_zonev"
-  
+    buf$audace(bufNo) bitpix short
+
     ## On binne sur les colonnes dans la région de l'image au dessus du spectre et on sauvegarde le résultat dans ${filenamespc_spatial}_spsup	        
     buf$audace(bufNo) load "$audace(rep_images)/${filenamespc_spatial}_zonev"	
     buf$audace(bufNo) biny $ysup [expr $ysup+$ht_dessus-1] 1
@@ -1038,6 +1048,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     } else {
 	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spsup"	
     }
+    buf$audace(bufNo) bitpix short
 
 
     ## Calcul une moyenne du fond du ciel prit dessus et dessous le spectre.
@@ -1063,7 +1074,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     } else {
 	buf$audace(bufNo) save1d "$audace(rep_images)/${filenamespc_spatial}_spc"
     }
-
+    buf$audace(bufNo) bitpix short
 
     ::console::affiche_resultat "Extraction des valeurs et écriture du fichier ascii $filenamespc_spatial${extsp}\n"
     #loadima ${filenamespc_spatial}_spc
@@ -1144,6 +1155,7 @@ proc spc_profily { args } {
 	} else {
 	    buf$audace(bufNo) save1d "$audace(rep_images)/${fichier}_spcy"
 	}
+	buf$audace(bufNo) bitpix short
 
 	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcy$conf(extension,defaut)\n"
 	return ${fichier}_spcy
@@ -1691,6 +1703,7 @@ proc spc_profillampe { args } {
        buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
        buf$audace(bufNo) save $audace(rep_images)/${spectre_lampe}_spc
+       buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "\nProfil de raie de la lampe de calibration sauvé sous ${spectre_lampe}_spc\n"
        return ${spectre_lampe}_spc
    } else {

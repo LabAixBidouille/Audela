@@ -1223,12 +1223,12 @@ proc spc_tiltautoimgs { args } {
 		#-- Cas des spectres dont la rotation excede une valeur seuil :
 		if { [ regexp {(.+)tilt0+} $spectre_tilte match spectrem ] } {
 		    if { $reject == "o" } {
-			file delete "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
-			file copy "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt0-$i$conf(extension,defaut)"
+			file delete -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
+			file copy -force "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt0-$i$conf(extension,defaut)"
 			::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt0-$i$conf(extension,defaut).\n\n"
 		    } elseif { $reject == "n" } {
-			file delete "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
-			file copy "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+			file delete -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
+			file copy -force "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
 			::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
 		    } else {
 			::console::affiche_resultat "Mauvaise option de rejet de spectre.\n"
@@ -1236,7 +1236,7 @@ proc spc_tiltautoimgs { args } {
 		    }
 		    incr nbspbad
 		} else {
-		    file rename "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
+		    file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
 		    ::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
 		}
 		incr i

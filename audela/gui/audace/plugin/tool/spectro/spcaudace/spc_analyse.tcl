@@ -26,6 +26,8 @@
 ##########################################################
 
 
+
+
 ##########################################################
 #  Procedure de détermination du centre d'une raie spectrale modelisee par une gaussienne.
 #
@@ -769,6 +771,8 @@ proc spc_snr { args } {
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
 	   set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+       } else {
+	   set naxis2 1
        }
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
 	   set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]

@@ -920,6 +920,7 @@ proc spc_calibre { args } {
 	
        #--- Effectue la calibration de la lampe spectrale : 
        # set etaloncalibre [ spc_calibren $profiletalon $xa1 $xa2 $lambda1 $type1 $xb1 $xb2 $lambda2 $type2 ]
+       # NON : file delete "$audace(rep_images)/$profiletalon$conf(extension,defaut)"
        return $spcalibre
    } else {
        ::console::affiche_erreur "Usage: spc_calibre profil_de_raies_a_calibrer\n\n"
@@ -1228,20 +1229,35 @@ proc spc_rinstrum { args } {
        
        #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
        ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
-       set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+       # set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+       set rinstrum0 [ spc_divri $fmes_sortie $fref_sortie ]
 
        #--- Lissage de la reponse instrumentale :
        ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
-       #- Meth 1 :
+       #-- Meth 1 :
        #set rinstrum1 [ spc_smooth2 $rinstrum0 ]
        #set rinstrum2 [ spc_passebas $rinstrum1 ]
        #set rinstrum3 [ spc_passebas $rinstrum2 ]
        #set rinstrum [ spc_passebas $rinstrum3 ]
-       #- Meth2 pour 2400 t/mm : 3 passebas (110, 35, 10) + spc_smooth2.
-       set rinstrum1 [ spc_passebas $rinstrum0 110 ]
-       set rinstrum2 [ spc_passebas $rinstrum1 35 ]
-       set rinstrum3 [ spc_passebas $rinstrum2 10 ]
-       set rinstrum [ spc_smooth2 $rinstrum3 ]
+
+       #-- Meth2 pour 2400 t/mm : 3 passebas (110, 35, 10) + spc_smooth2.
+       #set rinstrum1 [ spc_passebas $rinstrum0 110 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 35 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 10 ]
+       #set rinstrum [ spc_smooth2 $rinstrum3 ]
+
+       #-- Meth3 : interpolation polynomiale de degré 1 et 2
+       set rinstrum [ spc_ajustrid1 $rinstrum0 ]
+       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale1$conf(extension,defaut)"
+       set rinstrum [ spc_ajustrid2 $rinstrum0 ]
+       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale2$conf(extension,defaut)"
+
+       #-- Meth 4 :
+       #set rinstrum1 [ spc_smooth2 $rinstrum0 ]
+       set rinstrum1 [ spc_passebas $rinstrum0 ]
+       set rinstrum2 [ spc_passebas $rinstrum1 ]
+       set rinstrum3 $rinstrum2
+       set rinstrum [ spc_smooth2 $rinstrum2 ]
 
 
        #--- Nettoyage des fichiers temporaires :
@@ -1256,7 +1272,7 @@ proc spc_rinstrum { args } {
 	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
 	   return 0
        } else {
-	   file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+	   #file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
 	   file delete -force "$audace(rep_images)/$rinstrum1$conf(extension,defaut)"
 	   file delete -force "$audace(rep_images)/$rinstrum2$conf(extension,defaut)"
 	   file delete -force "$audace(rep_images)/$rinstrum3$conf(extension,defaut)"
@@ -1463,6 +1479,299 @@ proc spc_rinstrumeaucorr { args } {
 
 
 
+####################################################################
+# Procedure d'ajustement d'un nuage de points de réponse instrumentale
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 27-02-2007
+# Date modification : 27-02-2007
+# Arguments : fichier .fit de la réponse instrumentale
+# Algo : ajustement par un polynome de degré 1 avec abaissement global basé sur la moyenne de la difference des valeurs y_deb et y_fin de l'intervalle.
+####################################################################
+
+proc spc_ajustrid1 { args } {
+    global conf
+    global audace
+
+    if {[llength $args] == 1} {
+	set filenamespc [ lindex $args 0 ]
+
+	#--- Initialisation des paramètres et des données :
+	set erreur 1.
+	set contenu [ spc_fits2data $filenamespc ]
+	set abscisses [lindex $contenu 0]
+	set ordonnees [lindex $contenu 1]
+	set len [llength $ordonnees]
+
+	#--- Calcul des coefficients du polynôme d'ajustement :
+	# - calcul de la matrice X 
+	set n [llength $abscisses]
+	set x ""
+	set X "" 
+	for {set i 0} {$i<$n} {incr i} { 
+	    set xi [lindex $abscisses $i] 
+	    set ligne_i 1
+	    lappend erreurs $erreur
+	    lappend ligne_i $xi 
+	    lappend X $ligne_i 
+	} 
+	#-- calcul de l'ajustement 
+	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+	#-- extrait le resultat 
+	set coeffs [lindex $result 0] 
+	set chi2 [lindex $result 1] 
+	set covar [lindex $result 2]
+
+	set a [lindex $coeffs 0]
+	set b [lindex $coeffs 1]
+	::console::affiche_resultat "Coefficients : $a+$b*x\n"
+
+	#--- Calcul la valeur a retrancher : basée sur la difference moyenne y_deb et y_fin calculee par rapport aux mesures :
+	set ecart 30
+	set xdeb [ lindex $abscisses $ecart ]
+	set xfin [ lindex $abscisses [ expr $len-$ecart-1 ] ]
+	set ycalc_deb [ expr $a+$b*$xdeb ]
+	set ycalc_fin [ expr $a+$b*$xfin ]
+	set ymes_deb [ lindex $ordonnees $ecart ]
+	set ymes_fin [ lindex $ordonnees [ expr $len-$ecart-1 ] ]
+	#::console::affiche_resultat "$ycalc_deb ; $ycalc_fin ; $ymes_deb ; $ymes_fin\n"
+	## set dy_moy [ expr 0.5*(abs($ycalc_deb-$ymes_deb)+abs($ycalc_fin-$ymes_fin)) ]
+	set dy_moy [ expr 0.5*($ycalc_deb-$ymes_deb+$ycalc_fin-$ymes_fin) ]
+	#::console::affiche_resultat "Offset à retrancher : $dy_moy\n"
+	set aadj [ expr $a-$dy_moy ]
+	#set aadj $a
+
+	#--- Met a jour les nouvelles intensités :
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	for {set k 1} {$k<=$naxis1} {incr k} {
+	    set x [ lindex $abscisses [ expr $k-1 ] ]
+	    set y [ lindex $ordonnees [ expr $k-1 ] ]
+	    if { $y==0 } {
+		set yadj 0.
+	    } else {
+		set yadj [ expr $aadj+$b*$x ]
+	    }
+	    lappend yadjs $yadj
+	    buf$audace(bufNo) setpix [list $k 1] $yadj
+	}
+
+
+	#--- Affichage du graphe
+	::plotxy::figure 1
+	#::plotxy::clf
+	::plotxy::plot $abscisses $yadjs g 1
+	::plotxy::hold on
+	::plotxy::plot $abscisses $ordonnees ob 0
+	::plotxy::plotbackground #FFFFFF
+	::plotxy::title "bleu : RI orginale - rouge : RI interpolée deg 1"
+	::plotxy::hold off
+
+        #--- Sauvegarde du résultat :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
+	buf$audace(bufNo) bitpix short
+	::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
+	return ${filenamespc}_lin
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustrid1 fichier_profil.fit\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+####################################################################
+# Procedure d'ajustement d'un nuage de points de réponse instrumentale
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 26-02-2007
+# Date modification : 26-02-2007
+# Arguments : fichier .fit de la réponse instrumentale
+# Algo : ajustement par un polynome de degré 2 avec abaissement global basé sur la moyenne de la difference des valeurs y_deb et y_fin de l'intervalle.
+####################################################################
+
+proc spc_ajustrid2 { args } {
+    global conf
+    global audace
+
+    if {[llength $args] == 1} {
+	set filenamespc [ lindex $args 0 ]
+
+	#--- Initialisation des paramètres et des données :
+	set erreur 1.
+	set contenu [ spc_fits2data $filenamespc ]
+	set abscisses [lindex $contenu 0]
+	set ordonnees [lindex $contenu 1]
+	set len [llength $ordonnees]
+
+	#--- Calcul des coefficients du polynôme d'ajustement :
+	# - calcul de la matrice X 
+	set n [llength $abscisses]
+	set x ""
+	set X "" 
+	for {set i 0} {$i<$n} {incr i} { 
+	    set xi [lindex $abscisses $i] 
+	    set ligne_i 1
+	    lappend erreurs $erreur
+	    lappend ligne_i $xi 
+	    lappend ligne_i [expr $xi*$xi]
+	    lappend X $ligne_i 
+	} 
+	#-- calcul de l'ajustement 
+	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+	#-- extrait le resultat 
+	set coeffs [lindex $result 0] 
+	set chi2 [lindex $result 1] 
+	set covar [lindex $result 2]
+
+	set a [lindex $coeffs 0]
+	set b [lindex $coeffs 1]
+	set c [lindex $coeffs 2]
+	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
+
+	#--- Calcul la valeur a retrancher : basée sur la difference moyenne y_deb et y_fin calculee par rapport aux mesures :
+	set ecart 30
+	set xdeb [ lindex $abscisses $ecart ]
+	set xfin [ lindex $abscisses [ expr $len-$ecart-1 ] ]
+	set ycalc_deb [ expr $a+$b*$xdeb+$c*$xdeb*$xdeb ]
+	set ycalc_fin [ expr $a+$b*$xfin+$c*$xfin*$xfin ]
+	set ymes_deb [ lindex $ordonnees $ecart ]
+	set ymes_fin [ lindex $ordonnees [ expr $len-$ecart-1 ] ]
+	#::console::affiche_resultat "$ycalc_deb ; $ycalc_fin ; $ymes_deb ; $ymes_fin\n"
+	## set dy_moy [ expr 0.5*(abs($ycalc_deb-$ymes_deb)+abs($ycalc_fin-$ymes_fin)) ]
+	set dy_moy [ expr 0.5*($ycalc_deb-$ymes_deb+$ycalc_fin-$ymes_fin) ]
+	#::console::affiche_resultat "Offset à retrancher : $dy_moy\n"
+	set aadj [ expr $a-$dy_moy ]
+	#set aadj $a
+
+	#--- Met a jour les nouvelles intensités :
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	for {set k 1} {$k<=$naxis1} {incr k} {
+	    set x [ lindex $abscisses [ expr $k-1 ] ]
+	    set y [ lindex $ordonnees [ expr $k-1 ] ]
+	    if { $y==0 } {
+		set yadj 0.
+	    } else {
+		set yadj [ expr $aadj+$b*$x+$c*$x*$x ]
+	    }
+	    lappend yadjs $yadj
+	    buf$audace(bufNo) setpix [list $k 1] $yadj
+	}
+
+
+	#--- Affichage du graphe
+	#::plotxy::clf
+	::plotxy::figure 2
+	::plotxy::plot $abscisses $yadjs r 1
+	::plotxy::hold on
+	::plotxy::plot $abscisses $ordonnees ob 0
+	::plotxy::plotbackground #FFFFFF
+	::plotxy::title "bleu : RI orginale - rouge : RI interpolée deg 2"
+	::plotxy::hold off
+
+
+        #--- Sauvegarde du résultat :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
+	buf$audace(bufNo) bitpix short
+	::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
+	return ${filenamespc}_lin
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustrid2 fichier_profil.fit\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+####################################################################
+# Procedure d'ajustement d'un nuage de points 
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 28-02-2007
+# Date modification : 28-02-2007
+# Arguments : fichier .fit du profil de raie
+####################################################################
+
+proc spc_ajustd5 { args } {
+    global conf
+    global audace
+
+    if { [ llength $args ]==1 } {
+	set filenamespc [ lindex $args 0 ]
+	set erreur 1.
+	set contenu [ spc_fits2data $filenamespc ]
+	set abscisses [ lindex $contenu 0 ]
+	set ordonnees [ lindex $contenu 1 ]
+	set len [llength $ordonnees ]
+
+	#--- Calcul des coefficients du polynôme d'ajustement
+	# - calcul de la matrice X 
+	#set n [llength $abscisses]
+	set x ""
+	set X "" 
+	for {set i 0} {$i<$len} {incr i} { 
+	    set xi [lindex $abscisses $i] 
+	    set ligne_i 1
+	    lappend erreurs $erreur
+	    lappend ligne_i $xi 
+	    lappend ligne_i [ expr $xi*$xi ]
+	    lappend ligne_i [ expr $xi*$xi*$xi ]
+	    lappend ligne_i [ expr $xi*$xi*$xi*$xi ]
+	    lappend ligne_i [ expr $xi*$xi*$xi*$xi*$xi ]
+	    lappend X $ligne_i 
+	} 
+	#-- calcul de l'ajustement 
+	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ]
+	#-- extrait le resultat 
+	set coeffs [lindex $result 0] 
+	set chi2 [lindex $result 1] 
+	set covar [lindex $result 2]
+
+	set a [lindex $coeffs 0]
+	set b [lindex $coeffs 1]
+	set c [lindex $coeffs 2]
+	set d [lindex $coeffs 3]
+	set e [lindex $coeffs 4]
+	set f [lindex $coeffs 5]
+	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2+$d*x^3+$e*x^4+$f*x^5\n"
+
+	#--- Crée le fichier fits de sortie
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	#set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	set k 1
+	foreach x $abscisses {
+	    set y_lin [ expr $a+$b*$x+$c*$x*$x+$d*$x*$x*$x+$e*pow($x,4)+$f*pow($x,5) ]
+	    lappend yadj $y_lin
+	    buf$audace(bufNo) setpix [list $k 1] $y_lin
+	    incr k
+	}
+
+	#--- Affichage du graphe
+	#--- Meth1
+	::plotxy::clf
+	::plotxy::plot $abscisses $yadj r 1
+	::plotxy::hold on
+	::plotxy::plot $abscisses $ordonnees ob 0
+	::plotxy::plotbackground #FFFFFF
+	#::plotxy::xlabel "x"
+	#::plotxy::ylabel "y"
+	::plotxy::title "bleu : orginal ; rouge : interpolation deg 5"
+
+
+        #--- Sauvegarde du résultat :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
+	buf$audace(bufNo) bitpix short
+	::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
+	return ${filenamespc}_lin
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustd5 fichier_profil.fit\n\n"
+    }
+}
+#****************************************************************#
 
 
 

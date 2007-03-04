@@ -994,7 +994,7 @@ proc spc_autoew { args } {
 	#--- Détermination de la largeur équivalente :
 	set ew [ spc_ew2 $filename $lambda_deb $lambda_fin ]
 	set deltal [ expr abs($lambda_fin-$lambda_deb) ]
-	::console::affiche_resultat "Largeur d'intégration pour EW : $deltal\n"
+
 
 	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
 	set snr [ spc_snr $filename ]
@@ -1006,14 +1006,23 @@ proc spc_autoew { args } {
 	if { $snr != 0 } {
 	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
 	} else {
-	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n" ]
+	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
 	    set sigma 0
 	}
 
+        #--- Formatage des résultats :
+	set l_fin [ expr 0.01*int($lambda_fin*100) ]
+	set l_deb [ expr 0.01*int($lambda_deb*100) ]
+	set delta_l [ expr 0.01*int($deltal*100) ]
+	set ew_short [ expr 0.01*int($ew*100) ]
+	set sigma_ew [ expr 0.01*int($sigma*100) ]
+	set snr_short [ expr round($snr) ]
+
 	#--- Affichage des résultats :
-	::console::affiche_resultat "Bornes de calcul de EW : $lambda_deb, $lambda_fin\n\n"
-	::console::affiche_resultat "La largeur équivalente EW vaut $ew anstrom(s)\n"
-	::console::affiche_resultat "SNR=$snr\n Sigma(EW)=$sigma angstrom\n"
+	::console::affiche_resultat "\n"
+	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
+	::console::affiche_resultat "SNR=$snr_short.\n"
+	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
 	return $ew
     } else {
 	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie\n"

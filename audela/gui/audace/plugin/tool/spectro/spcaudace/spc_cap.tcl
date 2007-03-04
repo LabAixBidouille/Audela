@@ -1,8 +1,13 @@
 # Création : 2003
 # Modification : 08/12/2005
 
+global spcaudace
+
 #--- definition of captions
 #--- definition des legendes
+
+
+#----------------- Version anglaise --------------------------------------#
 if {[string compare $langage english] ==0 } {
      set captionspc(main_title) "SpcAud'ACE : spectrum analyser"
      set captionspc(acq) "CCD Acquisition"
@@ -42,6 +47,7 @@ if {[string compare $langage english] ==0 } {
 }
 
 
+#----------------- Version francaise --------------------------------------#
 if {[string compare $langage french] ==0 } {
      set captionspc(main_title) "SpcAud'ACE : analyseur de spectres"
      set captionspc(acq) "Acquisition CCD"
@@ -110,13 +116,13 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu Pipelines ---#
      set captionspc(spc_pipelines) "Pipelines"
+     set captionspc(spc_pipelines_space) "---------------------------------------------------------------------------"
      set captionspc(spc_traite2rinstrum_w) "1) Prétraitement -> réponse instrumentale"
      set captionspc(spc_traite2srinstrum_w) "2) Prétraitement -> correction instrumentale (application à d'autres spectres)"
-     set captionspc(spc_traite2calibre_w) "1bis) Prétraitement -> calibration"
-     set captionspc(spc_traite2scalibre_w) "2bis) Prétraitement -> calibration (application à d'autres spectres)"
-     set captionspc(spc_pipelines_space) "---------------------------------------------------------------------------"
+     set captionspc(spc_traite2scalibre_w) "Prétraitement -> calibration (application à d'autres spectres)"
      # set captionspc(spc_traitesimple2calibre_w) "Prétraitement simple -> calibration"
      # set captionspc(spc_traitesimple2rinstrum_w) "Prétraitement simple -> réponse instrumentale"
+     set captionspc(spc_lampe2calibre_w) "Lampe -> corrections géométriques+calibration"
      set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"
      set captionspc(spc_geom2rinstrum_w) "Corrections géométriques -> correction instrumentale"
      set captionspc(spc_specLhIII_w) "Réduction des spectres Lhires III (vide)"
@@ -133,29 +139,9 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu Aide ---#
      set captionspc(spc_aide) "Aide"
+     set captionspc(spc_version_w) "Version $spcaudace(version)"
      set captionspc(spc_about_w) "Auteur : Benjamin MAUCLAIRE"
-
+     set captionspc(spc_contrib_w) "Contributeurs : Alain Klotz, Michel Pujol."
 }
 
 
-
-#--- definition of colors
-#--- definition des couleurs
-set colorspc(back) #123456
-set colorspc(back_infos) #FFCCDD
-set colorspc(fore_infos) #000000
-set colorspc(back_graphborder) #CCCCCC
-set colorspc(plotbackground) #FFFFFF
-set colorspc(profile) #000088
-
-#--- definition of variables
-#--- definition des variables
-if { [info exists profilspc(initialfile)] == 0 } {
-   set profilspc(initialfile) " "
-}
-if { [info exists profilspc(xunit)] == 0 } {
-   set profilspc(xunit) "screen coord"
-}
-if { [info exists profilspc(yunit)] == 0 } {
-   set profilspc(yunit) "screen coord"
-}
