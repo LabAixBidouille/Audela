@@ -913,6 +913,10 @@ proc spc_ew2 { args } {
 	set valsselect [ list $xsel $ysel ]
 	set intensity [ spc_aire $valsselect ]
 	set ew [ expr $intensity-($xfin-$xdeb) ]
+	#--- Détermine le type de raie : émission ou absorption et donne un signe à EW
+	if { $intensity>=1 } {
+	    set ew [ expr -1.*$ew ]
+	}
 
 	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
 	set deltal [ expr abs($xfin-$xdeb) ]
@@ -923,15 +927,26 @@ proc spc_ew2 { args } {
 	    ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
 	}
 	if { $snr != 0 } {
-	    set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+	    #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
 	} else {
 	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n" ]
 	    set sigma 0
 	}
 
+        #--- Formatage des résultats :
+	set l_fin [ expr 0.01*round($xfin*100) ]
+	set l_deb [ expr 0.01*round($xdeb*100) ]
+	set delta_l [ expr 0.01*round($deltal*100) ]
+	set ew_short [ expr 0.01*round($ew*100) ]
+	set sigma_ew [ expr 0.01*round($sigma*100) ]
+	set snr_short [ expr round($snr) ]
 
 	#--- Affichage des résultats :
-	::console::affiche_resultat "La largeur équivalente sur ($xdeb-$xfin) vaut $ew anstrom(s)\nsigma(EW)=$sigma angstrom\n"
+	::console::affiche_resultat "\n"
+	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
+	::console::affiche_resultat "SNR=$snr_short.\n"
+	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
 	return $ew
     } else {
 	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies lanmba_dep lambda_fin\n"
@@ -1005,17 +1020,18 @@ proc spc_autoew { args } {
 	}
 	if { $snr != 0 } {
 	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+	    #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
 	} else {
 	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
 	    set sigma 0
 	}
 
         #--- Formatage des résultats :
-	set l_fin [ expr 0.01*int($lambda_fin*100) ]
-	set l_deb [ expr 0.01*int($lambda_deb*100) ]
-	set delta_l [ expr 0.01*int($deltal*100) ]
-	set ew_short [ expr 0.01*int($ew*100) ]
-	set sigma_ew [ expr 0.01*int($sigma*100) ]
+	set l_fin [ expr 0.01*round($lambda_fin*100) ]
+	set l_deb [ expr 0.01*round($lambda_deb*100) ]
+	set delta_l [ expr 0.01*round($deltal*100) ]
+	set ew_short [ expr 0.01*round($ew*100) ]
+	set sigma_ew [ expr 0.01*round($sigma*100) ]
 	set snr_short [ expr round($snr) ]
 
 	#--- Affichage des résultats :
