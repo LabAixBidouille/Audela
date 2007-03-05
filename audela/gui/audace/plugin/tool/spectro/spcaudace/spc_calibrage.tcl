@@ -1128,6 +1128,76 @@ proc spc_calibrehaeau { args } {
 
 
 
+##########################################################
+# Procedure de correction de la vitesse héliocentrique de la calibration en longueur d'onde
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 05-03-2007
+# Date de mise à jour : 05-03-2007
+# Arguments : profil_raies_étalonné lambda_calage ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
+##########################################################
+
+proc spc_corrvhelio { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 2 || [llength $args] == 8 || [llength $args] == 11 } {
+       if { [llength $args] == 1 } {
+	   set spectre [ lindex $args 0 ]
+	   set lambda_cal [ lindex $args 1 ]
+	   set vhelio [ spc_vhelio $spectre ]
+       } elseif { [llength $args] == 8 } {
+	   set spectre [ lindex $args 0 ]
+	   set lambda_cal [ lindex $args 1 ]
+	   set ra_h [ lindex $args 2 ]
+	   set ra_m [ lindex $args 3 ]
+	   set ra_s [ lindex $args 4 ]
+	   set dec_d [ lindex $args 5 ]
+	   set dec_m [ lindex $args 6 ]
+	   set dec_s [ lindex $args 7 ]
+	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s ]
+       } elseif { [llength $args] == 11 } {
+	   set spectre [ lindex $args 0 ]
+	   set lambda_cal [ lindex $args 1 ]
+	   set ra_h [ lindex $args 2 ]
+	   set ra_m [ lindex $args 3 ]
+	   set ra_s [ lindex $args 4 ]
+	   set dec_d [ lindex $args 5 ]
+	   set dec_m [ lindex $args 6 ]
+	   set dec_s [ lindex $args 7 ]
+	   set jj [ lindex $args 8 ]
+	   set mm [ lindex $args 9 ]
+	   set aaaaa [ lindex $args 10 ]
+	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s $jj $mm $aaaa ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_corrvhelio profil_raies_étalonné lambda_calage ?[[?RA_d RA_m RA_s DEC_h DEC_m DEC_s?] ?JJ MM AAAA?]?\n\n"
+	   return 0
+       }
+
+       #--- Calcul du décalage en longueur d'onde pour lambda_ref :
+       set deltal [ expr $lambda_cal*$vhelio/299792.458 ]
+       #--- Recalage en longueur d'onde du spectre :
+       set fileout [ spc_calibredecal $spectre $deltal ]
+
+       #--- Traitement du résultat :
+       file rename -force "$audace(rep_images)/$fileout$conf(extension,defaut)" "$audace(rep_images)/${spectre}_vhel$conf(extension,defaut)"
+       ::console::affiche_resultat "Spectre étalonné sauvé sous ${spectre}_vhel\n"
+       return ${spectre}_vhel
+   } else {
+       ::console::affiche_erreur "Usage: spc_corrvhelio profil_raies_étalonné lambda_calage ?[[?RA_d RA_m RA_s DEC_h DEC_m DEC_s?] ?JJ MM AAAA?]?\n\n"
+       return 0
+   }
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1253,11 +1323,8 @@ proc spc_rinstrum { args } {
        file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale2$conf(extension,defaut)"
 
        #-- Meth 4 :
-       #set rinstrum1 [ spc_smooth2 $rinstrum0 ]
-       set rinstrum1 [ spc_passebas $rinstrum0 ]
-       set rinstrum2 [ spc_passebas $rinstrum1 ]
-       set rinstrum3 $rinstrum2
-       set rinstrum [ spc_smooth2 $rinstrum2 ]
+       set rinstrum [ spc_ajusripbas $rinstrum0 ]
+       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale$conf(extension,defaut)"
 
 
        #--- Nettoyage des fichiers temporaires :
@@ -1272,11 +1339,8 @@ proc spc_rinstrum { args } {
 	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
 	   return 0
        } else {
+	   #-- Résultat de la division :
 	   #file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
-	   file delete -force "$audace(rep_images)/$rinstrum1$conf(extension,defaut)"
-	   file delete -force "$audace(rep_images)/$rinstrum2$conf(extension,defaut)"
-	   file delete -force "$audace(rep_images)/$rinstrum3$conf(extension,defaut)"
-	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale$conf(extension,defaut)"
 	   ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale$conf(extension,defaut)\n"
 	   return reponse_instrumentale
        }
@@ -1690,6 +1754,44 @@ proc spc_ajustrid2 { args } {
 # Procedure d'ajustement d'un nuage de points 
 #
 # Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-03-2007
+# Date modification : 03-03-2007
+# Arguments : fichier .fit du profil de raie
+####################################################################
+
+proc spc_ajustripbas { args } {
+    global conf
+    global audace
+
+    if { [ llength $args ]==1 } {
+	set filenamespc [ lindex $args 0 ]
+
+	#--- Filtrages passe-bas :
+	set rinstrum1 [ spc_passebas $filenamespc ]
+	set rinstrum2 [ spc_passebas $rinstrum1 ]
+	set rinstrum [ spc_smooth2 $rinstrum2 ]
+
+	#--- Effacement des fichiers intermédiaires :
+	file delete -force "$audace(rep_images)/$rinstrum1$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/$rinstrum2$conf(extension,defaut)"
+
+	#--- Retour du résultat :
+	file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
+	::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
+	return ${filenamespc}_lin
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustripbas fichier_profil.fit\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+
+####################################################################
+# Procedure d'ajustement d'un nuage de points 
+#
+# Auteur : Benjamin MAUCLAIRE
 # Date creation : 28-02-2007
 # Date modification : 28-02-2007
 # Arguments : fichier .fit du profil de raie
@@ -1772,7 +1874,6 @@ proc spc_ajustd5 { args } {
     }
 }
 #****************************************************************#
-
 
 
 
