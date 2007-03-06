@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.10 2007-03-03 22:10:59 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.11 2007-03-06 21:09:05 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -372,6 +372,7 @@ namespace eval ::pretraitement {
 
       #---
       set pretraitement(avancement) "$caption(pretraitement,en_cours)"
+      update
       #---
       set in    $pretraitement(in)
       set out   $pretraitement(out)
@@ -381,7 +382,8 @@ namespace eval ::pretraitement {
       if { $pretraitement(choix_mode) == "0" } {
          #--- Il faut une image affichee
          if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok -message $caption(pretraitement,header_noimage)
+            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+               -message $caption(pretraitement,header_noimage)
             set pretraitement(avancement) ""
             return
          }
@@ -1908,7 +1910,8 @@ namespace eval ::traiteImage {
       #--- Il faut une image affichee
       if { ( $traiteImage(operation) != "$caption(audace,menu,r+v+b2rvb)" ) && ( $traiteImage(operation) != "$caption(audace,menu,rvb2r+v+b)" ) } {
          if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok -message $caption(pretraitement,header_noimage)
+            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+               -message $caption(pretraitement,header_noimage)
             return
          }
       }
