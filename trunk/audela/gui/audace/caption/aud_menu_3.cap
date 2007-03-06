@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.10 2007-03-03 22:10:24 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.11 2007-03-06 21:57:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -332,7 +332,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Preproceso"
+   set caption(audace,menu,pretraite)                   "Preprocesando"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RGB ---> R+G+B"
@@ -382,8 +382,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_coefficients)        "Define los coeficientes."
    set caption(pretraitement,coef_manquant)             "Defina el coeficiente que falta."
    set caption(pretraitement,cte_invalide)              "Constante Inválida."
-   set caption(pretraitement,en_cours)                  "Preproceso..."
-   set caption(pretraitement,fin_traitement)            "Fin de preproceso."
+   set caption(pretraitement,en_cours)                  "Preprocesando..."
+   set caption(pretraitement,fin_traitement)            "Fin de preprocesando."
    set caption(pretraitement,definir_cte)               "Define una constante."
    set caption(pretraitement,definir_fond_ciel)         "Define el nivel del fondo de cielo."
    set caption(pretraitement,definir_image_B)           "Por favor, seleccione la imagen B."
@@ -546,7 +546,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,pretraite)                   "Pré-processamento"
+   set caption(audace,menu,pretraite)                   "Pré-tratamento"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,r+v+b2rvb)                   "Conversão R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversão RGB ---> R+G+B"
@@ -596,8 +596,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_coefficients)        "Defina os coeficientes."
    set caption(pretraitement,coef_manquant)             "Defina os coeficientes que faltam."
    set caption(pretraitement,cte_invalide)              "Constante Inválida."
-   set caption(pretraitement,en_cours)                  "Pré-processamento em curso..."
-   set caption(pretraitement,fin_traitement)            "Fim do pré-processamento."
+   set caption(pretraitement,en_cours)                  "Pré-tratamento em curso..."
+   set caption(pretraitement,fin_traitement)            "Fim do pré-tratamento."
    set caption(pretraitement,definir_cte)               "Defina uma constante."
    set caption(pretraitement,definir_fond_ciel)         "Defina o nível do céu de fundo."
    set caption(pretraitement,definir_image_B)           "Por favor escolha uma imagem B."
@@ -704,7 +704,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,coef_manquant)             "Definer den manglende koefficient."
    set caption(pretraitement,cte_invalide)              "Ugyldig konstant."
    set caption(pretraitement,en_cours)                  "Preprocessing er aktiv..."
-   set caption(pretraitement,fin_traitement)            "Slut på proces."
+   set caption(pretraitement,fin_traitement)            "Slut på preprocessing."
    set caption(pretraitement,definir_cte)               "Definer en konstant."
    set caption(pretraitement,definir_fond_ciel)         "Definer niveau på himmelbaggrunden."
    set caption(pretraitement,definir_image_B)           "Vælg et B billede."
