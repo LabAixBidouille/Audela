@@ -1,6 +1,6 @@
 #
 # Fichier : filtrage.cap
-# Mise a jour $Id: filtrage.cap,v 1.7 2007-01-27 14:43:45 robertdelmas Exp $
+# Mise a jour $Id: filtrage.cap,v 1.8 2007-03-06 21:57:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(filtrage,chargement)            "Loading File:"
-set caption(filtrage,fin_traitement)        "End of Processing.\n"
+set caption(filtrage,fin_traitement)        "End of Processing."
 set caption(filtrage,pas_de_fichier)        "File Does Not Exist.\n"
 set caption(filtrage,charge_image)          "An image must be loaded.\n"
 set caption(filtrage,attention)             "Warning"
@@ -34,7 +34,7 @@ set caption(filtrage,log)                   "Logarithm"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(filtrage,chargement)         "Chargement du fichier :"
-   set caption(filtrage,fin_traitement)     "Fin du traitement.\n"
+   set caption(filtrage,fin_traitement)     "Fin du traitement."
    set caption(filtrage,pas_de_fichier)     "Le fichier n'existe pas.\n"
    set caption(filtrage,charge_image)       "Il faut charger une image.\n"
    set caption(filtrage,attention)          "Attention"
@@ -56,7 +56,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(filtrage,chargement)         "Caricamento del file:"
-   set caption(filtrage,fin_traitement)     "Fine del trattamento.\n"
+   set caption(filtrage,fin_traitement)     "Fine del elaborazione."
    set caption(filtrage,pas_de_fichier)     "Il file non esiste.\n"
    set caption(filtrage,charge_image)       "Deve essere caricata un'immagine.\n"
    set caption(filtrage,attention)          "Attenzione"
@@ -78,7 +78,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(filtrage,chargement)         "Cargando fichero:"
-   set caption(filtrage,fin_traitement)     "Fin de proceso.\n"
+   set caption(filtrage,fin_traitement)     "Fin de procesando."
    set caption(filtrage,pas_de_fichier)     "El fichero no existe.\n"
    set caption(filtrage,charge_image)       "Debe cargar una imagen.\n"
    set caption(filtrage,attention)          "Aviso"
@@ -100,7 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(filtrage,chargement)         "Datei laden:"
-   set caption(filtrage,fin_traitement)     "Behandlung Ende.\n"
+   set caption(filtrage,fin_traitement)     "Aufbereitung Ende."
    set caption(filtrage,pas_de_fichier)     "Die Datei existiert nicht.\n"
    set caption(filtrage,charge_image)       "Ein Bild muss geladet sein.\n"
    set caption(filtrage,attention)          "Achtung"
@@ -122,7 +122,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(filtrage,chargement)         "A carregar ficheiro:"
-   set caption(filtrage,fin_traitement)     "Fim do processamento.\n"
+   set caption(filtrage,fin_traitement)     "Fim do tratamento."
    set caption(filtrage,pas_de_fichier)     "O Ficheiro Não Existe.\n"
    set caption(filtrage,charge_image)       "É Necessário Carregar Uma Imagem.\n"
    set caption(filtrage,attention)          "Aviso"
@@ -144,7 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(filtrage,chargement)         "Indlæs fil:"
-   set caption(filtrage,fin_traitement)     "Slut på proces.\n"
+   set caption(filtrage,fin_traitement)     "Slut på processing."
    set caption(filtrage,pas_de_fichier)     "Filen findes ikke.\n"
    set caption(filtrage,charge_image)       "Et billede må indlæses.\n"
    set caption(filtrage,attention)          "Advarsel"

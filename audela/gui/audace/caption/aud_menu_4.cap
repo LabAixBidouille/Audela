@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.5 2007-01-27 14:28:56 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.6 2007-03-06 21:57:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -51,6 +51,8 @@ set caption(traiteFilters,coef_manquant)                "Define the missing coef
 set caption(traiteFilters,coef_invalide)                "Invalid Coefficient."
 set caption(traiteFilters,coef_invalides)               "Invalid Coefficients."
 
+set caption(traiteFilters,traitement_en_cours)          "Processing in progress..."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -93,6 +95,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_manquant)             "Définissez le coefficient manquant."
    set caption(traiteFilters,coef_invalide)             "Coefficient invalide."
    set caption(traiteFilters,coef_invalides)            "Coefficients invalides."
+
+   set caption(traiteFilters,traitement_en_cours)       "Traitement en cours..."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -137,10 +141,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coefficiente non valido."
    set caption(traiteFilters,coef_invalides)            "Coefficienti non validi."
 
+   set caption(traiteFilters,traitement_en_cours)       "Elaborazione in corso..."
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,traitement)                  "Procesado"
+   set caption(audace,menu,traitement)                  "Procesando"
    set caption(audace,menu,masque_flou)                 "Máscara desenfocada"
    set caption(audace,menu,filtre_passe-bas)            "Filtro paso bajo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro paso alto"
@@ -180,10 +186,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coeficiente inválido."
    set caption(traiteFilters,coef_invalides)            "Coeficientes inválidos."
 
+   set caption(traiteFilters,traitement_en_cours)       "Procesando..."
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu,traitement)                  "Behandlung"
+   set caption(audace,menu,traitement)                  "Aufbereitung"
    set caption(audace,menu,masque_flou)                 "Unscharf Maske"
    set caption(audace,menu,filtre_passe-bas)            "Niederpaß Filter"
    set caption(audace,menu,filtre_passe-haut)           "Hochpaß Filter"
@@ -223,10 +231,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Ungültigen Koeffizient."
    set caption(traiteFilters,coef_invalides)            "Ungültigen Koeffizienten."
 
+   set caption(traiteFilters,traitement_en_cours)       "Aufbereitung im Gange..."
+
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,traitement)                  "Processamento"
+   set caption(audace,menu,traitement)                  "Tratamento"
    set caption(audace,menu,masque_flou)                 "Máscara de focagem"
    set caption(audace,menu,filtre_passe-bas)            "Filtro passa-baixo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
@@ -266,10 +276,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_invalide)             "Coeficiente Inválido."
    set caption(traiteFilters,coef_invalides)            "Coeficientes Inválidos."
 
+   set caption(traiteFilters,traitement_en_cours)       "Tratamento em curso..."
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,traitement)                  "Billedbehandling"
+   set caption(audace,menu,traitement)                  "Processing"
    set caption(audace,menu,masque_flou)                 "Uskarp maske"
    set caption(audace,menu,filtre_passe-bas)            "Lav pas filter"
    set caption(audace,menu,filtre_passe-haut)           "Høj pas filter"
@@ -308,6 +320,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,coef_manquant)             "Definer den manglende koefficient."
    set caption(traiteFilters,coef_invalide)             "Ugyldig koefficient."
    set caption(traiteFilters,coef_invalides)            "Ugyldige koefficienter."
+
+   set caption(traiteFilters,traitement_en_cours)       "Processing er aktiv"
 
 }
 
