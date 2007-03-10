@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.6 2007-03-06 21:57:42 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.7 2007-03-10 13:57:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -29,6 +29,7 @@ set caption(traiteFilters,image_a_choisir)              "To an Image on the Hard
 set caption(traiteFilters,filtres)                      "Filters:"
 set caption(traiteFilters,parcourir)                    "..."
 set caption(traiteFilters,entree)                       "Input Image:"
+set caption(traiteFilters,sortie)                       "Output Image:"
 set caption(traiteFilters,valeur_par_defaut)            "Default Values"
 set caption(traiteFilters,coef_etalement)               "Spreading Factor:"
 set caption(traiteFilters,coef_mult)                    "Multiplying Factor:"
@@ -36,6 +37,7 @@ set caption(traiteFilters,coef_efficacite)              "Efficiency:"
 set caption(traiteFilters,efficacite_min)               "1: No Effect"
 set caption(traiteFilters,efficacite_max)               "0: Maximum Efficiency"
 set caption(traiteFilters,offset)                       "Offset:"
+set caption(traiteFilters,afficher_image_fin)           "Display image when processing is completed"
 
 set caption(traiteFilters,ok)                           "OK"
 set caption(traiteFilters,appliquer)                    "Apply"
@@ -74,6 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,filtres)                   "Filtres :"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Image d'entrée :"
+   set caption(traiteFilters,sortie)                    "Image de sortie :"
    set caption(traiteFilters,valeur_par_defaut)         "Valeurs par défaut"
    set caption(traiteFilters,coef_etalement)            "Coefficient d'étalement :"
    set caption(traiteFilters,coef_mult)                 "Coefficient multiplicatif :"
@@ -81,6 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_min)            "1 : Aucun effet"
    set caption(traiteFilters,efficacite_max)            "0 : Maximale"
    set caption(traiteFilters,offset)                    "Offset :"
+   set caption(traiteFilters,afficher_image_fin)        "Afficher l'image à la fin du traitement"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Appliquer"
@@ -119,6 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,filtres)                   "Filtri:"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Immagine iniziali:"
+   set caption(traiteFilters,sortie)                    "Immagine finali:"
    set caption(traiteFilters,valeur_par_defaut)         "Valori di default"
    set caption(traiteFilters,coef_etalement)            "Coefficiente distributivo:"
    set caption(traiteFilters,coef_mult)                 "Coefficiente moltiplicativo:"
@@ -126,6 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_min)            "1: Nessun effetto"
    set caption(traiteFilters,efficacite_max)            "0: Efficenza massima"
    set caption(traiteFilters,offset)                    "Offset:"
+   set caption(traiteFilters,afficher_image_fin)        "Mostra immagine al termine dell'elaborazione"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Applica"
@@ -164,6 +170,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,filtres)                   "Filtros:"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Imagen de entrada:"
+   set caption(traiteFilters,sortie)                    "Imagen de salida:"
    set caption(traiteFilters,valeur_par_defaut)         "Valores por defecto"
    set caption(traiteFilters,coef_etalement)            "Coeficiente de dispersión:"
    set caption(traiteFilters,coef_mult)                 "Factor multiplicativo:"
@@ -171,6 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_min)            "1: Sin efecto"
    set caption(traiteFilters,efficacite_max)            "0: Eficiencia máxima"
    set caption(traiteFilters,offset)                    "Pedestal:"
+   set caption(traiteFilters,afficher_image_fin)        "Moastrar imagen al completar el proceso"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Aplicar"
@@ -209,6 +217,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,filtres)                   "Filtern:"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Eingang Bild:"
+   set caption(traiteFilters,sortie)                    "Hinaus Bild:"
    set caption(traiteFilters,valeur_par_defaut)         "Mangelwerten"
    set caption(traiteFilters,coef_etalement)            "Ausbreitung Koefficient:"
    set caption(traiteFilters,coef_mult)                 "Multiplikativ Koefficient:"
@@ -216,6 +225,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_min)            "1: Kein Erfolg"
    set caption(traiteFilters,efficacite_max)            "0: Maximale Wirksamkeit"
    set caption(traiteFilters,offset)                    "Offset:"
+   set caption(traiteFilters,afficher_image_fin)        "Das Bild nach die Behandlung anzeigen"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Anwenden"
@@ -254,6 +264,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,filtres)                   "Filtros:"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Imagem de entrada:"
+   set caption(traiteFilters,sortie)                    "Imagem de saída:"
    set caption(traiteFilters,valeur_par_defaut)         "Valor por defeito"
    set caption(traiteFilters,coef_etalement)            "Coeficiente de dispersão:"
    set caption(traiteFilters,coef_mult)                 "Factor de multiplicação:"
@@ -261,6 +272,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_min)            "1: Sem Efeito"
    set caption(traiteFilters,efficacite_max)            "0: Máxima Eficiência"
    set caption(traiteFilters,offset)                    "Offset:"
+   set caption(traiteFilters,afficher_image_fin)        "Apresentar imagem no fim do processamento"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Aplicar"
@@ -299,6 +311,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,filtres)                   "Filter:"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Indlæs billede:"
+   set caption(traiteFilters,sortie)                    "Output billede:"
    set caption(traiteFilters,valeur_par_defaut)         "Default værdier"
    set caption(traiteFilters,coef_etalement)            "Spredningsfaktor:"
    set caption(traiteFilters,coef_mult)                 "Multiplikationsfaktor:"
@@ -306,6 +319,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_min)            "1: Ingen virkning"
    set caption(traiteFilters,efficacite_max)            "0: Maksimal virkning"
    set caption(traiteFilters,offset)                    "Offset:"
+   set caption(traiteFilters,afficher_image_fin)        "Vis billede når behandling er udført"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Anvend"
