@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.11 2007-03-06 21:09:05 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.12 2007-03-10 13:56:57 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1832,14 +1832,14 @@ namespace eval ::traiteImage {
                   -font $audace(font,arial_8_b)
                pack $This.usr.2.23.ent5 -side right -padx 10 -pady 5
            # pack $This.usr.2.23 -side top -fill both
-         pack $This.usr.2 -side bottom -fill both
+        # pack $This.usr.2 -side bottom -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             label $This.usr.1.lab1 -textvariable "traiteImage(image_A)"
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
             set list_traiteImage [ list $caption(audace,menu,r+v+b2rvb) $caption(audace,menu,rvb2r+v+b) \
-               $caption(audace,menu,subsky) $caption(audace,menu,clip) ]
+               $caption(audace,menu,cfa2rgb) $caption(audace,menu,subsky) $caption(audace,menu,clip) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteImage(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -1851,7 +1851,7 @@ namespace eval ::traiteImage {
                   -variable traiteImage(operation) \
                   -command { }
             }
-         pack $This.usr.1 -side bottom -fill both
+        # pack $This.usr.1 -side top -fill both
       pack $This.usr -side top -fill both -expand 1
 
       frame $This.cmd -borderwidth 1 -relief raised
@@ -1970,6 +1970,18 @@ namespace eval ::traiteImage {
             } m
             if { $m == "" } {
                tk_messageBox -title $caption(audace,menu,rvb2r+v+b) -type ok \
+                  -message "$caption(pretraitement,fin_traitement)\n"
+            } else {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+            }
+         } \
+         "$caption(audace,menu,cfa2rgb)" {
+            catch {
+               buf$audace(bufNo) cfa2rgb 1
+               ::audace::autovisu $audace(visuNo)
+            } m
+            if { $m == "" } {
+               tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok \
                   -message "$caption(pretraitement,fin_traitement)\n"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
@@ -2097,6 +2109,8 @@ namespace eval ::traiteImage {
          set traiteImage(page_web) "1014r+v+b2rvb"
       } elseif { $traiteImage(operation) == $caption(audace,menu,rvb2r+v+b) } {
          set traiteImage(page_web) "1016rvb2r+v+b"
+      } elseif { $traiteImage(operation) == $caption(audace,menu,cfa2rgb) } {
+         set traiteImage(page_web) "1117cfa2rvb"
       } elseif { $traiteImage(operation) == $caption(audace,menu,subsky) } {
          set traiteImage(page_web) "1100soust_fond_ciel"
       } elseif { $traiteImage(operation) == $caption(audace,menu,clip) } {
@@ -2125,6 +2139,7 @@ namespace eval ::traiteImage {
       switch $traiteImage(operation) \
          "$caption(audace,menu,r+v+b2rvb)" {
             pack forget $This.usr.0
+            pack $This.usr.2 -side bottom -fill both
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
             pack forget $This.usr.2.15
@@ -2134,9 +2149,11 @@ namespace eval ::traiteImage {
             pack $This.usr.2.21 -in $This.usr.2 -side top -fill both
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
+            pack $This.usr.1 -side top -fill both
          } \
          "$caption(audace,menu,rvb2r+v+b)" {
             pack forget $This.usr.0
+            pack $This.usr.2 -side bottom -fill both
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
             pack forget $This.usr.2.15
@@ -2146,9 +2163,25 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack $This.usr.2.22 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.23 -in $This.usr.2 -side top -fill both
+            pack $This.usr.1 -side top -fill both
+         } \
+         "$caption(audace,menu,cfa2rgb)" {
+            pack forget $This.usr.0
+            pack forget $This.usr.2
+            pack forget $This.usr.2.13
+            pack forget $This.usr.2.14
+            pack forget $This.usr.2.15
+            pack forget $This.usr.2.16
+            pack forget $This.usr.2.17
+            pack forget $This.usr.2.20
+            pack forget $This.usr.2.21
+            pack forget $This.usr.2.22
+            pack forget $This.usr.2.23
+            pack $This.usr.1 -side top -fill both
          } \
          "$caption(audace,menu,subsky)" {
             pack forget $This.usr.0
+            pack $This.usr.2 -side bottom -fill both
             pack $This.usr.2.13 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.14 -in $This.usr.2 -side top -fill both
             pack forget $This.usr.2.15
@@ -2158,9 +2191,11 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
+            pack $This.usr.1 -side top -fill both
          } \
          "$caption(audace,menu,clip)" {
             pack forget $This.usr.0
+            pack $This.usr.2 -side bottom -fill both
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
             pack $This.usr.2.15 -in $This.usr.2 -side top -fill both
@@ -2170,6 +2205,7 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
+            pack $This.usr.1 -side top -fill both
          }
    }
 
@@ -2966,10 +3002,9 @@ namespace eval ::faireImageRef {
             #--- Liste des pretraitements disponibles
            ### set list_faireImageRef [ list $caption(audace,menu,raw2cfa) $caption(audace,menu,faire_offset) \
            ###    $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
-           ###    $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
-            set list_faireImageRef [ list $caption(audace,menu,faire_offset) \
-               $caption(audace,menu,faire_dark) $caption(audace,menu,faire_flat_field) \
-               $caption(audace,menu,pretraite) $caption(audace,menu,cfa2rgb) ]
+           ###    $caption(audace,menu,pretraite) ]
+            set list_faireImageRef [ list $caption(audace,menu,faire_offset) $caption(audace,menu,faire_dark) \
+               $caption(audace,menu,faire_flat_field) $caption(audace,menu,pretraite) ]
             #---
             menubutton $This.usr.1.but1 -textvariable faireImageRef(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -3060,7 +3095,7 @@ namespace eval ::faireImageRef {
          return
       }
       if { $faireImageRef(out) == "" } {
-         if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) || $faireImageRef(operation) == $caption(audace,menu,pretraite) || $faireImageRef(operation) == $caption(audace,menu,cfa2rgb) } {
+         if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) || $faireImageRef(operation) == $caption(audace,menu,pretraite) } {
              tk_messageBox -title $caption(pretraitement,attention) -type ok \
                 -message $caption(pretraitement,definir_sortie_generique)
              return
@@ -3300,15 +3335,6 @@ namespace eval ::faireImageRef {
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
             }
-         } \
-         "$caption(audace,menu,cfa2rgb)" {
-            catch { buf$audace(bufNo) cfa2rgb 1 } m
-            if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
-            } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
-            }
          }
       ::faireImageRef::recup_position
    }
@@ -3343,8 +3369,6 @@ namespace eval ::faireImageRef {
          set faireImageRef(page_web) "1115faire_flat_field"
       } elseif { $faireImageRef(operation) == $caption(audace,menu,pretraite) } {
          set faireImageRef(page_web) "1116pretraitement"
-      } elseif { $faireImageRef(operation) == $caption(audace,menu,cfa2rgb) } {
-         set faireImageRef(page_web) "1117cfa2rvb"
       }
 
       #---
@@ -3411,15 +3435,6 @@ namespace eval ::faireImageRef {
             pack forget $This.usr.5
             pack forget $This.usr.6
             pack $This.usr.7 -in $This.usr -side top -fill both
-         } \
-         "$caption(audace,menu,cfa2rgb)" {
-            pack $This.usr.1 -in $This.usr -side top -fill both
-            pack $This.usr.2 -in $This.usr -side top -fill both
-            pack forget $This.usr.3
-            pack forget $This.usr.4
-            pack forget $This.usr.5
-            pack forget $This.usr.6
-            pack forget $This.usr.7
          }
    }
 
@@ -3483,11 +3498,6 @@ namespace eval ::faireImageRef {
          set faireImageRef(offset)          "$caption(pretraitement,image_offset)"
          set faireImageRef(dark)            "$caption(pretraitement,image_dark)"
          set faireImageRef(flat-field)      "$caption(pretraitement,image_flat-field)"
-      } elseif { $faireImageRef(operation) == "$caption(audace,menu,cfa2rgb)" } {
-         set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
-         set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
-         set faireImageRef(premier_indice)  "$caption(pretraitement,image_premier_indice)"
-         set faireImageRef(image_sortie)    "$caption(pretraitement,image_generique_sortie)"
       } else {
          set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
          set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
