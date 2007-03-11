@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.10 2007-01-27 15:25:22 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.11 2007-03-11 19:16:43 robertdelmas Exp $
 #
 
 package provide quickremote 1.1
@@ -218,7 +218,7 @@ proc ::quickremote::getLinkIndex { linkLabel } {
 proc ::quickremote::getLinkLabels { } {
    variable private
 
-   #--- j'intialise une liste vide
+   #--- j'initialise une liste vide
    set labels [list]
    catch {
       foreach instance [link::available quickremote ] {

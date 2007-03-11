@@ -2,14 +2,14 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.11 2007-02-10 10:36:23 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.12 2007-03-11 19:16:07 robertdelmas Exp $
 #
 
 package provide autoguider 1.0
 
 #==============================================================
 #   Declaration du namespace autoguider
-#    intialise le namespace
+#    initialise le namespace
 #==============================================================
 namespace eval ::autoguider {
    global audace caption panneau

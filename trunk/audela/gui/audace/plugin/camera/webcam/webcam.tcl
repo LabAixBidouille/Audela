@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.2 2007-02-03 00:49:46 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.3 2007-03-11 19:17:08 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -18,7 +18,7 @@ proc ::webcam::init { } {
    #--- Charge le fichier caption
    source [ file join $audace(rep_plugin) camera webcam webcam.cap ]
 
-   #--- Intialise les variables de la webcams A
+   #--- Initialise les variables de la webcams A
    foreach cam_item { A B C } {
       if { ! [ info exists conf(webcam,$cam_item,longuepose) ] }           { set conf(webcam,$cam_item,longuepose)           "0" }
       if { ! [ info exists conf(webcam,$cam_item,longueposeport) ] }       { set conf(webcam,$cam_item,longueposeport)       "LPT1:" }
