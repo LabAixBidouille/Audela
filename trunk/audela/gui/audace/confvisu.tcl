@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.49 2007-03-03 21:52:43 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.50 2007-03-11 14:35:18 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -499,10 +499,23 @@ namespace eval ::confVisu {
    #     conserve le centre de l'image au centre du canvas si possible
    #  parametres :
    #    visuNo: numero de la visu
+   #    zoom  : valeur du zoom . Ce parametre est optionnel, le zoom
+   #             courant est utilise s'il n'est pas reseigne.
+   #  Exemple : afficher la visu 1 avec zoom = 0.5
+   #    ::confVisu 1 0.5   
    #------------------------------------------------------------
-   proc setZoom { visuNo } {
+   proc setZoom { visuNo { zoom "" } } {
       variable private
 
+      #--- je modifie le zomm si une nouvelle valeur est donnee en parametre
+      if { $zoom == "" } {
+         #--- rien a faire, on prend la valeur de private($visuNo,zoom)
+      } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 } {         
+         set private($visuNo,zoom) $zoom
+      } else {
+         ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
+      }
+      
       #--- je recupere les coordonnees du centre du canvas
       set box [grid bbox .audace.can1 0 0]
       set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]
