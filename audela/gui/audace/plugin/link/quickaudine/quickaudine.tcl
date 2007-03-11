@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.10 2007-01-27 15:25:06 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.11 2007-03-11 19:16:23 robertdelmas Exp $
 #
 
 package provide quickaudine 1.0
@@ -195,7 +195,7 @@ proc ::quickaudine::getLinkIndex { linkLabel } {
 proc ::quickaudine::getLinkLabels { } {
    variable private
 
-   #--- j'intialise une liste vide
+   #--- j'initialise une liste vide
    set labels [list]
    catch {
       foreach instance [link::available quickremote ] {
