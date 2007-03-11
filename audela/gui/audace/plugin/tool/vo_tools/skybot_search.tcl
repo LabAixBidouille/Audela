@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.12 2007-02-23 23:40:13 michelpujol Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.13 2007-03-11 19:15:20 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -933,12 +933,12 @@ namespace eval skybot_Search {
             button $fov.al.but_aladin -relief raised -state disabled \
                -text "$caption(search,view_aladin)" -borderwidth 2 \
                -command { set dim_fov [ split $voconf(taille_champ) "x" ]
-                          set radius [ expr [ lindex $dim_fov 0 ] / 60.0 ]
+                          set radius [ lindex $dim_fov 0 ]
                           if { [ llength $dim_fov ] > 1 } {
                              set radius_y [ lindex $dim_fov 1 ]
-                             set radius [ expr sqrt($radius*$radius+$radius_y*$radius_y)/60.0 ]
+                             set radius [ expr sqrt($radius*$radius+$radius_y*$radius_y) ]
                           }
-                          vo_launch_aladin [ concat "\"$voconf(centre_ad_image) $voconf(centre_dec_image)\"" ] $radius "DSS2" "USNO2"
+                          vo_launch_aladin [ concat "\"$voconf(centre_ad_image) $voconf(centre_dec_image)\"" ] $radius "DSS2" "USNO2" [ mc_date2jd $voconf(date_image) ]
                         }
             pack $fov.al.but_aladin \
                -in $fov.al -side top -anchor c \

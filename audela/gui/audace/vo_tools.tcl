@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.8 2006-11-12 09:19:58 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.9 2007-03-11 19:14:40 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -114,10 +114,11 @@ proc vo_aladin { args } {
 #                       radius   = rayon du FOV en arcmin
 #                       survey   = nom du survey-image
 #                       catalog  = nom du catalogue d'objets pour la reconnaissance
+#                       epoch    = date de l'observation
 #
 # Description : Aladin java launcher
 # Auteur      : Jerome BERTHIER
-# Update      : 13 february 2006
+# Update      : 10 mars 2007
 #
 # Ce script lance le client Aladin dans le navigateur par defaut
 # et affiche l'image <survey> (par defaut DSS2) centree aux coord. <coord> +/- <radius>
@@ -140,16 +141,18 @@ proc vo_launch_aladin { args } {
       if {$argc >= 3} { set survey [lindex $args 2] }
       set catalog "USNO2"
       if {$argc >= 4} { set catalog [lindex $args 3] }
+      set epoch "now"
+      if {$argc >= 5} { set epoch [lindex $args 4] }
 
       #--- construction de l'URL
-      set url_args [ concat "&script=get Aladin($survey) $coord $radius$unit;sync;get VizieR($catalog)" ]
+      set url_args [ concat "&script=get Aladin($survey) $coord $radius$unit;sync;get VizieR($catalog);get SkyBoT.IMCCE($epoch,500,'120 arcsec')" ]
       set goto_url [ concat $url_aladin$url_args ]
       #--- invocation de l'url
       ::audace::Lance_Site_htm $goto_url
 
    } else {
 
-      error "Usage: vo_launch_aladin Coord Radius [Survey Catalog]"
+      error "Usage: vo_launch_aladin Coord Radius [Survey Catalog Epoch]"
 
    }
 
@@ -186,8 +189,8 @@ proc vo_entityEncode {text} {
 # Description : Skybot webservices
 # Auteur      : inconnu
 # Update      : 21 may 2006
-# 
-# Generic skybot XML generation procedure to wrap up the method parameters for 
+#
+# Generic skybot XML generation procedure to wrap up the method parameters for
 # transport to the server. The procedure returns the generated XML data for the
 # RPC call
 # ------------------------------------------------------------------------------------

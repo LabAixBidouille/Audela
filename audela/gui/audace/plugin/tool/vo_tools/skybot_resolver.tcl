@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.13 2007-02-23 23:40:13 michelpujol Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.14 2007-03-11 19:14:59 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -558,7 +558,7 @@ namespace eval skybot_Resolver {
                       if { $voconf(taille_champ_y) != "" } {
                          set radius [ expr sqrt($voconf(taille_champ_x)*$voconf(taille_champ_x)+$voconf(taille_champ_y)*$voconf(taille_champ_y))/60.0 ]
                       }
-                      vo_launch_aladin [ concat "\"$voconf(ad_objet) $voconf(dec_objet)\"" ] $radius "DSS2" "USNO2"
+                      vo_launch_aladin [ concat "\"$voconf(ad_objet) $voconf(dec_objet)\"" ] $radius "DSS2" "USNO2" [ mc_date2jd $voconf(date_ephemerides) ]
                     }
         pack $This.frame6.but_aladin \
            -in $This.frame6 -side left -anchor w \
