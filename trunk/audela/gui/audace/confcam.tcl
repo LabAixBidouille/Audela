@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.58 2007-02-03 18:26:05 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.59 2007-03-12 22:34:03 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -31,13 +31,14 @@ namespace eval ::confCam {
 
       #--- Charge les plugins des cameras
       source [ file join $audace(rep_plugin) camera webcam webcam.tcl ]
+      source [ file join $audace(rep_plugin) camera cemes cemes.tcl ]
 
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.tcl ]\""
 
-      #--- Intialise les variables de chaque camera
+      #--- Initialise les variables de chaque camera
 
       #--- initConf 1
       if { ! [ info exists conf(audine,ampli_ccd) ] } { set conf(audine,ampli_ccd) "1" }
@@ -133,6 +134,9 @@ namespace eval ::confCam {
       if { ! [ info exists conf(fingerlakes,mirv) ] }     { set conf(fingerlakes,mirv)     "0" }
       if { ! [ info exists conf(fingerlakes,temp) ] }     { set conf(fingerlakes,temp)     "-50" }
 
+      #--- initConf 13
+      ::cemes::init
+
       #--- item par defaut
       set confCam(cam_item)   "A"
 
@@ -153,9 +157,9 @@ namespace eval ::confCam {
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-            TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI ]
+            TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI Cemes ]
       set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
-            th7852a scr1300xtc dslr andor fingerlakes ]
+            th7852a scr1300xtc dslr andor fingerlakes cemes ]
 
    }
 
@@ -184,7 +188,7 @@ namespace eval ::confCam {
          } elseif { [ string compare $confCam($cam_item,camName) fingerlakes ] == "0" } {
             ::confCam::FLIDispTemp
          } elseif { [ string compare $confCam($cam_item,camName) cemes ] == "0" } {
-            ::confCam::AndorDispTemp
+            ::cemes::CemesDispTemp
          }
       } else {
          select $cam_item audine
@@ -450,7 +454,7 @@ namespace eval ::confCam {
          wm geometry $This 670x430$confCam(position)
          wm minsize $This 670 430
       }
-      wm resizable $This 1 0
+      wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(confcam,config)"
       wm protocol $This WM_DELETE_WINDOW ::confCam::fermer
@@ -471,6 +475,7 @@ namespace eval ::confCam {
          fillPage10 $nn
          fillPage11 $nn
          fillPage12 $nn
+         fillPage13 $nn
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
 
@@ -2175,10 +2180,10 @@ namespace eval ::confCam {
       pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
-     # bind $frm.labURL <ButtonPress-1> {
-     #    set filename "$caption(confcam,site_th7852a)"
-     #    ::audace::Lance_Site_htm $filename
-     # }
+     ### bind $frm.labURL <ButtonPress-1> {
+     ###    set filename "$caption(confcam,site_th7852a)"
+     ###    ::audace::Lance_Site_htm $filename
+     ### }
       bind $frm.labURL <Enter> {
          global frmm
          set frm $frmm(Camera8)
@@ -2882,6 +2887,20 @@ namespace eval ::confCam {
    }
 
    #
+   # Fenetre de configuration de la Cemes
+   #
+   proc fillPage13 { nn } {
+      global confCam frmm
+
+      #--- Initialisation
+      set frmm(Camera13) [ Rnotebook:frame $nn 13 ]
+      set frm $frmm(Camera13)
+
+      #--- Construction de l'interface graphique
+      ::cemes::fillConfigPage $frm
+   }
+
+   #
    # confCam::Connect_Camera
    # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
    #
@@ -2948,6 +2967,10 @@ namespace eval ::confCam {
          dslr        { Rnotebook:raise $nn 10 }
          andor       { Rnotebook:raise $nn 11 }
          fingerlakes { Rnotebook:raise $nn 12 }
+         cemes       {
+            ::cemes::fillConfigPage $frmm(Camera13) $cam_item
+            Rnotebook:raise $nn 13
+         }
       }
    }
 
@@ -3096,10 +3119,10 @@ namespace eval ::confCam {
                set binningList [ ::webcam::getBinningList ]
             }
             dslr {
-               set binningList [cam$camNo quality list]
+               set binningList [ cam$camNo quality list ]
             }
             cemes {
-               set binningList { 1x1 2x2 4x4 8x8 }
+               set binningList [ ::cemes::getBinningList ]
             }
             default {
                set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
@@ -3269,7 +3292,7 @@ namespace eval ::confCam {
          switch -exact -- $camProduct {
             audine  {
                switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                  "ethernaude"   { return 1 }
+                  "ethernaude"   { return 2 }
                   default        { return 0 }
                }
             }
@@ -3343,7 +3366,7 @@ namespace eval ::confCam {
             webcam      { return [ ::webcam::hasShutter ] }
             andor       { return 1 }
             fingerlakes { return 1 }
-            cemes       { return 1 }
+            cemes       { return [ ::cemes::hasShutter ] }
             default     { return 0 }
          }
       } else {
@@ -3411,8 +3434,8 @@ namespace eval ::confCam {
                set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
             }
             cemes {
-               #--- O + F + S - A confirmer avec le materiel
-               set ShutterOptionList [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
+               #--- O + F + S
+               set ShutterOptionList [ ::cemes::getShutterOption ]
             }
             default {
                set ShutterOptionList { }
@@ -4221,6 +4244,9 @@ namespace eval ::confCam {
                   $caption(confcam,2points) $conf(audine,port)\n"
                console::affiche_saut "\n"
             }
+            cemes {
+               ::cemes::configureCamera
+            }
          }
          #--- <= fin du switch sur les cameras
 
@@ -4398,6 +4424,10 @@ namespace eval ::confCam {
             set conf(fingerlakes,mirh)            $confCam(fingerlakes,mirh)
             set conf(fingerlakes,mirv)            $confCam(fingerlakes,mirv)
             set conf(fingerlakes,temp)            $confCam(fingerlakes,temp)
+         }
+         cemes {
+            #--- Memorise la configuration de la Cemes dans le tableau conf(cemes,...)
+            ::cemes::widgetToConf
          }
       }
    }
