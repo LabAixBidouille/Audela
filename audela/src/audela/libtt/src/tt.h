@@ -179,6 +179,7 @@
 #define TT_IMASTACK_KS 5
 #define TT_IMASTACK_SIG 6
 #define TT_IMASTACK_SHUTTER 7
+#define TT_IMASTACK_PROD 8
 
 #define TT_TBLPIX_X 0
 #define TT_TBLPIX_Y 1

@@ -341,6 +341,8 @@ int tt_fct_ima_stack(void *arg1)
 	 msg=tt_ima_stack_sig_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_SHUTTER) {
 	 msg=tt_ima_stack_shutter_1(&pstack);
+      } else if (pstack.numfct==TT_IMASTACK_PROD) {
+	 msg=tt_ima_stack_prod_1(&pstack);
       } else {
 	 tt_imadestroyer(&p_in);
 	 tt_imadestroyer(&p_tmp);
@@ -474,6 +476,7 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    else if (strcmp(keys[10],"SK")==0) { pstack->numfct=TT_IMASTACK_KS; }
    else if (strcmp(keys[10],"SIG")==0) { pstack->numfct=TT_IMASTACK_SIG; }
    else if (strcmp(keys[10],"SHUTTER")==0) { pstack->numfct=TT_IMASTACK_SHUTTER; }
+   else if (strcmp(keys[10],"PROD")==0) { pstack->numfct=TT_IMASTACK_PROD; }
 
    /* --- decodage des parametres optionels ---*/
    pstack->bitpix=0;

@@ -673,3 +673,67 @@ int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack)
    return(OK_DLL);
 }
 
+int tt_ima_stack_prod_1(TT_IMA_STACK *pstack)
+/***************************************************************************/
+/* Empilement en faisant un produit                                        */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int kk,kkk;
+   double poids_pondere,value;
+   int base_adr;
+   TT_IMA *p_tmp=pstack->p_tmp;
+   TT_IMA *p_out=pstack->p_out;
+   long firstelem=pstack->firstelem;
+   long nelements=pstack->nelements;
+   long nelem=pstack->nelem;
+   long nelem0=pstack->nelem0;
+   int nbima=pstack->nbima;
+   double *poids=pstack->poids;
+   double val;
+   int *index0,nbima0;
+   int nombre,taille,msg;
+
+   nombre=nbima;
+   taille=sizeof(int);
+   index0=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&index0,&nombre,&taille,"index0"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_add_1 (pointer index0)");
+      return(TT_ERR_PB_MALLOC);
+   }
+   poids_pondere=(double)(nbima)/(double)(nelements);
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+       for (value=1,nbima0=0,kk=0;kk<nbima;kk++) {
+	 base_adr=(int)(nelem0)*kk;
+	 val=(double)(p_tmp->p[base_adr+kkk]);
+	 if (pstack->nullpix_exist==TT_YES) {
+	    if (val>pstack->nullpix_value) {
+	       index0[kk]=TT_YES;
+	       value*=val;
+	       nbima0++;
+	    } else {
+	       index0[kk]=TT_NO;
+	    }
+	 } else {
+	    index0[kk]=TT_YES;
+	    value*=val;
+	    nbima0++;
+	 }
+      }
+      value=(nbima0==0)?pstack->nullpix_value:value*((double)(nbima)/(double)(nbima0));
+      if (nbima0==0) {
+	 for (kk=0;kk<nbima;kk++) {
+	    poids[kk]+=(poids_pondere/(double)(nbima));
+	 }
+      } else {
+	 for (kk=0;kk<nbima;kk++) {
+	    if (index0[kk]==TT_YES) {
+	       poids[kk]+=(poids_pondere/(double)(nbima0));
+	    }
+	 }
+      }
+      p_out->p[(int)(firstelem)+kkk]=(TT_PTYPE)(value);
+   }
+   tt_free(index0,"index0");
+   return(OK_DLL);
+}
