@@ -2,8 +2,9 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.13 2007-02-20 09:32:19 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.14 2007-03-12 20:11:45 alainklotz Exp $
 #
+
 
 global audace
 
@@ -631,8 +632,12 @@ proc sn_buflog { numbuf bufno } {
    set fond [lindex $res 6]
    set sigma [lindex $res 7]
    set seuil [expr $fond-3.*$sigma]
+   #::console::affiche_resultat "fond=$fond sigma=$sigma seuil=$seuil\n"
    buf$bufno log 1000 [expr -1.*$seuil]
-   set sb [expr 1000.*log10($fond-1.*$sigma)]
+   set res [buf$bufno stat]
+   set fond [lindex $res 6]
+   set sigma [lindex $res 7]
+   set sb [expr $fond-5.*$sigma]
    set n1 [buf$bufno getpixelswidth]
    set n2 [buf$bufno getpixelsheight]
    set d 4
@@ -644,6 +649,9 @@ proc sn_buflog { numbuf bufno } {
    set res [buf$bufno stat $box]
    set maxi [lindex $res 2]
    set sh [expr 1.*$maxi]
+   if {$sh<=$sb} {
+	   set sh [expr $sb+10.*$sigma]
+   }
    buf$bufno setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
    buf$bufno setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
    buf$numbuf setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
