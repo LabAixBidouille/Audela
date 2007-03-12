@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.57 2007-03-10 13:55:10 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.58 2007-03-12 20:09:07 alainklotz Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -41,6 +41,7 @@ source help.tcl
 source vo_tools.tcl
 source sectiongraph.tcl
 source polydraw.tcl
+source ros.tcl
 
 namespace eval ::audace {
 
