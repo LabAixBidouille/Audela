@@ -2,9 +2,8 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.14 2007-03-12 20:11:45 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.15 2007-03-12 22:54:19 robertdelmas Exp $
 #
-
 
 global audace
 
@@ -650,7 +649,7 @@ proc sn_buflog { numbuf bufno } {
    set maxi [lindex $res 2]
    set sh [expr 1.*$maxi]
    if {$sh<=$sb} {
-	   set sh [expr $sb+10.*$sigma]
+      set sh [expr $sb+10.*$sigma]
    }
    buf$bufno setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
    buf$bufno setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
@@ -915,13 +914,13 @@ proc affimages { } {
       destroy $audace(base).snvisuzoom_d
    }
 
-   #
+   #---
    if {$afflog==0} {
-	   visu$num(visu_1) buf $num(buffer1)
-	   visu$num(visu_2) buf $num(buffer2)
+      visu$num(visu_1) buf $num(buffer1)
+      visu$num(visu_2) buf $num(buffer2)
    } else {
-	   visu$num(visu_1) buf $num(buffer1b)
-	   visu$num(visu_2) buf $num(buffer2b)
+      visu$num(visu_1) buf $num(buffer1b)
+      visu$num(visu_2) buf $num(buffer2b)
    }
    #
 
