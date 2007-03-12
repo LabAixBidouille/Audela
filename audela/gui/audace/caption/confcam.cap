@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.28 2007-02-02 23:10:31 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.29 2007-03-12 22:34:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -34,7 +34,6 @@ set caption(confcam,scr1300xtc)                 "SCR1300XTC"
 set caption(confcam,dslr)                       "Digital Camera"
 set caption(confcam,andor)                      "Andor"
 set caption(confcam,fingerlakes)                "FLI"
-set caption(confcam,cemes)                      "CEMES"
 
 set caption(confcam,port)                       "Port"
 set caption(confcam,port_liaison)               "Port / Link"
@@ -153,7 +152,6 @@ set caption(confcam,port_th7852a)               "TH7852A Port"
 set caption(confcam,port_scr1300xtc)            "SCR1300XTC Port"
 set caption(confcam,port_andor)                 "Andor Port"
 set caption(confcam,port_fingerlakes)           "FLI Port"
-set caption(confcam,port_cemes)                 "CEMES Port"
 
 set caption(confcam,site_web_ref)               "Reference Web Site:"
 set caption(confcam,site_audine)                "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -195,7 +193,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr)                    "APN"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
-   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Liaison"
@@ -314,7 +311,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Port SCR1300XTC"
    set caption(confcam,port_andor)              "Port Andor"
    set caption(confcam,port_fingerlakes)        "Port FLI"
-   set caption(confcam,port_cemes)              "Port CEMES"
 
    set caption(confcam,site_web_ref)            "Site Web de référence :"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/index_fr.htm"
@@ -356,7 +352,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr)                    "Fotocamera digitale"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
-   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Porte"
    set caption(confcam,port_liaison)            "Porte / Collegamento"
@@ -475,7 +470,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
    set caption(confcam,port_fingerlakes)        "Porta FLI"
-   set caption(confcam,port_cemes)              "Porta CEMES"
 
    set caption(confcam,site_web_ref)            "Sito Web di riferimento:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -517,7 +511,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr)                    "Cámara digital"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
-   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Puerto"
    set caption(confcam,port_liaison)            "Puerto / Enlace"
@@ -636,7 +629,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Puerto SCR1300XTC"
    set caption(confcam,port_andor)              "Puerto Andor"
    set caption(confcam,port_fingerlakes)        "Puerto FLI"
-   set caption(confcam,port_cemes)              "Puerto CEMES"
 
    set caption(confcam,site_web_ref)            "Sitio Web de referencia:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -678,7 +670,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr)                    "Digital Fotoapparat"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
-   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -797,7 +788,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
    set caption(confcam,port_fingerlakes)        "FLI Port"
-   set caption(confcam,port_cemes)              "CEMES Port"
 
    set caption(confcam,site_web_ref)            "Referenz Webseite:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -839,7 +829,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr)                    "Digital Câmara"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
-   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Porta"
    set caption(confcam,port_liaison)            "Porta / Ligação"
@@ -958,7 +947,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
    set caption(confcam,port_fingerlakes)        "Porta FLI"
-   set caption(confcam,port_cemes)              "Porta CEMES"
 
    set caption(confcam,site_web_ref)            "Site Web de referência:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -967,7 +955,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_cookbook)           "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_th7852a)            "To be created"
+   set caption(confcam,site_th7852a)            "A criar"
    set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_apn)                "http://photopc.sourceforge.net/"
@@ -1000,7 +988,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr)                    "Digital Camera"
    set caption(confcam,andor)                   "Andor"
    set caption(confcam,fingerlakes)             "FLI"
-   set caption(confcam,cemes)                   "CEMES"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -1119,7 +1106,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
    set caption(confcam,port_fingerlakes)        "FLI Port"
-   set caption(confcam,port_cemes)              "CEMES Port"
 
    set caption(confcam,site_web_ref)            "Reference Web Site:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
