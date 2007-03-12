@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.14 2007-03-04 17:20:44 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.15 2007-03-12 19:36:20 robertdelmas Exp $
 #
 
 package provide spectro 1.0
@@ -29,12 +29,10 @@ namespace eval ::spectro {
       #--- Initialisation du nom de la fenetre
       set This $this
       #--- Initialisation des captions
-      set panneau(menu_name,spectro)     "$caption(spectro,titre,outil)"
-      set panneau(spectro,aide)          "$caption(spectro,help,titre)"
-      set panneau(spectro,recherche)     " "
-      set panneau(spectro,configure)     "$caption(spectro,configure)"
-      set panneau(spectro,editer_profil) "$caption(spectro,editeur_profil)"
-      set panneau(spectro,accesBeSS)     "$caption(spectro,BeSS)"
+      set panneau(menu_name,spectro)  "$caption(spectro,titre,outil)"
+      set panneau(spectro,aide)       "$caption(spectro,help,titre)"
+      set panneau(spectro,configure)  "$caption(spectro,configure)"
+      set panneau(spectro,spc_audace) "$caption(spectro,spc_audace)"
       #--- Construction de l'interface
       spectroBuildIF $This
    }
@@ -73,23 +71,15 @@ proc spectroBuildIF { This } {
       #--- Frame des boutons
       frame $This.fra2 -borderwidth 1 -relief groove
 
-         label $This.fra2.lab1 -borderwidth 0 -text $panneau(spectro,recherche)
-         pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top
-
          #--- Bouton configurer
          button $This.fra2.but1 -borderwidth 2 -text $panneau(spectro,configure) \
             -command { source [ file join $audace(rep_plugin) tool spectro spectro_configure.tcl ] }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
          #--- Bouton editer un profil
-         button $This.fra2.but2 -borderwidth 2 -text $panneau(spectro,editer_profil) \
+         button $This.fra2.but2 -borderwidth 2 -text $panneau(spectro,spc_audace) \
             -command { source [ file join $audace(rep_plugin) tool spectro spcaudace spc_gui.tcl ] }
          pack $This.fra2.but2 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
-
-         #--- Bouton acces a BeSS
-         button $This.fra2.but4 -borderwidth 2 -text $panneau(spectro,accesBeSS) \
-            -command { source [ file join $audace(rep_plugin) tool spectro spectro_accesBeSS.tcl ] }
-         pack $This.fra2.but4 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
       pack $This.fra2 -side top -fill x
 
