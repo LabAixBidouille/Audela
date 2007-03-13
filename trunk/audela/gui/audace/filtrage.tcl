@@ -1,11 +1,9 @@
-#-----------------------------------------------------------------------------#
 #
 # Fichier : filtrage.tcl
 # Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: filtrage.tcl,v 1.3 2006-06-20 17:28:40 robertdelmas Exp $
+# Mise a jour $Id: filtrage.tcl,v 1.4 2007-03-13 22:06:18 robertdelmas Exp $
 #
-#-----------------------------------------------------------------------------#
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
@@ -28,10 +26,10 @@
 
 #---------------------- Artifice ---------------------------------------------#
 #
-# La variable "audace(artifice)" vaut toujours "@@@@" c'est un artifice qui
-# permet d'attribuer cette valeur à la variable "fichier" dans le cas d'une
-# image chargée en mémoire
-# Cette variable "audace(artifice)" est définie dans le script "aud3.tcl"
+#--- La variable "audace(artifice)" vaut toujours "@@@@" c'est un artifice qui
+#--- permet d'attribuer cette valeur à la variable "fichier" dans le cas d'une
+#--- image chargée en mémoire
+#--- Cette variable "audace(artifice)" est définie dans le script "aud_menu_4.tcl"
 #
 #-----------------------------------------------------------------------------#
 
@@ -41,16 +39,17 @@
 #
 #*****************************************************************************#
 
-# Dans ce fichier, les commandes des messages en console/caption sont commentes lorsqu'il est dans
-# le repertoire des scripts
+#--- Dans ce fichier, les commandes des messages en console/caption sont commentes lorsqu'il est dans
+#--- le repertoire des scripts
 proc bm_masque_flou { args } {
-   # arg : fichier coefg coefm
-   # Arguments : coefg = coefficient du filtre gaussien (0.8 en general), coefm = coefficient de multiplication
-   # des "details" (en general 1.3)
-   # Les variables nommees audace_* sont globales
+   #--- arg : fichier coefg coefm
+   #--- Arguments : coefg = coefficient du filtre gaussien (0.8 en general), coefm = coefficient de multiplication
+   #--- des "details" (en general 1.3)
+   #--- Les variables nommees audace_* sont globales
    global audace
    global conf
    global caption
+   global traiteFilters
 
    if { [llength $args] == 3 } {
       set fichier [ lindex $args 0 ]
@@ -60,11 +59,11 @@ proc bm_masque_flou { args } {
       if { ($fichier == "") || ($coefg == "") || ($coefm == "") } {
          ::console::affiche_erreur "Usage: bm_masque_flou filename coef_gauss mult\n"
       } else {
-         ## Verif existence
+         #--- Verif existence
          set filein   "$fichier$conf(extension,defaut)"
          set filetmp  "${fichier}_tmp$conf(extension,defaut)"
          set filetmp1 "${fichier}_tmp1$conf(extension,defaut)"
-         ## Algo
+         #--- Algo
          if { $fichier != "$audace(artifice)" } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
@@ -77,13 +76,15 @@ proc bm_masque_flou { args } {
                buf$audace(bufNo) add "$filein" 0
                ::audace::autovisu $audace(visuNo)
                catch {file delete -force "$filetmp"}
-               tk_messageBox -title $caption(filtrage,masque_flou) -type ok -message $caption(filtrage,fin_traitement)
+               set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             } else {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_de_fichier)
+               set traiteFilters(avancement) ""
             }
          } else {
             if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+               set traiteFilters(avancement) ""
             } else {
                buf$audace(bufNo) save "$filetmp1"
                convgauss $coefg
@@ -95,7 +96,7 @@ proc bm_masque_flou { args } {
                ::audace::autovisu $audace(visuNo)
                catch {file delete -force "$filetmp"}
                catch {file delete -force "$filetmp1"}
-               tk_messageBox -title $caption(filtrage,masque_flou) -type ok -message $caption(filtrage,fin_traitement)
+               set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             }
          }
       }
@@ -112,12 +113,13 @@ proc bm_masque_flou { args } {
 #*****************************************************************************#
 
 proc bm_filter { args } {
-   ## arg : type_filtre fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-   ## Les variables nommees audace_* sont globales
+   #--- arg : type_filtre fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Les variables nommees audace_* sont globales
    global audace
    global conf
    global caption
+   global traiteFilters
 
    if { [llength $args] == 3 } {
       set type_filtre [ lindex $args 0 ]
@@ -135,7 +137,7 @@ proc bm_filter { args } {
             ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0.1\]\n"
          } elseif { $type_filtre == "max" } {
             ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0.1\]\n"
-         }          
+         }
       } else {
          if { $type_filtre == "fb" } {
             set filter "filtre_passe-bas"
@@ -147,27 +149,29 @@ proc bm_filter { args } {
             set filter "filtre_minimum"
          } elseif { $type_filtre == "max" } {
             set filter "filtre_maximum"
-         }          
-         ## Verif existence
+         }
+         #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
-         ## Algo
+         #--- Algo
          if { $fichier != "$audace(artifice)" } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
                buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite"
                ::audace::autovisu $audace(visuNo)
-               tk_messageBox -title $caption(filtrage,$filter) -type ok -message $caption(filtrage,fin_traitement)
+               set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             } else {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_de_fichier)
+               set traiteFilters(avancement) ""
             }
          } else {
             if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+               set traiteFilters(avancement) ""
             } else {
                buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite"
                ::audace::autovisu $audace(visuNo)
-               tk_messageBox -title $caption(filtrage,$filter) -type ok -message $caption(filtrage,fin_traitement)
+               set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             }
          }
       }
@@ -178,8 +182,8 @@ proc bm_filter { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_passe_bas { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- arg : fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -192,8 +196,8 @@ proc bm_passe_bas { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_passe_haut { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- arg : fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -206,8 +210,8 @@ proc bm_passe_haut { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_median { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- arg : fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -220,8 +224,8 @@ proc bm_filtre_median { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_min { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- arg : fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -234,8 +238,8 @@ proc bm_filtre_min { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_max { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- arg : fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -254,12 +258,13 @@ proc bm_filtre_max { args } {
 #*****************************************************************************#
 
 proc bm_convo { args } {
-   ## arg : fichier efficacite
-   ## Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
-   ## Les variables nommees audace_* sont globales
+   #--- arg : fichier efficacite
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Les variables nommees audace_* sont globales
    global audace
    global conf
    global caption
+   global traiteFilters
 
    if { [llength $args] == 3 } {
       set type_filtre [ lindex $args 0 ]
@@ -273,7 +278,7 @@ proc bm_convo { args } {
             ::console::affiche_erreur "Usage: bm_ondelette_mor filename \[width 2\]\n"
          } elseif { $type_filtre == "mexican" } {
             ::console::affiche_erreur "Usage: bm_ondelette_mex filename \[width 2\]\n"
-         }          
+         }
       } else {
          if { $type_filtre == "gaussian" } {
             set filter "filtre_gaussien"
@@ -281,10 +286,10 @@ proc bm_convo { args } {
             set filter "ond_morlet"
          } elseif { $type_filtre == "mexican" } {
             set filter "ond_mexicain"
-         }          
-         ## Verif existence
+         }
+         #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
-         ## Algo
+         #--- Algo
          if { $fichier != "$audace(artifice)" } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
@@ -295,13 +300,15 @@ proc bm_convo { args } {
                   buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre sigma=$largeur"
                }
                ::audace::autovisu $audace(visuNo)
-               tk_messageBox -title $caption(filtrage,$filter) -type ok -message $caption(filtrage,fin_traitement)
+               set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             } else {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_de_fichier)
+               set traiteFilters(avancement) ""
             }
          } else {
             if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+               set traiteFilters(avancement) ""
             } else {
                if { [ lindex $args 2 ] == 0 } {
                   buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre"
@@ -309,7 +316,7 @@ proc bm_convo { args } {
                   buf$audace(bufNo) imaseries "CONV kernel_type=$type_filtre sigma=$largeur"
                }
                ::audace::autovisu $audace(visuNo)
-               tk_messageBox -title $caption(filtrage,$filter) -type ok -message $caption(filtrage,fin_traitement)
+               set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             }
          }
       }
@@ -320,8 +327,8 @@ proc bm_convo { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_gauss { args } {
-   ## arg : fichier largeur
-   ## Arguments : largeur = largeur du filtre
+   #--- arg : fichier largeur
+   #--- Arguments : largeur = largeur du filtre
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -338,8 +345,8 @@ proc bm_filtre_gauss { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_ondelette_mor { args } {
-   ## arg : fichier largeur
-   ## Arguments : largeur = largeur du filtre
+   #--- arg : fichier largeur
+   #--- Arguments : largeur = largeur du filtre
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -356,8 +363,8 @@ proc bm_ondelette_mor { args } {
 #-----------------------------------------------------------------------------#
 
 proc bm_ondelette_mex { args } {
-   ## arg : fichier largeur
-   ## Arguments : largeur = largeur du filtre
+   #--- arg : fichier largeur
+   #--- Arguments : largeur = largeur du filtre
 
    if { [llength $args] == 2 } {
       set fichier [ lindex $args 0 ]
@@ -382,10 +389,12 @@ proc bm_ondelette_mex { args } {
 proc bm_cutima {} {
    global audace
    global caption
+   global traiteFilters
 
    #--- Il faut une image affichee
    if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
       tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+      set traiteFilters(avancement) ""
       return
    }
    #---
@@ -396,6 +405,7 @@ proc bm_cutima {} {
       ::audace::autovisu $audace(visuNo)
    } else {
       tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,tracer)
+      set traiteFilters(avancement) ""
    }
 }
 #-----------------------------------------------------------------------------#
@@ -412,10 +422,12 @@ proc bm_cutima {} {
 proc bm_zoomima { args } {
    global audace
    global caption
+   global traiteFilters
 
    #--- Il faut une image affichee
    if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
       tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+      set traiteFilters(avancement) ""
       return
    }
    #---
@@ -452,6 +464,7 @@ proc bm_logima { args } {
    global audace
    global conf
    global caption
+   global traiteFilters
 
    if { [llength $args] == 3 } {
       set fichier [ lindex $args 0 ]
@@ -460,9 +473,9 @@ proc bm_logima { args } {
       if { ($fichier == "") || ($mult == "") || ($attenuation == "") } {
          ::console::affiche_erreur "Usage: bm_logima mult attenuation\n"
       } else {
-         ## Verif existence
+         #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
-         ## Algo
+         #--- Algo
          if { $fichier != "$audace(artifice)" } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
@@ -472,21 +485,23 @@ proc bm_logima { args } {
                   ::console::affiche_erreur "$caption(filtrage,charge_image)\n"
                } else {
                   ::audace::autovisu $audace(visuNo)
-                  tk_messageBox -title $caption(filtrage,log) -type ok -message $caption(filtrage,fin_traitement)
+                  set traiteFilters(avancement) $caption(filtrage,fin_traitement)
                }
             } else {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_de_fichier)
+               set traiteFilters(avancement) ""
             }
          } else {
             if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
                tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+               set traiteFilters(avancement) ""
             } else {
                set erreur [ catch { log $mult $attenuation } msg ]
                if { $erreur == "1" } {
                   ::console::affiche_erreur "$caption(filtrage,charge_image)\n"
                } else {
                   ::audace::autovisu $audace(visuNo)
-                  tk_messageBox -title $caption(filtrage,log) -type ok -message $caption(filtrage,fin_traitement)
+                  set traiteFilters(avancement) $caption(filtrage,fin_traitement)
                }
             }
          }
