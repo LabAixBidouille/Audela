@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.12 2007-03-10 13:56:57 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.13 2007-03-13 21:37:03 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1736,7 +1736,10 @@ namespace eval ::traiteImage {
    proc createDialog { } {
       variable This
       variable widget
-      global audace caption conf traiteImage
+      global audace caption color conf traiteImage
+
+      #---
+      set traiteImage(avancement) ""
 
       #---
       set traiteImage(clipWindow_mini) $conf(clip_mini)
@@ -1761,6 +1764,14 @@ namespace eval ::traiteImage {
             label $This.usr.0.lab1 -textvariable "traiteImage(formule)" -font $audace(font,arial_15_b)
             pack $This.usr.0.lab1 -padx 10 -pady 5
         # pack $This.usr.0 -side top -fill both
+
+         frame $This.usr.3 -borderwidth 1 -relief raised
+            frame $This.usr.3.1 -borderwidth 0 -relief flat
+               label $This.usr.3.1.labURL1 -textvariable "traiteImage(avancement)" -font $audace(font,arial_12_b) \
+                  -fg $color(blue)
+               pack $This.usr.3.1.labURL1 -side top -padx 10 -pady 5
+            pack $This.usr.3.1 -side top -fill both
+        # pack $This.usr.3 -in $This.usr -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.13 -borderwidth 0 -relief flat
@@ -1907,11 +1918,16 @@ namespace eval ::traiteImage {
    proc cmdApply { { visuNo "1" } } {
       global audace caption conf traiteImage
 
+      #---
+      set traiteImage(avancement) "$caption(pretraitement,en_cours)"
+      update
+
       #--- Il faut une image affichee
       if { ( $traiteImage(operation) != "$caption(audace,menu,r+v+b2rvb)" ) && ( $traiteImage(operation) != "$caption(audace,menu,rvb2r+v+b)" ) } {
          if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
             tk_messageBox -title $caption(pretraitement,attention) -type ok \
                -message $caption(pretraitement,header_noimage)
+            set traiteImage(avancement) ""
             return
          }
       }
@@ -1926,12 +1942,14 @@ namespace eval ::traiteImage {
             if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_entree_generique)
+               set traiteImage(avancement) ""
                return
             }
             #--- Test sur l'image RVB
             if { $traiteImage(rvbWindow_rvb_filename) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_image_sortie)
+               set traiteImage(avancement) ""
                return
             }
             #---
@@ -1940,10 +1958,10 @@ namespace eval ::traiteImage {
                loadima $traiteImage(rvbWindow_rvb_filename)
             } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,r+v+b2rvb) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteImage(avancement) ""
             }
          } \
          "$caption(audace,menu,rvb2r+v+b)" {
@@ -1951,12 +1969,14 @@ namespace eval ::traiteImage {
             if { $traiteImage(rvbWindow_rvb_filename) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_image_entree)
+               set traiteImage(avancement) ""
                return
             }
             #--- Test sur le nom generique des images R, V et B
             if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_sortie_generique)
+               set traiteImage(avancement) ""
                return
             }
             #---
@@ -1969,10 +1989,10 @@ namespace eval ::traiteImage {
                buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)3.fit"
             } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,rvb2r+v+b) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteImage(avancement) ""
             }
          } \
          "$caption(audace,menu,cfa2rgb)" {
@@ -1981,10 +2001,10 @@ namespace eval ::traiteImage {
                ::audace::autovisu $audace(visuNo)
             } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,cfa2rgb) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteImage(avancement) ""
             }
          } \
          "$caption(audace,menu,subsky)" {
@@ -1995,26 +2015,31 @@ namespace eval ::traiteImage {
             if { $traiteImage(subskyWindow_back_kernel) == "" && $traiteImage(subskyWindow_back_threshold) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,choix_coefficients)
+               set traiteImage(avancement) ""
                return
             }
             if { $traiteImage(subskyWindow_back_kernel) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,coef_manquant)
+               set traiteImage(avancement) ""
                return
             }
             if { $traiteImage(subskyWindow_back_threshold) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,coef_manquant)
+               set traiteImage(avancement) ""
                return
             }
             if { [ string is double -strict $traiteImage(subskyWindow_back_kernel) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
+               set traiteImage(avancement) ""
                return
             }
             if { [ string is double -strict $traiteImage(subskyWindow_back_threshold) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
+               set traiteImage(avancement) ""
                return
             }
             #---
@@ -2029,10 +2054,10 @@ namespace eval ::traiteImage {
                ::audace::autovisu $audace(visuNo)
             } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,subsky) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteImage(avancement) ""
             }
          } \
          "$caption(audace,menu,clip)" {
@@ -2043,26 +2068,31 @@ namespace eval ::traiteImage {
             if { $traiteImage(clipWindow_mini) == "" && $traiteImage(clipWindow_maxi) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,choix_coefficients)
+               set traiteImage(avancement) ""
                return
             }
             if { $traiteImage(clipWindow_mini) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,coef_manquant)
+               set traiteImage(avancement) ""
                return
             }
             if { $traiteImage(clipWindow_maxi) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,coef_manquant)
+               set traiteImage(avancement) ""
                return
             }
             if { [ string is double -strict $traiteImage(clipWindow_mini) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
+               set traiteImage(avancement) ""
                return
             }
             if { [ string is double -strict $traiteImage(clipWindow_maxi) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
+               set traiteImage(avancement) ""
                return
             }
             #---
@@ -2076,10 +2106,10 @@ namespace eval ::traiteImage {
                ::audace::autovisu $audace(visuNo)
             } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,clip) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteImage(avancement) ""
             }
          }
       ::traiteImage::recup_position
@@ -2130,6 +2160,7 @@ namespace eval ::traiteImage {
       global caption traiteImage
 
       #---
+      set traiteImage(avancement) ""
       ::traiteImage::formule
       #---
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -2139,6 +2170,7 @@ namespace eval ::traiteImage {
       switch $traiteImage(operation) \
          "$caption(audace,menu,r+v+b2rvb)" {
             pack forget $This.usr.0
+            pack $This.usr.3 -side bottom -fill both
             pack $This.usr.2 -side bottom -fill both
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
@@ -2153,6 +2185,7 @@ namespace eval ::traiteImage {
          } \
          "$caption(audace,menu,rvb2r+v+b)" {
             pack forget $This.usr.0
+            pack $This.usr.3 -side bottom -fill both
             pack $This.usr.2 -side bottom -fill both
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
@@ -2167,6 +2200,7 @@ namespace eval ::traiteImage {
          } \
          "$caption(audace,menu,cfa2rgb)" {
             pack forget $This.usr.0
+            pack $This.usr.3 -side bottom -fill both
             pack forget $This.usr.2
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
@@ -2181,6 +2215,7 @@ namespace eval ::traiteImage {
          } \
          "$caption(audace,menu,subsky)" {
             pack forget $This.usr.0
+            pack $This.usr.3 -side bottom -fill both
             pack $This.usr.2 -side bottom -fill both
             pack $This.usr.2.13 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.14 -in $This.usr.2 -side top -fill both
@@ -2195,6 +2230,7 @@ namespace eval ::traiteImage {
          } \
          "$caption(audace,menu,clip)" {
             pack forget $This.usr.0
+            pack $This.usr.3 -side bottom -fill both
             pack $This.usr.2 -side bottom -fill both
             pack forget $This.usr.2.13
             pack forget $This.usr.2.14
@@ -2361,7 +2397,7 @@ namespace eval ::traiteWindow {
    proc createDialog { } {
       variable This
       variable widget
-      global audace caption conf traiteWindow
+      global audace caption color conf traiteWindow
 
       #--- Initialisation
       set traiteWindow(in)  ""
@@ -2369,6 +2405,9 @@ namespace eval ::traiteWindow {
 
       #---
       set traiteWindow(valeur_indice) "1"
+
+      #---
+      set traiteWindow(avancement) ""
 
       #---
       toplevel $This
@@ -2387,13 +2426,21 @@ namespace eval ::traiteWindow {
             pack $This.usr.0.lab1 -padx 10 -pady 5
         # pack $This.usr.0 -in $This.usr -side top -fill both
 
-         frame $This.usr.7 -borderwidth 1 -relief raised
-            frame $This.usr.7.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.1.che1 -text "$caption(pretraitement,afficher_image_fin)" \
+         frame $This.usr.4 -borderwidth 1 -relief raised
+            frame $This.usr.4.1 -borderwidth 0 -relief flat
+               label $This.usr.4.1.labURL1 -textvariable "traiteWindow(avancement)" -font $audace(font,arial_12_b) \
+                  -fg $color(blue)
+               pack $This.usr.4.1.labURL1 -side top -padx 10 -pady 5
+            pack $This.usr.4.1 -side top -fill both
+        # pack $This.usr.4 -in $This.usr -side top -fill both
+
+         frame $This.usr.3 -borderwidth 1 -relief raised
+            frame $This.usr.3.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,afficher_image_fin)" \
                   -variable traiteWindow(4,disp)
-               pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.7.1 -side top -fill both
-        # pack $This.usr.7 -in $This.usr -side top -fill both
+               pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
+            pack $This.usr.3.1 -side top -fill both
+        # pack $This.usr.3 -in $This.usr -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.1 -borderwidth 0 -relief flat
@@ -2512,6 +2559,9 @@ namespace eval ::traiteWindow {
       global audace caption traiteWindow
 
       #---
+      set traiteWindow(avancement) "$caption(pretraitement,en_cours)"
+      update
+      #---
       set in    $traiteWindow(in)
       set out   $traiteWindow(out)
       set nb    $traiteWindow(nb)
@@ -2520,21 +2570,25 @@ namespace eval ::traiteWindow {
       if { $traiteWindow(in) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
              -message $caption(pretraitement,definir_image_entree)
+          set traiteWindow(avancement) ""
           return
       }
       if { $traiteWindow(nb) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
              -message $caption(pretraitement,choix_nbre_images)
+          set traiteWindow(avancement) ""
           return
       }
       if { [ TestEntier $traiteWindow(nb) ] == "0" } {
          tk_messageBox -title $caption(pretraitement,attention) -icon error \
             -message $caption(pretraitement,nbre_entier)
+          set traiteWindow(avancement) ""
          return
       }
       if { $traiteWindow(out) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
              -message $caption(pretraitement,definir_image_sortie)
+          set traiteWindow(avancement) ""
           return
       }
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -2549,10 +2603,10 @@ namespace eval ::traiteWindow {
                if { $traiteWindow(4,disp) == 1 } {
                   loadima $out
                }
-               tk_messageBox -title $caption(audace,menu,mediane) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteWindow(avancement) ""
             }
          } \
          "$caption(audace,menu,somme)" {
@@ -2562,10 +2616,10 @@ namespace eval ::traiteWindow {
                if { $traiteWindow(4,disp) == 1 } {
                   loadima $out
                }
-               tk_messageBox -title $caption(audace,menu,somme) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteWindow(avancement) ""
             }
          } \
          "$caption(audace,menu,moyenne)" {
@@ -2575,10 +2629,10 @@ namespace eval ::traiteWindow {
                if { $traiteWindow(4,disp) == 1 } {
                   loadima $out
                }
-               tk_messageBox -title $caption(audace,menu,moyenne) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteWindow(avancement) ""
             }
          } \
          "$caption(audace,menu,ecart_type)" {
@@ -2588,10 +2642,10 @@ namespace eval ::traiteWindow {
                if { $traiteWindow(4,disp) == 1 } {
                   loadima $out
                }
-               tk_messageBox -title $caption(audace,menu,ecart_type) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set traiteWindow(avancement) ""
             }
          }
       ::traiteWindow::recup_position
@@ -2640,6 +2694,7 @@ namespace eval ::traiteWindow {
       global caption traiteWindow
 
       #---
+      set traiteWindow(avancement) ""
       ::traiteWindow::formule
       #---
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -2649,27 +2704,31 @@ namespace eval ::traiteWindow {
       switch $traiteWindow(operation) \
          "$caption(audace,menu,mediane)" {
             pack forget $This.usr.0
+            pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
-            pack $This.usr.7 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
          } \
          "$caption(audace,menu,somme)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
-            pack $This.usr.7 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
          } \
          "$caption(audace,menu,moyenne)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
+            pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
-            pack $This.usr.7 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
          } \
          "$caption(audace,menu,ecart_type)" {
             pack forget $This.usr.0
+            pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
-            pack $This.usr.7 -in $This.usr -side top -fill both
+            pack $This.usr.3 -in $This.usr -side top -fill both
          }
    }
 
@@ -2815,7 +2874,7 @@ namespace eval ::faireImageRef {
    proc createDialog { } {
       variable This
       variable widget
-      global audace caption conf faireImageRef
+      global audace caption color conf faireImageRef
 
       #--- Initialisation
       set faireImageRef(in)           ""
@@ -2838,6 +2897,9 @@ namespace eval ::faireImageRef {
       set faireImageRef(valeur_indice) "1"
 
       #---
+      set faireImageRef(avancement) ""
+
+      #---
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
@@ -2848,6 +2910,14 @@ namespace eval ::faireImageRef {
 
       #---
       frame $This.usr -borderwidth 0 -relief raised
+
+         frame $This.usr.8 -borderwidth 1 -relief raised
+            frame $This.usr.8.1 -borderwidth 0 -relief flat
+               label $This.usr.8.1.labURL1 -textvariable "faireImageRef(avancement)" -font $audace(font,arial_12_b) \
+                  -fg $color(blue)
+               pack $This.usr.8.1.labURL1 -side top -padx 10 -pady 5
+            pack $This.usr.8.1 -side top -fill both
+        # pack $This.usr.8 -side bottom -fill both
 
          frame $This.usr.7 -borderwidth 1 -relief raised
             frame $This.usr.7.1 -borderwidth 0 -relief flat
@@ -2886,7 +2956,7 @@ namespace eval ::faireImageRef {
                   -variable faireImageRef(pretraitement,no-flat-field) -command { ::faireImageRef::griser_activer_1 }
                pack $This.usr.7.5.sans_flat -side left -padx 10 -pady 5
             pack $This.usr.7.5 -side top -fill both
-        # pack $This.usr.7 -side bottom -fill both
+        # pack $This.usr.7 -side top -fill both
 
          frame $This.usr.6 -borderwidth 1 -relief raised
             frame $This.usr.6.1 -borderwidth 0 -relief flat
@@ -2894,7 +2964,7 @@ namespace eval ::faireImageRef {
                   -variable faireImageRef(1,disp)
                pack $This.usr.6.1.che1 -side left -padx 10 -pady 5
             pack $This.usr.6.1 -side top -fill both
-        # pack $This.usr.6 -side bottom -fill both
+        # pack $This.usr.6 -side top -fill both
 
          frame $This.usr.5 -borderwidth 1 -relief raised
             frame $This.usr.5.1 -borderwidth 0 -relief flat
@@ -2910,12 +2980,12 @@ namespace eval ::faireImageRef {
                   -text "$caption(audace,menu,mediane)" -value 2 -variable faireImageRef(1,methode)
                pack $This.usr.5.1.rad2 -side left -padx 10 -pady 5
             pack $This.usr.5.1 -side top -fill both
-        # pack $This.usr.5 -side bottom -fill both
+        # pack $This.usr.5 -side top -fill both
 
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-filed,no-offset) -command { ::faireImageRef::griser_activer_2 }
+                  -variable faireImageRef(flat-field,no-offset) -command { ::faireImageRef::griser_activer_2 }
                pack $This.usr.4.1.che1 -side left -padx 10 -pady 5
                button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
@@ -2928,7 +2998,7 @@ namespace eval ::faireImageRef {
 
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.2.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-filed,no-dark) -command { ::faireImageRef::griser_activer_3 }
+                  -variable faireImageRef(flat-field,no-dark) -command { ::faireImageRef::griser_activer_3 }
                pack $This.usr.4.2.che1 -side left -padx 10 -pady 5
                button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
@@ -2946,7 +3016,7 @@ namespace eval ::faireImageRef {
                   -font $audace(font,arial_8_b)
                pack $This.usr.4.3.ent7 -side right -padx 10 -pady 5
             pack $This.usr.4.3 -side top -fill both
-        # pack $This.usr.4 -side bottom -fill both
+        # pack $This.usr.4 -side top -fill both
 
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
@@ -2961,7 +3031,7 @@ namespace eval ::faireImageRef {
                entry $This.usr.3.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
-        # pack $This.usr.3 -side bottom -fill both
+        # pack $This.usr.3 -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.1 -borderwidth 0 -relief flat
@@ -2996,7 +3066,7 @@ namespace eval ::faireImageRef {
                entry $This.usr.2.4.ent4 -textvariable faireImageRef(out) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5
             pack $This.usr.2.4 -side top -fill both
-        # pack $This.usr.2 -side bottom -fill both
+        # pack $This.usr.2 -side top -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             #--- Liste des pretraitements disponibles
@@ -3016,7 +3086,7 @@ namespace eval ::faireImageRef {
                 -variable faireImageRef(operation) \
                 -command { }
             }
-        # pack $This.usr.1 -side bottom -fill both -ipady 5
+        # pack $This.usr.1 -side top -fill both -ipady 5
 
       pack $This.usr -side top -fill both -expand 1
 
@@ -3074,6 +3144,9 @@ namespace eval ::faireImageRef {
       global audace caption conf faireImageRef
 
       #---
+      set faireImageRef(avancement) "$caption(pretraitement,en_cours)"
+      update
+      #---
       set in    $faireImageRef(in)
       set out   $faireImageRef(out)
       set nb    $faireImageRef(nb)
@@ -3082,26 +3155,31 @@ namespace eval ::faireImageRef {
       if { $faireImageRef(in) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
              -message $caption(pretraitement,definir_entree_generique)
+          set faireImageRef(avancement) ""
           return
       }
       if { $faireImageRef(nb) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
              -message $caption(pretraitement,choix_nbre_images)
+          set faireImageRef(avancement) ""
           return
       }
       if { [ TestEntier $faireImageRef(nb) ] == "0" } {
          tk_messageBox -title $caption(pretraitement,attention) -icon error \
             -message $caption(pretraitement,nbre_entier)
+          set faireImageRef(avancement) ""
          return
       }
       if { $faireImageRef(out) == "" } {
          if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) || $faireImageRef(operation) == $caption(audace,menu,pretraite) } {
              tk_messageBox -title $caption(pretraitement,attention) -type ok \
                 -message $caption(pretraitement,definir_sortie_generique)
+             set faireImageRef(avancement) ""
              return
          } else {
              tk_messageBox -title $caption(pretraitement,attention) -type ok \
                 -message $caption(pretraitement,definir_image_sortie)
+             set faireImageRef(avancement) ""
              return
          }
       }
@@ -3113,10 +3191,10 @@ namespace eval ::faireImageRef {
          "$caption(audace,menu,raw2cfa)" {
             catch { ### A developper } m
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,raw2cfa) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set faireImageRef(avancement) ""
             }
          } \
          "$caption(audace,menu,faire_offset)" {
@@ -3126,10 +3204,10 @@ namespace eval ::faireImageRef {
                   loadima $out
                   ::audace::autovisu $audace(visuNo)
                }
-               tk_messageBox -title $caption(audace,menu,faire_offset) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set faireImageRef(avancement) ""
             }
          } \
          "$caption(audace,menu,faire_dark)" {
@@ -3138,6 +3216,7 @@ namespace eval ::faireImageRef {
                if { $faireImageRef(1,offset) == "" } {
                   tk_messageBox -title $caption(pretraitement,attention) -type ok \
                      -message $caption(pretraitement,definir_offset)
+                  set faireImageRef(avancement) ""
                   return
                }
             }
@@ -3175,26 +3254,28 @@ namespace eval ::faireImageRef {
                   loadima $out
                   ::audace::autovisu $audace(visuNo)
                }
-               tk_messageBox -title $caption(audace,menu,faire_dark) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set faireImageRef(avancement) ""
             }
          } \
          "$caption(audace,menu,faire_flat_field)" {
             #--- Test sur l'offset
-            if { $faireImageRef(flat_field,no-offset) == "0" } {
+            if { $faireImageRef(flat-field,no-offset) == "0" } {
                if { $faireImageRef(1,offset) == "" } {
                   tk_messageBox -title $caption(pretraitement,attention) -type ok \
                      -message $caption(pretraitement,definir_offset)
+                  set faireImageRef(avancement) ""
                   return
                }
             }
             #--- Test sur le dark
-            if { $faireImageRef(flat_field,no-dark) == "0" } {
+            if { $faireImageRef(flat-field,no-dark) == "0" } {
                if { $faireImageRef(1,dark) == "" } {
                   tk_messageBox -title $caption(pretraitement,attention) -type ok \
                      -message $caption(pretraitement,definir_noir)
+                  set faireImageRef(avancement) ""
                   return
                }
             }
@@ -3202,11 +3283,13 @@ namespace eval ::faireImageRef {
             if { $faireImageRef(1,norm) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
+               set faireImageRef(avancement) ""
                return
             }
             if { [ string is double -strict $faireImageRef(1,norm) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
+               set faireImageRef(avancement) ""
                return
             }
             #---
@@ -3216,7 +3299,7 @@ namespace eval ::faireImageRef {
             set const  "0"
             set temp   "temp"
             set tempo  "tempo"
-            if { $faireImageRef(flat-filed,no-offset) == "0" && $faireImageRef(flat-filed,no-dark) == "0" } {
+            if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
                #--- Realisation de l'image ( Offset + Dark )
                catch {
                   set buf_pretrait [::buf::create]
@@ -3234,14 +3317,14 @@ namespace eval ::faireImageRef {
                #--- Suppression du fichier intermediaire
                catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
             } else {
-               if { $faireImageRef(flat-filed,no-dark) == "1" } {
+               if { $faireImageRef(flat-field,no-dark) == "1" } {
                   #---
                   catch { sub2 $in $offset $temp $const $nb $first } m
                   catch { noffset2 $temp $tempo $norm $nb $first } m
                   catch { smedian $tempo $out $nb $first } m
                   catch { delete2 $temp $nb } m
                   catch { delete2 $tempo $nb } m
-               } elseif { $faireImageRef(flat-filed,no-offset) == "1" } {
+               } elseif { $faireImageRef(flat-field,no-offset) == "1" } {
                   #---
                   catch { sub2 $in $dark $temp $const $nb $first } m
                   catch { noffset2 $temp $tempo $norm $nb $first } m
@@ -3255,10 +3338,10 @@ namespace eval ::faireImageRef {
                   loadima $out
                   ::audace::autovisu $audace(visuNo)
                }
-               tk_messageBox -title $caption(audace,menu,faire_flat_field) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set faireImageRef(avancement) ""
             }
          } \
          "$caption(audace,menu,pretraite)" {
@@ -3266,12 +3349,14 @@ namespace eval ::faireImageRef {
             if { $faireImageRef(1,offset) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_offset)
+               set faireImageRef(avancement) ""
                return
             }
             #--- Test sur le dark
             if { $faireImageRef(1,dark) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_noir)
+               set faireImageRef(avancement) ""
                return
             }
             #--- Test sur le flat-field
@@ -3280,6 +3365,7 @@ namespace eval ::faireImageRef {
                   if { $faireImageRef(1,flat-field) == "" } {
                      tk_messageBox -title $caption(pretraitement,attention) -type ok \
                         -message $caption(pretraitement,definir_flat-field)
+                     set faireImageRef(avancement) ""
                      return
                   }
                }
@@ -3330,10 +3416,10 @@ namespace eval ::faireImageRef {
             }
             #---
             if { $m == "" } {
-               tk_messageBox -title $caption(audace,menu,pretraite) -type ok \
-                  -message "$caption(pretraitement,fin_traitement)\n"
+               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               set faireImageRef(avancement) ""
             }
          }
       ::faireImageRef::recup_position
@@ -3384,6 +3470,7 @@ namespace eval ::faireImageRef {
       global caption faireImageRef
 
       #---
+      set faireImageRef(avancement) ""
       ::faireImageRef::formule
       #---
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -3399,6 +3486,7 @@ namespace eval ::faireImageRef {
             pack forget $This.usr.5
             pack forget $This.usr.6
             pack forget $This.usr.7
+            pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_offset)" {
             pack $This.usr.1 -in $This.usr -side top -fill both
@@ -3408,6 +3496,7 @@ namespace eval ::faireImageRef {
             pack forget $This.usr.5
             pack $This.usr.6 -in $This.usr -side top -fill both
             pack forget $This.usr.7
+            pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_dark)" {
             pack $This.usr.1 -in $This.usr -side top -fill both
@@ -3417,6 +3506,7 @@ namespace eval ::faireImageRef {
             pack $This.usr.5 -in $This.usr -side top -fill both
             pack $This.usr.6 -in $This.usr -side top -fill both
             pack forget $This.usr.7
+            pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_flat_field)" {
             pack $This.usr.1 -in $This.usr -side top -fill both
@@ -3426,6 +3516,7 @@ namespace eval ::faireImageRef {
             pack forget $This.usr.5
             pack $This.usr.6 -in $This.usr -side top -fill both
             pack forget $This.usr.7
+            pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,pretraite)" {
             pack $This.usr.1 -in $This.usr -side top -fill both
@@ -3435,6 +3526,7 @@ namespace eval ::faireImageRef {
             pack forget $This.usr.5
             pack forget $This.usr.6
             pack $This.usr.7 -in $This.usr -side top -fill both
+            pack $This.usr.8 -in $This.usr -side bottom -fill both
          }
    }
 
@@ -3532,7 +3624,7 @@ namespace eval ::faireImageRef {
       variable This
       global faireImageRef
 
-      if { $faireImageRef(flat-filed,no-offset) == "0" } {
+      if { $faireImageRef(flat-field,no-offset) == "0" } {
          $This.usr.4.1.explore configure -state normal
          $This.usr.4.1.ent6 configure -state normal
       } else {
@@ -3550,7 +3642,7 @@ namespace eval ::faireImageRef {
       variable This
       global faireImageRef
 
-      if { $faireImageRef(flat-filed,no-dark) == "0" } {
+      if { $faireImageRef(flat-field,no-dark) == "0" } {
          $This.usr.4.2.explore configure -state normal
          $This.usr.4.2.ent6 configure -state normal
       } else {
