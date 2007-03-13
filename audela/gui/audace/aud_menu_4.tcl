@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.6 2007-02-10 18:06:44 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.7 2007-03-13 22:05:59 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -97,11 +97,17 @@ namespace eval ::traiteFilters {
    proc createDialog { } {
       variable This
       variable widget
-      global audace caption conf traiteFilters
+      global audace caption color conf traiteFilters
 
       #--- Initialisation
-      set traiteFilters(choix) "0"
-      set traiteFilters(image) ""
+      set traiteFilters(choix_mode) "0"
+      set traiteFilters(image_in)   ""
+      set traiteFilters(image_out)  ""
+
+      #---
+      set traiteFilters(avancement)     ""
+      set traiteFilters(afficher_image) "$caption(traiteFilters,afficher_image_fin)"
+      set traiteFilters(disp_1)         "1"
 
       #---
       toplevel $This
@@ -111,30 +117,38 @@ namespace eval ::traiteFilters {
       wm geometry $This $widget(traiteFilters,position)
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW ::traiteFilters::cmdClose
+
       #---
       frame $This.usr -borderwidth 0 -relief raised
-         frame $This.usr.0 -borderwidth 1 -relief raised
-            #--- Bouton radio image_affichee
-            radiobutton $This.usr.0.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
-               -text "$caption(traiteFilters,image_affichee)" -value 0 -variable traiteFilters(choix) \
-               -command { ::traiteFilters::griser "$audace(base).traiteFilters" }
-            pack $This.usr.0.rad0 -anchor center -side left -padx 5
-            #--- Bouton radio image a choisir
-            radiobutton $This.usr.0.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
-               -text "$caption(traiteFilters,image_a_choisir)" -value 1 -variable traiteFilters(choix) \
-               -command { ::traiteFilters::activer "$audace(base).traiteFilters" }
-            pack $This.usr.0.rad1 -anchor center -side right -padx 5
-         pack $This.usr.0 -side top -fill both -ipady 5
 
          frame $This.usr.1 -borderwidth 1 -relief raised
-            label $This.usr.1.lab1 -text "$caption(traiteFilters,filtres)"
-            pack $This.usr.1.lab1 -side left -padx 10 -pady 5
+
+            frame $This.usr.1.radiobutton -borderwidth 0 -relief raised
+               #--- Bouton radio 'image affichee'
+               radiobutton $This.usr.1.radiobutton.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
+                  -text "$caption(traiteFilters,image_affichee)" -value 0 -variable traiteFilters(choix_mode) \
+                  -command {
+                     ::traiteFilters::change n1 n2 op
+                     ::traiteFilters::griser "$audace(base).traiteFilters"
+                  }
+               pack $This.usr.1.radiobutton.rad0 -anchor w -side top -padx 10 -pady 5
+               #--- Bouton radio 'image a choisir sur le disque dur'
+               radiobutton $This.usr.1.radiobutton.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 -state normal \
+                  -text "$caption(traiteFilters,image_a_choisir)" -value 1 -variable traiteFilters(choix_mode) \
+                  -command {
+                     ::traiteFilters::change n1 n2 op
+                     ::traiteFilters::activer "$audace(base).traiteFilters"
+                  }
+               pack $This.usr.1.radiobutton.rad1 -anchor w -side top -padx 10 -pady 5
+            pack $This.usr.1.radiobutton -side left -padx 10 -pady 5
+
             #--- Liste des traitements disponibles
             set list_traiteFilters [ list $caption(audace,menu,masque_flou) $caption(audace,menu,filtre_passe-bas) \
                $caption(audace,menu,filtre_passe-haut) $caption(audace,menu,filtre_median) \
                $caption(audace,menu,filtre_minimum) $caption(audace,menu,filtre_maximum) \
                $caption(audace,menu,filtre_gaussien) $caption(audace,menu,ond_morlet) \
                $caption(audace,menu,ond_mexicain) $caption(audace,menu,log) ]
+
             #---
             menubutton $This.usr.1.but1 -textvariable traiteFilters(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -146,32 +160,26 @@ namespace eval ::traiteFilters {
                   -variable traiteFilters(operation) \
                   -command { }
             }
+
+            #---
+            label $This.usr.1.lab1 -text "$caption(traiteFilters,filtres)"
+            pack $This.usr.1.lab1 -side right -padx 10 -pady 5
+
          pack $This.usr.1 -side top -fill both -ipady 5
 
          frame $This.usr.2 -borderwidth 1 -relief raised
-            frame $This.usr.3a -borderwidth 0 -relief raised
-               frame $This.usr.3a.1 -borderwidth 0 -relief flat
-                  button $This.usr.3a.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
-                     -command { ::traiteFilters::parcourir }
-                  pack $This.usr.3a.1.explore -side left -padx 10 -pady 5 -ipady 5
-                  label $This.usr.3a.1.lab1 -text "$caption(traiteFilters,entree)"
-                  pack $This.usr.3a.1.lab1 -side left -padx 5 -pady 5
-                  entry $This.usr.3a.1.ent1 -textvariable traiteFilters(image) -width 50 -font $audace(font,arial_8_b)
-                  pack $This.usr.3a.1.ent1 -side right -padx 10 -pady 5
-               pack $This.usr.3a.1 -side top -fill both
-           # pack $This.usr.3a -side top -fill both
 
-            frame $This.usr.3b -borderwidth 0 -relief raised
-               frame $This.usr.3b.1 -borderwidth 0 -relief flat
-                  button $This.usr.3b.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
-                     -command { ::traiteFilters::parcourir }
-                  pack $This.usr.3b.1.explore -side left -padx 10 -pady 5 -ipady 5
-                  label $This.usr.3b.1.lab1 -text "$caption(traiteFilters,entree)"
-                  pack $This.usr.3b.1.lab1 -side left -padx 5 -pady 5
-                  entry $This.usr.3b.1.ent1 -textvariable traiteFilters(image) -width 50 -font $audace(font,arial_8_b)
-                  pack $This.usr.3b.1.ent1 -side left -padx 10 -pady 5
-               pack $This.usr.3b.1 -side top -fill both
-           # pack $This.usr.3b -side top -fill both
+            frame $This.usr.3 -borderwidth 0 -relief raised
+               frame $This.usr.3.1 -borderwidth 0 -relief flat
+                  button $This.usr.3.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
+                     -command { ::traiteFilters::parcourir 1 }
+                  pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
+                  label $This.usr.3.1.lab1 -text "$caption(traiteFilters,entree)"
+                  pack $This.usr.3.1.lab1 -side left -padx 5 -pady 5
+                  entry $This.usr.3.1.ent1 -textvariable traiteFilters(image_in) -width 50 -font $audace(font,arial_8_b)
+                  pack $This.usr.3.1.ent1 -side right -padx 10 -pady 5
+               pack $This.usr.3.1 -side top -fill both
+           # pack $This.usr.3 -side top -fill both
 
             frame $This.usr.4 -borderwidth 0 -relief raised
                frame $This.usr.4.1 -borderwidth 0 -relief flat
@@ -229,7 +237,24 @@ namespace eval ::traiteFilters {
                   pack $This.usr.7.1.lab7 -side right -padx 5 -pady 5
                pack $This.usr.7.1 -side top -fill both
            # pack $This.usr.7 -side top -fill both
+
          pack $This.usr.2 -side top -fill both -ipady 5
+
+         frame $This.usr.8 -borderwidth 1 -relief raised
+            frame $This.usr.8.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.8.1.che1 -text "$traiteFilters(afficher_image)" -variable traiteFilters(disp_1) \
+                  -state disabled
+               pack $This.usr.8.1.che1 -side left -padx 10 -pady 5
+            pack $This.usr.8.1 -side top -fill both
+        # pack $This.usr.8 -side top -fill both
+
+         frame $This.usr.9 -borderwidth 1 -relief raised
+            frame $This.usr.9.1 -borderwidth 0 -relief flat
+               label $This.usr.9.1.labURL1 -textvariable "traiteFilters(avancement)" -font $audace(font,arial_12_b) \
+                  -fg $color(blue)
+               pack $This.usr.9.1.labURL1 -side top -padx 10 -pady 5
+            pack $This.usr.9.1 -side top -fill both
+        # pack $This.usr.9 -side top -fill both
 
       pack $This.usr -side top -fill both -expand 1
 
@@ -251,7 +276,7 @@ namespace eval ::traiteFilters {
       pack $This.cmd -side top -fill x
 
       #--- Entry actives ou non
-      if { $traiteFilters(choix) == "0" } {
+      if { $traiteFilters(choix_mode) == "0" } {
          ::traiteFilters::griser "$audace(base).traiteFilters"
       } else {
          ::traiteFilters::activer "$audace(base).traiteFilters"
@@ -286,24 +311,31 @@ namespace eval ::traiteFilters {
       global audace caption conf traiteFilters
 
       #---
+      set traiteFilters(avancement) "$caption(traiteFilters,traitement_en_cours)"
+      #---
       set audace(artifice) "@@@@"
-      set image $traiteFilters(image)
-      set coef_etal $traiteFilters(coef_etal)
-      set coef_mult $traiteFilters(coef_mult)
+      set image_in   $traiteFilters(image_in)
+      set image_out  $traiteFilters(image_out)
+      set coef_etal  $traiteFilters(coef_etal)
+      set coef_mult  $traiteFilters(coef_mult)
       set efficacite $traiteFilters(efficacite)
-      set offset $traiteFilters(offset)
+      set offset     $traiteFilters(offset)
       #--- Sauvegarde des reglages
       set conf(coef_etal) $traiteFilters(coef_etal)
       set conf(coef_mult) $traiteFilters(coef_mult)
       #--- Il faut saisir la constante
-      if { $traiteFilters(choix) == "0" } {
+      if { $traiteFilters(choix_mode) == "0" } {
          if { [ buf$audace(bufNo) imageready ] == "0" } {
-            tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,header_noimage)
+            tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+               -message $caption(traiteFilters,header_noimage)
+            set traiteFilters(avancement) ""
             return
          }
-      } elseif { $traiteFilters(choix) == "1" } {
-         if { $traiteFilters(image) == "" } {
-            tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_image_dd)
+      } elseif { $traiteFilters(choix_mode) == "1" } {
+         if { $traiteFilters(image_in) == "" } {
+            tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+               -message $caption(traiteFilters,choix_image_dd)
+            set traiteFilters(avancement) ""
             return
          }
       }
@@ -315,38 +347,50 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,masque_flou)" {
             #---
             if { ( $traiteFilters(coef_etal) == "" ) && ( $traiteFilters(coef_mult) == "" ) } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficients)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficients)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { $traiteFilters(coef_etal) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { $traiteFilters(coef_mult) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { ( [ string is double -strict $traiteFilters(coef_etal) ] == "0" ) && ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalides)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalides)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_masque_flou $image $coef_etal $coef_mult\n\n"
-               bm_masque_flou $image $coef_etal $coef_mult
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_masque_flou $image_in $coef_etal $coef_mult\n\n"
+               bm_masque_flou $image_in $coef_etal $coef_mult
             } else {
                ::console::affiche_resultat "bm_masque_flou $caption(traiteFilters,_image_affichee_) $coef_etal $coef_mult\n\n"
                bm_masque_flou "$audace(artifice)" $coef_etal $coef_mult
@@ -355,13 +399,15 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,filtre_passe-bas)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficient)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_passe_bas $image $efficacite\n\n"
-               bm_passe_bas $image $efficacite
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_passe_bas $image_in $efficacite\n\n"
+               bm_passe_bas $image_in $efficacite
             } else {
                ::console::affiche_resultat "bm_passe_bas $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_passe_bas "$audace(artifice)" $efficacite
@@ -370,13 +416,15 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,filtre_passe-haut)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficient)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_passe_haut $image $efficacite\n\n"
-               bm_passe_haut $image $efficacite
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_passe_haut $image_in $efficacite\n\n"
+               bm_passe_haut $image_in $efficacite
             } else {
                ::console::affiche_resultat "bm_passe_haut $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_passe_haut "$audace(artifice)" $efficacite
@@ -385,13 +433,15 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,filtre_median)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficient)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_filtre_median $image $efficacite\n\n"
-               bm_filtre_median $image $efficacite
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_filtre_median $image_in $efficacite\n\n"
+               bm_filtre_median $image_in $efficacite
             } else {
                ::console::affiche_resultat "bm_filtre_median $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_filtre_median "$audace(artifice)" $efficacite
@@ -400,13 +450,15 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,filtre_minimum)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficient)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_filtre_min $image $efficacite\n\n"
-               bm_filtre_min $image $efficacite
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_filtre_min $image_in $efficacite\n\n"
+               bm_filtre_min $image_in $efficacite
             } else {
                ::console::affiche_resultat "bm_filtre_min $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_filtre_min "$audace(artifice)" $efficacite
@@ -415,13 +467,15 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,filtre_maximum)" {
             #---
             if { $traiteFilters(efficacite) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficient)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficient)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_filtre_max $image $efficacite\n\n"
-               bm_filtre_max $image $efficacite
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_filtre_max $image_in $efficacite\n\n"
+               bm_filtre_max $image_in $efficacite
             } else {
                ::console::affiche_resultat "bm_filtre_max $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
                bm_filtre_max "$audace(artifice)" $efficacite
@@ -430,18 +484,22 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,filtre_gaussien)" {
             #---
             if { $traiteFilters(coef_etal) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_filtre_gauss $image $coef_etal\n\n"
-               bm_filtre_gauss $image $coef_etal
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_filtre_gauss $image_in $coef_etal\n\n"
+               bm_filtre_gauss $image_in $coef_etal
             } else {
                ::console::affiche_resultat "bm_filtre_gauss $caption(traiteFilters,_image_affichee_) $coef_etal\n\n"
                bm_filtre_gauss "$audace(artifice)" $coef_etal
@@ -450,18 +508,22 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,ond_morlet)" {
             #---
             if { $traiteFilters(coef_etal) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_ondelette_mor $image $coef_etal\n\n"
-               bm_ondelette_mor $image $coef_etal
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_ondelette_mor $image_in $coef_etal\n\n"
+               bm_ondelette_mor $image_in $coef_etal
             } else {
                ::console::affiche_resultat "bm_ondelette_mor $caption(traiteFilters,_image_affichee_) $coef_etal\n\n"
                bm_ondelette_mor "$audace(artifice)" $coef_etal
@@ -470,18 +532,22 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,ond_mexicain)" {
             #---
             if { $traiteFilters(coef_etal) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(coef_etal) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
             #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_ondelette_mex $image $coef_etal\n\n"
-               bm_ondelette_mex $image $coef_etal
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_ondelette_mex $image_in $coef_etal\n\n"
+               bm_ondelette_mex $image_in $coef_etal
             } else {
                ::console::affiche_resultat "bm_ondelette_mex $caption(traiteFilters,_image_affichee_) $coef_etal\n\n"
                bm_ondelette_mex "$audace(artifice)" $coef_etal
@@ -490,38 +556,50 @@ namespace eval ::traiteFilters {
          "$caption(audace,menu,log)" {
             #---
             if { ( $traiteFilters(coef_mult) == "" ) && ( $traiteFilters(offset) == "" ) } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,choix_coefficients)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,choix_coefficients)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { $traiteFilters(coef_mult) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { $traiteFilters(offset) == "" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -type ok -message $caption(traiteFilters,coef_manquant)
+               tk_messageBox -title $caption(traiteFilters,attention) -type ok \
+                  -message $caption(traiteFilters,coef_manquant)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { ( [ string is double -strict $traiteFilters(coef_mult) ] == "0" ) && ( [ string is double -strict $traiteFilters(offset) ] == "0" ) } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalides)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalides)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(coef_mult) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
             #---
             if { [ string is double -strict $traiteFilters(offset) ] == "0" } {
-               tk_messageBox -title $caption(traiteFilters,attention) -icon error -message $caption(traiteFilters,coef_invalide)
+               tk_messageBox -title $caption(traiteFilters,attention) -icon error \
+                  -message $caption(traiteFilters,coef_invalide)
+               set traiteFilters(avancement) ""
                return
             }
            #---
-            if { $traiteFilters(choix) == "1" } {
-               ::console::affiche_resultat "bm_logima $image $coef_mult $offset\n\n"
-               bm_logima $image $coef_mult $offset
+            if { $traiteFilters(choix_mode) == "1" } {
+               ::console::affiche_resultat "bm_logima $image_in $coef_mult $offset\n\n"
+               bm_logima $image_in $coef_mult $offset
             } else {
                ::console::affiche_resultat "bm_logima $caption(traiteFilters,_image_affichee_) $coef_mult $offset\n\n"
                bm_logima "$audace(artifice)" $coef_mult $offset
@@ -585,142 +663,246 @@ namespace eval ::traiteFilters {
       global audace caption conf traiteFilters
 
       #--- Initialisation des variables
-      set traiteFilters(coef_etal) $conf(coef_etal)
-      set traiteFilters(coef_mult) $conf(coef_mult)
+      set traiteFilters(avancement) ""
+      set traiteFilters(coef_etal)  $conf(coef_etal)
+      set traiteFilters(coef_mult)  $conf(coef_mult)
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteFilters(operation) \
          "$caption(audace,menu,masque_flou)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3a -in $This.usr.2 -side top -fill both
-            pack $This.usr.4 -in $This.usr.2 -side top -fill both
-            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-            pack $This.usr.5 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack $This.usr.5 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack $This.usr.5 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,filtre_passe-bas)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3b -in $This.usr.2 -side top -fill both
-            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,filtre_passe-haut)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3b -in $This.usr.2 -side top -fill both
-            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,filtre_median)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3b -in $This.usr.2 -side top -fill both
-            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,filtre_minimum)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3b -in $This.usr.2 -side top -fill both
-            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,filtre_maximum)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3b -in $This.usr.2 -side top -fill both
-            pack $This.usr.6 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,filtre_gaussien)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3a -in $This.usr.2 -side top -fill both
-            pack $This.usr.4 -in $This.usr.2 -side top -fill both
-            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,ond_morlet)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3a -in $This.usr.2 -side top -fill both
-            pack $This.usr.4 -in $This.usr.2 -side top -fill both
-            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,ond_mexicain)" {
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3a -in $This.usr.2 -side top -fill both
-            pack $This.usr.4 -in $This.usr.2 -side top -fill both
-            pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4 -in $This.usr.2 -side top -fill both
+               pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.5
+               pack forget $This.usr.5.1.but_defaut
+               pack forget $This.usr.6
+               pack forget $This.usr.7
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          } \
          "$caption(audace,menu,log)" {
             if { [ buf$audace(bufNo) imageready ] == "1" } {
                set traiteFilters(offset) [ lindex [ buf$audace(bufNo) autocuts ] 1 ]
             }
-            pack forget $This.usr.3a
-            pack forget $This.usr.3b
-            pack forget $This.usr.4
-            pack forget $This.usr.4.1.but_defaut
-            pack forget $This.usr.5
-            pack forget $This.usr.5.1.but_defaut
-            pack forget $This.usr.6
-            pack forget $This.usr.7
-            pack $This.usr.3a -in $This.usr.2 -side top -fill both
-            pack $This.usr.5 -in $This.usr.2 -side top -fill both
-            pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-            pack $This.usr.7 -in $This.usr.2 -side top -fill both
+            if { $traiteFilters(choix_mode) == "0" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack $This.usr.5 -in $This.usr.2 -side top -fill both
+               pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.6
+               pack $This.usr.7 -in $This.usr.2 -side top -fill both
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $traiteFilters(choix_mode) == "1" } {
+               pack $This.usr.3 -in $This.usr.2 -side top -fill both
+               pack forget $This.usr.4
+               pack forget $This.usr.4.1.but_defaut
+               pack $This.usr.5 -in $This.usr.2 -side top -fill both
+               pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+               pack forget $This.usr.6
+               pack $This.usr.7 -in $This.usr.2 -side top -fill both
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
          }
    }
 
@@ -728,7 +910,7 @@ namespace eval ::traiteFilters {
    # ::traiteFilters::parcourir
    # Ouvre un explorateur pour choisir un fichier
    #
-   proc parcourir { } {
+   proc parcourir { In_Out } {
       global audace traiteFilters
 
       #--- Fenetre parent
@@ -736,7 +918,11 @@ namespace eval ::traiteFilters {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Nom du fichier avec le chemin et sans son extension
-      set traiteFilters(image) [ file rootname $filename ]
+      if { $In_Out == "1" } {
+         set traiteFilters(image_in)  [ file rootname $filename ]
+      } elseif { $In_Out == "2" } {
+         set traiteFilters(image_out) [ file rootname $filename ]
+      }
    }
 
    #
@@ -768,13 +954,14 @@ namespace eval ::traiteFilters {
    #
    proc griser { this } {
       variable This
+      global traiteFilters
 
+      #--- Initialisation des variables
+      set traiteFilters(avancement) ""
       #--- Fonction destinee a inhiber et griser des widgets
       set This $this
-      $This.usr.3a.1.explore configure -state disabled
-      $This.usr.3a.1.ent1 configure -state disabled
-      $This.usr.3b.1.explore configure -state disabled
-      $This.usr.3b.1.ent1 configure -state disabled
+      $This.usr.3.1.explore configure -state disabled
+      $This.usr.3.1.ent1 configure -state disabled
    }
 
    #
@@ -784,13 +971,14 @@ namespace eval ::traiteFilters {
    #
    proc activer { this } {
       variable This
+      global traiteFilters
 
+      #--- Initialisation des variables
+      set traiteFilters(avancement) ""
       #--- Fonction destinee a activer des widgets
       set This $this
-      $This.usr.3a.1.explore configure -state normal
-      $This.usr.3a.1.ent1 configure -state normal
-      $This.usr.3b.1.explore configure -state normal
-      $This.usr.3b.1.ent1 configure -state normal
+      $This.usr.3.1.explore configure -state normal
+      $This.usr.3.1.ent1 configure -state normal
    }
 
 }
