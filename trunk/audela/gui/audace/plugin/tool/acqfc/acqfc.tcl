@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.36 2007-02-02 23:12:27 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.37 2007-03-14 18:32:39 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -290,6 +290,8 @@ namespace eval ::AcqFC {
    proc Adapt_Panneau_AcqFC { visuNo { a "" } { b "" } { c "" } } {
       global audace conf panneau
 
+      #--- Decoche le checkbutton Apercu des modes Video
+      set panneau(AcqFC,$visuNo,showvideopreview) "0"
       #---
       set camNo [ ::confVisu::getCamNo $visuNo ]
       if { $camNo == "0" } {
