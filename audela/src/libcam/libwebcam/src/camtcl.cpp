@@ -669,10 +669,14 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
    struct camprop *cam;
    cam = (struct camprop *) clientData;
 
-   if (argc != 3) {
+   if (argc != 2 && argc != 3) {
       sprintf(ligne, "Usage: %s %s ?linkno?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
+   } else  if (argc == 2 ) {
+      // je retourne le numero du link
+      sprintf(ligne,"%d",cam->longueposelinkno);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
    } else {
       // je memorise le numero du link
       if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkno)!=TCL_OK) {
@@ -687,7 +691,7 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
 
 /**
  * cmdCamLonguePoseLinkbit
- * Change the bit number 
+ * Changes or returns the bit number 
 */
 int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
@@ -697,10 +701,14 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    struct camprop *cam;
    cam = (struct camprop *) clientData;
 
-   if (argc != 3) {
+   if (argc != 2 && argc != 3) {
       sprintf(ligne, "Usage: %s %s ?numbit", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
+   } else  if (argc == 2 ) {
+      // je retourne le numero du bit
+      sprintf(ligne,"%d",cam->longueposelinkbit);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
    } else {
       // je memorise le numero du bit
       if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkbit)!=TCL_OK) {
