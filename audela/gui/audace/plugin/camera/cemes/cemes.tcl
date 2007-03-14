@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.1 2007-03-12 22:29:53 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.2 2007-03-14 21:57:54 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -146,10 +146,10 @@ proc ::cemes::fillConfigPage { frm } {
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
-  ### bind $frm.labURL <ButtonPress-1> {
-  ###    set filename "$caption(cemes,site_web_ref)"
-  ###    ::audace::Lance_Site_htm $filename
-  ### }
+   bind $frm.labURL <ButtonPress-1> {
+      set filename "$caption(cemes,site_web_ref)"
+      ::audace::Lance_Site_htm $filename
+   }
    bind $frm.labURL <Enter> {
       global frmm
       set frm $frmm(Camera13)
@@ -263,7 +263,7 @@ proc ::cemes::getLongExposure { } {
 #    Retourne le mode video de la camera (1 : oui , 0 : non)
 #
 proc ::cemes::hasVideo { } {
-   return 2
+   return 0
 }
 
 #
