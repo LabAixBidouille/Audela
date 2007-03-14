@@ -467,7 +467,7 @@ void audine_fast_vidage_inv(struct camprop *cam)
 #if defined(READSLOW)
     decaligne = 4;
 #else
-    decaligne = 32;
+    decaligne = 20;
     if (cam->index_cam == 2) {
 	decaligne = 128;
     }
