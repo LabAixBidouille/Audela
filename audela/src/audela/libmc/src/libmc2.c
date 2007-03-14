@@ -1262,7 +1262,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /*   MOONELONG : distance angulaire a la Lune								       */
 /*   PHASE : Phase de l'astre.												          */
 /*   APPDIAM : diametre apparent en degres.									       */
-/*   AZIMUTH : azinuth en degres (utiliser l'option -toto)                  */
+/*   AZIMUTH : azinuth en degres (utiliser l'option -topo)                  */
 /*   ALTITUDE : hauteur sur l'horizon (utiliser l'option -topo)             */
 /*   HA : Angle horaire en degres (utiliser l'option -topo)                 */
 /*   APPDIAMEQU : diametre apparent equatorial (degres).                    */
@@ -2228,7 +2228,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
                elem.e=1e-7*atof(ss);
                strcpy(ss,s+34); ss[41-34+1]='\0';
                elem.w=atof(ss)*(DR);
-               strcpy(ss,s+43); ss[43-50+1]='\0';
+               strcpy(ss,s+43); ss[50-43+1]='\0';
                elem.m0=atof(ss)*(DR);
                strcpy(ss,s+52); ss[62-52+1]='\0';
                n=atof(ss);
@@ -2239,6 +2239,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
                }
             } else {
                k=(int)strlen(s);
+			   if (k>79) {k=79;s[k]='\0';}
                strcpy(elem.designation,s);
                if (k>0) {
                   elem.designation[k-1]='\0';
@@ -2298,21 +2299,11 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
    struct elemorb elem;
    double jj,jj0,a,n=0.0,k_gauss;
    double longmpc,rhocosphip,rhosinphip;
-   /*
-   double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
-   double long1_sun=0.,lati_sun=0.;
-   double asd,dec,delta,mag,diamapp,elong,phase,rr;
-   */
    FILE *ftle;
+
    double xageo,yageo,zageo,xtgeo,ytgeo,ztgeo,xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo;
 
    if(argc<4) {
-      /*
-      set date 2003-09-23T20:30:00.00 ; set res [mc_tle2ephem [mc_date2tt $date] d:/geostat/gps24/geo.tle {gps 6.92389 e 43.75222 1270} "TELECOM 2D"]
-      set texte ""
-      foreach ligne $res { set res2 [mc_radec2altaz [lindex $ligne 1] [lindex $ligne 2] {gps 6.92389 e 43.75222 1270} $date] ; set gis [expr [lindex $res2 0]+180.] ; if {$gis>360} {set gis [expr $gis-360.]} ; append texte "[lindex $ligne 0] [lindex $ligne 1] [lindex $ligne 2] $gis [lindex $res2 1]\n" }
-      set f [open d:/geostat/sat.txt w] ; puts -nonewline $f $texte ; close $f
-      */
       sprintf(s,"Usage: %s Date file_tle Home ?satname?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
@@ -2345,8 +2336,9 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
       1 24209U 96044B   03262.91033065 -.00000065  00000-0  00000+0 0  8956
       2 24209   0.0626 123.5457 0004535  56.5151 138.1659  1.00273036 26182
       */
-	   result=TCL_OK;
-	   Tcl_DStringInit(&dsptr);
+	  result=TCL_OK;
+	  Tcl_DStringInit(&dsptr);
+      strcpy(elem.designation,"");
       while (feof(ftle)==0) {
          fgets(s,255,ftle);
          valid=0;
@@ -2361,6 +2353,7 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
                mctcl_decode_date(interp,sss,&jj0);
                strcpy(ss,s+20); ss[12]='\0';
                jj0+=(atof(ss)-1.);
+			   valid=0;
             } else if (s[0]=='2') {
                strcpy(ss,s+8); ss[15-8+1]='\0';
                elem.i=atof(ss)*(DR);
@@ -2370,7 +2363,7 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
                elem.e=1e-7*atof(ss);
                strcpy(ss,s+34); ss[41-34+1]='\0';
                elem.w=atof(ss)*(DR);
-               strcpy(ss,s+43); ss[43-50+1]='\0';
+               strcpy(ss,s+43); ss[50-43+1]='\0';
                elem.m0=atof(ss)*(DR);
                strcpy(ss,s+52); ss[62-52+1]='\0';
                n=atof(ss);
@@ -2381,17 +2374,21 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
                }
             } else {
                k=(int)strlen(s);
+			   if (k>79) {k=79;s[k]='\0';}
                strcpy(elem.designation,s);
                if (k>0) {
                   elem.designation[k-1]='\0';
-               }
+               } else {
+                  elem.designation[0]='\0';
+			   }
+			   valid=0;
             }
          }
          if (valid==1) {
+            elem.type=4;
             elem.jj_m0=jj0;
             elem.jj_equinoxe=jj0;
             elem.jj_epoque=jj0;
-            elem.type=4;
             elem.h0=0.;
             elem.g=0.;
             elem.n=0.;
@@ -2418,8 +2415,8 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
             elem.q=a*(1-elem.e);
             /* --- on lance le calcul ---*/
             mc_xyzgeoelem(jj,elem,longmpc,rhocosphip,rhosinphip,0,&xageo,&yageo,&zageo,&xtgeo,&ytgeo,&ztgeo,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
-            sprintf(s,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,xageo,yageo,zageo,xtgeo,ytgeo,ztgeo,xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo);
-            Tcl_DStringAppend(&dsptr,s,-1);
+            sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,xageo,yageo,zageo,xtgeo,ytgeo,ztgeo,xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo);
+            Tcl_DStringAppend(&dsptr,sss,-1);
          }
       }
       fclose(ftle);
