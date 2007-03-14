@@ -1759,8 +1759,8 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
  */
 void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, double signalRatio, double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2) {
    int i, j;                          // Index de parcours de l'image
-   TYPE_PIXELS *pixTemp, *p;
-   double *table=NULL;
+   TYPE_PIXELS *p = NULL;
+   double *table = NULL;
    double s1, s2, v, tableOffset, pixelOffset;
    int width, height, naxis1, naxis2, y0;
    double gauss[4], ecart;
@@ -1780,9 +1780,8 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    height = y2-y1+1;
    y0     = height/2;
 
-   pixTemp = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
-   pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
-   p = pixTemp;
+   p = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
+   pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) p);
    *maxi=0;
 
    
@@ -1904,6 +1903,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    *yc += y1;
    *signal1 = s1;
    *signal2 = s2;
+   if (p!=NULL) free(p);
    if (table!=NULL) free(table);
 
 }
