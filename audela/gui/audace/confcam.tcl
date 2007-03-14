@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.59 2007-03-12 22:34:03 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.60 2007-03-14 21:59:00 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -3099,34 +3099,18 @@ namespace eval ::confCam {
       if { $result == 0 } {
          #---
          switch $product {
-            audine {
+            audine  {
                switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                  "parallelport" {
-                     set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
-                  }
-                  "quickaudine" {
-                     set binningList { 1x1 2x2 3x3 4x4 }
-                  }
-                  "audinet" {
-                     set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
-                  }
-                  "ethernaude" {
-                     set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
-                  }
+                  "parallelport" { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
+                  "quickaudine"  { set binningList { 1x1 2x2 3x3 4x4 } }
+                  "audinet"      { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
+                  "ethernaude"   { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
                }
             }
-            webcam {
-               set binningList [ ::webcam::getBinningList ]
-            }
-            dslr {
-               set binningList [ cam$camNo quality list ]
-            }
-            cemes {
-               set binningList [ ::cemes::getBinningList ]
-            }
-            default {
-               set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
-            }
+            webcam  { set binningList [ ::webcam::getBinningList ] }
+            dslr    { set binningList [ cam$camNo quality list ] }
+            cemes   { set binningList [ ::cemes::getBinningList ] }
+            default { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
          }
       } else {
          set binningList { }
@@ -3150,20 +3134,17 @@ namespace eval ::confCam {
       if { $result == 0 } {
          #---
          switch $product {
-            audine {
+            audine  {
                switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "parallelport" { set binningList_Scan { 1x1 2x2 4x4 } }
+                  "quickaudine"  { set binningList_Scan { } }
                   "audinet"      { set binningList_Scan { 1x1 2x2 4x4 } }
                   "ethernaude"   { set binningList_Scan { 1x1 2x2 } }
-                  default        { set binningList_Scan { } }
                }
             }
-            webcam {
-               set binningList_Scan [ ::webcam::getBinningListScan ]
-            }
-            default {
-               set binningList_Scan { }
-            }
+            webcam  { set binningList_Scan [ ::webcam::getBinningListScan ] }
+            cemes   { set binningList_Scan [ ::cemes::getBinningListScan ] }
+            default { set binningList_Scan { } }
          }
       } else {
          set binningList_Scan { }
@@ -3200,7 +3181,10 @@ namespace eval ::confCam {
             if { $cam_item != "" } {
                switch $camProduct {
                   webcam {
-                     set result [::$camProduct\::getLongExposure $cam_item]
+                     set result [ ::$camProduct\::getLongExposure $cam_item ]
+                  }
+                  cemes {
+                     set result [ ::$camProduct\::getLongExposure ]
                   }
                   default {
                      #--- Toutes les cameras sont en longue pose par defaut
@@ -3268,6 +3252,7 @@ namespace eval ::confCam {
       if { $result == 0 } {
          switch $camProduct {
             webcam  { return [ ::webcam::hasLongExposure ] }
+            cemes   { return [ ::cemes::hasLongExposure ] }
             default { return 0 }
          }
       } else {
@@ -3297,6 +3282,7 @@ namespace eval ::confCam {
                }
             }
             webcam  { return [ ::webcam::hasVideo ] }
+            cemes   { return [ ::cemes::hasVideo ] }
             default { return 0 }
          }
       } else {
@@ -3319,20 +3305,17 @@ namespace eval ::confCam {
       #---
       if { $result == 0 } {
          switch -exact -- $camProduct {
-            audine {
+            audine  {
                switch -exact [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "parallelport" { return 1 }
+                  "quickaudine"  { return 0 }
                   "audinet"      { return 1 }
                   "ethernaude"   { return 1 }
-                  default        { return 0 }
                }
             }
-            webcam {
-               return [ ::webcam::hasScan ]
-            }
-            default {
-               return 0
-            }
+            webcam  { return [ ::webcam::hasScan ] }
+            cemes   { return [ ::cemes::hasScan ] }
+            default { return 0 }
          }
       } else {
          return 0
