@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.14 2006-11-21 21:59:28 alainklotz Exp $
+ * $Id: libcam.c,v 1.15 2007-03-14 21:42:23 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -784,7 +784,7 @@ static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int ar
  * AcqRead
  * Commande de lecture du CCD.
  */
-static void AcqRead(ClientData clientData)
+static void AcqRead(ClientData clientData )
 {
    char s[30000];
    unsigned short *p;		/* cameras de 1 a 16 bits non signes */
@@ -997,7 +997,8 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          /* Pour avertir les gens du status de la camera. */
          sprintf(ligne, "status_cam%d", cam->camno);
          Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
-         // 
+         // set current interp for multithread
+         cam->interp = interp;
          cam->exptimeTimer = cam->exptime;
          cam->timerExpiration = (struct TimerExpirationStruct *) calloc(1, sizeof(struct TimerExpirationStruct));
          cam->timerExpiration->clientData = clientData;
