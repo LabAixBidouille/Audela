@@ -873,22 +873,30 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                
             } else {
                //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
-               //--- save FITS file
+               //--- save FITS file               
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
-                  // je supprime ".gz" à la fin du fichier parce que libtt ne supporte pas l'extension ".gz" 
-                  // a cause de la deuxième passe paour l'enregistrement des nouveaux mots cles.
-                  sprintf(ligne,"file rootname {%s}",nom_fichier); Tcl_Eval(interp,ligne); strcpy(nom_fichier,interp->result);
+                  // je supprime ".gz" à la fin du fichier si ".gz" est present
+                  // parce que libtt ne supporte pas l'extension ".gz" 
+                  // a cause de la deuxième passe pour l'enregistrement des nouveaux mots cles.
+                  char * strfound = strstr(nom_fichier,".gz");
+                  if ( strfound != NULL && strfound==nom_fichier+strlen(nom_fichier)-3 ) {
+                     nom_fichier[strlen(nom_fichier)-3] = 0;
+                  }
                }
                Buffer->SaveFits(nom_fichier);
                // compression eventuelle du fichier               
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
-                  sprintf(ligne,"catch {file delete %s.gz}",nom_fichier); Tcl_Eval(interp,ligne);
-                  sprintf(ligne,"gzip %s",nom_fichier); 
+                  sprintf(ligne,"catch {file delete {%s.gz} }",nom_fichier); Tcl_Eval(interp,ligne);
+                  sprintf(ligne,"gzip {%s}",nom_fichier); 
                   Tcl_Eval(interp,ligne);
                   if( Tcl_Eval(interp,ligne) != TCL_OK  ) {
                      throw CError("gzip %s",interp->result);
-                  }     
-
+                  } else { 
+                     // je verifie que gzip retourn "1"
+                     if(strcmp(interp->result,"0")!=0) {
+                        throw CError("gzip %s returns %s : Intermediate file not found ",nom_fichier,interp->result);
+                     }
+                  }
                }
                
                retour = TCL_OK;
