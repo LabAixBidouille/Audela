@@ -1,6 +1,6 @@
 #
 # Fichier : cemes.cap
-# Mise a jour $Id: cemes.cap,v 1.1 2007-03-12 22:30:27 robertdelmas Exp $
+# Mise a jour $Id: cemes.cap,v 1.2 2007-03-14 21:56:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -29,7 +29,7 @@ set caption(cemes,port)                         "CEMES Port"
 set caption(cemes,2points)                      ":"
 
 set caption(cemes,titre_site_web)               "Reference Web Site:"
-set caption(cemes,site_web_ref)                 "To be created"
+set caption(cemes,site_web_ref)                 "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -52,7 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,2points)                   ":"
 
    set caption(cemes,titre_site_web)            "Site Web de référence :"
-   set caption(cemes,site_web_ref)              "A créer"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -75,7 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,2points)                   ":"
 
    set caption(cemes,titre_site_web)            "Sito Web di riferimento:"
-   set caption(cemes,site_web_ref)              "Crea"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -98,7 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,2points)                   ":"
 
    set caption(cemes,titre_site_web)            "Sitio Web de referencia:"
-   set caption(cemes,site_web_ref)              "A crear"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,2points)                   ":"
 
    set caption(cemes,titre_site_web)            "Referenz Webseite:"
-   set caption(cemes,site_web_ref)              "Zu schaffen"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -144,7 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,2points)                   ":"
 
    set caption(cemes,titre_site_web)            "Site Web de referência:"
-   set caption(cemes,site_web_ref)              "A criar"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -167,7 +167,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,2points)                   ":"
 
    set caption(cemes,titre_site_web)            "Reference Web Site:"
-   set caption(cemes,site_web_ref)              "To be created"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 }
 
