@@ -470,12 +470,6 @@ int Tk_AppInit(Tcl_Interp *interp)
       return TCL_ERROR;
    }
 
-#ifdef TCL_THREADS
-    if (TclThread_Init(interp) == TCL_ERROR) {
-        return TCL_ERROR;
-    }
-#endif
-   
    if(Tk_Init(interp)!=TCL_OK) {
       LOG("Tk initialization failed.\n");
       return TCL_ERROR;
@@ -538,12 +532,6 @@ int Tcl_AppInit(Tcl_Interp *interp)
    Tcl_CreateExitHandler(AppInitExitHandler, interp);
 #endif   
    
-#ifdef TCL_THREADS
-    if (TclThread_Init(interp) == TCL_ERROR) {
-        return TCL_ERROR;
-    }
-#endif
-
    load_library(interp,"libak");      // Misc. from Alain Klotz
    load_library(interp,"libaudela");  // Acquisition, and preprocssing
    load_library(interp,"libgsltcl");  // Gnu Scientific Library extension for Tcl
