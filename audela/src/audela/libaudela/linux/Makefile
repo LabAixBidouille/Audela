@@ -1,5 +1,5 @@
 
-OUTPUT   = libaudela.so ../../include/cpool.h
+OUTPUT   = libaudela.so 
 
 SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  \
@@ -11,13 +11,28 @@ SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/file_tcl.cpp
 
 OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
-A_LIBS = $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 
 include ../../../Makefile1
 
 CXXFLAGS += -I$(EXTINC)
+LDFLAGS += -L$(OUTPUTDIR) -ldcraw -ldcjpeg 
 
-../../include/cpool.h: ../src/cpool.h 
+# Link 
+# Remarque : ajout de l'option "-rpath ."
+# L'option -rpath permet d'eviter l'utilisation deconseillee de la variable 
+# LB_LIBRARY_PATH au runtime.
+# L'option -rpath indique les repertoires dans lesquesl les librairies
+# dynamiques libdcraw.so et libdcjpeg.so seront recherchees en priorite au runtime.
+# L'option -rpath ne peut pas etre passee directement en parametre sur la ligne de 
+# commande de gcc. Elle doit etre enregistree dans un fichier qui est passe en 
+# parametre a gcc avec l'option -specs
+
+$(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
+	@echo "*lib:" > libaudela.specs
+	@echo "    -rpath ." >> libaudela.specs
+	$(LD) $(LDFLAGS) -specs libaudela.specs -o $@ $? 
+	$(CP) $@ $(OUTPUTDIR)
+	@$(RM) libaudela.specs
 	mkdir -p  ../../include
 	cp -f ../src/cpool.h   ../../include
 	cp -f ../src/cdevice.h  ../../include
@@ -27,6 +42,7 @@ CXXFLAGS += -I$(EXTINC)
 	cp -f ../src/cbuffer.h  ../../include
 	cp -f ../src/cpixels.h  ../../include
 	cp -f ../src/fitskw.h   ../../include
+
 	
 
 
