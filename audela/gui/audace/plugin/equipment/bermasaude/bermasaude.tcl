@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.11 2007-02-03 18:17:13 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.12 2007-03-16 23:08:24 robertdelmas Exp $
 #
 
 package provide bermasaude 1.0
@@ -323,12 +323,6 @@ namespace eval bermasaude {
       variable widget
       global audace bermasaude caption conf ttybermasaude
 
-      #--- Affichage d'un message d'alerte si necessaire
-     ### ::confEqt::Connect_Equipement
-
-      #--- Inhibe les menus
-      ::audace::menustate disabled
-
       #--- Ferme le port comx de communication de la roue a filtres BerMasAude
       catch {
          ::bermasaude::bermasaude_delete $ttybermasaude
@@ -373,9 +367,6 @@ namespace eval bermasaude {
       if [ winfo exists $audace(base).connectEquipement ] {
          destroy $audace(base).connectEquipement
       }
-
-      #--- Restaure les menus
-      ::audace::menustate normal
    }
 
    #------------------------------------------------------------
