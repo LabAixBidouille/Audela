@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.8 2007-02-10 17:45:33 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.9 2007-03-16 23:48:41 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -257,7 +257,7 @@ namespace eval eventAude_GPS {
       global confCam
 
       #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-      set camNo $confCam($confCam(cam_item),camNo)
+      set camNo $confCam($confCam(currentCamItem),camNo)
       set statusVariableName "::status_cam$camNo"
       if { [set $statusVariableName] != "exp" } {
          set confCam(coord_GPS_Observateur) [ cam$camNo gps ]

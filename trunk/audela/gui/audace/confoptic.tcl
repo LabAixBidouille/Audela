@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.13 2007-01-27 15:11:43 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.14 2007-03-16 23:48:05 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -32,8 +32,8 @@ namespace eval ::confOptic {
 
       set This "$audace(base).confOptic"
       createDialog $visuNo
-      if { $conf(camera,$confCam(cam_item),camName) != "" } {
-         select $conf(camera,$confCam(cam_item),camName)
+      if { $conf(camera,$confCam(currentCamItem),camName) != "" } {
+         select $conf(camera,$confCam(currentCamItem),camName)
       } else {
          select A
       }
@@ -917,7 +917,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette A $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(cam_item) A ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(currentCamItem) A ; tkwait window $audace(base).confCam"
       bind [ Rnotebook:button $nn 1 ] <Button-1> "::confOptic::MAJ_Conf_Camera A $::confOptic::widget(frm)"
    }
 
@@ -1130,7 +1130,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette B $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(cam_item) B ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(currentCamItem) B ; tkwait window $audace(base).confCam"
       bind [ Rnotebook:button $nn 2 ] <Button-1> "::confOptic::MAJ_Conf_Camera B $::confOptic::widget(frm)"
    }
 
@@ -1343,7 +1343,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette C $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(cam_item) C ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(currentCamItem) C ; tkwait window $audace(base).confCam"
       bind [ Rnotebook:button $nn 3 ] <Button-1> "::confOptic::MAJ_Conf_Camera C $::confOptic::widget(frm)"
    }
 
