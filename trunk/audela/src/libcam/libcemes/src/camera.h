@@ -108,6 +108,8 @@ unsigned int SetDECALAGE(unsigned int n, unsigned int val);
 unsigned int SetConfCalcul(short ConfCalcul);
 void equilibrer(unsigned int stat_dina);
 
+unsigned int ResetADLINK();
+
 
 void cemes_updatelog(struct camprop *cam, char *filename, char *comment);
 

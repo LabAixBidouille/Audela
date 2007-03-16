@@ -1,4 +1,3 @@
-
 //DUVIDAS:
 //phiL,phiL2,phiS -> Alain Klotz
 //CTRL
@@ -56,7 +55,7 @@
 
 #include <libcam/util.h>
 #include "camera.h"
-unsigned int mean1, mean2, mean3, mean4;
+unsigned int mean1, mean2, mean3, mean4, mean5, mean6, mean7, mean8;
 
 
 /*
@@ -162,6 +161,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	mean2=0;
 	mean3=0;
 	mean4=0;
+	mean5=0;
+	mean6=0;
+	mean7=0;
+	mean8=0;
 
 	cam->status=0;
 
@@ -185,13 +188,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     	return 2;
 	}
 
+	control->Initialise(1);
+	
 	return 0;
 }
 
 int cam_close(struct camprop * cam)
 {
-	Stop(0);   
-	SetBasseTension(0);  
+	unsigned int error;
+
+	error=Stop(0);   
+	if (error==1) {
+	    sprintf(cam->msg,"Stop returns %d",error);
+  	    cam->status=4;
+    	return 3;
+	}
+
 	AlimsStop();		
 	ControleurStop();
 
@@ -201,21 +213,23 @@ int cam_close(struct camprop * cam)
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
 	//BINNING (pour HR mode)
-	//0: binning=1
-	//1: binning=2
-	//2: binning=4
-	//3: binning=8
+	//0: binning=1x1
+	//1: binning=2x2
+	//2: binning=4x4
+	//3: binning=8x8
 
 	//VITESSE:
-	//1: HV3 -> binning=2
-	//2: HV2 -> binning=4
-	//3: HV1 -> binning=8
-	//Default-> binning=2
+	//1: HV3 -> binning=2x2
+	//2: HV2 -> binning=4x4
+	//3: HV1 -> binning=8x8
+	//Default-> binning=2x2
 
 	double expos;		//temps de pose
 	unsigned int error,erreur,binning;
 	unsigned int obtu=0;
 	unsigned int automan=0;
+	
+	cam->status=0;
 	
 	if (cam->binx==1)		
 		binning=0;			
@@ -226,42 +240,45 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	if (cam->binx==8)		
 		binning=3;			
 
+	//set binning mode
 	error=SetModeBinning(cam->HV, binning, cam->vitesse, cam->debug); 
 	if (error==1) {
 	    sprintf(cam->msg,"SetModeBinning returns %d",error);
-  	    cam->status=1;
+  	    cam->status=5;
     	return ;
 	}
+	
 	cam_update_window(cam);
 	
 	error=SetModeTension(cam->HV, binning);
 	if (error==1) {
 		sprintf(cam->msg,"SetModeTension returns %d",error);
-  		cam->status=2;
+  		cam->status=6;
     	return ;
 	}
 
+	//set exposure time
 	erreur=SetTempsExposition(cam->exptime, &error);
 	if (error==1 || erreur==1) {
 	    sprintf(cam->msg,"SetTempsExposition returns %d",error);
-  	    cam->status=3;
+  	    cam->status=7;
     	return ;
 	}
 
 	erreur=GetTempsExposition(&expos, &error);		//Pour verifier le SetTempsExposition
 	if (error==1 || erreur==1) {
 	    sprintf(cam->msg,"GetTempsExposition returns %d",error);
-  	    cam->status=4;
+  	    cam->status=8;
     	return ;
 	}
 
 	error=SetArea((16/cam->binx),(16/cam->binx),10000,10000);	 //Regler la taille de l'image
 	if (error==1) {
 	    sprintf(cam->msg,"SetArea returns %d",error);
-  	    cam->status=5;
+  	    cam->status=9;
     	return ;
-	}
-
+	}	
+	
 	if (cam->shutterindex==0) {
 		automan=1;		//obturateur manuel 
 		obtu=0;			//obturateur ferme
@@ -274,11 +291,12 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		obtu=1;			//obturateur ouvert
 	}
 
-	error=SetAmplisObtu(cam->ampliautoman,automan,cam->amplionoff,obtu,cam->obtumode);  //Regler les parameters d'amplificateur et d'obturateur
+	//Regler les parameters d'amplificateur et d'obturateur
 
+	error=SetAmplisObtu(cam->ampliautoman,automan,cam->amplionoff,obtu,cam->obtumode);
 	if (error==1) {
 	    sprintf(cam->msg,"SetAmplisObtu returns %d",error);
-  	    cam->status=6;
+  	    cam->status=10;
     	return ;
 	}
 	control->SetDebugLevel(0);			
@@ -286,21 +304,27 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	error=Stop(1);
 	if (error==1) {
 	    sprintf(cam->msg,"Stop returns %d",error);
-  	    cam->status=7;
+  	    cam->status=11;
     	return ;
 	}
 
 	error=Start();
 	if (error==1) {
 	    sprintf(cam->msg,"Start returns %d",error);
-  	    cam->status=8;
+  	    cam->status=12;
     	return ;
 	}
 }
 
 void cam_stop_exp(struct camprop *cam)
 {
-	Abort(1);//Stop(1)?
+	unsigned int error;
+	
+	error=Abort(0);
+	if (error!=0) {
+	    sprintf(cam->msg,"Abort returns %d",error);
+  	    cam->status=13;
+	}
 }
 
 
@@ -315,39 +339,57 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	int nb_image;				
 	int nbimages=0;
 	unsigned long size = 0;
-	unsigned int taille=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny)*sizeof(unsigned short);	//cam->nb_photox=2048
+	unsigned int taille=((cam->nb_photox)/(cam->binx))*((cam->nb_photoy)/(cam->biny))*sizeof(unsigned short);	//cam->nb_photox=2048
 	sdata=(unsigned short *)malloc(taille);
 	sdata1=(unsigned short *)malloc(taille);
 	unsigned short val;
-	unsigned int somamedia,moyennetotal,moyenne1voie,ecarttype,i,j;
+	//unsigned int somamedia,moyennetotal,moyenne1voie,ecarttype;
+	unsigned int i,j,error;
 	unsigned int somadesvio=0;
 	unsigned long sum=0;
 	unsigned int equilibrer=1;
-
+	unsigned int counter_ms;  ///////
 
 	if (cam->status!=0) {
 		return;
 	}
 
+	counter_ms=0;
 	//Dans ce boucle on attend la fin de la lecture de l'image
-	while(size == 0){				
-		size = control->GetNextImage(sdata,0,&fin_image, &nb_image);  //((unsigned char *)sdata,0,&fin_image, &nb_image);			
+	while((size == 0) && (counter_ms!=(1200+1000*cam->exptime))){ 
+		size = control->GetNextImage(sdata,0,&fin_image, &nb_image);  //((unsigned char *)sdata,0,&fin_image, &nb_image);	
+		Sleep(1);
+		counter_ms++;
 	}
 	size=0;
 	
+	counter_ms=0;
 	//Dans ce boucle on attend la fin de la lecture d'une image de 2048x2048
-	while((size == 0) && (!fin_image)){			
-		size = control->GetNextImage(sdata1,0,&fin_image, &nb_image);	//((unsigned char *)sdata1,0,&fin_image, &nb_image);			
+	if (cam->binx==1)
+	{
+		while(((size == 0) && (!fin_image)) && (counter_ms!=(1000))){			
+			size = control->GetNextImage(sdata1,0,&fin_image, &nb_image);	//((unsigned char *)sdata1,0,&fin_image, &nb_image);
+			Sleep(1);
+			counter_ms++;
+		}
 	}
-	Stop(1);   
+	
+	error=Stop(1);
+	if (error==1) {
+	    sprintf(cam->msg,"Stop returns %d",error);
+  	    cam->status=14;
+    	return ;
+	}
+	
 	size=0;
 
 	tailletotal=(cam->nb_photox/cam->binx)*(cam->nb_photoy/cam->biny);
 
 	//Dans ce boucle on rempli le pointeur *p avec l'image capturée
+
 	for (k=0;k<tailletotal;k++)	
 	{
-		val=sdata[k];
+		val=sdata[k];  //na primeira volta sdata nao tem nada
 		p[k] = val;	
 	}
 
@@ -360,55 +402,52 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 			p[k] = val;	
 		}
 
+		//REGLAGE DES 4 VOIES NON BINNING
 		//FIRST SQUARE
-		for (i=0;i<1024;i++)
+		for (i=256;i<768;i++)
 		{
-			for (j=0;j<1024;j++)	
+			for (j=256;j<768;j++)	
 			{
 				sum=p[2048*i+j]+sum;
 			}
 		}
-		mean1=sum/(tailletotal/4);
-	
+		mean1=sum/(tailletotal/16);
+
 		//SECOND SQUARE
 		sum = 0;
-		for (i=0;i<1024;i++)
+		for (i=256;i<768;i++)
 		{
-			for (j=0;j<1024;j++)	
+			for (j=256;j<768;j++)	
 			{
 				sum=p[2048*i+1024+j]+sum;
 			}
 		}
-		mean2=sum/(tailletotal/4);
+		mean2=sum/(tailletotal/16);
 
 		//THIRD SQUARE
 		sum = 0;
-		for (i=0;i<1024;i++)
+		for (i=256;i<768;i++)
 		{
-			for (j=0;j<1024;j++)	
+			for (j=256;j<768;j++)	
 			{
 				sum=p[2048*i+(tailletotal/2)+j]+sum;
 			}
 		}
-		mean3=sum/(tailletotal/4);
+		mean3=sum/(tailletotal/16);
 
 		//FOURTH SQUARE
 		sum = 0;
-		for (i=0;i<1024;i++)
+		for (i=256;i<768;i++)
 		{
-			for (j=0;j<1024;j++)	
+			for (j=256;j<768;j++)	
 			{
 				sum=p[2048*i+(tailletotal/2)+1024+j]+sum;
 			}
 		}
-		mean4=sum/(tailletotal/4);
-	
-		//NOW WE'VE GOT THE MEANS!
-	}	
+		mean4=sum/(tailletotal/16);		//NOW WE'VE GOT THE MEANS IN NON BINNING MODE!
 
-	if (cam->binx==1)
-	{
-		//Calculer la moyenne des 4 voies  
+/*
+		//Calculer la moyenne des 4 voies 
 		somamedia=0;
 		for (i=0;i<tailletotal;i++)
 		{
@@ -436,6 +475,53 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 		}
 		ecarttype=somadesvio/tailletotal;
 		//ecarttype=sqrt(ecarttype);
+*/
+	}
+	else
+	{		
+		//REGLAGE DES 4 VOIES BINNING
+		//FIRST SQUARE
+		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		{
+			for (j=(256/cam->binx);j<(768/cam->binx);j++)	
+			{
+				sum=p[2048/(cam->binx)*i+j]+sum;
+			}
+		}
+		mean5=sum/(tailletotal/(16/cam->binx));
+
+		//SECOND SQUARE
+		sum = 0;
+		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		{
+			for (j=(256/cam->binx);j<(768/cam->binx);j++)	
+			{
+				sum=p[2048/(cam->binx)*i+(1024/(cam->binx))+j]+sum;
+			}
+		}
+		mean6=sum/(tailletotal/(16/cam->binx));
+
+		//THIRD SQUARE
+		sum = 0;
+		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		{
+			for (j=(256/cam->binx);j<(768/cam->binx);j++)
+			{
+				sum=p[2048/(cam->binx)*i+((tailletotal/2)/cam->binx)+j]+sum;
+			}
+		}
+		mean7=sum/(tailletotal/(16/cam->binx));
+
+		//FOURTH SQUARE
+		sum = 0;
+		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		{
+			for (j=(256/cam->binx);j<(768/cam->binx);j++)
+			{
+				sum=p[(2048/cam->binx)*i+((tailletotal/2)/cam->binx)+(1024/cam->binx)+j]+sum;
+			}
+		}
+		mean8=sum/(tailletotal/(16/cam->binx));		//NOW WE'VE GOT THE MEANS IN BINNING MODE!
 	}
 }
 
@@ -574,45 +660,83 @@ void AlimsStop()
 void equilibrer(unsigned int stat_dina)
 {
 	//EQUILIBRER EN CAS DE BINNING = 1
-	short dif1,dif2,dif3,dif4;
+	double dif1,dif2,dif3,dif4,dif5,dif6,dif7,dif8;
 
 	//MAINTENANT IL FAUT EQUILIBRER L'IMAGE FINALE
-		
+	
 	//equilibrage statique 
 	if (stat_dina==0)
 	{
-		dif1=50-mean1;
-		dif2=50-mean2;
-		dif3=50-mean3;
-		dif4=50-mean4;
-		SetDECALAGE(13,(1959+(dif1/(16*6))));
-		SetDECALAGE(14,(2208+(dif2/(16*6))));
-		SetDECALAGE(15,(1867+(dif3/(16*6))));
-		SetDECALAGE(16,(2235+(dif4/(16*6))));
-		/*	SetDECALAGE(13,((ReadMyDoubleKey(_T("Controleur"), "DEC1", 2000))+(dif1/(16*6))));
-		SetDECALAGE(14,((ReadMyDoubleKey(_T("Controleur"), "DEC2", 2000))+(dif2/(16*6))));
-		SetDECALAGE(15,((ReadMyDoubleKey(_T("Controleur"), "DEC3", 2000))+(dif3/(16*6))));
-		SetDECALAGE(16,((ReadMyDoubleKey(_T("Controleur"), "DEC4", 2000))+(dif4/(16*6))));*/
+		dif1=(mean1-50)*6 + (control->ReadMyDoubleKey2("DEC1", (2000)));
+		dif2=(mean2-50)*6 + (control->ReadMyDoubleKey2("DEC2", (2000)));
+		dif3=(mean3-50)*6 + (control->ReadMyDoubleKey2("DEC3", (2000)));
+		dif4=(mean4-50)*6 + (control->ReadMyDoubleKey2("DEC4", (2000)));
+
+		SetDECALAGE(13,(unsigned int)dif1);
+		SetDECALAGE(14,(unsigned int)dif2);
+		SetDECALAGE(15,(unsigned int)dif3);
+		SetDECALAGE(16,(unsigned int)dif4);
+
 		control->SaveRegistry();
 	}
 
-	//equilibrage dinamique
+	//equilibrage dinamique  (funciona mas demorou bastante a convergir para 150)
 	if (stat_dina==1)
 	{
-		dif1=150-mean1;
-		dif2=150-mean2;
-		dif3=150-mean3;
-		dif4=150-mean4;
-		SetDECALAGE(17,(2859+(dif1/(16*6))));
-		SetDECALAGE(18,(2818+(dif2/(16*6))));
-		SetDECALAGE(19,(2931+(dif3/(16*6))));
-		SetDECALAGE(20,(2557+(dif4/(16*6))));
-		/*SetDECALAGE(17,((ReadMyDoubleKey(_T("Controleur"), "DECD1", 2000))+(dif1/(16*6))));
-		SetDECALAGE(18,((ReadMyDoubleKey(_T("Controleur"), "DECD2", 2000))+(dif2/(16*6))));
-		SetDECALAGE(19,((ReadMyDoubleKey(_T("Controleur"), "DECD3", 2000))+(dif3/(16*6))));
-		SetDECALAGE(20,((ReadMyDoubleKey(_T("Controleur"), "DECD4", 2000))+(dif4/(16*6))));*/
+		dif1=(mean1-150)/16*6 + (control->ReadMyDoubleKey2("DECD1", (2000)));
+		dif2=(mean2-150)/16*6 + (control->ReadMyDoubleKey2("DECD2", (2000)));
+		dif3=(mean3-150)/16*6 + (control->ReadMyDoubleKey2("DECD3", (2000)));
+		dif4=(mean4-150)/16*6 + (control->ReadMyDoubleKey2("DECD4", (2000)));
+
+		SetDECALAGE(17,(unsigned int)dif1);
+		SetDECALAGE(18,(unsigned int)dif2);
+		SetDECALAGE(19,(unsigned int)dif3);
+		SetDECALAGE(20,(unsigned int)dif4);
+
 		control->SaveRegistry();
 	}
+
+	//equilibrage statique avec binning
+	if (stat_dina==2)
+	{
+		dif5=(mean5-50)*6 + (control->ReadMyDoubleKey2("DECB1", (2000)));
+		dif6=(mean6-50)*6 + (control->ReadMyDoubleKey2("DECB2", (2000)));
+		dif7=(mean7-50)*6 + (control->ReadMyDoubleKey2("DECB3", (2000)));
+		dif8=(mean8-50)*6 + (control->ReadMyDoubleKey2("DECB4", (2000)));
+
+		SetDECALAGE(13,dif5);
+		SetDECALAGE(14,dif6);
+		SetDECALAGE(15,dif7);
+		SetDECALAGE(16,dif8);
+
+		control->SaveRegistry();
+	}
+
+	//equilibrage dinamique avec binning 
+	if (stat_dina==3)
+	{
+		dif5=(mean5-150)/16*6 + (control->ReadMyDoubleKey2("DECDB1", (2000)));
+		dif6=(mean6-150)/16*6 + (control->ReadMyDoubleKey2("DECDB2", (2000)));
+		dif7=(mean7-150)/16*6 + (control->ReadMyDoubleKey2("DECDB3", (2000)));
+		dif8=(mean8-150)/16*6 + (control->ReadMyDoubleKey2("DECDB4", (2000)));
+
+		SetDECALAGE(17,dif5);
+		SetDECALAGE(18,dif6);
+		SetDECALAGE(19,dif7);
+		SetDECALAGE(20,dif8);
+
+		control->SaveRegistry();
+	}
+}
+
+unsigned int ResetADLINK()
+{
+	bool ret=control->ResetADLINK();
+
+	unsigned int error;
+	if (ret==true) { error = 0 ; }
+	else { error = 1; }
+	return error;
 }
 
 unsigned int SetConfCalcul(short ConfCalcul)
@@ -851,16 +975,16 @@ unsigned int Abort(int abrt)
 	else { error = 1; }
 	return error;
 }
-
-unsigned int Reset(void)
+/*
+unsigned int ResetADLINK(void)
 {
-	bool ret=control->Reset();
+	bool ret=control->ResetADLINK();
 
 	unsigned int error;
 	if (ret==true) { error = 0 ; }
 	else { error = 1; }
 	return error;
-}
+}*/
 
 
 

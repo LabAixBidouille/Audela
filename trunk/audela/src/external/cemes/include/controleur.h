@@ -56,7 +56,6 @@ public:
 	bool ModeBias(short modebiasvalue);
 
 
-
 private:
 	bool valtohex(long v, short nboctets, char * buf);
 	bool hextoval(char *buf, short nboctets, long *val);
@@ -113,9 +112,14 @@ public:
 	bool GetTargetRegistry(int *TargetStatic, int *TargetDynamic, int *TargetStaticB,int *TargetDynamicB,int *TargetStaticHV,int *TargetDynamicHV);
 	bool SetTempsExposition2(double pose, bool *erreur);
 	bool GetTempsExposition2(double *pose, bool *erreur );
-	bool SetTempsExpositionLimit(double pose, bool *erreur);
+	bool SetTempsExpositionLimit(bool *erreur);
 	bool GetTempsExpositionLimit(double *pose, bool *erreur); 
-
+	//double ReadMyDoubleKey2(CString keyvalue, double defval);
+	double ReadMyDoubleKey2(char keyvalue[100], double defval);
+	/*double ReadMyDoubleKeyDEC1(double defval);
+	double ReadMyDoubleKeyDEC2(double defval);
+	double ReadMyDoubleKeyDEC3(double defval);
+	double ReadMyDoubleKeyDEC4(double defval);*/
 
 };
 
