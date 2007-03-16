@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.58 2007-03-12 20:09:07 alainklotz Exp $
+# Mise a jour $Id: aud.tcl,v 1.59 2007-03-16 22:57:10 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1375,7 +1375,8 @@ proc startdebug { } {
    #comm::register audela 1
 
    catch {
-      load ../bin/tk84.dll
+      #load ../bin/tk84.dll
+      load ../bin/tk84t.dll
    }
    package require RamDebugger
 }
