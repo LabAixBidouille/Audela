@@ -5,7 +5,7 @@
 #               pose, drift-scan et scan rapide, choix des panneaux, messages dans la Console, type de
 #               fenetre, la fenetre A propos de ... et une fenetre de configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.23 2007-03-03 21:55:17 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.24 2007-03-16 16:55:06 robertdelmas Exp $
 #
 
 #
@@ -14,8 +14,6 @@
 #
 
 namespace eval confPosObs {
-   variable This
-   global confgene
 
    #
    # confPosObs::run this
@@ -64,8 +62,8 @@ namespace eval confPosObs {
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
-      global conf
-      global confgene
+      variable This
+      global conf confgene
 
       set confgene(posobs,altitude)                $conf(posobs,altitude)
       set confgene(posobs,estouest)                $conf(posobs,estouest)
@@ -78,8 +76,9 @@ namespace eval confPosObs {
       set confgene(posobs,observateur,mpcstation)  $conf(posobs,observateur,mpcstation)
       set confgene(posobs,ref_geodesique)          $conf(posobs,ref_geodesique)
       set confgene(posobs,station_uai)             $conf(posobs,station_uai)
+      set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
+      set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
 
-      variable This
       destroy $This
    }
 
@@ -100,19 +99,17 @@ namespace eval confPosObs {
 
    proc createDialog { } {
       variable This
-      global audace
-      global conf
-      global caption
-      global color
-      global confgene
+      global audace caption color conf confgene
 
       #--- initConf
-      #--- Initialisation indispensable de 1 variable dans aud.tcl (::audace::Recup_Config)
+      #--- Initialisation indispensable d'une variable dans aud.tcl (::audace::Recup_Config)
       if { ! [ info exists conf(posobs,fichier_station_uai) ] }    { set conf(posobs,fichier_station_uai)    "obscodes.txt" }
       if { ! [ info exists conf(posobs,observateur,mpc) ] }        { set conf(posobs,observateur,mpc)        "" }
       if { ! [ info exists conf(posobs,observateur,mpcstation) ] } { set conf(posobs,observateur,mpcstation) "" }
       if { ! [ info exists conf(posobs,ref_geodesique) ] }         { set conf(posobs,ref_geodesique)         "WGS84" }
       if { ! [ info exists conf(posobs,station_uai) ] }            { set conf(posobs,station_uai)            "" }
+      if { ! [ info exists conf(posobs,nom_observatoire) ] }       { set conf(posobs,nom_observatoire)       "" }
+      if { ! [ info exists conf(posobs,nom_observateur) ] }        { set conf(posobs,nom_observateur)        "" }
 
       #--- confToWidget
       set confgene(posobs,altitude)                $conf(posobs,altitude)
@@ -126,6 +123,8 @@ namespace eval confPosObs {
       set confgene(posobs,observateur,mpcstation)  $conf(posobs,observateur,mpcstation)
       set confgene(posobs,ref_geodesique)          $conf(posobs,ref_geodesique)
       set confgene(posobs,station_uai)             $conf(posobs,station_uai)
+      set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
+      set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
 
       #---
       if { [winfo exists $This] } {
@@ -148,6 +147,12 @@ namespace eval confPosObs {
 
       frame $This.frame2 -borderwidth 1 -relief raised
       pack $This.frame2 -side top -fill x
+
+      frame $This.frame2a -borderwidth 1 -relief raised
+      pack $This.frame2a -in $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame2b -borderwidth 0 -relief raised
+      pack $This.frame2b -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -202,6 +207,20 @@ namespace eval confPosObs {
 
       frame $This.frame20 -borderwidth 0 -relief raised
       pack $This.frame20 -in $This.frame9 -side top -fill both -expand 1
+
+      #--- Nom de l'observateur
+      label $This.lab0a -text "$caption(confgene,nom_observateur)"
+      pack $This.lab0a -in $This.frame2a -anchor w -side left -padx 10 -pady 5
+
+      entry $This.nom_observateur -textvariable confgene(posobs,nom_observateur) -width 35
+      pack $This.nom_observateur -in $This.frame2a -anchor w -side right -padx 10 -pady 5
+
+      #--- Nom de l'observatoire
+      label $This.lab0b -text "$caption(confgene,nom_observatoire)"
+      pack $This.lab0b -in $This.frame2b -anchor w -side left -padx 10 -pady 5
+
+      entry $This.nom_observatoire -textvariable confgene(posobs,nom_observatoire) -width 35
+      pack $This.nom_observatoire -in $This.frame2b -anchor w -side right -padx 10 -pady 5
 
       #--- Longitude observateur
       label $This.lab1 -text "$caption(confgene,position_longitude)"
@@ -359,10 +378,7 @@ namespace eval confPosObs {
    }
 
    proc MaJ { } {
-      global audace
-      global color
-      global caption
-      global confgene
+      global audace caption color confgene
 
       if [winfo exists $audace(base).maj] {
          destroy $audace(base).maj
@@ -408,8 +424,7 @@ namespace eval confPosObs {
    }
 
    proc Erreur { } {
-      global audace
-      global caption
+      global audace caption
 
       if [winfo exists $audace(base).erreur] {
          destroy $audace(base).erreur
@@ -443,9 +458,7 @@ namespace eval confPosObs {
    #
    proc Position { } {
       variable This
-      global conf
-      global caption
-      global confgene
+      global caption conf confgene
 
       #--- Localisation de l'observateur
       set estouest $confgene(posobs,estouest)
@@ -497,11 +510,7 @@ namespace eval confPosObs {
    #
    proc MPC { } {
       variable This
-      global audace
-      global conf
-      global caption
-      global confgene
-      global color
+      global audace caption color conf confgene
 
       #--- Effacement de la fenetre d'alerte
       bind $This.station_uai <Enter> { destroy $audace(base).erreur }
@@ -589,8 +598,7 @@ namespace eval confPosObs {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global confgene
-      global conf
+      global conf confgene
 
       set conf(posobs,altitude)               $confgene(posobs,altitude)
       set conf(posobs,estouest)               $confgene(posobs,estouest)
@@ -602,7 +610,9 @@ namespace eval confPosObs {
       set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
       set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
       set conf(posobs,ref_geodesique)         $confgene(posobs,ref_geodesique)
-      set conf(posobs,station_uai)                  $confgene(posobs,station_uai)
+      set conf(posobs,station_uai)            $confgene(posobs,station_uai)
+      set conf(posobs,nom_observatoire)       $confgene(posobs,nom_observatoire)
+      set conf(posobs,nom_observateur)        $confgene(posobs,nom_observateur)
    }
 }
 
@@ -612,8 +622,6 @@ namespace eval confPosObs {
 #
 
 namespace eval confTemps {
-   variable This
-   global confgene
 
    #
    # confTemps::run this
@@ -664,9 +672,7 @@ namespace eval confTemps {
    #
    proc fermer { } {
       variable This
-      global caption
-      global conf
-      global confgene
+      global caption conf confgene
 
       set confgene(temps,fushoraire) $conf(temps,fushoraire)
       set confgene(temps,hhiverete)  [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
@@ -691,10 +697,7 @@ namespace eval confTemps {
 
    proc createDialog { } {
       variable This
-      global audace
-      global conf
-      global caption
-      global confgene
+      global audace caption conf confgene
 
       #--- initConf
       #--- Initialisation indispensable de toutes les variables du temps dans aud.tcl (::audace::Recup_Config)
@@ -849,9 +852,7 @@ namespace eval confTemps {
    #
    proc Temps_TU_TSL { } {
       variable This
-      global conf
-      global caption
-      global confgene
+      global caption conf confgene
 
       #--- Systeme d'heure utilise
       if { $confgene(temps,hsysteme) == "$caption(confgene,temps_heurelegale)" } {
@@ -906,10 +907,7 @@ namespace eval confTemps {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      variable This
-      global caption
-      global conf
-      global confgene
+      global caption conf confgene
 
       set conf(temps,fushoraire) $confgene(temps,fushoraire)
       set conf(temps,hhiverete)  [ lsearch "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$confgene(temps,hhiverete)" ]
@@ -923,8 +921,6 @@ namespace eval confTemps {
 #
 
 namespace eval confFichierIma {
-   variable This
-   global confgene
 
    #
    # confFichierIma::run this
@@ -955,9 +951,7 @@ namespace eval confFichierIma {
    #
    proc appliquer { } {
       variable This
-      global audace
-      global conf
-      global confgene
+      global audace conf confgene
 
       #---
       catch {
@@ -1043,11 +1037,7 @@ namespace eval confFichierIma {
 
    proc createDialog { } {
       variable This
-      global audace
-      global conf
-      global caption
-      global confgene
-      global color
+      global audace caption color conf confgene
 
       #--- confToWidget
       set confgene(fichier,save_seuils_visu) $conf(save_seuils_visu)
@@ -1210,8 +1200,7 @@ namespace eval confFichierIma {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global conf
-      global confgene
+      global conf confgene
 
       set conf(save_seuils_visu)     $confgene(fichier,save_seuils_visu)
       set conf(format_fichier_image) $confgene(fichier,format)
@@ -1267,8 +1256,6 @@ namespace eval confFichierIma {
 #
 
 namespace eval confAlarmeFinPose {
-   variable This
-   global confgene
 
    #
    # confAlarmeFinPose::run this
@@ -1298,9 +1285,7 @@ namespace eval confAlarmeFinPose {
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc appliquer { } {
-      variable This
-      global conf
-      global confgene
+      global conf confgene
 
       if { $confgene(alarme,active) == "0" } {
          set conf(acq,bell) "-1"
@@ -1333,9 +1318,7 @@ namespace eval confAlarmeFinPose {
 
    proc createDialog { } {
       variable This
-      global conf
-      global caption
-      global confgene
+      global caption conf confgene
 
       #--- initConf
       if { ! [ info exists conf(acq,bell) ] }      { set conf(acq,bell)      "2" }
@@ -1425,11 +1408,10 @@ namespace eval confAlarmeFinPose {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global conf
-      global confgene
+      global conf confgene
 
-      set conf(acq,bell)       $confgene(alarme,delai)
-      set conf(alarme,active)  $confgene(alarme,active)
+      set conf(acq,bell)      $confgene(alarme,delai)
+      set conf(alarme,active) $confgene(alarme,active)
    }
 }
 
@@ -1439,8 +1421,6 @@ namespace eval confAlarmeFinPose {
 #
 
 namespace eval confTempoScan {
-   variable This
-   global confgene
 
    #
    # confTempoScan::run this
@@ -1496,9 +1476,7 @@ namespace eval confTempoScan {
 
    proc createDialog { } {
       variable This
-      global conf
-      global caption
-      global confgene
+      global caption conf confgene
 
       #--- initConf
       if { ! [ info exists conf(tempo_scan,delai) ] }  { set conf(tempo_scan,delai)  "3" }
@@ -1599,8 +1577,7 @@ namespace eval confTempoScan {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global conf
-      global confgene
+      global conf confgene
 
       set conf(tempo_scan,delai)  $confgene(tempo_scan,delai)
       set conf(tempo_scan,active) $confgene(tempo_scan,active)
@@ -1613,8 +1590,6 @@ namespace eval confTempoScan {
 #
 
 namespace eval confChoixOutil {
-   variable This
-   global confgene
 
    #
    # confChoixOutil::run this
@@ -1644,8 +1619,7 @@ namespace eval confChoixOutil {
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc appliquer { } {
-      global audace
-      global caption
+      global audace caption
 
       widgetToConf
       #--- Je supprime toutes les entrees du menu Outil
@@ -1685,11 +1659,7 @@ namespace eval confChoixOutil {
 
    proc createDialog { } {
       variable This
-      global conf
-      global caption
-      global panneau
-      global color
-      global confgene
+      global caption color conf confgene panneau
 
       #--- initConf
       #--- Initialisation indispensable dans aud.tcl --> ::audace::affiche_Outil
@@ -1858,8 +1828,7 @@ namespace eval confChoixOutil {
    #
    proc widgetToConf { } {
       variable This
-      global conf
-      global confgene
+      global conf confgene
 
       for { set i 1 } { $i <= $confgene(Choix_Outil,nbre) } { incr i } {
          catch {
@@ -1880,8 +1849,6 @@ namespace eval confChoixOutil {
 #
 
 namespace eval confMessages_Console {
-   variable This
-   global confgene
 
    #
    # confMessages_Console::run this
@@ -1937,10 +1904,7 @@ namespace eval confMessages_Console {
 
    proc createDialog { } {
       variable This
-      global conf
-      global caption
-      global panneau
-      global confgene
+      global caption conf confgene panneau
 
       #--- initConf
       if { ! [ info exists conf(messages_console_acqfc) ] }   { set conf(messages_console_acqfc)   "1" }
@@ -2082,8 +2046,7 @@ namespace eval confMessages_Console {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global conf
-      global confgene
+      global conf confgene
 
       set conf(messages_console_acqfc)   $confgene(Messages_Console,acqfc)
       set conf(messages_console_pretrfc) $confgene(Messages_Console,pretrfc)
@@ -2096,8 +2059,6 @@ namespace eval confMessages_Console {
 #
 
 namespace eval confTypeFenetre {
-   variable This
-   global confgene
 
    #
    # confTypeFenetre::run this
@@ -2177,9 +2138,7 @@ namespace eval confTypeFenetre {
 
    proc createDialog { } {
       variable This
-      global conf
-      global caption
-      global confgene
+      global caption conf confgene
 
       #--- Initialisation indispensable de la variable du type de fenetre dans aud.tcl (::audace::Recup_Config)
       #--- initConf
@@ -2292,8 +2251,7 @@ namespace eval confTypeFenetre {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global conf
-      global confgene
+      global conf confgene
 
       set conf(ok+appliquer) $confgene(TypeFenetre,ok+appliquer)
    }
@@ -2306,7 +2264,6 @@ namespace eval confTypeFenetre {
 #
 
 namespace eval confGeneral {
-   variable This
 
    #
    # confGeneral::run this
@@ -2344,9 +2301,7 @@ namespace eval confGeneral {
 
    proc createDialog { } {
       variable This
-      global audace
-      global conf
-      global caption
+      global audace caption conf
 
       if { [winfo exists $This] } {
          wm withdraw $This
@@ -2483,7 +2438,6 @@ namespace eval confGeneral {
 #
 
 namespace eval confVersion {
-   variable This
 
    #
    # confVersion::run this
@@ -2510,11 +2464,7 @@ namespace eval confVersion {
 
    proc createDialog { } {
       variable This
-      global audace
-      global audela
-      global conf
-      global caption
-      global color
+      global audace audela caption color conf
 
       if { [winfo exists $This] } {
          wm withdraw $This
