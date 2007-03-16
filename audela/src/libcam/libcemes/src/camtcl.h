@@ -27,10 +27,12 @@
    {"parameter",        (Tcl_CmdProc *)cmdCemesParam}, \
    {"stat_dina",     (Tcl_CmdProc *)cmdStatique_dinamique}, \
    {"balance",     (Tcl_CmdProc *)cmdBalance}, \
+   {"setwin",     (Tcl_CmdProc *)cmdSetwindow}, \
    {"peltON",     (Tcl_CmdProc *)cmdPeltierMarche}, \
    {"peltOFF",     (Tcl_CmdProc *)cmdPeltierArret}, \
    {"settemp",     (Tcl_CmdProc *)cmdCemesSetTemp}, \
    {"gettemp",     (Tcl_CmdProc *)cmdCemesGetTemp}, \
+   {"reset",     (Tcl_CmdProc *)cmdRESET}, \
    {"ampliobtu",     (Tcl_CmdProc *)cmdCemesObtu},    
 
 /* === Specific commands for that camera === */
@@ -45,7 +47,9 @@ int cmdCemesObtu(ClientData clientData, Tcl_Interp * interp, int argc, char *arg
 int cmdCemesGetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdStatique_dinamique(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdBalance(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdSetwindow(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCemesSetTemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdRESET(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

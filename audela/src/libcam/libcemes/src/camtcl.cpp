@@ -245,7 +245,7 @@ int cmdCemesParam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 			result = TCL_ERROR;
 			return result;
 		}
-		cam->sizeX=atoi(argv[4]);
+		cam->nb_photox=atoi(argv[4]);
 
 		//TAILLEY (0-2048)
 		if ((atoi(argv[5])<0) || (atoi(argv[5])>2048))
@@ -255,7 +255,7 @@ int cmdCemesParam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 			result = TCL_ERROR;
 			return result;
 		}
-		cam->sizeY=atoi(argv[5]);
+		cam->nb_photoy=atoi(argv[5]);
 
 		//DEBUG (1-ON/0-OFF)
 		if ((atoi(argv[6])!=0) && (atoi(argv[6])!=1))
@@ -268,7 +268,7 @@ int cmdCemesParam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		cam->debug=atoi(argv[6]);
 	}
 	
-	sprintf(ligne, "The following parameters have been selected: \n\n\t\tHV=%d\n\t\tVitesse=%d\n\t\tTaillex=%d\n\t\tTailley=%d\n\t\tDebug=%d\n", cam->HV, cam->vitesse, cam->sizeX, cam->sizeY, cam->debug);
+	sprintf(ligne, "The following parameters have been selected: \n\n\t\tHV=%d\n\t\tVitesse=%d\n\t\tTaillex=%d\n\t\tTailley=%d\n\t\tDebug=%d\n", cam->HV, cam->vitesse, cam->nb_photox, cam->nb_photoy, cam->debug);
 	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 
 	return result;
@@ -370,7 +370,7 @@ int cmdStatique_dinamique(ClientData clientData, Tcl_Interp * interp, int argc, 
 		else 
 		{
 			//dinamique
-			SetConfCalcul(7);
+			SetConfCalcul(5);
 		}
 	}
 
@@ -384,7 +384,7 @@ int cmdBalance(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[
 	
 	if (argc!=3)
 	{
-		sprintf(ligne, "Usage: %s %s 0=static/1=dynamic\n", argv[0], argv[1]);
+		sprintf(ligne, "Usage: %s %s 0=static (non binning)/1=dynamic (non binning)/2=static (binning)/3=dynamic (binning)\n", argv[0], argv[1]);
 		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 		result = TCL_ERROR;
 		return result;
@@ -396,14 +396,92 @@ int cmdBalance(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[
 			//statique
 			equilibrer(0);
 		}
-		else 
+		if (atoi(argv[2])==1) 
 		{
 			//dinamique
 			equilibrer(1);
+		}
+		if (atoi(argv[2])==2) 
+		{
+			//statique avec binning
+			equilibrer(2);
+		}
+		if (atoi(argv[2])==3) 
+		{
+			//dinamique avec binning
+			equilibrer(3);
 		}
 	}
 
 	return result;
 }
 
+int cmdSetwindow(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	/*char ligne[256];
+	
+	if (argc!=4)
+	{
+		sprintf(ligne, "Usage: %s %s (1) (2)\n\n\t\t(1)->X size (0-2048)\n\t\t(2)->Y size (0-2048)", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		result = TCL_ERROR;
+		return result;
+	}
+	else
+	{
+		SetArea((16/cam->binx),(16/cam->biny),10000,10000);
+	}
+*/
+	return result;
+}
 
+int cmdRESET(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	char ligne[256];
+	
+	if (argc!=2)
+	{
+		sprintf(ligne, "Usage: %s %s 0=static/1=dynamic\n", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		result = TCL_ERROR;
+		return result;
+	}
+	else
+	{
+		ResetADLINK();
+	}
+
+	return result;
+}
+
+/*
+int cmdBALANCEAUTO(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+	int result=TCL_OK;
+	char ligne[256];
+	struct camprop *cam;
+    cam = (struct camprop *) clientData;
+	
+	char *exemplo;
+	*exemplo=1;
+
+
+	if (argc!=2)
+	{
+		sprintf(ligne, "Usage: %s %s 0=static/1=dynamic\n", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		result = TCL_ERROR;
+		return result;
+	}
+	else
+	{
+		SetConfCalcul(2);
+		cam_start_exp(cam,exemplo);
+		equilibrer(0);
+	}
+
+	return result;
+}
+*/
