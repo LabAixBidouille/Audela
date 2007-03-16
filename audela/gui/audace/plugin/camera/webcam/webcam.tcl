@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.3 2007-03-11 19:17:08 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.4 2007-03-16 22:13:04 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -10,7 +10,7 @@ namespace eval ::webcam {
 
 #
 # ::webcam::init
-#    Initialise les variables conf(webcam,$cam_item,...) et les captions
+#    Initialise les variables conf(webcam,$camItem,...) et les captions
 #
 proc ::webcam::init { } {
    global audace conf
@@ -19,18 +19,18 @@ proc ::webcam::init { } {
    source [ file join $audace(rep_plugin) camera webcam webcam.cap ]
 
    #--- Initialise les variables de la webcams A
-   foreach cam_item { A B C } {
-      if { ! [ info exists conf(webcam,$cam_item,longuepose) ] }           { set conf(webcam,$cam_item,longuepose)           "0" }
-      if { ! [ info exists conf(webcam,$cam_item,longueposeport) ] }       { set conf(webcam,$cam_item,longueposeport)       "LPT1:" }
-      if { ! [ info exists conf(webcam,$cam_item,longueposelinkbit) ] }    { set conf(webcam,$cam_item,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(webcam,$cam_item,longueposestartvalue) ] } { set conf(webcam,$cam_item,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,$cam_item,longueposestopvalue) ] }  { set conf(webcam,$cam_item,longueposestopvalue)  "1" }
-      if { ! [ info exists conf(webcam,$cam_item,mirh) ] }                 { set conf(webcam,$cam_item,mirh)                 "0" }
-      if { ! [ info exists conf(webcam,$cam_item,mirv) ] }                 { set conf(webcam,$cam_item,mirv)                 "0" }
-      if { ! [ info exists conf(webcam,$cam_item,channel) ] }              { set conf(webcam,$cam_item,channel)              "0" }
-      if { ! [ info exists conf(webcam,$cam_item,ccd_N_B) ] }              { set conf(webcam,$cam_item,ccd_N_B)              "0" }
-      if { ! [ info exists conf(webcam,$cam_item,dim_ccd_N_B) ] }          { set conf(webcam,$cam_item,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,$cam_item,ccd) ] }                  { set conf(webcam,$cam_item,ccd)                  "" }
+   foreach camItem { A B C } {
+      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }           { set conf(webcam,$camItem,longuepose)           "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }       { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
+      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }    { set conf(webcam,$camItem,longueposelinkbit)    "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] } { set conf(webcam,$camItem,longueposestartvalue) "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposestopvalue) ] }  { set conf(webcam,$camItem,longueposestopvalue)  "1" }
+      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                 { set conf(webcam,$camItem,mirv)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,channel) ] }              { set conf(webcam,$camItem,channel)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }              { set conf(webcam,$camItem,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }          { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
+      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                  { set conf(webcam,$camItem,ccd)                  "" }
    }
 }
 
@@ -42,19 +42,19 @@ proc ::webcam::confToWidget { } {
    variable private
    global conf
 
-   #--- Recupere la configuration de la WebCam dans le tableau private($cam_item,...)
-   foreach cam_item { A B C } {
-      set private($cam_item,longuepose)           $conf(webcam,$cam_item,longuepose)
-      set private($cam_item,longueposeport)       $conf(webcam,$cam_item,longueposeport)
-      set private($cam_item,longueposelinkbit)    $conf(webcam,$cam_item,longueposelinkbit)
-      set private($cam_item,longueposestartvalue) $conf(webcam,$cam_item,longueposestartvalue)
-      set private($cam_item,longueposestopvalue)  $conf(webcam,$cam_item,longueposestopvalue)
-      set private($cam_item,mirh)                 $conf(webcam,$cam_item,mirh)
-      set private($cam_item,mirv)                 $conf(webcam,$cam_item,mirv)
-      set private($cam_item,channel)              $conf(webcam,$cam_item,channel)
-      set private($cam_item,ccd_N_B)              $conf(webcam,$cam_item,ccd_N_B)
-      set private($cam_item,dim_ccd_N_B)          $conf(webcam,$cam_item,dim_ccd_N_B)
-      set private($cam_item,ccd)                  $conf(webcam,$cam_item,ccd)
+   #--- Recupere la configuration de la WebCam dans le tableau private($camItem,...)
+   foreach camItem { A B C } {
+      set private($camItem,longuepose)           $conf(webcam,$camItem,longuepose)
+      set private($camItem,longueposeport)       $conf(webcam,$camItem,longueposeport)
+      set private($camItem,longueposelinkbit)    $conf(webcam,$camItem,longueposelinkbit)
+      set private($camItem,longueposestartvalue) $conf(webcam,$camItem,longueposestartvalue)
+      set private($camItem,longueposestopvalue)  $conf(webcam,$camItem,longueposestopvalue)
+      set private($camItem,mirh)                 $conf(webcam,$camItem,mirh)
+      set private($camItem,mirv)                 $conf(webcam,$camItem,mirv)
+      set private($camItem,channel)              $conf(webcam,$camItem,channel)
+      set private($camItem,ccd_N_B)              $conf(webcam,$camItem,ccd_N_B)
+      set private($camItem,dim_ccd_N_B)          $conf(webcam,$camItem,dim_ccd_N_B)
+      set private($camItem,ccd)                  $conf(webcam,$camItem,ccd)
    }
 }
 
@@ -62,29 +62,29 @@ proc ::webcam::confToWidget { } {
 # ::webcam::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::webcam::widgetToConf { cam_item } {
+proc ::webcam::widgetToConf { camItem } {
    variable private
    global conf
 
-   #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$cam_item,...)
-   set conf(webcam,$cam_item,longuepose)           $private($cam_item,longuepose)
-   set conf(webcam,$cam_item,longueposeport)       $private($cam_item,longueposeport)
-   set conf(webcam,$cam_item,longueposelinkbit)    $private($cam_item,longueposelinkbit)
-   set conf(webcam,$cam_item,longueposestartvalue) $private($cam_item,longueposestartvalue)
-   set conf(webcam,$cam_item,longueposestopvalue)  $private($cam_item,longueposestopvalue)
-   set conf(webcam,$cam_item,mirh)                 $private($cam_item,mirh)
-   set conf(webcam,$cam_item,mirv)                 $private($cam_item,mirv)
-   set conf(webcam,$cam_item,channel)              $private($cam_item,channel)
-   set conf(webcam,$cam_item,ccd_N_B)              $private($cam_item,ccd_N_B)
-   set conf(webcam,$cam_item,dim_ccd_N_B)          $private($cam_item,dim_ccd_N_B)
-   set conf(webcam,$cam_item,ccd)                  $private($cam_item,ccd)
+   #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$camItem,...)
+   set conf(webcam,$camItem,longuepose)           $private($camItem,longuepose)
+   set conf(webcam,$camItem,longueposeport)       $private($camItem,longueposeport)
+   set conf(webcam,$camItem,longueposelinkbit)    $private($camItem,longueposelinkbit)
+   set conf(webcam,$camItem,longueposestartvalue) $private($camItem,longueposestartvalue)
+   set conf(webcam,$camItem,longueposestopvalue)  $private($camItem,longueposestopvalue)
+   set conf(webcam,$camItem,mirh)                 $private($camItem,mirh)
+   set conf(webcam,$camItem,mirv)                 $private($camItem,mirv)
+   set conf(webcam,$camItem,channel)              $private($camItem,channel)
+   set conf(webcam,$camItem,ccd_N_B)              $private($camItem,ccd_N_B)
+   set conf(webcam,$camItem,dim_ccd_N_B)          $private($camItem,dim_ccd_N_B)
+   set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
 }
 
 #
 # ::webcam::fillConfigPage
 #    Interface de configuration de la WebCam
 #
-proc ::webcam::fillConfigPage { frm cam_item } {
+proc ::webcam::fillConfigPage { frm camItem } {
    variable private
    global audace caption color confCam
 
@@ -155,18 +155,18 @@ proc ::webcam::fillConfigPage { frm cam_item } {
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::webcam::private($cam_item,channel) \
+      -textvariable ::webcam::private($camItem,channel) \
       -editable 0       \
       -values $list_combobox
    pack $frm.port -in $frm.frame7 -anchor center -side left -padx 10
 
    #--- Miroir en x et en y
    checkbutton $frm.mirx -text "$caption(webcam,miroir_x)" -highlightthickness 0 \
-      -variable ::webcam::private($cam_item,mirh)
+      -variable ::webcam::private($camItem,mirh)
    pack $frm.mirx -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
 
    checkbutton $frm.miry -text "$caption(webcam,miroir_y)" -highlightthickness 0 \
-      -variable ::webcam::private($cam_item,mirv)
+      -variable ::webcam::private($camItem,mirv)
    pack $frm.miry -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
 
    #--- Boutons de configuration de la source et du format video
@@ -176,8 +176,8 @@ proc ::webcam::fillConfigPage { frm cam_item } {
    pack $frm.format_webcam -in $frm.frame5 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
    #--- Option longue pose avec lien au site web de Steve Chambers
-   checkbutton $frm.longuepose -highlightthickness 0 -variable ::webcam::private($cam_item,longuepose) \
-      -command "::webcam::checkConfigLonguePose $cam_item"
+   checkbutton $frm.longuepose -highlightthickness 0 -variable ::webcam::private($camItem,longuepose) \
+      -command "::webcam::checkConfigLonguePose $camItem"
    pack $frm.longuepose -in $frm.frame9 -anchor center -side left -pady 3
 
    label $frm.labURL_a -text "$caption(webcam,longuepose)" -font $audace(font,url) -fg $color(blue)
@@ -193,16 +193,16 @@ proc ::webcam::fillConfigPage { frm cam_item } {
    if { [ llength $list_combobox ] > 0 } {
       #--- Si la liste n'est pas vide,
       #--- Je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $list_combobox $private($cam_item,longueposeport) ] == -1 } {
+      if { [ lsearch -exact $list_combobox $private($camItem,longueposeport) ] == -1 } {
          #--- Si la valeur par defaut n'existe pas dans la liste,
          #--- Je la remplace par le premier item de la liste
-         set private($cam_item,longueposeport) [ lindex $list_combobox 0 ]
+         set private($camItem,longueposeport) [ lindex $list_combobox 0 ]
       }
    } else {
       #--- Si la liste est vide
       #--- Je desactive l'option longue pose
-      set private($cam_item,longueposeport) ""
-      set private($cam_item,longuepose) 0
+      set private($camItem,longueposeport) ""
+      set private($camItem,longuepose) 0
       #--- J'empeche de selectionner l'option longue
       $frm.longuepose configure -state disable
    }
@@ -214,15 +214,15 @@ proc ::webcam::fillConfigPage { frm cam_item } {
       -relief sunken    \
       -borderwidth 1    \
       -editable 0       \
-      -textvariable ::webcam::private($cam_item,longueposeport) \
+      -textvariable ::webcam::private($camItem,longueposeport) \
       -values $list_combobox \
-      -modifycmd "::webcam::configureLinkLonguePose $cam_item"
+      -modifycmd "::webcam::configureLinkLonguePose $camItem"
    pack $frm.lpport -in $frm.frame10 -anchor center -side right -padx 10 -pady 5
 
    #--- Bouton de configuration des liaisons
    button $frm.configure -text "$caption(webcam,configurer)" -relief raised \
-      -command "::webcam::configureLinkLonguePose $cam_item ; \
-         ::confLink::run ::webcam::private($cam_item,longueposeport) \
+      -command "::webcam::configureLinkLonguePose $camItem ; \
+         ::confLink::run ::webcam::private($camItem,longueposeport) \
          { parallelport quickremote } \"- $caption(webcam,longuepose1) - $caption(webcam,camera)\""
    pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
@@ -235,7 +235,7 @@ proc ::webcam::fillConfigPage { frm cam_item } {
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::webcam::private($cam_item,longueposelinkbit) \
+      -textvariable ::webcam::private($camItem,longueposelinkbit) \
       -editable 0       \
       -values $list_combobox
    pack $frm.longueposelinkbit -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
@@ -243,12 +243,12 @@ proc ::webcam::fillConfigPage { frm cam_item } {
    label $frm.lab4 -text "$caption(webcam,longueposestart)"
    pack $frm.lab4 -in $frm.frame12 -anchor center -side left -padx 3 -pady 5
 
-   entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($cam_item,longueposestartvalue) -justify center
+   entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
    pack $frm.longueposestartvalue -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
 
    #--- WebCam modifiee avec un capteur Noir et Blanc
    checkbutton $frm.ccd_N_B -text "$caption(webcam,ccd_N_B)" -highlightthickness 0 \
-      -variable ::webcam::private($cam_item,ccd_N_B) -command "::webcam::checkConfigCCDN&B $cam_item"
+      -variable ::webcam::private($camItem,ccd_N_B) -command "::webcam::checkConfigCCDN&B $camItem"
    pack $frm.ccd_N_B -in $frm.frame13 -anchor center -side left -pady 3 -pady 8
 
    set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
@@ -258,13 +258,13 @@ proc ::webcam::fillConfigPage { frm cam_item } {
       -relief sunken    \
       -borderwidth 1    \
       -editable 0       \
-      -textvariable ::webcam::private($cam_item,dim_ccd_N_B) \
-      -modifycmd "::webcam::checkConfigCCDN&B $cam_item" \
+      -textvariable ::webcam::private($camItem,dim_ccd_N_B) \
+      -modifycmd "::webcam::checkConfigCCDN&B $camItem" \
       -values $list_combobox
    pack $frm.dim_ccd_N_B -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
 
    #--- Gestion des widgets actifs/inactifs
-   ::webcam::ConfigWebCam $cam_item
+   ::webcam::ConfigWebCam $camItem
 
    #--- Site web officiel des WebCam
    label $frm.lab103 -text "$caption(webcam,titre_site_web)"
@@ -308,66 +308,78 @@ proc ::webcam::fillConfigPage { frm cam_item } {
 
 #
 # ::webcam::configureCamera
-#    Configure la WebCam en fonction des donnees contenues dans les variables conf(webcam,$cam_item,...)
+#    Configure la WebCam en fonction des donnees contenues dans les variables conf(webcam,$camItem,...)
 #
-proc ::webcam::configureCamera { cam_item } {
+proc ::webcam::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create webcam USB -channel $conf(webcam,$cam_item,channel) \
-      -lpport $conf(webcam,$cam_item,longueposeport) -name WEBCAM -ccd $conf(webcam,$cam_item,ccd) ]
+   set camNo [ cam::create webcam USB -channel $conf(webcam,$camItem,channel) \
+      -lpport $conf(webcam,$camItem,longueposeport) -name WEBCAM -ccd $conf(webcam,$camItem,ccd) ]
    console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
-      $caption(webcam,2points) $conf(webcam,$cam_item,channel)\n"
+      $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
    console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
-      $conf(webcam,$cam_item,longuepose)\n"
+      $conf(webcam,$camItem,longuepose)\n"
    console::affiche_saut "\n"
-   set confCam($cam_item,camNo) $camNo
-   cam$camNo buf [ visu$confCam($cam_item,visuNo) buf ]
-   cam$camNo mirrorh $conf(webcam,$cam_item,mirh)
-   cam$camNo mirrorv $conf(webcam,$cam_item,mirv)
+   set confCam($camItem,camNo) $camNo
+   #--- j'associe le buffer de la visu
+   set bufNo [visu$confCam($camItem,visuNo) buf]
+   cam$camNo buf $bufNo
+   #--- je conficure l'oriention des mirroir par defaut
+   cam$camNo mirrorh $conf(webcam,$camItem,mirh)
+   cam$camNo mirrorv $conf(webcam,$camItem,mirv)
+   #--- je cree la thread dediee a la camera
+   set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
+
    #--- Parametrage des longues poses
-   if { $conf(webcam,$cam_item,longuepose) == "1" } {
-      switch [ ::confLink::getLinkNamespace $conf(webcam,$cam_item,longueposeport) ] {
+   if { $conf(webcam,$camItem,longuepose) == "1" } {
+      switch [ ::confLink::getLinkNamespace $conf(webcam,$camItem,longueposeport) ] {
          parallelport {
             #--- Je cree la liaison longue pose
-            set linkNo [ ::confLink::create $conf(webcam,$cam_item,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$cam_item,longueposelinkbit)" ]
+            set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
             #---
             cam$camNo longuepose 1
             cam$camNo longueposelinkno $linkNo
-            cam$camNo longueposelinkbit $conf(webcam,$cam_item,longueposelinkbit)
-            cam$camNo longueposestartvalue $conf(webcam,$cam_item,longueposestartvalue)
-            cam$camNo longueposestopvalue $conf(webcam,$cam_item,longueposestopvalue)
+            cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
+            cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
+            cam$camNo longueposestopvalue $conf(webcam,$camItem,longueposestopvalue)
          }
          quickremote {
             #--- Je cree la liaison longue pose
-            set linkNo [ ::confLink::create $conf(webcam,$cam_item,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$cam_item,longueposelinkbit)" ]
+            set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
             #---
             cam$camNo longuepose 1
             cam$camNo longueposelinkno $linkNo
-            cam$camNo longueposelinkbit $conf(webcam,$cam_item,longueposelinkbit)
-            cam$camNo longueposestartvalue $conf(webcam,$cam_item,longueposestartvalue)
-            cam$camNo longueposestopvalue $conf(webcam,$cam_item,longueposestopvalue)
+            cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
+            cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
+            cam$camNo longueposestopvalue $conf(webcam,$camItem,longueposestopvalue)
          }
       }
+
+      #--- j'ajoute la commande de liaison longue pose dans la thread de la camera
+      if { $confCam($camItem,threadNo) != 0 &&  [cam$camNo longueposelinkno] != 0} {
+         thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
+      }
+
    } else {
       #--- Pas de liaison longue pose
       cam$camNo longuepose 0
    }
    #---
-   ::confVisu::visuDynamix $confCam($cam_item,visuNo) 255 -255
+   ::confVisu::visuDynamix $confCam($camItem,visuNo) 255 -255
 }
 
 #
 # ::webcam::stop
 #    Arrete la WebCam
 #
-proc ::webcam::stop { camNo cam_item } {
+proc ::webcam::stop { camNo camItem } {
    global conf
 
    #--- Gestion des widgets actifs/inactifs
-   ::webcam::ConfigWebCam $cam_item
+   ::webcam::ConfigWebCam $camItem
    #--- Je ferme la liaison longuepose
-   if { $conf(webcam,$cam_item,longuepose) == 1 } {
-      ::confLink::delete $conf(webcam,$cam_item,longueposeport) "cam$camNo" "longuepose"
+   if { $conf(webcam,$camItem,longuepose) == 1 } {
+      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose"
    }
 }
 
@@ -375,28 +387,25 @@ proc ::webcam::stop { camNo cam_item } {
 # ::webcam::ConfigWebCam
 #    Configure les widgets de configuration de la WebCam
 #
-proc ::webcam::ConfigWebCam { cam_item } {
+proc ::webcam::ConfigWebCam { camItem } {
    global audace conf confCam frmm
 
    if { [ winfo exists $audace(base).confCam ] } {
       set frm $frmm(Camera7)
-      if { [ ::confCam::getProduct $confCam($cam_item,camNo) ] == "webcam" } {
+      if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "webcam" } {
          #--- Boutons de configuration de la WebCam actif
-         $frm.conf_webcam configure -state normal -command "cam$confCam($cam_item,camNo) videosource"
-         $frm.format_webcam configure -state normal -command "cam$confCam($cam_item,camNo) videoformat"
+         $frm.conf_webcam configure -state normal -command "cam$confCam($camItem,camNo) videosource"
+         $frm.format_webcam configure -state normal -command "cam$confCam($camItem,camNo) videoformat"
          #--- Configure les widgets associes a la longue pose
-         ::webcam::checkConfigLonguePose $cam_item
+         ::webcam::checkConfigLonguePose $camItem
          #--- Configure les widgets associes au choix du CCD
-         ::webcam::checkConfigCCDN&B $cam_item
+         ::webcam::checkConfigCCDN&B $camItem
       } else {
          #--- Boutons de configuration de la WebCam inactif
          $frm.conf_webcam configure -state disabled
          $frm.format_webcam configure -state disabled
          #--- Configure les widgets associes a la longue pose
-         $frm.lpport configure -state disabled
-         $frm.configure configure -state disabled
-         $frm.longueposelinkbit configure -state disabled
-         $frm.longueposestartvalue configure -state disabled
+         ::webcam::checkConfigLonguePose $camItem
          #--- Configure les widgets associes au choix du CCD
          pack forget $frm.frame14
       }
@@ -407,13 +416,13 @@ proc ::webcam::ConfigWebCam { cam_item } {
 # ::webcam::checkConfigLonguePose
 #    Configure les widgets de configuration de la longue pose
 #
-proc ::webcam::checkConfigLonguePose { cam_item } {
+proc ::webcam::checkConfigLonguePose { camItem } {
    variable private
    global audace frmm
 
    if { [ winfo exists $audace(base).confCam ] } {
       set frm $frmm(Camera7)
-      if { $private($cam_item,longuepose) == "1" } {
+      if { $private($camItem,longuepose) == "1" } {
          #--- Widgets de configuration de la longue pose actifs
          $frm.lpport configure -state normal
          $frm.configure configure -state normal
@@ -433,23 +442,23 @@ proc ::webcam::checkConfigLonguePose { cam_item } {
 # ::webcam::checkConfigCCDN&B
 #    Configure les widgets de configuration du choix du CCD
 #
-proc ::webcam::checkConfigCCDN&B { cam_item } {
+proc ::webcam::checkConfigCCDN&B { camItem } {
    variable private
    global audace confCam frmm
 
    if { [ winfo exists $audace(base).confCam ] } {
       set frm $frmm(Camera7)
-      if { $::webcam::private($cam_item,ccd_N_B) == "1" } {
-         if { $::webcam::private($cam_item,dim_ccd_N_B) == "1/4''" } {
-            set ::webcam::private($cam_item,ccd) "ICX098BL-6"
-         } elseif { $::webcam::private($cam_item,dim_ccd_N_B) == "1/3''" } {
-            set ::webcam::private($cam_item,ccd) "ICX424AL-6"
-         } elseif { $::webcam::private($cam_item,dim_ccd_N_B) == "1/2''" } {
-            set ::webcam::private($cam_item,ccd) "ICX414AL-6"
+      if { $::webcam::private($camItem,ccd_N_B) == "1" } {
+         if { $::webcam::private($camItem,dim_ccd_N_B) == "1/4''" } {
+            set ::webcam::private($camItem,ccd) "ICX098BL-6"
+         } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/3''" } {
+            set ::webcam::private($camItem,ccd) "ICX424AL-6"
+         } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/2''" } {
+            set ::webcam::private($camItem,ccd) "ICX414AL-6"
          }
          pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
       } else {
-         set ::webcam::private($cam_item,ccd) "ICX098BQ-A"
+         set ::webcam::private($camItem,ccd) "ICX098BQ-A"
          pack forget $frm.frame14
       }
    }
@@ -459,16 +468,16 @@ proc ::webcam::checkConfigCCDN&B { cam_item } {
 # ::webcam::configureLinkLonguePose
 #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la longue pose
 #
-proc ::webcam::configureLinkLonguePose { cam_item } {
+proc ::webcam::configureLinkLonguePose { camItem } {
    variable private
 
    #--- Je positionne startvalue par defaut en fonction du type de liaison
-   if { [ ::confLink::getLinkNamespace $private($cam_item,longueposeport) ] == "parallelport" } {
-      set private($cam_item,longueposestartvalue) "0"
-      set private($cam_item,longueposestopvalue)  "1"
-   } elseif { [ ::confLink::getLinkNamespace $private($cam_item,longueposeport) ] == "quickremote" } {
-      set private($cam_item,longueposestartvalue) "1"
-      set private($cam_item,longueposestopvalue)  "0"
+   if { [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] == "parallelport" } {
+      set private($camItem,longueposestartvalue) "0"
+      set private($camItem,longueposestopvalue)  "1"
+   } elseif { [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] == "quickremote" } {
+      set private($camItem,longueposestartvalue) "1"
+      set private($camItem,longueposestopvalue)  "0"
    }
 }
 
@@ -503,8 +512,8 @@ proc ::webcam::hasLongExposure { } {
 #    Retourne 1 si le mode longue pose est activé
 #    Sinon retourne 0
 #
-proc ::webcam::getLongExposure { cam_item } {
-   return $::conf(webcam,$cam_item,longuepose)
+proc ::webcam::getLongExposure { camItem } {
+   return $::conf(webcam,$camItem,longuepose)
 }
 
 #
