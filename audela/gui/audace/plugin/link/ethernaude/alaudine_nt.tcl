@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.10 2007-02-10 17:40:21 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.11 2007-03-16 23:48:27 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -286,7 +286,7 @@ namespace eval AlAudine_NT {
    proc ReglageTemp { temp_ccd_souhaite } {
       global confCam
 
-      set camNo $confCam($confCam(cam_item),camNo)
+      set camNo $confCam($confCam(currentCamItem),camNo)
       cam$camNo cooler check $temp_ccd_souhaite
    }
 
@@ -302,13 +302,13 @@ namespace eval AlAudine_NT {
 
       catch {
          #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-         set camNo $confCam($confCam(cam_item),camNo)
+         set camNo $confCam($confCam(currentCamItem),camNo)
          set statusVariableName "::status_cam$camNo"
          if { [set $statusVariableName] == "exp" } {
             #--- Si on lit une image de la camera, il ne faut pas lire la temperature
             set confCam(alaudine_nt,aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
          } else {
-            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam($confCam(cam_item),camNo) temperature ] } ] == "0" } {
+            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$confCam($confCam(currentCamItem),camNo) temperature ] } ] == "0" } {
                set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
                $This.lab7 configure \
                   -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
