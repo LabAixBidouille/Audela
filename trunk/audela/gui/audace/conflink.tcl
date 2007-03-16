@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.14 2007-02-24 13:32:20 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.15 2007-03-16 22:59:44 michelpujol Exp $
 #
 
 namespace eval ::confLink {
@@ -631,7 +631,15 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
       set private(variableLinkLabel) $variableLinkLabel
    }
 
-   if { [createDialog $authorizedNamespaces $configurationTitle ]==0 } {
+   #--- je liste les packages qui sont presents parmi ceux qui sont autorises
+   set authorizedPresentNamespaces [list ]
+   foreach  name $authorizedNamespaces  {
+       if { [lsearch $private(namespacelist) $name ] != -1 } {
+         lappend authorizedPresentNamespaces $name
+       }
+   }
+
+   if { [createDialog $authorizedPresentNamespaces $configurationTitle ]==0 } {
       set linkNamespace [getLinkNamespace $private(linkLabel) ]
       if { $linkNamespace != "" } {
          #--- je selectionne l'onglet correspondant au linkNamespace
