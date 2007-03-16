@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.25 2007-02-24 13:32:43 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.26 2007-03-16 23:03:46 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2249,9 +2249,6 @@ namespace eval ::confTel {
       #--- Affichage d'un message d'alerte si necessaire
       ::confTel::Connect_Telescope
 
-      #--- Inhibe les menus
-      ::audace::menustate disabled
-
       #--- Efface la fenetre de controle de la vitesse de King si elle existe
       if { [ winfo exists $audace(base).confAudecomKing ] && ( $conf(telescope) != "audecom" ) } {
          set espion 1
@@ -2635,9 +2632,6 @@ namespace eval ::confTel {
       if [ winfo exists $audace(base).connectTelescope ] {
          destroy $audace(base).connectTelescope
       }
-
-      #--- Restaure les menus
-      ::audace::menustate normal
    }
 
    #
