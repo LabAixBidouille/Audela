@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.60 2007-03-14 21:59:00 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.61 2007-03-16 22:46:45 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -38,7 +38,19 @@ namespace eval ::confCam {
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.tcl ]\""
 
-      #--- Initialise les variables de chaque camera
+      #--- Je charge le package Thread  si l'option multitread est activive dans le TCL
+      if { [info exists ::tcl_platform(threaded)] } {
+         if { $::tcl_platform(threaded)==1 } {
+            package require Thread
+            thread::errorproc ::confCam::dispThreadError
+            set audace(updateMutex) [thread::mutex create]
+         }
+      } else {
+         set ::tcl_platform(threaded) 0
+         set audace(updateMutex) ""
+      }
+
+      #--- Intialise les variables de chaque camera
 
       #--- initConf 1
       if { ! [ info exists conf(audine,ampli_ccd) ] } { set conf(audine,ampli_ccd) "1" }
@@ -138,7 +150,7 @@ namespace eval ::confCam {
       ::cemes::init
 
       #--- item par defaut
-      set confCam(cam_item)   "A"
+      set confCam(currentCamItem)   "A"
 
       #--- Initialisation des variables d'echange avec les widgets
       set confCam(A,visuName) "visu1"
@@ -154,12 +166,20 @@ namespace eval ::confCam {
       set confCam(B,camName)  ""
       set confCam(C,camName)  ""
       set confCam(position)   $conf(camera,position)
+      set confCam(A,threadNo)  "0"
+      set confCam(B,threadNo)  "0"
+      set confCam(C,threadNo)  "0"
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
             TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI Cemes ]
       set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
             th7852a scr1300xtc dslr andor fingerlakes cemes ]
+
+   }
+
+   proc dispThreadError { thread_id errorInfo} {
+   ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
 
    }
 
@@ -176,22 +196,22 @@ namespace eval ::confCam {
 
       set This "$audace(base).confCam"
       createDialog
-      set cam_item $confCam(cam_item)
-      if { $confCam($cam_item,camName) != "" } {
-         select $cam_item $confCam($cam_item,camName)
-         if { [ string compare $confCam($cam_item,camName) sbig ] == "0" } {
+      set camItem $confCam(currentCamItem)
+      if { $confCam($camItem,camName) != "" } {
+         select $camItem $confCam($camItem,camName)
+         if { [ string compare $confCam($camItem,camName) sbig ] == "0" } {
             ::confCam::SbigDispTemp
-         } elseif { [ string compare $confCam($cam_item,camName) kitty ] == "0" } {
+         } elseif { [ string compare $confCam($camItem,camName) kitty ] == "0" } {
             ::confCam::KittyDispTemp
-         } elseif { [ string compare $confCam($cam_item,camName) andor ] == "0" } {
+         } elseif { [ string compare $confCam($camItem,camName) andor ] == "0" } {
             ::confCam::AndorDispTemp
-         } elseif { [ string compare $confCam($cam_item,camName) fingerlakes ] == "0" } {
+         } elseif { [ string compare $confCam($camItem,camName) fingerlakes ] == "0" } {
             ::confCam::FLIDispTemp
-         } elseif { [ string compare $confCam($cam_item,camName) cemes ] == "0" } {
+         } elseif { [ string compare $confCam($camItem,camName) cemes ] == "0" } {
             ::cemes::CemesDispTemp
          }
       } else {
-         select $cam_item audine
+         select $camItem audine
       }
       catch { tkwait visibility $This }
    }
@@ -258,10 +278,10 @@ namespace eval ::confCam {
       $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled
       #--- J'arrete la camera
-      stopItem $confCam(cam_item)
+      stopItem $confCam(currentCamItem)
       #--- je copie les parametres de la nouvelle camera dans conf()
-      widgetToConf     $confCam(cam_item)
-      configureCamera  $confCam(cam_item)
+      widgetToConf     $confCam(currentCamItem)
+      configureCamera  $confCam(currentCamItem)
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -relief raised -state normal
       $This.cmd.aide configure -state normal
@@ -313,7 +333,7 @@ namespace eval ::confCam {
       global confCam
       global frmm
 
-      set cam_item $confCam(cam_item)
+      set camItem $confCam(currentCamItem)
 
       #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
       if { [ winfo exists $audace(base).testAudine ] } {
@@ -322,7 +342,7 @@ namespace eval ::confCam {
 
       if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera1)
-         if { [ ::confCam::getProduct $confCam($cam_item,camNo) ] == "audine" && \
+         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "audine" && \
             [ ::confLink::getLinkNamespace $confCam(audine,port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera actif
             $frm.test configure -state normal
@@ -342,12 +362,12 @@ namespace eval ::confCam {
       global confCam
       global frmm
 
-      set cam_item $confCam(cam_item)
+      set camItem $confCam(currentCamItem)
 
       if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera6)
          if { [ winfo exists $frm.radio_on ] } {
-            if { [::confCam::getName $confCam($cam_item,camNo)] == "KITTYK2" } {
+            if { [::confCam::getName $confCam($camItem,camNo)] == "KITTYK2" } {
                #--- Boutons de configuration de la Kitty K2 actif
                $frm.radio_on configure -state normal
                $frm.radio_off configure -state normal
@@ -373,7 +393,7 @@ namespace eval ::confCam {
       global confCam
       global frmm
 
-      set cam_item $confCam(cam_item)
+      set camItem $confCam(currentCamItem)
 
       #--- Si la fenetre Telecharger l'image pour la fabrication de la camera est affichee, je la ferme
       if { [ winfo exists $audace(base).telecharge_image ] } {
@@ -383,7 +403,7 @@ namespace eval ::confCam {
       if { [ winfo exists $audace(base).confCam ] } {
          set frm $frmm(Camera10)
          if { [ winfo exists $frm.config_telechargement ] } {
-            if { [::confCam::getProduct $confCam($cam_item,camNo)] == "dslr" } {
+            if { [::confCam::getProduct $confCam($camItem,camNo)] == "dslr" } {
                #--- Bouton de configuration des APN (DSLR)
                $frm.config_telechargement configure -state normal
             } else {
@@ -435,7 +455,7 @@ namespace eval ::confCam {
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
-         select $confCam(cam_item) $confCam($confCam(cam_item),camName)
+         select $confCam(currentCamItem) $confCam($confCam(currentCamItem),camName)
          focus $This
          return
       }
@@ -490,7 +510,7 @@ namespace eval ::confCam {
       #--- Parametres de la camera A
       frame $This.startA -borderwidth 1 -relief raised
          radiobutton $This.startA.item -anchor w -highlightthickness 0 \
-            -text "A :" -value "A" -variable confCam(cam_item) \
+            -text "A :" -value "A" -variable confCam(currentCamItem) \
             -command "::confCam::selectCamItem"
          pack $This.startA.item -side left -padx 3 -pady 3 -fill x
          label $This.startA.camNo -textvariable confCam(A,camNo)
@@ -517,7 +537,7 @@ namespace eval ::confCam {
       #--- Parametres de la camera B
       frame $This.startB -borderwidth 1 -relief raised
          radiobutton $This.startB.item -anchor w -highlightthickness 0 \
-            -text "B :" -value "B" -variable confCam(cam_item) \
+            -text "B :" -value "B" -variable confCam(currentCamItem) \
             -command "::confCam::selectCamItem"
          pack $This.startB.item -side left -padx 3 -pady 3 -fill x
          label $This.startB.camNo -textvariable confCam(B,camNo)
@@ -544,7 +564,7 @@ namespace eval ::confCam {
       #--- Parametres de la camera C
       frame $This.startC -borderwidth 1 -relief raised
          radiobutton $This.startC.item -anchor w -highlightthickness 0 \
-            -text "C :" -value "C" -variable confCam(cam_item) \
+            -text "C :" -value "C" -variable confCam(currentCamItem) \
             -command "::confCam::selectCamItem"
          pack $This.startC.item -side left -padx 3 -pady 3 -fill x
          label $This.startC.camNo -textvariable confCam(C,camNo)
@@ -590,6 +610,31 @@ namespace eval ::confCam {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
+   }
+
+   #
+   # cree une thread dedie à la camera
+   # retourne le numero de la tread est palce dasn la confCam(camItem,threadNo)
+   #
+   proc createThread { camNo bufNo visuNo} {
+      global confCam
+
+      #--- Je cree la thread de la camera , si l'option multithread est activee dans le TCL
+      if { $::tcl_platform(threaded)==1 } {
+         #--- creation d’un nouvelle thread
+         set threadNo [thread::create ]
+         #--- declaration de la variable globale mainThreadNo dans la thread de la camera
+         thread::send $threadNo "set mainThreadNo [thread::id]"
+         #--- je copie la commande de la camera dans la thread de la camera
+         thread::copycommand $threadNo) "cam$camNo"
+         #--- declaration de la variable globale camNo dans la thread de la camera
+         thread::send $threadNo "set camNo $camNo"
+         #--- je copie la commande du buffer dans la thread de la camera
+         thread::copycommand $threadNo) buf$bufNo
+      } else {
+         set threadNo "0"
+      }
+      return $threadNo
    }
 
    #
@@ -1948,19 +1993,19 @@ namespace eval ::confCam {
             #--- Refroidissement On
             radiobutton $frm.radio_on -anchor w -highlightthickness 0 \
                -text "$caption(confcam,refroidissement_on)" -value 1 \
-               -variable confCam(kitty,on_off) -command { cam$confCam($confCam(cam_item),camNo) cooler on }
+               -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler on }
             pack $frm.radio_on -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
             #--- Refroidissement Off
             radiobutton $frm.radio_off -anchor w -highlightthickness 0 \
                -text "$caption(confcam,refroidissement_off)" -value 0 \
-               -variable confCam(kitty,on_off) -command { cam$confCam($confCam(cam_item),camNo) cooler off }
+               -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler off }
             pack $frm.radio_off -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
             #--- Definition de la temperature du capteur CCD
             label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
             pack $frm.temp_ccd -in $frm.frame13 -side left -fill x -padx 10 -pady 0
             #--- Bouton de test du microcontrolleur de la carte d'interface
             button $frm.test -text "$caption(confcam,test)" -relief raised \
-               -command { cam$confCam($confCam(cam_item),camNo) sx28test }
+               -command { cam$confCam($confCam(currentCamItem),camNo) sx28test }
             pack $frm.test -in $frm.frame14 -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
             #--- Gestion des boutons actif/inactif
             ::confCam::ConfKitty
@@ -2057,19 +2102,19 @@ namespace eval ::confCam {
          #--- Refroidissement On
          radiobutton $frm.radio_on -anchor w -highlightthickness 0 \
             -text "$caption(confcam,refroidissement_on)" -value 1 \
-            -variable confCam(kitty,on_off) -command { cam$confCam($confCam(cam_item),camNo) cooler on }
+            -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler on }
          pack $frm.radio_on -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
          #--- Refroidissement Off
          radiobutton $frm.radio_off -anchor w -highlightthickness 0 \
             -text "$caption(confcam,refroidissement_off)" -value 0 \
-            -variable confCam(kitty,on_off) -command { cam$confCam($confCam(cam_item),camNo) cooler off }
+            -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler off }
          pack $frm.radio_off -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
          #--- Definition de la temperature du capteur CCD
          label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
          pack $frm.temp_ccd -in $frm.frame13 -side left -fill x -padx 10 -pady 0
          #--- Bouton de test du microcontrolleur de la carte d'interface
          button $frm.test -text "$caption(confcam,test)" -relief raised \
-            -command { cam$confCam($confCam(cam_item),camNo) sx28test }
+            -command { cam$confCam($confCam(currentCamItem),camNo) sx28test }
          pack $frm.test -in $frm.frame14 -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
       }
 
@@ -2111,7 +2156,7 @@ namespace eval ::confCam {
       set frm $frmm(Camera7)
 
       #--- Construction de l'interface graphique
-      ::webcam::fillConfigPage $frm $confCam(cam_item)
+      ::webcam::fillConfigPage $frm $confCam(currentCamItem)
    }
 
    #
@@ -2567,7 +2612,7 @@ namespace eval ::confCam {
 
       #--- Bouton du choix du telechargement de l'image de l'APN
       button $frm.config_telechargement -text $caption(confcam,dslr_telecharger) -state normal \
-         -command { ::cameraDSLR::setLoadParameters $confCam($confCam(cam_item),visuNo) }
+         -command { ::cameraDSLR::setLoadParameters $confCam($confCam(currentCamItem),visuNo) }
       pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
@@ -2946,7 +2991,7 @@ namespace eval ::confCam {
    # Selectionne un onglet en passant le nom (eventuellement) de
    # la camera decrite dans l'onglet
    #----------------------------------------------------------------------------
-   proc select { cam_item { camName "audine" } } {
+   proc select { camItem { camName "audine" } } {
       variable This
       global frmm
 
@@ -2959,7 +3004,7 @@ namespace eval ::confCam {
          starlight   { Rnotebook:raise $nn 5 }
          kitty       { Rnotebook:raise $nn 6 }
          webcam      {
-            ::webcam::fillConfigPage $frmm(Camera7) $cam_item
+            ::webcam::fillConfigPage $frmm(Camera7) $camItem
             Rnotebook:raise $nn 7
          }
          th7852a     { Rnotebook:raise $nn 8 }
@@ -2968,7 +3013,7 @@ namespace eval ::confCam {
          andor       { Rnotebook:raise $nn 11 }
          fingerlakes { Rnotebook:raise $nn 12 }
          cemes       {
-            ::cemes::fillConfigPage $frmm(Camera13) $cam_item
+            ::cemes::fillConfigPage $frmm(Camera13) $camItem
             Rnotebook:raise $nn 13
          }
       }
@@ -2986,39 +3031,42 @@ namespace eval ::confCam {
       global confCam
 
       #--- je recupere l'item courant
-      set cam_item $confCam(cam_item)
+      set camItem $confCam(currentCamItem)
 
       #--- je recupere le nom de la camera a partir de l'onglet courant
       set index [expr [Rnotebook:currentIndex $This.usr.book ] - 1 ]
 
       #--- je selectionne l'onglet correspondant a la camera de cet item
-      ::confCam::select $cam_item [lindex $confCam(names) $index]
+      ::confCam::select $camItem [lindex $confCam(names) $index]
    }
 
    #----------------------------------------------------------------------------
    # confCam::stopItem
-   # Arrete la camera cam_item
+   # Arrete la camera camItem
    #----------------------------------------------------------------------------
-   proc stopItem { cam_item } {
+   proc stopItem { camItem } {
       global audace
       global caption
       global conf
       global confCam
 
-      set camNo $confCam($cam_item,camNo)
+      set camNo $confCam($camItem,camNo)
       if { $camNo != 0 } {
          #--- Je desassocie la camera de la visu
-         if { $confCam($cam_item,visuNo) != 0 } {
-            ::confVisu::setCamera $confCam($cam_item,visuNo) 0
-            set confCam($cam_item,visuNo) "0"
+         if { $confCam($camItem,visuNo) != 0 } {
+            ::confVisu::setCamera $confCam($camItem,visuNo) 0
+            set confCam($camItem,visuNo) "0"
          }
 
-         #--- Supprime la camera
-         set result [ catch { cam::delete $camNo } erreur ]
-         if { $result == "1" } { console::affiche_erreur "$erreur \n" }
+         #--- Je supprime la thread de la camera si elle existe
+         if { $confCam($camItem,threadNo)!=0 } {
+            #--- Je supprime la thread
+            thread::release $confCam($camItem,threadNo)
+            set confCam($camItem,threadNo)   "0"
+         }
 
          #--- Je ferme les ressources specifiques de la camera
-         switch -exact -- $confCam($cam_item,camName) {
+         switch -exact -- $confCam($camItem,camName) {
             audine {
                #--- Je ferme la liaison d'acquisition de la camera
                ::confLink::delete $conf(audine,port) "cam$camNo" "acquisition"
@@ -3032,7 +3080,7 @@ namespace eval ::confCam {
                ::confCam::ConfKitty
             }
             webcam {
-               ::webcam::stop $camNo $cam_item
+               ::webcam::stop $camNo $camItem
             }
             dslr {
                #--- Si la fenetre Telechargement d'images est affichee, je la ferme
@@ -3052,17 +3100,22 @@ namespace eval ::confCam {
                }
             }
          }
+
+         #--- Supprime la camera
+         set result [ catch { cam::delete $camNo } erreur ]
+         if { $result == "1" } { console::affiche_erreur "$erreur \n" }
       }
 
+
       #--- Raz des parametres de l'item
-      set confCam($cam_item,camNo) "0"
-      if { $cam_item == "A" } {
+      set confCam($camItem,camNo) "0"
+      if { $camItem == "A" } {
          #--- mise a jour de la variable audace pour compatibilite
-         set audace(camNo) $confCam($cam_item,camNo)
+         set audace(camNo) $confCam($camItem,camNo)
       }
-      set confCam($cam_item,camName) ""
+      set confCam($camItem,camName) ""
       #--- Sert a la surveillance du Listener de la configuration optique
-      set confCam($cam_item,super_camNo) $confCam($cam_item,camNo)
+      set confCam($camItem,super_camNo) $confCam($camItem,camNo)
    }
 
    #
@@ -3167,21 +3220,21 @@ namespace eval ::confCam {
       if { $camNo != 0 } {
          set camProduct [cam$camNo product]
          if { [hasLongExposure $camNo] == 1 } {
-            #--- Je determine cam_item
+            #--- Je determine camItem
             if { $confCam(A,camNo) == $camNo } {
-               set cam_item "A"
+               set camItem "A"
             } elseif { $confCam(B,camNo) == $camNo } {
-               set cam_item "B"
+               set camItem "B"
             } elseif { $confCam(C,camNo) == $camNo } {
-               set cam_item "C"
+               set camItem "C"
             } else {
-               set cam_item ""
+               set camItem ""
             }
             #---
-            if { $cam_item != "" } {
+            if { $camItem != "" } {
                switch $camProduct {
                   webcam {
-                     set result [ ::$camProduct\::getLongExposure $cam_item ]
+                     set result [ ::$camProduct\::getLongExposure $camItem ]
                   }
                   cemes {
                      set result [ ::$camProduct\::getLongExposure ]
@@ -3235,6 +3288,25 @@ namespace eval ::confCam {
          #--- Camera OK
          return $camProduct
       }
+   }
+
+   #
+   # confCam::getThreadNo
+   #    Retourne le numero de la thread de la camera
+   #    Si la camera n'a pas de thread associe, la valeur retournée est "0"
+   #  Parametres :
+   #     camNo : Numero de la camera
+   #
+   proc getThreadNo { camNo } {
+      global confCam
+      if { $confCam(A,camNo) == $camNo } {
+         set camItem "A"
+      } elseif { $confCam(B,camNo) == $camNo } {
+         set camItem "B"
+      } elseif { $confCam(C,camNo) == $camNo } {
+         set camItem "C"
+      }
+      return $confCam($camItem,threadNo)
    }
 
    #
@@ -3518,7 +3590,7 @@ namespace eval ::confCam {
    # confCam(A,camName) -> type de camera employe
    # conf(cam,A,...) -> proprietes de ce type de camera
    #
-   proc configureCamera { cam_item } {
+   proc configureCamera { camItem } {
       variable This
       global audace
       global caption
@@ -3532,37 +3604,36 @@ namespace eval ::confCam {
       #--- Affichage d'un message d'alerte si necessaire
       ::confCam::Connect_Camera
 
-      #--- Inhibe les menus
-      ::audace::menustate disabled
-
-      #--- Je recupere le numero de visu associe a la camera
-      if { "$confCam($cam_item,camName)" != "" } {
-         if { $confCam($cam_item,visuName) == $caption(confcam,nouvelle_visu) } {
+      #--- J'enregistre le numero de la visu associee a la camera
+      if { "$confCam($camItem,camName)" != "" } {
+         if { $confCam($camItem,visuName) == $caption(confcam,nouvelle_visu) } {
             set visuNo [::confVisu::create]
-            set confCam($cam_item,visuName) visu$visuNo
          } else {
-            scan $confCam($cam_item,visuName) "visu%d" visuNo
-            # je verifie que la visu existe
+            #--- je recupere le numera de la visu
+            scan $confCam($camItem,visuName) "visu%d" visuNo
+            #--- je verifie que la visu existe
             if { [lsearch -exact [visu::list] $visuNo] == -1 } {
                #--- si la visu n'existe plus , je la recree
                set visuNo [::confVisu::create]
-               set confCam($cam_item,visuName) visu$visuNo
             }
          }
-         set confCam($cam_item,visuNo) $visuNo
       } else {
          #--- Si c'est l'ouverture d'une camera au demarrage de Audela
          #--- J'impose la visu :
-         if { $cam_item == "A" } { set visuNo 1 }
-         if { $cam_item == "B" } { set visuNo [::confVisu::create] }
-         if { $cam_item == "C" } { set visuNo [::confVisu::create] }
+         if { $camItem == "A" } { set visuNo 1 }
+         if { $camItem == "B" } { set visuNo [::confVisu::create] }
+         if { $camItem == "C" } { set visuNo [::confVisu::create] }
       }
+      set confCam($camItem,visuNo)   $visuNo
+      set confCam($camItem,visuName) visu$visuNo
 
       #--- Remise a jour de la liste des visu
       set list_visu [list ]
+      #--- je recherche les visu existantes
       foreach n [::visu::list] {
          lappend list_visu "visu$n"
       }
+      #--- j'ajoute la visu "nouvelle"
       lappend list_visu $caption(confcam,nouvelle_visu)
       set confCam(list_visu) $list_visu
 
@@ -3575,18 +3646,18 @@ namespace eval ::confCam {
          $This.startC.visu configure -values $confCam(list_visu)
       }
 
-      #--- Je recupere le numero buffer associe a la camera
+      #--- Je recupere le numero buffer de la visu associee a la camera
       set bufNo [::confVisu::getBufNo $visuNo]
 
-      set erreur [ catch {
-         switch -exact -- $confCam($cam_item,camName) {
+      set catchResult [ catch {
+         switch -exact -- $confCam($camItem,camName) {
             hisis {
                if { $conf(hisis,modele) == "11" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
@@ -3596,7 +3667,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele) ($conf(hisis,res))\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3619,7 +3690,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3641,7 +3712,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3663,7 +3734,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3685,7 +3756,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3707,7 +3778,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3729,7 +3800,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3751,7 +3822,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3773,7 +3844,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
                      $caption(confcam,2points) $conf(hisis,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   set foncobtu $conf(hisis,foncobtu)
                   switch -exact -- $foncobtu {
                      0 {
@@ -3795,7 +3866,7 @@ namespace eval ::confCam {
             sbig {
               ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
                set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_sbig) ([ cam$camNo name ]) \
                   $caption(confcam,2points) $conf(sbig,port)\n"
                console::affiche_saut "\n"
@@ -3829,7 +3900,7 @@ namespace eval ::confCam {
                set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
                console::affiche_erreur "$caption(confcam,port_cookbook) $caption(confcam,2points) $conf(cookbook,port)\n"
                console::affiche_saut "\n"
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(cookbook,mirh)
                cam$camNo mirrorv $conf(cookbook,mirv)
@@ -3842,7 +3913,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                      $caption(confcam,2points) $conf(starlight,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo accelerator $starlight_accelerator
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(starlight,mirh)
@@ -3853,7 +3924,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                      $caption(confcam,2points) $conf(starlight,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo accelerator $starlight_accelerator
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(starlight,mirh)
@@ -3864,7 +3935,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
                      $caption(confcam,2points) $conf(starlight,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo accelerator $starlight_accelerator
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(starlight,mirh)
@@ -3879,7 +3950,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
                      $caption(confcam,2points) $conf(kitty,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo canbits [ lindex $conf(kitty,res) 0 ]
                   if { $conf(kitty,captemp) == "0" } {
                      cam$camNo AD7893 AN2
@@ -3896,7 +3967,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
                      $caption(confcam,2points) $conf(kitty,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo canbits [ lindex $conf(kitty,res) 0 ]
                   if { $conf(kitty,captemp) == "0" } {
                      cam$camNo AD7893 AN2
@@ -3912,7 +3983,7 @@ namespace eval ::confCam {
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele)\
                      $caption(confcam,2points) $conf(kitty,port)\n"
                   console::affiche_saut "\n"
-                  set confCam($cam_item,camNo) $camNo
+                  set confCam($camItem,camNo) $camNo
                   cam$camNo buf $bufNo
                   cam$camNo mirrorh $conf(kitty,mirh)
                   cam$camNo mirrorv $conf(kitty,mirv)
@@ -3931,14 +4002,14 @@ namespace eval ::confCam {
                }
             }
             webcam {
-               ::webcam::configureCamera $cam_item
+               ::webcam::configureCamera $camItem
             }
             th7852a {
                set camNo [ cam::create camth "unknown" -name TH7852A ]
                console::affiche_erreur "$caption(confcam,port_th7852a) $caption(confcam,2points)\
                   $caption(confcam,th7852a_ISA)\n"
                console::affiche_saut "\n"
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(th7852a,mirh)
                cam$camNo mirrorv $conf(th7852a,mirv)
@@ -3950,7 +4021,7 @@ namespace eval ::confCam {
                console::affiche_erreur "$caption(confcam,port_scr1300xtc) $caption(confcam,2points)\
                   $conf(scr1300xtc,port)\n"
                console::affiche_saut "\n"
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(scr1300xtc,mirh)
                cam$camNo mirrorv $conf(scr1300xtc,mirv)
@@ -3960,7 +4031,7 @@ namespace eval ::confCam {
                switch [ ::confLink::getLinkNamespace $conf(dslr,port) ] {
                   gphoto2 {
                      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir $::audela_start_dir ]
-                     set confCam($cam_item,camNo) $camNo
+                     set confCam($camItem,camNo) $camNo
                      console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$camNo name ]\n"
                      console::affiche_saut "\n"
@@ -3969,6 +4040,9 @@ namespace eval ::confCam {
                      cam$camNo mirrorv $conf(dslr,mirv)
                      #--- J'arrete le service WIA de Windows
                      cam$camNo systemservice 0
+                     #--- je cree la thread dediee a la camera
+                     set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
+
                      #--- Parametrage des longues poses
                      if { $conf(dslr,longuepose) == "1" } {
                         switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
@@ -3996,6 +4070,11 @@ namespace eval ::confCam {
                               cam$camNo longuepose 2
                            }
                         }
+                        #--- j'ajoute la commande de liaison longue pose dans la thread de la camera
+                        if { $confCam($camItem,threadNo) != 0 &&  [cam$camNo longueposelinkno] != 0} {
+                           thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
+                        }
+
                      } else {
                         #--- Pas de liaison longue pose
                         cam$camNo longuepose 0
@@ -4025,7 +4104,7 @@ namespace eval ::confCam {
                      if { $camNo=="" } {
                         set camNo "1"
                         if { ! [ info exists camNo ] } { set camNo "1" } else { incr camNo "1" }
-                        set confCam($cam_item,camNo) $camNo
+                        set confCam($camItem,camNo) $camNo
                      } else {
                         set erreur "1"
                      }
@@ -4038,7 +4117,7 @@ namespace eval ::confCam {
                } else {
                   set camNo [ cam::create andor PCI "$conf(andor,config)" ]
                }
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
                   $caption(confcam,2points) $conf(andor,config)\n"
                console::affiche_saut "\n"
@@ -4076,7 +4155,7 @@ namespace eval ::confCam {
             }
             fingerlakes {
                set camNo [ cam::create fingerlakes USB ]
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_fingerlakes) ([ cam$camNo name ]) \
                   $caption(confcam,2points) USB\n"
                console::affiche_saut "\n"
@@ -4179,10 +4258,13 @@ namespace eval ::confCam {
                #--- fin switch conf(audine,port)
 
                #--- je parametre la camera
-               set confCam($cam_item,camNo) $camNo
+               set confCam($camItem,camNo) $camNo
                cam$camNo buf $bufNo
                cam$camNo mirrorh $conf(audine,mirh)
                cam$camNo mirrorv $conf(audine,mirv)
+
+               #--- je cree la thread dediee a la camera
+               set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
 
                #--- je parametre le mode de fonctionnement de l'obturateur
                switch -exact -- $conf(audine,foncobtu) {
@@ -4234,43 +4316,48 @@ namespace eval ::confCam {
          #--- <= fin du switch sur les cameras
 
          #--- J'associe la camera avec la visu
-         ::confVisu::setCamera $confCam($cam_item,visuNo) $confCam($cam_item,camNo)
+         ::confVisu::setCamera $confCam($camItem,visuNo) $confCam($camItem,camNo)
 
       } errorMessage ]
       #--- <= fin du catch
 
-      if { $cam_item == "A" } {
+      #--- Traitement des erreurs detectees par le catch
+      if { $catchResult == "1" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+         tk_messageBox -message "$errorMessage. See console" -icon error
+         #--- Je desactive le demarrage automatique
+         set conf(camera,$camItem,start) "0"
+         #--- Je supprime la thread de la camera si elle existe
+         if { $confCam($camItem,threadNo)!=0 } {
+            #--- Je supprime la thread
+            thread::release $confCam($camItem,threadNo)
+            set confCam($camItem,threadNo)  "0"
+         }
+
+         #--- En cas de probleme, camera par defaut
+         set confCam($camItem,camName)   ""
+         set confCam($camItem,camNo)     "0"
+         set confCam($camItem,visuNo)    "0"
+      }
+
+      if { $camItem == "A" } {
          #--- Mise a jour de la variable audace pour compatibilite
-         set ::audace(camNo) $confCam($cam_item,camNo)
+         set ::audace(camNo) $confCam($camItem,camNo)
       }
 
       #--- Creation d'une variable qui se met a jour a la fin de la procedure configureCamera
       #--- Sert au Listener de surveillance de la configuration optique
-      set confCam($cam_item,super_camNo) $confCam($cam_item,camNo)
-
-      #--- Traitement des erreurs detectees par le catch
-      if { $erreur == "1" } {
-         tk_messageBox -message "$errorMessage" -icon error
-         #--- En cas de probleme, je desactive le demarrage automatique
-         set conf(camera,$cam_item,start) "0"
-         #--- En cas de probleme, camera par defaut
-         set confCam($cam_item,camName)   ""
-         set confCam($cam_item,camNo)     "0"
-         set confCam($cam_item,visuNo)    "0"
-      }
+      set confCam($camItem,super_camNo) $confCam($camItem,camNo)
 
       #--- Gestion des boutons actifs/inactifs
       ::confCam::ConfAudine
       ::confCam::ConfKitty
-      ::webcam::ConfigWebCam $cam_item
+      ::webcam::ConfigWebCam $camItem
       ::confCam::ConfDSLR
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectCamera ] {
          destroy $audace(base).connectCamera
       }
-
-      #--- Restaure les menus
-      ::audace::menustate normal
 
       #--- Desactive le blocage pendant l'acquisition (cli/sti)
       catch {
@@ -4284,7 +4371,7 @@ namespace eval ::confCam {
    # Acquisition de la configuration, c'est a dire isolation des
    # differentes variables dans le tableau conf(...)
    #
-   proc widgetToConf { cam_item } {
+   proc widgetToConf { camItem } {
       variable This
       global conf
       global confCam
@@ -4293,10 +4380,10 @@ namespace eval ::confCam {
       set nn $This.usr.book
 
       set index                             [ expr [ Rnotebook:currentIndex $nn ] - 1 ]
-      set confCam($cam_item,camName)        [ lindex $confCam(names) $index ]
-      set conf(camera,$cam_item,camName)    [ lindex $confCam(names) $index ]
+      set confCam($camItem,camName)         [ lindex $confCam(names) $index ]
+      set conf(camera,$camItem,camName)     [ lindex $confCam(names) $index ]
 
-      switch $conf(camera,$cam_item,camName) {
+      switch $conf(camera,$camItem,camName) {
          audine {
             #--- Memorise la configuration de Audine dans le tableau conf(audine,...)
             set conf(audine,ampli_ccd)            [ lsearch "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" "$confCam(audine,ampli_ccd)" ]
@@ -4355,8 +4442,8 @@ namespace eval ::confCam {
             set conf(kitty,on_off)                $confCam(kitty,on_off)
          }
          webcam {
-            #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$cam_item,...)
-            ::webcam::widgetToConf $cam_item
+            #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$camItem,...)
+            ::webcam::widgetToConf $camItem
          }
          th7852a {
             #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
@@ -4423,8 +4510,8 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera3)
-         set cam_item $confCam(cam_item)
-         if { [ info exists This ] == "1" && [ catch { set tempstatus [ cam$confCam($cam_item,camNo) infotemp ] } ] == "0" } {
+         set camItem $confCam(currentCamItem)
+         if { [ info exists This ] == "1" && [ catch { set tempstatus [ cam$confCam($camItem,camNo) infotemp ] } ] == "0" } {
             set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
             set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
             set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
@@ -4449,8 +4536,8 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera6)
-         set cam_item $confCam(cam_item)
-         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($cam_item,camNo) temperature ] } ] == "0" } {
+         set camItem $confCam(currentCamItem)
+         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
             $frm.temp_ccd configure \
                -text "$caption(confcam,temperature_CCD) $temp_ccd $caption(confcam,deg_c)"
@@ -4469,8 +4556,8 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera11)
-         set cam_item $confCam(cam_item)
-         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($cam_item,camNo) temperature ] } ] == "0" } {
+         set camItem $confCam(currentCamItem)
+         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
             $frm.temp_ccd configure \
                -text "$caption(confcam,temperature_CCD) $temp_ccd $caption(confcam,deg_c)"
@@ -4489,8 +4576,8 @@ namespace eval ::confCam {
 
       catch {
          set frm $frmm(Camera12)
-         set cam_item $confCam(cam_item)
-         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($cam_item,camNo) temperature ] } ] == "0" } {
+         set camItem $confCam(currentCamItem)
+         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
             $frm.temp_ccd configure \
                -text "$caption(confcam,temperature_CCD) $temp_ccd $caption(confcam,deg_c)"
