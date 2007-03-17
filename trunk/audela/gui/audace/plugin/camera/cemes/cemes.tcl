@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.2 2007-03-14 21:57:54 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.3 2007-03-17 09:28:24 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -166,13 +166,13 @@ proc ::cemes::fillConfigPage { frm } {
 # ::cemes::configureCamera
 #    Configure la camera Cemes en fonction des donnees contenues dans les variables conf(cemes,...)
 #
-proc ::cemes::configureCamera { } {
+proc ::cemes::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create cemes PCI ]
    console::affiche_erreur "$caption(cemes,port) $caption(cemes,2points) [ cam$camNo port ]\n"
    console::affiche_saut "\n"
-   set confCam($cam_item,camNo) $camNo
+   set confCam($camItem,camNo) $camNo
    set foncobtu $conf(cemes,foncobtu)
    switch -exact -- $foncobtu {
       0 {
@@ -191,11 +191,14 @@ proc ::cemes::configureCamera { } {
    } else {
       cam$camNo cooler off
    }
-   cam$camNo buf [ visu$confCam($cam_item,visuNo) buf ]
+   #--- J'associe le buffer de la visu
+   set bufNo [visu$confCam($camItem,visuNo) buf]
+   cam$camNo buf $bufNo
+   #--- Je configure l'oriention des miroirs par defaut
    cam$camNo mirrorh $conf(cemes,mirh)
    cam$camNo mirrorv $conf(cemes,mirv)
    #---
-   ::confVisu::visuDynamix $confCam($cam_item,visuNo) 65535 0
+   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
    #---
    if { [ info exists confCam(cemes,aftertemp) ] == "0" } {
       ::cemes::CemesDispTemp
@@ -211,8 +214,8 @@ proc CemesDispTemp { } {
 
    catch {
       set frm $frmm(Camera13)
-      set cam_item $confCam(cam_item)
-      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($cam_item,camNo) temperature ] } ] == "0" } {
+      set camItem $confCam(currentCamItem)
+      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.temp_ccd configure \
             -text "$caption(cemes,temperature_CCD) $temp_ccd $caption(cemes,deg_c)"
