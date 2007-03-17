@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.4 2007-03-16 22:13:04 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.5 2007-03-17 09:18:07 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -321,13 +321,13 @@ proc ::webcam::configureCamera { camItem } {
       $conf(webcam,$camItem,longuepose)\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
-   #--- j'associe le buffer de la visu
+   #--- J'associe le buffer de la visu
    set bufNo [visu$confCam($camItem,visuNo) buf]
    cam$camNo buf $bufNo
-   #--- je conficure l'oriention des mirroir par defaut
+   #--- Je configure l'oriention des miroirs par defaut
    cam$camNo mirrorh $conf(webcam,$camItem,mirh)
    cam$camNo mirrorv $conf(webcam,$camItem,mirv)
-   #--- je cree la thread dediee a la camera
+   #--- Je cree la thread dediee a la camera
    set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
 
    #--- Parametrage des longues poses
@@ -355,7 +355,7 @@ proc ::webcam::configureCamera { camItem } {
          }
       }
 
-      #--- j'ajoute la commande de liaison longue pose dans la thread de la camera
+      #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
       if { $confCam($camItem,threadNo) != 0 &&  [cam$camNo longueposelinkno] != 0} {
          thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
       }
