@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.14 2007-03-16 23:48:05 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.15 2007-03-17 09:24:37 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -388,16 +388,16 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  select [ cam_item ]
+   #  select [ camItem ]
    #     Selectionne un onglet en passant le nom de la
    #     camera (A, B ou C)
    #
    #------------------------------------------------------------
-   proc select { { cam_item A } } {
+   proc select { { camItem A } } {
       variable This
 
       set nn $This.usr.book
-      switch -exact -- $cam_item {
+      switch -exact -- $camItem {
          A { Rnotebook:raise $nn 1 }
          B { Rnotebook:raise $nn 2 }
          C { Rnotebook:raise $nn 3 }
@@ -1357,13 +1357,13 @@ namespace eval ::confOptic {
    #
    #------------------------------------------------------------
 
-   proc MAJ_Binning { cam_item frm { varname "" } { arrayindex "" } { operation "" } } {
+   proc MAJ_Binning { camItem frm { varname "" } { arrayindex "" } { operation "" } } {
       variable widget
       global confCam
 
       #--- Recherche du binning associe a la camera selectionnee
-      if { $confCam($cam_item,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($cam_item,visuNo) ]
+      if { $confCam($camItem,visuNo) != "0" } {
+         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
       } else {
          set camNo ""
       }
@@ -1375,16 +1375,16 @@ namespace eval ::confOptic {
          $frm.labURL_Binning configure -values $::confOptic::widget(list_combobox)
       } else {
          #--- Mise a jour de la combobox du binning
-         set confOptic::widget($cam_item,binning) "1x1"
+         set confOptic::widget($camItem,binning) "1x1"
          $frm.labURL_Binning configure -height [ llength $confOptic::widget(list_combobox) ]
          $frm.labURL_Binning configure -values $confOptic::widget(list_combobox)
-         $frm.labURL_Binning configure -textvariable confOptic::widget($cam_item,binning)
+         $frm.labURL_Binning configure -textvariable confOptic::widget($camItem,binning)
          #--- Mise a jour du champ et de l'echantilonnage
          $frm.labVal_Champ configure -text ""
          $frm.labVal_Echantillonnage configure -text ""
       }
       #--- Mise a jour des parametres de la camera CCD
-      ::confOptic::MAJ_Conf_Camera $cam_item $frm
+      ::confOptic::MAJ_Conf_Camera $camItem $frm
    }
 
    #------------------------------------------------------------
@@ -1392,32 +1392,32 @@ namespace eval ::confOptic {
    #     Prise en compte du binning choisi
    #
    #------------------------------------------------------------
-   proc Impact_Binning { cam_item frm } {
+   proc Impact_Binning { camItem frm } {
       variable widget
       global audace confCam
 
       #--- Recherche du numero de la camera CCD
-      if { $confCam($cam_item,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($cam_item,visuNo) ]
+      if { $confCam($camItem,visuNo) != "0" } {
+         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
       } else {
          set camNo ""
       }
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget($cam_item,binning) 0 0] [string range $::confOptic::widget($cam_item,binning) 2 2]]
+         cam$camNo bin [list [string range $::confOptic::widget($camItem,binning) 0 0] [string range $::confOptic::widget($camItem,binning) 2 2]]
       }
       #--- Mise a jour des informations concernant la camera
       if { $camNo != "" && $camNo != "0" } {
-         set pix_dim($cam_item) "[ expr [ lindex [ cam$camNo pixdim ] 0 ] * 1e6 ] x \
+         set pix_dim($camItem) "[ expr [ lindex [ cam$camNo pixdim ] 0 ] * 1e6 ] x \
             [ expr [ lindex [ cam$camNo pixdim ] 1 ] * 1e6 ]"
       } else {
-         set pix_dim($cam_item) ""
+         set pix_dim($camItem) ""
       }
       if { [ winfo exists $audace(base).confOptic ] } {
-         $frm.labURL_PixDim configure -text $pix_dim($cam_item)
+         $frm.labURL_PixDim configure -text $pix_dim($camItem)
       }
       #--- Calcul des parametres du systeme optique
-      ::confOptic::Calculette $cam_item $frm
+      ::confOptic::Calculette $camItem $frm
    }
 
    #------------------------------------------------------------
@@ -1425,39 +1425,39 @@ namespace eval ::confOptic {
    #     Calcule les differents parametres du systeme optique
    #
    #------------------------------------------------------------
-   proc Calculette { cam_item frm } {
+   proc Calculette { camItem frm } {
       variable widget
       global confCam
 
       #--- Je formate les entry pour permettre le calcul decimal
-      set confOptic::widget($cam_item,diametre) [ format "%.1f" $confOptic::widget($cam_item,diametre) ]
-      $frm.entDiametre configure -textvariable confOptic::widget($cam_item,diametre)
+      set confOptic::widget($camItem,diametre) [ format "%.1f" $confOptic::widget($camItem,diametre) ]
+      $frm.entDiametre configure -textvariable confOptic::widget($camItem,diametre)
 
-      set confOptic::widget($cam_item,focale) [ format "%.1f" $confOptic::widget($cam_item,focale) ]
-      $frm.entFocale configure -textvariable confOptic::widget($cam_item,focale)
+      set confOptic::widget($camItem,focale) [ format "%.1f" $confOptic::widget($camItem,focale) ]
+      $frm.entFocale configure -textvariable confOptic::widget($camItem,focale)
 
       #--- Je mets a jour la combobox du systeme optique
-      set confOptic::widget($cam_item,config_instrument) "$confOptic::widget($cam_item,instrument) -\
-         $confOptic::widget($cam_item,diametre) - $confOptic::widget($cam_item,focale) -\
-         $confOptic::widget($cam_item,barlow_reduc)"
-      $frm.comboboxModele configure -textvariable confOptic::widget($cam_item,config_instrument)
+      set confOptic::widget($camItem,config_instrument) "$confOptic::widget($camItem,instrument) -\
+         $confOptic::widget($camItem,diametre) - $confOptic::widget($camItem,focale) -\
+         $confOptic::widget($camItem,barlow_reduc)"
+      $frm.comboboxModele configure -textvariable confOptic::widget($camItem,config_instrument)
 
       #--- Calcul de la focale resultante du systeme optique
-      set confOptic::widget($cam_item,focale_resultante) [ expr $confOptic::widget($cam_item,focale) * $confOptic::widget($cam_item,barlow_reduc) ]
-      $frm.labVal_Foc_Result configure -text $confOptic::widget($cam_item,focale_resultante)
+      set confOptic::widget($camItem,focale_resultante) [ expr $confOptic::widget($camItem,focale) * $confOptic::widget($camItem,barlow_reduc) ]
+      $frm.labVal_Foc_Result configure -text $confOptic::widget($camItem,focale_resultante)
 
       #--- Calcul du rapport F/D du systeme optique
-      set confOptic::widget($cam_item,F/D) [ format "%.1f" \
-         [ expr $confOptic::widget($cam_item,focale_resultante) / $confOptic::widget($cam_item,diametre) ] ]
-      $frm.labVal_F/D configure -text $confOptic::widget($cam_item,F/D)
+      set confOptic::widget($camItem,F/D) [ format "%.1f" \
+         [ expr $confOptic::widget($camItem,focale_resultante) / $confOptic::widget($camItem,diametre) ] ]
+      $frm.labVal_F/D configure -text $confOptic::widget($camItem,F/D)
 
       #--- Calcul du pouvoir separateur du systeme optique
-      set confOptic::widget($cam_item,PS) [ format "%.2f" [ expr 120.0 / $confOptic::widget($cam_item,diametre) ] ]
-      $frm.labVal_PS configure -text $confOptic::widget($cam_item,PS)
+      set confOptic::widget($camItem,PS) [ format "%.2f" [ expr 120.0 / $confOptic::widget($camItem,diametre) ] ]
+      $frm.labVal_PS configure -text $confOptic::widget($camItem,PS)
 
       #--- Recherche du numero de la camera CCD
-      if { $confCam($cam_item,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($cam_item,visuNo) ]
+      if { $confCam($camItem,visuNo) != "0" } {
+         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
       } else {
          set camNo ""
       }
@@ -1465,20 +1465,20 @@ namespace eval ::confOptic {
       #--- Calcul du champ et de l'echantillonnage de la camera CCD
       if { $camNo != "" && $camNo != "0" } {
          #--- Nombres de pixels en x et en y
-         set nb_xy($cam_item) [ cam$camNo nbpix ]
+         set nb_xy($camItem) [ cam$camNo nbpix ]
          #--- Dimensions des pixels en x et en y
-         set pix_dim_xy($cam_item) [ cam$camNo pixdim ]
+         set pix_dim_xy($camItem) [ cam$camNo pixdim ]
          #--- Dimensions du CCD en x et en y
-         set dim_x($cam_item) [ expr [ lindex $nb_xy($cam_item) 0 ] * [ lindex $pix_dim_xy($cam_item) 0 ] * 1000. ]
-         set dim_y($cam_item) [ expr [ lindex $nb_xy($cam_item) 1 ] * [ lindex $pix_dim_xy($cam_item) 1 ] * 1000. ]
+         set dim_x($camItem) [ expr [ lindex $nb_xy($camItem) 0 ] * [ lindex $pix_dim_xy($camItem) 0 ] * 1000. ]
+         set dim_y($camItem) [ expr [ lindex $nb_xy($camItem) 1 ] * [ lindex $pix_dim_xy($camItem) 1 ] * 1000. ]
          #--- Champ en x et en y en minutes d'arc
-         set champ_x($cam_item) [ format "%.1f" [ expr 206265 * $dim_x($cam_item) / ( $confOptic::widget($cam_item,focale_resultante) * 60. ) ] ]
-         set champ_y($cam_item) [ format "%.1f" [ expr 206265 * $dim_y($cam_item) / ( $confOptic::widget($cam_item,focale_resultante) * 60. ) ] ]
-         $frm.labVal_Champ configure -text "$champ_x($cam_item) x $champ_y($cam_item)"
+         set champ_x($camItem) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $confOptic::widget($camItem,focale_resultante) * 60. ) ] ]
+         set champ_y($camItem) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $confOptic::widget($camItem,focale_resultante) * 60. ) ] ]
+         $frm.labVal_Champ configure -text "$champ_x($camItem) x $champ_y($camItem)"
          #--- Echantillonnage du CCD en x et en y en secondes d'arc par pixels
-         set echantillonnage_x($cam_item) [ format "%.1f"  [ expr $champ_x($cam_item) * 60. / [ lindex $nb_xy($cam_item) 0 ] ] ]
-         set echantillonnage_y($cam_item) [ format "%.1f"  [ expr $champ_y($cam_item) * 60. / [ lindex $nb_xy($cam_item) 1 ] ] ]
-         $frm.labVal_Echantillonnage configure -text "$echantillonnage_x($cam_item) x $echantillonnage_y($cam_item)"
+         set echantillonnage_x($camItem) [ format "%.1f"  [ expr $champ_x($camItem) * 60. / [ lindex $nb_xy($camItem) 0 ] ] ]
+         set echantillonnage_y($camItem) [ format "%.1f"  [ expr $champ_y($camItem) * 60. / [ lindex $nb_xy($camItem) 1 ] ] ]
+         $frm.labVal_Echantillonnage configure -text "$echantillonnage_x($camItem) x $echantillonnage_y($camItem)"
       }
    }
 
@@ -1487,43 +1487,43 @@ namespace eval ::confOptic {
    #     Mise a jour des parametres de la camera CCD
    #
    #------------------------------------------------------------
-   proc MAJ_Conf_Camera { cam_item frm } {
+   proc MAJ_Conf_Camera { camItem frm } {
       variable widget
       global audace caption confCam color
 
       #--- Recherche du numero de la camera CCD
-      if { $confCam($cam_item,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($cam_item,visuNo) ]
+      if { $confCam($camItem,visuNo) != "0" } {
+         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
       } else {
          set camNo ""
       }
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget($cam_item,binning) 0 0] [string range $::confOptic::widget($cam_item,binning) 2 2]]
+         cam$camNo bin [list [string range $::confOptic::widget($camItem,binning) 0 0] [string range $::confOptic::widget($camItem,binning) 2 2]]
       }
       #--- Je mets a jour les parametres de la camera CCD
       if { $camNo != "" && $camNo != "0" } {
-         set camera($cam_item)   "[ lindex [ cam$camNo info ] 1 ]"
-         set capteur($cam_item)  "[ lindex [ cam$camNo info ] 2 ]"
-         set cell_dim($cam_item) "[ expr [ lindex [ cam$camNo celldim ] 0 ] * 1e6 ] x \
+         set camera($camItem)   "[ lindex [ cam$camNo info ] 1 ]"
+         set capteur($camItem)  "[ lindex [ cam$camNo info ] 2 ]"
+         set cell_dim($camItem) "[ expr [ lindex [ cam$camNo celldim ] 0 ] * 1e6 ] x \
             [ expr [ lindex [ cam$camNo celldim ] 1 ] * 1e6 ]"
-         set pix_dim($cam_item)  "[ expr [ lindex [ cam$camNo pixdim ] 0 ] * 1e6 ] x \
+         set pix_dim($camItem)  "[ expr [ lindex [ cam$camNo pixdim ] 0 ] * 1e6 ] x \
             [ expr [ lindex [ cam$camNo pixdim ] 1 ] * 1e6 ]"
          set fg                  "$color(blue)"
       } else {
-         set camera($cam_item)   "$caption(confoptic,nocam)"
-         set capteur($cam_item)  ""
-         set cell_dim($cam_item) ""
-         set pix_dim($cam_item)  ""
+         set camera($camItem)   "$caption(confoptic,nocam)"
+         set capteur($camItem)  ""
+         set cell_dim($camItem) ""
+         set pix_dim($camItem)  ""
          set fg                  "$color(red)"
       }
       #--- Affichage des parametres de la camera CCD
       if { [ winfo exists $audace(base).confOptic ] } {
-         $frm.labURL_nomCamera configure -text $camera($cam_item) -fg $fg
-         $frm.labURL_typeCapteur configure -text $capteur($cam_item)
-         $frm.labURL_CellDim configure -text $cell_dim($cam_item)
-         $frm.labURL_PixDim configure -text $pix_dim($cam_item)
-         ::confOptic::Calculette $cam_item $frm
+         $frm.labURL_nomCamera configure -text $camera($camItem) -fg $fg
+         $frm.labURL_typeCapteur configure -text $capteur($camItem)
+         $frm.labURL_CellDim configure -text $cell_dim($camItem)
+         $frm.labURL_PixDim configure -text $pix_dim($camItem)
+         ::confOptic::Calculette $camItem $frm
       }
    }
 
