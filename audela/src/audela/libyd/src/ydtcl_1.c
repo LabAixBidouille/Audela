@@ -2106,7 +2106,7 @@ int Cmd_ydtcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char
       if (argc>=6) {
          htm_onlyflag=1;
          strcpy(htm_only,argv[5]);
-		 if ((htm_level>=0)&&(strlen(htm_only)!=htm_level+2)) {
+		 if ((htm_level>=0)&&((int)strlen(htm_only)!=htm_level+2)) {
 			 sprintf(s,"Usage: %s (htm_only = %s) must be (htm_level = %d)+2 caracters ", argv[0],htm_only,htm_level);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
