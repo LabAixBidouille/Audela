@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.18 2007-03-06 21:07:10 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.19 2007-03-17 13:32:54 robertdelmas Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -24,7 +24,7 @@
 # opt1  in dark offset out const ?tt_options?
 # opt2  in dark offset out const number ?first_index? ?tt_options?
 # subsky  back_kernel back_threshold  ?tt_options?
-# subsky2  back_kernel back_threshold ?first_index? ?tt_options?
+# subsky2  in out number back_kernel back_threshold ?first_index? ?tt_options?
 # window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
 # delete2  in number
 # register  in out number ?-box {x1 y1 x2 y2}? ?tt_options?
