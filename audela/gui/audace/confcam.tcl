@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.61 2007-03-16 22:46:45 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.62 2007-03-17 09:21:03 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -4310,7 +4310,7 @@ namespace eval ::confCam {
                console::affiche_saut "\n"
             }
             cemes {
-               ::cemes::configureCamera
+               ::cemes::configureCamera $camItem
             }
          }
          #--- <= fin du switch sur les cameras
