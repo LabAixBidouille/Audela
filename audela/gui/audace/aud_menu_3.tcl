@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.13 2007-03-13 21:37:03 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.14 2007-03-17 14:00:50 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1068,14 +1068,13 @@ namespace eval ::pretraitement {
       #---
       if { $pretraitement(choix_mode) == "0" } {
          set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-         $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
       } elseif { $pretraitement(choix_mode) == "1" } {
          set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-         $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
       } elseif { $pretraitement(choix_mode) == "2" } {
          set pretraitement(afficher_image) "$caption(pretraitement,afficher_der_image_fin)"
-         $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
       }
+      $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
+      #---
       set pretraitement(avancement) ""
       #---
       ::pretraitement::formule
@@ -2897,7 +2896,8 @@ namespace eval ::faireImageRef {
       set faireImageRef(valeur_indice) "1"
 
       #---
-      set faireImageRef(avancement) ""
+      set faireImageRef(afficher_image) "$caption(pretraitement,afficher_image_fin)"
+      set faireImageRef(avancement)     ""
 
       #---
       toplevel $This
@@ -2960,7 +2960,7 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.6 -borderwidth 1 -relief raised
             frame $This.usr.6.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.6.1.che1 -text "$caption(pretraitement,afficher_image_fin)" \
+               checkbutton $This.usr.6.1.che1 -text "$faireImageRef(afficher_image)" \
                   -variable faireImageRef(1,disp)
                pack $This.usr.6.1.che1 -side left -padx 10 -pady 5
             pack $This.usr.6.1 -side top -fill both
@@ -3416,6 +3416,10 @@ namespace eval ::faireImageRef {
             }
             #---
             if { $m == "" } {
+               if { $faireImageRef(1,disp) == 1 } {
+                  loadima $out$nb
+                  ::audace::autovisu $audace(visuNo)
+               }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
@@ -3470,6 +3474,13 @@ namespace eval ::faireImageRef {
       global caption faireImageRef
 
       #---
+      if { $faireImageRef(operation) == "$caption(audace,menu,pretraite)" } {
+         set faireImageRef(afficher_image) "$caption(pretraitement,afficher_der_image_fin)"
+      } else {
+         set faireImageRef(afficher_image) "$caption(pretraitement,afficher_image_fin)"
+      }
+      #---
+      $This.usr.6.1.che1 configure -text "$faireImageRef(afficher_image)"
       set faireImageRef(avancement) ""
       ::faireImageRef::formule
       #---
@@ -3479,6 +3490,11 @@ namespace eval ::faireImageRef {
       #--- que la commande switch continue sur la ligne suivante
       switch $faireImageRef(operation) \
          "$caption(audace,menu,raw2cfa)" {
+            set faireImageRef(in)           ""
+            set faireImageRef(out)          ""
+            set faireImageRef(1,offset)     ""
+            set faireImageRef(1,dark)       ""
+            set faireImageRef(1,flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3489,6 +3505,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_offset)" {
+            set faireImageRef(in)           ""
+            set faireImageRef(out)          "offset"
+            set faireImageRef(1,offset)     ""
+            set faireImageRef(1,dark)       ""
+            set faireImageRef(1,flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3499,6 +3520,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_dark)" {
+            set faireImageRef(in)           ""
+            set faireImageRef(out)          "dark"
+            set faireImageRef(1,offset)     "offset"
+            set faireImageRef(1,dark)       ""
+            set faireImageRef(1,flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
@@ -3509,6 +3535,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_flat_field)" {
+            set faireImageRef(in)           ""
+            set faireImageRef(out)          "flat"
+            set faireImageRef(1,offset)     "offset"
+            set faireImageRef(1,dark)       "dark-flat"
+            set faireImageRef(1,flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3519,13 +3550,18 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,pretraite)" {
+            set faireImageRef(in)           ""
+            set faireImageRef(out)          ""
+            set faireImageRef(1,offset)     "offset"
+            set faireImageRef(1,dark)       "dark"
+            set faireImageRef(1,flat-field) "flat"
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
             pack forget $This.usr.4
             pack forget $This.usr.5
-            pack forget $This.usr.6
             pack $This.usr.7 -in $This.usr -side top -fill both
+            pack $This.usr.6 -in $This.usr -side top -fill both
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          }
    }
@@ -3543,10 +3579,10 @@ namespace eval ::faireImageRef {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set faireImageRef(in)  [ file rootname [ file tail $filename ] ]
+         set faireImageRef(in)  [ lindex [ decomp [ file rootname [ file tail $filename ] ] ] 1 ]
          set faireImageRef(ext) [ file extension $filename ]
       } elseif { $In_Out == "2" } {
-         set faireImageRef(out) [ file rootname [ file tail $filename ] ]
+         set faireImageRef(out) [ lindex [ decomp [ file rootname [ file tail $filename ] ] ] 1 ]
       } elseif { $In_Out == "3" } {
          set faireImageRef(1,offset) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
@@ -3610,7 +3646,6 @@ namespace eval ::faireImageRef {
          $This.usr.7.4.explore configure -state normal
          $This.usr.7.4.ent6 configure -state normal
       } else {
-         set faireImageRef(1,flat-field) ""
          $This.usr.7.4.explore configure -state disabled
          $This.usr.7.4.ent6 configure -textvariable faireImageRef(1,flat-field) -state disabled
       }
@@ -3628,7 +3663,6 @@ namespace eval ::faireImageRef {
          $This.usr.4.1.explore configure -state normal
          $This.usr.4.1.ent6 configure -state normal
       } else {
-         set faireImageRef(1,offset) ""
          $This.usr.4.1.explore configure -state disabled
          $This.usr.4.1.ent6 configure -textvariable faireImageRef(1,offset) -state disabled
       }
@@ -3646,7 +3680,6 @@ namespace eval ::faireImageRef {
          $This.usr.4.2.explore configure -state normal
          $This.usr.4.2.ent6 configure -state normal
       } else {
-         set faireImageRef(1,dark) ""
          $This.usr.4.2.explore configure -state disabled
          $This.usr.4.2.ent6 configure -textvariable faireImageRef(1,dark) -state disabled
       }
@@ -3664,7 +3697,6 @@ namespace eval ::faireImageRef {
          $This.usr.3.1.explore configure -state normal
          $This.usr.3.1.ent6 configure -state normal
       } else {
-         set faireImageRef(1,offset) ""
          $This.usr.3.1.explore configure -state disabled
          $This.usr.3.1.ent6 configure -textvariable faireImageRef(1,offset) -state disabled
       }
