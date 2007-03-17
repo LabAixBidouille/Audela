@@ -2,9 +2,13 @@ Sous windows:
 
  - Lancer andor\make.bat puis andor\install.bat
 
+ - Lancer cemes\make.bat puis cemes\install.bat
+
  - Dans une console dos, executer depuis le repertoire
    cfitsio : vars.bat (regler les chemins si besoin), puis
    make.bat, puis install.bat
+
+ - Lancer etel\make.bat puis etel\install.bat
 
  - Ouvrir et compiler avec visual c++, en mode release :
       fli\libfli\lib\windows\libfli.dsw
@@ -35,5 +39,7 @@ Sous windows:
          (sex.exe est mis directement dans audela/bin)
 
  - Lancer tcl\make.bat puis tcl\install.bat
+
+ - Lancer truetime\make.bat puis truetime\install.bat
 
  - Lancer utils\make.bat puis utils\install.bat
