@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.51 2007-03-12 22:35:25 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.52 2007-03-17 09:16:03 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -623,23 +623,25 @@ namespace eval ::confVisu {
          set private($visuNo,camName)        ""
          set private($visuNo,camProductName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
-            $private($visuNo,This).fra1.labCam_name_labURL configure -text "$caption(confVisu,tiret)" -fg $color(blue)
+            $private($visuNo,This).fra1.labCam_name_labURL configure \
+               -text "$caption(confVisu,2points) $caption(confVisu,tiret)" -fg $color(blue)
          }
       } else {
          set private($visuNo,camName)        [cam$camNo name]
          set private($visuNo,camProductName) [cam$camNo product]
-         #--- Je determine cam_item
+         #--- Je determine camItem
          if { $confCam(A,camNo) == $camNo } {
-            set cam_item "A"
+            set camItem "A"
          } elseif { $confCam(B,camNo) == $camNo } {
-            set cam_item "B"
+            set camItem "B"
          } elseif { $confCam(C,camNo) == $camNo } {
-            set cam_item "C"
+            set camItem "C"
          } else {
-            set cam_item ""
+            set camItem ""
          }
          #--- J'affiche le nom de la camera
-         $private($visuNo,This).fra1.labCam_name_labURL configure -text "$cam_item - $private($visuNo,camName) $model" -fg $color(blue)
+         $private($visuNo,This).fra1.labCam_name_labURL configure \
+            -text "$camItem $caption(confVisu,2points) $private($visuNo,camName) $model" -fg $color(blue)
       }
    }
 
@@ -1094,19 +1096,19 @@ namespace eval ::confVisu {
          grid configure $This.fra1.labTime -column 5 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labCam_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,camera) $caption(confVisu,2points)" -fg $color(blue)
+            -text "$caption(audace,menu,camera)" -fg $color(blue)
          grid configure $This.fra1.labCam_labURL -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labCam_name_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(confVisu,tiret)" -fg $color(blue)
+            -text "$caption(confVisu,2points) $caption(confVisu,tiret)" -fg $color(blue)
          grid configure $This.fra1.labCam_name_labURL -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTel_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(audace,menu,monture) $caption(confVisu,2points)" -fg $color(blue)
+            -text "$caption(audace,menu,monture)" -fg $color(blue)
          grid configure $This.fra1.labTel_labURL -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTel_name_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(confVisu,tiret)" -fg $color(blue)
+            -text "$caption(confVisu,2points) $caption(confVisu,tiret)" -fg $color(blue)
          grid configure $This.fra1.labTel_name_labURL -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
 
       pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
