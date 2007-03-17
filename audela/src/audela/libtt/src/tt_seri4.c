@@ -1028,7 +1028,7 @@ int tt_ima_series_normgain_1(TT_IMA_SERIES *pseries)
       mult=(normgain_value)/(pseries->bgmean);
    }
    */
-   tt_util_statima(p_out,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
+   tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
    if (pseries->mean==0) {
       mult=1;
    } else {
