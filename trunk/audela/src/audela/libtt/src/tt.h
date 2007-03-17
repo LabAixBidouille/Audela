@@ -1004,6 +1004,7 @@ int tt_ima_stack_med_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_sort_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_sk_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack);
+int tt_ima_stack_prod_1(TT_IMA_STACK *pstack);
 
 int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys);
 int tt_strupr(char *chaine);
