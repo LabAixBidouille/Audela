@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.14 2007-03-17 14:00:50 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.15 2007-03-17 21:22:41 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -99,19 +99,18 @@ namespace eval ::pretraitement {
       variable widget
       global audace caption color conf pretraitement
 
-      #--- Initialisation
-      set pretraitement(in)  ""
-      set pretraitement(out) ""
-
-      #---
+      #--- Initialisation des variables principales
       set pretraitement(choix_mode)     "0"
+      set pretraitement(in)             ""
+      set pretraitement(nb)             ""
+      set pretraitement(valeur_indice)  "1"
+      set pretraitement(out)            ""
+      set pretraitement(disp_1)         "1"
+      set pretraitement(disp_2)         "1"
       set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
       set pretraitement(avancement)     ""
-      set pretraitement(valeur_indice)  "1"
-      set pretraitement(4,disp)         "1"
-      set pretraitement(5,disp)         "1"
 
-      #---
+      #--- Initialisation des variables de la fonction re-échantillonnage
       set pretraitement(scaleWindow_multx) $conf(multx)
       set pretraitement(scaleWindow_multy) $conf(multy)
 
@@ -141,14 +140,14 @@ namespace eval ::pretraitement {
 
          frame $This.usr.7 -borderwidth 1 -relief raised
             frame $This.usr.7.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.1.che1 -text "$pretraitement(afficher_image)" -variable pretraitement(5,disp)
+               checkbutton $This.usr.7.1.che1 -text "$pretraitement(afficher_image)" -variable pretraitement(disp_2)
                pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
             pack $This.usr.7.1 -side top -fill both
         # pack $This.usr.7 -in $This.usr -side top -fill both
 
          frame $This.usr.10 -borderwidth 1 -relief raised
             frame $This.usr.10.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.10.1.che1 -text "$pretraitement(afficher_image)" -variable pretraitement(4,disp) \
+               checkbutton $This.usr.10.1.che1 -text "$pretraitement(afficher_image)" -variable pretraitement(disp_1) \
                   -state disabled
                pack $This.usr.10.1.che1 -side left -padx 10 -pady 5
             pack $This.usr.10.1 -side top -fill both
@@ -210,7 +209,7 @@ namespace eval ::pretraitement {
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                label $This.usr.4.2.lab7 -textvariable "pretraitement(constante)"
                pack $This.usr.4.2.lab7 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent7 -textvariable pretraitement(2,const) -width 7 -justify center \
+               entry $This.usr.4.2.ent7 -textvariable pretraitement(const) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent7 -side right -padx 10 -pady 5
             pack $This.usr.4.2 -side top -fill both
@@ -220,7 +219,7 @@ namespace eval ::pretraitement {
             frame $This.usr.3.1 -borderwidth 0 -relief flat
                label $This.usr.3.1.lab5 -textvariable "pretraitement(constante)"
                pack $This.usr.3.1.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.3.1.ent5 -textvariable pretraitement(1,const) -width 7 -justify center \
+               entry $This.usr.3.1.ent5 -textvariable pretraitement(const) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent5 -side right -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
@@ -373,11 +372,13 @@ namespace eval ::pretraitement {
       #---
       set pretraitement(avancement) "$caption(pretraitement,en_cours)"
       update
+
       #---
       set in    $pretraitement(in)
-      set out   $pretraitement(out)
       set nb    $pretraitement(nb)
       set first $pretraitement(valeur_indice)
+      set out   $pretraitement(out)
+
       #--- Tests sur les images
       if { $pretraitement(choix_mode) == "0" } {
          #--- Il faut une image affichee
@@ -428,6 +429,7 @@ namespace eval ::pretraitement {
             return
          }
       }
+
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
@@ -505,7 +507,7 @@ namespace eval ::pretraitement {
                   scale1 $in $out $x $y
                } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -529,7 +531,7 @@ namespace eval ::pretraitement {
                   scale2 $in $out $nb $x $y $first
                } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -541,13 +543,13 @@ namespace eval ::pretraitement {
          } \
          "$caption(audace,menu,offset)" {
             #--- Tests sur la constante
-            if { $pretraitement(1,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(1,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -555,7 +557,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { offset $pretraitement(1,const) } m
+               catch { offset $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -565,11 +567,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: offset1 in out const\n\n"
                catch { offset1 $in $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -579,11 +581,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: offset2 in out const number ?first_index?\n\n"
                catch { offset2 $in $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -595,13 +597,13 @@ namespace eval ::pretraitement {
          } \
          "$caption(audace,menu,mult_cte)" {
             #--- Tests sur la constante
-            if { $pretraitement(1,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(1,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -609,7 +611,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { mult $pretraitement(1,const) } m
+               catch { mult $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -619,11 +621,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: mult1 in out const\n\n"
                catch { mult1 $in $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -633,11 +635,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
                catch { mult2 $in $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -649,13 +651,13 @@ namespace eval ::pretraitement {
          } \
          "$caption(audace,menu,noffset)" {
             #--- Tests sur la constante
-            if { $pretraitement(1,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_fond_ciel)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(1,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -663,7 +665,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { noffset $pretraitement(1,const) } m
+               catch { noffset $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -672,11 +674,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: noffset1 in out const\n\n"
                catch { noffset1 $in $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -686,11 +688,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
                catch { noffset2 $in $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -702,13 +704,13 @@ namespace eval ::pretraitement {
          } \
          "$caption(audace,menu,ngain)" {
             #--- Tests sur la constante
-            if { $pretraitement(1,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_fond_ciel)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(1,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -716,7 +718,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { ngain $pretraitement(1,const) } m
+               catch { ngain $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -725,11 +727,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: ngain1 in out const\n\n"
                catch { ngain1 $in $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -739,11 +741,11 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
-               set const $pretraitement(1,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
                catch { ngain2 $in $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -767,13 +769,13 @@ namespace eval ::pretraitement {
                return
             }
             #--- Tests sur la constante
-            if { $pretraitement(2,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(2,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -781,7 +783,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { add $pretraitement(2,operand) $pretraitement(2,const) } m
+               catch { add $pretraitement(2,operand) $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -791,11 +793,11 @@ namespace eval ::pretraitement {
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
                set operand $pretraitement(2,operand)
-               set const $pretraitement(2,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: add1 in operand out const\n\n"
                catch { add1 $in $operand $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -806,11 +808,11 @@ namespace eval ::pretraitement {
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
                set operand $pretraitement(2,operand)
-               set const $pretraitement(2,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
                catch { add2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -834,13 +836,13 @@ namespace eval ::pretraitement {
                return
             }
             #--- Tests sur la constante
-            if { $pretraitement(2,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(2,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -848,7 +850,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { sub $pretraitement(2,operand) $pretraitement(2,const) } m
+               catch { sub $pretraitement(2,operand) $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -858,11 +860,11 @@ namespace eval ::pretraitement {
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
                set operand $pretraitement(2,operand)
-               set const $pretraitement(2,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: sub1 in operand out const\n\n"
                catch { sub1 $in $operand $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -873,11 +875,11 @@ namespace eval ::pretraitement {
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
                set operand $pretraitement(2,operand)
-               set const $pretraitement(2,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
                catch { sub2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -901,13 +903,13 @@ namespace eval ::pretraitement {
                return
             }
             #--- Tests sur la constante
-            if { $pretraitement(2,const) == "" } {
+            if { $pretraitement(const) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
                set pretraitement(avancement) ""
                return
             }
-            if { [ string is double -strict $pretraitement(2,const) ] == "0" } {
+            if { [ string is double -strict $pretraitement(const) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set pretraitement(avancement) ""
@@ -915,7 +917,7 @@ namespace eval ::pretraitement {
             }
             if { $pretraitement(choix_mode) == "0" } {
                #---
-               catch { div $pretraitement(2,operand) $pretraitement(2,const) } m
+               catch { div $pretraitement(2,operand) $pretraitement(const) } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -925,11 +927,11 @@ namespace eval ::pretraitement {
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
                set operand $pretraitement(2,operand)
-               set const $pretraitement(2,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: div1 in operand out const\n\n"
                catch { div1 $in $operand $out $const } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -940,11 +942,11 @@ namespace eval ::pretraitement {
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
                set operand $pretraitement(2,operand)
-               set const $pretraitement(2,const)
+               set const $pretraitement(const)
                ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
                catch { div2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -985,7 +987,7 @@ namespace eval ::pretraitement {
                ::console::affiche_resultat "Usage: opt1 in dark offset out\n\n"
                catch { opt1 $in $dark $offset $out } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -1000,7 +1002,7 @@ namespace eval ::pretraitement {
                ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
                catch { opt2 $in $dark $offset $out $nb $first } m
                if { $m == "" } {
-                  if { $pretraitement(5,disp) == 1 } {
+                  if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -1085,6 +1087,7 @@ namespace eval ::pretraitement {
       #--- que la commande switch continue sur la ligne suivante
       switch $pretraitement(operation) \
          "$caption(audace,menu,scale)" {
+            set pretraitement(const) ""
             if { $pretraitement(choix_mode) == "0" } {
                pack forget $This.usr.0
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1124,6 +1127,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,offset)" {
+            set pretraitement(const) "0"
             if { $pretraitement(choix_mode) == "0" } {
                pack $This.usr.0 -in $This.usr -side top -fill both
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1163,6 +1167,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,mult_cte)" {
+            set pretraitement(const) "1"
             if { $pretraitement(choix_mode) == "0" } {
                pack $This.usr.0 -in $This.usr -side top -fill both
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1202,6 +1207,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,noffset)" {
+            set pretraitement(const) ""
             if { $pretraitement(choix_mode) == "0" } {
                pack forget $This.usr.0
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1241,6 +1247,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,ngain)" {
+            set pretraitement(const) ""
             if { $pretraitement(choix_mode) == "0" } {
                pack forget $This.usr.0
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1280,6 +1287,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,addition)" {
+            set pretraitement(const) "0"
             if { $pretraitement(choix_mode) == "0" } {
                pack $This.usr.0 -in $This.usr -side top -fill both
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1319,6 +1327,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,soust)" {
+            set pretraitement(const) "0"
             if { $pretraitement(choix_mode) == "0" } {
                pack $This.usr.0 -in $This.usr -side top -fill both
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1358,6 +1367,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,division)" {
+            set pretraitement(const) "1"
             if { $pretraitement(choix_mode) == "0" } {
                pack $This.usr.0 -in $This.usr -side top -fill both
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1397,6 +1407,7 @@ namespace eval ::pretraitement {
             }
          } \
          "$caption(audace,menu,opt_noir)" {
+            set pretraitement(const) ""
             if { $pretraitement(choix_mode) == "0" } {
                pack forget $This.usr.0
                pack $This.usr.1 -in $This.usr -side top -fill both
@@ -1737,16 +1748,16 @@ namespace eval ::traiteImage {
       variable widget
       global audace caption color conf traiteImage
 
-      #---
+      #--- Initialisation de la variable principale
       set traiteImage(avancement) ""
 
-      #---
-      set traiteImage(clipWindow_mini) $conf(clip_mini)
-      set traiteImage(clipWindow_maxi) $conf(clip_maxi)
-
-      #---
+      #--- Initialisation des variables de la fonction soustraction du fond de ciel
       set traiteImage(subskyWindow_back_kernel)    $conf(back_kernel)
       set traiteImage(subskyWindow_back_threshold) $conf(back_threshold)
+
+      #--- Initialisation des variables de la fonction écrêtage
+      set traiteImage(clipWindow_mini) $conf(clip_mini)
+      set traiteImage(clipWindow_maxi) $conf(clip_maxi)
 
       #---
       toplevel $This
@@ -2398,15 +2409,13 @@ namespace eval ::traiteWindow {
       variable widget
       global audace caption color conf traiteWindow
 
-      #--- Initialisation
-      set traiteWindow(in)  ""
-      set traiteWindow(out) ""
-
-      #---
+      #--- Initialisation des variables principales
+      set traiteWindow(in)            ""
+      set traiteWindow(nb)            ""
       set traiteWindow(valeur_indice) "1"
-
-      #---
-      set traiteWindow(avancement) ""
+      set traiteWindow(out)           ""
+      set traiteWindow(disp)          "1"
+      set traiteWindow(avancement)    ""
 
       #---
       toplevel $This
@@ -2436,7 +2445,7 @@ namespace eval ::traiteWindow {
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,afficher_image_fin)" \
-                  -variable traiteWindow(4,disp)
+                  -variable traiteWindow(disp)
                pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -in $This.usr -side top -fill both
@@ -2561,10 +2570,12 @@ namespace eval ::traiteWindow {
       set traiteWindow(avancement) "$caption(pretraitement,en_cours)"
       update
       #---
+
       set in    $traiteWindow(in)
-      set out   $traiteWindow(out)
       set nb    $traiteWindow(nb)
       set first $traiteWindow(valeur_indice)
+      set out   $traiteWindow(out)
+
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
@@ -2590,6 +2601,7 @@ namespace eval ::traiteWindow {
           set traiteWindow(avancement) ""
           return
       }
+
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
@@ -2599,7 +2611,7 @@ namespace eval ::traiteWindow {
             ::console::affiche_resultat "Usage: smedian in out number ?first_index? ?tt_options?\n\n"
             catch { smedian $in $out $nb $first } m
             if { $m == "" } {
-               if { $traiteWindow(4,disp) == 1 } {
+               if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
@@ -2612,7 +2624,7 @@ namespace eval ::traiteWindow {
             ::console::affiche_resultat "Usage: sadd in out number ?first_index? ?tt_options?\n\n"
             catch { sadd $in $out $nb $first } m
             if { $m == "" } {
-               if { $traiteWindow(4,disp) == 1 } {
+               if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
@@ -2625,7 +2637,7 @@ namespace eval ::traiteWindow {
             ::console::affiche_resultat "Usage: smean in out number ?first_index? ?tt_options?\n\n"
             catch { smean $in $out $nb $first } m
             if { $m == "" } {
-               if { $traiteWindow(4,disp) == 1 } {
+               if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
@@ -2638,7 +2650,7 @@ namespace eval ::traiteWindow {
             ::console::affiche_resultat "Usage: ssigma in out number ?first_index? bitpix=-32\n\n"
             catch { ssigma $in $out $nb $first "bitpix=-32" } m
             if { $m == "" } {
-               if { $traiteWindow(4,disp) == 1 } {
+               if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
@@ -2875,29 +2887,24 @@ namespace eval ::faireImageRef {
       variable widget
       global audace caption color conf faireImageRef
 
-      #--- Initialisation
-      set faireImageRef(in)           ""
-      set faireImageRef(out)          ""
-      set faireImageRef(nb)           ""
-      set faireImageRef(1,offset)     ""
-      set faireImageRef(1,dark)       ""
-      set faireImageRef(1,opt)        "0"
-      set faireImageRef(1,flat-field) ""
-      set faireImageRef(1,methode)    "2"
-      set faireImageRef(1,norm)       ""
-
-      #--- Initialisation
+      #--- Initialisation des variables principales
+      set faireImageRef(in)                          ""
+      set faireImageRef(nb)                          ""
+      set faireImageRef(valeur_indice)               "1"
+      set faireImageRef(out)                         ""
+      set faireImageRef(offset)                      ""
+      set faireImageRef(dark)                        ""
+      set faireImageRef(opt)                         "0"
+      set faireImageRef(flat-field)                  ""
+      set faireImageRef(methode)                     "2"
+      set faireImageRef(norm)                        ""
+      set faireImageRef(disp)                        "1"
+      set faireImageRef(afficher_image)              "$caption(pretraitement,afficher_image_fin)"
+      set faireImageRef(avancement)                  ""
       set faireImageRef(dark,no-offset)              "0"
       set faireImageRef(flat-field,no-offset)        "0"
       set faireImageRef(flat-field,no-dark)          "0"
       set faireImageRef(pretraitement,no-flat-field) "0"
-
-      #---
-      set faireImageRef(valeur_indice) "1"
-
-      #---
-      set faireImageRef(afficher_image) "$caption(pretraitement,afficher_image_fin)"
-      set faireImageRef(avancement)     ""
 
       #---
       toplevel $This
@@ -2926,7 +2933,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.1.lab6 -textvariable "faireImageRef(offset)"
                pack $This.usr.7.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.7.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.1 -side top -fill both
             frame $This.usr.7.2 -borderwidth 0 -relief flat
@@ -2935,11 +2942,11 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.2.lab6 -textvariable "faireImageRef(dark)"
                pack $This.usr.7.2.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.2.ent6 -textvariable faireImageRef(1,dark) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.7.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.2.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.2 -side top -fill both
             frame $This.usr.7.3 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.3.opt -text "$caption(audace,menu,opt_noir)" -variable faireImageRef(1,opt)
+               checkbutton $This.usr.7.3.opt -text "$caption(audace,menu,opt_noir)" -variable faireImageRef(opt)
                pack $This.usr.7.3.opt -side right -padx 60 -pady 5
             pack $This.usr.7.3 -side top -fill both
             frame $This.usr.7.4 -borderwidth 0 -relief flat
@@ -2948,7 +2955,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.4.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.4.lab6 -textvariable "faireImageRef(flat-field)"
                pack $This.usr.7.4.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.4.ent6 -textvariable faireImageRef(1,flat-field) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.7.4.ent6 -textvariable faireImageRef(flat-field) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.4.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.4 -side top -fill both
             frame $This.usr.7.5 -borderwidth 0 -relief flat
@@ -2961,7 +2968,7 @@ namespace eval ::faireImageRef {
          frame $This.usr.6 -borderwidth 1 -relief raised
             frame $This.usr.6.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.6.1.che1 -text "$faireImageRef(afficher_image)" \
-                  -variable faireImageRef(1,disp)
+                  -variable faireImageRef(disp)
                pack $This.usr.6.1.che1 -side left -padx 10 -pady 5
             pack $This.usr.6.1 -side top -fill both
         # pack $This.usr.6 -side top -fill both
@@ -2971,13 +2978,13 @@ namespace eval ::faireImageRef {
                label $This.usr.5.1.lab9 -text "$caption(pretraitement,methode)"
                pack $This.usr.5.1.lab9 -side left -padx 10 -pady 5
                radiobutton $This.usr.5.1.rad0 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,menu,somme)" -value 0 -variable faireImageRef(1,methode)
+                  -text "$caption(audace,menu,somme)" -value 0 -variable faireImageRef(methode)
                pack $This.usr.5.1.rad0 -side left -padx 10 -pady 5
                radiobutton $This.usr.5.1.rad1 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,menu,moyenne)" -value 1 -variable faireImageRef(1,methode)
+                  -text "$caption(audace,menu,moyenne)" -value 1 -variable faireImageRef(methode)
                pack $This.usr.5.1.rad1 -side left -padx 10 -pady 5
                radiobutton $This.usr.5.1.rad2 -highlightthickness 0 -padx 0 -pady 0 -state normal \
-                  -text "$caption(audace,menu,mediane)" -value 2 -variable faireImageRef(1,methode)
+                  -text "$caption(audace,menu,mediane)" -value 2 -variable faireImageRef(methode)
                pack $This.usr.5.1.rad2 -side left -padx 10 -pady 5
             pack $This.usr.5.1 -side top -fill both
         # pack $This.usr.5 -side top -fill both
@@ -2992,7 +2999,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.1.lab6 -textvariable "faireImageRef(offset)"
                pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.4.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.4.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.4.1 -side top -fill both
 
@@ -3005,14 +3012,14 @@ namespace eval ::faireImageRef {
                pack $This.usr.4.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.2.lab6 -textvariable "faireImageRef(dark)"
                pack $This.usr.4.2.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent6 -textvariable faireImageRef(1,dark) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.4.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent6 -side right -padx 10 -pady 5
             pack $This.usr.4.2 -side top -fill both
 
             frame $This.usr.4.3 -borderwidth 0 -relief flat
                label $This.usr.4.3.lab7 -textvariable "faireImageRef(normalisation)"
                pack $This.usr.4.3.lab7 -side left -padx 5 -pady 5
-               entry $This.usr.4.3.ent7 -textvariable faireImageRef(1,norm) -width 7 -justify center \
+               entry $This.usr.4.3.ent7 -textvariable faireImageRef(norm) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.4.3.ent7 -side right -padx 10 -pady 5
             pack $This.usr.4.3 -side top -fill both
@@ -3028,7 +3035,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.3.1.lab6 -textvariable "faireImageRef(offset)"
                pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.3.1.ent6 -textvariable faireImageRef(1,offset) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.3.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -side top -fill both
@@ -3146,11 +3153,13 @@ namespace eval ::faireImageRef {
       #---
       set faireImageRef(avancement) "$caption(pretraitement,en_cours)"
       update
+
       #---
       set in    $faireImageRef(in)
-      set out   $faireImageRef(out)
       set nb    $faireImageRef(nb)
       set first $faireImageRef(valeur_indice)
+      set out   $faireImageRef(out)
+
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $faireImageRef(in) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
@@ -3183,6 +3192,7 @@ namespace eval ::faireImageRef {
              return
          }
       }
+
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
@@ -3200,7 +3210,7 @@ namespace eval ::faireImageRef {
          "$caption(audace,menu,faire_offset)" {
             catch { smedian $in $out $nb $first } m
             if { $m == "" } {
-               if { $faireImageRef(1,disp) == 1 } {
+               if { $faireImageRef(disp) == 1 } {
                   loadima $out
                   ::audace::autovisu $audace(visuNo)
                }
@@ -3213,7 +3223,7 @@ namespace eval ::faireImageRef {
          "$caption(audace,menu,faire_dark)" {
             #--- Test sur l'offset
             if { $faireImageRef(dark,no-offset) == "0" } {
-               if { $faireImageRef(1,offset) == "" } {
+               if { $faireImageRef(offset) == "" } {
                   tk_messageBox -title $caption(pretraitement,attention) -type ok \
                      -message $caption(pretraitement,definir_offset)
                   set faireImageRef(avancement) ""
@@ -3221,36 +3231,36 @@ namespace eval ::faireImageRef {
                }
             }
             #---
-            set offset $faireImageRef(1,offset)
+            set offset $faireImageRef(offset)
             set const "0"
             set temp "temp"
             if { $faireImageRef(dark,no-offset) == "0" } {
                catch { sub2 $in $offset $temp $const $nb $first } m
-               if { $faireImageRef(1,methode) == "0" } {
+               if { $faireImageRef(methode) == "0" } {
                   #--- Somme
                   catch { sadd $temp $out $nb $first } m
-               } elseif { $faireImageRef(1,methode) == "1" } {
+               } elseif { $faireImageRef(methode) == "1" } {
                   #--- Moyenne
                   catch { smean $temp $out $nb $first } m
-               } elseif { $faireImageRef(1,methode) == "2" } {
+               } elseif { $faireImageRef(methode) == "2" } {
                   #--- Mediane
                   catch { smedian $temp $out $nb $first } m
                }
                catch { delete2 $temp $nb } m
             } elseif { $faireImageRef(dark,no-offset) == "1" } {
-               if { $faireImageRef(1,methode) == "0" } {
+               if { $faireImageRef(methode) == "0" } {
                   #--- Somme
                   catch { sadd $in $out $nb $first } m
-               } elseif { $faireImageRef(1,methode) == "1" } {
+               } elseif { $faireImageRef(methode) == "1" } {
                   #--- Moyenne
                   catch { smean $in $out $nb $first } m
-               } elseif { $faireImageRef(1,methode) == "2" } {
+               } elseif { $faireImageRef(methode) == "2" } {
                   #--- Mediane
                   catch { smedian $in $out $nb $first } m
                }
             }
             if { $m == "" } {
-               if { $faireImageRef(1,disp) == 1 } {
+               if { $faireImageRef(disp) == 1 } {
                   loadima $out
                   ::audace::autovisu $audace(visuNo)
                }
@@ -3263,7 +3273,7 @@ namespace eval ::faireImageRef {
          "$caption(audace,menu,faire_flat_field)" {
             #--- Test sur l'offset
             if { $faireImageRef(flat-field,no-offset) == "0" } {
-               if { $faireImageRef(1,offset) == "" } {
+               if { $faireImageRef(offset) == "" } {
                   tk_messageBox -title $caption(pretraitement,attention) -type ok \
                      -message $caption(pretraitement,definir_offset)
                   set faireImageRef(avancement) ""
@@ -3272,7 +3282,7 @@ namespace eval ::faireImageRef {
             }
             #--- Test sur le dark
             if { $faireImageRef(flat-field,no-dark) == "0" } {
-               if { $faireImageRef(1,dark) == "" } {
+               if { $faireImageRef(dark) == "" } {
                   tk_messageBox -title $caption(pretraitement,attention) -type ok \
                      -message $caption(pretraitement,definir_noir)
                   set faireImageRef(avancement) ""
@@ -3280,22 +3290,22 @@ namespace eval ::faireImageRef {
                }
             }
             #--- Tests sur la valeur de normalisation
-            if { $faireImageRef(1,norm) == "" } {
+            if { $faireImageRef(norm) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_cte)
                set faireImageRef(avancement) ""
                return
             }
-            if { [ string is double -strict $faireImageRef(1,norm) ] == "0" } {
+            if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error \
                   -message $caption(pretraitement,cte_invalide)
                set faireImageRef(avancement) ""
                return
             }
             #---
-            set offset $faireImageRef(1,offset)
-            set dark   $faireImageRef(1,dark)
-            set norm   $faireImageRef(1,norm)
+            set offset $faireImageRef(offset)
+            set dark   $faireImageRef(dark)
+            set norm   $faireImageRef(norm)
             set const  "0"
             set temp   "temp"
             set tempo  "tempo"
@@ -3334,7 +3344,7 @@ namespace eval ::faireImageRef {
                }
             }
             if { $m == "" } {
-               if { $faireImageRef(1,disp) == 1 } {
+               if { $faireImageRef(disp) == 1 } {
                   loadima $out
                   ::audace::autovisu $audace(visuNo)
                }
@@ -3346,14 +3356,14 @@ namespace eval ::faireImageRef {
          } \
          "$caption(audace,menu,pretraite)" {
             #--- Test sur l'offset
-            if { $faireImageRef(1,offset) == "" } {
+            if { $faireImageRef(offset) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_offset)
                set faireImageRef(avancement) ""
                return
             }
             #--- Test sur le dark
-            if { $faireImageRef(1,dark) == "" } {
+            if { $faireImageRef(dark) == "" } {
                tk_messageBox -title $caption(pretraitement,attention) -type ok \
                   -message $caption(pretraitement,definir_noir)
                set faireImageRef(avancement) ""
@@ -3362,7 +3372,7 @@ namespace eval ::faireImageRef {
             #--- Test sur le flat-field
             if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
                if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  if { $faireImageRef(1,flat-field) == "" } {
+                  if { $faireImageRef(flat-field) == "" } {
                      tk_messageBox -title $caption(pretraitement,attention) -type ok \
                         -message $caption(pretraitement,definir_flat-field)
                      set faireImageRef(avancement) ""
@@ -3371,14 +3381,14 @@ namespace eval ::faireImageRef {
                }
             }
             #---
-            set offset     $faireImageRef(1,offset)
-            set dark       $faireImageRef(1,dark)
-            set flat       $faireImageRef(1,flat-field)
+            set offset     $faireImageRef(offset)
+            set dark       $faireImageRef(dark)
+            set flat       $faireImageRef(flat-field)
             set const      "0"
             set const_mult "1"
             set temp       "temp"
             #--- Deux possibilites de pretraitement
-            if { $faireImageRef(1,opt) == "0" } {
+            if { $faireImageRef(opt) == "0" } {
                #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
                #--- Realisation de X = ( Offset + Dark )
                catch {
@@ -3416,7 +3426,7 @@ namespace eval ::faireImageRef {
             }
             #---
             if { $m == "" } {
-               if { $faireImageRef(1,disp) == 1 } {
+               if { $faireImageRef(disp) == 1 } {
                   loadima $out$nb
                   ::audace::autovisu $audace(visuNo)
                }
@@ -3490,11 +3500,11 @@ namespace eval ::faireImageRef {
       #--- que la commande switch continue sur la ligne suivante
       switch $faireImageRef(operation) \
          "$caption(audace,menu,raw2cfa)" {
-            set faireImageRef(in)           ""
-            set faireImageRef(out)          ""
-            set faireImageRef(1,offset)     ""
-            set faireImageRef(1,dark)       ""
-            set faireImageRef(1,flat-field) ""
+            set faireImageRef(in)         ""
+            set faireImageRef(out)        ""
+            set faireImageRef(offset)     ""
+            set faireImageRef(dark)       ""
+            set faireImageRef(flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3505,11 +3515,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_offset)" {
-            set faireImageRef(in)           ""
-            set faireImageRef(out)          "offset"
-            set faireImageRef(1,offset)     ""
-            set faireImageRef(1,dark)       ""
-            set faireImageRef(1,flat-field) ""
+            set faireImageRef(in)         ""
+            set faireImageRef(out)        "offset"
+            set faireImageRef(offset)     ""
+            set faireImageRef(dark)       ""
+            set faireImageRef(flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3520,11 +3530,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_dark)" {
-            set faireImageRef(in)           ""
-            set faireImageRef(out)          "dark"
-            set faireImageRef(1,offset)     "offset"
-            set faireImageRef(1,dark)       ""
-            set faireImageRef(1,flat-field) ""
+            set faireImageRef(in)         ""
+            set faireImageRef(out)        "dark"
+            set faireImageRef(offset)     "offset"
+            set faireImageRef(dark)       ""
+            set faireImageRef(flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
@@ -3535,11 +3545,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_flat_field)" {
-            set faireImageRef(in)           ""
-            set faireImageRef(out)          "flat"
-            set faireImageRef(1,offset)     "offset"
-            set faireImageRef(1,dark)       "dark-flat"
-            set faireImageRef(1,flat-field) ""
+            set faireImageRef(in)         ""
+            set faireImageRef(out)        "flat"
+            set faireImageRef(offset)     "offset"
+            set faireImageRef(dark)       "dark-flat"
+            set faireImageRef(flat-field) ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3550,11 +3560,11 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,pretraite)" {
-            set faireImageRef(in)           ""
-            set faireImageRef(out)          ""
-            set faireImageRef(1,offset)     "offset"
-            set faireImageRef(1,dark)       "dark"
-            set faireImageRef(1,flat-field) "flat"
+            set faireImageRef(in)         ""
+            set faireImageRef(out)        ""
+            set faireImageRef(offset)     "offset"
+            set faireImageRef(dark)       "dark"
+            set faireImageRef(flat-field) "flat"
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3584,11 +3594,11 @@ namespace eval ::faireImageRef {
       } elseif { $In_Out == "2" } {
          set faireImageRef(out) [ lindex [ decomp [ file rootname [ file tail $filename ] ] ] 1 ]
       } elseif { $In_Out == "3" } {
-         set faireImageRef(1,offset) [ file rootname [ file tail $filename ] ]
+         set faireImageRef(offset) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
-         set faireImageRef(1,dark) [ file rootname [ file tail $filename ] ]
+         set faireImageRef(dark) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "5" } {
-         set faireImageRef(1,flat-field) [ file rootname [ file tail $filename ] ]
+         set faireImageRef(flat-field) [ file rootname [ file tail $filename ] ]
       }
    }
 
@@ -3647,7 +3657,7 @@ namespace eval ::faireImageRef {
          $This.usr.7.4.ent6 configure -state normal
       } else {
          $This.usr.7.4.explore configure -state disabled
-         $This.usr.7.4.ent6 configure -textvariable faireImageRef(1,flat-field) -state disabled
+         $This.usr.7.4.ent6 configure -textvariable faireImageRef(flat-field) -state disabled
       }
    }
 
@@ -3664,7 +3674,7 @@ namespace eval ::faireImageRef {
          $This.usr.4.1.ent6 configure -state normal
       } else {
          $This.usr.4.1.explore configure -state disabled
-         $This.usr.4.1.ent6 configure -textvariable faireImageRef(1,offset) -state disabled
+         $This.usr.4.1.ent6 configure -textvariable faireImageRef(offset) -state disabled
       }
    }
 
@@ -3681,7 +3691,7 @@ namespace eval ::faireImageRef {
          $This.usr.4.2.ent6 configure -state normal
       } else {
          $This.usr.4.2.explore configure -state disabled
-         $This.usr.4.2.ent6 configure -textvariable faireImageRef(1,dark) -state disabled
+         $This.usr.4.2.ent6 configure -textvariable faireImageRef(dark) -state disabled
       }
    }
 
@@ -3698,7 +3708,7 @@ namespace eval ::faireImageRef {
          $This.usr.3.1.ent6 configure -state normal
       } else {
          $This.usr.3.1.explore configure -state disabled
-         $This.usr.3.1.ent6 configure -textvariable faireImageRef(1,offset) -state disabled
+         $This.usr.3.1.ent6 configure -textvariable faireImageRef(offset) -state disabled
       }
    }
 
