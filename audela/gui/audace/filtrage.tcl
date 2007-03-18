@@ -2,25 +2,23 @@
 # Fichier : filtrage.tcl
 # Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: filtrage.tcl,v 1.4 2007-03-13 22:06:18 robertdelmas Exp $
+# Mise a jour $Id: filtrage.tcl,v 1.5 2007-03-18 16:06:48 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
-# bm_masque_flou     : convolution par un filtre passe-bas effectuant un masque flou d'une image.
-# bm_passe_bas       : convolution par un filtre passe-bas "éliminant le bruit".
-# bm_passe_haut      : convolution par un filtre passe-haut "éliminant les formes".
-# bm_filtre_median   : convolution par un filtre median effectuant un genre de "moyenne".
-# bm_filtre_min      : convolution par un filtre minimum.
-# bm_filtre_max      : convolution par un filtre maximum.
-# bm_filtre_gauss    : convolution d'image par un filtre de forme gaussienne (lisse l'image).
-# bm_ondelette_mor   : convolution d'image par un filtre de forme chapeau type morlet.
-#                      (met en évidence les détails noyés dans la nébulosité).
-# bm_ondelette_mex   : convolution d'image par un filtre de forme chapeau type mexicain.
-#                      (met en évidence les détails noyés dans la nébulosité).
-# bm_cutima          : découpage d'une zone sélectionnée à la sourie d'une image chargée.
-# bm_zoomima         : zoom de l'image ou d'une partie sélectionnée de l'image chargée.
-# bm_logima          : logarithme d'une image avec des coeficients adpatés a une image brillante.
+# bm_masque_flou     : Convolution par un filtre passe-bas effectuant un masque flou d'une image
+# bm_passe_bas       : Convolution par un filtre passe-bas "éliminant le bruit"
+# bm_passe_haut      : Convolution par un filtre passe-haut "éliminant les formes"
+# bm_filtre_median   : Convolution par un filtre median effectuant un genre de "moyenne"
+# bm_filtre_min      : Convolution par un filtre minimum
+# bm_filtre_max      : Convolution par un filtre maximum
+# bm_filtre_gauss    : Convolution d'image par un filtre de forme gaussienne (lisse l'image)
+# bm_ondelette_mor   : Convolution d'image par un filtre de forme chapeau type morlet
+#                      (met en évidence les détails noyés dans la nébulosité)
+# bm_ondelette_mex   : Convolution d'image par un filtre de forme chapeau type mexicain
+#                      (met en évidence les détails noyés dans la nébulosité)
+# bm_logima          : Logarithme d'une image avec des coeficients adpatés a une image brillante
 #
 #-----------------------------------------------------------------------------#
 
@@ -376,77 +374,6 @@ proc bm_ondelette_mex { args } {
       bm_convo mexican $fichier $largeur
    } else {
       ::console::affiche_erreur "Usage: bm_ondelette_mex filename \[width 2\]\n"
-   }
-}
-#-----------------------------------------------------------------------------#
-
-#*****************************************************************************#
-#
-# Description : Decoupage d'une zone selectionnee a la souris
-#
-#*****************************************************************************#
-
-proc bm_cutima {} {
-   global audace
-   global caption
-   global traiteFilters
-
-   #--- Il faut une image affichee
-   if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
-      tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
-      set traiteFilters(avancement) ""
-      return
-   }
-   #---
-   if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
-      buf$audace(bufNo) window [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ]
-      #--- Suppression de la zone selectionnee avec la souris
-      ::confVisu::deleteBox $audace(visuNo)
-      ::audace::autovisu $audace(visuNo)
-   } else {
-      tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,tracer)
-      set traiteFilters(avancement) ""
-   }
-}
-#-----------------------------------------------------------------------------#
-
-#*****************************************************************************#
-#
-# Description : Zoom d'une image ou d'une zone selectionnee a la souris
-#
-#*****************************************************************************#
-
-#buf$audace(bufNo) imaseries "RESAMPLE options"
-#IMA/SERIES ... RESAMPLE "paramresample=$gross 0 0 0 $gross 0 normaflux=1"
-
-proc bm_zoomima { args } {
-   global audace
-   global caption
-   global traiteFilters
-
-   #--- Il faut une image affichee
-   if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
-      tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
-      set traiteFilters(avancement) ""
-      return
-   }
-   #---
-   if { [llength $args] == 1 } {
-      set gross $args
-      set factor [list $gross $gross]
-      if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
-         set xmax [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-         set ymax [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
-         buf$audace(bufNo) window "1 $ymax $xmax 1"
-      } else {
-         buf$audace(bufNo) window [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ]
-         #--- Suppression de la zone selectionnee avec la souris
-         ::confVisu::deleteBox $audace(visuNo)
-      }
-      buf$audace(bufNo) scale $factor 1
-      ::audace::autovisu $audace(visuNo)
-   } else {
-      ::console::affiche_erreur "Usage: bm_zoomima mult\n"
    }
 }
 #-----------------------------------------------------------------------------#
