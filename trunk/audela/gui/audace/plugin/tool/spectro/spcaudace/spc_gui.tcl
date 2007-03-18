@@ -112,13 +112,19 @@ proc spc_winini { } {
       menu .spc.menuBar.file -tearoff 0
       .spc.menuBar.file add command -label $captionspc(loadspcfit) -command "spc_loadfit" -underline 0 -accelerator "Ctrl-O"
       .spc.menuBar.file add command -label $captionspc(loadspctxt) -command "spc_loaddat" -underline 0 -accelerator "Ctrl-T"
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png_w) -command "spc_fit2png" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png2_w) -command "spc_fit2png2" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_file_space)
+      .spc.menuBar.file add command -label $captionspc(spc_repconf) -command { ::cwdWindow::run "$audace(base).cwdWindow" } -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_file_space)
+      .spc.menuBar.file add command -label $captionspc(spc_spc2png_w) -command "spc_export2png" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
       .spc.menuBar.file add command -label $captionspc(writeps) -command "spc_postscript" -underline 0 -accelerator "Ctrl-E"
+      .spc.menuBar.file add command -label $captionspc(spc_file_space)
       .spc.menuBar.file add command -label $captionspc(spc_fits2dat_w) -command "spc_fits2dat" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_file_space)
       .spc.menuBar.file add command -label $captionspc(spc_dat2fits_w) -command "spc_dat2fits" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_spc2fits_w) -command "spc_spc2fits" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_file_space)
       .spc.menuBar.file add command -label $captionspc(spc_bessmodule_w) -command "spc_bessmodule" -underline 0
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
@@ -149,7 +155,7 @@ proc spc_winini { } {
       # .spc configure -menu .spc.menuBar
       .spc.menuBar.geometrie add command -label $captionspc(spc_pretraitementfc_w) -command "spc_pretraitementfc_w" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_register_w) -command "spc_register" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_rot180_w) -command "spc_rot180" -underline 0
+      .spc.menuBar.geometrie add command -label $captionspc(spc_rot180_w) -command "spc_flip" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_tiltauto_w) -command "spc_tiltauto" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_tilt_w) -command "spc_tilt" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_slant_w) -command "spc_slant" -underline 0
@@ -160,10 +166,11 @@ proc spc_winini { } {
       #--- Menu Profil de raies ---#
       .spc.menuBar add cascade -menu .spc.menuBar.profil -label $captionspc(spc_profil) -underline 0
       menu .spc.menuBar.profil -tearoff 0
-      #.spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
+      # .spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
       .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
-      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
+      # .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
+      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_profil_zone" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       #bind .spc <Control-N> spc_open_fitfile
@@ -177,7 +184,7 @@ proc spc_winini { } {
       .spc.menuBar.mesures add command -label $captionspc(spc_centergrav_w) -command "spc_centergrav" -underline 0
       .spc.menuBar.mesures add command -label $captionspc(spc_centergauss_w) -command "spc_centergauss" -underline 0
       .spc.menuBar.mesures add command -label $captionspc(spc_fwhm_w) -command "spc_fwhm" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_ew_w) -command "spc_ew" -underline 0
+      .spc.menuBar.mesures add command -label $captionspc(spc_ew_w) -command "spc_ew2" -underline 0
       .spc.menuBar.mesures add command -label $captionspc(spc_intensity_w) -command "spc_intensity" -underline 0
 
 
@@ -185,14 +192,14 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(spc_calibration) -underline 0
       menu .spc.menuBar.calibration -tearoff 0
       # .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
-      # .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre \"\"" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
+      .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre" -underline 0 -accelerator "Ctrl-L"
+      #.spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
       .spc.menuBar.calibration add command -label $captionspc(spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
       .spc.menuBar.calibration add command -label $captionspc(spc_calibre_space)
       .spc.menuBar.calibration add command -label $captionspc(spc_rinstrum_w) -command "spc_rinstrum" -underline 0
       .spc.menuBar.calibration add command -label $captionspc(spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
       .spc.menuBar.calibration add command -label $captionspc(spc_calibre_space)
-      .spc.menuBar.calibration add command -label $captionspc(spc_norma_w) -command "spc_norma" -underline 0
+      .spc.menuBar.calibration add command -label $captionspc(spc_norma_w) -command "spc_autonormaraie" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       bind .spc <Control-L> cali_lambda
@@ -205,13 +212,13 @@ proc spc_winini { } {
       menu .spc.menuBar.pipelines -tearoff 0
       # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-4"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-5"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-4"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-4"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-2"
       .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-3"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
@@ -252,6 +259,7 @@ proc spc_winini { } {
       menu .spc.menuBar.aide -tearoff 0
       # .spc.menuBar.aide add command -label $captionspc(spc_version_w) -command "spc_version" -underline 0
       .spc.menuBar.aide add command -label $captionspc(spc_version_w)
+      .spc.menuBar.aide add command -label $captionspc(spc_help) -command "spc_help"
       .spc.menuBar.aide add command -label $captionspc(spc_about_w)
       .spc.menuBar.aide add command -label $captionspc(spc_contrib_w)
       .spc configure -menu .spc.menuBar
@@ -439,7 +447,8 @@ proc pvisu { } {
    #-- Meth 2 :
    #set echelley [ expr 10*int($vy(max)/($div_y*10)) ]
    #-- Meth 3 :
-   set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]   
+   set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]
+   return ""
 }
 #****************************************************************#
 

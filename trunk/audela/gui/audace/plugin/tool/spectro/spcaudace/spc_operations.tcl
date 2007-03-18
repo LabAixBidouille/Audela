@@ -54,7 +54,7 @@ proc spc_pretrait { args } {
        renumerote $nom_darkflat
 
        ## Détermine les listes de fichiers de chasue série
-       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]*$conf(extension,defaut) ] ]
+       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        set nb_stellaire [ llength $stellaire_liste ]
        #set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
        #set nb_dark [ llength $dark_liste ]
@@ -63,25 +63,25 @@ proc spc_pretrait { args } {
        #set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
        #set nb_darkflat [ llength $darkflat_liste ]
        #-- Gesttion du cas des masters au lieu d'une série de fichier :
-       if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) } ] } {
+       if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
 	   set dark_list [ list $nom_dark ]
 	   set nb_dark 1
        } else {
-	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
+	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_dark [ llength $dark_liste ]
        }
-       if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) } ] } {
+       if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
 	   set flat_list [ list $nom_flat ]
 	   set nb_flat 1
        } else {
-	   set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
+	   set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_flat [ llength $flat_liste ]
        }
-       if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) } ] } {
+       if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
 	   set darkflat_list [ list $nom_darkflat ]
 	   set nb_darkflat 1
        } else {
-	   set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
+	   set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_darkflat [ llength $darkflat_liste ]
        }
 
@@ -226,31 +226,40 @@ proc spc_pretrait { args } {
 
 proc spc_norma { args } {
 
-   global audace
+   global audace caption
    global conf
    set pourcent 0.95
 
-   if {[llength $args] == 2} {
-     set infichier [ lindex $args 0 ]
-     set lraie [lindex $args 1 ]
-     set fichier [ file rootname $infichier ]
-     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
-     buf$audace(bufNo) bitpix short
-     ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
-   } elseif {[llength $args] == 1} {
-     set fichier [ lindex $args 0 ]
-     set lraie 20
-     buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent div"
-     buf$audace(bufNo) bitpix float
-     buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
-     buf$audace(bufNo) bitpix short
-     ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
+   if {[llength $args] <= 2} {
+       if {[llength $args] == 2} {
+	   set fichier [ file rootname [ lindex $args 0 ] ]
+	   set lraie [lindex $args 1 ]
+       } elseif {[llength $args] == 1} {
+	   set fichier [ lindex $args 0 ]
+	   set lraie 20
+       } elseif { [llength $args]==0 } {
+	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+	       set fichier $spctrouve
+	       set lraie 20
+	   } else {
+	       ::console::affiche_erreur "Usage : spc_norma nom_fichier ?largeur de raie?\n\n"
+	       return 0
+	   }
+       } else {
+	   ::console::affiche_erreur "Usage : spc_norma nom_fichier ?largeur de raie?\n\n"
+	   return 0
+       }
+
+       #--- Filtrage d'élimination des raies :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent div"
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm$conf(extension,defaut)\n"
    } else {
-     ::console::affiche_erreur "Usage : spc_norma nom_fichier ?largeur de raie?\n\n"
+       ::console::affiche_erreur "Usage : spc_norma nom_fichier ?largeur de raie?\n\n"
    }
 }
 #*****************************************************************#
@@ -1120,97 +1129,36 @@ proc spc_div { args } {
 
 	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
 	if { [ spc_compare $numerateur $denominateur ] == 1 } {
-	    #--- Récupération des mots clef de l'entéte FITS :
-	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
-	    set dateobs [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
-	    set mjdobs [lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1]
-	    set exposure [lindex [buf$audace(bufNo) getkwd "EXPOSURE"] 1]
-	    set listemotsclef [ buf$audace(bufNo) getkwds ]
-	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-		set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-		set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
-		set spc_desc [ lindex [ buf$audace(bufNo) getkwd "SPC_DESC" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-		set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-		set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-		set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-		set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-		set spc_rms [ lindex [ buf$audace(bufNo) getkwd "SPC_RMS" ] 1 ]
-	    }
-
-	    #--- Création des listes de valeur
+	    #--- Création des listes de valeur :
 	    set contenu1 [ spc_fits2data $numerateur ]
 	    set contenu2 [ spc_fits2data $denominateur ]
 	    set abscisses [ lindex $contenu1 0 ]
 	    set ordonnees1 [ lindex $contenu1 1 ]
 	    set ordonnees2 [ lindex $contenu2 1 ]
 
-
-	    #--- Division
-	    set nordos [ list ]
-	    set i 0
+	    #--- Division :
+	    #-- Meth2 : division simple sans gestion des valeurs devenues gigantesques :
+	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
+	    set i 1
+	    set nbdivz 0
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
 		if { $ordo2 == 0.0 } {
-		    lappend nordos 0.0
-		    #::console::affiche_resultat "Val = $ordo2\n"
+		    buf$audace(bufNo) setpix [list $i 1] 0.0
 		    incr i
+		    incr nbdivz
 		} else {
-		    lappend nordos [ expr 1.0*$ordo1/$ordo2 ]
+		    buf$audace(bufNo) setpix [list $i 1] [ expr 1.0*$ordo1/$ordo2 ]
+		    incr i
 		}
 	    }
-	    ::console::affiche_resultat "Fin de la division : $i divisions par 0.\n"
+	    ::console::affiche_resultat "Fin de la division : $nbdivz divisions par 0.\n"
 
-	    #--- Enregistrement du resultat au format fits
-	    set ncontenu [ list $abscisses $nordos ]
-	    set lenl [ llength $nordos ]
-	    ::console::affiche_resultat "$lenl valeurs traitées.\n"
-	    set fichier_out [ spc_data2fits ${fichier}_div $ncontenu ]
-
-	    #--- Réintégration des mots clef FITS
-	    buf$audace(bufNo) load "$audace(rep_images)/$fichier_out"
-	    buf$audace(bufNo) setkwd [ list "DATE-OBS" "$dateobs" string "Start of exposure. FITS standard" "Iso 8601" ]
-	    buf$audace(bufNo) setkwd [ list "MJD-OBS" "$mjdobs" double "Start of exposure" "d" ]
-	    buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" double "Total time of exposure" "s" ]
-	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
-	    }
-	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]		
-	    }
-	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom.angstrom/pixel.pixel"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom.angstrom.a/pixel.pixel.p"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]		
-	    }
-	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
 
 	    #--- Fin du script :
+	    buf$audace(bufNo) bitpix float
+	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_div"
+	    buf$audace(bufNo) bitpix short
+	    file delete "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
 	    ::console::affiche_resultat "Division des 2 profils sauvée sous ${fichier}_div$conf(extension,defaut)\n"
 	    return ${fichier}_div
 	} else {
@@ -1252,38 +1200,6 @@ proc spc_divri { args } {
 
 	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
 	if { [ spc_compare $numerateur $denominateur_ech ] == 1 } {
-	    #--- Récupération des mots clef de l'entéte FITS :
-	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
-	    set dateobs [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
-	    set mjdobs [lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1]
-	    set exposure [lindex [buf$audace(bufNo) getkwd "EXPOSURE"] 1]
-	    set listemotsclef [ buf$audace(bufNo) getkwds ]
-	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-		set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-		set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
-		set spc_desc [ lindex [ buf$audace(bufNo) getkwd "SPC_DESC" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-		set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-		set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-		set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-		set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-		set spc_rms [ lindex [ buf$audace(bufNo) getkwd "SPC_RMS" ] 1 ]
-	    }
-
-
 	    #--- Création des listes de valeur :
 	    set contenu1 [ spc_fits2data $numerateur ]
 	    set contenu2 [ spc_fits2data $denominateur_ech ]
@@ -1292,84 +1208,30 @@ proc spc_divri { args } {
 	    set ordonnees2 [ lindex $contenu2 1 ]
 
 	    #--- Division :
-	    #-- Meth1 : gestion pixels oscillants :
-	    if {1==0} {
-	    set nordos ""
-	    set i 0
+	    #-- Meth2 : division simple sans gestion des valeurs devenues gigantesques :
+	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
+	    set i 1
+	    set nbdivz 0
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
 		if { $ordo2 == 0.0 } {
-		    lappend nordos 0.0
-		    #::console::affiche_resultat "Val = $ordo2\n"
+		    buf$audace(bufNo) setpix [list $i 1] 0.0
 		    incr i
+		    incr nbdivz
 		} else {
-		    set rapport [ expr 1.0*$ordo1/$ordo2 ]
-		    #-- Gere les bords qui sont oscillants et de tres grande valeur :
-		    if { $rapport>= 1. } {
-			lappend nordos 0.0
-			incr i
-		    } else {
-			lappend nordos $rapport
-		    }
+		    buf$audace(bufNo) setpix [list $i 1] [ expr 1.0*$ordo1/$ordo2 ]
+		    incr i
 		}
 	    }
-	    ::console::affiche_resultat "Fin de la division : $i division(s) par 0 ou mise(s) à 0.\n"
-	    }
-	    #-- Meth2 : division simple :
-	    set nordos [ list ]
-	    set i 0
-	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
-		if { $ordo2 == 0.0 } {
-		    lappend nordos 0.0
-		    #::console::affiche_resultat "Val = $ordo2\n"
-		    incr i
-		} else {
-		    lappend nordos [ expr 1.0*$ordo1/$ordo2 ]
-		}
-	    }
-	    ::console::affiche_resultat "Fin de la division : $i divisions par 0.\n"
+	    ::console::affiche_resultat "Fin de la division : $nbdivz divisions par 0.\n"
 
-
-	    #--- Enregistrement du resultat au format fits
-	    set ncontenu [ list $abscisses $nordos ]
-	    set lenl [ llength $nordos ]
-	    ::console::affiche_resultat "$lenl valeurs traitées.\n"
-	    set fichier_out [ spc_data2fits ${fichier}_ricorr $ncontenu ]
-
-	    #--- Réintégration des mots clef FITS
-	    buf$audace(bufNo) load "$audace(rep_images)/$fichier_out"
-	    buf$audace(bufNo) setkwd [ list "DATE-OBS" "$dateobs" string "Start of exposure. FITS standard" "Iso 8601" ]
-	    buf$audace(bufNo) setkwd [ list "MJD-OBS" "$mjdobs" double "Start of exposure" "d" ]
-	    buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" double "Total time of exposure" "s" ]
-	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
-	    }
-	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]		
-	    }
-	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom.angstrom/pixel.pixel"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom.angstrom.a/pixel.pixel.p"]
-	    }
-	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]		
-	    }
-	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
 
 	    #--- Fin du script :
+	    buf$audace(bufNo) bitpix float
+	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_ricorr"
+	    buf$audace(bufNo) bitpix short
 	    file delete "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
-	    ::console::affiche_resultat "Division du profil par la réponse intrumentale sauvée sous $fichier_out$conf(extension,defaut)\n"
-	    return $fichier_out
+	    ::console::affiche_resultat "Division du profil par la réponse intrumentale sauvée sous ${fichier}_ricorr$conf(extension,defaut)\n"
+	    return ${fichier}_ricorr
 	} else {
 	    ::console::affiche_resultat "\nLes 2 profils de raies ne sont pas divisibles.\n"
 	    return 0
@@ -1685,7 +1547,7 @@ proc spc_smoothsg { args } {
 	::console::affiche_resultat "Profil de raies exporté sous ${fichier}_lings\n"
 	return "${fichier}_linsg"
     } else {
-	::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?[[?largeur_filtre?] ?degre_filtrage (2,1,3)?]?\n\n"
+	::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?[[?largeur_filtre?] ?ordre_filtrage (2,4)?]?\n\n"
     }
 }
 ####################################################################
@@ -1718,6 +1580,170 @@ proc spc_smoothsg { args } {
 #================================================================================#
 # Anciennes versions
 #================================================================================#
+
+
+
+##########################################################
+# Procedure de division de 2 profils de raies et les effets de bords (intensités anormalement importantes par rapport à 1.0).
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 21-10-2006
+# Date de mise à jour : 21-10-2006
+# Arguments : profil de raies 1, profil de raies 2
+##########################################################
+
+proc spc_divri_21102006 { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 2} {
+	set numerateur [ lindex $args 0 ]
+	set denominateur [lindex $args 1 ]
+	set fichier [ file tail [ file rootname $numerateur ] ]
+
+	#--- Rééchantillonne la réponse intrumentale sur le spectre à corriger :
+	# set denominateur_ech $denominateur
+	# set denominateur_ech [ spc_echant $denominateur $numerateur ]
+	set denominateur_ech [ spc_calibreloifile $numerateur $denominateur ]
+
+
+	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+	if { [ spc_compare $numerateur $denominateur_ech ] == 1 } {
+	    #--- Récupération des mots clef de l'entéte FITS :
+	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
+	    set dateobs [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
+	    set mjdobs [lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1]
+	    set exposure [lindex [buf$audace(bufNo) getkwd "EXPOSURE"] 1]
+	    set listemotsclef [ buf$audace(bufNo) getkwds ]
+	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+		set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+		set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
+		set spc_desc [ lindex [ buf$audace(bufNo) getkwd "SPC_DESC" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+		set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+		set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+		set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+		set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
+		set spc_rms [ lindex [ buf$audace(bufNo) getkwd "SPC_RMS" ] 1 ]
+	    }
+	#foreach mot $listemotsclef {
+	#    set valeur_mot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+	#    if { [ regexp {\s99\s} $valeur_mot match resul ] } {
+	#	set nombre_poses [ llength $valeur_mot ]
+	#    }
+	#}
+
+	    #--- Création des listes de valeur :
+	    set contenu1 [ spc_fits2data $numerateur ]
+	    set contenu2 [ spc_fits2data $denominateur_ech ]
+	    set abscisses [ lindex $contenu1 0 ]
+	    set ordonnees1 [ lindex $contenu1 1 ]
+	    set ordonnees2 [ lindex $contenu2 1 ]
+
+	    #--- Division :
+	    #-- Meth1 : gestion pixels oscillants :
+	    if {1==0} {
+	    set nordos ""
+	    set i 0
+	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
+		if { $ordo2 == 0.0 } {
+		    lappend nordos 0.0
+		    #::console::affiche_resultat "Val = $ordo2\n"
+		    incr i
+		} else {
+		    set rapport [ expr 1.0*$ordo1/$ordo2 ]
+		    #-- Gere les bords qui sont oscillants et de tres grande valeur :
+		    if { $rapport>= 1. } {
+			lappend nordos 0.0
+			incr i
+		    } else {
+			lappend nordos $rapport
+		    }
+		}
+	    }
+	    ::console::affiche_resultat "Fin de la division : $i division(s) par 0 ou mise(s) à 0.\n"
+	    }
+	    #-- Meth2 : division simple :
+	    set nordos [ list ]
+	    set i 0
+	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
+		if { $ordo2 == 0.0 } {
+		    lappend nordos 0.0
+		    #::console::affiche_resultat "Val = $ordo2\n"
+		    incr i
+		} else {
+		    lappend nordos [ expr 1.0*$ordo1/$ordo2 ]
+		}
+	    }
+	    ::console::affiche_resultat "Fin de la division : $i divisions par 0.\n"
+
+
+	    #--- Enregistrement du resultat au format fits
+	    set ncontenu [ list $abscisses $nordos ]
+	    set lenl [ llength $nordos ]
+	    ::console::affiche_resultat "$lenl valeurs traitées.\n"
+	    set fichier_out [ spc_data2fits ${fichier}_ricorr $ncontenu ]
+
+	    #--- Réintégration des mots clef FITS
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier_out"
+	    buf$audace(bufNo) setkwd [ list "DATE-OBS" "$dateobs" string "Start of exposure. FITS standard" "Iso 8601" ]
+	    buf$audace(bufNo) setkwd [ list "MJD-OBS" "$mjdobs" double "Start of exposure" "d" ]
+	    buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" double "Total time of exposure" "s" ]
+	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
+	    }
+	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]		
+	    }
+	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom.angstrom/pixel.pixel"]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom"]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom.angstrom.a/pixel.pixel.p"]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]		
+	    }
+	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
+
+	    #--- Fin du script :
+	    file delete "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
+	    ::console::affiche_resultat "Division du profil par la réponse intrumentale sauvée sous $fichier_out$conf(extension,defaut)\n"
+	    return $fichier_out
+	} else {
+	    ::console::affiche_resultat "\nLes 2 profils de raies ne sont pas divisibles.\n"
+	    return 0
+	}
+    } else {
+	::console::affiche_erreur "Usage : spc_divri profil_de_raies_objet_fits profil_de_raies_réponse_instrumentale_fits\n\n"
+    }
+}
+#*********************************************************************#
+
+
 
 
 ####################################################################

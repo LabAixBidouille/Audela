@@ -16,11 +16,26 @@
 
 proc spc_rot180 { args } {
 
-    global audace
+    global audace caption
     global conf
 
-    if {[llength $args] == 1} {
-	set filenamespc [ lindex $args 0 ]
+    if {[llength $args] <= 1} {
+	if {[llength $args] == 1} {
+	    set filenamespc [ lindex $args 0 ]
+	} elseif { [llength $args]==0 } {
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+		set filenamespc $spctrouve
+	    } else {
+		::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n\n"
+		return 0
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n\n"
+	    return 0
+	}
+
+	#-- Traitement :
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 	buf$audace(bufNo) mirrorx
 	#visu
@@ -265,19 +280,35 @@ proc spc_register { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 26-08-2005
-# Date modification : 29-10-2005/27-12-2005/15-08-2006
+# Date modification : 29-10-2005/27-12-2005/15-08-2006/13-02-07
 # Arguments : fichier .fit
 # Heuristique : si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre.
 ####################################################################
 
 proc spc_tiltauto { args } {
-   global audace
+   global audace caption
    global conf
    set pi [expr acos(-1.0)]
-   set anglelimit 1.5
+   #- anglelim avant : 1.5
+   set anglelimit .746
 
-   if {[llength $args] == 1} {
-       set filename [ lindex $args 0 ]
+   if {[llength $args] <= 1} {
+       if {[llength $args] == 1} {
+	   set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       } elseif { [llength $args]==0 } {
+	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+	       set filename $spctrouve
+	   } else {
+	       ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
+	       return 0
+	   }
+       } else {
+	   ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
+	   return 0
+       }
+
+       #--- Traitement :
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
@@ -297,7 +328,7 @@ proc spc_tiltauto { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        buf$audace(bufNo) binx [expr $naxis1-2*$largeur] [expr $naxis1-$largeur] 3
        set x2 [ expr int($naxis1-1.5*$largeur) ]
-       set y2 [lindex [buf$audace(bufNo) centro $windowcoords] 1]
+       set y2 [ lindex [buf$audace(bufNo) centro $windowcoords ] 1]
 
        #-- Effectue la rotation d'angle "angle" et de centre=centre moyen de l'epaisseur du spectre :
        #- Angles>0 vers le haut de l'image
@@ -311,18 +342,14 @@ proc spc_tiltauto { args } {
 	   #buf$audace(bufNo) setkwd [list "NAXIS2" "$newnaxis2" int "" ""]
 	   buf$audace(bufNo) rot $xinf $yinf $angle
 	   ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xinf,$yinf).\n"
-	   #-- Modification du nom du fichier de sortie
-	   set filespc [ file tail [ file rootname $filename ] ]
-	   buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt$conf(extension,defaut)"
-	   ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt$conf(extension,defaut).\n"
-	   return ${filespc}_tilt
+	   buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
+	   ::console::affiche_resultat "Image sauvée sous ${filename}_tilt$conf(extension,defaut).\n"
+	   return ${filename}_tilt
        } else {
 	   ::console::affiche_resultat "Rotation d'angle 0° car angle=$angle est érroné.\n"
-	   #-- Modification du nom du fichier de sortie
-	   set filespc [ file tail [ file rootname $filename ] ]
-	   buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt0$conf(extension,defaut)"
-	   ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt0$conf(extension,defaut).\n"
-	   return ${filespc}_tilt0
+	   file copy -force "$audace(rep_images)/$filename$conf(extension,defaut)" "$audace(rep_images)/${filename}_tilt0$conf(extension,defaut)"
+	   ::console::affiche_resultat "Image sauvée sous ${filename}_tilt0$conf(extension,defaut).\n"
+	   return ${filename}_tilt0
        }
    } else {
        ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
@@ -499,17 +526,26 @@ proc spc_crop { args } {
 proc spc_smilex { args } {
 
     global audace spcaudace
-    global conf
+    global conf caption
     global flag_ok
     set pourcentimg 0.01
 
     if {[llength $args] <= 2} {
 	if {[llength $args] == 1} {
-	    set filenamespc [ lindex $args 0 ]
+	    set filenamespc [ file rootname [ lindex $args 0 ] ]
 	    set flagmanuel "n"
 	} elseif {[llength $args] == 2} {
-	    set filenamespc [ lindex $args 0 ]
+	    set filenamespc [ file rootname [ lindex $args 0 ] ]
 	    set flagmanuel [ lindex $args 1 ]
+	} elseif { [llength $args] == 0 } {
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+		set filenamespc $spctrouve
+		set flagmanuel "n"
+	    } else {
+		::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
+		return 0
+	    }
 	} else {
 	    ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
 	    return 0 
@@ -683,18 +719,17 @@ proc spc_smilex { args } {
 		buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 		buf$audace(bufNo) imaseries "TILT trans_x=$pente trans_y=0"
 		#-- Sauvegarde du spectre corrigé du slant :
-		set filespc [ file rootname $filenamespc ]
 		# buf$audace(bufNo) setkwd [list "SPC_SLX1" 0 float "ycenter smilex" ""]
 		# buf$audace(bufNo) setkwd [list "SPC_SLX2" 0 float "adeg2 smilex" ""]
 		buf$audace(bufNo) setkwd [list "SPC_SLA" $pente float "pente slant" ""]
-		buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slt$conf(extension,defaut)"
-		loadima "$audace(rep_images)/${filespc}_slt$conf(extension,defaut)"
-		::console::affiche_resultat "Image sauvée sous ${filespc}_slt$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
-		set results [ list ${filespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
+		buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
+		loadima "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
+		::console::affiche_resultat "Image sauvée sous ${filenamespc}_slt$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+		set results [ list ${filenamespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
 		return $results
 	    } else {
 		::console::affiche_resultat "Pas de correction du slant nécessaire non plus.\n"
-		return [ list $filespc ]
+		return [ list $filenamespc ]
 	    }
 	} else {
 	    set deltay [ expr 0.5*($naxis2i-$naxis2) ]
@@ -703,18 +738,17 @@ proc spc_smilex { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$c"
 	    #--- Sauvegarde
-	    set filespc [ file rootname $filenamespc ]
 	    buf$audace(bufNo) setkwd [list "SPC_SLX1" $ycenter float "ycenter smilex" ""]
 	    buf$audace(bufNo) setkwd [list "SPC_SLX2" $c float "coef deg2 smilex" ""]
-	    buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slx$conf(extension,defaut)"
-	    loadima "$audace(rep_images)/${filespc}_slx$conf(extension,defaut)"
-	    ::console::affiche_resultat "Image sauvée sous ${filespc}_slx$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
-	    set results [ list ${filespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
+	    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slx$conf(extension,defaut)"
+	    loadima "$audace(rep_images)/${filenamespc}_slx$conf(extension,defaut)"
+	    ::console::affiche_resultat "Image sauvée sous ${filenamespc}_slx$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+	    set results [ list ${filenamespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
 	    return $results
 	}
       } else {
 	  ::console::affiche_resultat "La seule déformation horisontale est du slant...\n"
-	  set results [ spc_slant filenamespc ]
+	  set results [ spc_slant $filenamespc ]
 	  return $results
       }
     } else {
@@ -890,12 +924,26 @@ proc spc_smilex2imgs { args } {
 
 proc spc_smiley { args } {
 
-    global audace
+    global audace caption
     global conf
     set pourcentimg 0.01
 
-    if {[llength $args] == 1} {
-	set filenamespc [ lindex $args 0 ]
+    if {[llength $args] <= 1} {
+	if {[llength $args] == 1} {
+	    set filenamespc [ lindex $args 0 ]
+	} elseif { [llength $args]==0 } {
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+		set filenamespc $spctrouve
+	    } else {
+		::console::affiche_erreur "Usage: spc_smiley spectre_2D_fits\n\n"
+		return 0
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: spc_smiley spectre_2D_fits\n\n"
+	    return 0
+	}
+
 
 	#--- Initialisation de varaibles relatives aux dimentions de l'image
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
@@ -1204,12 +1252,13 @@ proc spc_tiltautoimgs { args } {
 	    set reject [ lindex $args 1 ]
 	} else {
 	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+	    return 0
 	}
 
 	#--- Applique le smile au(x) spectre(s) incriminé(s)
 	set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
 	set nbsp [ llength $liste_images ]
-	if { $nbsp ==  1 } {
+	if { $nbsp==1 } {
 	    set spectre_tilt [ spc_tiltauto $filename ]
 	    ::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilt$conf(extension,defaut)\n"
 	    return $spectre_tilt

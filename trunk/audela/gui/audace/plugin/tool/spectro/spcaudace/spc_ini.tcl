@@ -6,6 +6,16 @@
 package require BLT
 
 
+#--- Version d'SpcAudace :
+proc spc_version {} {
+
+    global spcaudace conf
+    global caption
+
+    ::console::affiche_resultat "SpcAudACE version $spcaudace(version)\n"
+    tk_messageBox -title "Version d'SpcAudACE" -icon error -message "SpcAudACE version $spcaudace(version)"
+}
+
 
 #----------------------------------------------------------------------------------#
 proc spc_goodrep {} {
@@ -48,4 +58,22 @@ proc spc_vectorini {} {
 }
 
 spc_vectorini
+#*********************************************************#
+
+
+#--- Lancement du navigateur internet pour consulter la documentation d'SpcAudace
+proc spc_help {} {
+
+    global spcaudace conf
+
+    if { $conf(editsite_htm)!="" } {
+	if { [ file exists $spcaudace(spcdoc) ] } {
+	    set answer [ catch { exec $conf(editsite_htm) $spcaudace(spcdoc) & } ]
+	} else {
+	    set answer [ catch { exec $conf(editsite_htm) $spcaudace(sitedoc) & } ]
+	}
+    } else {
+	::console::affiche_resultat "Configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la documentation d'SpcAudACE\n"
+    }
+}
 #*********************************************************#

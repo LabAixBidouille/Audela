@@ -10,9 +10,14 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "05a-03-2007"
+set spcaudace(version) "17b-03-2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
+
+#--- Liste des contributeurs au développement d'SpcAudace :
+set spcaudace(author) "Benjamin MAUCLAIRE"
+set spcaudace(contribs) "Alain Klotz, Michel Pujol, Patrick Lailly"
+
 
 #--- Extension des fichiers :
 set spcaudace(extdat) ".dat"
@@ -34,6 +39,18 @@ set spcaudace(repchimie) [ file join $spcaudace(repspc) data chimie ]
 
 #--- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(repspc) data bibliotheque_spectrale ]
+
+#--- Répertoire de la calibration-chimie :
+set spcaudace(rep_spccal) [ file join $spcaudace(repspc) data calibration_lambda ]
+
+#--- Répertoire de la calibration-chimie :
+set spcaudace(motsheader) [ list "OBJNAME" "OBSERVER" "ORIGIN" "TELESCOP" "EQUIPMEN" ]
+set spcaudace(motsheaderdef) [ list "Current name of the object" "Observer name" "Origin place of FITS image" "Telescop" "System which created data via the camera" ]
+
+#--- Lieu de la documentation d'SpcAudACE :
+set spcaudace(spcdoc) [ file join $spcaudace(repspc) doc liste_fonctions.html ]
+set spcaudace(sitedoc) "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/liste_fonctions.html"
+
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :

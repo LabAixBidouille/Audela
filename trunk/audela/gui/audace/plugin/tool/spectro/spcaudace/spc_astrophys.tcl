@@ -82,7 +82,7 @@ proc spc_vhelio { args } {
 	   set dec_s [ lindex $args 6 ]
 	   set jj [ lindex $args 7 ]
 	   set mm [ lindex $args 8 ]
-	   set aaaaa [ lindex $args 9 ]
+	   set aaaa [ lindex $args 9 ]
        } else {
 	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
 	   return 0
@@ -643,7 +643,7 @@ proc spc_ewcourbe { args } {
 
 	    set ldeb [ expr $lambda-0.5*$largeur_raie ]
 	    set lfin [ expr $lambda+0.5*$largeur_raie ]
-	    lappend list_ew [ spc_ew $fichier $ldeb $lfin $type_raie ]
+	    lappend list_ew [ spc_ew2 $fichier $ldeb $lfin ]
 	}
 
 	#--- Création du fichier de données
@@ -949,7 +949,7 @@ proc spc_ew2 { args } {
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
 	return $ew
     } else {
-	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies lanmba_dep lambda_fin\n"
+	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies_normalisé lanmba_dep lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -1041,7 +1041,7 @@ proc spc_autoew { args } {
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
 	return $ew
     } else {
-	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie\n"
+	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie\n"
     }
 }
 #***************************************************************************#
