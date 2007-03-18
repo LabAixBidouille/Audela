@@ -23,6 +23,11 @@
 /*
 #define ETH_DEBUGFILE
 */
+#if defined ETH_DEBUGFILE
+#define LOG_ETHDEBUGFILE(s) {FILE *f; f = fopen("eth2.txt", "at"); fprintf(f, s); fclose(f);}
+#else
+#define LOG_ETHDEBUGFILE(s)
+#endif
 
 /*
  *  Definition of different cameras supported by this driver
@@ -55,6 +60,26 @@ struct camini CAM_INI[] = {
      },
     CAM_INI_NULL
 };
+
+static AskForExecuteCCDCommand_Dump(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
+{
+   int k;
+   char result[MAXLENGTH];
+
+   util_log("", 1);
+   for (k = 0; k < ParamCCDIn->NbreParam; k++) {
+      paramCCD_get(k, result, ParamCCDIn);
+      util_log(result, 0);
+   }
+   AskForExecuteCCDCommand(ParamCCDIn, ParamCCDOut);
+   util_log("", 2);
+   for (k = 0; k < ParamCCDOut->NbreParam; k++) {
+      paramCCD_get(k, result, ParamCCDOut);
+      util_log(result, 0);
+   }
+   util_log("\n", 0);
+}
+	    
 
 static int cam_init(struct camprop *cam, int argc, char **argv);
 static int cam_close(struct camprop *cam);
@@ -296,7 +321,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasTDICaps=%d",	     cam->ethvar.InfoCCD_HasTDICaps); util_log(cmdline, 0);
     sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasVideoCaps=%d",	     cam->ethvar.InfoCCD_HasVideoCaps); util_log(cmdline, 0);
     sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasRegulationTempCaps=%d",cam->ethvar.InfoCCD_HasRegulationTempCaps); util_log(cmdline, 0);
-    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasEventAude=%d",	     cam->ethvar.InfoCCD_HasEventAude); util_log(cmdline, 0);
+    sprintf(cmdline, "<LIBETHERNAUDE/cam_init> cam->ethvar.InfoCCD_HasGPSDatation=%d",	     cam->ethvar.InfoCCD_HasGPSDatation); util_log(cmdline, 0);
 
     return 0;
 }
@@ -458,7 +483,6 @@ void cam_stop_exp(struct camprop *cam)
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
-   char keyword[MAXLENGTH + 1];
    char value[MAXLENGTH + 1];
    char result[MAXLENGTH + 1];
    char ligne[MAXLENGTH + 1];
@@ -466,164 +490,148 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    int k, pdim;
    double t0, t1, dt, timeout = 60.;
    FILE *fwipe;
-#if defined ETH_DEBUGFILE
-   FILE *f;
-#endif
+
    if (p == NULL)
       return;
+
    if (strcmp(cam->msg, "InitExposure Failed") == 0)
       return;
-   if (cam->authorized == 1) {
-      /*- boucle d'attente de fin de pose -*/
-      if (cam->CCDStatus == 1) {
+
+   if (cam->authorized != 1)
+	  return;
+
+   /*- boucle d'attente de fin de pose -*/
+   if (cam->CCDStatus == 1) {
+      sortie = 0;
+   } else {
+      sortie = 1;
+   }
+   LOG_ETHDEBUGFILE("READ_CCD : boucle d'attente fin de pose\n");
+   while (sortie == 0) {
+      paramCCD_clearall(&ParamCCDIn, 1);
+      paramCCD_put(-1, "CCDStatus", &ParamCCDIn, 1);
+      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+      AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+      if (util_param_search(&ParamCCDOut, "EXPOSURE_COMPLETED", value, &paramtype) == 0) {
+         LOG_ETHDEBUGFILE("READ_CCD : sortie boucle d'attente fin de pose EXPOSURE_COMPLETED\n");
+         sortie = 1;
+	  }
+      if (util_param_search(&ParamCCDOut, "Idle", value, &paramtype) == 0) {
+         LOG_ETHDEBUGFILE("READ_CCD : sortie boucle d'attente fin de pose Idle\n");
+         sortie = 1;
+      }
+      if (sortie == 0) {
+         libcam_sleep(100);
+      }
+   }
+
+   /* date-obs */
+   Tcl_Eval(cam->interp, "mc_date2iso8601 now");
+   strcpy(cam->timerExpiration->dateobs, cam->interp->result);
+   strcpy(cam->date_obs, cam->interp->result);
+
+   /* - Demarre la lecture de l'image qui est finie - */
+   LOG_ETHDEBUGFILE("READ_CCD : demarre la lecture\n");
+   paramCCD_clearall(&ParamCCDIn, 1);
+   paramCCD_put(-1, "StartReadoutCCD", &ParamCCDIn, 1);
+   paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+   sprintf(result, "ImageAddress=%d", (int) (void *) p);
+   paramCCD_put(-1, result, &ParamCCDIn, 1);
+   AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+
+   /*- boucle d'attente de fin de transfert ethernet -*/
+   sortie = 0;
+   LOG_ETHDEBUGFILE("READ_CCD : boucle de lecture\n");
+   Tcl_Eval(cam->interp, "mc_date2jd [mc_date2iso8601 now]");
+   t0 = atof(cam->interp->result);
+   while (sortie == 0) {
+      paramCCD_clearall(&ParamCCDIn, 1);
+      paramCCD_put(-1, "CCDStatus", &ParamCCDIn, 1);
+      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+      AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+      if (util_param_search(&ParamCCDOut, "READOUT_in_PROGRESS", value, &paramtype) == 0) {
          sortie = 0;
       } else {
          sortie = 1;
       }
-#if defined ETH_DEBUGFILE
-      f = fopen("eth2.txt", "at");
-      fprintf(f, "READ_CCD : boucle d'attente fin de pose\n");
-      fclose(f);
-#endif
-      while (sortie == 0) {
-         paramCCD_clearall(&ParamCCDIn, 1);
-         paramCCD_put(-1, "CCDStatus", &ParamCCDIn, 1);
-         paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-         util_log("", 1);
-         for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-            paramCCD_get(k, result, &ParamCCDIn);
-            util_log(result, 0);
-         }
-         AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-         util_log("", 2);
-         for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-            paramCCD_get(k, result, &ParamCCDOut);
-            util_log(result, 0);
-         }
-         util_log("\n", 0);
-         strcpy(keyword, "EXPOSURE_COMPLETED");
-         if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-#if defined ETH_DEBUGFILE
-            f = fopen("eth2.txt", "at");
-            fprintf(f, "READ_CCD : sortie boucle d'attente fin de pose EXPOSURE_COMPLETED\n");
-            fclose(f);
-#endif
-            sortie = 1;
-         }
-         strcpy(keyword, "Idle");
-         if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-#if defined ETH_DEBUGFILE
-            f = fopen("eth2.txt", "at");
-            fprintf(f, "READ_CCD : sortie boucle d'attente fin de pose Idle\n");
-            fclose(f);
-#endif
-            sortie = 1;
-         }
-         if (sortie == 0) {
-            libcam_sleep(100);
+      Tcl_Eval(cam->interp, "mc_date2jd [mc_date2iso8601 now]");
+      t1 = atof(cam->interp->result);
+      dt = (t1 - t0) * 86400;
+      if (dt > timeout) {
+         sortie = 1;
+         if ((fwipe = fopen("ethbug.txt", "at")) != NULL) {
+            Tcl_Eval(cam->interp, "mc_date2iso8601 now");
+            fprintf(fwipe, "%s : sortie de lecture en timeout %f s", cam->interp->result, timeout);
+            fclose(fwipe);
          }
       }
-      /* - Demarre la lecture de l'image qui est finie - */
-#if defined ETH_DEBUGFILE
-      f = fopen("eth2.txt", "at");
-      fprintf(f, "READ_CCD : demarre la lecture\n");
-      fclose(f);
-#endif
-      paramCCD_clearall(&ParamCCDIn, 1);
-      paramCCD_put(-1, "StartReadoutCCD", &ParamCCDIn, 1);
-      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-      sprintf(result, "ImageAddress=%d", (int) (void *) p);
-      paramCCD_put(-1, result, &ParamCCDIn, 1);
-      util_log("", 1);
-      for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-         paramCCD_get(k, result, &ParamCCDIn);
-         util_log(result, 0);
-      }
-      AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-      util_log("", 2);
-      for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-         paramCCD_get(k, result, &ParamCCDOut);
-         util_log(result, 0);
-      }
-      /* date-obs */
-      /*
-      strcpy(keyword,"TimeStamp");
-      if (util_param_search(&ParamCCDOut,keyword,value,&paramtype)==0) {
-      sprintf(result,"mc_date2iso8601 %s",value);
-      Tcl_Eval(cam->interp,result);
-      strcpy(cam->timerExpiration->dateobs,(cam->interp)->result);
-      strcpy(cam->date_obs,(cam->interp)->result);
-      }
-      */
-      util_log("\n", 0);
-      /*- boucle d'attente de fin de transfert ethernet -*/
-      sortie = 0;
-#if defined ETH_DEBUGFILE
-      f = fopen("eth2.txt", "at");
-      fprintf(f, "READ_CCD : boucle de lecture\n");
-      fclose(f);
-#endif
-      sprintf(result, "mc_date2jd [mc_date2iso8601 now]");
-      Tcl_Eval(cam->interp, result);
-      t0 = atof(cam->interp->result);
-      while (sortie == 0) {
-         paramCCD_clearall(&ParamCCDIn, 1);
-         paramCCD_put(-1, "CCDStatus", &ParamCCDIn, 1);
-         paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-         util_log("", 1);
-         for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-            paramCCD_get(k, result, &ParamCCDIn);
-            util_log(result, 0);
-         }
-         AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-         util_log("", 2);
-         for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-            paramCCD_get(k, result, &ParamCCDOut);
-            util_log(result, 0);
-         }
-         util_log("\n", 0);
-         strcpy(keyword, "READOUT_in_PROGRESS");
-         if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-            sortie = 0;
-         } else {
-            sortie = 1;
-         }
-         sprintf(result, "mc_date2jd [mc_date2iso8601 now]");
-         Tcl_Eval(cam->interp, result);
-         t1 = atof(cam->interp->result);
-         dt = (t1 - t0) * 86400;
-         if (dt > timeout) {
-            sortie = 1;
-            if ((fwipe = fopen("ethbug.txt", "at")) != NULL) {
-               sprintf(ligne, "mc_date2iso8601 now");
-               Tcl_Eval(cam->interp, ligne);
-               fprintf(fwipe, "%s : sortie de lecture en timeout %f s", cam->interp->result, timeout);
-               fclose(fwipe);
-            }
-         }
-      }
-#if defined ETH_DEBUGFILE
-      f = fopen("eth2.txt", "at");
-      fprintf(f, "READ_CCD : fin de boucle de lecture\n");
-      fclose(f);
-#endif
-      /* --- inversion des octets de l'entier court --- */
-      pdim = cam->w * cam->h;
-      for (k = 0; k < pdim; k++) {
-         p[k] = (p[k] >> 8) + (p[k] << 8);
-      }
-      /* --- mirroir de l'image ? --- */
-      /*pdim=cam->w*cam->h;
-      for (k=0;k<pdim;k++) {
-      p[k]=(p[k]>>8)+(p[k]<<8);
-      } */
-      cam->CCDStatus = 1;
-    }
-    // je positionne l'indicateur d'inversion l'image sur l'axe X
-    // de maniere a obtenir une image orientee comme si elle avait
-    // ete acquise avec la liaison port parallele
-    cam->pixels_reverse_x = 1;
+   }
+   LOG_ETHDEBUGFILE("READ_CCD : fin de boucle de lecture\n");
 
+   /* --- inversion des octets de l'entier court --- */
+   pdim = cam->w * cam->h;
+   for (k = 0; k < pdim; k++) {
+      p[k] = (p[k] >> 8) + (p[k] << 8);
+   }
+
+   /* --- Datation GPS si eventaude present --- */
+   if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
+      // Debut de la pose
+      paramCCD_clearall(&ParamCCDIn, 1);
+      paramCCD_put(-1, "Get_JulianDate_beginLastExp", &ParamCCDIn, 1);
+      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+      AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+      if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
+         sprintf(ligne, "mc_date2iso8601 %s", value);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+         if ((cam->timerExpiration != NULL) && (cam->timerExpiration->dateobs != NULL)) {
+            strcpy(cam->timerExpiration->dateobs, cam->interp->result);
+         }
+         if (cam->date_obs != NULL) {
+            strcpy(cam->date_obs, cam->interp->result);
+         }
+      } else {
+         sprintf(ligne,"Keyword 'Date' not found");
+         util_log(ligne, 0);
+      }
+
+      // Fin de la pose
+      paramCCD_clearall(&ParamCCDIn, 1);
+      paramCCD_put(-1, "Get_JulianDate_endLastExp", &ParamCCDIn, 1);
+      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+      AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+      if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
+         sprintf(ligne, "mc_date2iso8601 %s", value);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+         if (cam->date_end != NULL) {
+            strcpy(cam->date_end, cam->interp->result);
+         }
+      } else {
+         sprintf(ligne,"Keyword 'Date' not found");
+         util_log(ligne, 0);
+      }
+   }
+
+
+   /* --- mirroir de l'image ? --- */
+   /*pdim=cam->w*cam->h;
+   for (k=0;k<pdim;k++) {
+   p[k]=(p[k]>>8)+(p[k]<<8);
+   } */
+   cam->CCDStatus = 1;
+
+   // je positionne l'indicateur d'inversion l'image sur l'axe X
+   // de maniere a obtenir une image orientee comme si elle avait
+   // ete acquise avec la liaison port parallele
+   cam->pixels_reverse_x = 1;
 }
 
 void cam_shutter_on(struct camprop *cam)

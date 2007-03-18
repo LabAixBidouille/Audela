@@ -373,15 +373,15 @@ int new_ethernaude(struct new_ethernaude_inp *inparams, ethernaude_var * ethvar)
        sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasRegulationTempCaps = %d",ethvar->InfoCCD_HasRegulationTempCaps); util_log(result, 0);
     }
     /* - InfoCCD_HasEventAude - */
-    strcpy(keyword, "InfoCCD_HasEventAude");
-    ethvar->InfoCCD_HasEventAude = 0;
+    strcpy(keyword, "InfoCCD_HasGPSDatation");
+    ethvar->InfoCCD_HasGPSDatation = 0;
     k = util_param_search(&ParamCCDOut, keyword, value, &paramtype);
     sprintf(result, "<LIBETHERNAUDE/new_ethernaude> param_util_search = %d (keyword='%s';value='%s';paramtype=%d)",k,keyword,value,paramtype); util_log(result, 0);
     if (k == 0) {
        if (!strcmp(value,"TRUE")) {
-	   ethvar->InfoCCD_HasEventAude = 1;
+	   ethvar->InfoCCD_HasGPSDatation = 1;
        }
-       sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasEventAude = %d",ethvar->InfoCCD_HasEventAude); util_log(result, 0);
+       sprintf(result, "<LIBETHERNAUDE/new_ethernaude> ethvar->InfoCCD_HasGPSDatation = %d",ethvar->InfoCCD_HasGPSDatation); util_log(result, 0);
     }
 
     /* - GetClockModes for the CCD number 1 and the clock mode number 1 - */
