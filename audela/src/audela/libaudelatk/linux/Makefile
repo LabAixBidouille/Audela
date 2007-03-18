@@ -7,7 +7,7 @@ OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 
 include ../../../Makefile1
 
-CXXFLAGS += -I$(EXTINC) -I../../include
+CXXFLAGS += -I$(EXTINC) -I../../include -fno-stack-protector
 LDFLAGS  += -laudela  -L $(OUTPUTDIR)
 
 # Link 
