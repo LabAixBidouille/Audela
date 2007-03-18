@@ -26,10 +26,10 @@
 #define AUDELA_VERSION_MAJOR 1 
 #define AUDELA_VERSION_MINOR 4
 #define AUDELA_VERSION_PATCH 0
-#define AUDELA_VERSION_EXTRA "-beta1-modified"
+#define AUDELA_VERSION_EXTRA "-beta2"
 
-#define AUDELA_VERSION "1.4.0-beta1-modified"
+#define AUDELA_VERSION "1.4.0-beta2"
 
-#define AUDELA_DATE "17/07/2006"
+#define AUDELA_DATE "18/03/2007"
 
 #endif
