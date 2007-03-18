@@ -64,8 +64,10 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu File ---#
      set captionspc(file) "Fichier"
+     set captionspc(spc_file_space) "----------------------------------------------"
      set captionspc(loadspcfit) "Charger un profil de raie fits"
      set captionspc(loadspctxt) "Charger un profil de raie dat"
+     set captionspc(spc_repconf) "Configuration du répertoire de travail"
      set captionspc(spc_spc2png_w) "Exporter un profil en image png"
      set captionspc(spc_spc2png2_w) "Exporter un profil en image png (réglages fins)"
      set captionspc(writeps) "Exporter un profil en postscript"
@@ -81,7 +83,7 @@ if {[string compare $langage french] ==0 } {
      set captionspc(spc_geometrie) "Géométrie"
      set captionspc(spc_pretraitementfc_w) "Prétraitement de spectres 2D"
      set captionspc(spc_register_w) "Appariement d'une série de spectres 2D"
-     set captionspc(spc_rot180_w) "Rotation de 180° (2D/1D)"
+     set captionspc(spc_rot180_w) "Inversion gauche-droite (2D/1D)"
      set captionspc(spc_tiltauto_w) "Rotation automatique (2D)"
      set captionspc(spc_tilt_w) "Rotation manuelle"
      set captionspc(spc_slant_w) "Correction du slant (2D)"
@@ -105,7 +107,7 @@ if {[string compare $langage french] ==0 } {
 
      #--- Menu Calibration ---#
      set captionspc(spc_calibration) "Calibration"
-     set captionspc(spc_calibre2file_w) "Étalonnage en lambda avec 2 raies"
+     set captionspc(spc_calibre2file_w) "Étalonnage en longeur d'onde"
      set captionspc(spc_calibre2loifile_w) "Étalonnage en lambda avec lampe étalon"
      set captionspc(spc_calibre_space) "---------------------------------------------------------------------------"
      set captionspc(spc_rinstrum_w) "Calcul de la réponse instrumentale"
@@ -117,12 +119,12 @@ if {[string compare $langage french] ==0 } {
      #--- Menu Pipelines ---#
      set captionspc(spc_pipelines) "Pipelines"
      set captionspc(spc_pipelines_space) "---------------------------------------------------------------------------"
-     set captionspc(spc_traite2rinstrum_w) "1) Prétraitement -> réponse instrumentale"
-     set captionspc(spc_traite2srinstrum_w) "2) Prétraitement -> correction instrumentale (application à d'autres spectres)"
+     set captionspc(spc_traite2rinstrum_w) "1) Calcul de la réponse instrumentale"
+     set captionspc(spc_lampe2calibre_w) "2) Calibrations d'une lampe spectrale"
+     set captionspc(spc_traite2srinstrum_w) "3) Application des calibrations aux spectres"
      set captionspc(spc_traite2scalibre_w) "Prétraitement -> calibration (application à d'autres spectres)"
      # set captionspc(spc_traitesimple2calibre_w) "Prétraitement simple -> calibration"
      # set captionspc(spc_traitesimple2rinstrum_w) "Prétraitement simple -> réponse instrumentale"
-     set captionspc(spc_lampe2calibre_w) "Lampe -> corrections géométriques+calibration"
      set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"
      set captionspc(spc_geom2rinstrum_w) "Corrections géométriques -> correction instrumentale"
      set captionspc(spc_specLhIII_w) "Réduction des spectres Lhires III (vide)"
@@ -140,8 +142,10 @@ if {[string compare $langage french] ==0 } {
      #--- Menu Aide ---#
      set captionspc(spc_aide) "Aide"
      set captionspc(spc_version_w) "Version $spcaudace(version)"
+     set captionspc(spc_help) "Liste des fonctions d'SpcAudACE"
      set captionspc(spc_about_w) "Auteur : Benjamin MAUCLAIRE"
-     set captionspc(spc_contrib_w) "Contributeurs : Alain Klotz, Michel Pujol."
+     set captionspc(spc_contrib_w) "Contributeurs : $spcaudace(contribs)."
 }
 
-
+set presentation "SpcAudACE - version $spcaudace(version) @$spcaudace(author)\n"
+return $presentation

@@ -543,10 +543,10 @@ proc spc_geom2rinstrum { args } {
        }
 
        #--- Message de fin du script :
-       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous $fsnorma\n\n"
+       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous $fsmooth\n\n"
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
-       spc_loadfit $fsnorma
-       return $fsnorma
+       spc_loadfit $fsmooth
+       return $fsmooth
    } else {
        ::console::affiche_erreur "Usage: spc_geom2rinstrum nom_générique_spectres_prétraités (sans extension) spectre_2D_lampe méthode_reg (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre)  méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_bining (add, rober, horne) normalisation (o/n) adoucissement (o/n)\n\n"
    }
@@ -684,7 +684,7 @@ proc spc_traite2scalibre { args } {
        }
 
        #--- Message de fin du script :
-       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous $fsnorma\n\n"
+       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous $fsmooth\n\n"
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
        spc_loadfit $fsmooth
        return $fsmooth
@@ -741,17 +741,27 @@ proc spc_traite2rinstrum { args } {
 	   ::console::affiche_resultat "\n**** Éliminations des mauvaises images ****\n\n"
 	   spc_reject $img
        }
-       set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]*$conf(extension,defaut) ] ]
-       renumerote $dark
        renumerote $img
-       #set dark1 [ lindex [ glob -dir $audace(rep_images) -tails ${dark}\[0-9\]*$conf(extension,defaut)  ${dark}*$conf(extension,defaut) ] 0 ]
-       set dark1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${dark}\[0-9\]*$conf(extension,defaut) ${dark}*$conf(extension,defaut) ] 0 ] ]
+
+       #[ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+
+       #--- Comptage des images :
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+
+       #--- Renumérotation et détection des darks :
+       if { [ catch { glob -dir $audace(rep_images) ${dark}\[0-9\]$conf(extension,defaut) ${dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+	   set darkmaster $dark
+       } else {
+	   renumerote $dark
+	   set darkmaster [ bm_smed $dark ]
+       }
+
 
        #--- Traitement du spectre de la lampe de calibration :
        ::console::affiche_resultat "\n\n**** Traitement du spectre de lampe de calibration ****\n\n"
        #-- Retrait du dark :
        buf$audace(bufNo) load "$audace(rep_images)/$lampe"
-       buf$audace(bufNo) sub "$audace(rep_images)/$dark1" 0
+       buf$audace(bufNo) sub "$audace(rep_images)/$darkmaster" 0
        buf$audace(bufNo) save "$audace(rep_images)/${lampe}-t"
        set lampet "${lampe}-t"
        
@@ -776,7 +786,7 @@ proc spc_traite2rinstrum { args } {
        set profillampe [ spc_profillampe ${img}1 $lampeflip ]
        #file delete "$audace(rep_images)/$lampeflip$conf(extension,defaut)"
        set lampecalibree [ spc_calibre $profillampe ]
-       file delete -force "$audace(rep_images)/$etoile_cat$conf(extension,defaut)"
+       file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D-traite$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$profillampe$conf(extension,defaut)"
        #- 04012007 :
        file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree$conf(extension,defaut)"
@@ -829,7 +839,7 @@ proc spc_traite2rinstrum { args } {
        if { $rmfpretrait=="o" } {
 	   delete2 $fgeom $nbimg
        }
-       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]*$conf(extension,defaut) ] ]
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]$conf(extension,defaut)  ] ]
 
 
        #::console::affiche_resultat "Sortie : $ftilt\n"
@@ -879,10 +889,14 @@ proc spc_traite2rinstrum { args } {
        #--- Soustraction du fond de ciel et binning
        ::console::affiche_resultat "\n\n**** Extraction du profil de raies ****\n\n"
        set fprofil [ spc_profil $fflip $methsky $methsel $methbin ]
+       file rename -force "$audace(rep_images)/$fflip$conf(extension,defaut)" "$audace(rep_images)/${img}-spectre2D-traite$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/$fsadd$conf(extension,defaut)"
+
 
        #--- Calibration en longueur d'onde du spectre de l'objet :
        ::console::affiche_resultat "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
        set fcal [ spc_calibreloifile $lampecalibree $fprofil ]
+       file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
 
 
        #--- Normalisation du profil de raies :
@@ -910,12 +924,15 @@ proc spc_traite2rinstrum { args } {
        # set fricorr [ spc_rinstrumcorr $fcal $etoile_ref $etoile_cat ]
        set rep_instrum [ spc_rinstrum $fcal $etoile_cat ]
        ::console::affiche_resultat "\nRéponse instrumentale sauvée sous $rep_instrum\n"
+       file rename -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1c$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/$etoile_cat"
+
 
        #--- Message de fin du script :
-       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous $fsmooth\n\n"
+       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-calibre_1c\n\n"
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
-       spc_loadfit $rep_instrum
-       return $fsmooth
+       spc_loadfit ${img}-profil-calibre_1c
+       return ${img}-profil-calibre_1c
    } else {
        ::console::affiche_erreur "Usage: spc_traite2rinstrum nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe profil_étoile_catalogue méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_bad_spectres (o/n) rejet_rotation_importante (o/n) sélection_manuelle_raie_géométrie (o/n) effacer_masters (o/n)\n\n"
    }
@@ -932,7 +949,7 @@ proc spc_traite2rinstrum { args } {
 # Date création :  28-08-2006
 # Date de mise à jour : 28-08-2006
 # Méthode : utilise spc_pretrait pour le prétraitement
-# Arguments : nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n)
+# Arguments : nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) efface_pretraitement (o/n) export_png (o/n)
 ###############################################################################
 
 proc spc_traite2srinstrum { args } {
@@ -940,7 +957,7 @@ proc spc_traite2srinstrum { args } {
    global audace
    global conf
 
-   if { [llength $args] == 18 } {
+   if { [llength $args] == 19 } {
        set img [ lindex $args 0 ]
        set dark [ lindex $args 1 ]
        set flat [ lindex $args 2 ]
@@ -958,15 +975,17 @@ proc spc_traite2srinstrum { args } {
        set methsmo [ lindex $args 14 ]
        set methejbad [ lindex $args 15 ]
        set methejtilt [ lindex $args 16 ]
-       # set methmasters [ lindex $args 17 ]
        set rmfpretrait [ lindex $args 17 ]
+       set export_png [ lindex $args 18 ]
 
-       #--- Eliminatoin des mauvaise images :
+
+
+       #--- Elimination des mauvaises images :
        if { $methejbad == "o" } {
 	   ::console::affiche_resultat "\n**** Éliminations des mauvaises images ****\n\n"
 	   spc_reject $img
        }
-       set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]*$conf(extension,defaut) ] ]
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
        #--- Prétraitement de $nbimg images :
        ::console::affiche_resultat "\n\n**** Prétraitement de $nbimg images ****\n\n"
@@ -1013,7 +1032,7 @@ proc spc_traite2srinstrum { args } {
        if { $rmfpretrait=="o" } {
 	   delete2 $fgeom $nbimg
        }
-       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]*$conf(extension,defaut) ] ]
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
 
        #--- Appariement de $nbimg images :
@@ -1043,13 +1062,13 @@ proc spc_traite2srinstrum { args } {
        }
 
 
-
        #--- Retrait des cosmics
        if { $methcos == "o" } {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
 	   uncosmic 0.5
 	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
        }
+
 
        #--- Inversion gauche-droite du spectre 2D (mirrorx)
        if { $methinv == "o" } {
@@ -1058,7 +1077,7 @@ proc spc_traite2srinstrum { args } {
        } else {
 	   set fflip "$fsadd"
        }
-       file copy -force "$audace(rep_images)/$fflip$conf(extension,defaut)" "$audace(rep_images)/${img}-spectre2D-traite_0b$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$fflip$conf(extension,defaut)" "$audace(rep_images)/${img}-spectre2D-traite$conf(extension,defaut)"
 
 
        #--- Soustraction du fond de ciel et binning
@@ -1115,6 +1134,12 @@ proc spc_traite2srinstrum { args } {
 	   set fsmooth "$fnorma"
        }
 
+       #--- Export au format PNG :
+       if { $export_png=="o" } {
+	   set fichier_png [ spc_export2png $fsmooth ]
+       }
+
+
        #--- Message de fin du script :
        file copy -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-traite-final$conf(extension,defaut)"
        ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-traite\n\n"
@@ -1143,45 +1168,51 @@ proc spc_traite2srinstrum { args } {
 # Arguments : nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne), sélection manuelle d'une raie pour la géométrie (o/n), effacer masters de prétraitement (o/n)
 ###############################################################################
 
-
-# $brut $noir $plu $noirplu $offset $lampe $methcos $methsel $methinv $methbin $methraie
-
 proc spc_lampe2calibre { args } {
 
    global audace spcaudace
    global conf
+   global lampe2calibre_fileout
 
-   if { [llength $args] == 11 } {
-       set img [ lindex $args 0 ]
-       set dark [ lindex $args 1 ]
-       set flat [ lindex $args 2 ]
-       set dflat [ lindex $args 3 ]
-       set offset [ lindex $args 4 ]
-       set lampe [ file tail [ file rootname [ lindex $args 5 ] ] ]
-       set methcos [ lindex $args 6 ]
-       set methsel [ lindex $args 7 ]
-       set methinv [ lindex $args 8 ]
-       set methbin [ lindex $args 9 ]
-       set methraie [ lindex $args 10 ]
+   if { [llength $args] == 8 } {
+       set lampe [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       set img [ lindex $args 1 ]
+       set dark [ lindex $args 2 ]
+       set methcos [ lindex $args 3 ]
+       set methsel [ lindex $args 4 ]
+       set methinv [ lindex $args 5 ]
+       set methbin [ lindex $args 6 ]
+       set methraie [ lindex $args 7 ]
 
-       set img1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]*$conf(extension,defaut) ] 0 ] ]
-       set dark1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${dark}\[0-9\]*$conf(extension,defaut) ${dark}*$conf(extension,defaut) ] 0 ] ]
-       set plu1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${flat}\[0-9\]*$conf(extension,defaut) ] 0 ] ]
-       set dplu1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${dflat}\[0-9\]*$conf(extension,defaut) ${dflat}*$conf(extension,defaut) ] 0 ] ]
+       #--- Prend la première image et le premier dark ou le masterdark :
+       # set img1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]*$conf(extension,defaut) ] 0 ] ]
+       #set dark1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${dark}\[0-9\]*$conf(extension,defaut) ${dark}*$conf(extension,defaut) ] 0 ] ]
+       if { [ catch { glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+	   set img1 $img
+       } else {
+	   set img1 [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
+       }
+       if { [ catch { glob -dir $audace(rep_images) ${dark}\[0-9\]$conf(extension,defaut) ${dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+	   set darkmaster $dark
+       } else {
+	   renumerote $dark
+	   set darkmaster [ bm_smed $dark ]
+       }
+
 
 
        #--- Prétraitement du 1ier spectre de l'objet donné pour repérer l'ordonnée du spectre :
        ::console::affiche_resultat "\n\n**** Prétraitement du premier spectre donné pour repérage du spectre ****\n\n"
-       buf$audace(bufNo) load "$audace(rep_images)/$plu1"
-       buf$audace(bufNo) sub "$audace(rep_images)/$dplu1" 0
-       set intensite_moyenne [ lindex [ buf$audace(bufNo) stat ] 4 ]
-       buf$audace(bufNo) ngain $intensite_moyenne
-       buf$audace(bufNo) save "$audace(rep_images)/${plu1}-t"
+       #buf$audace(bufNo) load "$audace(rep_images)/$plu1"
+       #buf$audace(bufNo) sub "$audace(rep_images)/$dplu1" 0
+       #set intensite_moyenne [ lindex [ buf$audace(bufNo) stat ] 4 ]
+       #buf$audace(bufNo) ngain $intensite_moyenne
+       #buf$audace(bufNo) save "$audace(rep_images)/${plu1}-t"
        buf$audace(bufNo) load "$audace(rep_images)/$img1"
-       buf$audace(bufNo) sub "$audace(rep_images)/$dark1" 0
-       buf$audace(bufNo) div "$audace(rep_images)/${plu1}-t" $intensite_moyenne
+       buf$audace(bufNo) sub "$audace(rep_images)/$darkmaster" 0
+       #buf$audace(bufNo) div "$audace(rep_images)/${plu1}-t" $intensite_moyenne
        buf$audace(bufNo) save "$audace(rep_images)/${img}-t"
-       file delete -force "$audace(rep_images)/${plu1}-t$conf(extension,defaut)"
+       #file delete -force "$audace(rep_images)/${plu1}-t$conf(extension,defaut)"
        loadima ${img}-t
 
 
@@ -1203,13 +1234,12 @@ proc spc_lampe2calibre { args } {
        ::console::affiche_resultat "\n\n**** Traitement du spectre de lampe de calibration ****\n\n"
        #-- Retrait du dark :
        buf$audace(bufNo) load "$audace(rep_images)/$lampe"
-       buf$audace(bufNo) sub "$audace(rep_images)/${dark}1" 0
+       buf$audace(bufNo) sub "$audace(rep_images)/$darkmaster" 0
        buf$audace(bufNo) save "$audace(rep_images)/${lampe}-t"
        set lampet "${lampe}-t"
        
        #-- Correction du smilex du spectre de lampe de calibration :
        set smilexcoefs [ spc_smilex $lampet $methraie ]
-       file delete -force "$audace(rep_images)/$lampet$conf(extension,defaut)"
        set lampegeom [ lindex $smilexcoefs 0 ]
        #set ycenter [ lindex $smilexcoefs 1 ]
        #set adeg2 [ lindex $smilexcoefs 4 ]
@@ -1226,20 +1256,21 @@ proc spc_lampe2calibre { args } {
        ::console::affiche_resultat "\n\n**** Etalonnage en longueur d'onde du spectre de lampe de calibration ****\n\n"
        #-- Création du profil de raie de la lampe :
        set profillampe [ spc_profillampe $ftilt $lampeflip ]
-       #file delete -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)"
+       file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D_redresse$conf(extension,defaut)"
+       #-- Calibration du profil de la lampe :
        set lampecalibree [ spc_calibre $profillampe ]
        file delete -force "$audace(rep_images)/$profillampe$conf(extension,defaut)"
-       #- 04012007 :
-       file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree$conf(extension,defaut)"
-       set lampecalibree "lampe_redressee_calibree"
+       #set lampecalibree "lampe_redressee_calibree"
        file delete -force "$audace(rep_images)/${img}-t$conf(extension,defaut)"
-
+       file delete -force "$audace(rep_images)/$lampet$conf(extension,defaut)"
 
        #--- Message de fin du script :
-       ::console::affiche_resultat "\n\nSpectre de lampe de calibration corrigé et calibré sauvé sous lampe_redressee_calibree$conf(extension,defaut)\n\n"
-       # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
-       spc_loadfit lampe_redressee_calibree
-       return lampe_redressee_calibree
+       set nomimg [ string trim $img "-" ]
+       file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree-${nomimg}$conf(extension,defaut)"
+       ::console::affiche_resultat "\n\nSpectre de lampe de calibration corrigé et calibré sauvé sous lampe_redressee_calibree-${nomimg}$conf(extension,defaut)\n\n"
+       spc_loadfit lampe_redressee_calibree-${nomimg}
+       set lampe2calibre_fileout "lampe_redressee_calibree-${nomimg}"
+       return lampe_redressee_calibree-${nomimg}
    } else {
        ::console::affiche_erreur "Usage: spc_lampe2calibre nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe uncosmic (o/n) méthode_détection_spectre (large, serre) mirrorx (o/n) méthode_binning (add, rober, horne) sélection_manuelle_raie_géométrie (o/n)\n\n"
    }

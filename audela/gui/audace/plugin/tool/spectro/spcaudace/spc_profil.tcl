@@ -38,31 +38,39 @@ proc spc_extract_profil_zone { args } {
     #****************************************************************#
     ## Chargement : source $audace(rep_scripts)/profil_raie.tcl
     ## Les var nommees audace_* sont globales
-    global audace
+    global audace caption
     global audela
     ## flag audace
     global conf
     global flag_ok
 
-    if { [ llength $args ]==1 } {
-	set filenamespc_spacial [ lindex $args 0 ]
+    if { [ llength $args ]<=1 } {
+	if { [ llength $args ]==1 } {
+	    set filespacialspc [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	} elseif { [llength $args]==0 } {
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+		set filespacialspc "$spctrouve"
+	    } else {
+		::console::affiche_erreur "Usage: spc_extract_profil_zone spectre_2D\n\n"
+		return 0
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: spc_extract_profil_zone spectre_2D\n\n"
+	    return 0
+	}
 
-	# Retire l'extension .fit du nom du fichier
-	# regsub -all .fit $filespacialspc - filespatialspc
-	set filespacialspc [ file tail [ file rootname $filenamespc_spacial ] ]
-	::console::affiche_resultat "Chargement du fichier $filespacialspc...\n"
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	## Algo
+
+	#--- Sélection de la zone à binner :
+	loadima "$filespacialspc"
+	#-- Algo :
 	::console::affiche_resultat "Sélection de la fenetre d'etude.\n"
-	
 	## On affiche un message demandant de sélectionner la zone d'étude
 	## Lecture des coordonnees de la ligne centrale du spectre
 	## Cree une liste de nom coords contenant les coordonnes d'un rectangle scroole avec la souris (demarre a 0)
-	
-	
 	set flag_ok 0
 	
-	# Création de la fenêtre
+	#-- Création de la fenêtre :
 	if { [ winfo exists .benji ] } {
 	    destroy .benji
 	}
@@ -148,8 +156,13 @@ proc spc_extract_profil_zone { args } {
 	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
 	
 	##--------------- Traitement de la zone selectionnee -------------------#
-	set listcoords [list $ht_spectre $yinf $ysup $xinf_zone $xsup_zone $ht_dessous $ht_dessus 7]
-	spc_bin ${filespacialspc}_zone $filespacialspc $listcoords
+	set listcoords [ list $ht_spectre $yinf $ysup $xinf_zone $xsup_zone $ht_dessous $ht_dessus ]
+	set listeargs [ list "${filespacialspc}_zone" "$filespacialspc" $listcoords ]
+	set fileout [ spc_bin "${filespacialspc}_zone" "$filespacialspc" $listcoords ]
+
+	#--- Traitement des résultats :
+	::console::affiche_resultat "Profil de raies de la zone sélectionnéé sauvé sous $fileout\n"
+	return $fileout
     } else {
 	::console::affiche_erreur "Usage: spc_extract_profil_zone spectre_2D\n\n"
     }
@@ -167,18 +180,33 @@ proc spc_extract_profil_zone { args } {
 ###############################################################
 proc spc_extract_zone { args } {
 
-    global audace
+    global audace caption
     global conf
     global flag_ok
 
-    if {[llength $args] == 1} {
-	set filespacialspc [ file rootname [lindex $args 0] ]
+    if {[llength $args] <= 1} {
+	if {[llength $args] == 1} {
+	    set filespacialspc [ file rootname [lindex $args 0] ]
+	} elseif { [llength $args]==0 } {
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+		set filespacialspc $spctrouve
+	    } else {
+		::console::affiche_erreur "Usage: spc_extract_zone spectre_2D_fits\n\n"
+	       return 0
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: spc_extract_zone spectre_2D_fits\n\n"
+	    return 0
+	}
+
+	#--- Traitement :
 	# Retire l'extension .fit du nom du fichier
 	# regsub -all .fit $filespacialspc - filespatialspc
 	## Verif existence
 	#if {[file exist [file join $audace(rep_images)/$filespacialspc.$conf(extension,defaut)]]==1} 
-	buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
-	#loadima "$filespacialspc"
+	# buf$audace(bufNo) load "$audace(rep_images)/$filespacialspc"
+	loadima "$filespacialspc"
 	::console::affiche_resultat "Sélection de la fenetre d'etude.\n"
 
 	## On affiche un message demandant de sélectionner la zone d'étude
@@ -261,21 +289,45 @@ proc spc_extract_zone { args } {
 
 proc spc_profil_zone { args } {
 
-    global audace
+    global audace caption
     global conf
 
-    if {[llength $args] == 1} {
-	set filespacialspc [ file rootname [lindex $args 0] ]
+    if {[llength $args] <= 1} {
+	if {[llength $args] == 1} {
+	    set filespacialspc [ file rootname [lindex $args 0] ]
+	} elseif { [llength $args]==0 } {
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+		set filespacialspc $spctrouve
+	    } else {
+		::console::affiche_erreur "Usage: spc_profil_zone spectre_2D_fits\n\n"
+	       return 0
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: spc_profil_zone spectre_2D_fits\n\n"
+	    return 0
+	}
+
+	#--- Détermination de la zone du spectre :
+	set results [ spc_detect $filespacialspc ]
+	set ycenter [ lindex $results 0 ]
+	set hauteur [ lindex $results 1 ]
 
 	#--- Soustrait le fond de ciel
-	set sp_propre [ spc_subsky $filespacialspc auto moy ]
+	set sp_propre [ spc_subsky $filespacialspc $ycenter $hauteur med ]
 	#--- Sélectionne la zone à étudier
 	set sp_zone [ spc_extract_zone $sp_propre ]
-	file delete $audace(rep_images)/$sp_propre$conf(extension,defaut)
+	file delete -force "$audace(rep_images)/$sp_propre$conf(extension,defaut)"
 	#--- Crée le profil de raies
 	buf$audace(bufNo) load "$audace(rep_images)/$sp_zone"
 	set ht_spectre [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
-	spc_bins "$sp_zone" $ht_spectre
+	set listeargs [ list "$sp_zone" $ht_spectre ]
+	#set fileout [ spc_bins $listeargs ]
+	set fileout [ spc_bins "$sp_zone" ]
+
+	#--- Traitement des résultats :
+	::console::affiche_resultat "Profil de raies sauvé sous $fileout\n"
+	return $fileout
     } else {
 	::console::affiche_erreur "Usage: spc_profil_zone spectre_2D_fits\n\n"
     }
@@ -787,11 +839,14 @@ proc spc_bin { args } {
     global conf
     set extsp ".dat"
 
+    ::console::affiche_resultat "[ llength $args ] ; $args\n"
+
     if { [ llength $args ]==3 } {
 	set filenamespc_zone_rep [ lindex $args 0 ]
 	set filenamespc_spatial_rep [ lindex $args 1 ]
-	set listcoords [ lindex 2 ]
+	set listcoords [ lindex $args 2 ]
 
+	#--- Initialisation des variables :
 	set ht_spectre [lindex $listcoords 0]
 	set yinf [lindex $listcoords 1]
 	set ysup [lindex $listcoords 2]
@@ -904,8 +959,6 @@ proc spc_bin { args } {
 	file delete "$audace(rep_images)/${filenamespc_spatial}_spsup$conf(extension,defaut)"
 	file delete "$audace(rep_images)/${filenamespc_spatial}_zone$conf(extension,defaut)"
 	file delete "$audace(rep_images)/${filenamespc_spatial}_zonev$conf(extension,defaut)"
-	
-	buf$audace(bufNo) bitpix short
 	return ${filenamespc_spatial}_spc
     } else {
 	::console::affiche_erreur "Usage: spc_bin spectre_2D_zone spectre_2D_entier liste_coordonnées_zone\n\n"

@@ -54,6 +54,7 @@ source [ file join $repspc spc_astrophys.tcl ]
 source [ file join $repspc spc_numeric.tcl ]
 source [ file join $repspc spc_metaf.tcl ]
 source [ file join $repspc spc_gui_boxes.tcl ]
+source [ file join $repspc spc_gui_metaboxes.tcl ]
 source [ file join $repspc spc_gui_runs.tcl ]
 source [ file join $repspc spc_echelle.tcl ]
 
