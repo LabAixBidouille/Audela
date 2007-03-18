@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.5 2007-01-20 11:07:19 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.6 2007-03-18 11:00:36 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -21,21 +21,20 @@ source [ file join $snconf(repsnaude) snmacros.cap ]
 catch { snconfacq_load }
 snconfacq_verif
 
-#--- Recuperation de la position de l'observateur
-catch {
-   set snconf(localite) $audace(posobs,observateur,gps)
-}
+#--- Recuperation de la localisation de l'observateur
+catch { set snconf(localite) "$audace(posobs,observateur,gps)" }
 
 #--- Recuperation du repertoire dedie aux images
-catch {
-   set snconf(dossier) "$conf(rep_images)"
-}
+catch { set snconf(dossier) "$conf(rep_images)" }
+
+#--- Recuperation du nom de l'observateur
+catch { set snconf(fits,OBSERVER) "$conf(posobs,nom_observateur)" }
 
 # ===================================================================
 # ===================================================================
 # ===================================================================
 
-set extname "[buf$audace(bufNo) extension]"
+set extname          "[buf$audace(bufNo) extension]"
 set snconf(darkfile) "d$snconf(exptime)b$snconf(binning)$extname"
 set snconf(biasfile) "d0b$snconf(binning)$extname"
 
@@ -182,7 +181,7 @@ pack $audace(base).snacq.frame10 \
    #--- Cree une ligne d'entree pour la hauteur du soleil
    entry $audace(base).snacq.frame10.entry_haurore \
       -font $audace(font,arial_8_b) -textvariable snconf(haurore) \
-      -borderwidth 1 -relief groove  -width 8
+      -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame10.entry_haurore \
       -in $audace(base).snacq.frame10 -side left \
       -padx 3 -pady 3
@@ -206,7 +205,7 @@ pack $audace(base).snacq.frame11 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame11.entry_houest \
       -font $audace(font,arial_8_b) -textvariable snconf(houest) \
-      -borderwidth 1 -relief groove  -width 8
+      -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame11.entry_houest \
       -in $audace(base).snacq.frame11 -side left \
       -padx 3 -pady 3
@@ -224,7 +223,7 @@ pack $audace(base).snacq.frame11 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame11.entry_hest \
       -font $audace(font,arial_8_b) -textvariable snconf(hest) \
-      -borderwidth 1 -relief groove  -width 8
+      -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame11.entry_hest \
       -in $audace(base).snacq.frame11 -side left \
       -padx 3 -pady 3
@@ -248,7 +247,7 @@ pack $audace(base).snacq.frame12 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame12.entry_decinf \
       -font $audace(font,arial_8_b) -textvariable snconf(decinf) \
-      -borderwidth 1 -relief groove  -width 8
+      -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame12.entry_decinf \
       -in $audace(base).snacq.frame12 -side left \
       -padx 3 -pady 3
@@ -266,7 +265,7 @@ pack $audace(base).snacq.frame12 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame12.entry_decsup \
       -font $audace(font,arial_8_b) -textvariable snconf(decsup) \
-      -borderwidth 1 -relief groove  -width 8
+      -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame12.entry_decsup \
       -in $audace(base).snacq.frame12 -side left \
       -padx 3 -pady 3
@@ -290,7 +289,7 @@ pack $audace(base).snacq.frame13 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame13.entry_exptime \
       -font $audace(font,arial_8_b) -textvariable snconf(exptime) \
-      -borderwidth 1 -relief groove  -width 4
+      -borderwidth 1 -relief groove -width 4
    pack $audace(base).snacq.frame13.entry_exptime \
       -in $audace(base).snacq.frame13 -side left \
       -padx 3 -pady 3
@@ -326,7 +325,7 @@ pack $audace(base).snacq.frame13 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame13.entry_unsmearing \
       -font $audace(font,arial_8_b) -textvariable snconf(unsmearing) \
-      -borderwidth 1 -relief groove  -width 8
+      -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame13.entry_unsmearing \
       -in $audace(base).snacq.frame13 -side left \
       -padx 3 -pady 3
@@ -385,7 +384,7 @@ pack $audace(base).snacq.frame14 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame14.entry_magsup \
       -font $audace(font,arial_8_b) -textvariable snconf(magsup) \
-      -borderwidth 1 -relief groove  -width 5
+      -borderwidth 1 -relief groove -width 5
    pack $audace(base).snacq.frame14.entry_magsup \
       -in $audace(base).snacq.frame14 -side left \
       -padx 3 -pady 3
@@ -403,7 +402,7 @@ pack $audace(base).snacq.frame14 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame14.entry_maginf \
       -font $audace(font,arial_8_b) -textvariable snconf(maginf) \
-      -borderwidth 1 -relief groove  -width 5
+      -borderwidth 1 -relief groove -width 5
    pack $audace(base).snacq.frame14.entry_maginf\
       -in $audace(base).snacq.frame14 -side left \
       -padx 3 -pady 3
@@ -427,7 +426,7 @@ pack $audace(base).snacq.frame15 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame15.entry_binning \
       -font $audace(font,arial_8_b) -textvariable snconf(binning) \
-      -borderwidth 1 -relief groove  -width 3
+      -borderwidth 1 -relief groove -width 3
    pack $audace(base).snacq.frame15.entry_binning \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
@@ -445,7 +444,7 @@ pack $audace(base).snacq.frame15 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame15.entry_foclen \
       -font $audace(font,arial_8_b) -textvariable snconf(foclen) \
-      -borderwidth 1 -relief groove  -width 6
+      -borderwidth 1 -relief groove -width 6
    pack $audace(base).snacq.frame15.entry_foclen \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
@@ -463,7 +462,7 @@ pack $audace(base).snacq.frame15 \
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame15.entry_observer \
       -font $audace(font,arial_8_b) -textvariable snconf(fits,OBSERVER) \
-      -borderwidth 1 -relief groove  -width 20
+      -borderwidth 1 -relief groove -width 25
    pack $audace(base).snacq.frame15.entry_observer \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
