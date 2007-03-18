@@ -1,9 +1,8 @@
 #
 # Fichier : specLhIII.tcl
-# Description : Réduction complète des spectres Lhires III
-# Auteurs : François COCHARD
-# Mise a jour $Id: specLhIII.tcl,v 1.4 2007-01-02 19:40:17 robertdelmas Exp $
-# Odieusement pompé sur le panneau de prétraitement (SpDatafc.tcl)
+# Description : Reduction complete des spectres Lhires III
+# Auteur : François COCHARD
+# Mise a jour $Id: specLhIII.tcl,v 1.5 2007-03-18 10:59:09 robertdelmas Exp $
 #
 
 #==============================================================
@@ -41,7 +40,7 @@ namespace eval ::spbmfc {
       RecuperationParametres
 
 # 19/08/06 Création du fichier de log... cette partie doit être basculée dans l'éxécution du panneau. Maintenant, c'est à chaque réduction qu'un fichier de log doit
-# être créé !   
+# être créé !
 
 #  # Gestion du fichier de log
 #  # Creation du nom de fichier log
@@ -103,42 +102,6 @@ namespace eval ::spbmfc {
    }
 #***** Fin de la procédure Arretspbmfc **************************
 
-#***** Procédure Init ******************************************
-   proc Init { { in "" } } {
-      createPanel $in.spbmfc
-   }
-#***** Fin de la procédure Init ********************************
-
-#***** Procédure createPanel ***********************************
-   proc createPanel { this } {
-      variable This
-      global caption panneau
-
-      #---
-      set This $this
-      #---
-      set panneau(menu_name,spbmfc) $caption(specLhIII,menu)
-
-      spbmfcBuildIF $This
-   }
-#***** Fin de la procédure createPanel *************************
-
-#***** Procedure startTool *******************************************
-   proc startTool { visuNo } {
-      variable This
-
-      pack $This -side left -fill y
-   }
-#***** Fin de la procedure startTool *********************************
-
-#***** Procedure stopTool ********************************************
-   proc stopTool { visuNo } {
-      variable This
-
-      pack forget $This
-   }
-#***** Fin de la procedure stopTool **********************************
-
 #***** Procedure recup_position ********************************
    proc recup_position { } {
       global audace panneau
@@ -165,7 +128,7 @@ namespace eval ::spbmfc {
          if { [ info exists panneau(fenetreSpData,geometry) ] } {
             set deb [ expr 1 + [ string first + $panneau(fenetreSpData,geometry) ] ]
             set fin [ string length $panneau(fenetreSpData,geometry) ]
-            set panneau(fenetreSpData,position) "+[string range $panneau(fenetreSpData,geometry) $deb $fin]"     
+            set panneau(fenetreSpData,position) "+[string range $panneau(fenetreSpData,geometry) $deb $fin]"
          }
 
          #---
@@ -345,7 +308,8 @@ namespace eval ::spbmfc {
 #***** Fin de la procedure cdeEnregistrer ******************************
 
 #***** Procédure cdeFermer  ************************************
-   proc cdeFermer  {} {
+   proc cdeFermer { } {
+      ::spbmfc::Arretspbmfc
    }
 #***** Fin de la procedure cdeFermer  ******************************
 
@@ -1204,7 +1168,7 @@ namespace eval ::spbmfc {
 #***** Fin de la procedure goBrut ******************************
 
 #***** Procédure testBrut ************************************
-   proc testBrut {} {
+   proc testBrut { } {
       global audace caption data_spbmfc integre
 
       # Initialisation du drapeau d'integrite
@@ -1811,66 +1775,6 @@ namespace eval ::spbmfc {
 
 #-----------------------------------------------------------------------------------------------
 
-proc spbmfcBuildIF { This } {
-   global audace panneau caption
-
-   #--- Trame du panneau
-   frame $This -borderwidth 2 -relief groove
-
-      #--- Trame du titre du panneau
-      frame $This.titre -borderwidth 2 -relief groove
-
-        Button $This.titre.but -borderwidth 2 -text $caption(specLhIII,titre) \
-           -command {
-              ::audace::showHelpPlugin tool specLhIII specLhIII.htm
-           }
-        pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top
-        DynamicHelp::add $This.titre.but -text $caption(specLhIII,help,titre)
-
-      pack $This.titre -side top -fill x
-
-      #--- Trame du bouton Données
-      frame $This.data -borderwidth 1 -relief groove
-
-         button $This.data.but -text $caption(specLhIII,data) \
-            -borderwidth 2 -command ::spbmfc::fenetreSpData
-         pack $This.data.but -in $This.data -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.data -side top -fill x
-
-      #--- Trame du bouton Prétraitement
-      frame $This.spData -borderwidth 1 -relief groove
-
-         button $This.spData.but -text $caption(specLhIII,pretrsp) \
-            -borderwidth 2 -command ::spbmfc::fenetreSpData
-         pack $This.spData.but -in $This.spData -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.spData -side top -fill x
-
-      #--- Trame du bouton Calibration
-      frame $This.calib -borderwidth 1 -relief groove
-
-         button $This.calib.but -text $caption(specLhIII,calib) \
-            -borderwidth 2 -command ::spbmfc::fenetreSpData
-         pack $This.calib.but -in $This.calib -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.calib -side top -fill x
-
-      #--- Trame du bouton Sauveagarde
-      frame $This.sauveg -borderwidth 1 -relief groove
-
-         button $This.sauveg.but -text $caption(specLhIII,sauvegarde) \
-            -borderwidth 2 -command ::spbmfc::fenetreSpData
-         pack $This.sauveg.but -in $This.sauveg -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.sauveg -side top -fill x
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
-   }
-
-#-----------------------------------------------------------------------------------------------
-
 proc creeFenspbmfc { } {
    global audace caption data_spbmfc panneau
 
@@ -1888,8 +1792,8 @@ proc creeFenspbmfc { } {
 
     #--- Premiere ligne de l'étape 1
    frame $audace(base).fenetreSpData.et1.fr1
-      frame $audace(base).fenetreSpData.et1.fr1.ligne1 
-        # Affichage du label 
+      frame $audace(base).fenetreSpData.et1.fr1.ligne1
+        # Affichage du label
         label $audace(base).fenetreSpData.et1.fr1.ligne1.lab1 -text $caption(specLhIII,spfich) \
            -font $audace(font,arial_12_b) -width 20
         pack $audace(base).fenetreSpData.et1.fr1.ligne1.lab1 -side left
@@ -1948,7 +1852,7 @@ proc creeFenspbmfc { } {
          label $audace(base).fenetreSpData.et1.ligne4.lab3 -text $caption(specLhIII,spsiteobs) \
             -font $audace(font,arial_10_n) -width 15 -justify right
          pack $audace(base).fenetreSpData.et1.ligne4.lab3 -side left
-         # Affichage du champ de saisie 
+         # Affichage du champ de saisie
          entry $audace(base).fenetreSpData.et1.ligne4.ent3 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable data_spbmfc(siteObs) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne4.ent3 -side left
@@ -1964,11 +1868,11 @@ proc creeFenspbmfc { } {
          entry $audace(base).fenetreSpData.et1.ligne5.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable data_spbmfc(Obs-1) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne5.ent1 -side left
-         # Affichage du champ de saisie 
+         # Affichage du champ de saisie
          entry $audace(base).fenetreSpData.et1.ligne5.ent2 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable data_spbmfc(Obs-2) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne5.ent2 -side left
-         # Affichage du champ de saisie 
+         # Affichage du champ de saisie
          entry $audace(base).fenetreSpData.et1.ligne5.ent3 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable data_spbmfc(Obs-3) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.ligne5.ent3 -side left
@@ -2008,7 +1912,7 @@ proc creeFenspbmfc { } {
          radiobutton $audace(base).fenetreSpData.et1.ligne7.rad3 -variable data_spbmfc(modeNoir) \
             -text $caption(specLhIII,NrPLUBut3) -value opt -font $audace(font,arial_10_n)
          pack $audace(base).fenetreSpData.et1.ligne7.rad3 -side left
-      pack $audace(base).fenetreSpData.et1.ligne7 -side top -fill x  
+      pack $audace(base).fenetreSpData.et1.ligne7 -side top -fill x
 
       #--- Huitième ligne de l'étape 1 "NeonAV"
       frame $audace(base).fenetreSpData.et1.ligne8
@@ -2084,7 +1988,7 @@ proc creeFenspbmfc { } {
          radiobutton $audace(base).fenetreSpData.et1.ligne11.rad3 -variable data_spbmfc(modeNeon) \
             -text $caption(specLhIII,NrPLUBut3) -value opt -font $audace(font,arial_10_n)
          pack $audace(base).fenetreSpData.et1.ligne11.rad3 -side left
-      pack $audace(base).fenetreSpData.et1.ligne11 -side top -fill x  
+      pack $audace(base).fenetreSpData.et1.ligne11 -side top -fill x
 
       #--- Douzième ligne de l'étape 1 "Flats"
       frame $audace(base).fenetreSpData.et1.ligne12
@@ -2140,7 +2044,7 @@ proc creeFenspbmfc { } {
          radiobutton $audace(base).fenetreSpData.et1.ligne14.rad3 -variable data_spbmfc(modePLU) \
             -text $caption(specLhIII,NrPLUBut3) -value opt -font $audace(font,arial_10_n)
          pack $audace(base).fenetreSpData.et1.ligne14.rad3 -side left
-      pack $audace(base).fenetreSpData.et1.ligne14 -side top -fill x  
+      pack $audace(base).fenetreSpData.et1.ligne14 -side top -fill x
 
       #--- Quinzième ligne de l'étape 1 "Offsets"
       frame $audace(base).fenetreSpData.et1.ligne15
@@ -2165,11 +2069,11 @@ proc creeFenspbmfc { } {
       frame $audace(base).fenetreSpData.et1.f1 -borderwidth 4 -relief groove -padx 15 -pady 3
          #--- Seizième ligne de l'étape 1
          frame $audace(base).fenetreSpData.et1.f1.ligne16
-         # Affichage du label 
+         # Affichage du label
          label $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -text $caption(specLhIII,spfichcosme) \
             -font $audace(font,arial_10_n) -width 20
          pack $audace(base).fenetreSpData.et1.f1.ligne16.lab1 -side left
-         # Affichage du champ de saisie 
+         # Affichage du champ de saisie
          entry $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat \
             -textvariable data_spbmfc(nomFichCosm) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.f1.ligne16.ent1 -side left
@@ -2177,11 +2081,11 @@ proc creeFenspbmfc { } {
          button $audace(base).fenetreSpData.et1.f1.ligne16.but1 -borderwidth 2 -width 1 -text $caption(specLhIII,troispoints) \
             -font $audace(font,arial_10_n) -command ::spbmfc::goBrut
          pack $audace(base).fenetreSpData.et1.f1.ligne16.but1 -side left
-         # Affichage du label 
+         # Affichage du label
          label $audace(base).fenetreSpData.et1.f1.ligne16.lab2 -text $caption(specLhIII,spcrbreponse) \
             -font $audace(font,arial_10_n) -width 20 -justify right
          pack $audace(base).fenetreSpData.et1.f1.ligne16.lab2 -side left
-         # Affichage du champ de saisie 
+         # Affichage du champ de saisie
          entry $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -width 16 -font $audace(font,arial_10_b) -relief flat\
             -textvariable data_spbmfc(nomFichRepInst) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetreSpData.et1.f1.ligne16.ent2 -side left
@@ -2274,7 +2178,7 @@ proc creeFenspbmfc { } {
          label $audace(base).fenetreSpData.et2.ligne2.lab1 -text $caption(specLhIII,fichinterm) \
             -font $audace(font,arial_10_n) -width 20 -justify right
          pack $audace(base).fenetreSpData.et2.ligne2.lab1 -side left
-         # Affichage de la case à cocher 
+         # Affichage de la case à cocher
          checkbutton $audace(base).fenetreSpData.et2.ligne2.chk1 -text $caption(specLhIII,fich_0b) \
             -font $audace(font,arial_10_n) -variable data_spbmfc(out-0b)
          pack $audace(base).fenetreSpData.et2.ligne2.chk1 -side left -in $audace(base).fenetreSpData.et2.ligne2
@@ -2321,11 +2225,11 @@ proc creeFenspbmfc { } {
             pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne6 -side top -fill x
             #--- Septième ligne de l'étape 3
             frame $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7
-               # Affichage du label 
+               # Affichage du label
                label $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -text $caption(specLhIII,spcorrgeom) \
                -font $audace(font,arial_10_n) -width 29 -justify right
                pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.lab1 -side left
-               # Affichage du champ de saisie 
+               # Affichage du champ de saisie
                entry $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
                -textvariable data_spbmfc(CorrGeom) -justify left -borderwidth 1 -relief groove -state disabled
                pack $audace(base).fenetreSpData.et3.deuxlignes.f1.ligne7.ent1 -side left
@@ -2374,12 +2278,6 @@ proc creeFenspbmfc { } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).fenetreSpData
 }
-
-#---------------------------------------------------------------------------------------------
-
-#--- Comme cet outil n'est pas lance comme un outil traditionnel, mais est lance
-#--- par l'editeur de profil de Benjamin MAUCLAIRE, je commente la ligne suivante
-###::spbmfc::Init $audace(base)
 
 #---------------------------------------------------------------------------------------------
 # Fin du fichier spbmfc.tcl
