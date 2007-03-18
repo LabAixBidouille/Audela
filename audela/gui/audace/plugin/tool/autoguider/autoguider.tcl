@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.12 2007-03-11 19:16:07 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.13 2007-03-18 10:13:54 michelpujol Exp $
 #
 
 package provide autoguider 1.0
@@ -12,11 +12,10 @@ package provide autoguider 1.0
 #    initialise le namespace
 #==============================================================
 namespace eval ::autoguider {
-   global audace caption panneau
+   global audace caption 
 
    source [ file join $audace(rep_plugin) tool autoguider autoguider.cap ]
    source [ file join $audace(rep_plugin) tool autoguider autoguiderconfig.tcl ]
-   set panneau(menu_name,autoguider) "$caption(autoguider,menu)"
 }
 
 #------------------------------------------------------------
@@ -63,7 +62,6 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
 
    set private($visuNo,monture_ok)        "0"
    set private($visuNo,suiviState)        "0"
-   set private($visuNo,status)            ""
    set private($visuNo,dx)                "0.00"
    set private($visuNo,dy)                "0.00"
    set private($visuNo,delay,alpha)       "0.00"
@@ -90,7 +88,7 @@ proc ::autoguider::createPanel { visuNo } {
    variable private
    global audace caption conf panneau
 
-   #---
+   #--- 
    set panneau(menu_name,autoguider) "$caption(autoguider,menu)"
 
    #--- Petit raccourci bien pratique
@@ -144,18 +142,12 @@ proc ::autoguider::createPanel { visuNo } {
       set list_combobox {0 0.1 0.3 0.5 1 2 3 5 10}
       ComboBox $This.intervalle.combo \
          -width 4 -height [ llength $list_combobox ] \
-         -relief sunken -borderwidth 1 -editable 1 \
+         -relief sunken -borderwidth 1 -editable 0 \
          -textvariable conf(autoguider,intervalle) \
          -values $list_combobox
       pack $This.intervalle.combo -anchor center -side left -fill x -expand 1
    pack $This.intervalle -anchor center -fill x -expand 1
 
-   #--- Cadre du Status
-   frame $This.status -borderwidth 2 -relief ridge
-      label $This.status.lab -textvariable ::autoguider::private($visuNo,status) \
-         -font $audace(font,arial_10_b) -relief ridge -justify center -width 2
-      pack $This.status.lab -side top -fill x -expand true -pady 1
-   pack $This.status -anchor center -fill x -expand true
 
    #--- Cadre du bouton Go/Stop
    frame $This.go_stop -borderwidth 2 -relief ridge
@@ -314,6 +306,8 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
 
    #--- je restaure le bind par defaut du bouton droit de la souris
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
+   #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
+   ::confVisu::createBindCanvas $visuNo <Double-1> "default"
 }
 
 #------------------------------------------------------------
@@ -330,8 +324,8 @@ proc ::autoguider::startAcquisition { visuNo } {
 
    #--- Petits raccourcis bien pratiques
    set camNo [::confVisu::getCamNo $visuNo ]
-   set bufNo [::confVisu::getBufNo $visuNo ]
-   set camName [::confVisu::getCamera $visuNo ]
+   set private($visuNo,bufNo)  [::confVisu::getBufNo $visuNo ]
+   set private($visuNo,camThreadNo) [::confCam::getThreadNo $camNo ]         
 
    if { $private($visuNo,suiviState) != 0 } {
       #--- je ne fais rien si une demande d'arret est en cours
@@ -354,11 +348,11 @@ proc ::autoguider::startAcquisition { visuNo } {
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::autoguider::stopAcquisition $visuNo"
 
-   #--- je remets a zero la valeur du decalage precedent
-   set private(previousAlphaDelay) "0"
-   set private(previousDeltaDelay) "0"
-   set private(delay_alpha)        "0"
-   set private(delay_delta)        "0"
+   #--- je remets a zero les valeurs de l'iteration precedente
+   set private(previousAlphaDirection) ""
+   set private(previousDeltaDirection) ""
+   set private($visuNo,interval)       "0 ms"
+   set private($visuNo,previousClock)  [clock clicks -milliseconds ]
 
    #--- je parametre le binning
    cam$camNo bin [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
@@ -371,32 +365,62 @@ proc ::autoguider::startAcquisition { visuNo } {
       initMount $visuNo
    }
 
-   while { $private($visuNo,suiviState) == "1" } {
-      #--- je parametre le temps de pose
-      cam$camNo exptime $::conf(autoguider,pose)
+   doAcquisition $visuNo $camNo
+ }
 
-      #--- je fais une acquisition
+#------------------------------------------------------------
+# ::autoguider::doAcquisition
+#    fait une acquisition (utilise le mutithread s'il est disponible)
+# 
+#------------------------------------------------------------
+proc ::autoguider::doAcquisition { visuNo camNo} {
+   variable private 
+   global conf
+
+   cam$camNo exptime $::conf(autoguider,pose)
+
+   if { $private($visuNo,camThreadNo) == 0 } {    
+      #--- je fais une acquisition (mono thread)
       cam$camNo acq
-      vwait status_cam$camNo
+      set statusVariableName "::status_cam$camNo"
+      if { [set $statusVariableName] == "exp" } {
+         vwait ::status_cam$camNo
+      }
+      ::autoguider::processAcquisition $visuNo $camNo
+   } else {
+      #--- je fais une acquisition avec la thread de la camera
+      thread::send -async $private($visuNo,camThreadNo) "set visuNo $visuNo" 
+      thread::send -async $private($visuNo,camThreadNo) {
+         cam$camNo acq
+         set statusVariableName "::status_cam$camNo"
+         if { [set $statusVariableName] == "exp" } {
+            vwait ::status_cam$camNo
+         }
+         thread::send -async $mainThreadNo  "::autoguider::processAcquisition $visuNo $camNo"
+      } 
+   }
+}
 
+#------------------------------------------------------------
+# ::autoguider::processAcquisition
+#    traite une acquisition
+# 
+#------------------------------------------------------------
+proc ::autoguider::processAcquisition { visuNo camNo} {
+   variable private 
+   global conf
+   global caption
+   
+   set bufNo $private($visuNo,bufNo)
+
+   #--- je place un catch pour intercepter les erreurs d'acces aux péripehriques
+   #--- et arreter proprement en cas d'erreur
+   set catchError [ catch { 
       #--- je soutrais le dark 
       if { $::conf(autoguider,darkEnabled) == "1" } {
-         catch { 
             buf$bufNo sub [file join $::audace(rep_images) $::conf(autoguider,darkFileName)] 0 
-         } catchMessage
-         if { $catchMessage != "" } {
-            #--- j'arrete le suivi
-            ::autoguider::stopAcquisition $visuNo
-            #--- j'affiche un message d'erreur
-            tk_messageBox -message "$caption(autguider,darkError)\n$catchMessage" -title "$caption(autoguider,titre)" -icon error
-         }
       }
       
-      #--- j'affiche l'image si c'est autorise
-      if { $::conf(autoguider,showImage) == "1" } {
-         ::confVisu::autovisu $visuNo
-      }
-
       #--- si l'origine n'est pas deja fixee, je prends le centre de l'image pour origine
       if { $private($visuNo,targetCoord) == "" } {
          if { $private($visuNo,originCoord) == "" } {
@@ -405,13 +429,7 @@ proc ::autoguider::startAcquisition { visuNo } {
          }
          set private($visuNo,targetCoord) $private($visuNo,originCoord)
       }
-
-      #--- je mets a jour l'affichage des axes si c'est necessaire
-      if { $private($visuNo,updateAxis) == 1 } {
-         createAlphaDeltaAxis $visuNo $private($visuNo,originCoord) $::conf(autoguider,angle)
-         set private($visuNo,updateAxis) 0
-      }
-
+         
       #--- je calcule la position de l'etoile guide dans la zone cible
       if { $::conf(autoguider,detection)=="PSF" } {
          #--- je calcule les coordonnees de la cible autour de l'etoile
@@ -422,13 +440,12 @@ proc ::autoguider::startAcquisition { visuNo } {
          set y1 [expr int($y) - $::conf(autoguider,targetBoxSize)]
          set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
          set private($visuNo,targetCoord) [buf$bufNo centro "[list $x1 $y1 $x2 $y2]"]
-         console::disp "result0=$private($visuNo,targetCoord) \n"
+         #console::disp "result0=$private($visuNo,targetCoord) \n"
       } else {
          set ydelta [expr abs([lindex $private($visuNo,originCoord) 1] - [lindex $private($visuNo,targetCoord) 1]) ]
          set yslit [expr $::conf(autoguider,lipWidth) + $::conf(autoguider,slitWidth)/2 ]
          if { $ydelta <= $yslit } {
              #--- l'etoile est une levre 
-             #--- la zone de recherche est  
              set x  [lindex $private($visuNo,targetCoord) 0]
              set y  [lindex $private($visuNo,originCoord) 1]
              set x1 [expr int($x) - $::conf(autoguider,targetBoxSize)]
@@ -437,7 +454,7 @@ proc ::autoguider::startAcquisition { visuNo } {
              set y2 [expr int($y) + $yslit]
              set result [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $::conf(autoguider,slitWidth) $::conf(autoguider,slitRatio) ] 
              set private($visuNo,targetCoord) [lrange $result 0 1]
-             console::disp "slit=$result \n"
+             #console::disp "slit=$result \n"
          } else {
              #--- l'etoile n'est pas sur une levre
              set x  [lindex $private($visuNo,targetCoord) 0]
@@ -448,14 +465,40 @@ proc ::autoguider::startAcquisition { visuNo } {
              set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
              set result [buf$bufNo centro "[list $x1 $y1 $x2 $y2]" ] 
              set private($visuNo,targetCoord) [lrange $result 0 1]
-             console::disp "centro=$result \n"
+             #console::disp "centro=$result \n"
          }
-      }
+      }           
 
       #--- je calcule l'ecart de position par rapport a la position d'origine
-      set private($visuNo,dx) [format "%##0.1f" [expr [lindex $private($visuNo,targetCoord) 0] - [lindex $private($visuNo,originCoord) 0] ]]
-      set private($visuNo,dy) [format "%##0.1f" [expr [lindex $private($visuNo,targetCoord) 1] - [lindex $private($visuNo,originCoord) 1] ]]
+      set dx [expr [lindex $private($visuNo,targetCoord) 0] - [lindex $private($visuNo,originCoord) 0] ]
+      set dy [expr [lindex $private($visuNo,targetCoord) 1] - [lindex $private($visuNo,originCoord) 1] ]
 
+      #--- je diminue les valeurs de dx et dy si elles depassent la taille de la zone de detection de l'etoile
+      if { $dx > $conf(autoguider,targetBoxSize) } {
+         set dx $conf(autoguider,targetBoxSize)
+      } elseif { $dx <  -$conf(autoguider,targetBoxSize) } {
+         set dx [expr -$conf(autoguider,targetBoxSize) ]
+      } 
+      
+      if { $dy > $conf(autoguider,targetBoxSize) } {
+         set dy $conf(autoguider,targetBoxSize)
+      } elseif { $private($visuNo,dy) <  -$conf(autoguider,targetBoxSize) } {
+         set dy [expr -$conf(autoguider,targetBoxSize) ]
+      }
+      set private($visuNo,dx) [format "%##0.1f" $dx]
+      set private($visuNo,dy) [format "%##0.1f" $dy]
+   
+      #--- j'affiche l'image si c'est autorise
+      if { $::conf(autoguider,showImage) == "1" } {
+         ::confVisu::autovisu $visuNo
+      }   
+
+      #--- je mets a jour l'affichage des axes si c'est necessaire
+      if { $private($visuNo,updateAxis) == 1 } {
+         createAlphaDeltaAxis $visuNo $private($visuNo,originCoord) $::conf(autoguider,angle)
+         set private($visuNo,updateAxis) 0
+      }
+   
       #--- j'affiche le symbole de la cible si c'est autorise
       if { $::conf(autoguider,showTarget) == "1" } {
          moveTarget $visuNo $private($visuNo,targetCoord)
@@ -465,40 +508,120 @@ proc ::autoguider::startAcquisition { visuNo } {
       set nextClock [clock clicks -milliseconds ]
       set private($visuNo,interval) "[expr $nextClock - $private($visuNo,previousClock)] ms"
       set private($visuNo,previousClock) $nextClock 
-      #--- je provoque le refraichissement de l'affichage des nouvelles valeurs
-      update
-
+   
       #--- je deplace le telescope si c'est autorise
       if { $private($visuNo,monture_ok) == 1 && $private($visuNo,suiviState) == "1" } {
-         set private($visuNo,status) "Maj suivi"
-         ::autoguider::updateTelescope $visuNo $private($visuNo,dx) $private($visuNo,dy)
-      }
+         
+         #--- je convertis l'angle en radian
+         set angle [expr $conf(autoguider,angle)* 3.14159265359/180 ]
+      
+         #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
+         set alphaDelay [expr int((cos($angle) * $private($visuNo,dx) - sin($angle) *$private($visuNo,dy)) * 1000.0 / $conf(autoguider,alphaSpeed))]
+         set deltaDelay [expr int((sin($angle) * $private($visuNo,dx) + cos($angle) *$private($visuNo,dy)) * 1000.0 / $conf(autoguider,deltaSpeed))]
+      
+         #--- calcul des seuils minimaux de deplacement alpha et delta (en millisecondes)
+         set seuilAlpha [expr $conf(autoguider,seuilx) * 1000.0 / $conf(autoguider,alphaSpeed)]
+         set seuilDelta [expr $conf(autoguider,seuily) * 1000.0 / $conf(autoguider,deltaSpeed)]
+      
+         #--- j'inverse le sens des deplacements si necessaire 
+         if { $conf(autoguider,alphaReverse) == "1" } {
+            set alphaDelay [expr -$alphaDelay]
+         }
+         if { $conf(autoguider,deltaReverse) == "1" } {
+            set deltaDelay [expr -$deltaDelay]
+         }
+      
+         #--- je calcule la direction alpha
+         if { $alphaDelay >= 0 } {
+            set alphaDirection "w"
+         } else {
+            set alphaDirection "e"
+            set alphaDelay [expr -$alphaDelay]
+         }          
+         #--- test anti-turbulance
+         if { $alphaDirection != $private(previousAlphaDirection) } {
+            set alphaDelay 0
+         }
+         if { $alphaDelay < $seuilAlpha } {
+            set alphaDelay 0
+         } 
+         set private(previousAlphaDirection) $alphaDirection
+      
+         #--- je calcule la direction delta
+         if { $conf(autoguider,declinaisonEnabled) == 1 } {
+            if { $deltaDelay >= 0 } {
+               set deltaDirection "n"
+            } else {
+               set deltaDirection "s"
+               set deltaDelay [expr -$deltaDelay]
+            }
+            
+            #--- test anti-turbulance
+            if { $deltaDirection != $private(previousDeltaDirection) } {
+              set deltaDelay 0
+            }
+            if { $deltaDelay < $seuilDelta } {
+              set deltaDelay 0
+            }
+         } else {
+            set deltaDelay 0
+         }
+         set private(previousDeltaDirection) $deltaDirection            
+         set private($visuNo,delay,alpha) "$alphaDelay $alphaDirection"
+         set private($visuNo,delay,delta) "$deltaDelay $deltaDirection"
 
-      #--- je vide l'affichage du status
-      set private($visuNo,status) ""
-
-      #--- j'execute le delai d'attente entre deux poses si c'est autorise
-      if { $conf(autoguider,intervalle) > 0 && $private($visuNo,suiviState) == "1"} {
-         after [expr int($conf(autoguider,intervalle) * 1000) ]
+         #--- je refraichis l'affichage des nouvelles valeurs
+         #--- avant le deplacement du telescope
+         update
+      
+         #--- je deplace le telescope
+         if { $alphaDelay != 0 } {
+            ::autoguider::moveTelescope $visuNo $alphaDirection $alphaDelay
+         }
+         if { $deltaDelay != 0 } {
+            ::autoguider::moveTelescope $visuNo $deltaDirection $deltaDelay
+         }
+      } else {
+         set private($visuNo,delay,alpha) "0"
+         set private($visuNo,delay,delta) "0"
+         update
       }
+   #--- fin du catch 
+   } catchMessage ] 
+
+   if { $catchError == 1 } {
+      #--- j'arrete le suivi
+      ::autoguider::stopAcquisition $visuNo
+      #--- j'affiche un message d'erreur
+      tk_messageBox -message "$catchMessage. See console." -title "$caption(autoguider,titre)" -icon error
+      console::affiche_erreur "::autoguider::processAcquisition $::errorInfo \n"
    }
 
-   #--- j'arrete le suivi
-   set private($visuNo,status) ""
 
-   #--- j'active le bouton GO et associe la commande demarrage
-   $private($visuNo,This).go_stop.but configure \
-      -text "$caption(autoguider,GO)" \
-      -command "::autoguider::startAcquisition $visuNo"
-   #--- je supprime l'association du bouton escape
-   bind all <Key-Escape> ""
 
-   set private($visuNo,suiviState) 0
+   if { $private($visuNo,suiviState) == "1" } {
+      if { [string is double $conf(autoguider,intervalle)] } { 
+         after [expr int($conf(autoguider,intervalle) * 1000) ] 
+      }
+      #--- je fais une nouvelle acquisition
+      ::autoguider::doAcquisition $visuNo $camNo
+      #--- c'est reparti pour un tour ...
+   } else {
+      #--- la fin des acquistions a ete demandee
+      #--- j'active le bouton GO 
+      $private($visuNo,This).go_stop.but configure \
+         -text "$caption(autoguider,GO)" \
+         -command "::autoguider::startAcquisition $visuNo"
+      #--- je supprime l'association du bouton escape
+      bind all <Key-Escape> ""         
+      set private($visuNo,suiviState) 0
+   }     
 }
 
 #------------------------------------------------------------
 # ::autoguider::stopAcquisition
-#    arrete les acquisitions en boucle
+#    Demande l'arret des acquisitions . L'arret sera effectif apres la fin
+#    de l'acquisition en cours
 # 
 #------------------------------------------------------------
 proc ::autoguider::stopAcquisition { visuNo } {
@@ -512,7 +635,8 @@ proc ::autoguider::stopAcquisition { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::initMount
-#    initialise les parametres de la monture : selectionne la plus petite vitesse
+#    initialise les parametres de la monture 
+#    selectionne la plus petite vitesse
 #      
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -551,7 +675,7 @@ proc ::autoguider::setOrigin { visuNo x y } {
 
 #------------------------------------------------------------
 # ::autoguider::setTargetCoord
-#   initialise le point origine dans private(visuNo,originCoord)
+#   initialise les cooredonnees de la cible dans private(visuNo,targetCoord)
 # 
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -670,7 +794,7 @@ proc ::autoguider::createTarget { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::createAlphaDeltaAxis
-#   dessine les axes alpha et delta
+#   dessine les axes alpha et delta centres sur l'origine
 # 
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -701,7 +825,7 @@ proc ::autoguider::deleteAlphaDeltaAxis { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::deleteTarget
-#  arrete l'affichage de la cible  
+#  supprime l'affichage de la cible  
 #  
 # parametres :
 #   visuNo    : numero de la visu courante
@@ -1013,100 +1137,6 @@ proc ::autoguider::selectBinning { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::autoguider::updateTelescope
-#   Calcule la duree de deplacement (alpha,delta) du telescope correspondant
-#   au deplacement (dx,dy) sur l'image.
-#   Puis execute le deplacement du telescope
-# parametres :
-#   visuNo    : numero de la visu courante
-#   dx        : nombre de pixels sur l'axe x de l'image (referentiel buffer)
-#   dy        : nombre de pixels sur l'axe y de l'image (referentiel buffer)
-# return
-#  rien
-#------------------------------------------------------------
-proc ::autoguider::updateTelescope { visuNo dx dy } {
-   variable private
-   global conf
-
-   #--- je diminue les valeurs de dx et dy si elles depassent la taille de la zone de detection de l'etoile
-   if { $dx > $conf(autoguider,targetBoxSize) } {
-      set dx $conf(autoguider,targetBoxSize)
-   } elseif { $dx <  -$conf(autoguider,targetBoxSize) } {
-      set dx [expr -$conf(autoguider,targetBoxSize) ]
-   }
-   if { $dy > $conf(autoguider,targetBoxSize) } {
-      set dy $conf(autoguider,targetBoxSize)
-   } elseif { $dy <  -$conf(autoguider,targetBoxSize) } {
-      set dy [expr -$conf(autoguider,targetBoxSize) ]
-   }
-
-   #--- j'affiche les valeurs dx et dy
-   $private($visuNo,This).suivi.dx configure -text $dx
-   $private($visuNo,This).suivi.dx configure -text $dy
-
-   #--- je convertis l'angle en radian
-   set angle [expr $conf(autoguider,angle)* 3.14159265359/180 ]
-
-   #--- je calcule les delais de deplacement alpha et delta (en millisecondes)
-   set alphaDelay [expr int((cos($angle) * $dx - sin($angle) *$dy) * 1000.0 / $conf(autoguider,alphaSpeed))]
-   set deltaDelay [expr int((sin($angle) * $dx + cos($angle) *$dy) * 1000.0 / $conf(autoguider,deltaSpeed))]
-
-   #--- calcul des durees minimales de deplacement alpha et delta (en millisecondes)
-   set seuilAlpha [expr $conf(autoguider,seuilx) * 1000.0 / $conf(autoguider,alphaSpeed)]
-   set seuilDelta [expr $conf(autoguider,seuily) * 1000.0 / $conf(autoguider,deltaSpeed)]
-
-   #--- j'inverse le sens des deplacements si necessaire 
-   if { $conf(autoguider,alphaReverse) == "1" } {
-      set alphaDelay [expr -$alphaDelay]
-   }
-   if { $conf(autoguider,deltaReverse) == "1" } {
-      set deltaDelay [expr -$deltaDelay]
-   }
-
-   #--- j'execute le deplacement alpha
-   if { $alphaDelay >= 0 && $private(previousAlphaDelay) > 0 } {
-      if { $alphaDelay > $seuilAlpha } {
-         set private($visuNo,delay,alpha) $alphaDelay
-         ::autoguider::moveTelescope $visuNo w $alphaDelay
-      } else {
-         set private($visuNo,delay,alpha) 0
-      }
-   } elseif { $alphaDelay < 0 && $private(previousAlphaDelay) < 0 } {
-      if { -$alphaDelay > $seuilAlpha } {
-         set private($visuNo,delay,alpha) $alphaDelay
-         ::autoguider::moveTelescope $visuNo e [expr -$alphaDelay]
-      } else {
-         set private($visuNo,delay,alpha) 0
-      }
-   }
-   set private(previousAlphaDelay) $alphaDelay
-
-   #--- j'execute le deplacement delta
-   if { $conf(autoguider,declinaisonEnabled) == 1 } {
-      if { $deltaDelay >= 0 && $private(previousDeltaDelay) > 0 } {
-         if { $deltaDelay > $seuilDelta } {
-            set private($visuNo,delay,delta) $deltaDelay
-            ::autoguider::moveTelescope $visuNo n [expr $deltaDelay]
-         } else {
-            set private($visuNo,delay,delta) 0
-         }
-      } elseif { $deltaDelay < 0 && $private(previousDeltaDelay) < 0 } {
-         if { -$deltaDelay > $seuilDelta } {
-            set private($visuNo,delay,delta) $deltaDelay
-            ::autoguider::moveTelescope $visuNo s [expr -$deltaDelay]
-         } else {
-            set private($visuNo,delay,delta) 0
-         }
-      }
-   } else {
-      set private($visuNo,delay,delta) 0
-   }
-
-   set private(previousDeltaDelay) $deltaDelay
-   update
-}
-
-#------------------------------------------------------------
 # ::autoguider::moveTelescope { }
 #   Deplace le telescope pendant un duree determinee
 #   Le deplacement est interrompu si private($visuNo,suiviState)!=0
@@ -1122,7 +1152,7 @@ proc ::autoguider::moveTelescope { visuNo direction delay} {
    variable private
 
    #--- laisse la main pour traiter une eventuelle demande d'arret
-   update
+   update 
 
    #--- je demarre le deplacement
    ##::telescope::move $direction

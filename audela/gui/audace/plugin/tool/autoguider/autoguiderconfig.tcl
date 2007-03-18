@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.3 2007-02-10 10:36:23 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.4 2007-03-18 10:13:54 michelpujol Exp $
 #
 
 ################################################################
@@ -74,6 +74,7 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,darkEnabled)       $widget($visuNo,darkEnabled)
    set conf(autoguider,darkFileName)      $widget($visuNo,darkFileName)
    set conf(autoguider,slitWidth)         $widget($visuNo,slitWidth)
+   set conf(autoguider,slitRatio)         $widget($visuNo,slitRatio)
    set conf(autoguider,lipWidth)          $widget($visuNo,lipWidth)
 
    #--- je redessine la cible si le mode de detection a change
@@ -107,6 +108,7 @@ proc ::autoguider::config::run { visuNo } {
    set ::caption(autoguider,darkFileName) "Fichier dark"
    set ::caption(autoguider,darkEnabled) "Activer la soustraction"
    set ::caption(autoguider,slitWidth) "Largeur de la fente"
+   set ::caption(autoguider,slitRatio) "Coefficient (%/pixels)"
    set ::caption(autoguider,lipWidth)  "Largeur d'une lèvre"
    set ::caption(autoguider,alphaReverse)  "Inverser le sens"
    set ::caption(autoguider,deltaReverse)  "Inverser le sens"
@@ -161,6 +163,7 @@ proc ::autoguider::config::confToWidget { visuNo } {
    set widget($visuNo,darkEnabled)       $conf(autoguider,darkEnabled)
    set widget($visuNo,darkFileName)      $conf(autoguider,darkFileName)
    set widget($visuNo,slitWidth)         $conf(autoguider,slitWidth)
+   set widget($visuNo,slitRatio)         $conf(autoguider,slitRatio)
    set widget($visuNo,lipWidth)          $conf(autoguider,lipWidth)
 }
 
@@ -199,11 +202,16 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,slitWidth)
       grid $frm.detection.slitWidth -in [$frm.detection getframe] -row 2 -column 0 -columnspan 2 -sticky ewns
+      LabelEntry $frm.detection.slitRatio -label "$caption(autoguider,slitRatio)" \
+         -labeljustify left -labelwidth 20 -width 3 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
+         -textvariable ::autoguider::config::widget($visuNo,slitRatio)
+      grid $frm.detection.slitRatio -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.lipWidth -label "$caption(autoguider,lipWidth)" \
          -labeljustify left -labelwidth 20 -width 3 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,lipWidth)
-      grid $frm.detection.lipWidth -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
+      grid $frm.detection.lipWidth -in [$frm.detection getframe] -row 4 -column 0 -columnspan 2 -sticky ewns
    grid $frm.detection -row 0 -column 0 -columnspan 1 -sticky ewns
 
    #--- Frame apprentissage
@@ -482,9 +490,11 @@ proc ::autoguider::config::setDetection { visuNo } {
    if { $widget($visuNo,detection) != "SLIT" } {
       $private($visuNo,This).detection.lipWidth configure -state disabled
       $private($visuNo,This).detection.slitWidth configure -state disabled
+      $private($visuNo,This).detection.slitRatio configure -state disabled
    } else {
       $private($visuNo,This).detection.lipWidth configure -state normal
       $private($visuNo,This).detection.slitWidth configure -state normal
+      $private($visuNo,This).detection.slitRatio configure -state normal
    }      
 
 }
@@ -494,9 +504,8 @@ proc ::autoguider::config::setDetection { visuNo } {
 #   affiche l'aide de cet outil
 #------------------------------------------------------------
 proc ::autoguider::config::showHelp { } {
-   variable private
-   variable widget
-
+  
+  ::audace::showHelpPlugin tool autoguider autoguider.htm
    
 }
 
