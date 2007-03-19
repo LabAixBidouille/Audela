@@ -1,10 +1,10 @@
 #
 # Fichier : confgene_en-tete.cap
-# Mise a jour $Id: confgene_en-tete.cap,v 1.11 2007-03-18 21:10:21 denismarchais Exp $
+# Mise a jour $Id: confgene_en-tete.cap,v 1.12 2007-03-19 08:03:04 denismarchais Exp $
 #
 
 #=========================================================================
-#   Dï¿½ut de la dï¿½laration des textes localisï¿½ (internationalisation)
+#   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -31,15 +31,15 @@ set caption(en-tete,a_propos_de_copyright9)           "(I) F. Manenti, (E) R. G.
 set caption(en-tete,a_propos_de_copyright10)          "(D) Ph. Kauffmann + J. Hoebelmann"
 set caption(en-tete,a_propos_de_copyright11)          "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
 
-# *************** Version franï¿½ise ***************************
+# *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(en-tete,interface_audace_audela)       "Interface Aud'ACE pour AudeLA"
 
    set caption(en-tete,a_propos_de)                   "A propos de ..."
    set caption(en-tete,a_propos_de_version)           "AudeLA/Aud'ACE"
-   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Version Tcl/Tk trouvï¿½ : V"
-   set caption(en-tete,a_propos_de_maj)               "Mise ï¿½jour du"
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Version Tcl/Tk trouvée : V"
+   set caption(en-tete,a_propos_de_maj)               "Mise à jour du"
    set caption(en-tete,a_propos_de_libre)             "Ce logiciel est libre et gratuit."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
    set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2007"
@@ -86,7 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_version)           "AudeLA/Aud'ACE"
    set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Version de Tcl/Tk encontrada: V"
    set caption(en-tete,a_propos_de_maj)               "Publicado el"
-   set caption(en-tete,a_propos_de_libre)             "Este software es gratis y con cï¿½igo fuente disponible."
+   set caption(en-tete,a_propos_de_libre)             "Este software es gratis y con código fuente disponible."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
    set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2007"
    set caption(en-tete,a_propos_de_copyright2)        "Equipo de Desarrollo: D. Marchais, A. Klotz, R. Delmas,"
@@ -103,11 +103,11 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(en-tete,interface_audace_audela)       "Aud'ACE Interface fr AudeLA"
+   set caption(en-tete,interface_audace_audela)       "Aud'ACE Interface für AudeLA"
 
-   set caption(en-tete,a_propos_de)                   "ï¿½er AudeLA"
+   set caption(en-tete,a_propos_de)                   "Über AudeLA"
    set caption(en-tete,a_propos_de_version)           "AudeLA/Aud'ACE"
-   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Ausfhrung gefunden: V"
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Ausführung gefunden: V"
    set caption(en-tete,a_propos_de_maj)               "Aufarbeitung vom"
    set caption(en-tete,a_propos_de_libre)             "Diesen Software ist frei und kostenlos."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
@@ -118,7 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
    set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
-   set caption(en-tete,a_propos_de_copyright8)        "ï¿½ersetzungen: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright8)        "Übersetzungen: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
    set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
@@ -130,9 +130,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(en-tete,a_propos_de)                   "Sobre..."
    set caption(en-tete,a_propos_de_version)           "AudeLA/Aud'ACE"
-   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Versï¿½ Encontrada: V"
-   set caption(en-tete,a_propos_de_maj)               "Versï¿½ de 14 de Julho de 2005."
-   set caption(en-tete,a_propos_de_libre)             "Este software ï¿½do tipo freeware e open source."
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Versão Encontrada: V"
+   set caption(en-tete,a_propos_de_maj)               "Versão de 14 de Julho de 2005."
+   set caption(en-tete,a_propos_de_libre)             "Este software é do tipo freeware e open source."
    set caption(en-tete,a_propos_de_site)              "http://software.audela.free.fr/"
    set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2007"
    set caption(en-tete,a_propos_de_copyright2)        "Equipa de desenvolvimento: D. Marchais, A. Klotz, R. Delmas,"
@@ -141,7 +141,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
    set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
-   set caption(en-tete,a_propos_de_copyright8)        "Traduï¿½es: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright8)        "Traduções: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
    set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
@@ -164,7 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
    set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
-   set caption(en-tete,a_propos_de_copyright8)        "Oversï¿½tere: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright8)        "Oversættere: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
    set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
@@ -172,6 +172,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la dï¿½laration des textes localisï¿½ (internationalisation)
+#   Fin de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
