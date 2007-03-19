@@ -3,10 +3,14 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.20 2007-01-20 15:46:48 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.21 2007-03-19 18:53:56 robertdelmas Exp $
 #
 
 package provide scanfast 1.0
+
+global panneau
+
+set panneau(Scanfast,temps_mort) "0"
 
 proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    #--- largpix  : Largeur de l'image (en pixels)
@@ -14,7 +18,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    #--- dt       : Temps d'integration interligne (en millisecondes)
    #--- firstpix : Indice du premier photosite de la largeur de l'image (commence a 1)
    #--- bin      : Binning du scan
-   global audace caption
+   global audace caption panneau
 
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment1)\n"
@@ -25,6 +29,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    cam$audace(camNo) scan $largpix $hautpix $bin 0 -firstpix $firstpix -fast 0 -tmpfile -biny $bin
    set tmort [ expr 1000.*[ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ] ]
    ::console::affiche_resultat "   $caption(scanfast,comment4) = $tmort $caption(scanfast,ms/ligne)\n"
+   set panneau(Scanfast,temps_mort) $tmort
    set dt0 [ expr $dt-$tmort ]
    if { $dt0 < "0" } {
       ::console::affiche_erreur "$caption(scanfast,comment5) dt=$dt $caption(scanfast,ms)\n"
@@ -319,7 +324,11 @@ namespace eval ::Scanfast {
             set w [ ::Scanfast::int [ expr $panneau(Scanfast,col2) - $panneau(Scanfast,col1) + 1 ] ]
             set h [ ::Scanfast::int $panneau(Scanfast,lig1) ]
             set f [ ::Scanfast::int $panneau(Scanfast,col1) ]
-            set temps_mort 10 ; #--- Estimation du temps mort a 10 ms par ligne
+            if { $panneau(Scanfast,temps_mort) == "0" } {
+               set temps_mort "20" ; #--- Estimation du temps mort a 20 ms par ligne
+            } else {
+               set temps_mort $panneau(Scanfast,temps_mort)
+            }
             set duree [ expr ($panneau(Scanfast,dt)+$temps_mort)*$h/1000./86400. ]
 
             #--- Gestion du moteur d'A.D.
