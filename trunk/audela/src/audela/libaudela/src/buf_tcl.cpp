@@ -1777,7 +1777,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       keep_keywords = DONT_KEEP_KEYWORDS;
    
       //  lecture des parametres optionels
-      for (i = 8; i < argc - 1; i++) {
+      for (i = 8; i < argc; i++) {
    	   if (strcmp(argv[i], "-keep_keywords") == 0) {
             keep_keywords = KEEP_KEYWORDS;
          } 
