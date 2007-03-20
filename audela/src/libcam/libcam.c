@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.15 2007-03-14 21:42:23 michelpujol Exp $
+ * $Id: libcam.c,v 1.16 2007-03-20 20:26:32 denismarchais Exp $
  */
 
 #include "sysexp.h"
@@ -814,6 +814,31 @@ static void AcqRead(ClientData clientData )
    
    libcam_GetCurrentFITSDate(interp, cam->date_end);
    libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
+
+   // Test de l'existence du buffer avant l'acquisition
+   // DM: cela permet eventuellement a la fonction read_ccd de creer des
+   // mots cles FITS.
+   sprintf(s, "buf%d clear", cam->bufno);
+   if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      libcam_log(LOG_WARNING, "error in this command: result='%s'", interp->result);
+      sprintf(s, "buf::create %d", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in the command '%s': result='%s'", __LINE__, s, interp->result);
+      }
+   }
+   
+   /* Ces deux mots cles sont assignes avant d'appeller la fonction 
+   /* de lecture de la camera, ce qui permet a celle-ci de les ecraser */
+   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+   libcam_log(LOG_DEBUG, s);
+   if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+   }
+   sprintf(s, "buf%d setkwd [list CAMERA {%s %s %s} string {} {}]", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+   libcam_log(LOG_DEBUG, s);
+   if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+   }
    
    //  capture 
    // TODO 2 : une autre solution serait de passer l'adresse de p  comme ceci :
@@ -833,13 +858,6 @@ static void AcqRead(ClientData clientData )
    }
    
    if (strlen(cam->msg) == 0) {
-      // Ce test permet de savoir si le buffer existe
-      sprintf(s, "buf%d bitpix", cam->bufno);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {
-         sprintf(s, "buf::create %d", cam->bufno);
-         Tcl_Eval(interp, s);
-      }
-      
       // --- application du miroir horizontal
       if( cam->mirrorh == 1 ) {
          // j'inverse l'orientation de l'image par rapport à un miroir horizontal
@@ -861,7 +879,7 @@ static void AcqRead(ClientData clientData )
             cam->pixels_reverse_x = 1; 
          }
       }
-      
+
       //--- set pixels to buffer
       //--- setPixels usage :
       //  required parameters : 
@@ -877,70 +895,111 @@ static void AcqRead(ClientData clientData )
       //      -reverseX    if "1" , apply vertical mirror
       //      -reverseY    if "1" , apply horizontal mirror
       // ---
-      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d", 
+      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d -keep_keywords", 
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
          (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+      libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
-         strcpy(s, interp->result);
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
-            
+
       //--- Add FITS keywords 
       if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
          // cas d'une image 2D en niveau de gris
          sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
-         Tcl_Eval(interp, s);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
       } else if ( strcmp(cam->pixels_classe, "CLASS_RGB")==0 ) {
          // cas d'une image 2D RGB
          sprintf(s, "buf%d setkwd {NAXIS 3 int \"\" \"\"}", cam->bufno);
-         Tcl_Eval(interp, s);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
          sprintf(s, "buf%d setkwd {NAXIS3 3 int \"\" \"\"}", cam->bufno);
-         Tcl_Eval(interp, s);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
       }
 
       //--- get height after decompression
       sprintf(s, "buf%d getpixelsheight", cam->bufno);
+      libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_OK) {
          Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
-      }   
+      } else {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       
       //--- get width after decompression
       sprintf(s, "buf%d getpixelswidth", cam->bufno);
+      libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_OK) {
          Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
-      }   
+      } else {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
 
       sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
-      Tcl_Eval(interp, s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
-      Tcl_Eval(interp, s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, cam->binx);
-      Tcl_Eval(interp, s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, cam->biny);
-      Tcl_Eval(interp, s);
-      sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
-      Tcl_Eval(interp, s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       if (cam->timerExpiration != NULL) {
          sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
       } else {
          sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
       }
-      Tcl_Eval(interp, s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       if (cam->timerExpiration != NULL) {
          sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
       } else {
          sprintf(s, "expr (([mc_date2jd %s]-[mc_date2jd %s])*86400.)", cam->date_end, cam->date_obs);
-         Tcl_Eval(interp, s);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
          exptime = atof(interp->result);
          sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, exptime);
       }
-      Tcl_Eval(interp, s);
-
-		/* - call the header proc to add additional informations -*/
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
+      
+      /* - call the header proc to add additional informations -*/
       sprintf(s,"catch {set libcam(header) [%s]}",cam->headerproc);
-      Tcl_Eval(interp,s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
       if (atoi(interp->result)==0) {
          sprintf(s, "foreach header $libcam(header) { buf%d setkwd $header }", cam->bufno);
-         Tcl_Eval(interp,s);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
       }
 /*
       if ( cam->radecFromTel  == 1 ) {
@@ -957,7 +1016,10 @@ static void AcqRead(ClientData clientData )
    } else { 
       // erreur d'acquisition, on enregistre une image vide 
       sprintf(s, "buf%d clear", cam->bufno );
-      Tcl_Eval(interp, s);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
    } 
    
    free(p);
