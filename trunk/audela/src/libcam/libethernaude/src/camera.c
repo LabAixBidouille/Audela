@@ -576,6 +576,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
    /* --- Datation GPS si eventaude present --- */
    if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
+      sprintf(ligne, "buf%d setkwd {CAMERA \"%s+GPS %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+      Tcl_Eval(cam->interp, ligne);
+
       // Debut de la pose
       paramCCD_clearall(&ParamCCDIn, 1);
       paramCCD_put(-1, "Get_JulianDate_beginLastExp", &ParamCCDIn, 1);
@@ -618,6 +621,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          sprintf(ligne,"Keyword 'Date' not found");
          util_log(ligne, 0);
       }
+      
+      sprintf(ligne, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+      Tcl_Eval(cam->interp, ligne);
    }
 
 
