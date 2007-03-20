@@ -2,7 +2,7 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.7 2007-03-18 16:08:20 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.8 2007-03-20 20:40:22 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -186,7 +186,6 @@ proc bm_ovakwd { args } {
    global audace
 
    set type "string"
-
    if { [ llength $args ] == 2 } {
       set fichier [ lindex $args 0 ]
       set reso [ lindex $args 1 ]
@@ -220,7 +219,6 @@ proc bm_addmotcleftxt { args } {
 
    set type "string"
    if { [ llength $args ] == 3 || [ llength $args ] == 4 || [ llength $args ] == 5 } {
-
       if { [ llength $args ] == 3 } {
          set fichier [ lindex $args 0 ]
          set nom_mot_clef [ lindex $args 1]
@@ -240,7 +238,8 @@ proc bm_addmotcleftxt { args } {
          set legende [ lindex $args 3 ]
          set type_data [ lindex $args 4 ]
       } else {
-         ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\"description mot clef\"?] ?type_donnees (float/short)?]?\n\n"
+         ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\" description mot clef\" ?] ?type_données (float/short)?]?\n\n"
+         return 0
       }
 
       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -257,7 +256,7 @@ proc bm_addmotcleftxt { args } {
       buf$audace(bufNo) save "$audace(rep_images)/$fichier"
       buf$audace(bufNo) bitpix short
    } else {
-      ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\"description mot clef\"?] ?type_donnees_image (float/short)?]?\n\n"
+      ::console::affiche_erreur "Usage: bm_addmotcleftxt fichier_fits nom_motclef_a_jouter \"valeur_mot\" ?[[?\" description mot clef\" ?] ?type_données_image (float/short)?]?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -480,8 +479,8 @@ proc bm_datefile { args } {
 proc bm_correctprism { args } {
    global audace
    global conf
-   set ext ".fts"
 
+   set ext ".fts"
    if { [llength $args] == 1 } {
       set nom_generique [lindex $args 0]
 
@@ -1279,7 +1278,7 @@ proc bm_smed { args } {
    if {[llength $args] == 1} {
       #set repdflt [bm_goodrep]
       set nom_generique [ file rootname [ lindex $args 0 ] ]
-      set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]*$conf(extension,defaut) ] ]
+      set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
       ::console::affiche_resultat "Somme médiane de $nb_file images...\n"
       smedian "$nom_generique" "${nom_generique}smd$nb_file" $nb_file
