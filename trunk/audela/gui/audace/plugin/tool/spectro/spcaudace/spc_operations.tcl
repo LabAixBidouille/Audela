@@ -29,39 +29,42 @@ proc spc_pretrait { args } {
        if {[llength $args] == 4} {
 	   #--- On se place dans le répertoire d'images configuré dans Audace
 	   set repdflt [ spc_goodrep ]
-	   set nom_stellaire [ lindex $args 0 ]
-	   set nom_dark [ lindex $args 1 ]
-	   set nom_flat [ lindex $args 2 ]
-	   set nom_darkflat [ lindex $args 3 ]
+	   set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
+	   set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
+	   set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
+	   set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
 	   set flag_rmmaster "o"
        } elseif {[llength $args] == 5} {
 	   #--- On se place dans le répertoire d'images configuré dans Audace
 	   set repdflt [ spc_goodrep ]
-	   set nom_stellaire [ lindex $args 0 ]
-	   set nom_dark [ lindex $args 1 ]
-	   set nom_flat [ lindex $args 2 ]
-	   set nom_darkflat [ lindex $args 3 ]
+	   set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
+	   set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
+	   set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
+	   set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
 	   set flag_rmmaster [ lindex $args 4 ]
        } else {
 	   ::console::affiche_erreur "Usage: spc_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?effacement des masters (O/n)?\n\n"
 	   return 0
        }
 
+
        ## Renumerote chaque série de fichier
-       renumerote $nom_stellaire
-       renumerote $nom_dark
-       renumerote $nom_flat
-       renumerote $nom_darkflat
+       #renumerote $nom_stellaire
+       #renumerote $nom_dark
+       #renumerote $nom_flat
+       #renumerote $nom_darkflat
 
        ## Détermine les listes de fichiers de chasue série
-       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-       set nb_stellaire [ llength $stellaire_liste ]
        #set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
        #set nb_dark [ llength $dark_liste ]
        #set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
        #set nb_flat [ llength $flat_liste ]
        #set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
        #set nb_darkflat [ llength $darkflat_liste ]
+       #-----------------------------------------------------------------------------------------#
+       if { 1==0 } {
+       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       set nb_stellaire [ llength $stellaire_liste ]
        #-- Gesttion du cas des masters au lieu d'une série de fichier :
        if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
 	   set dark_list [ list $nom_dark ]
@@ -83,6 +86,53 @@ proc spc_pretrait { args } {
        } else {
 	   set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_darkflat [ llength $darkflat_liste ]
+       }
+       }
+       #-----------------------------------------------------------------------------------------#
+       #--- Compte les images :
+       if { [ file exists "$audace(rep_images)/$nom_stellaire$conf(extension,defaut)" ] } {
+	   set stellaire_liste [ list $nom_stellaire ]
+	   set nb_stellaire 1
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+	   renumerote $nom_stellaire
+	   set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set nb_stellaire [ llength $stellaire_liste ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
+	   return ""
+       }
+       if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
+	   set dark_liste [ list $nom_dark ]
+	   set nb_dark 1
+       } elseif { [ catch { glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+	   renumerote $nom_dark
+	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set nb_dark [ llength $dark_liste ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
+	   return ""
+       }
+       if { [ file exists "$audace(rep_images)/$nom_flat$conf(extension,defaut)" ] } {
+	   set flat_list [ list $nom_flat ]
+	   set nb_flat 1
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+	   renumerote $nom_flat
+	   set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set nb_flat [ llength $flat_list ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
+	   return ""
+       }
+       if { [ file exists "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" ] } {
+	   set darkflat_list [ list $nom_darkflat ]
+	   set nb_darkflat 1
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+	   renumerote $nom_darkflat
+	   set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set nb_darkflat [ llength $darkflat_list ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
+	   return ""
        }
 
 
@@ -265,135 +315,6 @@ proc spc_norma { args } {
 #*****************************************************************#
 
 
-####################################################################
-# Procedure de normalisation automatique de profil de raies
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 15-12-2005
-# Date modification : 15-12-2005
-# Arguments : fichier .fit du profil de raie normalisé
-####################################################################
-
-proc spc_autonorma { args } {
-
-    global audace
-    global conf
-    set extsp ".dat"
-
-    if {[llength $args] == 1} {
-	set fichier [ lindex $args 0 ]
-	set nom_fichier [ file rootname $fichier ]
-	#::console::affiche_resultat "F : $fichier ; NF : $nom_fichier\n"
-	#--- Ajustement de degré 2 pour déterùiner un continuum
-	set coordonnees [ spc_ajust $fichier 1 ]
-	#-- vspc_data2fits retourne juste le nom de fichier créé
-	#set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees "double" ]
-	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees "float" ]
-
-	#--- Retablissemnt d'une dispersion identique entre continuum et le profil aà normaliser
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	set liste_dispersion [buf$audace(bufNo) getkwd "CDELT1"]
-	set dispersion [lindex $liste_dispersion 1]
-	set nbunit [lindex $liste_dispersion 2]
-	#set unite [lindex $liste_dispersion 3]
-	buf$audace(bufNo) load $audace(rep_images)/$nom_continuum
-	buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" $nbunit "" "Angstrom/pixel"]
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save $audace(rep_images)/$nom_continuum
-
-	#--- Normalisation par division
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
-	buf$audace(bufNo) bitpix short
-	#-- Effacement des fichiers temporaires
-	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
-	return ${nom_fichier}_norm
-    } else {
-	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
-    }
-}
-#*****************************************************************#
-
-proc spc_autonorma_051215b { args } {
-
-    global audace
-    global conf
-    set extsp ".dat"
-
-    if {[llength $args] == 1} {
-	set fichier [ lindex $args 0 ]
-	set nom_fichier [ file rootname $fichier ]
-	#--- Ajustement de degré 2 pour déterùiner un continuum
-	set coordonnees [spc_ajust $fichier 1]
-	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees ]
-
-	#set nx [llength [lindex $coordonnees 0]]
-	#set ny [llength [lindex $coordonnees 1]]
-	#::console::affiche_resultat "Nb points x : $nx ; y : $ny\n"
-	
-	#--- Normalisation par division
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
-	#buf$audace(bufNo) bitpix float
-	#buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
-
-	#-- Effacement des fichiers temporaires
-	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
-    } else {
-	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
-    }
-}
-#*****************************************************************#
-
-proc spc_autonorma_131205 { args } {
-
-    global audace
-    global conf
-    set extsp ".dat"
-
-    if {[llength $args] == 1} {
-	set fichier [ lindex $args 0 ]
-
-	# Ajustement de degré 2 pour déterùiner un continuum
-	set coordonnees [spc_ajust $fichier 1]
-	set lambdas [lindex $coordonnees 0]
-	set intensites [lindex $coordonnees 1]
-	set len [llength $lambdas]
-
-	#--- Enregistrement du continuum au format fits
-	set filename [ file rootname $fichier ]
-	##set filename ${fileetalonnespc}_dat$extsp
-	set fichier_conti ${filename}_conti$extsp
-	set file_id [open "$audace(rep_images)/$fichier_conti" w+]
-	for {set k 0} {$k<$len} {incr k} {
-	    set lambda [lindex $lambdas $k]
-	    set intensite [lindex $intensites $k]
-	    #--- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
-	    puts $file_id "$lambda\t$intensite"
-	}
-	close $file_id
-	#--- Conversion en fits
-	spc_dat2fits $fichier_conti
-	#-- Bisarrerie : le continuum fits est inverse gauche-droite
-	buf$audace(bufNo) load $audace(rep_images)/${filename}_conti_fit
-	buf$audace(bufNo) mirrorx
-	buf$audace(bufNo) save $audace(rep_images)/${filename}_conti_fit
-
-	#--- Normalisation par division
-	buf$audace(bufNo) load $audace(rep_images)/$fichier
-	buf$audace(bufNo) div $audace(rep_images)/${filename}_conti_fit 1
-	buf$audace(bufNo) save $audace(rep_images)/${filename}_norm
-
-	#-- Effacement des fichiers temporaires
-	file delete $audace(rep_images)/$fichier_conti$extsp
-	file delete $audace(rep_images)/${filename}_conti_fit$conf(extension,defaut)
-    } else {
-	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
-    }
-}
-#*****************************************************************#
 
 
 ##########################################################
@@ -469,6 +390,47 @@ proc spc_normaraie { args } {
    }
 }
 #****************************************************************#
+
+
+
+####################################################################
+# Procedure de normalisation automatique de profil de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 18-03-2007
+# Date modification : 18-03-2007
+# Arguments : fichier .fit du profil de raies
+####################################################################
+
+proc spc_autonorma { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 1} {
+	set fichier [ file rootname [ lindex $args 0 ] ]
+
+	#--- Détermination de la valeur du continuum :
+	set icont [ spc_icontinuum $fichier ]
+	set coefnorm [ expr 1./$icont ]
+
+	#--- Normalisation par division
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	buf$audace(bufNo) mult $coefnorm
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm"
+	buf$audace(bufNo) bitpix short
+
+	#--- Traitement des résultats :
+	::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm.\n"
+	return ${fichier}_norm
+    } else {
+	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+    }
+}
+#*****************************************************************#
+
+
 
 
 ##########################################################
@@ -1172,6 +1134,65 @@ proc spc_div { args } {
 #*********************************************************************#
 
 
+##########################################################
+# Procedure de division de 2 profils de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 30-03-2006
+# Date de mise à jour : 18-03-2007
+# Arguments : profil de raies 1, profil de raies 2
+##########################################################
+
+proc spc_divbrut { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 2} {
+	set numerateur [ lindex $args 0 ]
+	set denominateur [lindex $args 1 ]
+	set fichier [ file tail [ file rootname $numerateur ] ]
+
+	#--- Ne vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+
+	    #--- Création des listes de valeur :
+	    set contenu1 [ spc_fits2data $numerateur ]
+	    set contenu2 [ spc_fits2data $denominateur ]
+	    set abscisses [ lindex $contenu1 0 ]
+	    set ordonnees1 [ lindex $contenu1 1 ]
+	    set ordonnees2 [ lindex $contenu2 1 ]
+
+	    #--- Division :
+	    #-- Meth2 : division simple sans gestion des valeurs devenues gigantesques :
+	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
+	    set i 1
+	    set nbdivz 0
+	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
+		if { $ordo2 == 0.0 } {
+		    buf$audace(bufNo) setpix [list $i 1] 0.0
+		    incr i
+		    incr nbdivz
+		} else {
+		    buf$audace(bufNo) setpix [list $i 1] [ expr 1.0*$ordo1/$ordo2 ]
+		    incr i
+		}
+	    }
+	    ::console::affiche_resultat "Fin de la division : $nbdivz divisions par 0.\n"
+
+
+	    #--- Fin du script :
+	    buf$audace(bufNo) bitpix float
+	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_div"
+	    buf$audace(bufNo) bitpix short
+	    ::console::affiche_resultat "Division des 2 profils sauvée sous ${fichier}_div$conf(extension,defaut)\n"
+	    return ${fichier}_div
+    } else {
+	::console::affiche_erreur "Usage : spc_divbrut profil_de_raies_numérateur_fits profil_de_raies_dénominateur_fits\n\n"
+    }
+}
+#*********************************************************************#
+
+
 
 ##########################################################
 # Procedure de division de 2 profils de raies et les effets de bords (intensités anormalement importantes par rapport à 1.0).
@@ -1580,6 +1601,138 @@ proc spc_smoothsg { args } {
 #================================================================================#
 # Anciennes versions
 #================================================================================#
+
+
+####################################################################
+# Procedure de normalisation automatique de profil de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 15-12-2005
+# Date modification : 15-12-2005
+# Arguments : fichier .fit du profil de raie
+####################################################################
+
+proc spc_autonorma_15122005 { args } {
+
+    global audace
+    global conf
+    set extsp ".dat"
+
+    if {[llength $args] == 1} {
+	set fichier [ lindex $args 0 ]
+	set nom_fichier [ file rootname $fichier ]
+	#::console::affiche_resultat "F : $fichier ; NF : $nom_fichier\n"
+	#--- Ajustement de degré 2 pour déterùiner un continuum
+	set coordonnees [ spc_ajust $fichier 1 ]
+	#-- vspc_data2fits retourne juste le nom de fichier créé
+	#set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees "double" ]
+	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees "float" ]
+
+	#--- Retablissemnt d'une dispersion identique entre continuum et le profil aà normaliser
+	buf$audace(bufNo) load $audace(rep_images)/$fichier
+	set liste_dispersion [buf$audace(bufNo) getkwd "CDELT1"]
+	set dispersion [lindex $liste_dispersion 1]
+	set nbunit [lindex $liste_dispersion 2]
+	#set unite [lindex $liste_dispersion 3]
+	buf$audace(bufNo) load $audace(rep_images)/$nom_continuum
+	buf$audace(bufNo) setkwd [list "CDELT1" "$dispersion" $nbunit "" "Angstrom/pixel"]
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save $audace(rep_images)/$nom_continuum
+
+	#--- Normalisation par division
+	buf$audace(bufNo) load $audace(rep_images)/$fichier
+	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
+	buf$audace(bufNo) bitpix short
+	#-- Effacement des fichiers temporaires
+	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
+	return ${nom_fichier}_norm
+    } else {
+	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+    }
+}
+#*****************************************************************#
+
+proc spc_autonorma_051215b { args } {
+
+    global audace
+    global conf
+    set extsp ".dat"
+
+    if {[llength $args] == 1} {
+	set fichier [ lindex $args 0 ]
+	set nom_fichier [ file rootname $fichier ]
+	#--- Ajustement de degré 2 pour déterùiner un continuum
+	set coordonnees [spc_ajust $fichier 1]
+	set nom_continuum [ spc_data2fits ${nom_fichier}_conti $coordonnees ]
+
+	#set nx [llength [lindex $coordonnees 0]]
+	#set ny [llength [lindex $coordonnees 1]]
+	#::console::affiche_resultat "Nb points x : $nx ; y : $ny\n"
+	
+	#--- Normalisation par division
+	buf$audace(bufNo) load $audace(rep_images)/$fichier
+	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
+	#buf$audace(bufNo) bitpix float
+	#buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_norm
+
+	#-- Effacement des fichiers temporaires
+	#file delete $audace(rep_images)/${nom_fichier}_continuum$conf(extension,defaut)
+    } else {
+	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+    }
+}
+#*****************************************************************#
+
+proc spc_autonorma_131205 { args } {
+
+    global audace
+    global conf
+    set extsp ".dat"
+
+    if {[llength $args] == 1} {
+	set fichier [ lindex $args 0 ]
+
+	# Ajustement de degré 2 pour déterùiner un continuum
+	set coordonnees [spc_ajust $fichier 1]
+	set lambdas [lindex $coordonnees 0]
+	set intensites [lindex $coordonnees 1]
+	set len [llength $lambdas]
+
+	#--- Enregistrement du continuum au format fits
+	set filename [ file rootname $fichier ]
+	##set filename ${fileetalonnespc}_dat$extsp
+	set fichier_conti ${filename}_conti$extsp
+	set file_id [open "$audace(rep_images)/$fichier_conti" w+]
+	for {set k 0} {$k<$len} {incr k} {
+	    set lambda [lindex $lambdas $k]
+	    set intensite [lindex $intensites $k]
+	    #--- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
+	    puts $file_id "$lambda\t$intensite"
+	}
+	close $file_id
+	#--- Conversion en fits
+	spc_dat2fits $fichier_conti
+	#-- Bisarrerie : le continuum fits est inverse gauche-droite
+	buf$audace(bufNo) load $audace(rep_images)/${filename}_conti_fit
+	buf$audace(bufNo) mirrorx
+	buf$audace(bufNo) save $audace(rep_images)/${filename}_conti_fit
+
+	#--- Normalisation par division
+	buf$audace(bufNo) load $audace(rep_images)/$fichier
+	buf$audace(bufNo) div $audace(rep_images)/${filename}_conti_fit 1
+	buf$audace(bufNo) save $audace(rep_images)/${filename}_norm
+
+	#-- Effacement des fichiers temporaires
+	file delete $audace(rep_images)/$fichier_conti$extsp
+	file delete $audace(rep_images)/${filename}_conti_fit$conf(extension,defaut)
+    } else {
+	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+    }
+}
+#*****************************************************************#
+
 
 
 

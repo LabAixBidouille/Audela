@@ -1320,36 +1320,65 @@ proc spc_rinstrum { args } {
     }
     #======================================================================#
 
+       #--- Rééchanetillonnage du profil du catalogue :
        #set fref_sortie $fichier_ref
        set fmes_sortie $fichier_mes
        ::console::affiche_resultat "\nRééchantillonnage du spectre de référence...\n"
        set fref_sortie [ spc_echant $fichier_ref $fichier_mes ]
 
-       if {1==0} {
+    if {1==0} {
        #--- Recalage du profil de catalogue sur le pixel central du capteur :
-       buf$audace(bufNo) load "$audace(rep_images)/fichier_mes"
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_mes"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
        set naxis1m [ expr int(0.5*[ lindex [buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
        set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
        set lambdam_mes [ expr $lambda0+$cdelt1*$naxis1m ]
-       buf$audace(bufNo) load "$audace(rep_images)/fref_sortie"
+       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	   set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	   set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	   set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+	   if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+	       set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+	   } else {
+	       set spc_d 0.0
+	   }
+	   set lambdam_mes [ expr $spc_a+$spc_b*$naxis1m+$spc_c*pow($naxis1m,2)+$spc_d*pow($naxis1m,3) ]
+       } else {
+	   set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	   set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	   set lambdam_mes [ expr $lambda0+$cdelt1*$naxis1m ]
+       }
+       buf$audace(bufNo) load "$audace(rep_images)/$fref_sortie"
        set naxis1m [ expr int(0.5*[ lindex [buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
        set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
        set lambdam_ref [ expr $lambda0+$cdelt1*$naxis1m ]
        set deltal [ expr $lambdam_mes-$lambdam_ref ]
-       ::console::affiche_resultat "Décalage de $deltal angstroms entre les 2 profils, recalage...\n"
-       set lambda0dec [ expr $lambda0+$deltal ]
-       buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda0dec float "" "angstrom" ]
-       buf$audace(bufNo) bitpix float
-       buf$audace(bufNo) save "$audace(rep_images)/fref_sortie"
-       buf$audace(bufNo) bitpix short
+       if { $deltal>[ expr $cdelt1/10.] } {
+	   ::console::affiche_resultat "Décalage de $deltal angstroms entre les 2 profils, recalage du profil de l'étoile du catalogue...\n"
+	   buf$audace(bufNo) load "$audace(rep_images)/$fmes_sortie"
+	   set listemotsclef [ buf$audace(bufNo) getkwds ]
+	   set lambda0dec [ expr $lambda0+$deltal ]
+	   buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda0dec float "" "angstrom" ]
+	   if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	        buf$audace(bufNo) setkwd [list "SPC_A" $lambda0dec float "" "angstrom"]
+	   }
+	   buf$audace(bufNo) bitpix float
+	   buf$audace(bufNo) save "$audace(rep_images)/${fmes_sortie}_dec"
+	   buf$audace(bufNo) bitpix short
+	   set fref_sortie [ spc_echant ${fmes_sortie}_dec $fichier_ref ]
+	   #file delete -force "$audace(rep_images)/${fmes_sortie}_dec"
+       }
    }
        
        #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
        ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
-       # set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
-       set result_division [ spc_divri $fmes_sortie $fref_sortie ]
+       #set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_div $fmes_sortie $fref_sortie ]
+       set result_division [ spc_divbrut $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_divri $fmes_sortie $fref_sortie ]
+
 
        #--- Lissage de la reponse instrumentale :
        ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
@@ -1377,21 +1406,22 @@ proc spc_rinstrum { args } {
 
 
        #--- Nettoyage des fichiers temporaires :
-       file delete -force "$audace(rep_images)/$result_division$conf(extension,defaut)" "$audace(rep_images)/resultat_division$conf(extension,defaut)"
-       file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       file rename -force "$audace(rep_images)/$result_division$conf(extension,defaut)" "$audace(rep_images)/resultat_division$conf(extension,defaut)"
+       #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
        
        if { $fmes_sortie != $fichier_mes } {
 	   file delete -force "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
        }
        if { $fref_sortie != $fichier_ref } {
-	   file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+	   #- A decommenter :
+	   #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
        }
        if { $rinstrum == 0 } {
 	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
 	   return 0
        } else {
 	   #-- Résultat de la division :
-	   #file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+	   ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
 	   ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale3$conf(extension,defaut)\n"
 	   return reponse_instrumentale3
        }
