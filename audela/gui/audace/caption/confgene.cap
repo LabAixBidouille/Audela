@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.15 2007-03-18 11:55:46 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.16 2007-03-20 18:05:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -674,7 +674,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,position)                           "Observators position"
    set caption(confgene,nom_observateur)                    "Observators navn:"
-   set caption(confgene,nom_observatoire)                   "# Observatory Name:"
+   set caption(confgene,nom_observatoire)                   "Observatoriets navn:"
    set caption(confgene,position_longitude)                 "Geografisk længde:"
    set caption(confgene,position_est)                       "Ø"
    set caption(confgene,position_ouest)                     "V"
