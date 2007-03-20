@@ -749,12 +749,16 @@ proc spc_traite2rinstrum { args } {
        set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
        #--- Renumérotation et détection des darks :
-       if { [ catch { glob -dir $audace(rep_images) ${dark}\[0-9\]$conf(extension,defaut) ${dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+       if { [ file exists "$audace(rep_images)/$dark$conf(extension,defaut)" ] } {
 	   set darkmaster $dark
-       } else {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${dark}\[0-9\]$conf(extension,defaut) ${dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $dark
 	   set darkmaster [ bm_smed $dark ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $dark n'existe(nt) pas.\n"
+	   return ""
        }
+
 
 
        #--- Traitement du spectre de la lampe de calibration :
@@ -1176,8 +1180,8 @@ proc spc_lampe2calibre { args } {
 
    if { [llength $args] == 8 } {
        set lampe [ file tail [ file rootname [ lindex $args 0 ] ] ]
-       set img [ lindex $args 1 ]
-       set dark [ lindex $args 2 ]
+       set img [ file tail [ file rootname [ lindex $args 1 ] ] ]
+       set dark [ file tail [ file rootname [ lindex $args 2 ] ] ]
        set methcos [ lindex $args 3 ]
        set methsel [ lindex $args 4 ]
        set methinv [ lindex $args 5 ]
@@ -1187,16 +1191,22 @@ proc spc_lampe2calibre { args } {
        #--- Prend la première image et le premier dark ou le masterdark :
        # set img1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]*$conf(extension,defaut) ] 0 ] ]
        #set dark1 [ file rootname [ lindex [ glob -dir $audace(rep_images) -tails ${dark}\[0-9\]*$conf(extension,defaut) ${dark}*$conf(extension,defaut) ] 0 ] ]
-       if { [ catch { glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+       if { [ file exists "$audace(rep_images)/$img$conf(extension,defaut)" ] } {
 	   set img1 $img
-       } else {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   set img1 [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
-       }
-       if { [ catch { glob -dir $audace(rep_images) ${dark}\[0-9\]$conf(extension,defaut) ${dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-	   set darkmaster $dark
        } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $img n'existe(nt) pas.\n"
+	   return ""
+       }
+       if { [ file exists "$audace(rep_images)/$dark$conf(extension,defaut)" ] } {
+	   set darkmaster $dark
+       } elseif { [ catch { glob -dir $audace(rep_images) ${dark}\[0-9\]$conf(extension,defaut) ${dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $dark
 	   set darkmaster [ bm_smed $dark ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $dark n'existe(nt) pas.\n"
+	   return ""
        }
 
 

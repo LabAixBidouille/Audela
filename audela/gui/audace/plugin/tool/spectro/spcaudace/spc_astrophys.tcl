@@ -643,7 +643,7 @@ proc spc_ewcourbe { args } {
 
 	    set ldeb [ expr $lambda-0.5*$largeur_raie ]
 	    set lfin [ expr $lambda+0.5*$largeur_raie ]
-	    lappend list_ew [ spc_ew2 $fichier $ldeb $lfin ]
+	    lappend list_ew [ spc_ew3 $fichier $ldeb $lfin ]
 	}
 
 	#--- Création du fichier de données
@@ -682,6 +682,58 @@ proc spc_ewcourbe { args } {
     }
 }
 #*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de tracer de largeur équivalente pour une série de spectres dans le répertoire de travail
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 18-03-2007
+# Date de mise à jour : 18-03-2007
+# Arguments : longueur d'onde de la raie (A), largeur de la raie (A)
+##########################################################
+
+proc spc_ewdirw { args } {
+
+    global audace
+    global conf
+    global tcl_platform
+    set ewfile "ewcalculs.txt"
+    set ext ".txt"
+
+    if {[llength $args] == 1} {
+	#set repertoire [ lindex $args 0 ]
+	set lambda [lindex $args 0 ]
+	set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+
+	#--- Crée le fichier des résultats :
+	set file_id1 [open "$audace(rep_images)/$ewfile" w+]
+	puts $file_id1 "NAME\tMJD date\tEW(wavelength's range)\tSigma(EW)\tSNR\r"
+	foreach fichier $fileliste {
+	    ::console::affiche_resultat "\nTraitement de $fichier\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
+	    #- Ne tient que des 4 premières décimales du jour julien
+	    set jddate [ expr int($date*10000.)/10000.+2400000. ]
+	    set mesure [ spc_autoew2 $fichier $lambda ]
+	    set ew [ lindex $mesure 0 ]
+	    set sigma_ew [ lindex $mesure 1 ]
+	    set snr [ lindex $mesure 2 ]
+	    puts $file_id1 "$fichier\t$jddate\t$ew\t$sigma_ew\t$snr\r"
+	}
+	close $file_id1
+
+	#--- Fin de script :
+	::console::affiche_resultat "Fichier des résultats sauvé sous $ewfile\n"
+	return $ewfile
+    } else {
+	::console::affiche_erreur "Usage: spc_ewdirw lambda_raie \n\n"
+    }
+}
+#*******************************************************************************#
+
+
 
 
 
@@ -956,6 +1008,97 @@ proc spc_ew2 { args } {
 
 
 ####################################################################
+# Procédure de calcul de la largeur équivalente d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 18-03-2007
+# Date modification : 18-03-2007
+# Arguments : nom_profil_raies lanmba_dep lambda_fin
+####################################################################
+
+proc spc_ew3 { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 3 } {
+	set filename [ lindex $args 0 ]
+	set xdeb [ lindex $args 1 ]
+	set xfin [ lindex $args 2 ]
+
+	#--- Déterminiation de la valeur du continuum :
+	set icont [ spc_icontinuum $filename ]
+
+	#--- Conversion des données en liste :
+	set listevals [ spc_fits2data $filename ]
+	set xvals [ lindex $listevals 0 ]
+	set yvals [ lindex $listevals 1 ]
+
+	#--- Calcul de l'aire sous la raie :
+	set aire 0.
+	foreach xval $xvals yval $yvals {
+	    if { $xval>=$xdeb && $xval<=$xfin } {
+		lappend xsel $xval
+		set aire [ expr $aire+$yval-$icont ]
+		lappend ysel $yval
+	    }
+	}
+	::console::affiche_resultat "L'aire sans le continuum vaut $aire\n"
+
+	#--- Calcul la largeur équivalente :
+	#set deltal [ expr abs($xfin-$xdeb) ]
+	#set dispersion_locale [ expr 1.*$deltal/[ llength $xsel ] ]
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	set dispersion_locale [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	set ew [ expr -1.*$aire*$dispersion_locale/$icont ]
+
+	#--- Détermine le type de raie : émission ou absorption et donne un signe à EW
+	if { 1==0 } {
+	set valsselect [ list $xsel $ysel ]
+	set intensity [ spc_aire $valsselect ]
+	if { $intensity>=1 } {
+	    set ew [ expr -1.*$ew ]
+	}
+	}
+
+	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
+	set deltal [ expr abs($xfin-$xdeb) ]
+	set snr [ spc_snr $filename ]
+	set rapport [ expr $ew/$deltal ]
+	if { $rapport>=1.0 } {
+	    set deltal [ expr $ew+0.1 ]
+	    ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+	}
+	if { $snr != 0 } {
+	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+	    #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+	} else {
+	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n" ]
+	    set sigma 0
+	}
+
+        #--- Formatage des résultats :
+	set l_fin [ expr 0.01*round($xfin*100) ]
+	set l_deb [ expr 0.01*round($xdeb*100) ]
+	set delta_l [ expr 0.01*round($deltal*100) ]
+	set ew_short [ expr 0.01*round($ew*100) ]
+	set sigma_ew [ expr 0.01*round($sigma*100) ]
+	set snr_short [ expr round($snr) ]
+
+	#--- Affichage des résultats :
+	::console::affiche_resultat "\n"
+	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
+	::console::affiche_resultat "SNR=$snr_short.\n"
+	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
+	return $ew
+    } else {
+	::console::affiche_erreur "Usage: spc_ew3 nom_profil_raies_normalisé lanmba_dep lambda_fin\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
 # Procédure de calcul d'intensité d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
@@ -987,10 +1130,15 @@ proc spc_autoew { args } {
 	set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
 	# ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
 
+
+	#--- Déterminiation de la valeur du continuum :
+	# set icont 1.0
+	set icont [ spc_icontinuum $filename ]
+
 	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
 	for { set i $i_lambda } { $i<$len } { incr i } { 
 	    set yval [ lindex $intensities $i ]
-	    if { [ expr $yval-1.0 ]<=$precision } {
+	    if { [ expr $yval-$icont ]<=$precision } {
 		set lambda_fin [ lindex $lambdas $i ]
 		break
 	    }
@@ -999,7 +1147,7 @@ proc spc_autoew { args } {
 	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
 	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
 	    set yval [ lindex $intensities $i ]
-	    if { [ expr $yval-1.0 ]<=$precision } {
+	    if { [ expr $yval-$icont ]<=$precision } {
 		set lambda_deb [ lindex $lambdas $i ]
 		break
 	    }
@@ -1007,11 +1155,11 @@ proc spc_autoew { args } {
 	}
 
 	#--- Détermination de la largeur équivalente :
-	set ew [ spc_ew2 $filename $lambda_deb $lambda_fin ]
+	set ew [ spc_ew3 $filename $lambda_deb $lambda_fin ]
 	set deltal [ expr abs($lambda_fin-$lambda_deb) ]
 
 
-	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
+	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
 	set snr [ spc_snr $filename ]
 	set rapport [ expr $ew/$deltal ]
 	if { $rapport>=1.0 } {
@@ -1049,3 +1197,102 @@ proc spc_autoew { args } {
 #-- CAlcul incertitude sur EW
 #- le choix de lambda1 et lambda 2 est critique car il conditionne tout : largeur equivalente et incertitude;
 #-idem pour les parametres de lissage qui te permettent de separer signal et bruit
+
+
+
+####################################################################
+# Procédure de calcul d'intensité d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 18-03-2007
+# Date modification : 18-03-2007
+# Arguments : nom_profil_raies lambda_raie
+####################################################################
+
+proc spc_autoew2 { args } {
+    global conf
+    global audace
+    set precision 0.01
+
+    if { [llength $args] == 2 } {
+	set filename [ file rootname [ lindex $args 0 ] ]
+	set lambda_raie [ lindex $args 1 ]
+
+	#--- Valeur par defaut des bornes :
+	set lambda_deb [ expr $lambda_raie-20 ]
+	set lambda_fin [ expr $lambda_raie+20 ]
+
+	#--- Extraction des valeurs :
+	set listevals [ spc_fits2data $filename ]
+	set lambdas [ lindex $listevals 0 ]
+	set intensities [ lindex $listevals 1 ]
+	set len [ llength $lambdas ]
+
+	#--- Trouve l'indice de la raie recherche dans la liste
+	set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
+	# ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
+
+
+	#--- Déterminiation de la valeur du continuum :
+	# set icont 1.0
+	set icont [ spc_icontinuum $filename ]
+
+	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
+	for { set i $i_lambda } { $i<$len } { incr i } { 
+	    set yval [ lindex $intensities $i ]
+	    if { [ expr $yval-$icont ]<=$precision } {
+		set lambda_fin [ lindex $lambdas $i ]
+		break
+	    }
+	}
+
+	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
+	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+	    set yval [ lindex $intensities $i ]
+	    if { [ expr $yval-$icont ]<=$precision } {
+		set lambda_deb [ lindex $lambdas $i ]
+		break
+	    }
+	    #::console::affiche_resultat "$diff\n"
+	}
+
+	#--- Détermination de la largeur équivalente :
+	set ew [ spc_ew3 $filename $lambda_deb $lambda_fin ]
+	set deltal [ expr abs($lambda_fin-$lambda_deb) ]
+
+
+	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
+	set snr [ spc_snr $filename ]
+	set rapport [ expr $ew/$deltal ]
+	if { $rapport>=1.0 } {
+	    set deltal [ expr $ew+0.1 ]
+	    ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+	}
+	if { $snr != 0 } {
+	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+	    #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+	} else {
+	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
+	    set sigma 0
+	}
+
+        #--- Formatage des résultats :
+	set l_fin [ expr 0.01*round($lambda_fin*100) ]
+	set l_deb [ expr 0.01*round($lambda_deb*100) ]
+	set delta_l [ expr 0.01*round($deltal*100) ]
+	set ew_short [ expr 0.01*round($ew*100) ]
+	set sigma_ew [ expr 0.01*round($sigma*100) ]
+	set snr_short [ expr round($snr) ]
+
+	#--- Affichage des résultats :
+	#::console::affiche_resultat "\n"
+	#::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
+	#::console::affiche_resultat "SNR=$snr_short.\n"
+	#::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
+	set results [ list "EW($delta_l=$l_deb-$l_fin)=$ew_short A" "$sigma_ew A" $snr_short ]
+	return $results
+    } else {
+	::console::affiche_erreur "Usage: spc_autoew2 nom_profil_raies_normalisé lambda_raie\n"
+    }
+}
+#***************************************************************************#

@@ -747,12 +747,15 @@ proc spc_findbiglines { args } {
 }
 #***************************************************************************#
 
+
+
 ##########################################################
 # Procedure de calcul du rapport signal sur bruit S/N
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 01-10-2006
 # Date de mise à jour : 01-10-2006
 # Arguments : fichier .fit du profil de raies
+# Algo : SNR = mean / standard deviation, Where standard deviation is: std= sqrt( sum (pixel_value-m)^2)/nb_pixel)
 ##########################################################
 
 proc spc_snr { args } {
@@ -1067,6 +1070,56 @@ proc spc_imax0 { args } {
 	return $yimax
     } else {
 	::console::affiche_erreur "Usage: spc_imax nom_profil_raies lanmba_dep lambda_fin\n"
+    }
+}
+#***************************************************************************#
+
+
+
+
+####################################################################
+# Procédure de calcul de l'amplitude (Imax) d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 18-03-2007
+# Date modification : 18-03-2007
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_icontinuum { args } {
+    global conf
+    global audace
+    set nbtranches 10
+
+    if { [llength $args] == 1 } {
+	set fichier [ lindex $args 0 ]
+
+	#--- Calcul des paramètres de l'image :
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	set largeur [ expr int($naxis1/$nbtranches) ]
+
+	#--- Détermine l'intensité moyenne sur chaque tranches :
+	set listresults ""
+	for {set i 0} {$i<$nbtranches} {incr i} {
+	    if { $i==0 } {
+		set zone [ list 1 1 $largeur 1 ]
+	    } else {
+		set zone [ list [ expr $i*$largeur ] 1 [ expr ($i+1)*$largeur ] 1 ]
+	    }
+	    set result [ buf$audace(bufNo) stat $zone ]
+	    lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] ]
+	}
+
+	#--- Tri par ecart-type :
+	set listresults [ lsort -increasing -real -index 1 $listresults ]
+	set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
+
+	#--- Affichage des résultats :
+        ::console::affiche_resultat "Le continuum vaut $icontinuum\n"
+	return $icontinuum
+    } else {
+	::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies\n"
     }
 }
 #***************************************************************************#

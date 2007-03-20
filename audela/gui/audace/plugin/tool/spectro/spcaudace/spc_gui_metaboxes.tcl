@@ -4091,7 +4091,7 @@ namespace eval ::param_spc_audace_lampe2calibre {
       set audace(param_spc_audace,lampe2calibre,config,methsky) "med"
       set audace(param_spc_audace,lampe2calibre,config,methbin) "rober"
       set audace(param_spc_audace,lampe2calibre,config,methinv) "n"
-      set audace(param_spc_audace,lampe2calibre,config,methcos) "o"
+      set audace(param_spc_audace,lampe2calibre,config,methcos) "n"
       set audace(param_spc_audace,lampe2calibre,config,offset) "none"
       set audace(param_spc_audace,lampe2calibre,config,methraie) "n"
 

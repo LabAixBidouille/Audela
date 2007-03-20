@@ -334,9 +334,9 @@ proc spc_dat2fits { args } {
     
     if { [llength $args] <= 2 } {
 	if { [llength $args] == 1 } {
-	    set filenamespc [ lindex $args 0 ]
+	    set filenamespc [ file tail [ lindex $args 0 ] ]
 	} elseif { [llength $args] == 2 } {
-	    set filenamespc [ lindex $args 0 ]
+	    set filenamespc [ file tail [ lindex $args 0 ] ]
 	    set filenameout [ lindex $args 1 ]
 	} elseif { [llength $args]==0 } {
 	    set spctrouve [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "$spcaudace(extdat) $spcaudace(exttxt)" ] ] -initialdir $audace(rep_images) ] ]
@@ -445,14 +445,14 @@ proc spc_dat2fits { args } {
 	::console::affiche_resultat "Xdep : $xdepart ; Xfin : $xdernier\n"
 	::console::affiche_resultat "$naxis1 lignes affectées\n"
 	buf$audace(bufNo) bitpix float
-	if {[llength $args] == 1} {
+	if { [llength $args]==1 || [llength $args]==0 } {
 	    set nom [ file rootname $filenamespc ]
 	    buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${nom}$conf(extension,defaut)"
 	    buf$audace(bufNo) bitpix short
 	    ::console::affiche_resultat "Fichier fits sauvé sous $audace(rep_images)/${nom}$conf(extension,defaut)\n"
 	    return ${nom}
-	} elseif {[llength $args] == 2} {
+	} elseif { [llength $args]==2 } {
 	    set nom [ file rootname $filenameout ]
 	    buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${filenameout}$conf(extension,defaut)"
@@ -460,7 +460,7 @@ proc spc_dat2fits { args } {
 	    ::console::affiche_resultat "Fichier fits sauvé sous $audace(rep_images)/${filenameout}$conf(extension,defaut)\n"
 	    return ${filenameout}
 	}
-	#buf$audace(bufNo) bitpix short
+	buf$audace(bufNo) bitpix short
     } else {
 	::console::affiche_erreur "Usage: spc_dat2fits fichier_profil.dat ?fichier_sortie.fit?\n\n"
     }
