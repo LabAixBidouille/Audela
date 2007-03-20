@@ -327,6 +327,8 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    Tcl_Eval(interp, s);
    sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
    Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+   Tcl_Eval(interp, s);
    if (cam->timerExpiration != NULL) {
       sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
    } else {
@@ -1321,6 +1323,10 @@ void AudineScanTransfer(ClientData clientData)
    sprintf(s, "buf%d setkwd {DT %f float \"Asked Time Delay Integration\" \"s/line\"}", cam->bufno, dt);
    Tcl_Eval(interp, s);
    sprintf(s, "buf%d setkwd {DTEFF %f float \"Effective Time Delay Integration\" \"s/line\"}", cam->bufno, dteff);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
    Tcl_Eval(interp, s);
    
    libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
