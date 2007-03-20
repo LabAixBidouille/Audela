@@ -494,168 +494,170 @@ void EthernaudeScanTerminateSequence(ClientData clientData, int camno, char *rea
  */
 void EthernaudeScanTransfer(ClientData clientData)
 {
-    char value[MAXLENGTH + 1];
-    int paramtype;
-    int naxis1, naxis2, bin1, bin2;
-    char s[200], ligne[200];
-    double ra, dec;
-    float *pp;
-    struct camprop *cam;
-    Tcl_Interp *interp;
-    double exptime;
-    double dt;
-    int status;
-    char dateobs_tu[50], dateend_tu[50];
-    int nbpix;
+   char value[MAXLENGTH + 1];
+   int paramtype;
+   int naxis1, naxis2, bin1, bin2;
+   char s[200], ligne[200];
+   double ra, dec;
+   float *pp;
+   struct camprop *cam;
+   Tcl_Interp *interp;
+   double exptime;
+   double dt;
+   int status;
+   char dateobs_tu[50], dateend_tu[50];
+   int nbpix;
 
-    interp = TheScanStruct->interp;
-    cam = (struct camprop *) clientData;
+   interp = TheScanStruct->interp;
+   cam = (struct camprop *) clientData;
 
-    cam->clockbegin = 0;
-    naxis1 = TheScanStruct->line_size;
-    naxis2 = TheScanStruct->y;
-    bin1 = TheScanStruct->bin;
-    bin2 = TheScanStruct->biny;
-    dt = TheScanStruct->dt / 1000.;
-    exptime = -1;
+   cam->clockbegin = 0;
+   naxis1 = TheScanStruct->line_size;
+   naxis2 = TheScanStruct->y;
+   bin1 = TheScanStruct->bin;
+   bin2 = TheScanStruct->biny;
+   dt = TheScanStruct->dt / 1000.;
+   exptime = -1;
 
-    /* Creation automatique du buffer audela */
-    sprintf(s, "buf%d bitpix", cam->bufno);
-    if (Tcl_Eval(interp, s) == TCL_ERROR) {
-	    /* Creation du buffer car il n'existe pas */
-	    sprintf(s, "buf::create %d", cam->bufno);
-	    status=Tcl_Eval(interp, s);
-    }
+   /* Creation automatique du buffer audela */
+   sprintf(s, "buf%d bitpix", cam->bufno);
+   if (Tcl_Eval(interp, s) == TCL_ERROR) {
+      /* Creation du buffer car il n'existe pas */
+      sprintf(s, "buf::create %d", cam->bufno);
+      status=Tcl_Eval(interp, s);
+   }
 
-    /* Conversion des dates d'acquisition */
-    sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
-    Tcl_Eval(interp, s);
-    strcpy(dateobs_tu, interp->result);
-    sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateend, TheScanStruct->tumoinstl);
-    Tcl_Eval(interp, s);
-    strcpy(dateend_tu, interp->result);
+   /* Conversion des dates d'acquisition */
+   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl);
+   Tcl_Eval(interp, s);
+   strcpy(dateobs_tu, interp->result);
+   sprintf(s, "mc_date2iso8601 [expr [mc_date2jd %s]+%f+%f]", TheScanStruct->dateobs, TheScanStruct->tumoinstl, ((float)(naxis2))*dt/24./3600.);
+   Tcl_Eval(interp, s);
+   strcpy(dateend_tu, interp->result);
 
-    /* Transfert de la memoire temporaire vers le buffer image AudeLA */
-    nbpix = naxis1 * naxis2;
-    pp = (float *) malloc(nbpix * sizeof(float));
-    while (--nbpix >= 0) {
-       pp[nbpix] = (float)(TheScanStruct->pix[nbpix] / 256 + (TheScanStruct->pix[nbpix] % 256) * 256);
-    }
-    sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
-    Tcl_Eval(interp, s);
-    free(pp);
+   /* Transfert de la memoire temporaire vers le buffer image AudeLA */
+   nbpix = naxis1 * naxis2;
+   pp = (float *) malloc(nbpix * sizeof(float));
+   while (--nbpix >= 0) {
+      pp[nbpix] = (float)(TheScanStruct->pix[nbpix] / 256 + (TheScanStruct->pix[nbpix] % 256) * 256);
+   }
+   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
+   Tcl_Eval(interp, s);
+   free(pp);
 
-    /* Ajout des mots cles pour l'entete FITS */
-    sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure.\" \"\"}", cam->bufno, dateobs_tu);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"\"}", cam->bufno, exptime);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DATE-END %s string \"End of scan exposure.\" \"\"}", cam->bufno, dateend_tu);
-    Tcl_Eval(interp, s);
-    sprintf(s, "buf%d setkwd {DT %f float \"Asked Time Delay Integration\" \"s/line\"}", cam->bufno, dt);
-    Tcl_Eval(interp, s);
-    if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
-        sprintf(s, "buf%d setkwd {CAMERA \"%s %s+GPS %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
-        Tcl_Eval(interp, s);
-    } else {
-        sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
-        Tcl_Eval(interp, s);
-    }
+   /* Ajout des mots cles pour l'entete FITS */
+   sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, naxis1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, naxis2);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, bin1);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufno, bin2);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure.\" \"\"}", cam->bufno, dateobs_tu);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"\"}", cam->bufno, exptime);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DATE-END %s string \"Estimated end of scan exposure.\" \"\"}", cam->bufno, dateend_tu);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {DT %f float \"Asked Time Delay Integration\" \"s/line\"}", cam->bufno, dt);
+   Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+   Tcl_Eval(interp, s);
 
-    libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-    if (status == 0) {
-	/* Add FITS keywords */
-	sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope at the end\" \"\"}", cam->bufno, ra);
-	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope at the end\" \"\"}", cam->bufno, dec);
-	Tcl_Eval(interp, s);
-    }
-    if (TheScanStruct->ra != -1.) {
-	/* Add FITS keywords */
-	sprintf(s, "buf%d setkwd {RA_BEG %f float \"Right ascension telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->ra);
-	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {DEC_BEG %f float \"Declination telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->dec);
-	Tcl_Eval(interp, s);
-    }
+   /* Recuperation des coordonnees telescope le cas echeant */
+   libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
+   if (status == 0) {
+      sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope at the end\" \"\"}", cam->bufno, ra);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope at the end\" \"\"}", cam->bufno, dec);
+      Tcl_Eval(interp, s);
+   }
+   if (TheScanStruct->ra != -1.) {
+      sprintf(s, "buf%d setkwd {RA_BEG %f float \"Right ascension telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->ra);
+      Tcl_Eval(interp, s);
+      sprintf(s, "buf%d setkwd {DEC_BEG %f float \"Declination telescope at the begining\" \"\"}", cam->bufno, TheScanStruct->dec);
+      Tcl_Eval(interp, s);
+   }
 
-    /* --- Datation GPS si eventaude present --- */
-    if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
-        // Debut de la pose
-        paramCCD_clearall(&ParamCCDIn, 1);
-        paramCCD_put(-1, "Get_JulianDate_beginLastExp", &ParamCCDIn, 1);
-        paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-        AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
-        if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
-            sprintf(ligne, "mc_date2iso8601 %s", value);
-            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-                util_log(ligne, 0);
-                return;
-            }
-            if ((cam->timerExpiration != NULL) && (cam->timerExpiration->dateobs != NULL)) {
-                strcpy(cam->timerExpiration->dateobs, cam->interp->result);
-            }
-            if (cam->date_obs != NULL) {
-                strcpy(cam->date_obs, cam->interp->result);
-            }
-            sprintf(ligne, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_obs);
-            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-                util_log(ligne, 0);
-                return;
-            }
-        } else {
-            sprintf(ligne, "buf%d setkwd [list GPS_BEG -1 float {Error, could not get the value from ethernaude} {}]", cam->bufno);
-            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-                util_log(ligne, 0);
-                return;
-            }
-        }
+   /* --- Datation GPS si eventaude present --- */
+   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+   Tcl_Eval(cam->interp, s);
+   if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
+      sprintf(s, "buf%d setkwd {CAMERA \"%s+GPS %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
+      Tcl_Eval(interp, s);
+      
+      // Debut de la pose
+      paramCCD_clearall(&ParamCCDIn, 1);
+      paramCCD_put(-1, "Get_JulianDate_beginLastExp", &ParamCCDIn, 1);
+      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+      AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+      if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
+         sprintf(ligne, "mc_date2iso8601 %s", value);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+         if ((cam->timerExpiration != NULL) && (cam->timerExpiration->dateobs != NULL)) {
+            strcpy(cam->timerExpiration->dateobs, cam->interp->result);
+         }
+         if (cam->date_obs != NULL) {
+            strcpy(cam->date_obs, cam->interp->result);
+         }
+         sprintf(ligne, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_obs);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+      } else {
+         sprintf(ligne, "buf%d setkwd [list GPS_BEG -1 float {Error, could not get the value from ethernaude} {}]", cam->bufno);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+      }
 
-        // Fin de la pose
-        paramCCD_clearall(&ParamCCDIn, 1);
-        paramCCD_put(-1, "Get_JulianDate_endLastExp", &ParamCCDIn, 1);
-        paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-        AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
-        if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
-            sprintf(ligne, "mc_date2iso8601 %s", value);
-            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-                util_log(ligne, 0);
-                return;
-            }
-            if (cam->date_end != NULL) {
-                strcpy(cam->date_end, cam->interp->result);
-            }
-            sprintf(ligne, "buf%d setkwd {DATE-END %s string \"End of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_end);
-            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-                util_log(ligne, 0);
-                return;
-            }
-        } else {
-            sprintf(ligne, "buf%d setkwd [list GPS_END -1 float {Error, could not get the value from ethernaude} {}]", cam->bufno);
-            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-                util_log(ligne, 0);
-                return;
-            }
-        }
-    }
+      // Fin de la pose
+      paramCCD_clearall(&ParamCCDIn, 1);
+      paramCCD_put(-1, "Get_JulianDate_endLastExp", &ParamCCDIn, 1);
+      paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
+      AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
+      if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
+         sprintf(ligne, "mc_date2iso8601 %s", value);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+         if (cam->date_end != NULL) {
+            strcpy(cam->date_end, cam->interp->result);
+         }
+         sprintf(ligne, "buf%d setkwd {DATE-END %s string \"End of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_end);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+      } else {
+         sprintf(ligne, "buf%d setkwd [list GPS_END -1 float {Error, could not get the value from ethernaude} {}]", cam->bufno);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+      }
 
-    sprintf(s, "status_cam%d", cam->camno);
-    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+      sprintf(s, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+      Tcl_Eval(cam->interp, s);
+   }
+
+   sprintf(s, "status_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
 }
 
 /*
@@ -669,11 +671,11 @@ void EthernaudeScanTransfer(ClientData clientData)
  */
 void EthernaudeScanLibereStructure()
 {
-    free(TheScanStruct->dateobs);
-    free(TheScanStruct->dateend);
-    free(TheScanStruct->pix);
-    free(TheScanStruct);
-    TheScanStruct = NULL;
+   free(TheScanStruct->dateobs);
+   free(TheScanStruct->dateend);
+   free(TheScanStruct->pix);
+   free(TheScanStruct);
+   TheScanStruct = NULL;
 }
 
 
@@ -689,10 +691,10 @@ void EthernaudeScanLibereStructure()
  */
 int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    int retour = TCL_OK;
-    char result[MAXLENGTH];
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
+   int retour = TCL_OK;
+   char result[MAXLENGTH];
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
 
    if (cam->ethvar.InfoCCD_HasTDICaps == 0) {
       Tcl_SetResult(interp, "This Ethernaude camera doesn't support the TDI mode ; return bypassed.", TCL_VOLATILE);
@@ -709,12 +711,12 @@ int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc,
       strcpy(result, "");
       if (strcmp(result, "FAILED") == 0) {
          retour = TCL_ERROR;
-	 if (ParamCCDOut.NbreParam >= 2) {
-	    paramCCD_get(1, result, &ParamCCDOut);
-	    sprintf(result, "END_TDIMode Failed : %s", result);
-	 } else {
-	    strcpy(result, "END_TDIMode Failed");
-	 }
+         if (ParamCCDOut.NbreParam >= 2) {
+            paramCCD_get(1, result, &ParamCCDOut);
+            sprintf(result, "END_TDIMode Failed : %s", result);
+         } else {
+            strcpy(result, "END_TDIMode Failed");
+         }
       }
    }
 
@@ -738,46 +740,46 @@ int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc,
  */
 int cmdEthernaudeCanSpeed(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    char ligne[256];
-    char ligne2[256];
-    char **argvv = NULL;
-    int argcc;
-    int result = TCL_OK, pb = 0, reinit = 0;
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    if ((argc != 2) && (argc > 3)) {
-	pb = 1;
-    } else if (argc == 2) {
-	pb = 0;
-    } else {
-	cam->canspeed = atoi(argv[2]);
-	reinit = 1;
-	pb = 0;
-    }
-    if (pb == 1) {
-	sprintf(ligne, "Usage: %s %s ?value?", argv[0], argv[1]);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	result = TCL_ERROR;
-    } else {
-	sprintf(ligne, "%d", cam->canspeed);
-	if (reinit == 1) {
+   char ligne[256];
+   char ligne2[256];
+   char **argvv = NULL;
+   int argcc;
+   int result = TCL_OK, pb = 0, reinit = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   if ((argc != 2) && (argc > 3)) {
+      pb = 1;
+   } else if (argc == 2) {
+      pb = 0;
+   } else {
+      cam->canspeed = atoi(argv[2]);
+      reinit = 1;
+      pb = 0;
+   }
+   if (pb == 1) {
+      sprintf(ligne, "Usage: %s %s ?value?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      sprintf(ligne, "%d", cam->canspeed);
+      if (reinit == 1) {
 #ifdef CAMTCL_DEBUG
-	    printf("close dans cmdEthernaudeCanSpeed\n");
+         printf("close dans cmdEthernaudeCanSpeed\n");
 #endif
-	    
-	    CAM_DRV.close(cam);
-	    sprintf(ligne2, "-ip %d.%d.%d.%d -shutterinvert %d -canspeed %d ", cam->inparams.ip[0], cam->inparams.ip[1], cam->inparams.ip[2], cam->inparams.ip[3], cam->inparams.shutterinvert, cam->canspeed);
-	    util_splitline(ligne2, &argcc, &argvv);
-	    if (CAM_DRV.init(cam, argcc, argvv) != 0) {
-		Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
-		util_free((char *) argvv);
-		return TCL_ERROR;
-	    }
-	    util_free((char *) argvv);
-	}
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-    }
-    return result;
+
+         CAM_DRV.close(cam);
+         sprintf(ligne2, "-ip %d.%d.%d.%d -shutterinvert %d -canspeed %d ", cam->inparams.ip[0], cam->inparams.ip[1], cam->inparams.ip[2], cam->inparams.ip[3], cam->inparams.shutterinvert, cam->canspeed);
+         util_splitline(ligne2, &argcc, &argvv);
+         if (CAM_DRV.init(cam, argcc, argvv) != 0) {
+            Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+            util_free((char *) argvv);
+            return TCL_ERROR;
+         }
+         util_free((char *) argvv);
+      }
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   }
+   return result;
 }
 
 int cmdEthernaudeDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
@@ -844,14 +846,14 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
       }
    }
    sprintf(keyword,"Longitude");
-	if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-		longitude = (float)atof(value);
-		if (longitude < 0) {
-   		dir = 'W';
+   if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+      longitude = (float)atof(value);
+      if (longitude < 0) {
+         dir = 'W';
       } else {
-      	dir = 'E';
-   	}
-   	longitude = (float)(180.0*fabs(longitude)/(4.*atan(1)));
+         dir = 'E';
+      }
+      longitude = (float)(180.0*fabs(longitude)/(4.*atan(1)));
    } else {
       Tcl_SetResult(interp,"Internal error in longitude decoding.",TCL_VOLATILE);
       return TCL_ERROR;
@@ -877,8 +879,8 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
       }
    }
    sprintf(keyword,"Latitude");
-	if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-		latitude = (float)(180.0*atof(value)/(4*atan(1)));
+   if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+      latitude = (float)(180.0*atof(value)/(4*atan(1)));
    } else {
       Tcl_SetResult(interp,"Internal error in latitude decoding.",TCL_VOLATILE);
       return TCL_ERROR;
@@ -904,8 +906,8 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
       }
    }
    sprintf(keyword,"Altitude");
-	if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-		altitude = (float)atof(value);
+   if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
+      altitude = (float)atof(value);
    } else {
       Tcl_SetResult(interp,"Internal error in altitude decoding.",TCL_VOLATILE);
       return TCL_ERROR;
