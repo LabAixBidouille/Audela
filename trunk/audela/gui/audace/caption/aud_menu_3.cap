@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.12 2007-03-17 21:21:07 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.13 2007-03-21 18:39:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -557,9 +557,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,mult_cte)                    "Multiplicar por constante"
    set caption(audace,menu,noffset)                     "Normalizar fundo do céu"
    set caption(audace,menu,ngain)                       "Normalizar iluminação"
-   set caption(audace,menu,addition)                    "# Somar"
-   set caption(audace,menu,soust)                       "# Subtrair"
-   set caption(audace,menu,division)                    "# Dividir"
+   set caption(audace,menu,addition)                    "Adicionar uma imagem"
+   set caption(audace,menu,soust)                       "Subtrair uma imagem"
+   set caption(audace,menu,division)                    "Dividir por uma imagem"
    set caption(audace,menu,opt_noir)                    "Optimização do Dark Frame"
    set caption(audace,menu,mediane)                     "Mediana"
    set caption(audace,menu,somme)                       "Soma"
