@@ -46,7 +46,10 @@ set version 1.4.0-beta2
                regsub -all / "$temp" \\ name2
                set name2 "{app}\\$name2"
                if {[string range $shortname 0 1]==".#"} {
-	               continue
+                  continue
+               }
+               if {$shortname=="modifications audela-1.4.0-beta1.xls"} {
+                  continue
                }
                if {$shortname=="PortTalk.sys"} {
                   append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
