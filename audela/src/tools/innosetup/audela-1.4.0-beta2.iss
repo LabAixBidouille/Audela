@@ -21,6 +21,7 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 
 [Files]
 Source: ".\..\..\..\readme.txt"; DestDir: "{app}"; 
+Source: ".\..\..\..\bin\CCD_Driver.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libaudine.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libquickremote.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libquicka.dll"; DestDir: "{app}\bin"; 
@@ -63,7 +64,6 @@ Source: ".\..\..\..\bin\libstarlight.dll"; DestDir: "{app}\bin";
 Source: ".\..\..\..\bin\libsext.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libsbig.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\quicka.dll"; DestDir: "{app}\bin"; 
-Source: ".\..\..\..\bin\CCD_Driver.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libgphoto2_canon.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libgphoto2.dll"; DestDir: "{app}\bin"; 
 Source: ".\..\..\..\bin\libgphoto2_port_usb.dll"; DestDir: "{app}\bin"; 
@@ -1254,7 +1254,6 @@ Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\gp\gpwin32\pgnuplot
 Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module\BeSSParam.ini"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module"; 
 Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module\bess_module.tcl"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module"; 
 Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module\bess_module.cap"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module"; 
-Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module\bess_module.ini"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\bess_module"; 
 Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\specLhIII\specLhIII.tcl"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\specLhIII"; 
 Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\specLhIII\specLhIII.cap"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\specLhIII"; 
 Source: ".\..\..\..\gui\audace\plugin\tool\spectro\spcaudace\plugins\specLhIII\spconf.ini"; DestDir: "{app}\gui\audace\plugin\tool\spectro\spcaudace\plugins\specLhIII"; 
