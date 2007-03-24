@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.7 2007-01-27 14:26:56 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.8 2007-03-24 15:04:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,10 +14,11 @@ global caption langage
 #--- Textes de titres
 set caption(acqfen,audace)             "Aud'ACE"
 set caption(acqfen,titre)              "Windowed Acquisition"
-set caption(acqfen,help_titre)         "Left Button: Help For This Tool\nRight Button: Setup"
+set caption(acqfen,help_titre)         "Help For This Tool"
 set caption(acqfen,titre_centrage)     "Full Frame Acq."
 set caption(acqfen,titre_fenetrees)    "Windowed Acq."
 set caption(acqfen,actuxy)             "Refresh\nWindow"
+set caption(acqfen,congiguration)      "Setup"
 
 #--- Textes pour l'acquisition CCD
 set caption(acqfen,pose)               "Exp."
@@ -74,10 +75,11 @@ if { [ string compare $langage "french" ] == 0 } {
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Acquisition fenêtrée"
-   set caption(acqfen,help_titre)      "Bouton gauche : Aide pour cet outil\nBouton droit : Configuration"
+   set caption(acqfen,help_titre)      "Aide pour cet outil"
    set caption(acqfen,titre_centrage)  "Acq. pleine trame"
    set caption(acqfen,titre_fenetrees) "Acq. fenêtrée"
    set caption(acqfen,actuxy)          "Actu.\nfenêtrage"
+   set caption(acqfen,congiguration)   "Configuration"
 
 #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Pose"
@@ -134,10 +136,11 @@ if { [ string compare $langage "french" ] == 0 } {
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Finestra di acquisizione"
-   set caption(acqfen,help_titre)      "Bottone sinistro: Aiuto per questo tool\nBottone destro: Configurazione"
+   set caption(acqfen,help_titre)      "Aiuto per questo tool"
    set caption(acqfen,titre_centrage)  "Acq frame completo"
    set caption(acqfen,titre_fenetrees) "Finestra di acq."
    set caption(acqfen,actuxy)          "Rinfresco\nfinestra"
+   set caption(acqfen,congiguration)   "Configurazione"
 
 #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Posa"
@@ -194,10 +197,11 @@ if { [ string compare $langage "french" ] == 0 } {
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Adquisición con subzona"
-   set caption(acqfen,help_titre)      "Botón izdo: Ayuda para esta herramienta\nBotón derecho: Configuración"
+   set caption(acqfen,help_titre)      "Ayuda para esta herramienta"
    set caption(acqfen,titre_centrage)  "Adq. cu. completo"
    set caption(acqfen,titre_fenetrees) "Adq. con subzona"
    set caption(acqfen,actuxy)          "Refrescar\nventana"
+   set caption(acqfen,congiguration)   "Configuración"
 
 #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Exp."
@@ -254,10 +258,11 @@ if { [ string compare $langage "french" ] == 0 } {
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Fenster Anschaffung"
-   set caption(acqfen,help_titre)      "Linken Knopf: Hilfe für dieses Gerät\nRechten Knopf: Konfiguration"
+   set caption(acqfen,help_titre)      "Hilfe für dieses Gerät"
    set caption(acqfen,titre_centrage)  "Vollbild Anschaf."
    set caption(acqfen,titre_fenetrees) "Fenster Anschaf."
    set caption(acqfen,actuxy)          "Fenster\naktualis."
+   set caption(acqfen,congiguration)   "Konfiguration"
 
 #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Bel."
@@ -314,10 +319,11 @@ if { [ string compare $langage "french" ] == 0 } {
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Aquisição em janela"
-   set caption(acqfen,help_titre)      "Botão esquerdo : Ajuda para esta ferramenta\nBotão direito : Configuração"
+   set caption(acqfen,help_titre)      "Ajuda para esta ferramenta"
    set caption(acqfen,titre_centrage)  "Aq. trama completa"
    set caption(acqfen,titre_fenetrees) "Aq. em janela"
    set caption(acqfen,actuxy)          "Actu.\njanela"
+   set caption(acqfen,congiguration)   "Configuração"
 
 #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Exposição"
@@ -374,10 +380,11 @@ if { [ string compare $langage "french" ] == 0 } {
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Windowed Acquisition"
-   set caption(acqfen,help_titre)      "Left Button: Help For This Tool\nRight Button: Setup"
+   set caption(acqfen,help_titre)      "Help For This Tool"
    set caption(acqfen,titre_centrage)  "Full Frame Acq."
    set caption(acqfen,titre_fenetrees) "Windowed Acq."
    set caption(acqfen,actuxy)          "Refresh\nWindow"
+   set caption(acqfen,congiguration)   "Setup"
 
 #--- Textes pour l'acquisition CCD
    set caption(acqfen,pose)            "Exp."
