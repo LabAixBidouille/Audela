@@ -11,7 +11,7 @@
  * This file contains all the "glue code" required to use the canon
  * driver with libgphoto2.
  *
- * $Id: library.c,v 1.1 2006-12-03 09:56:40 michelpujol Exp $
+ * $Id: library.c,v 1.2 2007-03-24 22:41:24 michelpujol Exp $
  *
  ****************************************************************************/
 /****************************************************************************
@@ -495,7 +495,9 @@ update_disk_cache (Camera *camera, GPContext *context)
 	if (res != GP_OK) {
 		gp_context_error (context, _("Could not get disk info: %s"),
 				  gp_result_as_string (res));
-		return 0;
+      // modif michel
+		//return 0;
+      return res;
 	}
 	camera->pl->cached_disk = 1;
 
@@ -526,7 +528,8 @@ set_transfert_mode (Camera *camera, canonTransferMode mode, GPContext *context)
       
       //modif michel 
       if ( mode ==  REMOTE_CAPTURE_THUMB_TO_DRIVE || mode ==  REMOTE_CAPTURE_FULL_TO_DRIVE ) {
-         if ( update_disk_cache(camera , context) == 1) {
+         status = update_disk_cache(camera , context) ;
+         if ( status == 1) {
             if ( camera->pl->cached_available == 0 ) {
                gp_context_error (context, _("memory card CF is required"));
                status = GP_ERROR;
@@ -534,6 +537,9 @@ set_transfert_mode (Camera *camera, canonTransferMode mode, GPContext *context)
                camera->pl->transfert_mode =  mode;
                status = GP_OK;
             }
+         } else { 
+            gp_context_error (context, _("memory card CF is required"));
+            status = status;
          }
       } else {
          camera->pl->transfert_mode =  mode;
@@ -1659,7 +1665,7 @@ camera_set_config (Camera *camera, CameraWidget *window, GPContext *context)
 			if (set_transfert_mode (camera, ivalue, context) == GP_OK) {
 				gp_context_status (context, _("transfert mode set"));
 			} else {
-				gp_context_status (context, _("could not set transfert mode"));
+				gp_context_error (context, _("could not set transfert mode"));
             return GP_ERROR;
 			}
 		}

@@ -14,7 +14,7 @@
 #include "libgphoto2.h"
 
 // =========== local definiton and types ===========
-#define CR(result)       {int r=(result); if (r<0) return LIBGPHOTO_ERROR;}
+#define CR(result)       {int r=(result); if (r<0) return result;}
 
 #define MAX_FILE_LEN   1024
 
@@ -61,6 +61,7 @@ void debugstdout_func (GPLogLevel level, const char *domain, const char *format,
 int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir, int debug)
 {
 	int count;
+   int result;
    GPhotoSession *p;   
    char line[1024];
 	
@@ -80,7 +81,9 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir,
       setenv("IOLIBS",gphotoWinDllDir,1);
       
 #endif
-   // activation/desactivation des traces de deboggage de libgphoto2
+   *gphotoSession = p;
+
+    // activation/desactivation des traces de deboggage de libgphoto2
    libgphoto_setDebugLog(p, debug);
 
    // raz des messages d'erreur
@@ -93,6 +96,9 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir,
    gp_context_set_status_func    (p->context, ctx_status_func,  NULL);
    gp_context_set_message_func   (p->context, ctx_message_func, NULL);
 
+   // Je nettoie le dernier message d'erreur
+   gp_context_error(p->context,"");
+
    // charge la liste dll des APN presentes( PTP, canon, ...)
    gp_abilities_list_new (&p->abilities_list);
    gp_abilities_list_load (p->abilities_list, p->context);
@@ -101,14 +107,25 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir,
    gp_log (GP_LOG_DEBUG, "libgphoto_openSession", "Nombre de modele de camera supportes = %d \n", count);
    
    // charge les dll des types de port (serial et usb)
-   CR (gp_port_info_list_new (&p->portList));
-   CR (gp_port_info_list_load (p->portList));
+   result = gp_port_info_list_new (&p->portList);
+   if ( result <0 ) {
+      gp_context_error(p->context,gp_port_result_as_string(result));
+      return result;
+   }
+   result = gp_port_info_list_load (p->portList);
+   if ( result <0 ) {
+      gp_context_error(p->context,gp_port_result_as_string(result));
+      return result;
+   }
    count = gp_port_info_list_count(p->portList);
-   gp_log (GP_LOG_DEBUG, "libgphoto_openSession", "Nombre de type de port supportes = %d \n", count);
-   
-   CR (gp_list_new (&p->previousFileList)); 
+   if ( count == 0 ) {
+      // libgphoto2_canon_usb n'a pas pu etre charge car il manque libusb
+      gp_context_error(p->context,gp_port_result_as_string(GP_ERROR_LIBUSB_NOT_AVAILABLE));
+      return GP_ERROR_LIBUSB_NOT_AVAILABLE;
+   }
 
-   *gphotoSession = p;
+   gp_log (GP_LOG_DEBUG, "libgphoto_openSession", "Nombre de type de port supportes = %d \n", count);   
+   CR (gp_list_new (&p->previousFileList)); 
 
    return LIBGPHOTO_OK;
 }
@@ -341,6 +358,7 @@ int libgphoto_setQuality (GPhotoSession *gphotoSession, char * quality)
 
 int libgphoto_setTransfertMode (GPhotoSession *gphotoSession, int value)
 {
+   int result;
    CameraWidget *driverWidget = NULL;
    CameraWidget *transfertModeWidget = NULL;
    
@@ -351,8 +369,9 @@ int libgphoto_setTransfertMode (GPhotoSession *gphotoSession, int value)
    CR(gp_widget_get_child_by_label (gphotoSession->config, "Driver", &driverWidget));
    CR(gp_widget_get_child_by_label (driverWidget, "Transfert Mode", &transfertModeWidget));
    CR(gp_widget_set_value(transfertModeWidget, &value ));
-   CR(gp_camera_set_config(gphotoSession->camera, gphotoSession->config, gphotoSession->context));
-   return LIBGPHOTO_OK;
+   result = gp_camera_set_config(gphotoSession->camera, gphotoSession->config, gphotoSession->context);
+   return result;
+   //return LIBGPHOTO_OK;
 }
 
 int libgphoto_getTransfertMode (GPhotoSession *gphotoSession, int *pvalue)
