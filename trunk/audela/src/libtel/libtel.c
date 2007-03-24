@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.3 2006-11-01 17:39:55 alainklotz Exp $
+// $Id: libtel.c,v 1.4 2007-03-24 01:35:11 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -441,6 +441,15 @@ int cmdTelProtocol(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    struct telprop *tel;
    tel = (struct telprop *)clientData;
    sprintf(ligne,"%s",tel_ini[tel->index_tel].protocol);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int cmdTelProduct(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   sprintf(ligne,"%s",tel_ini[tel->index_tel].product);
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return TCL_OK;
 }

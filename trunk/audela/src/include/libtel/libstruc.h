@@ -68,6 +68,7 @@ struct telini {
    /* --- variables communes privees constantes ---*/
    char name[256];
    char protocol[256];
+   char product[256];
    /* --- variables communes publiques parametrables depuis Tcl ---*/
    double foclen;
 };
