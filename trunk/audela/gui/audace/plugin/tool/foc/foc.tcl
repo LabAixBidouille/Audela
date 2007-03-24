@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.8 2007-03-24 01:35:16 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.9 2007-03-24 15:54:27 robertdelmas Exp $
 #
 
 package provide foc 1.0
@@ -124,15 +124,27 @@ namespace eval ::Focs {
          $This.fra2.but1 configure -relief groove -state disabled
          $This.fra2.but2 configure -text $panneau(Focs,stop)
          update
+         #--- Applique le binning demande si la camera possede bien ce binning
+         set binningCamera "2"
+         if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
+            set panneau(Focs,bin) "2"
+         } else {
+            set panneau(Focs,bin) "1"
+         }
          #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
-         set panneau(Focs,bin) "2"
          if { [ info exists panneau(Focs,actuel) ] == "0" } {
             set panneau(Focs,actuel) "$caption(foc,centrage)"
             set dimxy [ cam$audace(camNo) nbcells ]
             set panneau(Focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
          }
          if { $panneau(Focs,menu) == "$caption(foc,centrage)" } {
-            set panneau(Focs,bin) "2"
+            #--- Applique le binning demande si la camera possede bien ce binning
+            set binningCamera "2"
+            if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
+               set panneau(Focs,bin) "2"
+            } else {
+               set panneau(Focs,bin) "1"
+         }
             set dimxy [ cam$audace(camNo) nbcells ]
             set panneau(Focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
             set panneau(Focs,actuel) "$caption(foc,centrage)"
@@ -146,7 +158,7 @@ namespace eval ::Focs {
                   set b $a
                   #--- Tient compte du binning
                   foreach e $a {
-                     set b [ lreplace $b $kk $kk [ expr 2*$e ] ]
+                     set b [ lreplace $b $kk $kk [ expr $panneau(Focs,bin)*$e ] ]
                      incr kk
                   }
                   set panneau(Focs,window) $b
@@ -209,6 +221,11 @@ namespace eval ::Focs {
 
       #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
       ::camera::gestionPose $panneau(Focs,exptime) 1 $camera $buffer
+
+      #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
+      if { [ ::confCam::hasCapability $audace(camNo) window ] == "0" } {
+         buf$audace(bufNo) window $panneau(Focs,window)
+      }
 
       #--- Visualisation de l'image acquise
       ::audace::autovisu $audace(visuNo)
