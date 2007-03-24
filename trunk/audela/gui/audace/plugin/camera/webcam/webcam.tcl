@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.5 2007-03-17 09:18:07 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.6 2007-03-24 01:38:07 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -500,20 +500,43 @@ proc ::webcam::getBinningListScan { } {
 }
 
 #
-# ::webcam::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::webcam::hasLongExposure { } {
-   return 1
-}
-
-#
 # ::webcam::getLongExposure
 #    Retourne 1 si le mode longue pose est activé
 #    Sinon retourne 0
 #
 proc ::webcam::getLongExposure { camItem } {
    return $::conf(webcam,$camItem,longuepose)
+}
+
+#
+# ::webcam::getShutterOption
+#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
+#
+proc ::webcam::getShutterOption { } {
+   set ShutterOptionList { }
+   return $ShutterOptionList
+}
+
+#
+# ::webcam::hasCapability
+#    Retourne "la valeur de la propriete"
+#
+#  Parametres :
+#     camNo      : Numero de la camera
+#     capability : Fonctionnalite de la camera
+#
+proc ::webcam::hasCapability { camNo capability } {
+   switch $capability {
+      window { return 0 }
+   }
+}
+
+#
+# ::webcam::hasLongExposure
+#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
+#
+proc ::webcam::hasLongExposure { } {
+   return 1
 }
 
 #
@@ -538,14 +561,5 @@ proc ::webcam::hasScan { } {
 #
 proc ::webcam::hasShutter { } {
    return 0
-}
-
-#
-# ::webcam::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::webcam::getShutterOption { } {
-   set ShutterOptionList { }
-   return $ShutterOptionList
 }
 

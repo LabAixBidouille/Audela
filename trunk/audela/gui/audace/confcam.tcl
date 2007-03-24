@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.63 2007-03-18 21:00:16 denismarchais Exp $
+# Mise a jour $Id: confcam.tcl,v 1.64 2007-03-24 01:36:54 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -617,8 +617,8 @@ namespace eval ::confCam {
    }
 
    #
-   # cree une thread dedie �la camera
-   # retourne le numero de la tread est palce dasn la confCam(camItem,threadNo)
+   # cree une thread dediee a la camera
+   # retourne le numero de la thread place dans la variable confCam(camItem,threadNo)
    #
    proc createThread { camNo bufNo visuNo} {
       global confCam
@@ -2483,7 +2483,7 @@ namespace eval ::confCam {
      ###    -values $audace(list_com)
      ### pack $frm.s_port -in $frm.frame2 -anchor e -side left -padx 5 -pady 10
 
-      #--- Definition de la vitesse du port s�ie
+      #--- Definition de la vitesse du port serie
       label $frm.lab3 -text $caption(confcam,apn_baud)
       pack $frm.lab3 -in $frm.frame3 -anchor e -side left -padx 10 -pady 10
 
@@ -2576,7 +2576,7 @@ namespace eval ::confCam {
          pack $frm.detect_service -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
       }
 
-      #--- Gestion des 2 types de liaisons suivant les APN (DSLR) utilis�
+      #--- Gestion des 2 types de liaison suivant les APN (DSLR) utilises
       if { [ ::confLink::getLinkNamespace $confCam(dslr,port) ] == "photopc" } {
          pack $frm.frame2 -side top -fill x
          pack $frm.frame3 -side top -fill x
@@ -2616,7 +2616,7 @@ namespace eval ::confCam {
 
       #--- Bouton du choix du telechargement de l'image de l'APN
       button $frm.config_telechargement -text $caption(confcam,dslr_telecharger) -state normal \
-         -command { ::cameraDSLR::setLoadParameters $confCam($confCam(currentCamItem),visuNo) }
+         -command { ::dslr::setLoadParameters $confCam($confCam(currentCamItem),visuNo) }
       pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
@@ -3211,7 +3211,7 @@ namespace eval ::confCam {
 
    #
    # confCam::getLongExposure
-   #    Retourne 1 si le mode longue pose est activ�   #    Retourne 0 sinon
+   #    Retourne 1 si le mode longue pose est active   #    Retourne 0 sinon
    #  Parametres :
    #    camNo : Numero de la camera
    #
@@ -3296,7 +3296,7 @@ namespace eval ::confCam {
    #
    # confCam::getThreadNo
    #    Retourne le numero de la thread de la camera
-   #    Si la camera n'a pas de thread associe, la valeur retourn� est "0"
+   #    Si la camera n'a pas de thread associee, la valeur retournee est "0"
    #  Parametres :
    #     camNo : Numero de la camera
    #
@@ -3310,6 +3310,29 @@ namespace eval ::confCam {
          set camItem "C"
       }
       return $confCam($camItem,threadNo)
+   }
+
+   #
+   # confCam::hasCapability
+   #    Retourne "la valeur de la propriete"
+   #
+   #  Parametres :
+   #     camNo      : Numero de la camera
+   #     capability : Fonctionnalite de la camera
+   #
+   proc hasCapability { camNo capability } {
+      #--- Je verifie si la camera est capable de fournir son nom de famille
+      set result [ catch { cam$camNo product } camProduct ]
+      #---
+      if { $result == 0 } {
+         switch $camProduct {
+            dslr    { return [ ::dslr::hasCapability $camNo $capability ] }
+            webcam  { return [ ::webcam::hasCapability $camNo $capability ] }
+            default { return 1 }
+         }
+      } else {
+         return 0
+      }
    }
 
    #
@@ -3515,7 +3538,7 @@ namespace eval ::confCam {
 
       #--- Initialisation pour l'onglet APN
       set frm $frmm(Camera10)
-      #--- Gestion des 2 types de liaisons suivant les APN (DSLR) utilis�
+      #--- Gestion des 2 types de liaison suivant les APN (DSLR) utilises
       if { [ ::confLink::getLinkNamespace $confCam(dslr,port) ] == "photopc" } {
          pack $frm.frame2 -side top -fill x
          pack $frm.frame3 -side top -fill x
@@ -4033,7 +4056,9 @@ namespace eval ::confCam {
             dslr {
                switch [ ::confLink::getLinkNamespace $conf(dslr,port) ] {
                   gphoto2 {
-                     set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir $::audela_start_dir ]
+                     #--- Je cree la camera
+                     #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
+                     set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
                      set confCam($camItem,camNo) $camNo
                      console::affiche_erreur "$caption(confcam,dslr_name) $caption(confcam,2points)\
                         [ cam$camNo name ]\n"
@@ -4118,7 +4143,9 @@ namespace eval ::confCam {
                if {$conf(andor,config)=="cemes"} {
                   set camNo [ cam::create cemes PCI ]
                } else {
-                  set camNo [ cam::create andor PCI "$conf(andor,config)" ]
+                  #--- Je mets conf(andor,config) entre guillemets pour le cas ou
+                  #--- le nom du repertoire contient des espaces
+                  set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
                }
                set confCam($camItem,camNo) $camNo
                console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
@@ -4203,12 +4230,12 @@ namespace eval ::confCam {
                   parallelport {
                      set camNo [cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
                      cam$camNo cantype $conf(audine,can)
-                     #--- je cree la liaison utilis� par la camera pour l'acquisition
+                     #--- je cree la liaison utilisee par la camera pour l'acquisition
                      set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                   }
                   quickaudine {
                      set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
-                     #--- je cree la liaison utilis� par la camera pour l'acquisition
+                     #--- je cree la liaison utilisee par la camera pour l'acquisition
                      set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                   ethernaude {
@@ -4229,24 +4256,28 @@ namespace eval ::confCam {
                      #--- Gestion du mode debug ou non de l'EthernAude
                      if { $conf(ethernaude,debug) == "0" } {
                         if { $conf(ethernaude,ipsetting) == "1" } {
+                           #--- Je mets le nom du fichier entre guillemets pour le cas ou le nom du
+                           #--- repertoire contient des espaces
                            set camNo [cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
-                              -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] ]
+                              -ipsetting \"[ file join $audace(rep_install) bin IPSetting.exe ]\" ]
                         } else {
                            set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
                         }
                      } else {
                         if { $conf(ethernaude,ipsetting) == "1" } {
+                           #--- Je mets le nom du fichier entre guillemets pour le cas ou le nom du
+                           #--- repertoire contient des espaces
                            set camNo [cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
-                              -ipsetting [ file join $audace(rep_install) bin IPSetting.exe] -debug_eth ]
+                              -ipsetting \"[ file join $audace(rep_install) bin IPSetting.exe ]\" -debug_eth ]
                         } else {
                            set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                               -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
                         }
                      }
-                     #--- je cree la liaison utilis� par la camera pour l'acquisition
+                     #--- je cree la liaison utilisee par la camera pour l'acquisition
                      set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                   audinet {
@@ -4254,7 +4285,7 @@ namespace eval ::confCam {
                         -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                         -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) \
                         -debug_cam $conf(audinet,debug) ]
-                     #--- je cree la liaison utilis� par la camera pour l'acquisition
+                     #--- je cree la liaison utilisee par la camera pour l'acquisition
                      set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                }
@@ -4302,7 +4333,7 @@ namespace eval ::confCam {
                   }
                }
 
-               #--- je configure la visu utilis� par la camera
+               #--- je configure la visu utilisee par la camera
                ::confVisu::visuDynamix $visuNo 32767 -32768
 
                #--- j'affiche un message d'information
