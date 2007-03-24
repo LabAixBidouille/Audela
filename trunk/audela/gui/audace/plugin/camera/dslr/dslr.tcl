@@ -2,10 +2,10 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.7 2007-01-27 15:15:19 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.8 2007-03-24 01:38:43 robertdelmas Exp $
 #
 
-namespace eval cameraDSLR {
+namespace eval dslr {
 
    proc init { } {
       global audace
@@ -56,32 +56,32 @@ namespace eval cameraDSLR {
       #--- utilise carte memoire CF
       checkbutton $audace(base).telecharge_image.utiliserCF -text "$caption(dslr,utiliser_cf)" \
          -highlightthickness 0 -variable conf(dslr,utiliser_cf) \
-         -command "::cameraDSLR::utiliserCF $visuNo"
+         -command "::dslr::utiliserCF $visuNo"
       pack $audace(base).telecharge_image.utiliserCF -anchor w -side top -padx 20 -pady 10
 
       radiobutton $audace(base).telecharge_image.rad1 -anchor nw -highlightthickness 1 \
         -padx 0 -pady 0 -state normal \
         -text "$caption(dslr,pas_telecharger)" -value 1 -variable conf(dslr,telecharge_mode) \
-        -command "::cameraDSLR::changerSelectionTelechargementAPN $visuNo"
+        -command "::dslr::changerSelectionTelechargementAPN $visuNo"
       pack $audace(base).telecharge_image.rad1 -anchor w -expand 1 -fill none \
         -side top -padx 30 -pady 5
       radiobutton $audace(base).telecharge_image.rad2 -anchor nw -highlightthickness 0 \
         -padx 0 -pady 0 -state normal \
         -text "$caption(dslr,immediat)" -value 2 -variable conf(dslr,telecharge_mode)\
-        -command "::cameraDSLR::changerSelectionTelechargementAPN $visuNo"
+        -command "::dslr::changerSelectionTelechargementAPN $visuNo"
       pack $audace(base).telecharge_image.rad2 -anchor w -expand 1 -fill none \
         -side top -padx 30 -pady 5
       radiobutton $audace(base).telecharge_image.rad3 -anchor nw -highlightthickness 0 \
         -padx 0 -pady 0 -state normal -disabledforeground #999999 \
         -text "$caption(dslr,acq_suivante)" -value 3 -variable conf(dslr,telecharge_mode) \
-        -command "::cameraDSLR::changerSelectionTelechargementAPN $visuNo"
+        -command "::dslr::changerSelectionTelechargementAPN $visuNo"
       pack $audace(base).telecharge_image.rad3 -anchor w -expand 1 -fill none \
          -side top -padx 30 -pady 5
 
       #--- supprime l'image sur la carte memoire apres le chargement
       checkbutton $audace(base).telecharge_image.supprime_image -text "$caption(dslr,supprimer_image)" \
          -highlightthickness 0 -variable conf(dslr,supprimer_image) \
-         -command "::cameraDSLR::supprimerImage $visuNo"
+         -command "::dslr::supprimerImage $visuNo"
       pack $audace(base).telecharge_image.supprime_image -anchor w -side top -padx 20 -pady 10
 
       #--- New message window is on
@@ -147,8 +147,22 @@ namespace eval cameraDSLR {
       ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) cam[ ::confVisu::getCamNo $visuNo ] autoload=[ cam[ ::confVisu::getCamNo $visuNo ] autoload ] \n"
    }
 
+   #
+   # hasCapability
+   #    Retourne "la valeur de la propriete"
+   #
+   #  Parametres :
+   #     camNo      : Numero de la camera
+   #     capability : Fonctionnalite de la camera
+   #
+   proc hasCapability { camNo capability } {
+      switch $capability {
+         window { return 0 }
+      }
+   }
+
 }
 
 #--- Initialisation au demarrage
-::cameraDSLR::init
+::dslr::init
 
