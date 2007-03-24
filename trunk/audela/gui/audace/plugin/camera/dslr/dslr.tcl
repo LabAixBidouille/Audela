@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.8 2007-03-24 01:38:43 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.9 2007-03-24 22:51:03 michelpujol Exp $
 #
 
 namespace eval dslr {
@@ -105,6 +105,18 @@ namespace eval dslr {
       global conf
       global audace
 
+      #--- je configure la camera
+      set camNo [::confVisu::getCamNo $visuNo]
+      set resultUsecf [ catch { cam$camNo usecf $conf(dslr,utiliser_cf) } messageUseCf ]
+      if { $resultUsecf == 1 } {
+         tk_messageBox -message "$messageUseCf" -icon error
+         #--- si l'appareil n'a pas de carte memoire
+         #--- je change l'otion la carte memoire de l'appareil
+         set conf(dslr,utiliser_cf) 0
+         cam$camNo usecf $conf(dslr,utiliser_cf)
+      }
+   
+      #--- je met a jour les widgets
       if { $conf(dslr,utiliser_cf) == "0" } {
          $audace(base).telecharge_image.rad3 configure -state disabled
          $audace(base).telecharge_image.supprime_image configure -state disabled
@@ -116,8 +128,7 @@ namespace eval dslr {
          $audace(base).telecharge_image.rad3 configure -state normal
          $audace(base).telecharge_image.supprime_image configure -state normal
       }
-      #--- je configure la camera
-      cam[ ::confVisu::getCamNo $visuNo ] usecf $conf(dslr,utiliser_cf)
+
    }
 
    proc supprimerImage { visuNo } {
