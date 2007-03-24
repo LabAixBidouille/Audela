@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.7 2007-02-12 12:27:25 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.8 2007-03-24 01:35:16 robertdelmas Exp $
 #
 
 package provide foc 1.0
@@ -101,7 +101,7 @@ namespace eval ::Focs {
 
       #--- Initialisation du fenetrage
       catch {
-         set n1n2 [ cam$audace(camNo)  nbcells ]
+         set n1n2 [ cam$audace(camNo) nbcells ]
          cam$audace(camNo) window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
       }
       trace remove variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
