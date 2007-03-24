@@ -95,10 +95,10 @@ gp_port_library_list (GPPortInfoList *list)
    // verify libusb is installed
    version = usb_get_version();
    if(version) {
-      if ( version->driver.major <0 ) {
+      if ( version->dll.major < 0 ) {
          gp_log (GP_LOG_DEBUG, "gp_port_library_list", _("wrong driver version. libusb is not installed."));
          return GP_ERROR_LIBUSB_NOT_AVAILABLE;
-      }    
+      }
    } else {
       gp_log (GP_LOG_DEBUG, "gp_port_library_list", _("Can't read libusb version. libusb is not installed ."));
       return GP_ERROR_LIBUSB_NOT_AVAILABLE;
