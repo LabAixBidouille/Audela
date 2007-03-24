@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.64 2007-03-24 01:36:54 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.65 2007-03-24 22:50:16 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -4108,7 +4108,14 @@ namespace eval ::confCam {
                         cam$camNo longuepose 0
                      }
                      #--- Parametrage du telechargement des images
-                     cam$camNo usecf $conf(dslr,utiliser_cf)
+                     set resultUsecf [ catch { cam$camNo usecf $conf(dslr,utiliser_cf) } messageUseCf ]
+                     if { $resultUsecf == 1 } {
+                        #--- si l'appareil n'a pas de carte memoire,
+                        #--- je descative l'utilsationde de la carte memoire de l'appareil
+                        console::affiche_erreur "$messageUseCf. Unset use memory card"
+                        set conf(dslr,utiliser_cf) 0
+                        cam$camNo usecf $conf(dslr,utiliser_cf)
+                     }
                      switch -exact -- $conf(dslr,telecharge_mode) {
                         1  {
                            #--- Ne pas telecharger
