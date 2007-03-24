@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition d'images en couleur
 # Compatibilite : Cameras Audine couleur et SCR1300XTC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: acqcolor_go.tcl,v 1.3 2006-06-20 20:36:21 robertdelmas Exp $
+# Mise a jour $Id: acqcolor_go.tcl,v 1.4 2007-03-24 01:35:56 robertdelmas Exp $
 #
 
 package provide acqcolor 1.0
@@ -37,6 +37,11 @@ namespace eval ::Ccdcolor {
    proc startTool { visuNo } {
       variable This
 
+      #--- Chargement de la librairie de definition de la commande combit
+      if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
+         load libcombit.dll
+      }
+      #---
       pack $This -side left -fill y
    }
 
