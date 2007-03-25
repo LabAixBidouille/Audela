@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.9 2007-03-24 22:40:33 michelpujol Exp $
+// $Id: camera.c,v 1.8 2007-02-09 22:00:09 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -498,27 +498,24 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       if( cam->params->useCf == 1 ) {
          // si la carte CF est utilise 
          result = libgphoto_captureImage(cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile);  
-         if ( result == LIBGPHOTO_OK ) {
-            // je verifie s'il faut charger immediatement
-            if( cam->params->autoLoadFlag == 1 ) {
-               // je charge l'image  
-               result = libgphoto_loadImage(cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile, &imageData, &imageLength, &imageMime);
-               if (result == LIBGPHOTO_OK) {
-                  result = cam_copyImage(cam, imageData, imageLength, imageMime);
-                  if (result == LIBGPHOTO_OK  && cam->params->autoDeleteFlag == 1 ) {
-                     // je supprime l'image sur la carte memoire de l'appareil
-                     result = libgphoto_deleteImage (cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile);
-                  }
+         // je verifie s'il faut charger immediatement
+         if( cam->params->autoLoadFlag == 1 ) {
+            // je charge l'image  
+            result = libgphoto_loadImage(cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile, &imageData, &imageLength, &imageMime);
+            if (result == LIBGPHOTO_OK) {
+               result = cam_copyImage(cam, imageData, imageLength, imageMime);
+               if (result == LIBGPHOTO_OK  && cam->params->autoDeleteFlag == 1 ) {
+                  // je supprime l'image sur la carte memoire de l'appareil
+                  result = libgphoto_deleteImage (cam->params->gphotoSession, cam->params->imageFolder, cam->params->imageFile);
                }
+            } else {
+               // je retourne un message d'erreur
+               strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
             }
+            // je purge le nom du fichier
+            strcpy(cam->params->imageFile, "");
+            strcpy(cam->params->imageFolder, "");      
          }
-         if ( result != LIBGPHOTO_OK ) {
-            // je retourne un message d'erreur
-            strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
-         }
-         // je purge le nom du fichier
-         strcpy(cam->params->imageFile, "");
-         strcpy(cam->params->imageFolder, "");      
       } else {
          // si la carte CF n'est pas utilisee
          if( cam->params->autoLoadFlag == 1 ) {
@@ -982,11 +979,7 @@ int  cam_setUseCf(struct camprop *cam, int value) {
 
    // je verifie que le nouveau mode est applicable, en particulier dans le cas ou
    // la carte memoire CF  est requise
-   if ( value == 0 ) {
-      result = libgphoto_setTransfertMode(cam->params->gphotoSession,0);
-   } else {
-      result = libgphoto_setTransfertMode(cam->params->gphotoSession,8);
-   }
+   result = libgphoto_setTransfertMode(cam->params->gphotoSession,value);
 
    if (result == LIBGPHOTO_OK) {
       cam->params->useCf  = value;

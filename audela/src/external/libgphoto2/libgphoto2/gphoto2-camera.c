@@ -811,7 +811,6 @@ gp_camera_get_config (Camera *camera, CameraWidget **window, GPContext *context)
 int
 gp_camera_set_config (Camera *camera, CameraWidget *window, GPContext *context)
 {
-   int result;
 	CHECK_NULL (camera && window);
 	CHECK_INIT (camera, context);
 
@@ -822,19 +821,8 @@ gp_camera_set_config (Camera *camera, CameraWidget *window, GPContext *context)
                 return (GP_ERROR_NOT_SUPPORTED);
 	}
 
-//	CHECK_RESULT_OPEN_CLOSE (camera, camera->functions->set_config (camera,
-//						window, context), context);
-
- 	CHECK_OPEN (camera,context);						
-	result = camera->functions->set_config (camera,window, context);							
-	if (result < 0) {							
-		CHECK_CLOSE (camera,context);					
-		gp_log (GP_LOG_DEBUG, "gphoto2-camera", "Operation failed!");
-		CAMERA_UNUSED (camera,context);                              	
-		return (result);						
-	}								
-	CHECK_CLOSE (camera,context);						
-
+	CHECK_RESULT_OPEN_CLOSE (camera, camera->functions->set_config (camera,
+						window, context), context);
 
 	CAMERA_UNUSED (camera, context);
 	return (GP_OK);

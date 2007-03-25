@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.38 2007-03-24 01:39:54 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.37 2007-03-14 18:32:39 robertdelmas Exp $
 #
 
 package provide acqfc 2.1
@@ -3200,7 +3200,7 @@ namespace eval ::AcqFC {
       if { ( $panneau(AcqFC,$visuNo,mode) == "1" ) || ( $panneau(AcqFC,$visuNo,mode) == "2" ) || \
          ( $panneau(AcqFC,$visuNo,mode) == "3" ) || ( $panneau(AcqFC,$visuNo,mode) == "4" ) || \
          ( $panneau(AcqFC,$visuNo,mode) == "5" ) } {
-         ::dslr::setLoadParameters $visuNo
+         ::cameraDSLR::setLoadParameters $visuNo
       }
    }
 #***** Fin de la configuration du telechargement *********************

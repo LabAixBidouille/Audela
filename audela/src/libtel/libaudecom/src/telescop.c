@@ -44,12 +44,10 @@
 struct telini tel_ini[] = {
    {"AudeCom",    /* telescope name */
     "AudeCom",    /* protocol name */
-    "audecom",    /* product */
      1.         /* default focal lenght of optic system */
    },
    {"",       /* telescope name */
     "",       /* protocol name */
-    "",       /* product */
 	1.        /* default focal lenght of optic system */
    },
 };

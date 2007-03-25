@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.8 2007-03-25 13:28:13 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.7 2007-01-27 14:47:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -18,7 +18,6 @@ set caption(obj_lune,cartographie)           "Cartography"
 set caption(obj_lune,carte_libration)        "Librations Maps"
 set caption(obj_lune,meilleur_moment)        "Best Observing Period"
 set caption(obj_lune,match)                  "MATCH"
-set caption(obj_lune,aide)                   "Help"
 set caption(obj_lune,fermer)                 "Close"
 set caption(obj_lune,match_confirm)          "Continue?"
 
@@ -91,7 +90,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,carte_libration)     "Cartes des librations"
    set caption(obj_lune,meilleur_moment)     "Meilleure période pour l'observation"
    set caption(obj_lune,match)               "MATCH"
-   set caption(obj_lune,aide)                "Aide"
    set caption(obj_lune,fermer)              "Fermer"
    set caption(obj_lune,match_confirm)       "Voulez-vous poursuivre ?"
 
@@ -164,7 +162,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,carte_libration)     "Schede delle librazioni"
    set caption(obj_lune,meilleur_moment)     "Periodo migliore per l'osservazione"
    set caption(obj_lune,match)               "MATCH"
-   set caption(obj_lune,aide)                "Aiuto"
    set caption(obj_lune,fermer)              "Chiudi"
    set caption(obj_lune,match_confirm)       "Volete continuare?"
 
@@ -237,7 +234,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,carte_libration)     "Mapas de libración"
    set caption(obj_lune,meilleur_moment)     "Mejor periodo para la observación"
    set caption(obj_lune,match)               "MATCH"
-   set caption(obj_lune,aide)                "Ayuda"
    set caption(obj_lune,fermer)              "Cerrar"
    set caption(obj_lune,match_confirm)       "Continuar?"
 
@@ -310,7 +306,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,carte_libration)     "Libration Karten"
    set caption(obj_lune,meilleur_moment)     "Best Beobachtung Zeitraum"
    set caption(obj_lune,match)               "MATCH"
-   set caption(obj_lune,aide)                "Hilfe"
    set caption(obj_lune,fermer)              "Schließen"
    set caption(obj_lune,match_confirm)       "Vollen sie weiterführen ?"
 
@@ -383,7 +378,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,carte_libration)     "Mapas das librações"
    set caption(obj_lune,meilleur_moment)     "Melhor período para observação"
    set caption(obj_lune,match)               "MATCH"
-   set caption(obj_lune,aide)                "Ajuda"
    set caption(obj_lune,fermer)              "Fechar"
    set caption(obj_lune,match_confirm)       "Pretende prosseguir ?"
 
@@ -456,7 +450,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,carte_libration)     "Librationskort"
    set caption(obj_lune,meilleur_moment)     "Bedste observations periode"
    set caption(obj_lune,match)               "TILPAS"
-   set caption(obj_lune,aide)                "Hjælp"
    set caption(obj_lune,fermer)              "Luk"
    set caption(obj_lune,match_confirm)       "Fortsæt?"
 

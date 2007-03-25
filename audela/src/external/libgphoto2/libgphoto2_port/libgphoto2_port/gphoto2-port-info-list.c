@@ -257,8 +257,7 @@ foreach_func (const char *filename, lt_ptr data)
 int
 gp_port_info_list_load_dir (GPPortInfoList *list, const char * iolibsdir)
 {
-    int result = GP_OK;
-    int resultLibList = GP_OK;
+    int result;
 //#ifndef HAVE_LTDL
     int i;
     GPPortLibraryType lib_type;
@@ -350,21 +349,13 @@ gp_port_info_list_load_dir (GPPortInfoList *list, const char * iolibsdir)
                 continue;
             }
             
-            resultLibList = lib_list (list);
-            if (resultLibList < 0) {
-               if ( resultLibList == GP_ERROR_LIBUSB_NOT_AVAILABLE ) {
-                  gp_log (GP_LOG_DEBUG, "gphoto2-port-info-list",
-                     _("Libusb not available (%s)"),
-                    gp_port_result_as_string (resultLibList));
-                  gp_system_dlclose (lh);
-                  result = GP_ERROR_LIBUSB_NOT_AVAILABLE;
-                  break;
-               } else 
-                  gp_log (GP_LOG_DEBUG, "gphoto2-port-info-list",
-                     _("Could not load list (%s)"),
-                     gp_port_result_as_string (resultLibList));
-                  gp_system_dlclose (lh);
-                  continue;
+            result = lib_list (list);
+            if (result < 0) {
+                gp_log (GP_LOG_DEBUG, "gphoto2-port-info-list",
+                    _("Could not load list (%s)"),
+                    gp_port_result_as_string (result));
+                gp_system_dlclose (lh);
+                continue;
             }
             
             for (i = old_size; i < list->count; i++){
@@ -381,7 +372,7 @@ gp_port_info_list_load_dir (GPPortInfoList *list, const char * iolibsdir)
     
     gp_system_closedir (d);
     
-    return result;
+    return (GP_OK);
 }
 #endif
 

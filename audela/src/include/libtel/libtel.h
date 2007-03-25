@@ -43,7 +43,6 @@ struct cmditem {
    {"drivername", (Tcl_CmdProc *)cmdTelDrivername},\
    {"name", (Tcl_CmdProc *)cmdTelName},\
    {"protocol", (Tcl_CmdProc *)cmdTelProtocol},\
-   {"product", (Tcl_CmdProc *)cmdTelProduct},\
    {"port", (Tcl_CmdProc *)cmdTelPort},\
    {"channel", (Tcl_CmdProc *)cmdTelChannel},\
    {"foclen", (Tcl_CmdProc *)cmdTelFoclen},\
@@ -84,7 +83,6 @@ int cmdTelSpeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 /* --- Action commands ---*/
 int cmdTelName(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelProtocol(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelProduct(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelFoclen(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
