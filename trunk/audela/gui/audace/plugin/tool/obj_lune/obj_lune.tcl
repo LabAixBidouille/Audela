@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.5 2007-01-20 10:09:25 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.6 2007-03-25 13:28:50 robertdelmas Exp $
 #
 
 global audace
@@ -50,6 +50,7 @@ namespace eval obj_Lune {
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief groove -state disabled
       $This.cmd.match configure -relief raised -state disabled
+      $This.cmd.aide configure -relief raised -state disabled
       $This.cmd.fermer configure -relief raised -state disabled
       update
       #--- Gestion des differents telescopes goto
@@ -57,6 +58,7 @@ namespace eval obj_Lune {
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state normal
       $This.cmd.match configure -relief raised -state normal
+      $This.cmd.aide configure -relief raised -state normal
       $This.cmd.fermer configure -relief raised -state normal
       update
       catch {
@@ -78,6 +80,7 @@ namespace eval obj_Lune {
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state disabled
       $This.cmd.match configure -relief groove -state disabled
+      $This.cmd.aide configure -relief raised -state disabled
       $This.cmd.fermer configure -relief raised -state disabled
       update
       #--- Gestion des differents telescopes goto
@@ -94,6 +97,7 @@ namespace eval obj_Lune {
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state normal
       $This.cmd.match configure -relief raised -state normal
+      $This.cmd.aide configure -relief raised -state normal
       $This.cmd.fermer configure -relief raised -state normal
       update
       catch {
@@ -174,6 +178,9 @@ namespace eval obj_Lune {
          button $This.cmd.fermer -text "$caption(obj_lune,fermer)" -relief raised -state normal \
             -command { ::obj_Lune::fermer }
          pack $This.cmd.fermer -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
+         button $This.cmd.aide -text "$caption(obj_lune,aide)" -relief raised -state normal \
+            -command { ::audace::showHelpPlugin tool obj_lune obj_lune.htm }
+         pack $This.cmd.aide -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
       pack $This.cmd -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
