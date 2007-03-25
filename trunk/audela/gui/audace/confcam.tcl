@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.65 2007-03-24 22:50:16 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.66 2007-03-25 13:29:51 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -4102,7 +4102,6 @@ namespace eval ::confCam {
                         if { $confCam($camItem,threadNo) != 0 &&  [cam$camNo longueposelinkno] != 0} {
                            thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
                         }
-
                      } else {
                         #--- Pas de liaison longue pose
                         cam$camNo longuepose 0
@@ -4111,8 +4110,8 @@ namespace eval ::confCam {
                      set resultUsecf [ catch { cam$camNo usecf $conf(dslr,utiliser_cf) } messageUseCf ]
                      if { $resultUsecf == 1 } {
                         #--- si l'appareil n'a pas de carte memoire,
-                        #--- je descative l'utilsationde de la carte memoire de l'appareil
-                        console::affiche_erreur "$messageUseCf. Unset use memory card"
+                        #--- je desactive l'utilisation de la carte memoire de l'appareil
+                        console::affiche_erreur "$messageUseCf. Unset use memory card."
                         set conf(dslr,utiliser_cf) 0
                         cam$camNo usecf $conf(dslr,utiliser_cf)
                      }
