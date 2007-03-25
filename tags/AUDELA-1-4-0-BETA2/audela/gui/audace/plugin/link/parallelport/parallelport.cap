@@ -1,0 +1,65 @@
+#
+# Fichier : parallelport.cap
+# Mise a jour $Id: parallelport.cap,v 1.14 2007-01-27 14:48:54 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(parallelport,titre)           "Parallel Port"
+set caption(parallelport,available)       "Parallel ports available"
+set caption(parallelport,refresh)         "Reload"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(parallelport,titre)        "Port parallèle"
+   set caption(parallelport,available)    "Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "Rafraîchir"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(parallelport,titre)        "Porta parallela"
+   set caption(parallelport,available)    "Porta parallela disponibile"
+   set caption(parallelport,refresh)      "Rinfresca"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(parallelport,titre)        "Puerto paralelo"
+   set caption(parallelport,available)    "Puertos paralelos disponibles"
+   set caption(parallelport,refresh)      "Recargar"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(parallelport,titre)        "Parallel Anschlüss"
+   set caption(parallelport,available)    "Parallel Anschlüssen verfügbar"
+   set caption(parallelport,refresh)      "Aktualisieren"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(parallelport,titre)        "Porta paralela"
+   set caption(parallelport,available)    "Portas paralelas disponíveis"
+   set caption(parallelport,refresh)      "Actualizar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(parallelport,titre)        "Parallel port"
+   set caption(parallelport,available)    "Disponible parallelle porte"
+   set caption(parallelport,refresh)      "Genindlæs"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

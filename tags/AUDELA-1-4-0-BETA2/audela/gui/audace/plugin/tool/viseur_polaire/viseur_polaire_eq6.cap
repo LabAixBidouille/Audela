@@ -1,0 +1,128 @@
+#
+# Fichier : viseur_polaire_eq6.cap
+# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.6 2007-01-27 14:59:10 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(viseur_eq6,titre)                "EQ6 Type Polar Finder"
+set caption(viseur_eq6,texte)                "Polar Finder with Constellations"
+set caption(viseur_eq6,long)                 "Longitude:"
+set caption(viseur_eq6,ah_polaire)           "Hour Angle of Polar Star:"
+set caption(viseur_eq6,taille)               "Its size"
+set caption(viseur_eq6,couleur_fond)         "Background Color"
+set caption(viseur_eq6,couleur_reticule)     "Reticle Color"
+set caption(viseur_eq6,couleur_etoile)       "Star Color"
+set caption(viseur_eq6,ok)                   "OK"
+set caption(viseur_eq6,appliquer)            "Apply"
+set caption(viseur_eq6,aide)                 "Help"
+set caption(viseur_eq6,fermer)               "Close"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(viseur_eq6,titre)             "Viseur polaire de type EQ6"
+   set caption(viseur_eq6,texte)             "Viseur polaire avec dessin de constellations"
+   set caption(viseur_eq6,long)              "Longitude :"
+   set caption(viseur_eq6,ah_polaire)        "Angle horaire de la Polaire :"
+   set caption(viseur_eq6,taille)            "Sa taille"
+   set caption(viseur_eq6,couleur_fond)      "Couleur du fond"
+   set caption(viseur_eq6,couleur_reticule)  "Couleur du réticule"
+   set caption(viseur_eq6,couleur_etoile)    "Couleur des étoiles"
+   set caption(viseur_eq6,ok)                "OK"
+   set caption(viseur_eq6,appliquer)         "Appliquer"
+   set caption(viseur_eq6,aide)              "Aide"
+   set caption(viseur_eq6,fermer)            "Fermer"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(viseur_eq6,titre)             "Cercatore polare del tipo EQ6"
+   set caption(viseur_eq6,texte)             "Cercatore polare con costellazioni"
+   set caption(viseur_eq6,long)              "Longitudine:"
+   set caption(viseur_eq6,ah_polaire)        "Angolo orario della Polare:"
+   set caption(viseur_eq6,taille)            "Dimensioni"
+   set caption(viseur_eq6,couleur_fond)      "Colore di fondo"
+   set caption(viseur_eq6,couleur_reticule)  "Colore del reticolo"
+   set caption(viseur_eq6,couleur_etoile)    "Colore delle stelle"
+   set caption(viseur_eq6,ok)                "OK"
+   set caption(viseur_eq6,appliquer)         "Applica"
+   set caption(viseur_eq6,aide)              "Aiuto"
+   set caption(viseur_eq6,fermer)            "Chiudi"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(viseur_eq6,titre)             "Buscador de la polar tipo EQ6"
+   set caption(viseur_eq6,texte)             "Buscador de la polar con constelaciones"
+   set caption(viseur_eq6,long)              "Longitud:"
+   set caption(viseur_eq6,ah_polaire)        "Angulo horario de la estrella Polar:"
+   set caption(viseur_eq6,taille)            "Su tamaño"
+   set caption(viseur_eq6,couleur_fond)      "Color de fondo"
+   set caption(viseur_eq6,couleur_reticule)  "Color del retículo"
+   set caption(viseur_eq6,couleur_etoile)    "Color de las estrellas"
+   set caption(viseur_eq6,ok)                "OK"
+   set caption(viseur_eq6,appliquer)         "Aplicar"
+   set caption(viseur_eq6,aide)              "Ayuda"
+   set caption(viseur_eq6,fermer)            "Cerrar"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(viseur_eq6,titre)             "EQ6 Modell Polar Sucher"
+   set caption(viseur_eq6,texte)             "Polar Sucher mit Konstellation Zeichnungen"
+   set caption(viseur_eq6,long)              "Länge:"
+   set caption(viseur_eq6,ah_polaire)        "Polar Zeitwinkel:"
+   set caption(viseur_eq6,taille)            "Ihre Größe"
+   set caption(viseur_eq6,couleur_fond)      "Hintergrund Farbe"
+   set caption(viseur_eq6,couleur_reticule)  "Fadenkreuz Farbe"
+   set caption(viseur_eq6,couleur_etoile)    "Stern Farbe"
+   set caption(viseur_eq6,ok)                "OK"
+   set caption(viseur_eq6,appliquer)         "Anwenden"
+   set caption(viseur_eq6,aide)              "Hilfe"
+   set caption(viseur_eq6,fermer)            "Schließen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(viseur_eq6,titre)             "Buscador polar do tipo EQ6"
+   set caption(viseur_eq6,texte)             "Buscador polar com constelações"
+   set caption(viseur_eq6,long)              "Longitude :"
+   set caption(viseur_eq6,ah_polaire)        "Ângulo horário da Polar :"
+   set caption(viseur_eq6,taille)            "Seu tamanho"
+   set caption(viseur_eq6,couleur_fond)      "Cor do fundo"
+   set caption(viseur_eq6,couleur_reticule)  "Cor do retículo"
+   set caption(viseur_eq6,couleur_etoile)    "Cor das estrelas"
+   set caption(viseur_eq6,ok)                "OK"
+   set caption(viseur_eq6,appliquer)         "Aplicar"
+   set caption(viseur_eq6,aide)              "Ajuda"
+   set caption(viseur_eq6,fermer)            "Fechar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(viseur_eq6,titre)             "Polsøger af EQ6 typen"
+   set caption(viseur_eq6,texte)             "Polsøger med konstellationer"
+   set caption(viseur_eq6,long)              "Geografisk længde:"
+   set caption(viseur_eq6,ah_polaire)        "Polstjernens timevinkel:"
+   set caption(viseur_eq6,taille)            "Dens størrelse"
+   set caption(viseur_eq6,couleur_fond)      "Baggrundsfarve"
+   set caption(viseur_eq6,couleur_reticule)  "Trådkors farve"
+   set caption(viseur_eq6,couleur_etoile)    "Stjernefarve"
+   set caption(viseur_eq6,ok)                "OK"
+   set caption(viseur_eq6,appliquer)         "Anvend"
+   set caption(viseur_eq6,aide)              "Hjælp"
+   set caption(viseur_eq6,fermer)            "Luk"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

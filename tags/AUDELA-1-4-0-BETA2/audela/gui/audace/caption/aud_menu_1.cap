@@ -1,0 +1,324 @@
+#
+# Fichier : aud_menu_1.cap
+# Mise a jour $Id: aud_menu_1.cap,v 1.5 2007-01-27 14:28:09 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(audace,menu,fichier)             "File"
+set caption(audace,menu,charger)             "Open"
+set caption(audace,menu,enregistrer)         "Save"
+set caption(audace,menu,enregistrer_sous)    "Save as"
+set caption(audace,menu,copyjpeg)            "Save as Jpeg"
+set caption(audace,menu,entete)              "FITS Header"
+set caption(audace,menu,select)              "Image Selection"
+set caption(audace,menu,nouveau_script)      "New Script"
+set caption(audace,menu,editer_script)       "Edit a script"
+set caption(audace,menu,lancer_script)       "Run a script"
+set caption(audace,menu,quitter)             "Exit"
+
+set caption(audace,header_title)             "FITS Header"
+set caption(audace,header_noimage)           "No Image in Memory."
+
+set caption(audace,pas_ouvrir_fichier)       "Cannot open file:"
+
+set caption(audace,console_gagne)            "Access OK"
+set caption(audace,console_annule)           "Cancelled"
+set caption(audace,console_rate)             "Access not possible"
+
+set caption(audace,script)                   "Program"
+set caption(audace,boite_erreur)             "Error"
+set caption(audace,2points)                  ":"
+set caption(audace,script_termine)           "Completed"
+
+set caption(audace,enregistrer_config_1)     "Save new setup before quitting?"
+set caption(audace,enregistrer_config_2)     "(Press 'Cancel' to return to Aud'ACE)"
+set caption(audace,enregistrer_config_3)     "Save setup?"
+set caption(audace,enregistrer_config_4)     "Setup saving not required."
+set caption(audace,attention)                "Warning"
+set caption(audace,quitter)                  "Do you really want to exit?"
+
+set caption(newscript,pas_de_nom)            "noname.tcl"
+set caption(newscript,nouveau_script)        "New Script"
+set caption(newscript,parcourir)             "..."
+set caption(newscript,nom_script)            "File Name"
+set caption(newscript,ok)                    "OK"
+set caption(newscript,annuler)               "Cancel"
+set caption(newscript,aide)                  "Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audace,menu,fichier)          "Fichier"
+   set caption(audace,menu,charger)          "Ouvrir"
+   set caption(audace,menu,enregistrer)      "Enregistrer"
+   set caption(audace,menu,enregistrer_sous) "Enregistrer sous"
+   set caption(audace,menu,copyjpeg)         "Enregistrer en Jpeg"
+   set caption(audace,menu,entete)           "En-tête FITS"
+   set caption(audace,menu,select)           "Sélection d'images"
+   set caption(audace,menu,nouveau_script)   "Nouveau script"
+   set caption(audace,menu,editer_script)    "Editer un script"
+   set caption(audace,menu,lancer_script)    "Lancer un script"
+   set caption(audace,menu,quitter)          "Quitter"
+
+   set caption(audace,header_title)          "En-tête FITS"
+   set caption(audace,header_noimage)        "Il n'y a pas d'image actuellement en mémoire."
+
+   set caption(audace,pas_ouvrir_fichier)    "Impossible d'ouvrir le fichier :"
+
+   set caption(audace,console_gagne)         "Accès réussi"
+   set caption(audace,console_annule)        "Annulé"
+   set caption(audace,console_rate)          "Accès non possible"
+
+   set caption(audace,script)                "Programme"
+   set caption(audace,boite_erreur)          "Erreur"
+   set caption(audace,2points)               ":"
+   set caption(audace,script_termine)        "Terminé"
+
+   set caption(audace,enregistrer_config_1)  "Voulez-vous enregistrer la nouvelle configuration de Aud'ACE avant de quitter ?"
+   set caption(audace,enregistrer_config_2)  "(Appuyer sur 'Annuler' pour retourner à Aude'ACE)"
+   set caption(audace,enregistrer_config_3)  "Enregistrer la configuration ?"
+   set caption(audace,enregistrer_config_4)  "Pas d'enregistrement de configuration nécessaire."
+   set caption(audace,attention)             "Attention"
+   set caption(audace,quitter)               "Voulez-vous quitter ?"
+
+   set caption(newscript,pas_de_nom)         "noname.tcl"
+   set caption(newscript,nouveau_script)     "Nouveau script"
+   set caption(newscript,parcourir)          "..."
+   set caption(newscript,nom_script)         "Nom du fichier"
+   set caption(newscript,ok)                 "OK"
+   set caption(newscript,annuler)            "Annuler"
+   set caption(newscript,aide)               "Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audace,menu,fichier)          "File"
+   set caption(audace,menu,charger)          "Aprire"
+   set caption(audace,menu,enregistrer)      "Salvare"
+   set caption(audace,menu,enregistrer_sous) "Salvare come"
+   set caption(audace,menu,copyjpeg)         "Salvare in JPEG"
+   set caption(audace,menu,entete)           "Intestazione FITS"
+   set caption(audace,menu,select)           "Selezione immagini"
+   set caption(audace,menu,nouveau_script)   "Nuovo script"
+   set caption(audace,menu,editer_script)    "Edita uno script"
+   set caption(audace,menu,lancer_script)    "Esegui uno script"
+   set caption(audace,menu,quitter)          "Esci"
+
+   set caption(audace,header_title)          "Intestazione FITS"
+   set caption(audace,header_noimage)        "Nessuna immagine in memoria."
+
+   set caption(audace,pas_ouvrir_fichier)    "Impossibile aprire il file:"
+
+   set caption(audace,console_gagne)         "Accesso riuscito"
+   set caption(audace,console_annule)        "Cancellato"
+   set caption(audace,console_rate)          "Accesso non possibile"
+
+   set caption(audace,script)                "Programma"
+   set caption(audace,boite_erreur)           "Errore"
+   set caption(audace,2points)               ":"
+   set caption(audace,script_termine)        "Completato"
+
+   set caption(audace,enregistrer_config_1)  "Volete salvare questa configurazione prima di uscire?"
+   set caption(audace,enregistrer_config_2)  "(Premere 'Cancella' per tornare ad Aud'ACE)"
+   set caption(audace,enregistrer_config_3)  "Salvare la configurazione?"
+   set caption(audace,enregistrer_config_4)  "Non e` richiesto il salvataggio della configurazione."
+   set caption(audace,attention)             "Attenzione"
+   set caption(audace,quitter)               "Vuoi veramente terminare?"
+
+   set caption(newscript,pas_de_nom)         "noname.tcl"
+   set caption(newscript,nouveau_script)     "Nuovo script"
+   set caption(newscript,parcourir)          "..."
+   set caption(newscript,nom_script)         "Nome file"
+   set caption(newscript,ok)                 "OK"
+   set caption(newscript,annuler)            "Cancella"
+   set caption(newscript,aide)               "Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audace,menu,fichier)          "Fichero"
+   set caption(audace,menu,charger)          "Abrir"
+   set caption(audace,menu,enregistrer)      "Guardar"
+   set caption(audace,menu,enregistrer_sous) "Guardar como"
+   set caption(audace,menu,copyjpeg)         "Guardar JPEG"
+   set caption(audace,menu,entete)           "Cabecera FITS"
+   set caption(audace,menu,select)           "Selección de imagen"
+   set caption(audace,menu,nouveau_script)   "Nuevo script"
+   set caption(audace,menu,editer_script)    "Editar un script"
+   set caption(audace,menu,lancer_script)    "Ejecutar un script"
+   set caption(audace,menu,quitter)          "Salir"
+
+   set caption(audace,header_title)          "Cabecera FITS"
+   set caption(audace,header_noimage)        "No existe una imágen cargada en la memoria."
+
+   set caption(audace,pas_ouvrir_fichier)    "No se puede abrir fichero:"
+
+   set caption(audace,console_gagne)         "Acceso correcto"
+   set caption(audace,console_annule)        "Cancelado"
+   set caption(audace,console_rate)          "El acceso no es posible"
+
+   set caption(audace,script)                "Programa"
+   set caption(audace,boite_erreur)          "Error"
+   set caption(audace,2points)               ":"
+   set caption(audace,script_termine)        "Completado"
+
+   set caption(audace,enregistrer_config_1)  "¿ Guardar las nuevas preferencias antes de salir ?"
+   set caption(audace,enregistrer_config_2)  "(Pulsar 'Cancel' para volver a Aud'ACE)"
+   set caption(audace,enregistrer_config_3)  "¿ Guardar preferencias ?"
+   set caption(audace,enregistrer_config_4)  "No hace falta guardar las preferencias."
+   set caption(audace,attention)             "Aviso"
+   set caption(audace,quitter)               "¿ Desea realmente salir ?"
+
+   set caption(newscript,pas_de_nom)         "noname.tcl"
+   set caption(newscript,nouveau_script)     "Nuevo script"
+   set caption(newscript,parcourir)          "..."
+   set caption(newscript,nom_script)         "Nombre de fichero"
+   set caption(newscript,ok)                 "OK"
+   set caption(newscript,annuler)            "Cancelar"
+   set caption(newscript,aide)               "Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audace,menu,fichier)          "Datei"
+   set caption(audace,menu,charger)          "Öffnen"
+   set caption(audace,menu,enregistrer)      "Speichern"
+   set caption(audace,menu,enregistrer_sous) "Speichern mit"
+   set caption(audace,menu,copyjpeg)         "In JPEG speichern"
+   set caption(audace,menu,entete)           "FITS Vorsatz"
+   set caption(audace,menu,select)           "Bilder Auswahl"
+   set caption(audace,menu,nouveau_script)   "Neuen Skript"
+   set caption(audace,menu,editer_script)    "Ein Skript editieren"
+   set caption(audace,menu,lancer_script)    "Ein Skript ausführen"
+   set caption(audace,menu,quitter)          "Programm beenden"
+
+   set caption(audace,header_title)          "FITS Vorsatz"
+   set caption(audace,header_noimage)        "Es ist jetzt kein Bild im Speicher."
+
+   set caption(audace,pas_ouvrir_fichier)    "Es ist unmöglich die Datei zu öffnen:"
+
+   set caption(audace,console_gagne)         "Zugriff gelungen"
+   set caption(audace,console_annule)        "Annulliert"
+   set caption(audace,console_rate)          "Unmöglichen Zugang"
+
+   set caption(audace,script)                "Programm"
+   set caption(audace,boite_erreur)          "Irrtum"
+   set caption(audace,2points)               ":"
+   set caption(audace,script_termine)        "Beendet"
+
+   set caption(audace,enregistrer_config_1)  "Wollen sie die neue Aude'ACE Gestalt bevor beenden speichern?"
+   set caption(audace,enregistrer_config_2)  "(Auf 'Annullieren' drücken um zu Aude'ACE zurückgehen)"
+   set caption(audace,enregistrer_config_3)  "Gestalt speichern ?"
+   set caption(audace,enregistrer_config_4)  "Keine Gestalt Speicherung notwendig."
+   set caption(audace,attention)             "Achtung"
+   set caption(audace,quitter)               "Wollen sie beenden ?"
+
+   set caption(newscript,pas_de_nom)         "noname.tcl"
+   set caption(newscript,nouveau_script)     "Neuen Skript"
+   set caption(newscript,parcourir)          "..."
+   set caption(newscript,nom_script)         "Dateien Namen"
+   set caption(newscript,ok)                 "OK"
+   set caption(newscript,annuler)            "Annullieren"
+   set caption(newscript,aide)               "Hilfe"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audace,menu,fichier)          "Ficheiro"
+   set caption(audace,menu,charger)          "Abrir"
+   set caption(audace,menu,enregistrer)      "Guardar"
+   set caption(audace,menu,enregistrer_sous) "Guardar como"
+   set caption(audace,menu,copyjpeg)         "Guardar como JPEG"
+   set caption(audace,menu,entete)           "Cabeçalho FITS"
+   set caption(audace,menu,select)           "Selecção de imagem"
+   set caption(audace,menu,nouveau_script)   "Novo Script"
+   set caption(audace,menu,editer_script)    "Editar um script"
+   set caption(audace,menu,lancer_script)    "Executar um script"
+   set caption(audace,menu,quitter)          "Sair"
+
+   set caption(audace,header_title)          "Cabeçalho FITS"
+   set caption(audace,header_noimage)        "Não existe imagem carregada em memória."
+
+   set caption(audace,pas_ouvrir_fichier)    "Impossível abrir ficheiro:"
+
+   set caption(audace,console_gagne)         "Acesso OK"
+   set caption(audace,console_annule)        "Cancelado"
+   set caption(audace,console_rate)          "O acesso não é possivel"
+
+   set caption(audace,script)                "Programa"
+   set caption(audace,boite_erreur)          "Erro"
+   set caption(audace,2points)               ":"
+   set caption(audace,script_termine)        "Terminado"
+
+   set caption(audace,enregistrer_config_1)  "Guardar nova configuração antes de sair?"
+   set caption(audace,enregistrer_config_2)  "(Prima 'Cancelar' para voltar ao Aud'ACE)"
+   set caption(audace,enregistrer_config_3)  "Guardar configuração?"
+   set caption(audace,enregistrer_config_4)  "Não é necessário guardar configuração."
+   set caption(audace,attention)             "Aviso"
+   set caption(audace,quitter)               "Tem a certeza que pretende sair?"
+
+   set caption(newscript,pas_de_nom)         "noname.tcl"
+   set caption(newscript,nouveau_script)     "Novo Script"
+   set caption(newscript,parcourir)          "..."
+   set caption(newscript,nom_script)         "Nome do Ficheiro"
+   set caption(newscript,ok)                 "OK"
+   set caption(newscript,annuler)            "Cancelar"
+   set caption(newscript,aide)               "Ajuda"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audace,menu,fichier)          "Fil"
+   set caption(audace,menu,charger)          "Åbn"
+   set caption(audace,menu,enregistrer)      "Gem"
+   set caption(audace,menu,enregistrer_sous) "Gem som"
+   set caption(audace,menu,copyjpeg)         "Gem som Jpeg"
+   set caption(audace,menu,entete)           "FITS Header"
+   set caption(audace,menu,select)           "Billedvalg"
+   set caption(audace,menu,nouveau_script)   "Ny skript"
+   set caption(audace,menu,editer_script)    "Rediger en skript"
+   set caption(audace,menu,lancer_script)    "Kør en skript"
+   set caption(audace,menu,quitter)          "Afbryd"
+
+   set caption(audace,header_title)          "FITS Header"
+   set caption(audace,header_noimage)        "Intet billede i memory."
+
+   set caption(audace,pas_ouvrir_fichier)    "Fil kan ikke åbnes:"
+
+   set caption(audace,console_gagne)         "Adgang: OK!"
+   set caption(audace,console_annule)        "Annulleret"
+   set caption(audace,console_rate)          "Ingen adgang"
+
+   set caption(audace,script)                "Program"
+   set caption(audace,boite_erreur)          "Fejl"
+   set caption(audace,2points)               ":"
+   set caption(audace,script_termine)        "Udført"
+
+   set caption(audace,enregistrer_config_1)  "Gem ny opsætning før afslutning?"
+   set caption(audace,enregistrer_config_2)  "(Tryk 'Annuller' for at vende tilbage til Aud'ACE)"
+   set caption(audace,enregistrer_config_3)  "Gem opsætning?"
+   set caption(audace,enregistrer_config_4)  "Gem opsætning - Er ikke nødvendig."
+   set caption(audace,attention)             "Advarsel"
+   set caption(audace,quitter)               "Ønsker du virkelig at afslutte?"
+
+   set caption(newscript,pas_de_nom)         "noname.tcl"
+   set caption(newscript,nouveau_script)     "Ny skript"
+   set caption(newscript,parcourir)          "..."
+   set caption(newscript,nom_script)         "Filnavn"
+   set caption(newscript,ok)                 "OK"
+   set caption(newscript,annuler)            "Annuller"
+   set caption(newscript,aide)               "Hjælp"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,88 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Alain Klotz">
+   <meta name="GENERATOR" content="Mozilla/4.75 [fr] (Win98; U) [Netscape]">
+   <title>Librairie MC : compiler libMC</title>
+</head>
+<body>
+
+<center><b><font size=+3>LIB MC</font></b>
+<p>une librairie d'extension Tcl pour la m&eacute;canique c&eacute;leste
+<br>version 20010303
+<br>&nbsp;
+<p><b><font size=+3>Compiler LibMC</font></b></center>
+
+<p><br>
+<h1>
+1. Structure du dossier libmc</h1>
+Apr&egrave;s avoir t&eacute;l&eacute;charg&eacute; le fichier <a href="libmc.zip">libmc.zip</a>,
+d&eacute;compresser le dans un dossier nomm&eacute; libmc. On y trouvera
+alors les dossiers suivants :
+<ul>
+<li>
+html : contient la pr&eacute;sente documentation</li>
+
+<li>
+sources : contient les fichiers source (.c et .h) de libmc</li>
+
+<li>
+os_linux_so : contient le batch de compilation pour gcc sous Linux.</li>
+
+<li>
+os_win_vcpp_dll : contient le batch de compilation pour Microsoft C++ sous
+Windows.</li>
+
+<li>
+hlin : contient les fichiers d'ent&ecirc;te C de tcl pour compilation Linux.</li>
+
+<li>
+hwin : contient les fichiers d'ent&ecirc;te C de tcl pour compilation Windows.</li>
+</ul>
+
+<h1>
+2. Compiler libmc sous Linux avec gcc</h1>
+On commencera par se placer dans le r&eacute;pertoire os_linux_so. Le batch
+de compilation se nomme <b><tt>makelib.gcc</tt></b>. Il faut d'abord rendre
+ce batch ex&eacute;cutable sous Linux. Pour cela, ex&eacute;cuter <b><tt>chmod
++x makelib.gcc</tt></b>. Ensuite, suivre les instructions suivantes, dans
+l'ordre :
+<ul>
+<li>
+copier tous les fichiers pr&eacute;sents dans le dossier source vers le
+dossier os_linux_so.</li>
+
+<li>
+ex&eacute;cuter le batch makelib.gcc.</li>
+
+<li>
+copier le fichier libmc.so dans le dossier binlin du logiciel AudeLA.</li>
+</ul>
+
+<h1>
+3. Compiler libmc sous Windows avec Microsoft C++</h1>
+On commencera par se placer dans le r&eacute;pertoire os_win_vcpp_dll.
+Le projet senomme <b><tt>libmc.mdp</tt></b>. Suivre les instructions suivantes,
+dans l'ordre :
+<ul>
+<li>
+lancer le projet libmc.mdp.</li>
+
+<li>
+s&eacute;lectionner l'option de compilation Release (l'option Debug g&eacute;n&egrave;re
+un plus gros fichier).</li>
+
+<li>
+compiler en choisissant "construire libmc.dll".</li>
+
+<li>
+le fichier libmc.dll est g&eacute;n&eacute;r&eacute; dans le dossier Release.</li>
+
+<li>
+copier le fichier libmc.dll dans le dossier bin du logiciel AudeLA.</li>
+</ul>
+
+<br>&nbsp;
+</body>
+</html>

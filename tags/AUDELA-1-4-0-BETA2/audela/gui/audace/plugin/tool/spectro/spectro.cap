@@ -1,0 +1,205 @@
+#
+# Fichier : spectro.cap
+# Mise a jour $Id: spectro.cap,v 1.11 2007-03-12 19:34:20 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(spectro,titre,outil)                        "Spectroscopy"
+set caption(spectro,help,titre)                         "Help For This Tool"
+set caption(spectro,configure)                          "Set up"
+set caption(spectro,spc_audace)                         "SpcAud'ACE"
+
+set caption(spectro,configure,titre)                    "Spectroscopy: Setup"
+set caption(spectro,configure,titre2)                   "Spectroscopy: Setup"
+set caption(spectro,configure,load_button)              "Load Setup"
+set caption(spectro,configure,save_button)              "Save Setup"
+set caption(spectro,configure,return_button)            "OK"
+set caption(spectro,configure,load)                     "Load Setup"
+set caption(spectro,configure,save)                     "Save Setup"
+set caption(spectro,configure,config,code_obs)          "UAI Code for the observatory"
+set caption(spectro,configure,config,longitude)         "Observatory Longitude (deg.)"
+set caption(spectro,configure,config,sens)              "Observatory Longitude (E|W)"
+set caption(spectro,configure,config,latitude)          "Observatory Latitude (deg.)"
+set caption(spectro,configure,config,altitude)          "Observatory Altitude (m)"
+set caption(spectro,configure,config,desc_location)     "Observatory Name"
+set caption(spectro,configure,config,desc_camera)       "Camera Description"
+set caption(spectro,configure,config,desc_telescope)    "Telescope Description"
+set caption(spectro,configure,config,tel_diam)          "Telescope Diameter (m)"
+set caption(spectro,configure,config,tel_fd)            "Telescope F/D"
+set caption(spectro,configure,config,comment)           "Comments"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Spectroscopie"
+   set caption(spectro,help,titre)                      "Aide pour cet outil"
+   set caption(spectro,configure)                       "Configurer"
+   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+
+   set caption(spectro,configure,titre)                 "Spectroscopie : Configuration"
+   set caption(spectro,configure,titre2)                "Spectroscopie : Configuration"
+   set caption(spectro,configure,load_button)           "Charge la configuration"
+   set caption(spectro,configure,save_button)           "Enregistre la configuration"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Charge la configuration"
+   set caption(spectro,configure,save)                  "Enregistre la configuration"
+   set caption(spectro,configure,config,code_obs)       "Code UAI de l'observatoire"
+   set caption(spectro,configure,config,longitude)      "Longitude de l'observatoire (deg.)"
+   set caption(spectro,configure,config,sens)           "Longitude de l'observatoire (E|W)"
+   set caption(spectro,configure,config,latitude)       "Latitude de l'observatoire (deg.)"
+   set caption(spectro,configure,config,altitude)       "Altitude de l'observatoire (m)"
+   set caption(spectro,configure,config,desc_location)  "Nom de l'observatoire"
+   set caption(spectro,configure,config,desc_camera)    "Description de la caméra"
+   set caption(spectro,configure,config,desc_telescope) "Description du télescope"
+   set caption(spectro,configure,config,tel_diam)       "Diamètre du télescope (m)"
+   set caption(spectro,configure,config,tel_fd)         "F/D du télescope"
+   set caption(spectro,configure,config,comment)        "Commentaire"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Spettroscopia"
+   set caption(spectro,help,titre)                      "Aiuto per questo tool"
+   set caption(spectro,configure)                       "Configurare"
+   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+
+   set caption(spectro,configure,titre)                 "Spettroscopia: Configurazione"
+   set caption(spectro,configure,titre2)                "Spettroscopia: Configurazione"
+   set caption(spectro,configure,load_button)           "Caricamento della configurazione"
+   set caption(spectro,configure,save_button)           "Salvataggio della configurazione"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Caricamento della configurazione"
+   set caption(spectro,configure,save)                  "Salvataggio della configurazione"
+   set caption(spectro,configure,config,code_obs)       "Codice UAI dell'osservatorio"
+   set caption(spectro,configure,config,longitude)      "Longitudine dell'osservatorio (deg.)"
+   set caption(spectro,configure,config,sens)           "Longitudine dell'osservatorio (E|W)"
+   set caption(spectro,configure,config,latitude)       "Latitudine dell'osservatorio (deg.)"
+   set caption(spectro,configure,config,altitude)       "Altitudine dell'osservatorio (m)"
+   set caption(spectro,configure,config,desc_location)  "Nome dell'osservatorio"
+   set caption(spectro,configure,config,desc_camera)    "Descrizione della camera"
+   set caption(spectro,configure,config,desc_telescope) "Descrizione del telescopio"
+   set caption(spectro,configure,config,tel_diam)       "Diametro del telescopio (m)"
+   set caption(spectro,configure,config,tel_fd)         "F/D del telescopio"
+   set caption(spectro,configure,config,comment)        "Commenti"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Espectroscopia"
+   set caption(spectro,help,titre)                      "Ayuda para esta herramienta"
+   set caption(spectro,configure)                       "Configurar"
+   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+
+   set caption(spectro,configure,titre)                 "Espectroscopia: Configuración"
+   set caption(spectro,configure,titre2)                "Espectroscopia: Configuración"
+   set caption(spectro,configure,load_button)           "Cargar la configuración"
+   set caption(spectro,configure,save_button)           "Guardar la configuración"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Cargar la configuración"
+   set caption(spectro,configure,save)                  "Guardar la configuración"
+   set caption(spectro,configure,config,code_obs)       "Código UAI del observatorio"
+   set caption(spectro,configure,config,longitude)      "Longitud del observatorio (grad.)"
+   set caption(spectro,configure,config,sens)           "Longitid del observatorio (E|W)"
+   set caption(spectro,configure,config,latitude)       "Latitud del observatorio (grad.)"
+   set caption(spectro,configure,config,altitude)       "Altura del observatorio (m)"
+   set caption(spectro,configure,config,desc_location)  "Nombre del observatorio"
+   set caption(spectro,configure,config,desc_camera)    "Descripción de la cámara"
+   set caption(spectro,configure,config,desc_telescope) "Descripción del telescopio"
+   set caption(spectro,configure,config,tel_diam)       "Diámetro del telescopio (m)"
+   set caption(spectro,configure,config,tel_fd)         "Relacion focal del telescopio"
+   set caption(spectro,configure,config,comment)        "Comentarios"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Spektroskopie"
+   set caption(spectro,help,titre)                      "Hilfe für dieses Gerät"
+   set caption(spectro,configure)                       "Konfigurieren"
+   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+
+   set caption(spectro,configure,titre)                 "Spektroskopie: Konfiguration"
+   set caption(spectro,configure,titre2)                "Spektroskopie: Konfiguration"
+   set caption(spectro,configure,load_button)           "Konfiguration laden"
+   set caption(spectro,configure,save_button)           "Konfiguration speichern"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Konfiguration laden"
+   set caption(spectro,configure,save)                  "Konfiguration speichern"
+   set caption(spectro,configure,config,code_obs)       "Sternwarte UAI Code"
+   set caption(spectro,configure,config,longitude)      "Länge der Sternwarte (deg.)"
+   set caption(spectro,configure,config,sens)           "Länge der Sternwarte (E/W)"
+   set caption(spectro,configure,config,latitude)       "Breite der Sternwarte (deg.)"
+   set caption(spectro,configure,config,altitude)       "Höhe der Sternwarte (m)"
+   set caption(spectro,configure,config,desc_location)  "Nahmen der Sternwarte"
+   set caption(spectro,configure,config,desc_camera)    "Kamera Beschreibung"
+   set caption(spectro,configure,config,desc_telescope) "Teleskop Beschreibung"
+   set caption(spectro,configure,config,tel_diam)       "Teleskop Durchmesser (m)"
+   set caption(spectro,configure,config,tel_fd)         "Teleskop F/D"
+   set caption(spectro,configure,config,comment)        "Kommentar"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Espectroscopia"
+   set caption(spectro,help,titre)                      "Ajuda para esta ferramenta"
+   set caption(spectro,configure)                       "Configurar"
+   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+
+   set caption(spectro,configure,titre)                 "Espectroscopia : Configuração"
+   set caption(spectro,configure,titre2)                "Espectroscopia : Configuração"
+   set caption(spectro,configure,load_button)           "Carregar a configuração"
+   set caption(spectro,configure,save_button)           "Guardar a configuração"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Carregar a configuração"
+   set caption(spectro,configure,save)                  "Guardar a configuração"
+   set caption(spectro,configure,config,code_obs)       "Codigo UAI do observatório"
+   set caption(spectro,configure,config,longitude)      "Longitude do observatório (deg.)"
+   set caption(spectro,configure,config,sens)           "Longitude do observatório (E|W)"
+   set caption(spectro,configure,config,latitude)       "Latitude do observatório (deg.)"
+   set caption(spectro,configure,config,altitude)       "Altitude do observatório (m)"
+   set caption(spectro,configure,config,desc_location)  "Nome do observatório"
+   set caption(spectro,configure,config,desc_camera)    "Descrição da câmara"
+   set caption(spectro,configure,config,desc_telescope) "Descrição do telescópio"
+   set caption(spectro,configure,config,tel_diam)       "Diâmetro do telescópio (m)"
+   set caption(spectro,configure,config,tel_fd)         "F/D do telescópio"
+   set caption(spectro,configure,config,comment)        "Comentário"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(spectro,titre,outil)                     "Spectroscopy"
+   set caption(spectro,help,titre)                      "Help For This Tool"
+   set caption(spectro,configure)                       "Set up"
+   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+
+   set caption(spectro,configure,titre)                 "Spectroscopy: Setup"
+   set caption(spectro,configure,titre2)                "Spectroscopy: Setup"
+   set caption(spectro,configure,load_button)           "Load Setup"
+   set caption(spectro,configure,save_button)           "Save Setup"
+   set caption(spectro,configure,return_button)         "OK"
+   set caption(spectro,configure,load)                  "Load Setup"
+   set caption(spectro,configure,save)                  "Save Setup"
+   set caption(spectro,configure,config,code_obs)       "UAI Code for the observatory"
+   set caption(spectro,configure,config,longitude)      "Observatory Longitude (deg.)"
+   set caption(spectro,configure,config,sens)           "Observatory Longitude (E|W)"
+   set caption(spectro,configure,config,latitude)       "Observatory Latitude (deg.)"
+   set caption(spectro,configure,config,altitude)       "Observatory Altitude (m)"
+   set caption(spectro,configure,config,desc_location)  "Observatory Name"
+   set caption(spectro,configure,config,desc_camera)    "Camera Description"
+   set caption(spectro,configure,config,desc_telescope) "Telescope Description"
+   set caption(spectro,configure,config,tel_diam)       "Telescope Diameter (m)"
+   set caption(spectro,configure,config,tel_fd)         "Telescope F/D"
+   set caption(spectro,configure,config,comment)        "Comments"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

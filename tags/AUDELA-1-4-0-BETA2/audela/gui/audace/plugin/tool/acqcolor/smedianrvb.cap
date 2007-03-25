@@ -1,0 +1,121 @@
+#
+# Fichier : smedianrvb.cap
+# Mise a jour $Id: smedianrvb.cap,v 1.6 2007-01-27 14:54:28 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(smedianrvb,interro)        "?"
+set caption(smedianrvb,titre)          "Computes the median of an image stack"
+set caption(smedianrvb,comment1)       "Generates 3 final files (red, green, blue)"
+set caption(smedianrvb,comment2)       "Deletes temporary files"
+set caption(smedianrvb,rep_images)     "Image Folder"
+set caption(smedianrvb,parcourir)      "..."
+set caption(smedianrvb,nom_images)     "Images Name"
+set caption(smedianrvb,nbre_images)    "Images Number"
+set caption(smedianrvb,nom_med)        "Median Name"
+set caption(smedianrvb,comment3)       "Comments: Save Displayed Median"
+set caption(smedianrvb,executer)       "Run"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(smedianrvb,interro)     "?"
+   set caption(smedianrvb,titre)       "Exécute la médiane d'une pile d'images"
+   set caption(smedianrvb,comment1)    "Génère les 3 fichiers finaux (rouge, vert, bleu)"
+   set caption(smedianrvb,comment2)    "Efface les fichiers intermédiaires"
+   set caption(smedianrvb,rep_images)  "Répertoire des images"
+   set caption(smedianrvb,parcourir)   "..."
+   set caption(smedianrvb,nom_images)  "Nom des images"
+   set caption(smedianrvb,nbre_images) "Nombre d'images"
+   set caption(smedianrvb,nom_med)     "Nom de la médiane"
+   set caption(smedianrvb,comment3)    "Commentaire : Enregistrer la médiane affichée"
+   set caption(smedianrvb,executer)    "Exécuter"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(smedianrvb,interro)     "?"
+   set caption(smedianrvb,titre)       "Esegui la mediana di una pila di immagini"
+   set caption(smedianrvb,comment1)    "Genera i tre file finali (rosso, verde, blu)"
+   set caption(smedianrvb,comment2)    "Cancella i file intermedi"
+   set caption(smedianrvb,rep_images)  "Directory delle immagini"
+   set caption(smedianrvb,parcourir)   "..."
+   set caption(smedianrvb,nom_images)  "Nomi delle immagini"
+   set caption(smedianrvb,nbre_images) "Numero immagini"
+   set caption(smedianrvb,nom_med)     "Nome della mediana"
+   set caption(smedianrvb,comment3)    "Commento: Registrare la mediana visualizzata"
+   set caption(smedianrvb,executer)    "Esegui"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(smedianrvb,interro)     "?"
+   set caption(smedianrvb,titre)       "Calcular la mediana de un conjunto de imágenes"
+   set caption(smedianrvb,comment1)    "Generar 3 ficheros finales (rojo, verde, azul)"
+   set caption(smedianrvb,comment2)    "Borra ficheros temporales"
+   set caption(smedianrvb,rep_images)  "Directorio de imágenes"
+   set caption(smedianrvb,parcourir)   "..."
+   set caption(smedianrvb,nom_images)  "Nombre de imágenes"
+   set caption(smedianrvb,nbre_images) "Numero imágenes"
+   set caption(smedianrvb,nom_med)     "Nombre de la mediana"
+   set caption(smedianrvb,comment3)    "Comentarios: Guardar la mediana mostrada"
+   set caption(smedianrvb,executer)    "Ejecutar"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(smedianrvb,interro)     "?"
+   set caption(smedianrvb,titre)       "Schafft das Mittelbild von einen Stapel aus"
+   set caption(smedianrvb,comment1)    "Erzeugt die drei ende Dateien (rot, grün, blau)"
+   set caption(smedianrvb,comment2)    "Löscht die zwischen Dateien aus"
+   set caption(smedianrvb,rep_images)  "Bilder Verzeichnis"
+   set caption(smedianrvb,parcourir)   "..."
+   set caption(smedianrvb,nom_images)  "Bilder Namen"
+   set caption(smedianrvb,nbre_images) "Bilder Zahl"
+   set caption(smedianrvb,nom_med)     "Mittelbild Namen"
+   set caption(smedianrvb,comment3)    "Kommentar: Das angerzeigte Mittelbild speichern"
+   set caption(smedianrvb,executer)    "Starten"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(smedianrvb,interro)     "?"
+   set caption(smedianrvb,titre)       "Executar a mediana de uma sequência de imagens"
+   set caption(smedianrvb,comment1)    "Gerar os 3 ficheiros finais (vermelho, verde, azul)"
+   set caption(smedianrvb,comment2)    "Apagar os ficheiros temporários"
+   set caption(smedianrvb,rep_images)  "Directório das imagens"
+   set caption(smedianrvb,parcourir)   "..."
+   set caption(smedianrvb,nom_images)  "Nome das imagens"
+   set caption(smedianrvb,nbre_images) "Número das imagens"
+   set caption(smedianrvb,nom_med)     "Nome da mediana"
+   set caption(smedianrvb,comment3)    "Comentário : Guardar a mediana"
+   set caption(smedianrvb,executer)    "Executar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(smedianrvb,interro)     "?"
+   set caption(smedianrvb,titre)       "Computes the median of an image stack"
+   set caption(smedianrvb,comment1)    "Generates 3 final files (red, green, blue)"
+   set caption(smedianrvb,comment2)    "Deletes temporary files"
+   set caption(smedianrvb,rep_images)  "Image Folder"
+   set caption(smedianrvb,parcourir)   "..."
+   set caption(smedianrvb,nom_images)  "Images Name"
+   set caption(smedianrvb,nbre_images) "Images Number"
+   set caption(smedianrvb,nom_med)     "Median Name"
+   set caption(smedianrvb,comment3)    "Comments: Save Displayed Median"
+   set caption(smedianrvb,executer)    "Run"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

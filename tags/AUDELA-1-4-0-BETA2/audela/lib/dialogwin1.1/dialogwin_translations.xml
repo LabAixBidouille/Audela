@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?><!-- -*- coding: utf-8;-*- -->
+<!DOCTYPE ramtranslator SYSTEM "ramtranslator.dtd">
+<ramtranslator version="1.1">
+    <maxrow>25</maxrow>
+    <languages>
+        <langlist>Spanish es English en</langlist>
+        <current>Spanish</current>
+    </languages>
+    <srcstrings>
+        <src id="1">
+            <base>OK</base>
+            <position>dialogwin.tcl:105;dialogwin.tcl:425;dialogwin.tcl:1044;dialogwin.tcl:1048;dialogwin.tcl:1104</position>
+            <priority>0</priority>
+        </src>
+        <src id="2">
+            <base>Close</base>
+            <position>dialogwin.tcl:110;dialogwin.tcl:430;dialogwin.tcl:1185</position>
+            <priority>0</priority>
+        </src>
+        <src id="3">
+            <base>Cancel</base>
+            <position>dialogwin.tcl:112;dialogwin.tcl:432;dialogwin.tcl:1048;dialogwin.tcl:1052;dialogwin.tcl:1060;dialogwin.tcl:1101;dialogwin.tcl:1182</position>
+            <priority>0</priority>
+        </src>
+        <src id="4">
+            <base>Warning</base>
+            <position>dialogwin.tcl:975;dialogwin.tcl:993;dialogwin.tcl:1009</position>
+            <priority>0</priority>
+        </src>
+        <src id="5">
+            <base>Ok</base>
+            <position>dialogwin.tcl:975;dialogwin.tcl:993;dialogwin.tcl:1009;dialogwin.tcl:1181</position>
+            <priority>0</priority>
+        </src>
+        <src id="6">
+            <base>unknown option '%s' in snit_messageBox</base>
+            <position>dialogwin.tcl:1032</position>
+            <priority>0</priority>
+        </src>
+        <src id="7">
+            <base>Abort</base>
+            <position>dialogwin.tcl:1040</position>
+            <priority>0</priority>
+        </src>
+        <src id="8">
+            <base>Retry</base>
+            <position>dialogwin.tcl:1040;dialogwin.tcl:1052</position>
+            <priority>0</priority>
+        </src>
+        <src id="9">
+            <base>Ignore</base>
+            <position>dialogwin.tcl:1040</position>
+            <priority>0</priority>
+        </src>
+        <src id="10">
+            <base>Yes</base>
+            <position>dialogwin.tcl:1056;dialogwin.tcl:1060</position>
+            <priority>0</priority>
+        </src>
+        <src id="11">
+            <base>No</base>
+            <position>dialogwin.tcl:1056;dialogwin.tcl:1060</position>
+            <priority>0</priority>
+        </src>
+        <src id="12">
+            <base>unknown type: '%s' in snit_messageBox</base>
+            <position>dialogwin.tcl:1063</position>
+            <priority>0</priority>
+        </src>
+        <src id="13">
+            <base>bad default option: '%s' in snit_messageBox</base>
+            <position>dialogwin.tcl:1071</position>
+            <priority>0</priority>
+        </src>
+        <src id="14">
+            <base>Action</base>
+            <position>dialogwin.tcl:1492</position>
+            <priority>0</priority>
+        </src>
+        <src id="15">
+            <base>New password</base>
+            <position>dialogwin.tcl:1492</position>
+            <priority>0</priority>
+        </src>
+        <src id="16">
+            <base>Uncrypt</base>
+            <position>dialogwin.tcl:1492</position>
+            <priority>0</priority>
+        </src>
+        <src id="17">
+            <base>Choose action to perform:</base>
+            <position>dialogwin.tcl:1492</position>
+            <priority>0</priority>
+        </src>
+        <src id="18">
+            <base>Enter password</base>
+            <position>dialogwin.tcl:1506</position>
+            <priority>0</priority>
+        </src>
+        <src id="19">
+            <base>Password:</base>
+            <position>dialogwin.tcl:1506</position>
+            <priority>0</priority>
+        </src>
+        <src id="20">
+            <base>Enter password to encrypt:</base>
+            <position>dialogwin.tcl:1506</position>
+            <priority>0</priority>
+        </src>
+        <src id="21">
+            <base>Password must have at least 4 characters</base>
+            <position>dialogwin.tcl:1515</position>
+            <priority>0</priority>
+        </src>
+        <src id="22">
+            <base>Change page type</base>
+            <position>dialogwin.tcl:1525</position>
+            <priority>0</priority>
+        </src>
+        <src id="23">
+            <base>Choose a new page type for page '%s'</base>
+            <position>dialogwin.tcl:1525</position>
+            <priority>0</priority>
+        </src>
+        <src id="24">
+            <base>Current type: %s</base>
+            <position>dialogwin.tcl:1528</position>
+            <priority>0</priority>
+        </src>
+        <src id="25">
+            <base>New type:</base>
+            <position>dialogwin.tcl:1529</position>
+            <priority>0</priority>
+        </src>
+    </srcstrings>
+    <translatestrings>
+        <lan lan="es">
+            <translate id="1">
+                <base>Aceptar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="2">
+                <base>Cerrar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="3">
+                <base>Cancelar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="4">
+                <base>Atención</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="5">
+                <base>Aceptar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="6">
+                <base>Opción desconocida '%s' en snit_messageBox</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="7">
+                <base>Abortar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="8">
+                <base>Reintentar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="9">
+                <base>Ignorar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="10">
+                <base>Sí</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="11">
+                <base>No</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="12">
+                <base>Tipo desconocido '%s' en snit_messageBox</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="13">
+                <base>Opción por defecto incorrecta: '%s' en snit_messageBox</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="14">
+                <base>Acción</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="15">
+                <base>Nueva contraseña</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="16">
+                <base>Desencriptar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="17">
+                <base>Escoja la acción a realizar:</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="18">
+                <base>Entre la contraseña</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="19">
+                <base>Contraseña:</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="20">
+                <base>Entre la contraseña para encriptar</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="21">
+                <base>La contraseña debe tener al menos 4 caracteres</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="22">
+                <base>Cambiar el tipo de página</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="23">
+                <base>Escoja un nuevo tipo de página para la página '%s'</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="24">
+                <base>Tipo actual: %s</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+            <translate id="25">
+                <base>Nuevo tipo:</base>
+                <tuser>ramsan</tuser>
+                <date>2004-07-01</date>
+            </translate>
+        </lan>
+        <lan lan="en"/>
+    </translatestrings>
+    <users>
+        <user id="1">Programador</user>
+        <user id="2">Traductor</user>
+        <user id="3">Web</user>
+        <user id="4">ramsan</user>
+        <current>ramsan</current>
+    </users>
+</ramtranslator>

@@ -1,0 +1,114 @@
+#
+# Fichier : trichro.cap
+# Mise a jour $Id: trichro.cap,v 1.6 2007-01-27 14:58:54 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(trichro,interro)        "?"
+set caption(trichro,titre)          "Import a three-color image"
+set caption(trichro,comment)        "Merging of Red/Green/Blue Images"
+set caption(trichro,rep_images)     "Image Folder"
+set caption(trichro,parcourir)      "..."
+set caption(trichro,image_r)        "Red Image"
+set caption(trichro,image_v)        "Green Image"
+set caption(trichro,image_b)        "Blue Image"
+set caption(trichro,nom_image)      "Image Name"
+set caption(trichro,executer)       "Run"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Importer une trichromie"
+   set caption(trichro,comment)     "Fusion des images rouges/vertes/bleues"
+   set caption(trichro,rep_images)  "Répertoire des images"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Image rouge"
+   set caption(trichro,image_v)     "Image verte"
+   set caption(trichro,image_b)     "Image bleue"
+   set caption(trichro,nom_image)   "Nom de l'image"
+   set caption(trichro,executer)    "Exécuter"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Importare una tricromia"
+   set caption(trichro,comment)     "Fusione delle immagini rosse/verdi/blu"
+   set caption(trichro,rep_images)  "Directory delle immagini"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Immagine rossa"
+   set caption(trichro,image_v)     "Immagine verde"
+   set caption(trichro,image_b)     "Immagine blu"
+   set caption(trichro,nom_image)   "Nome dell'immagine"
+   set caption(trichro,executer)    "Esegui"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Importar una imagen de tres colores"
+   set caption(trichro,comment)     "Fusión de imágenes rojo/verde/azul"
+   set caption(trichro,rep_images)  "Directorio de imágenes"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Imagen roja"
+   set caption(trichro,image_v)     "Imagen verde"
+   set caption(trichro,image_b)     "Imagen azul"
+   set caption(trichro,nom_image)   "Nombre de la imagen"
+   set caption(trichro,executer)    "Ejecutar"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Eine Dreifarbenverfahren einführen"
+   set caption(trichro,comment)     "Rot/grün/blauen Bilder zusammenschluß"
+   set caption(trichro,rep_images)  "Bilder Verzeichnis"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Rote Bild"
+   set caption(trichro,image_v)     "Grüne Bild"
+   set caption(trichro,image_b)     "Blaue Bild"
+   set caption(trichro,nom_image)   "Namen des Bild"
+   set caption(trichro,executer)    "Starten"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Importar uma tricromia"
+   set caption(trichro,comment)     "Fusão das imagens vermelhas/verdes/azuis"
+   set caption(trichro,rep_images)  "Directório das imagens"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Imagem vermelha"
+   set caption(trichro,image_v)     "Imagem verde"
+   set caption(trichro,image_b)     "Imagem azul"
+   set caption(trichro,nom_image)   "Nome da imagem"
+   set caption(trichro,executer)    "Executar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Import a three-color image"
+   set caption(trichro,comment)     "Merging of Red/Green/Blue Images"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,rep_images)  "Image Folder"
+   set caption(trichro,image_r)     "Red Image"
+   set caption(trichro,image_v)     "Green Image"
+   set caption(trichro,image_b)     "Blue Image"
+   set caption(trichro,nom_image)   "Image Name"
+   set caption(trichro,executer)    "Run"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,72 @@
+#
+# Fichier : telshift_go.cap
+# Mise a jour $Id: telshift_go.cap,v 1.6 2007-01-27 14:57:47 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(telshift_go,telshift)         "Shoot and Shift"
+set caption(telshift_go,help_titre)       "Help For This Tool"
+set caption(telshift_go,acquisition)      "Acquisition"
+set caption(telshift_go,acq)              "Acq."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Imager & déplacer"
+   set caption(telshift_go,help_titre)    "Aide pour cet outil"
+   set caption(telshift_go,acquisition)   "Acquisition"
+   set caption(telshift_go,acq)           "Acq."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Ripresa & Trasf."
+   set caption(telshift_go,help_titre)    "Aiuto per questo tool"
+   set caption(telshift_go,acquisition)   "Acquisizione"
+   set caption(telshift_go,acq)           "Acq."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Adq. & Mueve-tel."
+   set caption(telshift_go,help_titre)    "Ayuda para esta herramienta"
+   set caption(telshift_go,acquisition)   "Adquisición"
+   set caption(telshift_go,acq)           "Adq."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Bildieren & versch."
+   set caption(telshift_go,help_titre)    "Hilfe für dieses Gerät"
+   set caption(telshift_go,acquisition)   "Anschaffung"
+   set caption(telshift_go,acq)           "Anschaf."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Capturar & deslocar"
+   set caption(telshift_go,help_titre)    "Ajuda para esta ferramenta"
+   set caption(telshift_go,acquisition)   "Aquisição"
+   set caption(telshift_go,acq)           "Aq."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Eksponér og flyt"
+   set caption(telshift_go,help_titre)    "Hjælp til dette værktøj"
+   set caption(telshift_go,acquisition)   "Eksponér"
+   set caption(telshift_go,acq)           "Eks."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
