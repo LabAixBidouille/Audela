@@ -14,7 +14,7 @@ OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 
 include ../../../Makefile1
 
-CXXFLAGS += -I$(EXTINC) -fno-stack-protector -Wno-deprecated
+CXXFLAGS += -I$(EXTINC) -Wno-deprecated
 LDFLAGS += -L$(OUTPUTDIR) -ldcraw -ldcjpeg
 
 # Link 
