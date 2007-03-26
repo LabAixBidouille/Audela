@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.15 2007-03-17 21:22:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.16 2007-03-26 15:24:34 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -180,7 +180,7 @@ namespace eval ::pretraitement {
                button $This.usr.5.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 4 }
                pack $This.usr.5.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.5.1.lab8 -text "$caption(pretraitement,image_noir:)"
+               label $This.usr.5.1.lab8 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.5.1.lab8 -side left -padx 5 -pady 5
                entry $This.usr.5.1.ent8 -textvariable pretraitement(3,dark) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.5.1.ent8 -side right -padx 10 -pady 5
@@ -406,7 +406,7 @@ namespace eval ::pretraitement {
          #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
          if { $pretraitement(in) == "" } {
             tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,choix_image_entree)
+               -message $caption(pretraitement,definir_entree_generique)
             set pretraitement(avancement) ""
             return
          }
@@ -424,7 +424,7 @@ namespace eval ::pretraitement {
          }
          if { $pretraitement(out) == "" } {
             tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,choix_image_sortie)
+               -message $caption(pretraitement,definir_sortie_generique)
             set pretraitement(avancement) ""
             return
          }
@@ -1510,10 +1510,10 @@ namespace eval ::pretraitement {
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(formule)        "$caption(pretraitement,formule) B = A + Cte"
          } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,images_sortie-) ( B ) :"
+            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + Cte"
          }
@@ -1533,10 +1533,10 @@ namespace eval ::pretraitement {
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
             set pretraitement(formule)        "$caption(pretraitement,formule) B = A x Cte"
          } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,images_sortie-) ( B ) :"
+            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
             set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An x Cte"
          }
@@ -1558,10 +1558,10 @@ namespace eval ::pretraitement {
             set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( C ) :"
             set pretraitement(formule)        "$caption(pretraitement,formule) B = A + C + Cte"
          } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,images_sortie-) ( B ) :"
+            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( C ) :"
             set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + C + Cte"
@@ -1584,10 +1584,10 @@ namespace eval ::pretraitement {
             set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( C ) :"
             set pretraitement(formule)        "$caption(pretraitement,formule) B = A - C + Cte"
          } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,images_sortie-) ( B ) :"
+            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( C ) :"
             set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An - C + Cte"
@@ -1610,10 +1610,10 @@ namespace eval ::pretraitement {
             set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( C ) :"
             set pretraitement(formule)        "$caption(pretraitement,formule) B = ( A / C ) x Cte"
          } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,images_sortie-) ( B ) :"
+            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
             set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( C ) :"
             set pretraitement(formule)        "$caption(pretraitement,formule) Bn = ( An / C ) x Cte"
@@ -1636,10 +1636,10 @@ namespace eval ::pretraitement {
             set pretraitement(operande)       "$caption(pretraitement,image_operande)"
             set pretraitement(formule)        ""
          } elseif { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(image_A)        "$caption(pretraitement,images_entree)"
+            set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree)"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre)"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
-            set pretraitement(image_B)        "$caption(pretraitement,images_sortie)"
+            set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie)"
             set pretraitement(constante)      "$caption(pretraitement,valeur_fond_ciel)"
             set pretraitement(operande)       "$caption(pretraitement,image_operande)"
             set pretraitement(formule)        ""
@@ -2579,7 +2579,7 @@ namespace eval ::traiteWindow {
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
           tk_messageBox -title $caption(pretraitement,attention) -type ok \
-             -message $caption(pretraitement,definir_image_entree)
+             -message $caption(pretraitement,definir_entree_generique)
           set traiteWindow(avancement) ""
           return
       }
@@ -2770,19 +2770,19 @@ namespace eval ::traiteWindow {
       global caption traiteWindow
 
       if { $traiteWindow(operation) == "$caption(audace,menu,somme)" } {
-         set traiteWindow(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
          set traiteWindow(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
          set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
          set traiteWindow(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
          set traiteWindow(formule)        "$caption(pretraitement,formule) B = A1 + A2 + ... + An"
       } elseif { $traiteWindow(operation) == "$caption(audace,menu,moyenne)" } {
-         set traiteWindow(image_A)        "$caption(pretraitement,images_entree-) ( A ) :"
+         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
          set traiteWindow(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
          set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
          set traiteWindow(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
          set traiteWindow(formule)        "$caption(pretraitement,formule) B = ( A1 + A2 + ... + An ) / n"
       } else {
-         set traiteWindow(image_A)        "$caption(pretraitement,images_entree)"
+         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree)"
          set traiteWindow(nombre)         "$caption(pretraitement,image_nombre)"
          set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
          set traiteWindow(image_B)        "$caption(pretraitement,image_sortie)"
@@ -2931,7 +2931,7 @@ namespace eval ::faireImageRef {
                button $This.usr.7.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.7.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.7.1.lab6 -textvariable "faireImageRef(offset)"
+               label $This.usr.7.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.7.1.lab6 -side left -padx 5 -pady 5
                entry $This.usr.7.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.1.ent6 -side right -padx 10 -pady 5
@@ -2940,7 +2940,7 @@ namespace eval ::faireImageRef {
                button $This.usr.7.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
                pack $This.usr.7.2.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.7.2.lab6 -textvariable "faireImageRef(dark)"
+               label $This.usr.7.2.lab6 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.7.2.lab6 -side left -padx 5 -pady 5
                entry $This.usr.7.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.2.ent6 -side right -padx 10 -pady 5
@@ -2953,7 +2953,7 @@ namespace eval ::faireImageRef {
                button $This.usr.7.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 5 }
                pack $This.usr.7.4.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.7.4.lab6 -textvariable "faireImageRef(flat-field)"
+               label $This.usr.7.4.lab6 -text "$caption(pretraitement,image_flat-field)"
                pack $This.usr.7.4.lab6 -side left -padx 5 -pady 5
                entry $This.usr.7.4.ent6 -textvariable faireImageRef(flat-field) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.4.ent6 -side right -padx 10 -pady 5
@@ -2997,7 +2997,7 @@ namespace eval ::faireImageRef {
                button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.4.1.lab6 -textvariable "faireImageRef(offset)"
+               label $This.usr.4.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
                entry $This.usr.4.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.4.1.ent6 -side right -padx 10 -pady 5
@@ -3010,7 +3010,7 @@ namespace eval ::faireImageRef {
                button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
                pack $This.usr.4.2.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.4.2.lab6 -textvariable "faireImageRef(dark)"
+               label $This.usr.4.2.lab6 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.4.2.lab6 -side left -padx 5 -pady 5
                entry $This.usr.4.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent6 -side right -padx 10 -pady 5
@@ -3033,7 +3033,7 @@ namespace eval ::faireImageRef {
                button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.3.1.lab6 -textvariable "faireImageRef(offset)"
+               label $This.usr.3.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
                entry $This.usr.3.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent6 -side right -padx 10 -pady 5
