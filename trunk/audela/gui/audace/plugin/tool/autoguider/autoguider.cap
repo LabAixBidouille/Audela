@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.16 2007-01-27 14:35:10 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.17 2007-03-27 18:52:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,7 +19,7 @@ set caption(autoguider,selcam)                   "You must select a camera first
 
 set caption(autoguider,image)                    "Image"
 set caption(autoguider,cible)                    "Target"
-set caption(autoguider,axe_AD)                   "RA Axis"
+set caption(autoguider,axe_AD)                   "Axes (RA, Dec)"
 set caption(autoguider,ctrl_monture)             "Tracking on"
 set caption(autoguider,config_guidage)           "Setup..."
 set caption(autoguider,ecart_origine_etoile)     "Deviation"
@@ -33,7 +33,7 @@ set caption(autoguider,intervalle)               "Interval"
 set caption(autoguider,seuil)                    "Threshold (pixels)"
 set caption(autoguider,detection)                "Star Detection"
 set caption(autoguider,apprenti)                 "Learning"
-set caption(autoguider,vitesse)                  "Speed (pixel/s)"
+set caption(autoguider,vitesse)                  "Speed (pixels/s)"
 set caption(autoguider,detection_psf)            "Star"
 set caption(autoguider,detection_fente)          "Slit"
 
@@ -49,6 +49,18 @@ set caption(autoguider,declinaison)              "Declination"
 set caption(autoguider,aller_vers)               "Go to"
 set caption(autoguider,clic_etoile)              "Click on the star"
 
+set caption(autoguider,cumulTitle)               "# Cumul des acquisitions"
+set caption(autoguider,cumulEnabled)             "# Activer le cumul"
+set caption(autoguider,cumulNb)                  "# Nombre d'acquisitions"
+set caption(autoguider,darkTitle)                "Dark Frame Subtraction"
+set caption(autoguider,darkFileName)             "Dark Frame File"
+set caption(autoguider,darkEnabled)              "# Activer la soustraction"
+set caption(autoguider,slitWidth)                "Slit Width"
+set caption(autoguider,slitRatio)                "Ratio (% / pixel)"
+set caption(autoguider,lipWidth)                 "Lip Width"
+set caption(autoguider,alphaReverse)             "# Inverser le sens"
+set caption(autoguider,deltaReverse)             "# Inverser le sens"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == 0 } {
 
@@ -60,7 +72,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Image"
    set caption(autoguider,cible)                 "Cible"
-   set caption(autoguider,axe_AD)                "Axe AD"
+   set caption(autoguider,axe_AD)                "Axes (AD, Déc.)"
    set caption(autoguider,ctrl_monture)          "Suivi actif"
    set caption(autoguider,config_guidage)        "Configuration..."
    set caption(autoguider,ecart_origine_etoile)  "Ecart"
@@ -71,10 +83,10 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Intervalle"
 
-   set caption(autoguider,seuil)                 "Seuil (pixel)"
+   set caption(autoguider,seuil)                 "Seuil (pixels)"
    set caption(autoguider,detection)             "Détection étoile"
    set caption(autoguider,apprenti)              "Apprentissage"
-   set caption(autoguider,vitesse)               "Vitesse (pixel/s)"
+   set caption(autoguider,vitesse)               "Vitesse (pixels/s)"
    set caption(autoguider,detection_psf)         "Etoile"
    set caption(autoguider,detection_fente)       "Fente"
 
@@ -90,6 +102,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Aller vers"
    set caption(autoguider,clic_etoile)           "Cliquer sur l'étoile"
 
+   set caption(autoguider,cumulTitle)            "Cumul des acquisitions"
+   set caption(autoguider,cumulEnabled)          "Activer le cumul"
+   set caption(autoguider,cumulNb)               "Nombre d'acquisitions"
+   set caption(autoguider,darkTitle)             "Soustraction du dark"
+   set caption(autoguider,darkFileName)          "Fichier dark"
+   set caption(autoguider,darkEnabled)           "Activer la soustraction"
+   set caption(autoguider,slitWidth)             "Largeur de la fente"
+   set caption(autoguider,slitRatio)             "Coefficient (%/pixel)"
+   set caption(autoguider,lipWidth)              "Largeur d'une lèvre"
+   set caption(autoguider,alphaReverse)          "Inverser le sens"
+   set caption(autoguider,deltaReverse)          "Inverser le sens"
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == 0 } {
 
@@ -101,7 +125,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Immagine"
    set caption(autoguider,cible)                 "Target"
-   set caption(autoguider,axe_AD)                "Asse AR"
+   set caption(autoguider,axe_AD)                "# Asse AR"
    set caption(autoguider,ctrl_monture)          "Inseg. on"
    set caption(autoguider,config_guidage)        "Settaggio..."
    set caption(autoguider,ecart_origine_etoile)  "Scarto"
@@ -112,10 +136,10 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Intervallo"
 
-   set caption(autoguider,seuil)                 "Soglia (pixel)"
+   set caption(autoguider,seuil)                 "Soglia (pixels)"
    set caption(autoguider,detection)             "Detezione stella"
    set caption(autoguider,apprenti)              "Apprendimento"
-   set caption(autoguider,vitesse)               "Velocita` (pixel/s)"
+   set caption(autoguider,vitesse)               "Velocita` (pixels/s)"
    set caption(autoguider,detection_psf)         "Stella"
    set caption(autoguider,detection_fente)       "Fenditura"
 
@@ -131,6 +155,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Andare verso"
    set caption(autoguider,clic_etoile)           "Cliccare sulla stella"
 
+   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
+   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
+   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
+   set caption(autoguider,darkTitle)             "# Soustraction du dark"
+   set caption(autoguider,darkFileName)          "# Fichier dark"
+   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
+   set caption(autoguider,slitWidth)             "# Largeur de la fente"
+   set caption(autoguider,slitRatio)             "# Coefficient (%/pixel)"
+   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre"
+   set caption(autoguider,alphaReverse)          "# Inverser le sens"
+   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == 0 } {
 
@@ -142,7 +178,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Imagen"
    set caption(autoguider,cible)                 "Objetivo"
-   set caption(autoguider,axe_AD)                "Eje RA"
+   set caption(autoguider,axe_AD)                "# Eje RA"
    set caption(autoguider,ctrl_monture)          "Seg. on"
    set caption(autoguider,config_guidage)        "Configuración..."
    set caption(autoguider,ecart_origine_etoile)  "Desviación"
@@ -156,7 +192,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,seuil)                 "Nivel (pixels)"
    set caption(autoguider,detection)             "Detección de estrella"
    set caption(autoguider,apprenti)              "Aprendizaje"
-   set caption(autoguider,vitesse)               "Velocidad (pixel/s)"
+   set caption(autoguider,vitesse)               "Velocidad (pixels/s)"
    set caption(autoguider,detection_psf)         "Estrella"
    set caption(autoguider,detection_fente)       "Rendija"
 
@@ -172,6 +208,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Ir a"
    set caption(autoguider,clic_etoile)           "Click en la estrella"
 
+   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
+   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
+   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
+   set caption(autoguider,darkTitle)             "# Soustraction du dark"
+   set caption(autoguider,darkFileName)          "# Fichier dark"
+   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
+   set caption(autoguider,slitWidth)             "# Largeur de la fente"
+   set caption(autoguider,slitRatio)             "# Coefficient (%/pixel)"
+   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre"
+   set caption(autoguider,alphaReverse)          "# Inverser le sens"
+   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
 
@@ -183,7 +231,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Bild"
    set caption(autoguider,cible)                 "Ziel"
-   set caption(autoguider,axe_AD)                "GR Achse"
+   set caption(autoguider,axe_AD)                "# GR Achse"
    set caption(autoguider,ctrl_monture)          "Folgung an"
    set caption(autoguider,config_guidage)        "Konfiguration..."
    set caption(autoguider,ecart_origine_etoile)  "Abweichung"
@@ -194,10 +242,10 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Zeit"
 
-   set caption(autoguider,seuil)                 "Schwelle(Pixel)"
+   set caption(autoguider,seuil)                 "Schwelle(Pixels)"
    set caption(autoguider,detection)             "Stern Entdeckung"
    set caption(autoguider,apprenti)              "Lernen"
-   set caption(autoguider,vitesse)               "Geschwindigkeit (Pixel/s)"
+   set caption(autoguider,vitesse)               "Geschwindigkeit (Pixels/s)"
    set caption(autoguider,detection_psf)         "Stern"
    set caption(autoguider,detection_fente)       "Schlitz"
 
@@ -213,6 +261,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "zu gehen"
    set caption(autoguider,clic_etoile)           "auf das Stern klicken"
 
+   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
+   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
+   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
+   set caption(autoguider,darkTitle)             "# Soustraction du dark"
+   set caption(autoguider,darkFileName)          "# Fichier dark"
+   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
+   set caption(autoguider,slitWidth)             "# Largeur de la fente"
+   set caption(autoguider,slitRatio)             "# Coefficient (%/pixel)"
+   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre"
+   set caption(autoguider,alphaReverse)          "# Inverser le sens"
+   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -224,7 +284,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Imagem"
    set caption(autoguider,cible)                 "Alvo"
-   set caption(autoguider,axe_AD)                "Eixo AR"
+   set caption(autoguider,axe_AD)                "# Eixo AR"
    set caption(autoguider,ctrl_monture)          "Seguimento activo"
    set caption(autoguider,config_guidage)        "Configuração..."
    set caption(autoguider,ecart_origine_etoile)  "Desvio"
@@ -235,10 +295,10 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
    set caption(autoguider,intervalle)            "Intervalo"
 
-   set caption(autoguider,seuil)                 "Limiar (pixel)"
+   set caption(autoguider,seuil)                 "Limiar (pixels)"
    set caption(autoguider,detection)             "Detecção estrela"
    set caption(autoguider,apprenti)              "Aprendizagem"
-   set caption(autoguider,vitesse)               "Velocidade (pixel/s)"
+   set caption(autoguider,vitesse)               "Velocidade (pixels/s)"
    set caption(autoguider,detection_psf)         "Estrela"
    set caption(autoguider,detection_fente)       "Fenda"
 
@@ -254,6 +314,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Ir para"
    set caption(autoguider,clic_etoile)           "Clicar sobre a estrela"
 
+   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
+   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
+   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
+   set caption(autoguider,darkTitle)             "# Soustraction du dark"
+   set caption(autoguider,darkFileName)          "# Fichier dark"
+   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
+   set caption(autoguider,slitWidth)             "# Largeur de la fente"
+   set caption(autoguider,slitRatio)             "# Coefficient (%/pixel)"
+   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre"
+   set caption(autoguider,alphaReverse)          "# Inverser le sens"
+   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
 
@@ -265,7 +337,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Image"
    set caption(autoguider,cible)                 "Target"
-   set caption(autoguider,axe_AD)                "RA Axis"
+   set caption(autoguider,axe_AD)                "Axes (RA, Dec)"
    set caption(autoguider,ctrl_monture)          "Tracking on"
    set caption(autoguider,config_guidage)        "Setup..."
    set caption(autoguider,ecart_origine_etoile)  "Deviation"
@@ -279,7 +351,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,seuil)                 "Threshold (pixels)"
    set caption(autoguider,detection)             "Star Detection"
    set caption(autoguider,apprenti)              "Learning"
-   set caption(autoguider,vitesse)               "Speed (pixel/s)"
+   set caption(autoguider,vitesse)               "Speed (pixels/s)"
    set caption(autoguider,detection_psf)         "Star"
    set caption(autoguider,detection_fente)       "Slit"
 
@@ -294,6 +366,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,declinaison)           "Declination"
    set caption(autoguider,aller_vers)            "Go to"
    set caption(autoguider,clic_etoile)           "Click on the star"
+
+   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
+   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
+   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
+   set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
+   set caption(autoguider,darkFileName)          "Dark Frame File"
+   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
+   set caption(autoguider,slitWidth)             "Slit Width"
+   set caption(autoguider,slitRatio)             "Ratio (% / pixel)"
+   set caption(autoguider,lipWidth)              "Lip Width"
+   set caption(autoguider,alphaReverse)          "# Inverser le sens"
+   set caption(autoguider,deltaReverse)          "# Inverser le sens"
 
 }
 
