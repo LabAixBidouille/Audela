@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.4 2007-03-18 10:13:54 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.5 2007-03-27 18:53:47 robertdelmas Exp $
 #
 
 ################################################################
@@ -42,11 +42,11 @@ proc ::autoguider::config::apply { visuNo } {
 
    set pendingUpdateTarget 0
    set pendingUpdateAxis 0
-   
+
    #--- je verifie s'il faut redessiner la cible si le mode de detection a change
-   if {  $widget($visuNo,detection)   != $conf(autoguider,detection) 
-        || $widget($visuNo,slitWidth) != $conf(autoguider,slitWidth)
-        || $widget($visuNo,lipWidth)  != $conf(autoguider,lipWidth)
+   if {  $widget($visuNo,detection)       != $conf(autoguider,detection)
+        || $widget($visuNo,slitWidth)     != $conf(autoguider,slitWidth)
+        || $widget($visuNo,lipWidth)      != $conf(autoguider,lipWidth)
         || $widget($visuNo,targetBoxSize) != $conf(autoguider,targetBoxSize) } {
       if { $::conf(autoguider,showTarget) } {
          set pendingUpdateTarget 1
@@ -57,7 +57,7 @@ proc ::autoguider::config::apply { visuNo } {
    if {  $widget($visuNo,angle) != $conf(autoguider,angle) } {
       set pendingUpdateAxis 1
    }
-         
+
    set conf(autoguider,seuilx)            $widget($visuNo,seuilx)
    set conf(autoguider,seuily)            $widget($visuNo,seuily)
    set conf(autoguider,detection)         $widget($visuNo,detection)
@@ -79,7 +79,7 @@ proc ::autoguider::config::apply { visuNo } {
 
    #--- je redessine la cible si le mode de detection a change
    if { $pendingUpdateTarget } {
-         ::autoguider::createTarget $visuNo 
+         ::autoguider::createTarget $visuNo
    }
    #--- je redessine les axes si l'angle a change
    if {  $pendingUpdateAxis } {
@@ -91,7 +91,7 @@ proc ::autoguider::config::apply { visuNo } {
 #------------------------------------------------------------
 # ::autoguider::config::run
 #    affiche la fenetre de configuration de l'autoguidage
-# 
+#
 #------------------------------------------------------------
 proc ::autoguider::config::run { visuNo } {
    variable private
@@ -100,18 +100,6 @@ proc ::autoguider::config::run { visuNo } {
    set private($visuNo,learn,stepLabel)  ""
    set private($visuNo,fullImage)        0
    set private($visuNo,selectedPoint)    ""
-
-   set ::caption(autoguider,cumulTitle) "Cumul des acquisitions"
-   set ::caption(autoguider,cumulEnabled) "Activer le cumul"
-   set ::caption(autoguider,cumulNb) "Nb d'acquisitions"
-   set ::caption(autoguider,darkTitle) "Soustraction du dark"
-   set ::caption(autoguider,darkFileName) "Fichier dark"
-   set ::caption(autoguider,darkEnabled) "Activer la soustraction"
-   set ::caption(autoguider,slitWidth) "Largeur de la fente"
-   set ::caption(autoguider,slitRatio) "Coefficient (%/pixels)"
-   set ::caption(autoguider,lipWidth)  "Largeur d'une lèvre"
-   set ::caption(autoguider,alphaReverse)  "Inverser le sens"
-   set ::caption(autoguider,deltaReverse)  "Inverser le sens"
 
    #--- j'affiche la fenetre de configuration
    ::confGenerique::run  "[confVisu::getBase $visuNo].autoguider.config" "::autoguider::config" $visuNo nomodal
@@ -134,7 +122,7 @@ proc ::autoguider::config::close { visuNo } {
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
    set ::conf(autoguider,configWindowPosition) "+[ string range $geometry $deb $fin ]"
-   
+
 }
 
 #------------------------------------------------------------
@@ -241,7 +229,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -textvariable ::autoguider::config::widget($visuNo,seuilx)
       pack $frm.alpha.seuil -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
       checkbutton $frm.alpha.reverse -text "$caption(autoguider,alphaReverse)" \
-         -variable ::autoguider::config::widget($visuNo,alphaReverse) 
+         -variable ::autoguider::config::widget($visuNo,alphaReverse)
       pack $frm.alpha.reverse -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
    grid $frm.alpha -row 1 -column 0 -columnspan 1 -rowspan 2 -sticky ewns
 
@@ -258,7 +246,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -textvariable ::autoguider::config::widget($visuNo,seuily)
       pack $frm.delta.seuil -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       checkbutton $frm.delta.reverse -text "$caption(autoguider,deltaReverse)" \
-         -variable ::autoguider::config::widget($visuNo,deltaReverse) 
+         -variable ::autoguider::config::widget($visuNo,deltaReverse)
       pack $frm.delta.reverse -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       checkbutton $frm.delta.enabledec -text "$caption(autoguider,declinaison)" \
          -variable ::autoguider::config::widget($visuNo,declinaisonEnabled) \
@@ -378,7 +366,7 @@ proc ::autoguider::config::markPosition { visuNo step} {
 
 #------------------------------------------------------------
 # ::autoguider::config::moveTelescope { }
-# 
+#
 #------------------------------------------------------------
 proc ::autoguider::config::moveTelescope { visuNo direction label} {
    variable private
@@ -430,8 +418,8 @@ proc ::autoguider::config::selectStar { visuNo x y  } {
 
 #------------------------------------------------------------
 # ::autoguider::config::setCumul
-#    active/desactive le widget de saisie du nombre de d'acquisitions 
-#    
+#    active/desactive le widget de saisie du nombre de d'acquisitions
+#
 #------------------------------------------------------------
 proc ::autoguider::config::setCumul { visuNo } {
    variable private
@@ -441,7 +429,7 @@ proc ::autoguider::config::setCumul { visuNo } {
       $private($visuNo,This).cumul.nb configure -state normal
    } else {
       $private($visuNo,This).cumul.nb configure -state disabled
-   }      
+   }
 }
 
 #------------------------------------------------------------
@@ -456,7 +444,7 @@ proc ::autoguider::config::setDark { visuNo } {
       $private($visuNo,This).dark.filename configure -state normal
    } else {
       $private($visuNo,This).dark.filename configure -state disabled
-   }      
+   }
 }
 
 #------------------------------------------------------------
@@ -495,7 +483,7 @@ proc ::autoguider::config::setDetection { visuNo } {
       $private($visuNo,This).detection.lipWidth configure -state normal
       $private($visuNo,This).detection.slitWidth configure -state normal
       $private($visuNo,This).detection.slitRatio configure -state normal
-   }      
+   }
 
 }
 
@@ -504,9 +492,8 @@ proc ::autoguider::config::setDetection { visuNo } {
 #   affiche l'aide de cet outil
 #------------------------------------------------------------
 proc ::autoguider::config::showHelp { } {
-  
   ::audace::showHelpPlugin tool autoguider autoguider.htm
-   
+
 }
 
 #------------------------------------------------------------
@@ -668,7 +655,7 @@ proc ::autoguider::config::startLearn { visuNo } {
          set angleAlpha2 $angleAlpha
       }
       if { $angleAlpha2 < 0 } {
-         set angleAlpha2  [expr $angleAlpha2+360 ] 
+         set angleAlpha2  [expr $angleAlpha2+360 ]
       }
       set angleDelta [expr 180*atan($penteDelta)/3.14159265359 ]
       if { ($dxDelta<0 && $dyDelta>0) || ($dxDelta<0 && $dyDelta<0) } {
@@ -677,9 +664,9 @@ proc ::autoguider::config::startLearn { visuNo } {
          set angleDelta2 [expr fmod($angleDelta +90, 360) ]
       }
       if { $angleDelta2 < 0 } {
-         set angleDelta2  [expr $angleDelta2+360 ] 
+         set angleDelta2  [expr $angleDelta2+360 ]
       }
-      #--- je calcule la moyenne des 2 angles 
+      #--- je calcule la moyenne des 2 angles
       set widget($visuNo,angle) [expr ($angleAlpha2 + $angleDelta2)/2]
       set widget($visuNo,angle) [format "%0.1f" $widget($visuNo,angle)]
       ###console::disp "angleAlpha=$angleAlpha angleDelta=$angleDelta angleDelta2=$angleDelta2 angle=$widget($visuNo,angle)\n"
@@ -712,7 +699,7 @@ proc ::autoguider::config::startLearn { visuNo } {
 # ::autoguider::config::stopLearn { }
 #   demande l'arret de l'apprentissage
 # return
-#    
+#
 #------------------------------------------------------------
 proc ::autoguider::config::stopLearn { visuNo } {
    variable private
@@ -760,7 +747,7 @@ proc ::autoguider::config::validateNumber { win event X oldX  min max} {
    if {! $weakCheck} {set X $oldX}
    # Strong integer checking with range
    set strongCheck [expr {[string is double  $X] && ($X >= $min) && ($X <= $max)}]
-   
+
    switch $event {
       key {
          if { $strongCheck == 0 } {
