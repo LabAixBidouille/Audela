@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.8 2007-02-24 12:09:00 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.9 2007-03-27 20:39:17 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -73,8 +73,6 @@ global audace
          bind $base.inittel <Destroy> {
             #--- Les coordonnees AD et Dec sont mises a jour a la fermeture de la fenetre
             ::telescope::afficheCoord
-            #--- Fermeture de la fenetre
-            destroy $base.inittel
             #--- Activation du bouton initialisation
             $::telescope::Button_Init configure -relief raised -state normal
          }
