@@ -1,14 +1,10 @@
 #
-# Script de prise d'images avec déplacement du télescope entre les poses
-#
-
-#
 # Fichier : telshift.tcl
-# Description : Outil pour imagerie avec déplacement du télescope
+# Description : Script de prise d'images avec déplacement du télescope entre les poses
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.3 2006-06-20 21:32:16 robertdelmas Exp $
+# Mise a jour $Id: telshift.tcl,v 1.4 2007-03-28 18:13:55 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -21,7 +17,6 @@ global base
 global audace
 global caption
 global panneau
-global catalogue
 global color
 
 set base $audace(base).telima
@@ -34,7 +29,6 @@ if { [winfo exists $base] } {
 }
 
 set panneau(telshift,stop) "0"
-set catalogue(validation)  "1"
 
 toplevel $base
 
