@@ -1,15 +1,3 @@
-//DUVIDAS:
-//phiL,phiL2,phiS -> Alain Klotz
-//CTRL
-//CAMINHO para DLL
-//Warning c4013; getimagesize non definie; extern retournant int suppose 
-//Podemos apagar todas as funçoes antigas que interagem com amplificador e obturador?
-//Passamos a utilizar a notação da camera audine (cam->****) ou utilizamos a notaçao do prog para microscopio? (exemplo: *temp
-//em GetTemperature)
-//Substituimos cam_cooler_on/off por SetPeltier? Qual a diferença entre SetPeltier e SetPeltierConsigne?
-//No InitCam temos que usar a estrutura cam e alim? Se sim, onde é que elas estão definidas?
-
-
 /* camera.c
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
@@ -166,8 +154,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	mean7=0;
 	mean8=0;
 
-	cam->status=0;
-
+	cam->status=0; 
 
 	//CamInit();
  	ControleurInit();	
@@ -212,6 +199,7 @@ int cam_close(struct camprop * cam)
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
+	
 	//BINNING (pour HR mode)
 	//0: binning=1x1
 	//1: binning=2x2
@@ -228,7 +216,12 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	unsigned int error,erreur,binning;
 	unsigned int obtu=0;
 	unsigned int automan=0;
-	
+	//unsigned int numerodeimagens; ////////////////////////////////////////////
+	//numerodeimagens=cam->nb_images; //////////////////////////////////////
+
+
+	SetDebugLevel(0);
+
 	cam->status=0;
 	
 	if (cam->binx==1)		
@@ -298,8 +291,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	    sprintf(cam->msg,"SetAmplisObtu returns %d",error);
   	    cam->status=10;
     	return ;
-	}
-	control->SetDebugLevel(0);			
+	}			
 	
 	error=Stop(1);
 	if (error==1) {
@@ -729,6 +721,17 @@ void equilibrer(unsigned int stat_dina)
 	}
 }
 
+
+
+////////////////
+void SetDebugLevel(int level)
+{
+	bool onBOOL;
+	if (level==1) { onBOOL=true; }
+	else { onBOOL=false; }
+	control->SetDebugLevel(onBOOL);
+}
+//////////////////////
 unsigned int ResetADLINK()
 {
 	bool ret=control->ResetADLINK();
@@ -975,18 +978,6 @@ unsigned int Abort(int abrt)
 	else { error = 1; }
 	return error;
 }
-/*
-unsigned int ResetADLINK(void)
-{
-	bool ret=control->ResetADLINK();
-
-	unsigned int error;
-	if (ret==true) { error = 0 ; }
-	else { error = 1; }
-	return error;
-}*/
-
-
 
 unsigned int GetStatusCamera(int est0, int est1)
 {
