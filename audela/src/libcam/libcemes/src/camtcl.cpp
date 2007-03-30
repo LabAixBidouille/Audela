@@ -440,10 +440,13 @@ int cmdRESET(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
 	int result=TCL_OK;
 	char ligne[256];
+	int iteration = 0;
+	int com=1;
+	int	progOK=0;
 	
 	if (argc!=2)
 	{
-		sprintf(ligne, "Usage: %s %s 0=static/1=dynamic\n", argv[0], argv[1]);
+		sprintf(ligne, "Usage: %s %s", argv[0], argv[1]);
 		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 		result = TCL_ERROR;
 		return result;
@@ -451,8 +454,23 @@ int cmdRESET(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 	else
 	{
 		ResetADLINK();
+		while((com==1)&&(iteration<10)) 	
+		{
+			com = SetDECALAGE(20, 2000);
+			iteration++;
+		}
+		if(com!=1) 
+		{
+			progOK = SerialDownload();
+			if(progOK == 0) 
+			{
+				SetDebugLevel(0);
+				Initialise(1);
+				sprintf(ligne, "Reset successful");
+				Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			}
+		}
 	}
-
 	return result;
 }
 

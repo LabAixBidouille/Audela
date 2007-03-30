@@ -107,6 +107,7 @@ unsigned int SetAmplisObtu(int onoff, int onoff2, int onoff3, int onoff4, int on
 unsigned int SetDECALAGE(unsigned int n, unsigned int val);
 unsigned int SetConfCalcul(short ConfCalcul);
 void equilibrer(unsigned int stat_dina);
+void SetDebugLevel(int level);
 
 unsigned int ResetADLINK();
 
