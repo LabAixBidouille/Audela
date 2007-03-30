@@ -1,6 +1,5 @@
 Nomenclature NGC2000
 
-
 Gx       Galaxie
 OC       Amas ouvert
 Gb       Amas globulaire
@@ -16,7 +15,5 @@ D*       Etoile double
 blank    Objet inconnu ou non identifie
 -        Objet non existant
 PD       Plaque photo defectueuse
-
-
 
 Coordonnees Equatoriales  Equinox 2000.
