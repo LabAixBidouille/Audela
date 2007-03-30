@@ -473,9 +473,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	{		
 		//REGLAGE DES 4 VOIES BINNING
 		//FIRST SQUARE
-		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		for (i=(unsigned int)(256/cam->binx);i<(unsigned int)(768/cam->binx);i++)
 		{
-			for (j=(256/cam->binx);j<(768/cam->binx);j++)	
+			for (j=(unsigned int)(256/cam->binx);j<(unsigned int)(768/cam->binx);j++)	
 			{
 				sum=p[2048/(cam->binx)*i+j]+sum;
 			}
@@ -484,9 +484,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
 		//SECOND SQUARE
 		sum = 0;
-		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		for (i=(unsigned int)(256/cam->binx);i<(unsigned int)(768/cam->binx);i++)
 		{
-			for (j=(256/cam->binx);j<(768/cam->binx);j++)	
+			for (j=(unsigned int)(256/cam->binx);j<(unsigned int)(768/cam->binx);j++)	
 			{
 				sum=p[2048/(cam->binx)*i+(1024/(cam->binx))+j]+sum;
 			}
@@ -495,9 +495,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
 		//THIRD SQUARE
 		sum = 0;
-		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		for (i=(unsigned int)(256/cam->binx);i<(unsigned int)(768/cam->binx);i++)
 		{
-			for (j=(256/cam->binx);j<(768/cam->binx);j++)
+			for (j=(unsigned int)(256/cam->binx);j<(unsigned int)(768/cam->binx);j++)
 			{
 				sum=p[2048/(cam->binx)*i+((tailletotal/2)/cam->binx)+j]+sum;
 			}
@@ -506,9 +506,9 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
 		//FOURTH SQUARE
 		sum = 0;
-		for (i=(256/cam->binx);i<(768/cam->binx);i++)
+		for (i=(unsigned int)(256/cam->binx);i<(unsigned int)(768/cam->binx);i++)
 		{
-			for (j=(256/cam->binx);j<(768/cam->binx);j++)
+			for (j=(unsigned int)(256/cam->binx);j<(unsigned int)(768/cam->binx);j++)
 			{
 				sum=p[(2048/cam->binx)*i+((tailletotal/2)/cam->binx)+(1024/cam->binx)+j]+sum;
 			}
@@ -696,10 +696,10 @@ void equilibrer(unsigned int stat_dina)
 		dif7=(mean7-50)*6 + (control->ReadMyDoubleKey2("DECB3", (2000)));
 		dif8=(mean8-50)*6 + (control->ReadMyDoubleKey2("DECB4", (2000)));
 
-		SetDECALAGE(13,dif5);
-		SetDECALAGE(14,dif6);
-		SetDECALAGE(15,dif7);
-		SetDECALAGE(16,dif8);
+		SetDECALAGE(13,(unsigned int)dif5);
+		SetDECALAGE(14,(unsigned int)dif6);
+		SetDECALAGE(15,(unsigned int)dif7);
+		SetDECALAGE(16,(unsigned int)dif8);
 
 		control->SaveRegistry();
 	}
@@ -712,10 +712,10 @@ void equilibrer(unsigned int stat_dina)
 		dif7=(mean7-150)/16*6 + (control->ReadMyDoubleKey2("DECDB3", (2000)));
 		dif8=(mean8-150)/16*6 + (control->ReadMyDoubleKey2("DECDB4", (2000)));
 
-		SetDECALAGE(17,dif5);
-		SetDECALAGE(18,dif6);
-		SetDECALAGE(19,dif7);
-		SetDECALAGE(20,dif8);
+		SetDECALAGE(17,(unsigned int)dif5);
+		SetDECALAGE(18,(unsigned int)dif6);
+		SetDECALAGE(19,(unsigned int)dif7);
+		SetDECALAGE(20,(unsigned int)dif8);
 
 		control->SaveRegistry();
 	}
