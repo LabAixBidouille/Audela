@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.7 2006-08-15 21:34:44 alainklotz Exp $
+# Mise a jour $Id: divers.tcl,v 1.8 2007-03-30 19:59:34 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
@@ -13,10 +13,9 @@
 
 
 proc charge {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
-    if {[syntaxe_args $args 0 1 [list [list "-novisu" "-dovisu"] [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
+
+   if {[syntaxe_args $args 0 1 [list [list "-novisu" "-dovisu"] [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
     # Configuration des options
     set range_options [range_options $args]
@@ -58,9 +57,7 @@ proc charge {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -107,9 +104,7 @@ proc charge {args} {
 
       if {[file extension $nom_complet] == ".bz2"} {
 
-#--- Debut Modif Robert
         switch $::tcl_platform(os) {
-#--- Fin Modif Robert
         "Linux" {
           # Sous Linux, on copie le fichier dans un sous-répertoire de /tmp/.audela
           # on le décompresse et on essaie de le recharger à partir de là
@@ -125,9 +120,7 @@ proc charge {args} {
           if {[string compare $buf $audace(bufNo)] == 0} {
             if {$novisu != "-novisu"} {
               wm title $audace(base) "$caption(divers,audace) - $nom_complet"
-#--- Debut modif Robert
               audace::autovisu $audace(visuNo)
-#--- Fin modif Robert
               }
             }
           }
@@ -154,9 +147,7 @@ proc charge {args} {
         } else {
 
           # Le nom complet de fichier comporte des caractères accentués.
-#--- Debut Modif Robert
           switch $::tcl_platform(os) {
-#--- Fin Modif Robert
           "Linux" {
             # Sous Linux, on copie le fichier dans /tmp/.audela
             # en supprimant les caractères accentués et on essaie
@@ -171,9 +162,7 @@ proc charge {args} {
             if {[string compare $buf $audace(bufNo)] == 0} {
               if {$novisu != "-novisu"} {
                 wm title $audace(base) "$caption(divers,audace) - $nom_complet"
-#--- Debut modif Robert
                 audace::autovisu $audace(visuNo)
-#--- Fin modif Robert
                 }
               }
             }
@@ -194,9 +183,7 @@ proc charge {args} {
 
 
 proc sauve {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 1 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -231,9 +218,7 @@ proc sauve {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -342,9 +327,7 @@ proc sauve {args} {
 
 
 proc sauve_jpeg {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 1 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -394,9 +377,7 @@ proc sauve_jpeg {args} {
         # - si la palette est monochrome, on enregistre en jpeg N&B.
         # - si la palette est polychrome, on enregistre en jpeg couleurs
 
-#--- Debut modif Robert
         if {$conf(visu_palette,visu$audace(visuNo),mode)<=2} {
-#--- Fin modif Robert
           # Sauvegarde en jpeg monochrome
 
           # On récupère la fonction de transfert
@@ -447,15 +428,15 @@ proc sauve_jpeg {args} {
           # plan R
           buf$audace(bufNo) copyto $num_buf_tmp
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
-          sauve plan_R -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)
+          sauve plan_R -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
           # plan V
           buf$audace(bufNo) copyto $num_buf_tmp
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_V}
-          sauve plan_V -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)
+          sauve plan_V -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
           # plan B
           buf$audace(bufNo) copyto $num_buf_tmp
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_B}
-          sauve plan_B -buf $num_buf_tmp -rep $rep_tmp -ext $conf(extension,defaut)
+          sauve plan_B -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
 
           # Suppression du buffer temporaire
           buf::delete $num_buf_tmp
@@ -479,9 +460,7 @@ proc sauve_jpeg {args} {
 
 
 proc soustrait {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -512,9 +491,7 @@ proc soustrait {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -530,9 +507,7 @@ proc soustrait {args} {
 
     # Si le buffer de travail est le buffer Aud'ACE, on refraîchit l'affichage
     if {$audace(bufNo) == $buf} {
-#--- Debut modif Robert
       audace::autovisu $audace(visuNo)
-#--- Fin modif Robert
       }
 
   } else {
@@ -542,9 +517,7 @@ proc soustrait {args} {
 
 
 proc normalise {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -575,9 +548,7 @@ proc normalise {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -602,9 +573,7 @@ proc normalise {args} {
 
     # Si le buffer de travail est le buffer Aud'ACE, on rafraîchit l'affichage
     if {$audace(bufNo) == $buf} {
-#--- Debut modif Robert
       audace::autovisu $audace(visuNo)
-#--- Fin modif Robert
       }
 
   } else {
@@ -619,9 +588,7 @@ proc normalise {args} {
 
 
 proc suppr_serie {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -642,9 +609,7 @@ proc suppr_serie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -660,9 +625,7 @@ proc suppr_serie {args} {
 
 
 proc suppr_fin_serie {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -684,9 +647,7 @@ proc suppr_fin_serie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -708,9 +669,7 @@ proc suppr_fin_serie {args} {
 
 
 proc suppr_debut_serie {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -732,9 +691,7 @@ proc suppr_debut_serie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -755,9 +712,7 @@ proc suppr_debut_serie {args} {
 
 
 proc renumerote {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -778,9 +733,7 @@ proc renumerote {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -789,7 +742,12 @@ proc renumerote {args} {
     # Procédure principale
     set index_serie [lsort [liste_index $nom_generique -rep "$rep" -ext $ext]]
     # Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-    if [catch [set index_serie [lsort -integer $index_serie]]] {}
+    set error [ catch { set index_serie [ lsort -integer $index_serie ] } msg ]
+    if { $error == "0" } {
+       if [catch [set index_serie [lsort -integer $index_serie]]] {}
+    } else {
+       if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+    }
     set k 1
     foreach oldindex $index_serie {
       if {[string compare $k $oldindex]!=0} {
@@ -806,9 +764,7 @@ proc renumerote {args} {
 
 
 proc renomme {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 1 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext"]]]=="1"} {
 
@@ -851,9 +807,7 @@ proc renomme {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -872,8 +826,8 @@ proc renomme {args} {
     if {[string compare $in_rep$ancien_nom_generique$in_ext $ex_rep$nouveau_nom_generique$ex_ext] != 0} {
 
       # On cherche si le nom de la série courante existe déjà.
-      set index_newserie [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext]
-      set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep $in_rep -ext $in_ext]]
+      set index_newserie [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext]
+      set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep "$in_rep" -ext $in_ext]]
       # 1er cas : le nom de la série courante n'existe pas. On renomme sans se poser de questions
       if {[llength $index_newserie]==0} {
         # Deux cas sont possibles : 1) les deux séries ont le même type de compression, et alors pas de problème. 2) les deux séries n'ont pas le même type de compression, et alors il faut passer par un répertoire temporaire pour gérer les compressions / décompressions.
@@ -892,12 +846,12 @@ proc renomme {args} {
             # Rien à faire (...)
             }
           ".gz" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext $in_ext] {
               gunzip [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
               }
             }
           ".bz2" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext $in_ext] {
               exec bunzip2 [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
               }
             }
@@ -908,12 +862,12 @@ proc renomme {args} {
             # Rien à faire (...)
             }
           ".gz" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]] {
               gzip [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
               }
             }
           ".bz2" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]] {
               exec bzip2 [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
               }
             }
@@ -930,7 +884,7 @@ proc renomme {args} {
         # les deux séries et les concaténer
 
         # On réindexe la série cible :
-        renumerote $nouveau_nom_generique -rep $ex_rep -ext $ex_ext
+        renumerote $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext
 
         # On détermine à quel index on continue la copie
         set index [expr [llength $index_newserie]+1]
@@ -947,11 +901,9 @@ proc renomme {args} {
 
       # Si la série de destination est en lecture seule, on autorise l'utilisateur
       # en écriture
-#--- Debut Modif Robert
       switch $::tcl_platform(os) {
-#--- Fin Modif Robert
       "Linux" {
-        foreach index [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext] {
+        foreach index [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext] {
           if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
             exec chmod u+w [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
             }
@@ -968,9 +920,7 @@ proc renomme {args} {
 
 
 proc copie {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 1 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext"]]]=="1"} {
 
@@ -1013,9 +963,7 @@ proc copie {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1035,8 +983,8 @@ proc copie {args} {
     if {[string compare $in_rep$ancien_nom_generique$in_ext $ex_rep$nouveau_nom_generique$ex_ext] != 0} {
 
       # On cherche si le nom de la série courante existe déjà.
-      set index_newserie [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext]
-      set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep $in_rep -ext $in_ext]]
+      set index_newserie [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext]
+      set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep "$in_rep" -ext $in_ext]]
       # 1er cas : le nom de la série courante n'existe pas. On renomme sans se poser de questions
       if {[llength $index_newserie]==0} {
         # Deux cas sont possibles : 1) les deux séries ont le même type de compression, et alors pas de problème. 2) les deux séries n'ont pas le même type de compression, et alors il faut passer par un répertoire temporaire pour gérer les compressions / décompressions.
@@ -1055,12 +1003,12 @@ proc copie {args} {
             # Rien à faire (...)
             }
           ".gz" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext $in_ext] {
               gunzip [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
               }
             }
           ".bz2" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext $in_ext] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext $in_ext] {
               exec bunzip2 [file join $rep_tmp $nouveau_nom_generique$index$in_ext]
               }
             }
@@ -1071,12 +1019,12 @@ proc copie {args} {
             # Rien à faire (...)
             }
           ".gz" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]] {
               gzip [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
               }
             }
           ".bz2" {
-            foreach index [liste_index $nouveau_nom_generique -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]] {
+            foreach index [liste_index $nouveau_nom_generique -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]] {
               exec bzip2 [file join $rep_tmp $nouveau_nom_generique$index[lindex [decomp $in_ext] 3]]
               }
             }
@@ -1093,7 +1041,7 @@ proc copie {args} {
         # les deux séries et les concaténer
 
         # On réindexe la série cible :
-        renumerote $nouveau_nom_generique -rep $ex_rep -ext $ex_ext
+        renumerote $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext
 
         # On détermine à quel index on continue la copie
         set index [expr [llength $index_newserie]+1]
@@ -1110,11 +1058,9 @@ proc copie {args} {
 
       # Si la série de destination est en lecture seule, on autorise l'utilisateur
       # en écriture
-#--- Debut Modif Robert
       switch $::tcl_platform(os) {
-#--- Fin Modif Robert
       "Linux" {
-        foreach index [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext] {
+        foreach index [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext] {
           if {[file writable [file join $ex_rep $nouveau_nom_generique$index$ex_ext]] == 0} {
             exec chmod u+w [file join $ex_rep $nouveau_nom_generique$index$ex_ext]
             }
@@ -1132,9 +1078,7 @@ proc copie {args} {
 
 
 proc copie_partielle {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext"]]]=="1"} {
 
@@ -1173,9 +1117,7 @@ proc copie_partielle {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1193,8 +1135,8 @@ proc copie_partielle {args} {
     # On ne continue que si le vieux nom générique et le nouveau sont différents
     if {$ancien_nom_generique!=$nouveau_nom_generique} {
       # On cherche si le nom de la série courante existe déjà.
-      set index_newserie [liste_index $nouveau_nom_generique -rep $ex_rep -ext $ex_ext]
-      set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep $in_rep -ext $ex_ext]]
+      set index_newserie [liste_index $nouveau_nom_generique -rep "$ex_rep" -ext $ex_ext]
+      set index_oldserie [lsort -integer [liste_index $ancien_nom_generique -rep "$in_rep" -ext $ex_ext]]
       # On ne garde de la vieille série que les index que l'on veut copier
       set index_oldserie [lrange $index_oldserie [expr $debut-1] [expr $fin-1]]
 
@@ -1220,9 +1162,7 @@ proc copie_partielle {args} {
 
 
 proc serie_charge {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -1243,9 +1183,7 @@ proc serie_charge {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -1267,9 +1205,7 @@ proc serie_charge {args} {
 
 
 proc serie_fenetre {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_ext" "-ex_ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1310,9 +1246,7 @@ proc serie_fenetre {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1341,16 +1275,16 @@ proc serie_fenetre {args} {
 
     # Procédure principale
     # On récupère la liste des index de la série initiale...
-    set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
+    set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
 
     # Fenêtrage des fichiers
     foreach index $liste_index {
-      charge $in$index -buf $num_buf_tmp -rep $in_rep -ext $in_ext -polyNo $in_polyNo
+      charge $in$index -buf $num_buf_tmp -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo
       buf$num_buf_tmp window $coord
-      sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep $ex_rep -ext $ex_ext
+      sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep "$ex_rep" -ext $ex_ext
     }
 
     # Suppression du buffer temporaire
@@ -1362,9 +1296,7 @@ proc serie_fenetre {args} {
 
 
 proc souris_fenetre {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1403,9 +1335,7 @@ proc souris_fenetre {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1441,9 +1371,7 @@ proc souris_fenetre {args} {
 
 
 proc serie_rot {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 5 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1486,9 +1414,7 @@ proc serie_rot {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1517,16 +1443,16 @@ proc serie_rot {args} {
 
     # Procédure principale
     # On récupère la liste des index de la série initiale...
-    set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
+    set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
 
     # Rotation des fichiers
     foreach index $liste_index {
-      charge $in$index -buf $num_buf_tmp -rep $in_rep -ext $in_ext -polyNo $in_polyNo
+      charge $in$index -buf $num_buf_tmp -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo
       buf$num_buf_tmp rot $x0 $y0 $angle
-      sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep $ex_rep -ext $ex_ext
+      sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep "$ex_rep" -ext $ex_ext
     }
 
     # Suppression du buffer temporaire
@@ -1538,9 +1464,7 @@ proc serie_rot {args} {
 
 
 proc serie_trans {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 4 0 [list "" [list "-rep" "-in_rep" "-ex_rep" "-ext" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -1582,9 +1506,7 @@ proc serie_trans {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -1613,16 +1535,16 @@ proc serie_trans {args} {
 
     # Procédure principale
     # On récupère la liste des index de la série initiale...
-    set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
+    set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
 
     # Rotation des fichiers
     foreach index $liste_index {
-      charge $in$index -buf $num_buf_tmp -rep $in_rep -ext $ext -polyNo $in_polyNo
+      charge $in$index -buf $num_buf_tmp -rep "$in_rep" -ext $ext -polyNo $in_polyNo
       buf$num_buf_tmp imaseries "TRANS trans_x=$dx trans_y=$dy"
-      sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep $ex_rep -ext $ext
+      sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep "$ex_rep" -ext $ext
     }
 
     # Suppression du buffer temporaire
@@ -1634,9 +1556,7 @@ proc serie_trans {args} {
 
 
 proc series_traligne {args} {
-#--- Debut Modif Robert
   global audace caption conf script
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_polyNo"]]]=="1"} {
 
@@ -1671,9 +1591,7 @@ proc series_traligne {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -1686,17 +1604,17 @@ proc series_traligne {args} {
 
     # Procédure principale
     # On supprime d'éventuels fichiers déjà présents de la série-cible
-    suppr_serie $ex -rep $ex_rep -ext $ext
+    suppr_serie $ex -rep "$ex_rep" -ext $ext
 
     # La série de référence est recopiée sans modifications
     set serie_ref [lindex $liste_in 0]
     poly2serie $serie_ref $in_polyNo $ex -in_rep $in_rep -ex_rep $ex_rep -ext $ext
     # Tex au plus on la renumérote.
-    renumerote $ex -rep $ex_rep -ext $ext
+    renumerote $ex -rep "$ex_rep" -ext $ext
 
     # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
     # référence pour recaler la série suivante
-    set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
+    set liste_index_ref [lsort -integer [liste_index $ex -rep "$ex_rep" -ext $ext]]
     set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
     set fichier_ref [file join $ex_rep $ex$index_ref$ext]
 
@@ -1704,7 +1622,7 @@ proc series_traligne {args} {
     set series_amodif [lrange $liste_in 1 [expr [llength $liste_in]-1]]
 
     # Les fichiers temporaires sont stockés dans un répertoire temporaire
-    set rep_tmp [cree_sousrep -rep $ex_rep -nom_base "tmp_poly_series_traligne"]
+    set rep_tmp [cree_sousrep -rep "$ex_rep" -nom_base "tmp_poly_series_traligne"]
 
     foreach serie $series_amodif {
 
@@ -1731,7 +1649,7 @@ proc series_traligne {args} {
 
       console::affiche_resultat "$caption(divers,series_trreg_cadre-a-rec) $serie\n"
       # Chargement du premier fichier de la série courante
-      set liste_index [lsort -integer [liste_index $serie -rep $in_rep -ext $ext]]
+      set liste_index [lsort -integer [liste_index $serie -rep "$in_rep" -ext $ext]]
       loadima [file join $in_rep "$serie[lindex $liste_index 0]$ext;$in_polyNo"]
 
       # Création de la fenêtre
@@ -1755,16 +1673,16 @@ proc series_traligne {args} {
       serie_trans $serie tmp_trans_$serie [expr round([lindex $modifs 0])] [expr round([lindex $modifs 1])] -in_rep $in_rep -ex_rep $rep_tmp -ext $ext -in_polyNo $in_polyNo
       # Rotation
       console::affiche_resultat "$caption(divers,series_trreg_rot) $serie\n"
-      serie_rot tmp_trans_$serie tmp_rot_$serie [lindex $modifs 2] [lindex $modifs 3] [lindex $modifs 4] -rep $rep_tmp -ext $ext
+      serie_rot tmp_trans_$serie tmp_rot_$serie [lindex $modifs 2] [lindex $modifs 3] [lindex $modifs 4] -rep "$rep_tmp" -ext $ext
       # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire,
       # l'auto-écrasement bugge)
-      suppr_serie tmp_trans_$serie -rep $rep_tmp -ext $ext
+      suppr_serie tmp_trans_$serie -rep "$rep_tmp" -ext $ext
       # On renomme vers la série de destination
       renomme tmp_rot_$serie $ex -in_rep $rep_tmp -ex_rep $ex_rep -ext $ext
 
       # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
       # référence pour recaler la série suivante
-      set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
+      set liste_index_ref [lsort -integer [liste_index $ex -rep "$ex_rep" -ext $ext]]
       set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
       set fichier_ref [file join $ex_rep $ex$index_ref$ext]
       }
@@ -1778,9 +1696,7 @@ proc series_traligne {args} {
 
 
 proc serie_sauvejpeg {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-ex_name" "-qualitejpeg" "-seuils_type" "-rep" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-in_polyNo"] [list "-seuils_haut_bas" "-histo_haut_bas"]]] =="1"} {
 
@@ -1834,9 +1750,7 @@ proc serie_sauvejpeg {args} {
       }
     if {$in_ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $in_ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
     } else {
       set in_ext $conf(extension,defaut).gz
@@ -1871,7 +1785,7 @@ proc serie_sauvejpeg {args} {
 
     # Procédure principale
     # On récupère la liste des index de la série initiale...
-    set liste_index [liste_index $in -rep $in_rep -ext $in_ext]
+    set liste_index [liste_index $in -rep "$in_rep" -ext $in_ext]
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
@@ -1913,9 +1827,7 @@ proc serie_sauvejpeg {args} {
 
 
 proc mediane {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-buf" "-rep" "-ext" "-polyNo"]]]=="1"} {
 
@@ -1946,9 +1858,7 @@ proc mediane {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -1981,7 +1891,7 @@ proc mediane {args} {
           exec bunzip2 $fichier
           }
         ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images [file rootname $ext] \"$rep_tmp\" mediane . [file rootname $ext] MED"
-        suppr_serie $serie -rep $rep_tmp -ext [file rootname $ext]
+        suppr_serie $serie -rep "$rep_tmp" -ext [file rootname $ext]
         exec bzip2 [file join $rep_tmp mediane[file rootname $ext]]
       } else {
         ttscript2 "IMA/STACK \"$rep\" $serie 1 $nb_images $ext \"$rep_tmp\" mediane . $ext MED"
@@ -2000,17 +1910,17 @@ proc mediane {args} {
           }
         exec bunzip2 [file join $rep_tmp ${serie}*$ext]
         ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images [file rootname $ext] \"$rep_tmp\" mediane . [file rootname $ext] MED"
-        suppr_serie $serie -rep $rep_tmp -ext [file rootname $ext]
+        suppr_serie $serie -rep "$rep_tmp" -ext [file rootname $ext]
         exec bzip2 [file join $rep_tmp mediane[file rootname $ext]]
       } else {
         renumerote $serie -rep "$rep" -ext $ext
         ttscript2 "IMA/STACK \"$rep_tmp\" $serie 1 $nb_images $ext \"$rep_tmp\" mediane . $ext MED"
-        suppr_serie $serie -rep $rep_tmp -ext $ext
+        suppr_serie $serie -rep "$rep_tmp" -ext $ext
         }
       }
 
     # Chargement de l'image dans le buffer désiré
-    charge mediane -rep $rep_tmp -ext $ext -buf $buf
+    charge mediane -rep "$rep_tmp" -ext $ext -buf $buf
 
     # Suppression de fichier / répertoire temporaire
 #    file delete [file join $rep_tmp mediane$ext]
@@ -2024,9 +1934,7 @@ proc mediane {args} {
 
 
 proc serie_soustrait {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo" "-buf"]]]=="1"} {
 
@@ -2068,9 +1976,7 @@ proc serie_soustrait {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2123,9 +2029,9 @@ proc serie_soustrait {args} {
 
     # Soustraction
     foreach index $liste_index {
-      charge $in_serie$index -rep $in_rep -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
-      soustrait soustrait -buf $num_buf_tmp -rep $rep_tmp -ext [lindex [decomp $ex_ext] 3]
-      sauve  $ex_serie$index -rep $ex_rep -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
+      charge $in_serie$index -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
+      soustrait soustrait -buf $num_buf_tmp -rep "$rep_tmp" -ext [lindex [decomp $ex_ext] 3]
+      sauve  $ex_serie$index -rep "$ex_rep" -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
       }
 
     # Suppression du buffer temporaire
@@ -2143,9 +2049,7 @@ proc serie_soustrait {args} {
 
 
 proc serie_normalise {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo" "-buf"]]]=="1"} {
 
@@ -2187,9 +2091,7 @@ proc serie_normalise {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2242,9 +2144,9 @@ proc serie_normalise {args} {
 
     # Soustraction
     foreach index $liste_index {
-      charge $in_serie$index -rep $in_rep -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
-      normalise normalise -buf $num_buf_tmp -rep $rep_tmp -ext $ex_ext
-      sauve  $ex_serie$index -rep $ex_rep -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
+      charge $in_serie$index -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
+      normalise normalise -buf $num_buf_tmp -rep "$rep_tmp" -ext $ex_ext
+      sauve  $ex_serie$index -rep "$ex_rep" -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
       }
 
     # Suppression du buffer temporaire
@@ -2262,9 +2164,7 @@ proc serie_normalise {args} {
 
 
 proc normalise_gain {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-in_ext" "-ex_ext" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -2305,9 +2205,7 @@ proc normalise_gain {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2349,18 +2247,18 @@ proc normalise_gain {args} {
 
     # On enregistre le niveau de fond de ciel de la première image
     set premier_index [lindex $liste_index 0]
-    charge $in_serie$premier_index -rep $in_rep -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
+    charge $in_serie$premier_index -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
     set stats [buf$num_buf_tmp stat]
     set gain_ref [lindex $stats 6]
-    sauve $ex_serie$premier_index -rep $ex_rep -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
+    sauve $ex_serie$premier_index -rep "$ex_rep" -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
 
     # Normalisation du gain de chaque image en se calant sur la première
     foreach index [lrange $liste_index 1 [expr [llength $liste_index]-1]] {
-      charge $in_serie$index -rep $in_rep -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
+      charge $in_serie$index -rep "$in_rep" -ext $in_ext -polyNo $in_polyNo -buf $num_buf_tmp
       set stats [buf$num_buf_tmp stat]
       set gain_encours [lindex $stats 6]
       buf$num_buf_tmp mult [expr 1.0*$gain_ref/$gain_encours]
-      sauve $ex_serie$index -rep $ex_rep -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
+      sauve $ex_serie$index -rep "$ex_rep" -ext $ex_ext -polyNo $ex_polyNo -buf $num_buf_tmp
       }
 
     # Suppression du buffer temporaire
@@ -2374,9 +2272,7 @@ proc normalise_gain {args} {
 
 
 proc aligne {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_ext" "-ex_ext" "-in_rep" "-ex_rep" "-polyNo" "-in_polyNo" "-ex_polyNo"]]]=="1"} {
 
@@ -2417,9 +2313,7 @@ proc aligne {args} {
     if {$ext_index>=0} {
       set in_ext [lindex [lindex $options_1param $ext_index] 1]
       set ex_ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set in_ext $conf(extension,defaut)
       set ex_ext $conf(extension,defaut)
     } else {
@@ -2457,7 +2351,7 @@ proc aligne {args} {
     set liste_index [liste_index $in_serie -rep "$in_rep" -ext $in_ext]
 
     # Création d'un répertoire temporaire
-    set rep_tmp [cree_sousrep -nom_base "tmp_aligne" -rep $in_rep]
+    set rep_tmp [cree_sousrep -nom_base "tmp_aligne" -rep "$in_rep"]
 
     # En cas de compression .bz2 : on décompresse dans le répertoire temporaire
     if {[lindex [decomp $in_ext] 4] ==".bz2" } {
@@ -2476,7 +2370,7 @@ proc aligne {args} {
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
 
-    if {[numerotation_usuelle $in_serie -rep $in_rep -ext $in_ext] == "1"} {
+    if {[numerotation_usuelle $in_serie -rep "$in_rep" -ext $in_ext] == "1"} {
       # Registration
       ttscript2 "IMA/SERIES \"$rep_tmp\" tmp_ima_ 1 [llength $liste_index] [lindex [decomp $in_ext] 3] \"$rep_tmp\" tmp_ima2_ 1 [lindex [decomp $ex_ext] 3] REGISTER translate=only"
 
@@ -2484,7 +2378,7 @@ proc aligne {args} {
       set depl_x ""
       set depl_y ""
       foreach index $liste_index {
-        charge tmp_ima2_$index -ext [lindex [decomp $ex_ext] 3] -rep $rep_tmp -buf $num_buf_tmp
+        charge tmp_ima2_$index -ext [lindex [decomp $ex_ext] 3] -rep "$rep_tmp" -buf $num_buf_tmp
         set TT_num 1
         while {[lindex [buf$num_buf_tmp getkwd TT${TT_num}] 1] != "IMA/SERIES REGISTER"} {
           incr TT_num
@@ -2494,14 +2388,14 @@ proc aligne {args} {
         }
       set naxis1 [lindex [buf$num_buf_tmp getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$num_buf_tmp getkwd NAXIS2] 1]
-      serie_fenetre tmp_ima2_ tmp_ima2_ [list [expr -round([lmin $depl_x])] [expr -round([lmin $depl_y])] [expr $naxis1 - round([lmax $depl_x])] [expr $naxis2 - round([lmax $depl_y])]] -ext [lindex [decomp $ex_ext] 3] -rep $rep_tmp
+      serie_fenetre tmp_ima2_ tmp_ima2_ [list [expr -round([lmin $depl_x])] [expr -round([lmin $depl_y])] [expr $naxis1 - round([lmax $depl_x])] [expr $naxis2 - round([lmax $depl_y])]] -ext [lindex [decomp $ex_ext] 3] -rep "$rep_tmp"
 
       # Déplacement des fichiers
       renomme tmp_ima2_ $ex_serie -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3] -ex_ext $ex_ext
 
     } else {
 
-      renumerote tmp_ima_ -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]
+      renumerote tmp_ima_ -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]
 
       # Registration
       ttscript2 "IMA/SERIES \"$rep_tmp\" tmp_ima_ 1 [llength $liste_index] [lindex [decomp $in_ext] 3] \"$rep_tmp\" tmp_ima2_ 1 [lindex [decomp $in_ext] 3] REGISTER translate=only"
@@ -2510,7 +2404,7 @@ proc aligne {args} {
       set depl_x ""
       set depl_y ""
       for {set index 1} {$index <= [llength $liste_index]} {incr index} {
-        charge tmp_ima2_$index -ext [lindex [decomp $ex_ext] 3] -rep $rep_tmp -buf $num_buf_tmp
+        charge tmp_ima2_$index -ext [lindex [decomp $ex_ext] 3] -rep "$rep_tmp" -buf $num_buf_tmp
         set TT_num 1
         while {[lindex [buf$num_buf_tmp getkwd TT${TT_num}] 1] != "IMA/SERIES REGISTER"} {
           incr TT_num
@@ -2520,7 +2414,7 @@ proc aligne {args} {
         }
       set naxis1 [lindex [buf$num_buf_tmp getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$num_buf_tmp getkwd NAXIS2] 1]
-      serie_fenetre tmp_ima2_ tmp_ima2_ [list [expr -round([lmin $depl_x])] [expr -round([lmin $depl_y])] [expr $naxis1 - round([lmax $depl_x])] [expr $naxis2 - round([lmax $depl_y])]] -ext [lindex [decomp $ex_ext] 3] -rep $rep_tmp
+      serie_fenetre tmp_ima2_ tmp_ima2_ [list [expr -round([lmin $depl_x])] [expr -round([lmin $depl_y])] [expr $naxis1 - round([lmax $depl_x])] [expr $naxis2 - round([lmax $depl_y])]] -ext [lindex [decomp $ex_ext] 3] -rep "$rep_tmp"
 
       # Déplacement des fichiers
       renomme tmp_ima2_ $ex_serie -in_rep $rep_tmp -ex_rep $ex_rep -in_ext [lindex [decomp $in_ext] 3] -ex_ext $ex_ext
@@ -2530,7 +2424,7 @@ proc aligne {args} {
     buf::delete $num_buf_tmp
 
     # Suppression de fichier / répertoire temporaire
-    suppr_serie tmp_ima_ -rep $rep_tmp -ext [lindex [decomp $in_ext] 3]
+    suppr_serie tmp_ima_ -rep "$rep_tmp" -ext [lindex [decomp $in_ext] 3]
     file delete $rep_tmp
 
   } else {
@@ -2779,9 +2673,7 @@ proc decomp {args} {
 
 
 proc liste_index {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2804,9 +2696,7 @@ proc liste_index {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2864,9 +2754,7 @@ proc liste_index {args} {
 
 
 proc liste_series {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2888,9 +2776,7 @@ proc liste_series {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -2918,9 +2804,7 @@ proc liste_series {args} {
 
 
 proc liste_sousreps {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 0 0 [list "" [list "-rep"]]]=="1"} {
 
@@ -2961,9 +2845,7 @@ proc liste_sousreps {args} {
 
 
 proc serie_existe {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -2986,9 +2868,7 @@ proc serie_existe {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -3008,9 +2888,7 @@ proc serie_existe {args} {
 
 
 proc numerotation_usuelle {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -3033,9 +2911,7 @@ proc numerotation_usuelle {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -3045,7 +2921,12 @@ proc numerotation_usuelle {args} {
     # On récupère les index
     set liste [liste_index $nom_generique -rep "$rep" -ext $ext]
     # On essaie de les ranger par ordre croissant
-    catch [set liste [lsort -integer $liste]] {}
+    set error [ catch { set liste [lsort -integer $liste] } msg ]
+    if { $error == "0" } {
+       catch [set liste [lsort -integer $liste]] {}
+    } else {
+       catch [set liste [lsort -ascii $liste]] {}
+    }
 
     set k 1
     foreach index $liste {
@@ -3063,9 +2944,7 @@ proc numerotation_usuelle {args} {
 
 
 proc compare_index_series {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -3088,9 +2967,7 @@ proc compare_index_series {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -3147,9 +3024,7 @@ proc cree_sousrep {args} {
 
     # Si le répertoire indiqué est protégé en écriture :
     if {[file writable $rep] == 0} {
-#--- Debut Modif Robert
       switch $::tcl_platform(os) {
-#--- Fin Modif Robert
       "Linux" {
         # Pour linux : le sous-répertoire est créé dans /tmp/.audela
         set rep [file join /tmp .audela]
@@ -3215,9 +3090,7 @@ proc cree_fichier {args} {
 
     # Cas où le répertoire indiqué est protégé en écriture :
     if {[file writable $rep] == 0} {
-#--- Debut Modif Robert
     switch $::tcl_platform(os) {
-#--- Fin Modif Robert
     "Linux"} {
       # Pour linux : le fichier est créé dans /tmp/.audela
       if {[file exist [file join /tmp .audela]]=="0"} {
