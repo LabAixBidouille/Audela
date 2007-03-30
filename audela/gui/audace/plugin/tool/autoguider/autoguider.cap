@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.17 2007-03-27 18:52:38 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.18 2007-03-30 19:39:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -49,17 +49,17 @@ set caption(autoguider,declinaison)              "Declination"
 set caption(autoguider,aller_vers)               "Go to"
 set caption(autoguider,clic_etoile)              "Click on the star"
 
-set caption(autoguider,cumulTitle)               "# Cumul des acquisitions"
-set caption(autoguider,cumulEnabled)             "# Activer le cumul"
-set caption(autoguider,cumulNb)                  "# Nombre d'acquisitions"
+set caption(autoguider,cumulTitle)               "Add Exposures "
+set caption(autoguider,cumulEnabled)             "Enable Addition"
+set caption(autoguider,cumulNb)                  "Number of Exposures"
 set caption(autoguider,darkTitle)                "Dark Frame Subtraction"
 set caption(autoguider,darkFileName)             "Dark Frame File"
-set caption(autoguider,darkEnabled)              "# Activer la soustraction"
+set caption(autoguider,darkEnabled)              "Enable Subtraction"
 set caption(autoguider,slitWidth)                "Slit Width"
 set caption(autoguider,slitRatio)                "Ratio (% / pixel)"
 set caption(autoguider,lipWidth)                 "Lip Width"
-set caption(autoguider,alphaReverse)             "# Inverser le sens"
-set caption(autoguider,deltaReverse)             "# Inverser le sens"
+set caption(autoguider,alphaReverse)             "Reverse movement"
+set caption(autoguider,deltaReverse)             "Reverse movement"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == 0 } {
@@ -178,7 +178,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Imagen"
    set caption(autoguider,cible)                 "Objetivo"
-   set caption(autoguider,axe_AD)                "# Eje RA"
+   set caption(autoguider,axe_AD)                "Ejes (AR, Dec)"
    set caption(autoguider,ctrl_monture)          "Seg. on"
    set caption(autoguider,config_guidage)        "Configuración..."
    set caption(autoguider,ecart_origine_etoile)  "Desviación"
@@ -208,17 +208,17 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Ir a"
    set caption(autoguider,clic_etoile)           "Click en la estrella"
 
-   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
-   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
-   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
-   set caption(autoguider,darkTitle)             "# Soustraction du dark"
-   set caption(autoguider,darkFileName)          "# Fichier dark"
-   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
-   set caption(autoguider,slitWidth)             "# Largeur de la fente"
-   set caption(autoguider,slitRatio)             "# Coefficient (%/pixel)"
-   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre"
-   set caption(autoguider,alphaReverse)          "# Inverser le sens"
-   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+   set caption(autoguider,cumulTitle)            "Sumar exposiciones"
+   set caption(autoguider,cumulEnabled)          "Permitir la suma"
+   set caption(autoguider,cumulNb)               "Numero de tomas"
+   set caption(autoguider,darkTitle)             "Resta de toma oscura"
+   set caption(autoguider,darkFileName)          "Fichero de toma oscura"
+   set caption(autoguider,darkEnabled)           "Permitir la resta"
+   set caption(autoguider,slitWidth)             "Anchura de la rendija"
+   set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
+   set caption(autoguider,lipWidth)              "Tamaño del labio"
+   set caption(autoguider,alphaReverse)          "Invertir el movimiento"
+   set caption(autoguider,deltaReverse)          "Invertir el movimiento"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
@@ -284,7 +284,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
    set caption(autoguider,image)                 "Imagem"
    set caption(autoguider,cible)                 "Alvo"
-   set caption(autoguider,axe_AD)                "# Eixo AR"
+   set caption(autoguider,axe_AD)                "Eixos (AR, Dec.)"
    set caption(autoguider,ctrl_monture)          "Seguimento activo"
    set caption(autoguider,config_guidage)        "Configuração..."
    set caption(autoguider,ecart_origine_etoile)  "Desvio"
@@ -314,17 +314,17 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Ir para"
    set caption(autoguider,clic_etoile)           "Clicar sobre a estrela"
 
-   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
-   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
-   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
-   set caption(autoguider,darkTitle)             "# Soustraction du dark"
-   set caption(autoguider,darkFileName)          "# Fichier dark"
-   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
-   set caption(autoguider,slitWidth)             "# Largeur de la fente"
-   set caption(autoguider,slitRatio)             "# Coefficient (%/pixel)"
-   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre"
-   set caption(autoguider,alphaReverse)          "# Inverser le sens"
-   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+   set caption(autoguider,cumulTitle)            "Somar aquisições"
+   set caption(autoguider,cumulEnabled)          "Activar soma"
+   set caption(autoguider,cumulNb)               "Número de aquisições"
+   set caption(autoguider,darkTitle)             "Subtracção do dark"
+   set caption(autoguider,darkFileName)          "Ficheiro dark"
+   set caption(autoguider,darkEnabled)           "Activar subtracção"
+   set caption(autoguider,slitWidth)             "Largura da fenda"
+   set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
+   set caption(autoguider,lipWidth)              "Largura de um lábio"
+   set caption(autoguider,alphaReverse)          "Inverter sentido"
+   set caption(autoguider,deltaReverse)          "Inverter sentido"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == 0 } {
@@ -367,17 +367,17 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,aller_vers)            "Go to"
    set caption(autoguider,clic_etoile)           "Click on the star"
 
-   set caption(autoguider,cumulTitle)            "# Cumul des acquisitions"
-   set caption(autoguider,cumulEnabled)          "# Activer le cumul"
-   set caption(autoguider,cumulNb)               "# Nombre d'acquisitions"
+   set caption(autoguider,cumulTitle)            "Add Exposures "
+   set caption(autoguider,cumulEnabled)          "Enable Addition"
+   set caption(autoguider,cumulNb)               "Number of Exposures"
    set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
    set caption(autoguider,darkFileName)          "Dark Frame File"
-   set caption(autoguider,darkEnabled)           "# Activer la soustraction"
+   set caption(autoguider,darkEnabled)           "Enable Subtraction"
    set caption(autoguider,slitWidth)             "Slit Width"
    set caption(autoguider,slitRatio)             "Ratio (% / pixel)"
    set caption(autoguider,lipWidth)              "Lip Width"
-   set caption(autoguider,alphaReverse)          "# Inverser le sens"
-   set caption(autoguider,deltaReverse)          "# Inverser le sens"
+   set caption(autoguider,alphaReverse)          "Reverse movement"
+   set caption(autoguider,deltaReverse)          "Reverse movement"
 
 }
 
