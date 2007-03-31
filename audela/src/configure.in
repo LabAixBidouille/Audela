@@ -89,8 +89,18 @@ dnl
 CXXFLAGS=""
 LDFLAGS=""
 AC_HEADER_STDC
+AC_MSG_CHECKING(for kernel headers)
 if test ! -f /usr/include/asm/system.h ; then
+    if test -f /usr/src/linux-headers-`uname -r`/include/asm/system.h ; then
         CXXFLAGS+="-I /usr/src/linux-headers-`uname -r`/include "
+        msg="yes (/usr/src/linux-headers-`uname -r`)"
+        AC_MSG_RESULT($msg)
+    fi
+    if test -f /usr/src/linux-`uname -r`/include/asm/system.h ; then
+        CXXFLAGS+="-I /usr/src/linux-`uname -r`/include "
+        msg="yes (/usr/src/linux-`uname -r`)"
+        AC_MSG_RESULT($msg)
+    fi
 fi
 
 dnl Check for webcam headers presence
@@ -130,6 +140,8 @@ fi
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
 
+GCC_STACK_PROTECT_DISABLE_CC
+GCC_STACK_PROTECT_DISABLE_CXX
 
 dnl
 dnl Configure the modules to be compiled.
