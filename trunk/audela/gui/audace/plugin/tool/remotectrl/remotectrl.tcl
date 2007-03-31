@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.6 2007-02-12 17:45:12 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.7 2007-03-31 15:25:22 robertdelmas Exp $
 #
 
 package provide remotectrl 1.0
@@ -203,6 +203,7 @@ namespace eval ::Rmctrl {
       #--- Gestion des catalogues
       if { $panneau(Rmctrl,menu) == "$caption(rmctrl,coord)" } {
          ::cataGoto::Nettoyage
+         set catalogue(validation) "0"
          set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,planete)" } {
          ::cataGoto::GotoPlanete
@@ -213,8 +214,6 @@ namespace eval ::Rmctrl {
             set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
          }
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,asteroide)" } {
          ::cataGoto::CataAsteroide
          vwait catalogue(validation)
@@ -224,8 +223,6 @@ namespace eval ::Rmctrl {
             set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
          }
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,etoile)" } {
          ::cataGoto::CataEtoiles
          vwait catalogue(validation)
@@ -235,8 +232,6 @@ namespace eval ::Rmctrl {
             set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
          }
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,messier)" } {
          ::cataGoto::CataObjet $panneau(Rmctrl,menu)
          vwait catalogue(validation)
@@ -246,8 +241,6 @@ namespace eval ::Rmctrl {
             set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
          }
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,ngc)" } {
          ::cataGoto::CataObjet $panneau(Rmctrl,menu)
          vwait catalogue(validation)
@@ -257,8 +250,6 @@ namespace eval ::Rmctrl {
             set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
          }
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,ic)" } {
          ::cataGoto::CataObjet $panneau(Rmctrl,menu)
          vwait catalogue(validation)
@@ -268,8 +259,6 @@ namespace eval ::Rmctrl {
             set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
          }
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,utilisateur)" } {
          if { $catalogue(autre_catalogue) == "2" } {
             ::cataGoto::CataObjetUtilisateur_Choix
@@ -284,18 +273,15 @@ namespace eval ::Rmctrl {
                set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
             }
             set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-            $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-            update
          } else {
-            set catalogue(validation) "2"
+            set catalogue(validation) "0"
          }
       } else {
          ::cataGoto::Nettoyage
+         set catalogue(validation) "0"
          set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
          set panneau(Rmctrl,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
          set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         $This.fra2.ent1 configure -textvariable panneau(Rmctrl,getobj)
-         update
       }
       if { $catalogue(validation) == "1" } {
          ::Rmctrl::Gestion_Cata
