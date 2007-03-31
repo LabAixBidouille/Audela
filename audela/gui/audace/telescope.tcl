@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.9 2007-03-27 20:39:17 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.10 2007-03-31 15:20:47 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -15,6 +15,7 @@ global audace
       global audace
       global caption
 
+      #---
       set audace(telescope,getra)      "00h00m00"
       set audace(telescope,getdec)     "+00d00m00"
       set audace(telescope,rate)       "1"
@@ -23,8 +24,6 @@ global audace
       set audace(telescope,goto)       "0"
       set audace(telescope,inittel)    "$caption(telescope,init)"
       set audace(telescope,controle)   "$caption(telescope,suivi_marche)"
-
-      set catalogue(validation)        "0"
    }
 
    proc initTel { this visuNo } {
@@ -143,8 +142,8 @@ global audace
       global audace
       global caption
       global confTel
-      global confGotoPlanete
       global cataGoto
+      global catalogue
 
       if { ( $conf(telescope) == "audecom" ) && ( $confTel(audecom,connect) == "1" ) } {
          set audace(telescope,goto) "1"
@@ -152,10 +151,10 @@ global audace
          #--- Transfere les parametres de derive dans le microcontroleur
          set vit_der_alpha 0; set vit_der_delta 0
          catch {
-            if { $confGotoPlanete(choisi) == "$caption(telescope,soleil)" } {
+            if { $catalogue(planete_choisie) == "$caption(telescope,soleil)" } {
                set vit_der_alpha 3548
                set vit_der_delta 0
-            } elseif { $confGotoPlanete(choisi) == "$caption(telescope,lune)" } {
+            } elseif { $catalogue(planete_choisie) == "$caption(telescope,lune)" } {
                set vit_der_alpha 43636
                set vit_der_delta 0
             } else {
@@ -185,10 +184,10 @@ global audace
       if { [ ::tel::list ] != "" } {
          #--- Gestion des boutons Goto et Match
          if { $But_Goto != "" } {
-            $But_Goto configure -state disabled -relief groove
+            $But_Goto configure -relief groove -state disabled
          }
          if { $But_Match != "" } {
-            $But_Match configure -state disabled -relief raised
+            $But_Match configure -relief raised -state disabled
          }
          update
          #--- Affichage du champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
@@ -220,10 +219,10 @@ global audace
          after 1000 ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
       } else {
          if { $But_Goto != "" } {
-            $But_Goto configure -state normal -relief raised
+            $But_Goto configure -relief raised -state normal
          }
          if { $But_Match != "" } {
-            $But_Match configure -state normal -relief raised
+            $But_Match configure -relief raised -state normal
          }
          update
       }
