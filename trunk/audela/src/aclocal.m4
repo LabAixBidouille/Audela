@@ -2670,3 +2670,36 @@ int main (void)
   rm -f conf.gsltest
 ])
 
+
+#
+# Macros used to disable the anti stack smashing feature of GCC. Based on
+# the macros of Tiago Sousa (mirage@kaotik.org, http://www.trl.ibm.com/projects/security/ssp)
+#
+
+AC_DEFUN([GCC_STACK_PROTECT_DISABLE_CC],[
+  ssp_cc=yes
+  if test "X$CC" != "X"; then
+    AC_MSG_CHECKING([whether ${CC} accepts -fno-stack-protector])
+    ssp_old_cflags="$CFLAGS"
+    CFLAGS="$CFLAGS -fno-stack-protector"
+    AC_TRY_COMPILE(,,, ssp_cc=no)
+    echo $ssp_cc
+    if test "X$ssp_cc" = "Xno"; then
+      CFLAGS="$ssp_old_cflags"
+    fi
+  fi
+])
+
+AC_DEFUN([GCC_STACK_PROTECT_DISABLE_CXX],[
+  ssp_cxx=yes
+  if test "X$CXX" != "X"; then
+    AC_MSG_CHECKING([whether ${CXX} accepts -fno-stack-protector])
+    ssp_old_cxxflags="$CXXFLAGS"
+    CXXFLAGS="$CXXFLAGS -fno-stack-protector"
+    AC_TRY_COMPILE(,,, ssp_cxx=no)
+    echo $ssp_cxx
+    if test "X$ssp_cxx" = "Xno"; then
+	CXXFLAGS="$ssp_old_cxxflags"
+    fi
+  fi
+])
