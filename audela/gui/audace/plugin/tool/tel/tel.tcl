@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.8 2007-02-24 12:11:16 robertdelmas Exp $
+# Mise a jour $Id: tel.tcl,v 1.9 2007-03-31 15:24:58 robertdelmas Exp $
 #
 
 namespace eval ::tlscp {
@@ -32,31 +32,31 @@ proc ::tlscp::createPanel { visuNo } {
    set private($visuNo,cata_coord)  "$caption(tel,coord) $caption(tel,planete) $caption(tel,asteroide) \
       $caption(tel,etoile) $caption(tel,messier) $caption(tel,ngc) $caption(tel,ic) $caption(tel,utilisateur) \
       $caption(tel,zenith)"
-   set This $private($visuNo,This)
 
    #--- Coordonnees J2000.0 de M104
    set private($visuNo,getobj)      "12h40m0 -11d37m22"
 
    #--- Frame principal
-   frame $This -borderwidth 2 -relief groove
+   frame $private($visuNo,This) -borderwidth 2 -relief groove
 
       #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
+      frame $private($visuNo,This).fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $caption(tel,telescope) \
+         Button $private($visuNo,This).fra1.but -borderwidth 1 -text $caption(tel,telescope) \
             -command {
                ::audace::showHelpPlugin tool tel tel.htm
             }
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $caption(tel,help_titre)
+         pack $private($visuNo,This).fra1.but -in $private($visuNo,This).fra1 -anchor center -expand 1 \
+            -fill both -side top -ipadx 5
+         DynamicHelp::add $private($visuNo,This).fra1.but -text $caption(tel,help_titre)
 
-      pack $This.fra1 -side top -fill x
+      pack $private($visuNo,This).fra1 -side top -fill x
 
       #--- Frame du pointage
-      frame $This.fra2 -borderwidth 1 -relief groove
+      frame $private($visuNo,This).fra2 -borderwidth 1 -relief groove
 
-         ComboBox $This.fra2.optionmenu1 \
+         ComboBox $private($visuNo,This).fra2.optionmenu1 \
             -width 12         \
             -height [ llength $private($visuNo,cata_coord) ]  \
             -relief sunken    \
@@ -65,146 +65,161 @@ proc ::tlscp::createPanel { visuNo } {
             -textvariable ::tlscp::private($visuNo,menu) \
             -modifycmd "::tlscp::Gestion_Cata $visuNo" \
             -values $private($visuNo,cata_coord)
-         pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -padx 2 -pady 2
+         pack $private($visuNo,This).fra2.optionmenu1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
 
          #--- Bind (clic droit) pour ouvrir la fenetre sans avoir a selectionner dans la listbox
-         bind $This.fra2.optionmenu1.e <ButtonPress-3> " ::tlscp::Gestion_Cata $visuNo"
+         bind $private($visuNo,This).fra2.optionmenu1.e <ButtonPress-3> " ::tlscp::Gestion_Cata $visuNo"
 
          #--- Entry pour l'objet a entrer
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable ::tlscp::private($visuNo,getobj) \
-            -relief groove -width 16
-         pack $This.fra2.ent1 -in $This.fra2 -anchor center -padx 2 -pady 2
+         entry $private($visuNo,This).fra2.ent1 -font $audace(font,arial_8_b) \
+            -textvariable ::tlscp::private($visuNo,getobj) -relief groove -width 16
+         pack $private($visuNo,This).fra2.ent1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
 
-         bind $This.fra2.ent1 <Enter> "::tlscp::FormatADDec $visuNo"
-         bind $This.fra2.ent1 <Leave> "destroy [::confVisu::getBase $visuNo].formataddec"
+         bind $private($visuNo,This).fra2.ent1 <Enter> "::tlscp::FormatADDec $visuNo"
+         bind $private($visuNo,This).fra2.ent1 <Leave> "destroy [::confVisu::getBase $visuNo].formataddec"
 
-         frame $This.fra2.fra1a
+         frame $private($visuNo,This).fra2.fra1a
 
             #--- Checkbutton chemin le plus long
-            checkbutton $This.fra2.fra1a.check1 -highlightthickness 0 -variable conf(audecom,gotopluslong) \
-               -command "::tlscp::PlusLong $visuNo"
-            pack $This.fra2.fra1a.check1 -in $This.fra2.fra1a -side left -fill both -anchor center -pady 1
+            checkbutton $private($visuNo,This).fra2.fra1a.check1 -highlightthickness 0 \
+               -variable conf(audecom,gotopluslong) -command "::tlscp::PlusLong $visuNo"
+            pack $private($visuNo,This).fra2.fra1a.check1 -in $private($visuNo,This).fra2.fra1a -side left \
+               -fill both -anchor center -pady 1
 
             #--- Bouton MATCH
-            button $This.fra2.fra1a.match -borderwidth 2 -text $caption(tel,match) -command "::tlscp::cmdMatch $visuNo"
-            pack $This.fra2.fra1a.match -in $This.fra2.fra1a -side right -expand 1 -fill both -anchor center -pady 1
+            button $private($visuNo,This).fra2.fra1a.match -borderwidth 2 -text $caption(tel,match) \
+               -command "::tlscp::cmdMatch $visuNo"
+            pack $private($visuNo,This).fra2.fra1a.match -in $private($visuNo,This).fra2.fra1a -side right -expand 1 \
+               -fill both -anchor center -pady 1
 
-         pack $This.fra2.fra1a -in $This.fra2 -expand 1 -fill both
+         pack $private($visuNo,This).fra2.fra1a -in $private($visuNo,This).fra2 -expand 1 -fill both
 
-         frame $This.fra2.fra2a
+         frame $private($visuNo,This).fra2.fra2a
 
             #--- Bouton Coord. / Stop GOTO
-            button $This.fra2.fra2a.but2 -borderwidth 2 -text $caption(tel,coord) \
+            button $private($visuNo,This).fra2.fra2a.but2 -borderwidth 2 -text $caption(tel,coord) \
                -font $audace(font,arial_8_b) -command { ::telescope::afficheCoord }
-            pack $This.fra2.fra2a.but2 -in $This.fra2.fra2a -side left -fill both -anchor center -pady 1
+            pack $private($visuNo,This).fra2.fra2a.but2 -in $private($visuNo,This).fra2.fra2a -side left \
+               -fill both -anchor center -pady 1
 
             #--- Bouton GOTO
-            button $This.fra2.fra2a.but1 -borderwidth 2 -text $caption(tel,goto) -command "::tlscp::cmdGoto $visuNo"
-            pack $This.fra2.fra2a.but1 -in $This.fra2.fra2a -side right -expand 1 -fill both -anchor center -pady 1
+            button $private($visuNo,This).fra2.fra2a.but1 -borderwidth 2 -text $caption(tel,goto) \
+               -command "::tlscp::cmdGoto $visuNo"
+            pack $private($visuNo,This).fra2.fra2a.but1 -in $private($visuNo,This).fra2.fra2a -side right -expand 1 \
+               -fill both -anchor center -pady 1
 
             #--- Bouton Stop GOTO
-            button $This.fra2.fra2a.but3 -borderwidth 2 -text $caption(tel,stop_goto) -font $audace(font,arial_10_b) \
-               -command { ::telescope::stopGoto }
-            pack $This.fra2.fra2a.but3 -in $This.fra2.fra2a -side left -fill y -anchor center -pady 1
+            button $private($visuNo,This).fra2.fra2a.but3 -borderwidth 2 -text $caption(tel,stop_goto) \
+               -font $audace(font,arial_10_b) -command { ::telescope::stopGoto }
+            pack $private($visuNo,This).fra2.fra2a.but3 -in $private($visuNo,This).fra2.fra2a -side left \
+               -fill y -anchor center -pady 1
 
-         pack $This.fra2.fra2a -in $This.fra2 -expand 1 -fill both
+         pack $private($visuNo,This).fra2.fra2a -in $private($visuNo,This).fra2 -expand 1 -fill both
 
          #--- Bouton Initialisation Telescope
-         button $This.fra2.but3 -borderwidth 2 -textvariable audace(telescope,inittel) -command "::tlscp::cmdInitTel $visuNo"
-         pack $This.fra2.but3 -in $This.fra2 -side bottom -anchor center -fill x -pady 1
+         button $private($visuNo,This).fra2.but3 -borderwidth 2 -textvariable audace(telescope,inittel) \
+            -command "::tlscp::cmdInitTel $visuNo"
+         pack $private($visuNo,This).fra2.but3 -in $private($visuNo,This).fra2 -side bottom -anchor center \
+            -fill x -pady 1
 
-      pack $This.fra2 -side top -fill x
+      pack $private($visuNo,This).fra2 -side top -fill x
 
       #--- Frame des coordonnees
-      frame $This.fra3 -borderwidth 1 -relief groove
+      frame $private($visuNo,This).fra3 -borderwidth 1 -relief groove
 
          #--- Label pour RA
-         label $This.fra3.ent1 -font $audace(font,arial_10_b) -textvariable audace(telescope,getra) -relief flat
-         pack $This.fra3.ent1 -in $This.fra3 -anchor center -fill none -pady 1
+         label $private($visuNo,This).fra3.ent1 -font $audace(font,arial_10_b) \
+            -textvariable audace(telescope,getra) -relief flat
+         pack $private($visuNo,This).fra3.ent1 -in $private($visuNo,This).fra3 -anchor center -fill none -pady 1
 
          #--- Label pour DEC
-         label $This.fra3.ent2 -font $audace(font,arial_10_b) -textvariable audace(telescope,getdec) -relief flat
-         pack $This.fra3.ent2 -in $This.fra3 -anchor center -fill none -pady 1
+         label $private($visuNo,This).fra3.ent2 -font $audace(font,arial_10_b) \
+            -textvariable audace(telescope,getdec) -relief flat
+         pack $private($visuNo,This).fra3.ent2 -in $private($visuNo,This).fra3 -anchor center -fill none -pady 1
 
-      pack $This.fra3 -side top -fill x
-      set zone(radec) $This.fra3
+      pack $private($visuNo,This).fra3 -side top -fill x
+      set zone(radec) $private($visuNo,This).fra3
 
       bind $zone(radec) <ButtonPress-1> { ::telescope::afficheCoord }
       bind $zone(radec).ent1 <ButtonPress-1> { ::telescope::afficheCoord }
       bind $zone(radec).ent2 <ButtonPress-1> { ::telescope::afficheCoord }
 
       #--- Frame des boutons manuels
-      frame $This.fra4 -borderwidth 1 -relief groove
+      frame $private($visuNo,This).fra4 -borderwidth 1 -relief groove
 
          #--- Create the button 'N'
-         frame $This.fra4.n -width 27 -borderwidth 0 -relief flat
-         pack $This.fra4.n -in $This.fra4 -side top -fill x
+         frame $private($visuNo,This).fra4.n -width 27 -borderwidth 0 -relief flat
+         pack $private($visuNo,This).fra4.n -in $private($visuNo,This).fra4 -side top -fill x
 
          #--- Button-design
-         button $This.fra4.n.canv1 -borderwidth 2 \
+         button $private($visuNo,This).fra4.n.canv1 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(tel,nord)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $This.fra4.n.canv1 -in $This.fra4.n -expand 0 -side top -padx 2 -pady 0
+         pack $private($visuNo,This).fra4.n.canv1 -in $private($visuNo,This).fra4.n -expand 0 \
+            -side top -padx 2 -pady 0
 
          #--- Create the buttons 'E W'
-         frame $This.fra4.we -width 27 -borderwidth 0 -relief flat
-         pack $This.fra4.we -in $This.fra4 -side top -fill x
+         frame $private($visuNo,This).fra4.we -width 27 -borderwidth 0 -relief flat
+         pack $private($visuNo,This).fra4.we -in $private($visuNo,This).fra4 -side top -fill x
 
          #--- Button-design 'E'
-         button $This.fra4.we.canv1 -borderwidth 2 \
+         button $private($visuNo,This).fra4.we.canv1 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(tel,est)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $This.fra4.we.canv1 -in $This.fra4.we -expand 1 -side left -padx 0 -pady 0
+         pack $private($visuNo,This).fra4.we.canv1 \
+            -in $private($visuNo,This).fra4.we -expand 1 -side left -padx 0 -pady 0
 
          #--- Write the label of speed
-         label $This.fra4.we.lab \
+         label $private($visuNo,This).fra4.we.lab \
             -font [ list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
-         pack $This.fra4.we.lab \
-            -in $This.fra4.we -expand 1 -side left
+         pack $private($visuNo,This).fra4.we.lab \
+            -in $private($visuNo,This).fra4.we -expand 1 -side left
 
          #--- Button-design 'W'
-         button $This.fra4.we.canv2 -borderwidth 2 \
+         button $private($visuNo,This).fra4.we.canv2 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(tel,ouest)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $This.fra4.we.canv2 -in $This.fra4.we -expand 1 -side right -padx 0 -pady 0
+         pack $private($visuNo,This).fra4.we.canv2 \
+            -in $private($visuNo,This).fra4.we -expand 1 -side right -padx 0 -pady 0
 
          #--- Create the button 'S'
-         frame $This.fra4.s -width 27 -borderwidth 0 -relief flat
-         pack $This.fra4.s -in $This.fra4 -side top -fill x
+         frame $private($visuNo,This).fra4.s -width 27 -borderwidth 0 -relief flat
+         pack $private($visuNo,This).fra4.s -in $private($visuNo,This).fra4 -side top -fill x
 
          #--- Button-design
-         button $This.fra4.s.canv1 -borderwidth 2 \
+         button $private($visuNo,This).fra4.s.canv1 -borderwidth 2 \
             -font [ list {Arial} 12 bold ] \
             -text "$caption(tel,sud)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $This.fra4.s.canv1 -in $This.fra4.s -expand 0 -side top -padx 2 -pady 0
+         pack $private($visuNo,This).fra4.s.canv1 \
+            -in $private($visuNo,This).fra4.s -expand 0 -side top -padx 2 -pady 0
 
-         set zone(n) $This.fra4.n.canv1
-         set zone(e) $This.fra4.we.canv1
-         set zone(w) $This.fra4.we.canv2
-         set zone(s) $This.fra4.s.canv1
+         set zone(n) $private($visuNo,This).fra4.n.canv1
+         set zone(e) $private($visuNo,This).fra4.we.canv1
+         set zone(w) $private($visuNo,This).fra4.we.canv2
+         set zone(s) $private($visuNo,This).fra4.s.canv1
 
          #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
-         label $This.fra4.s.lab1 -font $audace(font,arial_10_b) -textvariable audace(telescope,controle) \
-            -borderwidth 0 -relief flat
-         pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
+         label $private($visuNo,This).fra4.s.lab1 -font $audace(font,arial_10_b) \
+            -textvariable audace(telescope,controle) -borderwidth 0 -relief flat
+         pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
 
-      pack $This.fra4 -side top -fill x
+      pack $private($visuNo,This).fra4 -side top -fill x
 
-      bind $This.fra4.we.lab <ButtonPress-1> { ::tlscp::cmdSpeed }
-      bind $This.fra4.s.lab1 <ButtonPress-1> { ::tlscp::cmdCtlSuivi }
+      bind $private($visuNo,This).fra4.we.lab <ButtonPress-1> { ::tlscp::cmdSpeed }
+      bind $private($visuNo,This).fra4.s.lab1 <ButtonPress-1> { ::tlscp::cmdCtlSuivi }
 
       #--- Cardinal moves
       bind $zone(e) <ButtonPress-1> { ::tlscp::cmdMove e }
@@ -217,27 +232,30 @@ proc ::tlscp::createPanel { visuNo } {
       bind $zone(n) <ButtonRelease-1> { ::tlscp::cmdStop n }
 
       #--- Frame de l'image
-      frame $This.fra6 -borderwidth 1 -relief groove
+      frame $private($visuNo,This).fra6 -borderwidth 1 -relief groove
 
          #--- Frame invisible pour le temps de pose
-         frame $This.fra6.fra1
+         frame $private($visuNo,This).fra6.fra1
 
             #--- Entry pour l'objet a entrer
-            entry $This.fra6.fra1.ent1 -font $audace(font,arial_8_b) -textvariable ::tlscp::private($visuNo,exptime) \
-               -relief groove -width 5 -justify center
-            pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -padx 4 -pady 2
+            entry $private($visuNo,This).fra6.fra1.ent1 -font $audace(font,arial_8_b) \
+               -textvariable ::tlscp::private($visuNo,exptime) -relief groove -width 5 -justify center
+            pack $private($visuNo,This).fra6.fra1.ent1 -in $private($visuNo,This).fra6.fra1 -side left \
+               -fill none -padx 4 -pady 2
 
-            label $This.fra6.fra1.lab1 -text $caption(tel,seconde) -relief flat
-            pack $This.fra6.fra1.lab1 -in $This.fra6.fra1 -side left -fill none -padx 1 -pady 1
+            label $private($visuNo,This).fra6.fra1.lab1 -text $caption(tel,seconde) -relief flat
+            pack $private($visuNo,This).fra6.fra1.lab1 -in $private($visuNo,This).fra6.fra1 -side left \
+               -fill none -padx 1 -pady 1
 
-         pack $This.fra6.fra1 -in $This.fra6 -side top -fill x
+         pack $private($visuNo,This).fra6.fra1 -in $private($visuNo,This).fra6 -side top -fill x
 
          #--- Menu pour binning
-         frame $This.fra6.optionmenu1 -borderwidth 0 -relief groove
-            menubutton $This.fra6.optionmenu1.but_bin -text $caption(tel,binning) \
-               -menu $This.fra6.optionmenu1.but_bin.menu -relief raised
-            pack $This.fra6.optionmenu1.but_bin -in $This.fra6.optionmenu1 -side left -fill none
-            set m [ menu $This.fra6.optionmenu1.but_bin.menu -tearoff 0 ]
+         frame $private($visuNo,This).fra6.optionmenu1 -borderwidth 0 -relief groove
+            menubutton $private($visuNo,This).fra6.optionmenu1.but_bin -text $caption(tel,binning) \
+               -menu $private($visuNo,This).fra6.optionmenu1.but_bin.menu -relief raised
+            pack $private($visuNo,This).fra6.optionmenu1.but_bin -in $private($visuNo,This).fra6.optionmenu1 \
+               -side left -fill none
+            set m [ menu $private($visuNo,This).fra6.optionmenu1.but_bin.menu -tearoff 0 ]
             foreach valbin $private($visuNo,choix_bin) {
                $m add radiobutton -label "$valbin" \
                   -indicatoron "1" \
@@ -245,19 +263,22 @@ proc ::tlscp::createPanel { visuNo } {
                   -variable ::tlscp::private($visuNo,binning) \
                   -command { }
             }
-            entry $This.fra6.optionmenu1.lab_bin -width 3 -font {arial 10 bold}  -relief groove \
+            entry $private($visuNo,This).fra6.optionmenu1.lab_bin -width 3 -font {arial 10 bold} -relief groove \
               -textvariable ::tlscp::private($visuNo,binning) -justify center -state disabled
-            pack $This.fra6.optionmenu1.lab_bin -in $This.fra6.optionmenu1 -side left -fill both -expand true
-         pack $This.fra6.optionmenu1 -anchor n -fill x -expand 0 -pady 2
+            pack $private($visuNo,This).fra6.optionmenu1.lab_bin -in $private($visuNo,This).fra6.optionmenu1 \
+               -side left -fill both -expand true
+         pack $private($visuNo,This).fra6.optionmenu1 -anchor n -fill x -expand 0 -pady 2
 
          #--- Bouton GO
-         button $This.fra6.but1 -borderwidth 2 -text $caption(tel,goccd) -command "::tlscp::cmdGo $visuNo"
-         pack $This.fra6.but1 -in $This.fra6 -fill none -anchor center -pady 1 -ipadx 17
+         button $private($visuNo,This).fra6.but1 -borderwidth 2 -text $caption(tel,goccd) \
+            -command "::tlscp::cmdGo $visuNo"
+         pack $private($visuNo,This).fra6.but1 -in $private($visuNo,This).fra6 -fill none \
+            -anchor center -pady 1 -ipadx 17
 
-      pack $This.fra6 -side top -fill x
+      pack $private($visuNo,This).fra6 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+      ::confColor::applyColor $private($visuNo,This)
 }
 
 #------------------------------------------------------------
@@ -286,49 +307,49 @@ proc ::tlscp::adaptPanel { visuNo { varName "" } { varIndex "" } { operation "" 
    variable private
    global conf
 
-   set This $private($visuNo,This)
-
    if { $conf(telescope) == "audecom" } {
-      pack $This.fra2.fra1a.check1 -in $This.fra2.fra1a -side left -fill both -anchor center -pady 1
+      pack $private($visuNo,This).fra2.fra1a.check1 -in $private($visuNo,This).fra2.fra1a -side left \
+         -fill both -anchor center -pady 1
       #--- Evolution du script tant que la fonctionnalite "Stop Goto" sous AudeCom ne fonctionne pas
-      #--- pack $This.fra2.fra2a.but2 -in $This.fra2.fra2a -side right -fill both -anchor center -pady 1
-      pack forget $This.fra2.fra2a.but2
+      #--- pack $private($visuNo,This).fra2.fra2a.but2 -in $private($visuNo,This).fra2.fra2a -side right \
+      #---    -fill both -anchor center -pady 1
+      pack forget $private($visuNo,This).fra2.fra2a.but2
       #--- Fin de l'evolution
-      pack forget $This.fra2.fra2a.but3
-      pack $This.fra2.but3 -in $This.fra2 -side bottom -anchor center -fill x -pady 1
-      pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
+      pack forget $private($visuNo,This).fra2.fra2a.but3
+      pack $private($visuNo,This).fra2.but3 -in $private($visuNo,This).fra2 -side bottom -anchor center -fill x -pady 1
+      pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
    } elseif { $conf(telescope) == "temma" } {
       if { $conf(temma,modele) == "2" } {
-         pack forget $This.fra2.fra1a.check1
-         pack forget $This.fra2.fra2a.but2
-         pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-         pack forget $This.fra2.but3
-         pack $This.fra4.s.lab1 -in $This.fra4.s -expand 1 -side left
+         pack forget $private($visuNo,This).fra2.fra1a.check1
+         pack forget $private($visuNo,This).fra2.fra2a.but2
+         pack $private($visuNo,This).fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
+         pack forget $private($visuNo,This).fra2.but3
+         pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
       } else {
-         pack forget $This.fra2.fra1a.check1
-         pack forget $This.fra2.fra2a.but2
-         pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-         pack forget $This.fra2.but3
-         pack forget $This.fra4.s.lab1
+         pack forget $private($visuNo,This).fra2.fra1a.check1
+         pack forget $private($visuNo,This).fra2.fra2a.but2
+         pack $private($visuNo,This).fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
+         pack forget $private($visuNo,This).fra2.but3
+         pack forget $private($visuNo,This).fra4.s.lab1
       }
    } else {
       #--- C'est un telescope compatible LX200
-      pack forget $This.fra2.fra1a.check1
-      pack forget $This.fra2.fra2a.but2
-      pack $This.fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-      pack forget $This.fra2.but3
-      pack forget $This.fra4.s.lab1
+      pack forget $private($visuNo,This).fra2.fra1a.check1
+      pack forget $private($visuNo,This).fra2.fra2a.but2
+      pack $private($visuNo,This).fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
+      pack forget $private($visuNo,This).fra2.but3
+      pack forget $private($visuNo,This).fra4.s.lab1
    }
    if { [ ::telescope::possedeGoto ] == "0" } {
-      $This.fra2.fra1a.match configure -relief groove -state disabled
-      $This.fra2.fra2a.but1 configure -relief groove -state disabled
-      $This.fra2.fra2a.but2 configure -relief groove -state disabled
-      $This.fra2.fra2a.but3 configure -relief groove -state disabled
+      $private($visuNo,This).fra2.fra1a.match configure -relief groove -state disabled
+      $private($visuNo,This).fra2.fra2a.but1 configure -relief groove -state disabled
+      $private($visuNo,This).fra2.fra2a.but2 configure -relief groove -state disabled
+      $private($visuNo,This).fra2.fra2a.but3 configure -relief groove -state disabled
    } else {
-      $This.fra2.fra1a.match configure -relief raised -state normal
-      $This.fra2.fra2a.but1 configure -relief raised -state normal
-      $This.fra2.fra2a.but2 configure -relief raised -state normal
-      $This.fra2.fra2a.but3 configure -relief raised -state normal
+      $private($visuNo,This).fra2.fra1a.match configure -relief raised -state normal
+      $private($visuNo,This).fra2.fra2a.but1 configure -relief raised -state normal
+      $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal
+      $private($visuNo,This).fra2.fra2a.but3 configure -relief raised -state normal
    }
 }
 
@@ -437,6 +458,7 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
    #--- Gestion des catalogues
    if { $private($visuNo,menu) == "$caption(tel,coord)" } {
       ::cataGoto::Nettoyage
+      set catalogue(validation) "0"
       set private($visuNo,list_radec) $private($visuNo,getobj)
    } elseif { $private($visuNo,menu) == "$caption(tel,planete)" } {
       ::cataGoto::GotoPlanete
@@ -447,8 +469,6 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
    } elseif { $private($visuNo,menu) == "$caption(tel,asteroide)" } {
       ::cataGoto::CataAsteroide
       vwait catalogue(validation)
@@ -458,8 +478,6 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
    } elseif { $private($visuNo,menu) == "$caption(tel,etoile)" } {
       ::cataGoto::CataEtoiles
       vwait catalogue(validation)
@@ -469,8 +487,6 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
    } elseif { $private($visuNo,menu) == "$caption(tel,messier)" } {
       ::cataGoto::CataObjet $private($visuNo,menu)
       vwait catalogue(validation)
@@ -480,8 +496,6 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
    } elseif { $private($visuNo,menu) == "$caption(tel,ngc)" } {
       ::cataGoto::CataObjet $private($visuNo,menu)
       vwait catalogue(validation)
@@ -491,8 +505,6 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
    } elseif { $private($visuNo,menu) == "$caption(tel,ic)" } {
       ::cataGoto::CataObjet $private($visuNo,menu)
       vwait catalogue(validation)
@@ -502,9 +514,7 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
          set private($visuNo,list_radec) $private($visuNo,getobj)
       }
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
-   } elseif { $private($visuNo,menu) == "$caption(tel,utilisateur)"  } {
+   } elseif { $private($visuNo,menu) == "$caption(tel,utilisateur)" } {
       if { $catalogue(autre_catalogue) == "2" } {
          ::cataGoto::CataObjetUtilisateur_Choix
       } else {
@@ -518,18 +528,15 @@ proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
             set private($visuNo,list_radec) $private($visuNo,getobj)
          }
          set private($visuNo,getobj) $private($visuNo,list_radec)
-         $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-         update
       } else {
-         set catalogue(validation) "2"
+         set catalogue(validation) "0"
       }
-   } else {
+   } elseif { $private($visuNo,menu) == "$caption(tel,zenith)" } {
       ::cataGoto::Nettoyage
+      set catalogue(validation) "0"
       set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
       set private($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
       set private($visuNo,getobj) $private($visuNo,list_radec)
-      $private($visuNo,This).fra2.ent1 configure -textvariable ::tlscp::private($visuNo,getobj)
-      update
    }
    if { $catalogue(validation) == "1" } {
       ::tlscp::Gestion_Cata $visuNo
