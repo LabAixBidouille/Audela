@@ -28,6 +28,9 @@
 /* the following line is proposed by Laurent Marsac (jko@rox0r.net) */
 #undef CONFIG_X86_CMPXCHG
 
+
+#if 0  // Following code is disabled
+
 /* the following lines include the system.h */
 #define __KERNEL__
 #include <asm/types.h>
@@ -55,6 +58,12 @@
 #define AUDELA_CLI cli_fonction_qui_n_existe_pas
 #define AUDELA_STI sti_fonction_qui_n_existe_pas
 #endif
+
+#endif /* 0 */
+
+/* Override of the local irq functions */
+#define AUDELA_CLI() __asm__ __volatile__ ("cli": : :"memory")
+#define AUDELA_STI() __asm__ __volatile__ ("sti": : :"memory")
 
 #endif /* OS_LIN */
 
