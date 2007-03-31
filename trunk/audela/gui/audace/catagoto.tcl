@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.10 2007-02-24 12:09:51 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.11 2007-03-31 15:23:19 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -98,6 +98,8 @@ namespace eval cataGoto {
       }
    }
 
+############## Gestion des corps du Systeme Solaire (Soleil, Lune et Planetes) ##############
+
    #
    # cataGoto::GotoPlanete
    # Affichage de la fenetre de configuration pour les Goto vers des planetes
@@ -106,10 +108,20 @@ namespace eval cataGoto {
       global audace
       global conf
       global caption
-      global confGotoPlanete
       global catalogue
       global cataGoto
 
+      #---
+      set catalogue(planete_choisie)       "-"
+      set catalogue(planete_mag)           "-"
+      set catalogue(planete_diam_apparent) "-"
+      set catalogue(planete_phase)         "-"
+      set catalogue(planete_elongation)    "-"
+      set catalogue(planete_ad)            "-"
+      set catalogue(planete_dec)           "-"
+      set catalogue(planete_hauteur_°)     "-"
+      set catalogue(planete_azimut_°)      "-"
+      set catalogue(planete_anglehoraire)  "-"
       #---
       ::cataGoto::Nettoyage
       #---
@@ -128,7 +140,7 @@ namespace eval cataGoto {
       wm geometry $audace(base).gotoPlanete $cataGoto(gotoPlanete,position)
       wm protocol $audace(base).gotoPlanete WM_DELETE_WINDOW {
          ::cataGoto::recup_position
-         set catalogue(validation) "2"
+         set catalogue(validation)      "0"
          set cataGoto(carte,validation) "0"
          set cataGoto(carte,avant_plan) "0"
          destroy $audace(base).gotoPlanete
@@ -141,63 +153,63 @@ namespace eval cataGoto {
       bind $audace(base).gotoPlanete <Key-F1> { ::console::GiveFocus }
 
       #--- Cree l'affichage de la fenetre de selection et des boutons
-      set confGotoPlanete(planete) "10"
+      set catalogue(planete_numero) "10"
       frame $audace(base).gotoPlanete.frame1 -borderwidth 1 -relief raised
          frame $audace(base).gotoPlanete.frame1.frame1a -borderwidth 0 -relief raised
             #--- Radio-bouton Soleil
             radiobutton $audace(base).gotoPlanete.frame1.frame1a.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,soleil)" -value 0 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,soleil)" -value 0 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1a.rad1 -side left -padx 5 -pady 2
             #--- Radio-bouton Lune
             radiobutton $audace(base).gotoPlanete.frame1.frame1a.rad2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,lune)" -value 1 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,lune)" -value 1 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1a.rad2 -side right -padx 5 -pady 2
          pack $audace(base).gotoPlanete.frame1.frame1a -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame1.frame1b -borderwidth 0 -relief raised
             #--- Radio-bouton Mercure
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,mercure)" -value 2 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,mercure)" -value 2 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1b.rad3 -side left -padx 5 -pady 2
             #--- Radio-bouton Venus
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,venus)" -value 3 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,venus)" -value 3 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1b.rad4 -side left -padx 5 -pady 2
             #--- Radio-bouton Mars
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad5 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,mars)" -value 4 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,mars)" -value 4 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1b.rad5 -side left -padx 5 -pady 2
             #--- Radio-bouton Jupiter
             radiobutton $audace(base).gotoPlanete.frame1.frame1b.rad6 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,jupiter)" -value 5 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,jupiter)" -value 5 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1b.rad6 -side left -padx 5 -pady 2
          pack $audace(base).gotoPlanete.frame1.frame1b -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame1.frame1c -borderwidth 0 -relief raised
             #--- Radio-bouton Saturne
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad7 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,saturne)" -value 6 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,saturne)" -value 6 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1c.rad7 -side left -padx 5 -pady 2
             #--- Radio-bouton Uranus
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad8 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,uranus)" -value 7 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,uranus)" -value 7 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1c.rad8 -side left -padx 5 -pady 2
             #--- Radio-bouton Neptune
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad9 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,neptune)" -value 8 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,neptune)" -value 8 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
             pack $audace(base).gotoPlanete.frame1.frame1c.rad9 -side left -padx 5 -pady 2
             #--- Radio-bouton Pluton
             radiobutton $audace(base).gotoPlanete.frame1.frame1c.rad10 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-               -text "$caption(catagoto,pluton)" -value 9 -variable confGotoPlanete(planete) \
+               -text "$caption(catagoto,pluton)" -value 9 -variable catalogue(planete_numero) \
                -width 10 -command { ::cataGoto::Ephemeride_Planete }
-            pack $audace(base).gotoPlanete.frame1.frame1c.rad10 -side left -padx 5 -pady 2 
+            pack $audace(base).gotoPlanete.frame1.frame1c.rad10 -side left -padx 5 -pady 2
          pack $audace(base).gotoPlanete.frame1.frame1c -side top -fill both -expand 1
       pack $audace(base).gotoPlanete.frame1 -side top -fill both -expand 1
 
@@ -210,64 +222,64 @@ namespace eval cataGoto {
             label $audace(base).gotoPlanete.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame3.lab3 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3.lab3a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame3.lab3a -textvariable "catalogue(planete_choisie)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame3.lab4 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3.lab4a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame3.lab4a -textvariable "catalogue(planete_mag)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame3a -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame3a.lab41 -text "$caption(catagoto,diametre_ap)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame3a.lab41 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3a.lab41a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame3a.lab41a -textvariable "catalogue(planete_diam_apparent)"
             pack $audace(base).gotoPlanete.frame2.frame3a.lab41a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame3a -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame3b -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame3b.lab42 -text "$caption(catagoto,phase)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame3b.lab42 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3b.lab42a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame3b.lab42a -textvariable "catalogue(planete_phase)"
             pack $audace(base).gotoPlanete.frame2.frame3b.lab42a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3b.lab43 -text "$caption(catagoto,elongation)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame3b.lab43 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3b.lab43a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame3b.lab43a -textvariable "catalogue(planete_elongation)"
             pack $audace(base).gotoPlanete.frame2.frame3b.lab43a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame3b -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame4.lab5 \
                -text "$caption(catagoto,RA) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame4.lab5 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame4.lab5a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame4.lab5a -textvariable "catalogue(planete_ad)"
             pack $audace(base).gotoPlanete.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame5.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame5.lab6 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame5.lab6a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame5.lab6a -textvariable "catalogue(planete_dec)"
             pack $audace(base).gotoPlanete.frame2.frame5.lab6a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame6.lab7 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -textvariable "catalogue(planete_hauteur_°)"
             pack $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame6.lab8 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame6.lab8a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame6.lab8a -textvariable "catalogue(planete_azimut_°)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame7 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).gotoPlanete.frame2.frame7.lab9 -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame7.lab9a -text "-"
+            label $audace(base).gotoPlanete.frame2.frame7.lab9a -textvariable "catalogue(planete_anglehoraire)"
             pack $audace(base).gotoPlanete.frame2.frame7.lab9a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame7 -side top -fill both -expand 1
       pack $audace(base).gotoPlanete.frame2 -side top -fill both -expand 1
@@ -276,11 +288,11 @@ namespace eval cataGoto {
       frame $audace(base).gotoPlanete.frame8 -borderwidth 1 -relief raised
          label $audace(base).gotoPlanete.frame8.lab10 -text "$caption(catagoto,haut_inf)"
          pack $audace(base).gotoPlanete.frame8.lab10 -side left -padx 10 -pady 5
-         entry $audace(base).gotoPlanete.frame8.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
+         entry $audace(base).gotoPlanete.frame8.haut_inf -textvariable "conf(cata,haut_inf)" -justify center -width 4
          pack $audace(base).gotoPlanete.frame8.haut_inf -side left -padx 10 -pady 5
          label $audace(base).gotoPlanete.frame8.lab11 -text "$caption(catagoto,haut_sup)"
          pack $audace(base).gotoPlanete.frame8.lab11 -side left -padx 10 -pady 5
-         entry $audace(base).gotoPlanete.frame8.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
+         entry $audace(base).gotoPlanete.frame8.haut_sup -textvariable "conf(cata,haut_sup)" -justify center -width 4
          pack $audace(base).gotoPlanete.frame8.haut_sup -side left -padx 10 -pady 5
       pack $audace(base).gotoPlanete.frame8 -side top -fill both -expand 1
 
@@ -288,7 +300,7 @@ namespace eval cataGoto {
       frame $audace(base).gotoPlanete.frame10 -borderwidth 1 -relief raised
          button $audace(base).gotoPlanete.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
             ::cataGoto::recup_position
-            set catalogue(validation) "2"
+            set catalogue(validation)      "0"
             set cataGoto(carte,validation) "0"
             set cataGoto(carte,avant_plan) "0"
             destroy $audace(base).gotoPlanete
@@ -310,7 +322,6 @@ namespace eval cataGoto {
       global caption
       global audace
       global catalogue
-      global confGotoPlanete
       global cataGoto
 
       #--- Preparation de l'heure TU
@@ -320,49 +331,48 @@ namespace eval cataGoto {
       }
 
       #--- Preparation des affichages nom, magnitude, AD et Dec.
-      switch -exact -- $confGotoPlanete(planete) {
-      0 { set confGotoPlanete(choisi) "$caption(catagoto,soleil)"
+      switch -exact -- $catalogue(planete_numero) {
+      0 { set catalogue(planete_choisie) "$caption(catagoto,soleil)"
            set planete_choisie [mc_ephem {Sun} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      1 { set confGotoPlanete(choisi) "$caption(catagoto,lune)"
+      1 { set catalogue(planete_choisie) "$caption(catagoto,lune)"
            set planete_choisie [mc_ephem {Moon} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE} -topo $audace(posobs,observateur,gps)]
         }
-      2 { set confGotoPlanete(choisi) "$caption(catagoto,mercure)"
+      2 { set catalogue(planete_choisie) "$caption(catagoto,mercure)"
            set planete_choisie [mc_ephem {Mercury} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE ELONG} -topo $audace(posobs,observateur,gps)]
         }
-      3 { set confGotoPlanete(choisi) "$caption(catagoto,venus)"
+      3 { set catalogue(planete_choisie) "$caption(catagoto,venus)"
            set planete_choisie [mc_ephem {Venus} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE ELONG} -topo $audace(posobs,observateur,gps)]
         }
-      4 { set confGotoPlanete(choisi) "$caption(catagoto,mars)"
+      4 { set catalogue(planete_choisie) "$caption(catagoto,mars)"
            set planete_choisie [mc_ephem {Mars} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      5 { set confGotoPlanete(choisi) "$caption(catagoto,jupiter)"
+      5 { set catalogue(planete_choisie) "$caption(catagoto,jupiter)"
            set planete_choisie [mc_ephem {Jupiter} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      6 { set confGotoPlanete(choisi) "$caption(catagoto,saturne)"
+      6 { set catalogue(planete_choisie) "$caption(catagoto,saturne)"
            set planete_choisie [mc_ephem {Saturn} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      7 { set confGotoPlanete(choisi) "$caption(catagoto,uranus)"
+      7 { set catalogue(planete_choisie) "$caption(catagoto,uranus)"
            set planete_choisie [mc_ephem {Uranus} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      8 { set confGotoPlanete(choisi) "$caption(catagoto,neptune)"
+      8 { set catalogue(planete_choisie) "$caption(catagoto,neptune)"
            set planete_choisie [mc_ephem {Neptune} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
-      9 { set confGotoPlanete(choisi) "$caption(catagoto,pluton)"
+      9 { set catalogue(planete_choisie) "$caption(catagoto,pluton)"
            set planete_choisie [mc_ephem {Pluto} [list [mc_date2tt $now]] \
               {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM} -topo $audace(posobs,observateur,gps)]
         }
       }
-      $audace(base).gotoPlanete.frame2.frame3.lab3a configure -text "$confGotoPlanete(choisi)"
 
       #--- Extraction du nom pour l'affichage de la carte de champ
       set cataGoto(carte,nom_objet) "[lindex [lindex $planete_choisie 0] 0]"
@@ -394,10 +404,10 @@ namespace eval cataGoto {
       if { $diam_ap >= "60" } {
          set diam_ap [expr $diam_ap/60.]
          set diam_ap "[format "%04.2f" $diam_ap]"
-         $audace(base).gotoPlanete.frame2.frame3a.lab41a configure -text "$diam_ap$caption(catagoto,minute_arc)"
+         set catalogue(planete_diam_apparent) "$diam_ap$caption(catagoto,minute_arc)"
       } else {
          set diam_ap "[format "%04.2f" $diam_ap]"
-         $audace(base).gotoPlanete.frame2.frame3a.lab41a configure -text "$diam_ap$caption(catagoto,seconde_arc)"
+         set catalogue(planete_diam_apparent) "$diam_ap$caption(catagoto,seconde_arc)"
       }
 
       #--- Affichage phase et elongation
@@ -405,23 +415,21 @@ namespace eval cataGoto {
          set phase [lindex [lindex $planete_choisie 0] 9]
          set phase [mc_angle2rad $phase]
          set phase [expr (1+cos($phase))/2]
-         $audace(base).gotoPlanete.frame2.frame3b.lab42a configure -text "[format "%04.2f" $phase]"
+         set catalogue(planete_phase) "[format "%04.2f" $phase]"
       } else {
-         $audace(base).gotoPlanete.frame2.frame3b.lab42a configure -text "-"
+         set catalogue(planete_phase) "-"
       }
       if { ([lindex [lindex $planete_choisie 0] 0] == "Mercury") || ([lindex [lindex $planete_choisie 0] 0] == "Venus") } {
          set catalogue(planete_elongation) "[format "%-03.1f" [lindex [lindex $planete_choisie 0] 10] ]"
-         $audace(base).gotoPlanete.frame2.frame3b.lab43a configure -text "$catalogue(planete_elongation)$caption(catagoto,degre)"
+         set catalogue(planete_elongation) "$catalogue(planete_elongation)$caption(catagoto,degre)"
       } else {
-         $audace(base).gotoPlanete.frame2.frame3b.lab43a configure -text "-"
+         set catalogue(planete_elongation) "-"
       }
 
       #--- Affichage magnitude, ascension droite et declinaison
-      $audace(base).gotoPlanete.frame2.frame3.lab4a configure -text "[format "%-03.1f" [lindex [lindex $planete_choisie 0] 7] ]"
-      set catalogue(planete_ad) "[format "%02dh%02dm%03.1fs" [lindex [lindex $planete_choisie 0] 1] [lindex [lindex $planete_choisie 0] 2] [lindex [lindex $planete_choisie 0] 3] ]"
-      $audace(base).gotoPlanete.frame2.frame4.lab5a configure -text "$catalogue(planete_ad)"
+      set catalogue(planete_mag) "[format "%-03.1f" [lindex [lindex $planete_choisie 0] 7] ]"
+      set catalogue(planete_ad)  "[format "%02dh%02dm%03.1fs" [lindex [lindex $planete_choisie 0] 1] [lindex [lindex $planete_choisie 0] 2] [lindex [lindex $planete_choisie 0] 3] ]"
       set catalogue(planete_dec) "[format "%02dd%02dm%03.1fs" [lindex [lindex $planete_choisie 0] 4] [lindex [lindex $planete_choisie 0] 5] [lindex [lindex $planete_choisie 0] 6] ]"
-      $audace(base).gotoPlanete.frame2.frame5.lab6a configure -text "$catalogue(planete_dec)"
 
       #--- Preparation et affichage hauteur et azimut
       set catalogue(planete_altaz) [mc_radec2altaz $catalogue(planete_ad) $catalogue(planete_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
@@ -443,18 +451,19 @@ namespace eval cataGoto {
          #--- Mise a jour dynamique des couleurs
          ::confColor::applyColor $audace(base).gotoPlanete
       }
-      $audace(base).gotoPlanete.frame2.frame6.labURLRed7a configure \
-         -text "$catalogue(planete_hauteur)$caption(catagoto,degre)" -fg $fg
+      set catalogue(planete_hauteur_°) "$catalogue(planete_hauteur)$caption(catagoto,degre)"
+      $audace(base).gotoPlanete.frame2.frame6.labURLRed7a configure -fg $fg
       #--- Azimut
       set catalogue(planete_azimut) "[format "%05.2f" [lindex $catalogue(planete_altaz) 0]]"
-      $audace(base).gotoPlanete.frame2.frame6.lab8a configure -text "$catalogue(planete_azimut)$caption(catagoto,degre)"
+      set catalogue(planete_azimut_°) "$catalogue(planete_azimut)$caption(catagoto,degre)"
       #--- Angle horaire
       set catalogue(planete_anglehoraire) [lindex $catalogue(planete_altaz) 2]
       set catalogue(planete_anglehoraire) [mc_angle2hms $catalogue(planete_anglehoraire) 360]
       set catalogue(planete_anglehoraire_sec) [lindex $catalogue(planete_anglehoraire) 2]
       set catalogue(planete_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(planete_anglehoraire) 0] [lindex $catalogue(planete_anglehoraire) 1] [expr int($catalogue(planete_anglehoraire_sec))]]
-      $audace(base).gotoPlanete.frame2.frame7.lab9a configure -text "$catalogue(planete_anglehoraire)"
    }
+
+##################### Gestion des corps du Systeme Solaire (Asteroides) #####################
 
    #
    # cataGoto::CataAsteroide
@@ -470,6 +479,14 @@ namespace eval cataGoto {
       global catalogue
       global cataGoto
 
+      #---
+      set catalogue(asteroide_choisie)      "-"
+      set catalogue(asteroide_mag)          "-"
+      set catalogue(asteroide_ad)           "-"
+      set catalogue(asteroide_dec)          "-"
+      set catalogue(asteroide_hauteur_°)    "-"
+      set catalogue(asteroide_azimut_°)     "-"
+      set catalogue(asteroide_anglehoraire) "-"
       #---
       ::cataGoto::Nettoyage
       #---
@@ -488,9 +505,9 @@ namespace eval cataGoto {
       wm geometry $audace(base).cataAsteroide $cataGoto(cataAsteroide,position)
       wm protocol $audace(base).cataAsteroide WM_DELETE_WINDOW {
          ::cataGoto::recup_position
-         set catalogue(validation)       "2"
+         set catalogue(validation)       "0"
          set catalogue(asteroide_choisi) ""
-         set catalogue(asteroide_mag)    ""
+         set catalogue(asteroide_mag)    "-"
          set cataGoto(carte,validation)  "0"
          set cataGoto(carte,avant_plan)  "0"
          destroy $audace(base).cataAsteroide
@@ -509,7 +526,7 @@ namespace eval cataGoto {
          pack $audace(base).cataAsteroide.frame1.labURL -side top -padx 5 -pady 5
          label $audace(base).cataAsteroide.frame1.lab1 -text "$caption(catagoto,objet_choisi)"
          pack $audace(base).cataAsteroide.frame1.lab1 -side left -padx 5 -pady 5
-         entry $audace(base).cataAsteroide.frame1.obj_choisi_ref -textvariable catalogue(asteroide_choisi) \
+         entry $audace(base).cataAsteroide.frame1.obj_choisi_ref -textvariable "catalogue(asteroide_choisi)" \
             -justify left -width 16
          pack $audace(base).cataAsteroide.frame1.obj_choisi_ref -side left -padx 5 -pady 5
          button $audace(base).cataAsteroide.frame1.rechercher -text "$caption(catagoto,rechercher)" -width 12 \
@@ -526,45 +543,45 @@ namespace eval cataGoto {
             label $audace(base).cataAsteroide.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame3.lab3 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame3.lab3a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame3.lab3a -textvariable "catalogue(asteroide_choisie)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame3.lab4 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame3.lab4a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame3.lab4a -textvariable "catalogue(asteroide_mag)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame4.lab5 \
                -text "$caption(catagoto,RA) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame4.lab5 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame4.lab5a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame4.lab5a -textvariable "catalogue(asteroide_ad)"
             pack $audace(base).cataAsteroide.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame5.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame5.lab6 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame5.lab6a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame5.lab6a -textvariable "catalogue(asteroide_dec)"
             pack $audace(base).cataAsteroide.frame2.frame5.lab6a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame6.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -textvariable "catalogue(asteroide_hauteur_°)"
             pack $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame6.lab8 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame6.lab8a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame6.lab8a -textvariable "catalogue(asteroide_azimut_°)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame7 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataAsteroide.frame2.frame7.lab9 -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame7.lab9a -text "-"
+            label $audace(base).cataAsteroide.frame2.frame7.lab9a -textvariable "catalogue(asteroide_anglehoraire)"
             pack $audace(base).cataAsteroide.frame2.frame7.lab9a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame7 -side top -fill both -expand 1
       pack $audace(base).cataAsteroide.frame2 -side top -fill both -expand 1
@@ -573,11 +590,11 @@ namespace eval cataGoto {
       frame $audace(base).cataAsteroide.frame8 -borderwidth 1 -relief raised
          label $audace(base).cataAsteroide.frame8.lab10 -text "$caption(catagoto,haut_inf)"
          pack $audace(base).cataAsteroide.frame8.lab10 -side left -padx 10 -pady 5
-         entry $audace(base).cataAsteroide.frame8.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
+         entry $audace(base).cataAsteroide.frame8.haut_inf -textvariable "conf(cata,haut_inf)" -justify center -width 4
          pack $audace(base).cataAsteroide.frame8.haut_inf -side left -padx 10 -pady 5
          label $audace(base).cataAsteroide.frame8.lab11 -text "$caption(catagoto,haut_sup)"
          pack $audace(base).cataAsteroide.frame8.lab11 -side left -padx 10 -pady 5
-         entry $audace(base).cataAsteroide.frame8.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
+         entry $audace(base).cataAsteroide.frame8.haut_sup -textvariable "conf(cata,haut_sup)" -justify center -width 4
          pack $audace(base).cataAsteroide.frame8.haut_sup -side left -padx 10 -pady 5
       pack $audace(base).cataAsteroide.frame8 -side top -fill both -expand 1
 
@@ -598,16 +615,19 @@ namespace eval cataGoto {
          button $audace(base).cataAsteroide.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
             #---
             set catalogue(asteroide_choisi) ""
-            set catalogue(asteroide_mag)    ""
+            set catalogue(asteroide_mag)    "-"
             #---
             ::cataGoto::recup_position
-            set catalogue(validation) "2"
+            set catalogue(validation)      "0"
             set cataGoto(carte,validation) "0"
             set cataGoto(carte,avant_plan) "0"
             destroy $audace(base).cataAsteroide
          }
          pack $audace(base).cataAsteroide.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
       pack $audace(base).cataAsteroide.frame10 -side top -fill both -expand 1
+
+      #--- Binding sur le bouton Rechercher
+      bind $audace(base).cataAsteroide <Key-Return> { ::cataGoto::Recherche_Asteroide }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).cataAsteroide
@@ -643,20 +663,22 @@ namespace eval cataGoto {
             #--- Traitement d'une erreur particuliere, la requete repond 'item'
             if { $liste_titres == "item" } {
                set catalogue(asteroide_choisi) ""
-               set catalogue(asteroide_mag)    ""
+               set catalogue(asteroide_mag)    "-"
             } else {
                set liste_objet [ split [ lindex [ lrange [ split $liste ";" ] 0 end ] 1 ] "|" ]
                set catalogue(asteroide_choisi) [ lindex $liste_objet 1 ]
+               set catalogue(asteroide_choisi) [ string trimleft $catalogue(asteroide_choisi) " " ]
+               set catalogue(asteroide_choisi) [ string trimright $catalogue(asteroide_choisi) " " ]
                set catalogue(aster_ad) [ lindex $liste_objet 2 ]
                set catalogue(asteroide_ad_d) [ expr 15.0 * $catalogue(aster_ad) ]
-               set catalogue(asteroide_ad) [ mc_angle2hms $catalogue(asteroide_ad_d) 360 zero 2 auto string ]
+               set catalogue(asteroide_ad_) [ mc_angle2hms $catalogue(asteroide_ad_d) 360 zero 2 auto string ]
                set catalogue(aster_dec) [ lindex $liste_objet 3 ]
-               set catalogue(asteroide_dec) [ string trimleft [ mc_angle2dms $catalogue(aster_dec) 90 zero 2 + string ] + ]
-               set catalogue(asteroide_mag) [ lindex $liste_objet 5 ]
+               set catalogue(asteroide_dec_) [ string trimleft [ mc_angle2dms $catalogue(aster_dec) 90 zero 2 + string ] + ]
+               set catalogue(asteroide_mag_) [ lindex $liste_objet 5 ]
             }
          } else {
             set catalogue(asteroide_choisi) ""
-            set catalogue(asteroide_mag)    ""
+            set catalogue(asteroide_mag)    "-"
          }
          #--- Gestion du bouton
          $audace(base).cataAsteroide.frame1.rechercher configure -relief raised -state normal
@@ -668,65 +690,61 @@ namespace eval cataGoto {
 
       #--- Preparation et affichage nom, magnitude, AD et Dec.
       if { "$catalogue(asteroide_choisi)" == "" } {
-         $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text ""
-         $audace(base).cataAsteroide.frame2.frame3.lab4a configure -text ""
-         set catalogue(asteroide_ad) "0"
-         $audace(base).cataAsteroide.frame2.frame4.lab5a configure -text ""
-         set catalogue(asteroide_dec) "0"
-         $audace(base).cataAsteroide.frame2.frame5.lab6a configure -text ""
+         set catalogue(asteroide_choisie) "-"
+         set catalogue(asteroide_mag) "-"
+         set catalogue(asteroide_ad) "-"
+         set catalogue(asteroide_dec) "-"
       } else {
-         $audace(base).cataAsteroide.frame2.frame3.lab3a configure -text [concat "([ lindex $liste_objet 0 ]) $catalogue(asteroide_choisi)"]
-         $audace(base).cataAsteroide.frame2.frame3.lab4a configure -text "$catalogue(asteroide_mag)"
-         $audace(base).cataAsteroide.frame2.frame4.lab5a configure -text "$catalogue(asteroide_ad)"
-         $audace(base).cataAsteroide.frame2.frame5.lab6a configure -text "$catalogue(asteroide_dec)"
+         set catalogue(asteroide_choisie) [ concat "([ string trimright [ lindex $liste_objet 0 ] " " ]) $catalogue(asteroide_choisi)" ]
+         set catalogue(asteroide_mag) $catalogue(asteroide_mag_)
+         set catalogue(asteroide_ad) $catalogue(asteroide_ad_)
+         set catalogue(asteroide_dec) $catalogue(asteroide_dec_)
       }
 
       #--- Preparation et affichage hauteur et azimut
-      set catalogue(asteroide_altaz) [mc_radec2altaz $catalogue(asteroide_ad) $catalogue(asteroide_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
-      #--- Hauteur
-      set catalogue(asteroide_hauteur) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 1]]"
-      if { ($catalogue(asteroide_hauteur) < $conf(cata,haut_inf)) || ("$catalogue(asteroide_choisi)" == "") } {
-         set fg $color(red)
-         destroy $audace(base).cataAsteroide.frame10.ok
-      } elseif { ($catalogue(asteroide_hauteur) > $conf(cata,haut_sup)) || ("$catalogue(asteroide_choisi)" == "") } {
-         set fg $color(red)
-         destroy $audace(base).cataAsteroide.frame10.ok
-      } else {
-         set fg $audace(color,textColor)
-         destroy $audace(base).cataAsteroide.frame10.ok
-         button $audace(base).cataAsteroide.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-            set catalogue(asteroide_choisi) ""
-            set catalogue(asteroide_mag)    ""
-            set catalogue(validation)       "1"
+      if { "$catalogue(asteroide_choisi)" != "" } {
+         set catalogue(asteroide_altaz) [mc_radec2altaz $catalogue(asteroide_ad) $catalogue(asteroide_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+         #--- Hauteur
+         set catalogue(asteroide_hauteur) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 1]]"
+         if { ( $catalogue(asteroide_hauteur) < $conf(cata,haut_inf) ) || ( "$catalogue(asteroide_choisi)" == "" ) } {
+            set fg $color(red)
+            destroy $audace(base).cataAsteroide.frame10.ok
+         } elseif { ( $catalogue(asteroide_hauteur) > $conf(cata,haut_sup) ) || ( "$catalogue(asteroide_choisi)" == "" ) } {
+            set fg $color(red)
+            destroy $audace(base).cataAsteroide.frame10.ok
+         } else {
+            set fg $audace(color,textColor)
+            destroy $audace(base).cataAsteroide.frame10.ok
+            button $audace(base).cataAsteroide.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
+               set catalogue(asteroide_choisi) ""
+               set catalogue(asteroide_mag)    "-"
+               set catalogue(validation)       "1"
+            }
+            pack $audace(base).cataAsteroide.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
+            #--- Mise a jour dynamique des couleurs
+            ::confColor::applyColor $audace(base).cataAsteroide
          }
-         pack $audace(base).cataAsteroide.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
-         #--- Mise a jour dynamique des couleurs
-         ::confColor::applyColor $audace(base).cataAsteroide
-      }
-      if { "$catalogue(asteroide_choisi)" == "" } {
-         $audace(base).cataAsteroide.frame2.frame6.labURLRed7a configure -text ""
+         set catalogue(asteroide_hauteur_°) "$catalogue(asteroide_hauteur)$caption(catagoto,degre)"
+         $audace(base).cataAsteroide.frame2.frame6.labURLRed7a configure -fg $fg
+         #--- Azimut
+         set catalogue(asteroide_azimut) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 0]]"
+         set catalogue(asteroide_azimut_°) "$catalogue(asteroide_azimut)$caption(catagoto,degre)"
+         #--- Angle horaire
+         set catalogue(asteroide_anglehoraire) [lindex $catalogue(asteroide_altaz) 2]
+         set catalogue(asteroide_anglehoraire) [mc_angle2hms $catalogue(asteroide_anglehoraire) 360]
+         set catalogue(asteroide_anglehoraire_sec) [lindex $catalogue(asteroide_anglehoraire) 2]
+         set catalogue(asteroide_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(asteroide_anglehoraire) 0] [lindex $catalogue(asteroide_anglehoraire) 1] [expr int($catalogue(asteroide_anglehoraire_sec))]]
       } else {
-         $audace(base).cataAsteroide.frame2.frame6.labURLRed7a configure \
-            -text "$catalogue(asteroide_hauteur)$caption(catagoto,degre)" -fg $fg
-      }
-      #--- Azimut
-      set catalogue(asteroide_azimut) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 0]]"
-      if { "$catalogue(asteroide_choisi)" == "" } {
-         $audace(base).cataAsteroide.frame2.frame6.lab8a configure -text ""
-      } else {
-         $audace(base).cataAsteroide.frame2.frame6.lab8a configure -text "$catalogue(asteroide_azimut)$caption(catagoto,degre)"
-      }
-      #--- Angle horaire
-      set catalogue(asteroide_anglehoraire) [lindex $catalogue(asteroide_altaz) 2]
-      set catalogue(asteroide_anglehoraire) [mc_angle2hms $catalogue(asteroide_anglehoraire) 360]
-      set catalogue(asteroide_anglehoraire_sec) [lindex $catalogue(asteroide_anglehoraire) 2]
-      set catalogue(asteroide_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(asteroide_anglehoraire) 0] [lindex $catalogue(asteroide_anglehoraire) 1] [expr int($catalogue(asteroide_anglehoraire_sec))]]
-      if { "$catalogue(asteroide_choisi)" == "" } {
-         $audace(base).cataAsteroide.frame2.frame7.lab9a configure -text ""
-      } else {
-         $audace(base).cataAsteroide.frame2.frame7.lab9a configure -text "$catalogue(asteroide_anglehoraire)"
+         #--- Hauteur
+         set catalogue(asteroide_hauteur_°)    "-"
+         #--- Azimut
+         set catalogue(asteroide_azimut_°)     "-"
+         #--- Angle horaire
+         set catalogue(asteroide_anglehoraire) "-"
       }
    }
+
+######################### Gestion des catalogues Messier, NGC et IC #########################
 
    #
    # cataGoto::CataObjet
@@ -742,6 +760,14 @@ namespace eval cataGoto {
       global cataGoto
 
       #---
+      set catalogue(M-NGC-IC_choisie)      "-"
+      set catalogue(M-NGC-IC_mag)          "-"
+      set catalogue(M-NGC-IC_ad)           "-"
+      set catalogue(M-NGC-IC_dec)          "-"
+      set catalogue(M-NGC-IC_hauteur_°)    "-"
+      set catalogue(M-NGC-IC_azimut_°)     "-"
+      set catalogue(M-NGC-IC_anglehoraire) "-"
+      #---
       ::cataGoto::Nettoyage
       #---
       set cataGoto(cataObjet,position) $conf(cataObjet,position)
@@ -751,6 +777,8 @@ namespace eval cataGoto {
          set fin [ string length $cataGoto(cataObjet,geometry) ]
          set cataGoto(cataObjet,position) "+[ string range $cataGoto(cataObjet,geometry) $deb $fin ]"
       }
+      #---
+      set catalogue(M-NGC-IC) $menuChoisi
       #---
       toplevel $audace(base).cataObjet
       if { $conf(telescope) == "ouranos" } {
@@ -796,7 +824,7 @@ namespace eval cataGoto {
          wm geometry $audace(base).cataObjet $cataGoto(cataObjet,position)
          wm protocol $audace(base).cataObjet WM_DELETE_WINDOW {
             ::cataGoto::recup_position
-            set catalogue(validation) "2"
+            set catalogue(validation)      "0"
             set cataGoto(carte,validation) "0"
             set cataGoto(carte,avant_plan) "0"
             destroy $audace(base).cataObjet
@@ -813,7 +841,7 @@ namespace eval cataGoto {
       frame $audace(base).cataObjet.frame1 -borderwidth 1 -relief raised
          label $audace(base).cataObjet.frame1.lab1 -text "$caption(catagoto,objet_choisi)"
          pack $audace(base).cataObjet.frame1.lab1 -side left -padx 5 -pady 5
-         entry $audace(base).cataObjet.frame1.obj_choisi_ref -textvariable catalogue(obj_choisi_ref) \
+         entry $audace(base).cataObjet.frame1.obj_choisi_ref -textvariable "catalogue(obj_choisi_ref)" \
             -justify left -width 10
          pack $audace(base).cataObjet.frame1.obj_choisi_ref -side left -padx 5 -pady 5
          button $audace(base).cataObjet.frame1.rechercher -text "$caption(catagoto,rechercher)" -width 12 \
@@ -830,12 +858,12 @@ namespace eval cataGoto {
             label $audace(base).cataObjet.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame3.lab3 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame3.lab3a -text "-"
+            label $audace(base).cataObjet.frame2.frame3.lab3a -textvariable "catalogue(M-NGC-IC_choisie)"
             pack $audace(base).cataObjet.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame3.lab4 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame3.lab4a -text "-"
+            label $audace(base).cataObjet.frame2.frame3.lab4a -textvariable "catalogue(M-NGC-IC_mag)"
             pack $audace(base).cataObjet.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame4 -borderwidth 0 -relief raised
@@ -843,7 +871,7 @@ namespace eval cataGoto {
                -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame4.lab5 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame4.lab5a -text "-"
+            label $audace(base).cataObjet.frame2.frame4.lab5a -textvariable "catalogue(M-NGC-IC_ad)"
             pack $audace(base).cataObjet.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame5 -borderwidth 0 -relief raised
@@ -851,26 +879,26 @@ namespace eval cataGoto {
                -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame5.lab6 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame5.lab6a -text "-"
+            label $audace(base).cataObjet.frame2.frame5.lab6a -textvariable "catalogue(M-NGC-IC_dec)"
             pack $audace(base).cataObjet.frame2.frame5.lab6a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame6.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame6.labURLRed7a -text "-"
+            label $audace(base).cataObjet.frame2.frame6.labURLRed7a -textvariable "catalogue(M-NGC-IC_hauteur_°)"
             pack $audace(base).cataObjet.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame6.lab8 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame6.lab8a -text "-"
+            label $audace(base).cataObjet.frame2.frame6.lab8a -textvariable "catalogue(M-NGC-IC_azimut_°)"
             pack $audace(base).cataObjet.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame7 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataObjet.frame2.frame7.lab9 -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame7.lab9a -text "-"
+            label $audace(base).cataObjet.frame2.frame7.lab9a -textvariable "catalogue(M-NGC-IC_anglehoraire)"
             pack $audace(base).cataObjet.frame2.frame7.lab9a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame7 -side top -fill both -expand 1
       pack $audace(base).cataObjet.frame2 -side top -fill both -expand 1
@@ -879,11 +907,11 @@ namespace eval cataGoto {
       frame $audace(base).cataObjet.frame8 -borderwidth 1 -relief raised
          label $audace(base).cataObjet.frame8.lab10 -text "$caption(catagoto,haut_inf)"
          pack $audace(base).cataObjet.frame8.lab10 -side left -padx 10 -pady 5
-         entry $audace(base).cataObjet.frame8.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
+         entry $audace(base).cataObjet.frame8.haut_inf -textvariable "conf(cata,haut_inf)" -justify center -width 4
          pack $audace(base).cataObjet.frame8.haut_inf -side left -padx 10 -pady 5
          label $audace(base).cataObjet.frame8.lab11 -text "$caption(catagoto,haut_sup)"
          pack $audace(base).cataObjet.frame8.lab11 -side left -padx 10 -pady 5
-         entry $audace(base).cataObjet.frame8.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
+         entry $audace(base).cataObjet.frame8.haut_sup -textvariable "conf(cata,haut_sup)" -justify center -width 4
          pack $audace(base).cataObjet.frame8.haut_sup -side left -padx 10 -pady 5
       pack $audace(base).cataObjet.frame8 -side top -fill both -expand 1
 
@@ -912,7 +940,7 @@ namespace eval cataGoto {
          } else {
             button $audace(base).cataObjet.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
                ::cataGoto::recup_position
-               set catalogue(validation) "2"
+               set catalogue(validation)      "0"
                set cataGoto(carte,validation) "0"
                set cataGoto(carte,avant_plan) "0"
                destroy $audace(base).cataObjet
@@ -920,6 +948,9 @@ namespace eval cataGoto {
          }
          pack $audace(base).cataObjet.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
       pack $audace(base).cataObjet.frame10 -side top -fill both -expand 1
+
+      #--- Binding sur le bouton Rechercher
+      bind $audace(base).cataObjet <Key-Return> { ::cataGoto::Recherche_Objet }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).cataObjet
@@ -962,75 +993,76 @@ namespace eval cataGoto {
       set cataGoto(carte,zoom_objet) "8"
 
       #--- Preparation et affichage nom, magnitude, AD et Dec.
-      $audace(base).cataObjet.frame2.frame3.lab3a configure -text "[lindex $objet_choisi 0]"
-      $audace(base).cataObjet.frame2.frame3.lab4a configure -text "[lindex $objet_choisi 5]"
       if { [lindex $objet_choisi 0] == "" } {
-         set catalogue(objet_ad) "0"
-         $audace(base).cataObjet.frame2.frame4.lab5a configure -text ""
-         set catalogue(objet_dec) "0"
-         $audace(base).cataObjet.frame2.frame5.lab6a configure -text ""
+         set catalogue(M-NGC-IC_choisie) "-"
+         set catalogue(M-NGC-IC_mag)     "-"
+         set catalogue(M-NGC-IC_ad)      "-"
+         set catalogue(objet_ad)         "0"
+         set catalogue(M-NGC-IC_dec)     "-"
+         set catalogue(objet_dec)        "0"
       } else {
-         set catalogue(objet_ad) "[lindex $objet_choisi 1]h[string range [lindex $objet_choisi 2] 0 1]m[expr ([string range [lindex $objet_choisi 2] 3 3])*60/10]"
-         $audace(base).cataObjet.frame2.frame4.lab5a configure -text "$catalogue(objet_ad)"
-         set catalogue(objet_dec) "[lindex $objet_choisi 3]d[lindex $objet_choisi 4]m00"
-         $audace(base).cataObjet.frame2.frame5.lab6a configure -text "$catalogue(objet_dec)"
+         set catalogue(M-NGC-IC_choisie) "[lindex $objet_choisi 0]"
+         set catalogue(M-NGC-IC_mag)     "[lindex $objet_choisi 5]"
+         set catalogue(M-NGC-IC_ad)      "[lindex $objet_choisi 1]h[string range [lindex $objet_choisi 2] 0 1]m[expr ([string range [lindex $objet_choisi 2] 3 3])*60/10]"
+         set catalogue(objet_ad)         "$catalogue(M-NGC-IC_ad)"
+         set catalogue(M-NGC-IC_dec)     "[lindex $objet_choisi 3]d[lindex $objet_choisi 4]m00"
+         set catalogue(objet_dec)        "$catalogue(M-NGC-IC_dec)"
       }
 
-      #--- Preparation et affichage hauteur et azimut
-      set catalogue(objet_altaz) [mc_radec2altaz $catalogue(objet_ad) $catalogue(objet_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
-      #--- Hauteur
-      set catalogue(objet_hauteur) "[format "%05.2f" [lindex $catalogue(objet_altaz) 1]]"
-      if { ($catalogue(objet_hauteur) < $conf(cata,haut_inf)) || ([lindex $objet_choisi 0] == "") } {
-         set fg $color(red)
-         destroy $audace(base).cataObjet.frame10.ok
-      } elseif { ($catalogue(objet_hauteur) > $conf(cata,haut_sup)) || ([lindex $objet_choisi 0] == "") } {
-         set fg $color(red)
-         destroy $audace(base).cataObjet.frame10.ok
-      } else {
-         set fg $audace(color,textColor)
-         destroy $audace(base).cataObjet.frame10.ok
-         if { $conf(telescope) == "ouranos" } {
-            button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-               ::OuranosCom::match_transfert_ouranos
-               destroy $audace(base).cataObjet
-               #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
-               if { $cataGoto(carte,validation) == "1" } {
-                  ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
+      #--- Preparation et affichage hauteur, azimut et angle horaire
+      if { [lindex $objet_choisi 0] != "" } {
+         set catalogue(objet_altaz) [mc_radec2altaz $catalogue(M-NGC-IC_ad) $catalogue(M-NGC-IC_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+         #--- Hauteur
+         set catalogue(objet_hauteur) "[format "%05.2f" [lindex $catalogue(objet_altaz) 1]]"
+         if { ($catalogue(objet_hauteur) < $conf(cata,haut_inf)) || ([lindex $objet_choisi 0] == "") } {
+            set fg $color(red)
+            destroy $audace(base).cataObjet.frame10.ok
+         } elseif { ($catalogue(objet_hauteur) > $conf(cata,haut_sup)) || ([lindex $objet_choisi 0] == "") } {
+            set fg $color(red)
+            destroy $audace(base).cataObjet.frame10.ok
+         } else {
+            set fg $audace(color,textColor)
+            destroy $audace(base).cataObjet.frame10.ok
+            if { $conf(telescope) == "ouranos" } {
+               button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
+                  ::OuranosCom::match_transfert_ouranos
+                  destroy $audace(base).cataObjet
+                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
+                  if { $cataGoto(carte,validation) == "1" } {
+                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
+                  }
+               }
+            } else {
+               button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
+                  set catalogue(validation) "1"
                }
             }
-         } else {
-            button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-               set catalogue(validation) "1"
-            }
+            pack $audace(base).cataObjet.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
+            #--- Mise a jour dynamique des couleurs
+            ::confColor::applyColor $audace(base).cataObjet
          }
-         pack $audace(base).cataObjet.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
-         #--- Mise a jour dynamique des couleurs
-         ::confColor::applyColor $audace(base).cataObjet
-      }
-      if { [lindex $objet_choisi 0] == "" } {
-         $audace(base).cataObjet.frame2.frame6.labURLRed7a configure -text ""
+         set catalogue(M-NGC-IC_hauteur_°) "$catalogue(objet_hauteur)$caption(catagoto,degre)"
+         $audace(base).cataObjet.frame2.frame6.labURLRed7a configure -fg $fg
+         #--- Azimut
+         set catalogue(objet_azimut) "[format "%05.2f" [lindex $catalogue(objet_altaz) 0]]"
+         set catalogue(M-NGC-IC_azimut_°) "$catalogue(objet_azimut)$caption(catagoto,degre)"
+         #--- Angle horaire
+         set catalogue(objet_anglehoraire) [lindex $catalogue(objet_altaz) 2]
+         set catalogue(objet_anglehoraire) [mc_angle2hms $catalogue(objet_anglehoraire) 360]
+         set catalogue(objet_anglehoraire_sec) [lindex $catalogue(objet_anglehoraire) 2]
+         set catalogue(objet_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(objet_anglehoraire) 0] [lindex $catalogue(objet_anglehoraire) 1] [expr int($catalogue(objet_anglehoraire_sec))]]
+         set catalogue(M-NGC-IC_anglehoraire) "$catalogue(objet_anglehoraire)"
       } else {
-         $audace(base).cataObjet.frame2.frame6.labURLRed7a configure \
-            -text "$catalogue(objet_hauteur)$caption(catagoto,degre)" -fg $fg
-      }
-      #--- Azimut
-      set catalogue(objet_azimut) "[format "%05.2f" [lindex $catalogue(objet_altaz) 0]]"
-      if { [lindex $objet_choisi 0] == "" } {
-         $audace(base).cataObjet.frame2.frame6.lab8a configure -text ""
-      } else {
-         $audace(base).cataObjet.frame2.frame6.lab8a configure -text "$catalogue(objet_azimut)$caption(catagoto,degre)"
-      }
-      #--- Angle horaire
-      set catalogue(objet_anglehoraire) [lindex $catalogue(objet_altaz) 2]
-      set catalogue(objet_anglehoraire) [mc_angle2hms $catalogue(objet_anglehoraire) 360]
-      set catalogue(objet_anglehoraire_sec) [lindex $catalogue(objet_anglehoraire) 2]
-      set catalogue(objet_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(objet_anglehoraire) 0] [lindex $catalogue(objet_anglehoraire) 1] [expr int($catalogue(objet_anglehoraire_sec))]]
-      if { [lindex $objet_choisi 0] == "" } {
-         $audace(base).cataObjet.frame2.frame7.lab9a configure -text ""
-      } else {
-         $audace(base).cataObjet.frame2.frame7.lab9a configure -text "$catalogue(objet_anglehoraire)"
+         #--- Hauteur
+         set catalogue(M-NGC-IC_hauteur_°) "-"
+         #--- Azimut
+         set catalogue(M-NGC-IC_azimut_°) "-"
+         #--- Angle horaire
+         set catalogue(M-NGC-IC_anglehoraire) "-"
       }
    }
+
+############################# Gestion d'un catalogue d'etoiles ##############################
 
    #
    # cataGoto::CataEtoiles
@@ -1046,6 +1078,15 @@ namespace eval cataGoto {
       global color
       global cataGoto
 
+      #---
+      set catalogue(etoile_choisie)      "-"
+      set catalogue(etoile_nom_courant)  "-"
+      set catalogue(etoile_mag)          "-"
+      set catalogue(etoile_ad)           "-"
+      set catalogue(etoile_dec)          "-"
+      set catalogue(etoile_hauteur_°)    "-"
+      set catalogue(etoile_azimut_°)     "-"
+      set catalogue(etoile_anglehoraire) "-"
       #---
       ::cataGoto::Nettoyage
       #---
@@ -1077,7 +1118,7 @@ namespace eval cataGoto {
          wm geometry $audace(base).cataEtoile $cataGoto(cataEtoile,position)
          wm protocol $audace(base).cataEtoile WM_DELETE_WINDOW {
             ::cataGoto::recup_position
-            set catalogue(validation) "2"
+            set catalogue(validation)      "0"
             set cataGoto(carte,validation) "0"
             set cataGoto(carte,avant_plan) "0"
             destroy $audace(base).cataEtoile
@@ -1116,7 +1157,7 @@ namespace eval cataGoto {
             button $audace(base).cataEtoile.frame9.fermer -text "$caption(catagoto,fermer)" -width 7 -state disabled \
                -command {
                   ::cataGoto::recup_position
-                  set catalogue(validation) "2"
+                  set catalogue(validation)      "0"
                   set cataGoto(carte,validation) "0"
                   set cataGoto(carte,avant_plan) "0"
                   destroy $audace(base).cataEtoile
@@ -1141,11 +1182,11 @@ namespace eval cataGoto {
       frame $audace(base).cataEtoile.frame7 -borderwidth 1 -relief raised
          label $audace(base).cataEtoile.frame7.lab10 -text "$caption(catagoto,haut_inf)"
          pack $audace(base).cataEtoile.frame7.lab10 -side left -padx 10 -pady 5
-         entry $audace(base).cataEtoile.frame7.haut_inf -textvariable conf(cata,haut_inf) -justify center -width 4
+         entry $audace(base).cataEtoile.frame7.haut_inf -textvariable "conf(cata,haut_inf)" -justify center -width 4
          pack $audace(base).cataEtoile.frame7.haut_inf -side left -padx 10 -pady 5
          label $audace(base).cataEtoile.frame7.lab11 -text "$caption(catagoto,haut_sup)"
          pack $audace(base).cataEtoile.frame7.lab11 -side left -padx 10 -pady 5
-         entry $audace(base).cataEtoile.frame7.haut_sup -textvariable conf(cata,haut_sup) -justify center -width 4
+         entry $audace(base).cataEtoile.frame7.haut_sup -textvariable "conf(cata,haut_sup)" -justify center -width 4
          pack $audace(base).cataEtoile.frame7.haut_sup -side left -padx 10 -pady 5
       pack $audace(base).cataEtoile.frame7 -side bottom -fill both -expand 1
 
@@ -1158,17 +1199,17 @@ namespace eval cataGoto {
             label $audace(base).cataEtoile.frame2.frame3.lab2 -text "$caption(catagoto,nom_courant)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame3.lab2 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame3.lab2a -text "-"
+            label $audace(base).cataEtoile.frame2.frame3.lab2a -textvariable "catalogue(etoile_nom_courant)"
             pack $audace(base).cataEtoile.frame2.frame3.lab2a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame3.lab3 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame3.lab3a -text "-"
+            label $audace(base).cataEtoile.frame2.frame3.lab3a -textvariable "catalogue(etoile_choisie)"
             pack $audace(base).cataEtoile.frame2.frame3.lab3a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame3.lab4 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame3.lab4a -text "-"
+            label $audace(base).cataEtoile.frame2.frame3.lab4a -textvariable "catalogue(etoile_mag)"
             pack $audace(base).cataEtoile.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame4 -borderwidth 0 -relief raised
@@ -1176,32 +1217,32 @@ namespace eval cataGoto {
                -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame4.lab5 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame4.lab5a -text "-"
+            label $audace(base).cataEtoile.frame2.frame4.lab5a -textvariable "catalogue(etoile_ad)"
             pack $audace(base).cataEtoile.frame2.frame4.lab5a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab6 \
                -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame4.lab6 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame4.lab6a -text "-"
+            label $audace(base).cataEtoile.frame2.frame4.lab6a -textvariable "catalogue(etoile_dec)"
             pack $audace(base).cataEtoile.frame2.frame4.lab6a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame5.lab7 -text "$caption(catagoto,hauteur)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame5.lab7 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame5.labURLRed7a -text "-"
+            label $audace(base).cataEtoile.frame2.frame5.labURLRed7a -textvariable "catalogue(etoile_hauteur_°)"
             pack $audace(base).cataEtoile.frame2.frame5.labURLRed7a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.lab8 -text "$caption(catagoto,azimut)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame5.lab8 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame5.lab8a -text "-"
+            label $audace(base).cataEtoile.frame2.frame5.lab8a -textvariable "catalogue(etoile_azimut_°)"
             pack $audace(base).cataEtoile.frame2.frame5.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame6 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame6.lab9 -text "$caption(catagoto,angle_horaire)" \
                -font $audace(font,arial_10_b)
             pack $audace(base).cataEtoile.frame2.frame6.lab9 -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame6.lab9a -text "-"
+            label $audace(base).cataEtoile.frame2.frame6.lab9a -textvariable "catalogue(etoile_anglehoraire)"
             pack $audace(base).cataEtoile.frame2.frame6.lab9a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame6 -side top -fill both -expand 1
       pack $audace(base).cataEtoile.frame2 -side bottom -fill both -expand 1
@@ -1217,13 +1258,11 @@ namespace eval cataGoto {
       bind $zone(list_etoile) <ButtonRelease-1> {
          set thisstar [lindex $etbrillante [%W curselection]]
          #--- Preparation des affichages nom, nom courant, magnitude, AD et Dec.
-         $audace(base).cataEtoile.frame2.frame3.lab2a configure -text "[lindex $thisstar 0]"
-         $audace(base).cataEtoile.frame2.frame3.lab3a configure -text "[lindex $thisstar 1] [lindex $thisstar 2]"
-         $audace(base).cataEtoile.frame2.frame3.lab4a configure -text "[lindex $thisstar 9]"
+         set catalogue(etoile_nom_courant) "[lindex $thisstar 0]"
+         set catalogue(etoile_choisie) "[lindex $thisstar 1] [lindex $thisstar 2]"
+         set catalogue(etoile_mag) "[lindex $thisstar 9]"
          set catalogue(etoile_ad) "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]"
-         $audace(base).cataEtoile.frame2.frame4.lab5a configure -text "$catalogue(etoile_ad)"
          set catalogue(etoile_dec) "[lindex $thisstar 6]d[lindex $thisstar 7]m[lindex $thisstar 8]"
-         $audace(base).cataEtoile.frame2.frame4.lab6a configure -text "$catalogue(etoile_dec)"
          #--- Extraction des coordonnees pour l'affichage de la carte de champ
          set cataGoto(carte,nom_objet) "#etoile#"
          set cataGoto(carte,ad) "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]s"
@@ -1261,17 +1300,16 @@ namespace eval cataGoto {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $audace(base).cataEtoile
          }
-         $audace(base).cataEtoile.frame2.frame5.labURLRed7a configure \
-            -text "$catalogue(etoile_hauteur)$caption(catagoto,degre)" -fg $fg
+         set catalogue(etoile_hauteur_°) "$catalogue(etoile_hauteur)$caption(catagoto,degre)"
+         $audace(base).cataEtoile.frame2.frame5.labURLRed7a configure -fg $fg
          #--- Azimut
          set catalogue(etoile_azimut) "[format "%%05.2f" [lindex $catalogue(etoile_altaz) 0]]"
-         $audace(base).cataEtoile.frame2.frame5.lab8a configure -text "$catalogue(etoile_azimut)$caption(catagoto,degre)"
+         set catalogue(etoile_azimut_°) "$catalogue(etoile_azimut)$caption(catagoto,degre)"
          #--- Angle horaire
          set catalogue(etoile_anglehoraire) [lindex $catalogue(etoile_altaz) 2]
          set catalogue(etoile_anglehoraire) [mc_angle2hms $catalogue(etoile_anglehoraire) 360]
          set catalogue(etoile_anglehoraire_sec) [lindex $catalogue(etoile_anglehoraire) 2]
          set catalogue(etoile_anglehoraire) [format "%%02dh%%02dm%%02ds" [lindex $catalogue(etoile_anglehoraire) 0] [lindex $catalogue(etoile_anglehoraire) 1] [expr int($catalogue(etoile_anglehoraire_sec))]]
-         $audace(base).cataEtoile.frame2.frame6.lab9a configure -text "$catalogue(etoile_anglehoraire)"
       }
 
       #--- Mise a jour dynamique des couleurs
@@ -1343,6 +1381,8 @@ namespace eval cataGoto {
       $audace(base).cataEtoile.frame1.lb1 yview moveto $index
    }
 
+############################# Gestion de catalogues utilsateurs #############################
+
    #
    # cataGoto::CataObjetUtilisateur_Choix
    # Affichage de la fenetre de configuration pour le choix des catalogues propres a l'utilisateur
@@ -1378,6 +1418,15 @@ namespace eval cataGoto {
       global color
 
       #---
+      set catalogue(utilisateur_choisie)      "-"
+      set catalogue(utilisateur_mag)          "-"
+      set catalogue(utilisateur_ad)           "-"
+      set catalogue(utilisateur_dec)          "-"
+      set catalogue(utilisateur_hauteur_°)    "-"
+      set catalogue(utilisateur_azimut_°)     "-"
+      set catalogue(utilisateur_anglehoraire) "-"
+
+      #---
       ::cataGoto::Nettoyage
 
       #---
@@ -1401,7 +1450,7 @@ namespace eval cataGoto {
          wm geometry $audace(base).cataObjetUtilisateur $cataGoto(cataObjetUtilisateur,position)
          wm protocol $audace(base).cataObjetUtilisateur WM_DELETE_WINDOW {
             ::cataGoto::recup_position
-            set catalogue(validation) "2"
+            set catalogue(validation)      "0"
             set catalogue(autre_catalogue) "2"
             destroy $audace(base).cataObjetUtilisateur
          }
@@ -1430,7 +1479,7 @@ namespace eval cataGoto {
                -width 7 -state disabled \
                -command {
                   ::cataGoto::recup_position
-                  set catalogue(validation) "2"
+                  set catalogue(validation)      "0"
                   set catalogue(autre_catalogue) "2"
                   destroy $audace(base).cataObjetUtilisateur
                }
@@ -1441,12 +1490,12 @@ namespace eval cataGoto {
          frame $audace(base).cataObjetUtilisateur.frame6 -borderwidth 1 -relief raised
             label $audace(base).cataObjetUtilisateur.frame6.lab8 -text "$caption(catagoto,haut_inf)"
             pack $audace(base).cataObjetUtilisateur.frame6.lab8 -side left -padx 10 -pady 5
-            entry $audace(base).cataObjetUtilisateur.frame6.haut_inf -textvariable conf(cata,haut_inf) \
+            entry $audace(base).cataObjetUtilisateur.frame6.haut_inf -textvariable "conf(cata,haut_inf)" \
                -justify center -width 4
             pack $audace(base).cataObjetUtilisateur.frame6.haut_inf -side left -padx 10 -pady 5
             label $audace(base).cataObjetUtilisateur.frame6.lab9 -text "$caption(catagoto,haut_sup)"
             pack $audace(base).cataObjetUtilisateur.frame6.lab9 -side left -padx 10 -pady 5
-            entry $audace(base).cataObjetUtilisateur.frame6.haut_sup -textvariable conf(cata,haut_sup) \
+            entry $audace(base).cataObjetUtilisateur.frame6.haut_sup -textvariable "conf(cata,haut_sup)" \
                -justify center -width 4
             pack $audace(base).cataObjetUtilisateur.frame6.haut_sup -side left -padx 10 -pady 5
          pack $audace(base).cataObjetUtilisateur.frame6 -side bottom -fill both -expand 1
@@ -1460,12 +1509,12 @@ namespace eval cataGoto {
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -text "$caption(catagoto,nom)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -textvariable "catalogue(utilisateur_choisie)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -text "$caption(catagoto,magnitude)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -textvariable "catalogue(utilisateur_mag)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -side left -padx 5 -pady 5
             pack $audace(base).cataObjetUtilisateur.frame2.frame3 -side top -fill both -expand 1
             frame $audace(base).cataObjetUtilisateur.frame2.frame4 -borderwidth 0 -relief raised
@@ -1473,32 +1522,32 @@ namespace eval cataGoto {
                   -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -textvariable "catalogue(utilisateur_ad)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 \
                   -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -textvariable "catalogue(utilisateur_dec)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -side left -padx 5 -pady 5
             pack $audace(base).cataObjetUtilisateur.frame2.frame4 -side top -fill both -expand 1
             frame $audace(base).cataObjetUtilisateur.frame2.frame5 -borderwidth 0 -relief raised
                label $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -text "$caption(catagoto,hauteur)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -textvariable "catalogue(utilisateur_hauteur_°)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -side left -padx 5 -pady 5
                label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -text "$caption(catagoto,azimut)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -textvariable "catalogue(utilisateur_azimut_°)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -side left -padx 5 -pady 5
             pack $audace(base).cataObjetUtilisateur.frame2.frame5 -side top -fill both -expand 1
             frame $audace(base).cataObjetUtilisateur.frame2.frame6 -borderwidth 0 -relief raised
                label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -text "$caption(catagoto,angle_horaire)" \
                   -font $audace(font,arial_10_b)
                pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -side left -padx 5 -pady 5
-               label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -text "-"
+               label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -textvariable "catalogue(utilisateur_anglehoraire)"
                pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -side left -padx 5 -pady 5
             pack $audace(base).cataObjetUtilisateur.frame2.frame6 -side top -fill both -expand 1
          pack $audace(base).cataObjetUtilisateur.frame2 -side bottom -fill both -expand 1
@@ -1511,16 +1560,16 @@ namespace eval cataGoto {
          bind $zone(list_objet_utilisateur) <ButtonRelease-1> {
             set thisuser [lindex $objet_utilisateur [%W curselection]]
             #--- Preparation des affichages nom, magnitude, AD et Dec.
-            $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a configure -text "[lindex $thisuser 0]"
-            $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a configure -text "[lindex $thisuser 7]"
+            set catalogue(utilisateur_choisie) "[lindex $thisuser 0]"
+            set catalogue(utilisateur_mag) "[lindex $thisuser 7]"
             set catalogue(objet_utilisateur_ad) "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]"
-            $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a configure -text "$catalogue(objet_utilisateur_ad)"
+            set catalogue(utilisateur_ad) $catalogue(objet_utilisateur_ad)
             set catalogue(objet_utilisateur_dec) "[lindex $thisuser 4]d[lindex $thisuser 5]m[lindex $thisuser 6]"
-            $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a configure -text "$catalogue(objet_utilisateur_dec)"
+            set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
             if { ($catalogue(objet_utilisateur_ad) == "hm") || ($catalogue(objet_utilisateur_dec) == "dm") } {
-               $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a configure -text "-"
-               $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a configure -text "-"
-               $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a configure -text "-"
+               set catalogue(utilisateur_hauteur_°) "-"
+               set catalogue(utilisateur_azimut_°) "-"
+               set catalogue(utilisateur_anglehoraire) "-"
                destroy $audace(base).cataObjetUtilisateur.frame7.ok
             } else {
                #--- Preparation des affichages hauteur et azimut
@@ -1545,17 +1594,17 @@ namespace eval cataGoto {
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $audace(base).cataObjetUtilisateur
                }
-               $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a configure \
-                  -text "$catalogue(objet_utilisateur_hauteur)$caption(catagoto,degre)" -fg $fg
+               set catalogue(utilisateur_hauteur_°) "$catalogue(objet_utilisateur_hauteur)$caption(catagoto,degre)"
+               $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a configure -fg $fg
                #--- Azimut
                set catalogue(objet_utilisateur_azimut) "[format "%%05.2f" [lindex $catalogue(objet_utilisateur_altaz) 0]]"
-               $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a configure -text "$catalogue(objet_utilisateur_azimut)$caption(catagoto,degre)"
+               set catalogue(utilisateur_azimut_°) "$catalogue(objet_utilisateur_azimut)$caption(catagoto,degre)"
                #--- Angle horaire
                set catalogue(objet_utilisateur_anglehoraire) [lindex $catalogue(objet_utilisateur_altaz) 2]
                set catalogue(objet_utilisateur_anglehoraire) [mc_angle2hms $catalogue(objet_utilisateur_anglehoraire) 360]
                set catalogue(objet_utilisateur_anglehoraire_sec) [lindex $catalogue(objet_utilisateur_anglehoraire) 2]
                set catalogue(objet_utilisateur_anglehoraire) [format "%%02dh%%02dm%%02ds" [lindex $catalogue(objet_utilisateur_anglehoraire) 0] [lindex $catalogue(objet_utilisateur_anglehoraire) 1] [expr int($catalogue(objet_utilisateur_anglehoraire_sec))]]
-               $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a configure -text "$catalogue(objet_utilisateur_anglehoraire)"
+               set catalogue(utilisateur_anglehoraire) $catalogue(objet_utilisateur_anglehoraire)
             }
          }
          #--- Mise a jour dynamique des couleurs
