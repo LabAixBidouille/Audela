@@ -2,22 +2,33 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.11 2007-03-31 15:23:19 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.12 2007-04-01 20:58:20 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
 
-   proc init { } {
+   #
+   # cataGoto::init
+   # Chargement des captions et initialisation de varaibles
+   #
+   proc init { { visuNo 1 } } {
       global audace
+      global caption
       global conf
       global cataGoto
       global catalogue
 
-      #---
+      #--- Charge le fichier caption
+      source [ file join $audace(rep_caption) catagoto.cap ]
+
+      #--- Initialisation de variables
       set cataGoto(carte,validation) "0"
       set cataGoto(carte,avant_plan) "0"
       set catalogue(validation)      "0"
       set catalogue(autre_catalogue) "2"
+      set catalogue(liste_cata)      "$caption(catagoto,coord) $caption(catagoto,planete) $caption(catagoto,asteroide) \
+         $caption(catagoto,etoile) $caption(catagoto,messier) $caption(catagoto,ngc) $caption(catagoto,ic) \
+         $caption(catagoto,utilisateur) $caption(catagoto,zenith)"
 
       #--- initConf
       if { ! [ info exists conf(cata,haut_inf) ] }                 { set conf(cata,haut_inf)                 "10" }
@@ -27,10 +38,6 @@ namespace eval cataGoto {
       if { ! [ info exists conf(cataObjet,position) ] }            { set conf(cataObjet,position)            "+140+40" }
       if { ! [ info exists conf(cataEtoile,position) ] }           { set conf(cataEtoile,position)           "+140+40" }
       if { ! [ info exists conf(cataObjetUtilisateur,position) ] } { set conf(cataObjetUtilisateur,position) "+140+40" }
-
-      #--- Charge le fichier caption
-      source [ file join $audace(rep_caption) catagoto.cap ]
-
    }
 
    #
@@ -54,6 +61,10 @@ namespace eval cataGoto {
       }
    }
 
+   #
+   # cataGoto::recup_position
+   # Recupere la position des fenetres dediees a chaque catalogue
+   #
    proc recup_position { } {
       variable This
       global audace
@@ -98,7 +109,147 @@ namespace eval cataGoto {
       }
    }
 
+   #
+   # ::cataGoto::createFrameCatalogue
+   #    Cree une frame pour selectionner un catalogue d'objets
+   #    Cette frame est destinee a etre inseree dans une fenetre
+   # Parametres :
+   #    frm : Chemin TK de la frame a creer
+   #    variablePositionObjet : Position AD et Dec. d'un objet
+   #    visuNo : Numero de la visu
+   #
+   proc createFrameCatalogue { frm variablePositionObjet visuNo } {
+      global caption
+      global catalogue
+
+      #--- Initialisation du catalogue choisi
+      set catalogue(choisi,$visuNo) "$caption(catagoto,coord)"
+
+      #--- Initialisation des coordonnees pour le premier affichage
+      set catalogue($visuNo,list_radec) $variablePositionObjet
+
+      #--- je cree la frame si elle n'existe pas deja
+      if { [winfo exists $frm ] == 0 } {
+         frame $frm -borderwidth 0 -relief raised
+      }
+
+      ComboBox $frm.list \
+         -width 12         \
+         -height [ llength $catalogue(liste_cata) ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable catalogue(choisi,$visuNo) \
+         -modifycmd "::cataGoto::Gestion_Cata $visuNo" \
+         -values $catalogue(liste_cata)
+      pack $frm.list -in $frm -anchor center -padx 2 -pady 2
+
+      #--- Bind (clic droit) pour ouvrir la fenetre sans avoir a selectionner dans la listbox
+      bind $frm.list.e <ButtonPress-3> "::cataGoto::Gestion_Cata $visuNo"
+   }
+
+   #
+   # cataGoto::Gestion_Cata
+   # Gestion des differents catalogue
+   # Parametres :
+   #    visuNo : Numero de la visu
+   #    type_objets : Type de catalogue utilise
+   #
+   proc Gestion_Cata { visuNo { type_objets "" } } {
+      global audace caption catalogue conf
+
+      #--- Force le type d'objets
+      if { $type_objets != "" } {
+         set catalogue(choisi,$visuNo) "$type_objets"
+      }
+
+      #--- Gestion des catalogues
+      if { $catalogue(choisi,$visuNo) == "$caption(catagoto,coord)" } {
+         ::cataGoto::Nettoyage
+         set catalogue(validation) "0"
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,planete)" } {
+         ::cataGoto::GotoPlanete
+         vwait catalogue(validation)
+         if { $catalogue(validation) == "1" } {
+            set catalogue($visuNo,list_radec) "$catalogue(planete_ad) $catalogue(planete_dec)"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,asteroide)" } {
+         ::cataGoto::CataAsteroide
+         vwait catalogue(validation)
+         if { $catalogue(validation) == "1" } {
+            set catalogue($visuNo,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,etoile)" } {
+         ::cataGoto::CataEtoiles
+         vwait catalogue(validation)
+         if { $catalogue(validation) == "1" } {
+            set catalogue($visuNo,list_radec) "$catalogue(etoile_ad) $catalogue(etoile_dec)"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,messier)" } {
+         ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
+         vwait catalogue(validation)
+         if { $catalogue(validation) == "1" } {
+            set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,ngc)" } {
+         ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
+         vwait catalogue(validation)
+         if { $catalogue(validation) == "1" } {
+            set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,ic)" } {
+         ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
+         vwait catalogue(validation)
+         if { $catalogue(validation) == "1" } {
+            set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,utilisateur)" } {
+         if { $catalogue(autre_catalogue) == "2" } {
+            ::cataGoto::CataObjetUtilisateur_Choix
+         } else {
+            ::cataGoto::CataObjetUtilisateur
+         }
+         if { $catalogue(utilisateur) != "" } {
+            vwait catalogue(validation)
+            if { $catalogue(validation) == "1" } {
+               set catalogue($visuNo,list_radec) "$catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec)"
+            }
+         } else {
+            set catalogue(validation) "0"
+         }
+      } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,zenith)" } {
+         ::cataGoto::Nettoyage
+         set catalogue(validation) "0"
+         set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
+         set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
+      }
+      set ::tlscp::private($visuNo,getobj) $catalogue($visuNo,list_radec)
+      if { $catalogue(validation) == "1" } {
+         ::cataGoto::Gestion_Cata $visuNo
+      }
+   }
+
 ############## Gestion des corps du Systeme Solaire (Soleil, Lune et Planetes) ##############
+
+   #
+   # cataGoto::initPlanete
+   # Initialisation de varaibles
+   #
+   proc initPlanete { } {
+      global catalogue
+
+      #---
+      set catalogue(planete_choisie)       "-"
+      set catalogue(planete_mag)           "-"
+      set catalogue(planete_diam_apparent) "-"
+      set catalogue(planete_phase)         "-"
+      set catalogue(planete_elongation)    "-"
+      set catalogue(planete_ad)            "-"
+      set catalogue(planete_dec)           "-"
+      set catalogue(planete_hauteur_°)     "-"
+      set catalogue(planete_azimut_°)      "-"
+      set catalogue(planete_anglehoraire)  "-"
+   }
 
    #
    # cataGoto::GotoPlanete
@@ -112,16 +263,7 @@ namespace eval cataGoto {
       global cataGoto
 
       #---
-      set catalogue(planete_choisie)       "-"
-      set catalogue(planete_mag)           "-"
-      set catalogue(planete_diam_apparent) "-"
-      set catalogue(planete_phase)         "-"
-      set catalogue(planete_elongation)    "-"
-      set catalogue(planete_ad)            "-"
-      set catalogue(planete_dec)           "-"
-      set catalogue(planete_hauteur_°)     "-"
-      set catalogue(planete_azimut_°)      "-"
-      set catalogue(planete_anglehoraire)  "-"
+      ::cataGoto::initPlanete
       #---
       ::cataGoto::Nettoyage
       #---
@@ -134,7 +276,6 @@ namespace eval cataGoto {
       }
       #---
       toplevel $audace(base).gotoPlanete -class Toplevel
-      wm transient $audace(base).gotoPlanete $audace(base)
       wm resizable $audace(base).gotoPlanete 0 0
       wm title $audace(base).gotoPlanete "$caption(catagoto,planete)"
       wm geometry $audace(base).gotoPlanete $cataGoto(gotoPlanete,position)
@@ -466,6 +607,23 @@ namespace eval cataGoto {
 ##################### Gestion des corps du Systeme Solaire (Asteroides) #####################
 
    #
+   # cataGoto::initCataAsteroide
+   # Initialisation de varaibles
+   #
+   proc initCataAsteroide { } {
+      global catalogue
+
+      #---
+      set catalogue(asteroide_choisie)      "-"
+      set catalogue(asteroide_mag)          "-"
+      set catalogue(asteroide_ad)           "-"
+      set catalogue(asteroide_dec)          "-"
+      set catalogue(asteroide_hauteur_°)    "-"
+      set catalogue(asteroide_azimut_°)     "-"
+      set catalogue(asteroide_anglehoraire) "-"
+   }
+
+   #
    # cataGoto::CataAsteroide
    # Affichage de la fenetre de configuration des asteroides
    #
@@ -480,13 +638,7 @@ namespace eval cataGoto {
       global cataGoto
 
       #---
-      set catalogue(asteroide_choisie)      "-"
-      set catalogue(asteroide_mag)          "-"
-      set catalogue(asteroide_ad)           "-"
-      set catalogue(asteroide_dec)          "-"
-      set catalogue(asteroide_hauteur_°)    "-"
-      set catalogue(asteroide_azimut_°)     "-"
-      set catalogue(asteroide_anglehoraire) "-"
+      ::cataGoto::initCataAsteroide
       #---
       ::cataGoto::Nettoyage
       #---
@@ -499,7 +651,6 @@ namespace eval cataGoto {
       }
       #---
       toplevel $audace(base).cataAsteroide
-      wm transient $audace(base).cataAsteroide $audace(base)
       wm resizable $audace(base).cataAsteroide 0 0
       wm title $audace(base).cataAsteroide "$caption(catagoto,asteroide)"
       wm geometry $audace(base).cataAsteroide $cataGoto(cataAsteroide,position)
@@ -747,6 +898,23 @@ namespace eval cataGoto {
 ######################### Gestion des catalogues Messier, NGC et IC #########################
 
    #
+   # cataGoto::initCataObjet
+   # Initialisation de varaibles
+   #
+   proc initCataObjet { } {
+      global catalogue
+
+      #---
+      set catalogue(M-NGC-IC_choisie)      "-"
+      set catalogue(M-NGC-IC_mag)          "-"
+      set catalogue(M-NGC-IC_ad)           "-"
+      set catalogue(M-NGC-IC_dec)          "-"
+      set catalogue(M-NGC-IC_hauteur_°)    "-"
+      set catalogue(M-NGC-IC_azimut_°)     "-"
+      set catalogue(M-NGC-IC_anglehoraire) "-"
+   }
+
+   #
    # cataGoto::CataObjet
    # Affichage de la fenetre de configuration des catalogues Messier, NGC et IC
    #
@@ -760,13 +928,7 @@ namespace eval cataGoto {
       global cataGoto
 
       #---
-      set catalogue(M-NGC-IC_choisie)      "-"
-      set catalogue(M-NGC-IC_mag)          "-"
-      set catalogue(M-NGC-IC_ad)           "-"
-      set catalogue(M-NGC-IC_dec)          "-"
-      set catalogue(M-NGC-IC_hauteur_°)    "-"
-      set catalogue(M-NGC-IC_azimut_°)     "-"
-      set catalogue(M-NGC-IC_anglehoraire) "-"
+      ::cataGoto::initCataObjet
       #---
       ::cataGoto::Nettoyage
       #---
@@ -806,9 +968,8 @@ namespace eval cataGoto {
             set confTel(ouranos,objet) "4"
          }
       } else {
-         wm transient $audace(base).cataObjet $audace(base)
          wm resizable $audace(base).cataObjet 0 0
-         if { "$menuChoisi" == "$caption(catagoto,messier)"  } {
+         if { "$menuChoisi" == "$caption(catagoto,messier)" } {
             wm title $audace(base).cataObjet "$caption(catagoto,messier)"
             set catalogue(obj_choisi_ref) $caption(catagoto,M)
             set catalogue(objet) "cat_messier.txt"
@@ -1065,6 +1226,24 @@ namespace eval cataGoto {
 ############################# Gestion d'un catalogue d'etoiles ##############################
 
    #
+   # cataGoto::initCataEtoiles
+   # Initialisation de varaibles
+   #
+   proc initCataEtoiles { } {
+      global catalogue
+
+      #---
+      set catalogue(etoile_choisie)      "-"
+      set catalogue(etoile_nom_courant)  "-"
+      set catalogue(etoile_mag)          "-"
+      set catalogue(etoile_ad)           "-"
+      set catalogue(etoile_dec)          "-"
+      set catalogue(etoile_hauteur_°)    "-"
+      set catalogue(etoile_azimut_°)     "-"
+      set catalogue(etoile_anglehoraire) "-"
+   }
+
+   #
    # cataGoto::CataEtoiles
    # Affichage de la fenetre de configuration du catalogue des etoiles
    #
@@ -1079,14 +1258,7 @@ namespace eval cataGoto {
       global cataGoto
 
       #---
-      set catalogue(etoile_choisie)      "-"
-      set catalogue(etoile_nom_courant)  "-"
-      set catalogue(etoile_mag)          "-"
-      set catalogue(etoile_ad)           "-"
-      set catalogue(etoile_dec)          "-"
-      set catalogue(etoile_hauteur_°)    "-"
-      set catalogue(etoile_azimut_°)     "-"
-      set catalogue(etoile_anglehoraire) "-"
+      ::cataGoto::initCataEtoiles
       #---
       ::cataGoto::Nettoyage
       #---
@@ -1112,7 +1284,6 @@ namespace eval cataGoto {
             set confTel(ouranos,objet) "4"
          }
       } else {
-         wm transient $audace(base).cataEtoile $audace(base)
          wm resizable $audace(base).cataEtoile 0 0
          wm title $audace(base).cataEtoile "$caption(catagoto,etoile)"
          wm geometry $audace(base).cataEtoile $cataGoto(cataEtoile,position)
@@ -1384,6 +1555,23 @@ namespace eval cataGoto {
 ############################# Gestion de catalogues utilsateurs #############################
 
    #
+   # cataGoto::initCataObjetUtilisateur
+   # Initialisation de varaibles
+   #
+   proc initCataObjetUtilisateur { } {
+      global catalogue
+
+      #---
+      set catalogue(utilisateur_choisie)      "-"
+      set catalogue(utilisateur_mag)          "-"
+      set catalogue(utilisateur_ad)           "-"
+      set catalogue(utilisateur_dec)          "-"
+      set catalogue(utilisateur_hauteur_°)    "-"
+      set catalogue(utilisateur_azimut_°)     "-"
+      set catalogue(utilisateur_anglehoraire) "-"
+   }
+
+   #
    # cataGoto::CataObjetUtilisateur_Choix
    # Affichage de la fenetre de configuration pour le choix des catalogues propres a l'utilisateur
    #
@@ -1418,13 +1606,7 @@ namespace eval cataGoto {
       global color
 
       #---
-      set catalogue(utilisateur_choisie)      "-"
-      set catalogue(utilisateur_mag)          "-"
-      set catalogue(utilisateur_ad)           "-"
-      set catalogue(utilisateur_dec)          "-"
-      set catalogue(utilisateur_hauteur_°)    "-"
-      set catalogue(utilisateur_azimut_°)     "-"
-      set catalogue(utilisateur_anglehoraire) "-"
+      ::cataGoto::initCataObjetUtilisateur
 
       #---
       ::cataGoto::Nettoyage
@@ -1444,7 +1626,6 @@ namespace eval cataGoto {
 
          #---
          toplevel $audace(base).cataObjetUtilisateur
-         wm transient $audace(base).cataObjetUtilisateur $audace(base)
          wm resizable $audace(base).cataObjetUtilisateur 0 0
          wm title $audace(base).cataObjetUtilisateur "$caption(catagoto,utilisateur)"
          wm geometry $audace(base).cataObjetUtilisateur $cataGoto(cataObjetUtilisateur,position)
