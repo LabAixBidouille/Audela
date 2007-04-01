@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.9 2007-03-31 15:24:58 robertdelmas Exp $
+# Mise a jour $Id: tel.tcl,v 1.10 2007-04-01 20:56:54 robertdelmas Exp $
 #
 
 namespace eval ::tlscp {
@@ -29,9 +29,6 @@ proc ::tlscp::createPanel { visuNo } {
    set private($visuNo,choix_bin)   "1x1 2x2 4x4"
    set private($visuNo,binning)     "2x2"
    set private($visuNo,menu)        "$caption(tel,coord)"
-   set private($visuNo,cata_coord)  "$caption(tel,coord) $caption(tel,planete) $caption(tel,asteroide) \
-      $caption(tel,etoile) $caption(tel,messier) $caption(tel,ngc) $caption(tel,ic) $caption(tel,utilisateur) \
-      $caption(tel,zenith)"
 
    #--- Coordonnees J2000.0 de M104
    set private($visuNo,getobj)      "12h40m0 -11d37m22"
@@ -56,19 +53,9 @@ proc ::tlscp::createPanel { visuNo } {
       #--- Frame du pointage
       frame $private($visuNo,This).fra2 -borderwidth 1 -relief groove
 
-         ComboBox $private($visuNo,This).fra2.optionmenu1 \
-            -width 12         \
-            -height [ llength $private($visuNo,cata_coord) ]  \
-            -relief sunken    \
-            -borderwidth 1    \
-            -editable 0       \
-            -textvariable ::tlscp::private($visuNo,menu) \
-            -modifycmd "::tlscp::Gestion_Cata $visuNo" \
-            -values $private($visuNo,cata_coord)
-         pack $private($visuNo,This).fra2.optionmenu1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
-
-         #--- Bind (clic droit) pour ouvrir la fenetre sans avoir a selectionner dans la listbox
-         bind $private($visuNo,This).fra2.optionmenu1.e <ButtonPress-3> " ::tlscp::Gestion_Cata $visuNo"
+         #--- Frame pour choisir un catalogue
+         ::cataGoto::createFrameCatalogue $private($visuNo,This).fra2.catalogue $::tlscp::private($visuNo,getobj) $visuNo
+         pack $private($visuNo,This).fra2.catalogue -in $private($visuNo,This).fra2 -anchor nw -side top -padx 4 -pady 1
 
          #--- Entry pour l'objet a entrer
          entry $private($visuNo,This).fra2.ent1 -font $audace(font,arial_8_b) \
@@ -385,7 +372,7 @@ proc ::tlscp::cmdMatch { visuNo } {
 
 proc ::tlscp::cmdGoto { visuNo } {
    variable private
-   global audace caption cataGoto
+   global audace caption cataGoto catalogue
 
    #--- Gestion graphique des boutons GOTO et Stop
    $private($visuNo,This).fra2.fra2a.but1 configure -relief groove -state disabled
@@ -444,103 +431,6 @@ proc ::tlscp::cmdGoto { visuNo } {
    $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal -text $caption(tel,coord) \
       -font $audace(font,arial_8_b) -command { ::telescope::afficheCoord }
    update
-}
-
-proc ::tlscp::Gestion_Cata { visuNo { type_objets "" } } {
-   variable private
-   global audace caption catalogue conf
-
-   #--- Force le type d'objets
-   if { $type_objets != "" } {
-      set private($visuNo,menu) "$type_objets"
-   }
-
-   #--- Gestion des catalogues
-   if { $private($visuNo,menu) == "$caption(tel,coord)" } {
-      ::cataGoto::Nettoyage
-      set catalogue(validation) "0"
-      set private($visuNo,list_radec) $private($visuNo,getobj)
-   } elseif { $private($visuNo,menu) == "$caption(tel,planete)" } {
-      ::cataGoto::GotoPlanete
-      vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {
-         set private($visuNo,list_radec) "$catalogue(planete_ad) $catalogue(planete_dec)"
-      } else {
-         set private($visuNo,list_radec) $private($visuNo,getobj)
-      }
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   } elseif { $private($visuNo,menu) == "$caption(tel,asteroide)" } {
-      ::cataGoto::CataAsteroide
-      vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {
-         set private($visuNo,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
-      } else {
-         set private($visuNo,list_radec) $private($visuNo,getobj)
-      }
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   } elseif { $private($visuNo,menu) == "$caption(tel,etoile)" } {
-      ::cataGoto::CataEtoiles
-      vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {
-         set private($visuNo,list_radec) "$catalogue(etoile_ad) $catalogue(etoile_dec)"
-      } else {
-         set private($visuNo,list_radec) $private($visuNo,getobj)
-      }
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   } elseif { $private($visuNo,menu) == "$caption(tel,messier)" } {
-      ::cataGoto::CataObjet $private($visuNo,menu)
-      vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {
-         set private($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
-      } else {
-         set private($visuNo,list_radec) $private($visuNo,getobj)
-      }
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   } elseif { $private($visuNo,menu) == "$caption(tel,ngc)" } {
-      ::cataGoto::CataObjet $private($visuNo,menu)
-      vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {
-         set private($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
-      } else {
-         set private($visuNo,list_radec) $private($visuNo,getobj)
-      }
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   } elseif { $private($visuNo,menu) == "$caption(tel,ic)" } {
-      ::cataGoto::CataObjet $private($visuNo,menu)
-      vwait catalogue(validation)
-      if { $catalogue(validation) == "1" } {
-         set private($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
-      } else {
-         set private($visuNo,list_radec) $private($visuNo,getobj)
-      }
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   } elseif { $private($visuNo,menu) == "$caption(tel,utilisateur)" } {
-      if { $catalogue(autre_catalogue) == "2" } {
-         ::cataGoto::CataObjetUtilisateur_Choix
-      } else {
-         ::cataGoto::CataObjetUtilisateur
-      }
-      if { $catalogue(utilisateur) != "" } {
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set private($visuNo,list_radec) "$catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec)"
-         } else {
-            set private($visuNo,list_radec) $private($visuNo,getobj)
-         }
-         set private($visuNo,getobj) $private($visuNo,list_radec)
-      } else {
-         set catalogue(validation) "0"
-      }
-   } elseif { $private($visuNo,menu) == "$caption(tel,zenith)" } {
-      ::cataGoto::Nettoyage
-      set catalogue(validation) "0"
-      set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
-      set private($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
-      set private($visuNo,getobj) $private($visuNo,list_radec)
-   }
-   if { $catalogue(validation) == "1" } {
-      ::tlscp::Gestion_Cata $visuNo
-   }
 }
 
 proc ::tlscp::PlusLong { visuNo } {
