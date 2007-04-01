@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.5 2007-01-27 14:29:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.6 2007-04-01 14:39:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -321,7 +321,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,fwhm_y)                         "Fwhmy"
 
    set caption(audace,titre_gauss)                    "=== Tilpas en Gausskurve ==="
-   set caption(audace,coord_box)                      "Window coordinater"
+   set caption(audace,coord_box)                      "Window Koordinater"
    set caption(audace,center_xy)                      "Centrum"
    set caption(audace,fwhm_xy)                        "Fwhm"
    set caption(audace,intens_xy)                      "Intensitet"

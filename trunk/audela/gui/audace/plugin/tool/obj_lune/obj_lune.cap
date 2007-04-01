@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.8 2007-03-25 13:28:13 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.9 2007-04-01 14:39:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -488,7 +488,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,longitude)           "Månes longitude:"
    set caption(obj_lune,dimension)           "Størrelse (km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas kort:"
-   set caption(obj_lune,objectif)            "Gå til flg. koordinates:"
+   set caption(obj_lune,objectif)            "Gå til flg. koordinater:"
    set caption(obj_lune,ad)                  "RA (J2000):"
    set caption(obj_lune,dec)                 "Dec. (J2000):"
 
