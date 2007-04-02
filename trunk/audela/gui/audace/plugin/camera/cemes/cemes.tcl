@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.3 2007-03-17 09:28:24 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.4 2007-04-02 16:17:38 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -209,7 +209,7 @@ proc ::cemes::configureCamera { camItem } {
 # ::cemes::CemesDispTemp
 #    Affiche la temperature du CCD
 #
-proc CemesDispTemp { } {
+proc ::cemes::CemesDispTemp { } {
    global audace caption confCam frmm
 
    catch {
