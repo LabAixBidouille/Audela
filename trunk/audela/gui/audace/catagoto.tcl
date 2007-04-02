@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.12 2007-04-01 20:58:20 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.13 2007-04-02 16:03:06 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -223,7 +223,15 @@ namespace eval cataGoto {
          set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
          set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
       }
+
+      #--- Mise a jour des coordonnees pour l'outil Telescope
       set ::tlscp::private($visuNo,getobj) $catalogue($visuNo,list_radec)
+
+      #--- Mise a jour des coordonnees pour l'outil Controle a distance
+      global panneau
+      set panneau(Rmctrl,getobj) $catalogue($visuNo,list_radec)
+
+      #--- Bouclage pour laisser la boite ouverte et vider les champs
       if { $catalogue(validation) == "1" } {
          ::cataGoto::Gestion_Cata $visuNo
       }
@@ -778,7 +786,7 @@ namespace eval cataGoto {
       pack $audace(base).cataAsteroide.frame10 -side top -fill both -expand 1
 
       #--- Binding sur le bouton Rechercher
-      bind $audace(base).cataAsteroide <Key-Return> { ::cataGoto::Recherche_Asteroide }
+      bind $audace(base).cataAsteroide <Key-Return> "::cataGoto::Recherche_Asteroide"
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).cataAsteroide
@@ -817,15 +825,17 @@ namespace eval cataGoto {
                set catalogue(asteroide_mag)    "-"
             } else {
                set liste_objet [ split [ lindex [ lrange [ split $liste ";" ] 0 end ] 1 ] "|" ]
-               set catalogue(asteroide_choisi) [ lindex $liste_objet 1 ]
-               set catalogue(asteroide_choisi) [ string trimleft $catalogue(asteroide_choisi) " " ]
-               set catalogue(asteroide_choisi) [ string trimright $catalogue(asteroide_choisi) " " ]
-               set catalogue(aster_ad) [ lindex $liste_objet 2 ]
-               set catalogue(asteroide_ad_d) [ expr 15.0 * $catalogue(aster_ad) ]
-               set catalogue(asteroide_ad_) [ mc_angle2hms $catalogue(asteroide_ad_d) 360 zero 2 auto string ]
-               set catalogue(aster_dec) [ lindex $liste_objet 3 ]
-               set catalogue(asteroide_dec_) [ string trimleft [ mc_angle2dms $catalogue(aster_dec) 90 zero 2 + string ] + ]
-               set catalogue(asteroide_mag_) [ lindex $liste_objet 5 ]
+               if { $liste_objet != "" } {
+                  set catalogue(asteroide_choisi) [ lindex $liste_objet 1 ]
+                  set catalogue(asteroide_choisi) [ string trimleft $catalogue(asteroide_choisi) " " ]
+                  set catalogue(asteroide_choisi) [ string trimright $catalogue(asteroide_choisi) " " ]
+                  set catalogue(aster_ad) [ lindex $liste_objet 2 ]
+                  set catalogue(asteroide_ad_d) [ expr 15.0 * $catalogue(aster_ad) ]
+                  set catalogue(asteroide_ad_) [ mc_angle2hms $catalogue(asteroide_ad_d) 360 zero 2 auto string ]
+                  set catalogue(aster_dec) [ lindex $liste_objet 3 ]
+                  set catalogue(asteroide_dec_) [ string trimleft [ mc_angle2dms $catalogue(aster_dec) 90 zero 2 + string ] + ]
+                  set catalogue(asteroide_mag_) [ lindex $liste_objet 5 ]
+               }
             }
          } else {
             set catalogue(asteroide_choisi) ""
@@ -846,45 +856,49 @@ namespace eval cataGoto {
          set catalogue(asteroide_ad) "-"
          set catalogue(asteroide_dec) "-"
       } else {
-         set catalogue(asteroide_choisie) [ concat "([ string trimright [ lindex $liste_objet 0 ] " " ]) $catalogue(asteroide_choisi)" ]
-         set catalogue(asteroide_mag) $catalogue(asteroide_mag_)
-         set catalogue(asteroide_ad) $catalogue(asteroide_ad_)
-         set catalogue(asteroide_dec) $catalogue(asteroide_dec_)
+         if { $liste_objet != "" } {
+            set catalogue(asteroide_choisie) [ concat "([ string trimright [ lindex $liste_objet 0 ] " " ]) $catalogue(asteroide_choisi)" ]
+            set catalogue(asteroide_mag) $catalogue(asteroide_mag_)
+            set catalogue(asteroide_ad) $catalogue(asteroide_ad_)
+            set catalogue(asteroide_dec) $catalogue(asteroide_dec_)
+         }
       }
 
       #--- Preparation et affichage hauteur et azimut
       if { "$catalogue(asteroide_choisi)" != "" } {
-         set catalogue(asteroide_altaz) [mc_radec2altaz $catalogue(asteroide_ad) $catalogue(asteroide_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
-         #--- Hauteur
-         set catalogue(asteroide_hauteur) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 1]]"
-         if { ( $catalogue(asteroide_hauteur) < $conf(cata,haut_inf) ) || ( "$catalogue(asteroide_choisi)" == "" ) } {
-            set fg $color(red)
-            destroy $audace(base).cataAsteroide.frame10.ok
-         } elseif { ( $catalogue(asteroide_hauteur) > $conf(cata,haut_sup) ) || ( "$catalogue(asteroide_choisi)" == "" ) } {
-            set fg $color(red)
-            destroy $audace(base).cataAsteroide.frame10.ok
-         } else {
-            set fg $audace(color,textColor)
-            destroy $audace(base).cataAsteroide.frame10.ok
-            button $audace(base).cataAsteroide.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-               set catalogue(asteroide_choisi) ""
-               set catalogue(asteroide_mag)    "-"
-               set catalogue(validation)       "1"
+         if { $liste_objet != "" } {
+            set catalogue(asteroide_altaz) [mc_radec2altaz $catalogue(asteroide_ad) $catalogue(asteroide_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+            #--- Hauteur
+            set catalogue(asteroide_hauteur) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 1]]"
+            if { ( $catalogue(asteroide_hauteur) < $conf(cata,haut_inf) ) || ( "$catalogue(asteroide_choisi)" == "" ) } {
+               set fg $color(red)
+               destroy $audace(base).cataAsteroide.frame10.ok
+            } elseif { ( $catalogue(asteroide_hauteur) > $conf(cata,haut_sup) ) || ( "$catalogue(asteroide_choisi)" == "" ) } {
+               set fg $color(red)
+               destroy $audace(base).cataAsteroide.frame10.ok
+            } else {
+               set fg $audace(color,textColor)
+               destroy $audace(base).cataAsteroide.frame10.ok
+               button $audace(base).cataAsteroide.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
+                  set catalogue(asteroide_choisi) ""
+                  set catalogue(asteroide_mag)    "-"
+                  set catalogue(validation)       "1"
+               }
+               pack $audace(base).cataAsteroide.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
+               #--- Mise a jour dynamique des couleurs
+               ::confColor::applyColor $audace(base).cataAsteroide
             }
-            pack $audace(base).cataAsteroide.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $audace(base).cataAsteroide
+            set catalogue(asteroide_hauteur_°) "$catalogue(asteroide_hauteur)$caption(catagoto,degre)"
+            $audace(base).cataAsteroide.frame2.frame6.labURLRed7a configure -fg $fg
+            #--- Azimut
+            set catalogue(asteroide_azimut) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 0]]"
+            set catalogue(asteroide_azimut_°) "$catalogue(asteroide_azimut)$caption(catagoto,degre)"
+            #--- Angle horaire
+            set catalogue(asteroide_anglehoraire) [lindex $catalogue(asteroide_altaz) 2]
+            set catalogue(asteroide_anglehoraire) [mc_angle2hms $catalogue(asteroide_anglehoraire) 360]
+            set catalogue(asteroide_anglehoraire_sec) [lindex $catalogue(asteroide_anglehoraire) 2]
+            set catalogue(asteroide_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(asteroide_anglehoraire) 0] [lindex $catalogue(asteroide_anglehoraire) 1] [expr int($catalogue(asteroide_anglehoraire_sec))]]
          }
-         set catalogue(asteroide_hauteur_°) "$catalogue(asteroide_hauteur)$caption(catagoto,degre)"
-         $audace(base).cataAsteroide.frame2.frame6.labURLRed7a configure -fg $fg
-         #--- Azimut
-         set catalogue(asteroide_azimut) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 0]]"
-         set catalogue(asteroide_azimut_°) "$catalogue(asteroide_azimut)$caption(catagoto,degre)"
-         #--- Angle horaire
-         set catalogue(asteroide_anglehoraire) [lindex $catalogue(asteroide_altaz) 2]
-         set catalogue(asteroide_anglehoraire) [mc_angle2hms $catalogue(asteroide_anglehoraire) 360]
-         set catalogue(asteroide_anglehoraire_sec) [lindex $catalogue(asteroide_anglehoraire) 2]
-         set catalogue(asteroide_anglehoraire) [format "%02dh%02dm%02ds" [lindex $catalogue(asteroide_anglehoraire) 0] [lindex $catalogue(asteroide_anglehoraire) 1] [expr int($catalogue(asteroide_anglehoraire_sec))]]
       } else {
          #--- Hauteur
          set catalogue(asteroide_hauteur_°)    "-"
@@ -1111,7 +1125,7 @@ namespace eval cataGoto {
       pack $audace(base).cataObjet.frame10 -side top -fill both -expand 1
 
       #--- Binding sur le bouton Rechercher
-      bind $audace(base).cataObjet <Key-Return> { ::cataGoto::Recherche_Objet }
+      bind $audace(base).cataObjet <Key-Return> "::cataGoto::Recherche_Objet"
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).cataObjet
