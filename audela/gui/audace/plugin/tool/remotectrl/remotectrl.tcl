@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.7 2007-03-31 15:25:22 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.8 2007-04-02 16:00:16 robertdelmas Exp $
 #
 
 package provide remotectrl 1.0
@@ -67,9 +67,6 @@ namespace eval ::Rmctrl {
       set panneau(Rmctrl,choix_bin)                     "1x1 2x2 4x4"
       set panneau(Rmctrl,binning)                       "2x2"
       set panneau(Rmctrl,menu)                          "$caption(rmctrl,coord)"
-      set panneau(Rmctrl,cata_coord)                    "$caption(rmctrl,coord) $caption(rmctrl,planete) \
-         $caption(rmctrl,asteroide) $caption(rmctrl,etoile) $caption(rmctrl,messier) $caption(rmctrl,ngc) \
-         $caption(rmctrl,ic) $caption(rmctrl,utilisateur) $caption(rmctrl,zenith)"
 
       #--- Coordonnees J2000.0 de M104
       set panneau(Rmctrl,getobj)    "12h40m0 -11d37m22"
@@ -190,102 +187,6 @@ namespace eval ::Rmctrl {
          update
       }
       ::Rmctrl::cmdAfficheCoord
-   }
-
-   proc Gestion_Cata { } {
-      variable This
-      global conf
-      global audace
-      global panneau
-      global caption
-      global catalogue
-
-      #--- Gestion des catalogues
-      if { $panneau(Rmctrl,menu) == "$caption(rmctrl,coord)" } {
-         ::cataGoto::Nettoyage
-         set catalogue(validation) "0"
-         set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,planete)" } {
-         ::cataGoto::GotoPlanete
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set panneau(Rmctrl,list_radec) "$catalogue(planete_ad) $catalogue(planete_dec)"
-         } else {
-            set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-         }
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,asteroide)" } {
-         ::cataGoto::CataAsteroide
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set panneau(Rmctrl,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
-         } else {
-            set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-         }
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,etoile)" } {
-         ::cataGoto::CataEtoiles
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set panneau(Rmctrl,list_radec) "$catalogue(etoile_ad) $catalogue(etoile_dec)"
-         } else {
-            set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-         }
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,messier)" } {
-         ::cataGoto::CataObjet $panneau(Rmctrl,menu)
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set panneau(Rmctrl,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
-         } else {
-            set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-         }
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,ngc)" } {
-         ::cataGoto::CataObjet $panneau(Rmctrl,menu)
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set panneau(Rmctrl,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
-         } else {
-            set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-         }
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,ic)" } {
-         ::cataGoto::CataObjet $panneau(Rmctrl,menu)
-         vwait catalogue(validation)
-         if { $catalogue(validation) == "1" } {
-            set panneau(Rmctrl,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
-         } else {
-            set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-         }
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      } elseif { $panneau(Rmctrl,menu) == "$caption(rmctrl,utilisateur)" } {
-         if { $catalogue(autre_catalogue) == "2" } {
-            ::cataGoto::CataObjetUtilisateur_Choix
-         } else {
-            ::cataGoto::CataObjetUtilisateur
-         }
-         if { $catalogue(utilisateur) != "" } {
-            vwait catalogue(validation)
-            if { $catalogue(validation) == "1" } {
-               set panneau(Rmctrl,list_radec) "$catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec)"
-            } else {
-               set panneau(Rmctrl,list_radec) $panneau(Rmctrl,getobj)
-            }
-            set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-         } else {
-            set catalogue(validation) "0"
-         }
-      } else {
-         ::cataGoto::Nettoyage
-         set catalogue(validation) "0"
-         set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
-         set panneau(Rmctrl,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
-         set panneau(Rmctrl,getobj) $panneau(Rmctrl,list_radec)
-      }
-      if { $catalogue(validation) == "1" } {
-         ::Rmctrl::Gestion_Cata
-      }
    }
 
    proc cmdSpeed { { value " " } } {
@@ -903,19 +804,9 @@ proc RmctrlBuildIF { This } {
       #--- Frame du pointage
       frame $This.fra2 -borderwidth 1 -relief groove
 
-         ComboBox $This.fra2.optionmenu1 \
-            -width 12         \
-            -height [ llength $panneau(Rmctrl,cata_coord) ]  \
-            -relief sunken    \
-            -borderwidth 1    \
-            -editable 0       \
-            -textvariable panneau(Rmctrl,menu) \
-            -modifycmd { ::Rmctrl::Gestion_Cata } \
-            -values $panneau(Rmctrl,cata_coord)
-         pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -pady 2
-
-         #--- Bind (clic droit) pour ouvrir la fenetre sans avoir a selectionner dans la listbox
-         bind $This.fra2.optionmenu1.e <ButtonPress-3> { ::Rmctrl::Gestion_Cata }
+         #--- Frame pour choisir un catalogue
+         ::cataGoto::createFrameCatalogue $This.fra2.catalogue $panneau(Rmctrl,getobj) 1
+         pack $This.fra2.catalogue -in $This.fra2 -anchor nw -side top -padx 4 -pady 1
 
          #--- Entry pour l'objet a entrer
          entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Rmctrl,getobj) \
