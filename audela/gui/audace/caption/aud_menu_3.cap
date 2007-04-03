@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.14 2007-03-26 15:23:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.15 2007-04-03 20:31:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -110,6 +110,17 @@ set caption(pretraitement,image_flat-field)             "Flat-Field Frame:"
 set caption(pretraitement,sans_image_flat-field)        "No Flat-Field Frame Available"
 set caption(pretraitement,aucune)                       "None"
 
+set caption(pretraitement,liste_serie)                  "Index List:"
+set caption(pretraitement,nom_generique)                "Generic Name:"
+set caption(pretraitement,nom_generique_ok)             "This is a file generic name."
+set caption(pretraitement,nom_generique_ko)             "This is not a file generic name."
+set caption(pretraitement,renumerote_termine)           "File renumbering completed."
+set caption(pretraitement,numerotation_ok)              "Renumbering of the file series is correct."
+set caption(pretraitement,pas_fichier_manquant)         "No files are missing in this series."
+set caption(pretraitement,renumerote_manuel)            "If there are missing files in the series, file\nrenumbering must be performed manually."
+set caption(pretraitement,indice_pas_1)                 "The first index in the series is not 1."
+set caption(pretraitement,fichier_indice_0)             "The file with index 0 has now the last index of the list."
+
 set caption(aud_menu_3,ok)                              "OK"
 set caption(aud_menu_3,appliquer)                       "Apply"
 set caption(aud_menu_3,fermer)                          "Close"
@@ -216,6 +227,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Image de flat-field :"
    set caption(pretraitement,sans_image_flat-field)     "Aucun flat-field est disponible"
    set caption(pretraitement,aucune)                    "Aucune"
+
+   set caption(pretraitement,liste_serie)               "Liste des index :"
+   set caption(pretraitement,nom_generique)             "Nom générique :"
+   set caption(pretraitement,nom_generique_ok)          "C'est bien un nom générique de fichier."
+   set caption(pretraitement,nom_generique_ko)          "Ce n'est pas un nom générique de fichier."
+   set caption(pretraitement,renumerote_termine)        "La renumérotation des fichiers est terminée."
+   set caption(pretraitement,numerotation_ok)           "La numérotation de la série de fichiers est correcte."
+   set caption(pretraitement,pas_fichier_manquant)      "Il n'y a pas de fichier manquant dans cette série."
+   set caption(pretraitement,renumerote_manuel)         "Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
+   set caption(pretraitement,indice_pas_1)              "Le premier indice de la série n'est pas 1."
+   set caption(pretraitement,fichier_indice_0)          "Le fichier d'indice 0 porte désormais le dernier indice de la liste."
 
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Appliquer"
@@ -324,6 +346,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,sans_image_flat-field)     "Nessun flat-field disponibile"
    set caption(pretraitement,aucune)                    "Nessuna"
 
+   set caption(pretraitement,liste_serie)               "# Liste des index :"
+   set caption(pretraitement,nom_generique)             "Nomi generici:"
+   set caption(pretraitement,nom_generique_ok)          "# C'est bien un nom générique de fichier."
+   set caption(pretraitement,nom_generique_ko)          "# Ce n'est pas un nom générique de fichier."
+   set caption(pretraitement,renumerote_termine)        "# La renumérotation des fichiers est terminée."
+   set caption(pretraitement,numerotation_ok)           "# La numérotation de la série de fichiers est correcte."
+   set caption(pretraitement,pas_fichier_manquant)      "# Il n'y a pas de fichier manquant dans cette série."
+   set caption(pretraitement,renumerote_manuel)         "# Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
+   set caption(pretraitement,indice_pas_1)              "# Le premier indice de la série n'est pas 1."
+   set caption(pretraitement,fichier_indice_0)          "# Le fichier d'indice 0 porte désormais le dernier indice de la liste."
+
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Applica"
    set caption(aud_menu_3,fermer)                       "Chiudi"
@@ -430,6 +463,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Imagen de campo plano:"
    set caption(pretraitement,sans_image_flat-field)     "No se dispone de toma flat-field"
    set caption(pretraitement,aucune)                    "Ninguno"
+
+   set caption(pretraitement,liste_serie)               "# Liste des index :"
+   set caption(pretraitement,nom_generique)             "Nombre genérico:"
+   set caption(pretraitement,nom_generique_ok)          "# C'est bien un nom générique de fichier."
+   set caption(pretraitement,nom_generique_ko)          "# Ce n'est pas un nom générique de fichier."
+   set caption(pretraitement,renumerote_termine)        "# La renumérotation des fichiers est terminée."
+   set caption(pretraitement,numerotation_ok)           "# La numérotation de la série de fichiers est correcte."
+   set caption(pretraitement,pas_fichier_manquant)      "# Il n'y a pas de fichier manquant dans cette série."
+   set caption(pretraitement,renumerote_manuel)         "# Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
+   set caption(pretraitement,indice_pas_1)              "# Le premier indice de la série n'est pas 1."
+   set caption(pretraitement,fichier_indice_0)          "# Le fichier d'indice 0 porte désormais le dernier indice de la liste."
 
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Aplicar"
@@ -538,6 +582,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,sans_image_flat-field)     "Es ist keinen Flach-Feld erhältlich"
    set caption(pretraitement,aucune)                    "Keine"
 
+   set caption(pretraitement,liste_serie)               "# Liste des index :"
+   set caption(pretraitement,nom_generique)             "Generischen Nahmen:"
+   set caption(pretraitement,nom_generique_ok)          "# C'est bien un nom générique de fichier."
+   set caption(pretraitement,nom_generique_ko)          "# Ce n'est pas un nom générique de fichier."
+   set caption(pretraitement,renumerote_termine)        "# La renumérotation des fichiers est terminée."
+   set caption(pretraitement,numerotation_ok)           "# La numérotation de la série de fichiers est correcte."
+   set caption(pretraitement,pas_fichier_manquant)      "# Il n'y a pas de fichier manquant dans cette série."
+   set caption(pretraitement,renumerote_manuel)         "# Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
+   set caption(pretraitement,indice_pas_1)              "# Le premier indice de la série n'est pas 1."
+   set caption(pretraitement,fichier_indice_0)          "# Le fichier d'indice 0 porte désormais le dernier indice de la liste."
+
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Anwenden"
    set caption(aud_menu_3,fermer)                       "Schließen"
@@ -645,6 +700,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,sans_image_flat-field)     "Nenhum Flat-Field disponível"
    set caption(pretraitement,aucune)                    "Nenhum"
 
+   set caption(pretraitement,liste_serie)               "# Liste des index :"
+   set caption(pretraitement,nom_generique)             "Nome genérico:"
+   set caption(pretraitement,nom_generique_ok)          "# C'est bien un nom générique de fichier."
+   set caption(pretraitement,nom_generique_ko)          "# Ce n'est pas un nom générique de fichier."
+   set caption(pretraitement,renumerote_termine)        "# La renumérotation des fichiers est terminée."
+   set caption(pretraitement,numerotation_ok)           "# La numérotation de la série de fichiers est correcte."
+   set caption(pretraitement,pas_fichier_manquant)      "# Il n'y a pas de fichier manquant dans cette série."
+   set caption(pretraitement,renumerote_manuel)         "# Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
+   set caption(pretraitement,indice_pas_1)              "# Le premier indice de la série n'est pas 1."
+   set caption(pretraitement,fichier_indice_0)          "# Le fichier d'indice 0 porte désormais le dernier indice de la liste."
+
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Aplicar"
    set caption(aud_menu_3,fermer)                       "Fechar"
@@ -751,6 +817,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Flat-field frame:"
    set caption(pretraitement,sans_image_flat-field)     "Intet flat-field billede er til rådighed"
    set caption(pretraitement,aucune)                    "Ingen"
+
+   set caption(pretraitement,liste_serie)               "Index-liste:"
+   set caption(pretraitement,nom_generique)             "Fællesnavn:"
+   set caption(pretraitement,nom_generique_ok)          "Dette er et fil-fællesnavn."
+   set caption(pretraitement,nom_generique_ko)          "Dette er ikke et fil-fællesnavn."
+   set caption(pretraitement,renumerote_termine)        "Fil-omnummerering er afsluttet."
+   set caption(pretraitement,numerotation_ok)           "Omnummereringen af fil-serien er korrekt."
+   set caption(pretraitement,pas_fichier_manquant)      "Der mangler ingen filer i denne serie."
+   set caption(pretraitement,renumerote_manuel)         "Hvis der mangler filer i denne serie,\nmå filnummerering foregå manuelt!"
+   set caption(pretraitement,indice_pas_1)              "Første indeks i serien er ikke 1."
+   set caption(pretraitement,fichier_indice_0)          "Filen med indeks 0 er nu tildelt den sidste indeks i listen."
 
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Anvend"
