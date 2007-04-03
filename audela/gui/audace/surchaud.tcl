@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.19 2007-03-17 13:32:54 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.20 2007-04-03 16:34:55 robertdelmas Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -23,13 +23,14 @@
 # opt  dark offset
 # opt1  in dark offset out const ?tt_options?
 # opt2  in dark offset out const number ?first_index? ?tt_options?
-# subsky  back_kernel back_threshold  ?tt_options?
-# subsky2  in out number back_kernel back_threshold ?first_index? ?tt_options?
-# window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
 # delete2  in number
 # register  in out number ?-box {x1 y1 x2 y2}? ?tt_options?
 # register2  in out number ?first_index? ?tt_options?
 # registerwcs  in out number ?first_index? ?tt_options?
+# subsky  back_kernel back_threshold  ?tt_options?
+# subsky1  in out back_kernel back_threshold ?tt_options?
+# subsky2  in out number back_kernel back_threshold ?first_index? ?tt_options?
+# window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
 # smedian  in out number ?first_index? ?tt_options?
 # sadd  in out number ?first_index? ?tt_options?
 # ssigma  in out number ?first_index? ?tt_options?
@@ -691,7 +692,7 @@ proc register {args} {
       error "Usage: register in out number ?-box {x1 y1 x2 y2}? ?tt_options?"
       return $error;
    }
-   # --- decode la ligne de commande
+   #--- decode la ligne de commande
    set in [lindex $args 0]
    set out [lindex $args 1]
    set number [lindex $args 2]
@@ -799,6 +800,63 @@ proc registerwcs {args} {
    }
 }
 
+proc subsky {args} {
+   global audace
+   global caption
+
+   set argc [llength $args]
+   if { $argc < 2} {
+      error "Usage: subsky back_kernel back_threshold ?tt_options?"
+      return $error;
+   }
+   #--- decode la ligne de commande source audace/surchaud.tcl ; subsky 20 0.20 40
+   set back_kernel [lindex $args 0]
+   set back_threshold [lindex $args 1]
+   if {$back_threshold<0} {
+      set back_threshold 0
+   }
+   if {$back_threshold>1} {
+      set back_threshold 1
+   }
+   set options ""
+   if {$argc>=3} {
+      set options "[lrange $args 2 end]"
+   }
+   buf$audace(bufNo) imaseries "back back_kernel=$back_kernel back_threshold=$back_threshold sub $options"
+}
+
+proc subsky1 {args} {
+   global audace
+   global caption
+
+   set argc [llength $args]
+   if { $argc < 4} {
+      error "Usage: subsky1 in out back_kernel back_threshold ?tt_options?"
+      return $error;
+   }
+   #--- decode la ligne de commande source audace/surchaud.tcl ; subsky2 ic a 20 0.20 40
+   set in [lindex $args 0]
+   set out [lindex $args 1]
+   set back_kernel [lindex $args 2]
+   set back_threshold [lindex $args 3]
+   if {$back_threshold<0} {
+      set back_threshold 0
+   }
+   if {$back_threshold>1} {
+      set back_threshold 1
+   }
+   set options ""
+   if {$argc>=5} {
+      set options "[lrange $args 4 end]"
+   }
+   set ext "[buf$audace(bufNo) extension]"
+   set path "$audace(rep_images)"
+   set script "IMA/SERIES \"$path\" \"$in\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" BACK back_kernel=$back_kernel back_threshold=$back_threshold sub $options"
+   #::console::affiche_resultat "$script\n"
+   ttscript2 $script
+   ttscript2  "IMA/SERIES \"$path\" \"$out\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
+}
+
 proc subsky2 {args} {
    global audace
    global caption
@@ -808,7 +866,7 @@ proc subsky2 {args} {
       error "Usage: subsky2 in out number back_kernel back_threshold ?first_index? ?tt_options?"
       return $error;
    }
-   # --- decode la ligne de commande source audace/surchaud.tcl ; subsky2 ic a 2 20 0.20 40
+   #--- decode la ligne de commande source audace/surchaud.tcl ; subsky2 ic a 10 20 0.20 40
    set in [lindex $args 0]
    set out [lindex $args 1]
    set number [lindex $args 2]
@@ -835,32 +893,6 @@ proc subsky2 {args} {
    #::console::affiche_resultat "$script\n"
    ttscript2 $script
    ttscript2  "IMA/SERIES \"$path\" \"$out\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
-   # buf$audace(bufNo) imaseries "back back_kernel=$back_kernel back_threshold=$back_threshold sub"
-}
-
-proc subsky {args} {
-   global audace
-   global caption
-
-   set argc [llength $args]
-   if { $argc < 2} {
-      error "Usage: subsky back_kernel back_threshold ?tt_options?"
-      return $error;
-   }
-   # --- decode la ligne de commande source audace/surchaud.tcl ; subsky ic a 2 20 0.20 40
-   set back_kernel [lindex $args 0]
-   set back_threshold [lindex $args 1]
-   if {$back_threshold<0} {
-      set back_threshold 0
-   }
-   if {$back_threshold>1} {
-      set back_threshold 1
-   }
-   set options ""
-   if {$argc>=3} {
-      set options "[lrange $args 2 end]"
-   }
-   buf$audace(bufNo) imaseries "back back_kernel=$back_kernel back_threshold=$back_threshold sub $options"
 }
 
 proc window2 {args} {
@@ -872,7 +904,7 @@ proc window2 {args} {
       error "Usage: window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?"
       return $error;
    }
-   # --- decode la ligne de commande source audace/surchaud.tcl ; window2 ic a 2 {50 50 100 100}
+   #--- decode la ligne de commande source audace/surchaud.tcl ; window2 ic a 2 {50 50 100 100}
    set in [lindex $args 0]
    set out [lindex $args 1]
    set number [lindex $args 2]
