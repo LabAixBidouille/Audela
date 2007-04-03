@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.60 2007-03-31 00:11:48 alainklotz Exp $
+# Mise a jour $Id: aud.tcl,v 1.61 2007-04-03 20:30:11 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -630,13 +630,8 @@ namespace eval ::audace {
          { ::traiteImage::run "$caption(audace,menu,r+v+b2rvb)" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rvb2r+v+b)..." \
          { ::traiteImage::run "$caption(audace,menu,rvb2r+v+b)" "$audace(base).traiteImage" }
-      Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
          { ::traiteImage::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
-         { ::traiteImage::run "$caption(audace,menu,subsky)" "$audace(base).traiteImage" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
-         { ::traiteImage::run "$caption(audace,menu,clip)" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
          { ::pretraitement::run "$caption(audace,menu,scale)" "$audace(base).pretraitement" }
@@ -644,6 +639,10 @@ namespace eval ::audace {
          { ::pretraitement::run "$caption(audace,menu,offset)" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
          { ::pretraitement::run "$caption(audace,menu,mult_cte)" "$audace(base).pretraitement" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
+         { ::pretraitement::run "$caption(audace,menu,clip)" "$audace(base).pretraitement" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
+         { ::pretraitement::run "$caption(audace,menu,subsky)" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
          { ::pretraitement::run "$caption(audace,menu,noffset)" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
